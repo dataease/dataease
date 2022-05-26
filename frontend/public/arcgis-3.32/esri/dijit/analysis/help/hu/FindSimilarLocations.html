@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hasonló helyek keresése</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Hasonl&oacute; helyek keres&eacute;se"></h2>
+        <hr/>
+    <p>A Hasonl&oacute; helyek keres&eacute;se eszk&ouml;z a megadott krit&eacute;riumok alapj&aacute;n megm&eacute;ri a vizsg&aacute;lt lehets&eacute;ges keres&eacute;si r&eacute;teg helyeinek egy vagy t&ouml;bb vonatkoztat&aacute;si helyhez val&oacute; hasonl&oacute;s&aacute;g&aacute;t.  Ez az eszk&ouml;z k&eacute;pes v&aacute;laszt tal&aacute;lni p&eacute;ld&aacute;ul az al&aacute;bbi k&eacute;rd&eacute;sekre
+        <ul>
+            <li>Az &uuml;zletek k&ouml;z&uuml;l melyek hasonl&iacute;tanak a legink&aacute;bb a legjobban teljes&iacute;tőkre a v&aacute;s&aacute;rl&oacute;i profil tekintet&eacute;ben?
+            </li>
+            <li>A j&aacute;rv&aacute;ny &aacute;ltal legink&aacute;bb s&uacute;jtott k&ouml;zs&eacute;gek jellemzői alapj&aacute;n mely k&ouml;zs&eacute;gek vesz&eacute;lyeztetetts&eacute;ge magas?
+            </li>
+        </ul>
+        Hasonl&oacute; k&eacute;rd&eacute;sek megv&aacute;laszol&aacute;s&aacute;hoz adja meg a vonatkoztat&aacute;si helyeket, a sz&oacute;ba j&ouml;vő keres&eacute;si helyeket, &eacute;s az egyeztetni k&iacute;v&aacute;nt krit&eacute;riumoknak megfelelő mezőket.  Az első bemenő r&eacute;teg tartalmazza a vonatkoztat&aacute;si vagy viszony&iacute;t&aacute;si alapk&eacute;nt szolg&aacute;l&oacute; helyeket.  Ez lehet p&eacute;ld&aacute;ul a legjobban teljes&iacute;tő &uuml;zleteket, vagy a j&aacute;rv&aacute;ny &aacute;ltal legink&aacute;bb s&uacute;jtott k&ouml;zs&eacute;geket tartalmaz&oacute; r&eacute;teg.  Ezut&aacute;n adja meg a vizsg&aacute;lt keres&eacute;si helyeket tartalmaz&oacute; r&eacute;teget.  Ez lehet az &ouml;sszes &uuml;zlet vagy minden m&aacute;s k&ouml;zs&eacute;g.  V&eacute;g&uuml;l adjon meg egy vagy t&ouml;bb mezőt, amelyet a hasonl&oacute;s&aacute;g m&eacute;rt&eacute;k&eacute;nek meghat&aacute;roz&aacute;s&aacute;hoz szeretne haszn&aacute;lni.  A Hasonl&oacute; helyek keres&eacute;se eszk&ouml;z ezut&aacute;n rangsorolja az &ouml;sszes sz&oacute;ba j&ouml;vő keres&eacute;si helyet aszerint, hogy milyen m&eacute;rt&eacute;kben egyeznek meg a vonatkoztat&aacute;si helyekkel a kiv&aacute;lasztott &ouml;sszes mező tekintet&eacute;ben.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vonatkoztatási helyeket tartalmazó réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A p&aacute;ros&iacute;tani k&iacute;v&aacute;nt vonatkoztat&aacute;si helyeket tartalmaz&oacute; pont, vonal, vagy ter&uuml;let r&eacute;teg. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Használhatja az összes helyet, vagy választhat közülük</h2></div>
+        <hr/>
+        <div>
+            <p>Ha sz&uuml;ks&eacute;ges, a v&aacute;laszt&oacute;gombok seg&iacute;ts&eacute;g&eacute;vel adja meg a vonatkoztat&aacute;si helyeket.  Ha p&eacute;ld&aacute;ul a bemenő r&eacute;teg tartalmazza az &ouml;sszes helyet &ndash; a vonatkoztat&aacute;si helyeket &eacute;s a sz&oacute;ba j&ouml;vő keres&eacute;si helyeket is &ndash;, akkor valamelyik v&aacute;laszt&oacute;eszk&ouml;z seg&iacute;ts&eacute;g&eacute;vel meg kell adnia a vonatkoztat&aacute;si helyeket.  Ha l&eacute;trehoz k&eacute;t k&uuml;l&ouml;n r&eacute;teget, amelyek k&ouml;z&uuml;l az egyik a vonatkoztat&aacute;si helyeket, a m&aacute;sik az &ouml;sszes sz&oacute;ba j&ouml;vő keres&eacute;si helyet tartalmazza, ez a kiv&aacute;laszt&aacute;s nem sz&uuml;ks&eacute;ges. 
+            </p>
+            <p>Ha t&ouml;bb vonatkoztat&aacute;si hely l&eacute;tezik, akkor l&eacute;trej&ouml;n egyetlen hely a hasonl&oacute;s&aacute;g elemz&eacute;s&eacute;re haszn&aacute;lt egyes mezők &eacute;rt&eacute;keinek &aacute;tlagol&aacute;s&aacute;val.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Hasonló helyek keresésének helye</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z a r&eacute;teg sz&oacute;ba j&ouml;vő keres&eacute;si helyeit a legjobban hasonl&oacute;t&oacute;l a legkev&eacute;sb&eacute; hasonl&oacute;ig rangsorolja.  A hasonl&oacute;s&aacute;g alapja az, hogy milyen m&eacute;rt&eacute;kben egyeznek meg az egyes helyek a vonatkoztat&aacute;si hellyel megadott mezőkben. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Hasonlóság alapja</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z a kiv&aacute;lasztott mezőket haszn&aacute;lja krit&eacute;riumk&eacute;nt a hasonl&oacute;s&aacute;g &eacute;rt&eacute;kel&eacute;s&eacute;re.  N&eacute;pess&eacute;g &eacute;s j&ouml;vedelem mező kiv&aacute;laszt&aacute;sa eset&eacute;n p&eacute;ld&aacute;ul a sz&oacute;ba j&ouml;vő keres&eacute;si helyek k&ouml;z&uuml;l azok lesznek a legelőr&eacute;bb rangsorolva, amelyek n&eacute;pess&eacute;g- &eacute;s j&ouml;vedelem&eacute;rt&eacute;ke a legjobban hasonl&iacute;t a vonatkoztat&aacute;si hely&eacute;hez. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Megjelenítés</h2></div>
+        <hr/>
+        <div>
+            <p>Megtekintheti az &ouml;sszes sz&oacute;ba j&ouml;vő keres&eacute;si helyet a legjobban hasonl&oacute;t&oacute;l a legkev&eacute;sb&eacute; hasonl&oacute;ig, vagy megadhatja a megjelen&iacute;tendő eredm&eacute;nyek sz&aacute;m&aacute;t. 
+                <ul>
+                    <li> <b>Minden hely a legjobban hasonl&oacute;t&oacute;l a legkev&eacute;sb&eacute; hasonl&oacute;ig</b>&ndash; A sz&oacute;ba j&ouml;vő keres&eacute;si hely &ouml;sszes vektoros eleme szerepelni fog az eredm&eacute;ny r&eacute;teg rangsor&aacute;ban.
+                    </li>
+                    <li> <b>A visszat&eacute;rt helyek sz&aacute;ma</b>&ndash; Meghat&aacute;rozhatja, hogy a legink&aacute;bb hasonl&oacute; sz&oacute;ba j&ouml;vő lehetős&eacute;gek k&ouml;z&uuml;l h&aacute;ny darab szerepeljen az eredm&eacute;ny r&eacute;tegen. Az alap&eacute;rtelmezett bemeneti &eacute;rt&eacute;k 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez adand&oacute; vektoros r&eacute;teg nev&eacute;t.  Az eredm&eacute;ny r&eacute;teg tartalmazni fogja a vonatkoztat&aacute;si helyeket &eacute;s rangsor szerint a megadott sz&oacute;ba j&ouml;vő keres&eacute;si helyeket.   Ha az eredm&eacute;ny r&eacute;teg neve m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy nevezze &aacute;t.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mezőben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

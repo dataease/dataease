@@ -1,0 +1,146 @@
+.#{$theme-name} {
+  .esriMeasurement {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    .esriMeasurementBorderContainer {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    .dijitContentPane {
+      padding: 0;
+      position: relative;
+    }
+    .distanceIcon,
+    .areaIcon,
+    .locationIcon {
+      width: $measurement-icon-width;
+      height: $measurement-icon-height;
+    }
+    .distanceIcon {
+      background-image: url(../images/Measure_Distance16.png);
+    }
+    .areaIcon {
+      background-image: url(../images/Measure_Area16.png);
+    }
+    .locationIcon {
+      background-image: url(../images/Measure_Point16.png);
+    }
+    .esriButton {
+      float: left;
+      width: 33.3333333333%;
+      position: relative;
+      + .esriButton {
+        margin-left: -1px;
+      }
+      &:first-child {
+        margin-left: 1px;
+      }
+    }
+    .dijitButtonNode {
+      width: 100%;
+      .dijitIcon {
+        margin-right: 0;
+      }
+      * {
+        outline: none;
+      }
+    }
+    .esriButtonChecked {
+      z-index: 1;
+      .dijitButtonNode {
+        @include button-variant-default-active;
+        border-color: $input-border-focus;
+      }
+    }
+    .esriToggleButton {
+      display: block;
+      margin: 0 1px;
+      .dijitButtonContents {
+        display: table;
+        width: 100%;
+        padding: 0;
+        > * {
+          display: table-cell;
+        }
+      }
+      .dijitButtonText {
+        width: 100%;
+        padding: $padding-base-vertical $padding-base-horizontal;
+      }
+      .dijitArrowButtonInner {
+        float: right;
+      }
+    }
+    .esriMeasurementButtonContainer {
+      overflow: visible;
+      margin-bottom: $measurement-row-spacing;
+    }
+    .esriMeasurementResultLabel {
+      border-top: 1px solid $measurement-result-label-border;
+      padding: $measurement-result-label-padding-vertical $measurement-result-label-padding-horizontal;
+      color: $measurement-result-label-color;
+      text-align: center;
+    }
+    .esriMeasurementResultValue,
+    .esriMeasurementTableContainer {
+      text-align: center;
+      padding: $measurement-result-padding-vertical $measurement-result-padding-horizontal;
+    }
+    .esriMeasurementResultTable {
+      width: 100%;
+    }
+    .esriMeasurementTableRow,
+    .result {
+      font-weight: 700;
+      font-size: $measurement-result-font-size;
+    }
+    .esriMeasurementTableHeader {
+      width: 50%;
+      text-align: end;
+    }
+    .esriMeasurementTableCell {
+      width: 48%;
+      text-align: end;
+    }
+    .esriMeasurementSeparator {
+      height: $measurement-row-spacing;
+      text-indent: -99999em; // to hide the "|"
+      clear: both;
+    }
+  }
+}
+
+// RTL
+// --------------------------------------------------
+.dj_rtl {
+  .#{$theme-name} {
+    .esriMeasurement {
+      .esriButton {
+        float: right;
+        + .esriButton {
+          margin-left: inherit;
+          margin-right: -1px;
+        }
+        &:first-child {
+          margin-left: inherit;
+          margin-right: 1px;
+        }
+      }
+      .dijitButtonNode {
+        .dijitIcon {
+          margin-left: 0;
+          margin-right: inherit;
+        }
+      }
+      .esriToggleButton {
+        .dijitArrowButtonInner {
+          float: left;
+        }
+      }
+    }
+  }
+}
+

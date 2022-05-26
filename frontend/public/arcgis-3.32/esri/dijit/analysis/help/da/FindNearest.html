@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find nærmeste</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Find n&aelig;rmeste"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j finder de n&aelig;rmeste objekter og rapporterer og rangordner afstanden til de n&aelig;rmeste objekter. Hvis du vil finde de n&aelig;rmeste objekter, kan v&aelig;rkt&oslash;jet foretage m&aring;linger i fugleflugtslinje eller ud fra en valgt rejsetilstand. Det er muligt at begr&aelig;nse antallet af n&aelig;rmeste objekter, der bliver fundet, eller s&oslash;geintervallet, hvor de skal findes. Resultaterne fra dette v&aelig;rkt&oslash;j kan hj&aelig;lpe dig med at f&aring; svar p&aring; f&oslash;lgende sp&oslash;rgsm&aring;l:
+        <ul>
+            <li>Hvilken park er n&aelig;rmest?
+            </li>
+            <li>Til hvilket hospital er k&oslash;retiden kortest? Hvor lang tid tager turen p&aring; en tirsdag kl. 17.30 i myldretiden?
+            </li>
+            <li>Hvor lang er k&oslash;reafstandene mellem disse st&oslash;rre byer?
+            </li>
+            <li>Hvilke af disse patienter bor inden for en afstand af 5 kilometer fra disse kemiske fabrikker?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Find n&aelig;rmeste returnerer et lag, der indeholder objekterne t&aelig;ttest p&aring;, og et linjelag, der forbinder startstederne med deres n&aelig;rmeste steder. Linjelaget indeholder oplysninger om starten og n&aelig;rmeste steder samt afstanden mellem dem.
+    </p>
+    <p>Hvis feltet  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der anses for startobjekter og potentielle n&aelig;rmeste objekter. Hvis markeringen fjernes, medtages alle objekter i inputlaget, ogs&aring; selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Angiv startpositionerne</h2></div>
+        <hr/>
+        <div>
+            <p>Find n&aelig;rmeste m&aring;ler fra de objekter i laget, som du angiver her (startstederne), til de steder, som du angiver i den n&aelig;ste parameter. V&aelig;rkt&oslash;jet underst&oslash;tter op til  5.000 objekter i hvert lag. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Find nærmeste steder i</h2></div>
+        <hr/>
+        <div>
+            <p>Find n&aelig;rmeste m&aring;ler fra hvert af objekterne i det f&oslash;rste lag til stederne i dette lag. V&aelig;rkt&oslash;jet underst&oslash;tter op til  5.000 positioner i hvert lag. </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Opmål</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, om de n&aelig;rmeste steder skal findes baseret p&aring; afstanden i fugleflugtslinje eller en valgt rejsetilstand. Rejsetilstande er kun aktiveret, n&aring;r dit inputlag indeholder punkter. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation. N&aring;r du bruger en af rejsetilstandene, foretages m&aring;lingerne langs med veje eller g&aring;stier, og m&aring;lingerne stemmer overens med g&aelig;ldende regler s&aring;som ensrettede gader, ulovlige vendinger osv.
+            </p>
+            <p>Ved m&aring;ling mellem linjer eller omr&aring;der findes afstanden fra eller til n&aelig;rmeste punkt langs linjen eller omr&aring;degr&aelig;nsen. 
+            </p> 
+            <p>N&aring;r du v&aelig;lger  <b>K&oslash;retid</b>, <b>K&oslash;retid i landlige omgivelser</b>, eller <b>Lastbilsk&oslash;retid</b> kan du v&aelig;lge, hvordan k&oslash;retiden skal m&aring;les.
+                <ul>
+                    <li>
+                        <p>Fjern markeringen ud for  <b>Brug trafik</b>, hvis du vil finde de n&aelig;rmeste objekter p&aring; basis af statiske rejsehastigheder, f.eks. hastighedsgr&aelig;nser, i stedet for varierende hastigheder, der er for&aring;rsaget af &aelig;ndrede trafikforhold.
+                        </p>
+                        <p>V&aelig;lg denne indstilling, hvis du vil vide, hvad der generelt er n&aelig;rmeste, men ikke n&oslash;dvendigvis n&aelig;rmest i betragtning af trafikforholdene p&aring; et bestemt tidspunkt eller en bestemt dag.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Marker feltet  <b>Brug trafik</b> for at finde n&aelig;rmeste objekter baseret p&aring; et givent starttidspunkt og skiftende trafikforhold. Hvis du ogs&aring; v&aelig;lger <b>Aktuel trafik</b>, angives afgangstidspunktet fra startstederne til den aktuelle tid, og den aktuelle trafikhastighed samt prognoser for trafikhastighed hentes fra sensorer og feeds for at afg&oslash;re, hvilke objekter, der er n&aelig;rmest. De forventede k&oslash;rehastigheder beregnes under henvisning til trafikkens aktuelle hastigheder, historiske hastigheder og aktuelle forhold som f.eks. vejret. Trafikkens hastighed forudsiges 12 timer frem, s&aring; afgangstidspunktet kan indstilles ved at flytte skyderen op til 12 timer frem.
+                        </p>
+                        <p>Brug disse indstillinger for den aktuelle trafik til at finde ud af, hvilke objekter du kan n&aring; p&aring; korteste tid, n&aring;r du k&oslash;rer nu, om en time osv.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Hvis du markerer  <b>Brug trafik</b> og v&aelig;lger <b>Trafik baseret p&aring; fysiske forhold for</b> en dag og et klokkesl&aelig;t, finder v&aelig;rkt&oslash;jet de n&aelig;rmeste objekter baseret p&aring; gennemsnittet af historisk hastighed for hvert femte minut i en normal uge.. Resultaterne omfatter trafik, men fjerner p&aring;virkningen af aktuelle trafikforhold og h&aelig;ndelser, som i betydelig grad kan skille sig ud fra normen.
+                        </p>
+                        <p>Du kan bruge disse historiske trafikindstillinger til eksempelvis at f&aring; svar p&aring; sp&oslash;rgsm&aring;let: &quot;hvilke objekter kan n&aring;s hurtigst, hvis jeg k&oslash;rer fra startobjekterne kl. 11.30 p&aring; en onsdag?&quot; 
+                        </p>
+                        <p>Klokkesl&aelig;ttet, du indstiller, henviser til tidszonen, som startobjekterne befinder sig i. S&aring; hvis du indstiller tidspunktet til kl. 8.00 og har to udgangspunkter - &eacute;t i New York City og et andet i Los Angeles, bliver de n&aelig;rmeste steder fundet under foruds&aelig;tning af, at afgangstidspunkt er henholdsvis kl. 8.00 p&aring; &oslash;stkysten (Eastern Time) og kl. 8.00 p&aring; vestkysten (Pacific Time).
+                        </p>
+                    </li>
+                </ul>
+                Bem&aelig;rk, at n&aring;r et k&oslash;ret&oslash;j begiver sig v&aelig;k fra et punkt, s&aring; g&aring;r tiden, og trafikforholdene &aelig;ndrer sig. Dette v&aelig;rkt&oslash;j tager h&oslash;jde for disse variationer, hvis du markerer <b>Brug trafik</b>; men ikke alle regioner underst&oslash;tter trafik. Klik p&aring; linket <b>Se tilg&aelig;ngelighed</b> i v&aelig;rkt&oslash;jet for at finde ud af, hvorvidt det er tilf&aelig;ldet i det omr&aring;de, du unders&oslash;ger. 
+            </p>
+            <p> <b>Lastbilsk&oslash;retid</b> kan benytte dynamiske rejsehastigheder baseret p&aring; trafikken, men kun op til hastighedsgr&aelig;nserne for lastbiler. Hvis den dynamiske hastighed for en vej baseret p&aring; den aktuelle trafik f.eks. er 110 km/t , men hastighedsgr&aelig;nsen for lastbiler p&aring; den p&aring;g&aelig;ldende vej er 80 km/t, benytter beregningen 80 km/t for denne  vej.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vælg grænselag</h2></div>
+        <hr/>
+        <div>
+            <p> Et eller flere objekter, der fungerer som midlertidige begr&aelig;nsninger (barrierer) under transport p&aring; de underliggende gader. Du kan angive gr&aelig;nser vha. punkt-, linje- eller polygonobjekter.
+            </p>
+            <p>En punktgr&aelig;nse kan modellere et f&aelig;ldet tr&aelig;, en ulykke, en nedfalden elektrisk ledning eller andet, der blokerer helt for trafikken p&aring; en specifik position p&aring; gaden. Transport er tilladt p&aring; gaden, men ikke gennem gr&aelig;nsen (barrieren). Du kan angive op til 250 objekter, der kan fungere som punktgr&aelig;nser.
+            </p>
+            <p>En linjegr&aelig;nse forhindrer transport alle steder, hvor gr&aelig;nsen gennemsk&aelig;rer gaderne. En linjegr&aelig;nse kan f.eks. bruges til at modellere en parade eller en demonstration, der blokerer trafikken p&aring; tv&aelig;rs af flere gadesegmenter. Hvis det antal gadesegmenter, der gennemsk&aelig;res af linjegr&aelig;nserne, overskrider 500, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+            <p>En polygongr&aelig;nse forhindrer transport alle steder, hvor polygonen gennemsk&aelig;rer gaderne. &Eacute;n m&aring;de at benytte denne type gr&aelig;nse p&aring; er at modellere oversv&oslash;mmelser, der d&aelig;kker s&aring; store dele af vejnettet, at vejtransport bliver umulig. Hvis det antal gadesegmenter, der gennemsk&aelig;res af polygongr&aelig;nserne, overskrider 2000, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>For hvert sted i inputlaget</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan begr&aelig;nse s&oslash;gningen efter n&aelig;rmeste steder p&aring; to m&aring;der. Den ene er at begr&aelig;nse det maksimale antal n&aelig;rmeste steder, der skal findes pr. startsted. Du kan finde den n&aelig;rmeste park, de to n&aelig;rmeste osv. Den anden mulighed er at indstille en maksimal s&oslash;geafstand eller k&oslash;retid.
+            </p>
+            <p>Hvis du ikke markerer nogen indstillinger, bliver der maksimalt fundet 100 steder (v&aelig;rkt&oslash;jets gr&aelig;nse), og det maksimale s&oslash;geomr&aring;de er ubegr&aelig;nset.
+            </p>
+            <p>Behandlingstiden afh&aelig;nger af antallet af startsteder, antallet af steder i n&aelig;rheden og det maksimale s&oslash;geomr&aring;de. Behandlingen tager l&aelig;ngere tid, n&aring;r der er flere steder eller st&oslash;rre s&oslash;geomr&aring;der.
+            </p>
+            <p>Bem&aelig;rk, at n&aring;r der er angivet en gr&aelig;nse for s&oslash;geomr&aring;det, er det muligt, at v&aelig;rkt&oslash;jet ikke finder n&aelig;rmeste steder inden for omr&aring;det, eller at der findes f&aelig;rre end det maksimale antal n&aelig;rmeste steder, du angiver.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det vektorlag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Hvis vektorlaget allerede findes, vil du blive bedt om at angive et andet navn. Vektorlaget vil indeholde to lag: &eacute;t med de n&aelig;rmeste steder og et andet med de linjer, der forbinder inputstederne med de n&aelig;rmeste steder.
+            </p>
+            <p>Hvis du v&aelig;lger  <b>Medtag rutelag</b>, gemmes hver rute fra resultatet ogs&aring; som rutelag. Et rutelag indeholder alle oplysninger for en bestemt rute, s&aring;som de stop, der er tildelt til ruten, samt rejsevejledningen. Det er nyttigt at oprette rutelag, hvis du gerne vil dele individuelle ruter med andre medlemmer i din organisation, eller hvis du &oslash;nsker at foretage yderligere redigering af ruterne ved hj&aelig;lp af knappen <b>K&oslash;rselsvejledninger</b> i kortviseren. Rutelagene bruger det navn, der er angivet for vektorlaget, som pr&aelig;fiks, og det rutenavn, der genereres som en del af analysen, tilf&oslash;jes for at oprette et unikt navn for hvert rutelag.
+            </p>
+            <p>Det maksimale antal rutelag, der kan oprettes, er  1.000. Hvis resultatet indeholder mere end  1.000 ruter, og feltet  <b>Medtag rutelag</b> er markeret, vil v&aelig;rkt&oslash;jet kun oprette output-featuretjenesten.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor vektorlaget og rutelagene &ndash; hvis de er oprettet &ndash;  vil blive gemt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

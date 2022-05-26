@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kreiraj oblasti koje se prelaze za određeno vreme</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Kreiraj oblasti koje se prelaze za određeno vreme"></h2>
+        <hr/>
+    <p>Alatka Kreiraj oblasti koje se prelaze za određeno vreme kreira oblasti koje mogu da se dosegnu za određeno vreme vožnje, dužinu vožnje, dužinu pe&scaron;ačenja i tako dalje. Meri se od jedne ili vi&scaron;e tačaka (do 1000) duž puteva ili trotoara, da bi se kreirao sloj koji može da vam pomogne da odgovorite na pitanja kao &scaron;to su:
+        <ul>
+            <li>Gde mogu da stignem odavde za najvi&scaron;e 30 minuta vožnje?
+            </li>
+            <li>Gde mogu da stignem odavde za najvi&scaron;e 30 minuta vožnje u 5:30 posle podne tokom &scaron;pica?
+            </li>
+            <li>&Scaron;ta se nalazi unutar dva kilometra pe&scaron;ačenja od mog hotela?
+            </li>
+            <li>U koje oblasti grada može vatrogasna patrola da stigne za najvi&scaron;e 5 minuta? 
+            </li>
+            <li>Kako bi se pobolj&scaron;ala pokrivenost reagovanja na požarne opasnosti građenjem nove vatrogasne stanice ovde?
+            </li>
+            <li>Koje oblasti trži&scaron;ta pokriva moje poslovanje?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Možda ćete moći da odgovorite na pitanja isključivo putem vizuelizovanja izlaznih oblasti. Druga mogućnost je da obavite detaljniju prostornu analizu koristeći izlazne oblasti. Na primer, pokretanje alatke Grupisanje tačaka koristeći oblasti koje se prelaze za određeno vreme sa demografskim podacima mogu da pomognu u određivanju koje bi potencijalne lokacije prodavnice verovatno omogućile najbolju korisničku bazu za va&scaron; tip poslovanja. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Da biste kreirali oblasti merenjem pravolinijske razdaljine umesto merenjem duž puteva, koristite alatku Kreiraj zone bliskosti umesto toga.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, samo oni geoobjekti koji su vidljivi unutar trenutnog obuhvata mape koristiće se za kreiranje oblasti zasnovanih na vremenu vožnje ili dužini vožnje. Ako nije izabrana, koristiće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite tačkasti sloj da biste izračunali okolne oblasti koja se prelaze za određeno vreme</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti oko kojih će oblasti biti izračunate. Možete da odaberete kako se oblasti izračunavaju na osnovu režima putovanja (vožnja automobila ili kamiona ili pe&scaron;ačenje) i merenja (vreme ili razdaljina).
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+            <p>Alatka podržava do 1000 geoobjekata u ulaznom sloju.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Merenja</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite režim putovanja (vožnja automobila ili kamiona ili pe&scaron;ačenje) i merenja (vreme ili razdaljina). Dostupne režime putovanja određuje administrator organizacije. Nakon biranja režima i merenja, unesite trajanje ili razdaljinu do  5 sati (300 minuta) ili  300 milja (482,80 kilometara). 
+            </p>
+            <p>Smer putovanja ( <b>Od objekta</b> ili <b>Ka objektu</b>) može da utiče na način generisanja oblasti. Pri kreiranju oblasti vožnja-vreme, uzimaju se u obzir jednosmerne ulice, izbegavaju se nepropisna skretanja i prate se druga pravila, na osnovu smera putovanja. Smer putovanja trebalo bi da izaberete na osnovu tipa ulaznih lokacija i konteksta analize. Na primer, oblast vožnja-vreme za restoran koji isporučuje picu trebalo bi da se kreira od objekta, a oblast vožnja-vreme za bolnicu trebalo bi da se kreira ka objektu.
+            </p>
+            <p>Kada odaberete  <b>Vreme vožnje</b>, <b>Vreme vožnje ruralnim predelima</b> ili <b>Vreme vožnje kamionom</b> imate opcije za način merenja vremena vožnje.
+                <ul>
+                    <li>
+                        <p>Opozovite izbor opcije  <b>Koristi saobraćaj</b> da biste kreirali oblasti koje se prelaze za određeno vreme na osnovu fiksnih brzina. Ovo je opcija koju treba da izaberete ako želite op&scaron;tu oblast vremena putovanja, a ne onu koja se izračunava koristeći promenljive uslove saobraćaja za određeno vreme polaska.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Izaberite opciju  <b>Koristi saobraćaj</b> da biste kreirali oblasti koje se prelaze za određeno vreme na osnovu datog vremena početka i promenljivih uslova saobraćaja. Biranjem opcije <b>Saobraćaj uživo</b> , vreme polaska od ulaznih tačaka je pode&scaron;eno na trenutno vreme, a trenutna i predviđena brzina saobraćaja referenciraju se iz senzora i feed-ova da bi se kreirale oblasti koje se prelaze za određeno vreme. Predviđene brzine saobraćaja izračunavaju se referenciranjem brzina saobraćaja uživo, arhivskim brzinama i trenutnim događajima kao &scaron;to su vremenski uslovi. Brzine saobraćaja predviđaju se 12 sati unapred, tako da možete da pomerite klizač da biste podesili vreme polaska do 12 sati unapred.
+                        </p>
+                        <p>Koristite ove postavke saobraćaja uživo da biste saznali do kojih oblasti možete da dođete ako krenete odmah, ako krenete za jedan sat i tako dalje.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Biranjem opcije  <b>Koristi saobraćaj</b> i opcije <b>Saobraćaj zasnovan na tipičnim uslovima za</b> dan i vreme, alatka kreira oblasti koje se prelaze za određeno vreme na osnovu proseka arhivskih brzina za svaki petominutni interval tokom rutinske sedmice. Rezultati obuhvataju saobraćaj, ali uklanjaju uticaj trenutnih uslova saobraćaja i događaja, &scaron;to može značajno da se razlikuje od norme.
+                        </p>
+                        <p>Ove postavke arhivskih podataka o saobraćaju možete da koristite da pitate, na primer, &bdquo;Koliko dugo obično treba da se stigne na ove krajnje tačke ako je vreme polaska 11:30 pre podne u sredu?&ldquo; 
+                        </p>
+                        <p>Vreme koje podesite odnosi se na vremensku zonu u kojoj se nalaze ulazne tačke. Stoga, ako podesite vreme na 8:00 pre podne, a imate dve polazne tačke, jednu u Njujorku, a drugu u Los Anđelesu, rute će biti generisane za vreme polaska u 8:00 pre podne. Istočno vreme i 8:00 pre podne. Pacifičko vreme, respektivno.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Imajte u vidu to da dok se vozilo udaljava ka spolja od polazne tačke, vreme protiče, a uslovi saobraćaja se menjaju. Alatka Oblasti koje se prelaze za određeno vreme uzima u obzir ove varijacije kada izaberete opciju  <b>Vreme vožnje</b> i opciju <b>Koristi saobraćaj</b>; međutim, saobraćaj nije omogućen u svim regionima. Kliknite na link <b>Pogledajte dostupnost</b> na alatki da biste saznali da li je ponuđen u va&scaron;oj oblasti ispitivanja.
+            </p>
+            <p> <b>Vreme vožnje kamionom</b> može da koristi brzine kretanja na osnovu saobraćaja, ali samo do zakonskog ograničenja brzine kamiona. Na primer, ako je dinamička brzina za ulicu na osnovu saobraćaja uživo 65 milja na sat, ali ograničenje brzine kamiona za tu ulicu iznosi 55 milja na sat, izračunavanje će koristiti 55 milja na sat za tu ulicu.
+            </p>
+            <p>Alatke  <b>Vreme pe&scaron;ačenja</b> i <b>Dužina pe&scaron;ačenja</b> koriste fiksnu brzinu od 5 kilometara na sat (3,1 milja na sat) i prate pe&scaron;ačke trotoare, kao i imenovane ulice (ignori&scaron;ući pravila koja se odnose na automobile, kao &scaron;to su jednosmerne ulice). </p>
+            <p> <b>Dužina vožnje kamionom</b> koristi fiksne brzine i pridržava se pravila koja su primenljiva na te&scaron;ke kamione, dok <b>Dužina vožnje</b> i <b>Dužina vožnje ruralnim predelima</b> koristi fiksne brzine i pridržava se pravila koja su primenljiva za manja vozila poput automobila.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izaberite slojeve barijera</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji će da predstavljaju privremena ograničenja (barijere) prilikom putovanja po pozadinskim ulicama. Barijere možete da navedete kori&scaron;ćenjem tačkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Tačkasta barijera može da predstavlja oboreno drvo, nezgodu, oboreni električni vod ili bilo &scaron;ta &scaron;to u potpunosti blokira saobraćaj na određenom mestu duž ulice. Kretanje je dozvoljeno na ulici, ali ne kroz barijeru. Možete da navedete do 250 geoobjekata koji će da predstavljaju tačkaste barijere.
+            </p>
+            <p>Linijska barijera zabranjuje kretanje svuda kuda barijera preseca ulice. Na primer, parada ili protest koji blokiraju saobraćaj duž nekoliko segmenta ulica mogu da budu predstavljeni linijskom barijerom. Ako broj ulica koje su presečene linijskom barijerom prema&scaron;uje 500, alatka će prikazati gre&scaron;ku.
+            </p>
+            <p>Poligonalna barijera zabranjuje kretanje svuda gde poligon preseca ulice. Jedan vid kori&scaron;ćenja ovog tipa barijere je da predstavi poplave koje pokrivaju oblasti cele mreže ulica i onemogućavaju drumski saobraćaj. Ako broj ulica koje su presečene poligonalnom barijerom prema&scaron;uje 2000, alatka će prikazati gre&scaron;ku.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Oblasti iz različitih tačaka</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako se upravlja zajedničkim oblastima iz različitih ulaznih tačaka kada dođu jedna do druge. One mogu da se:
+                <ul>
+                    <li> <b>preklope</b> &ndash; oblasti iz različitih ulaznih tačaka mogu da pokriju isti put. Ovo je korisno kada treba da znate sve ulazne tačke koje mogu da dođu do određene lokacije za dato vreme ili datu razdaljinu.
+                    </li>
+                    <li> <b>svedu</b> &ndash; sve oblasti se spajaju u jednu, a najvi&scaron;e jedna oblast može da pokrije određenu lokaciju. Ovo je korisno kada vam je jedino potrebno da znate da li do oblasti može da se dođe za dato vreme ili datu razdaljinu, ali ne morate da znate koje određene ulazne tačke mogu da dođu do lokacije.
+                    </li>
+                    <li> <b>razdele</b> &ndash; oblasti iz različitih ulaznih lokacija koje bi se međusobno preklopile dele se na sredini, pa se umesto toga nastavljaju jedna na drugu. Ovo je korisno kada želite da vidite koje oblasti se nalaze unutar datog vremena ili date razdaljine ulaznih tačaka i, u isto vreme, da odredite koje su ulazne tačke najbliže toj oblasti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Prikaži nedostupne oblasti kao rupe</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite da li će izlazne oblasti sadržati rupe ako su neke ulice nedostupne zbog  <b>merenja</b> vremena ili razdaljine, odnosno usled ograničenja koja nameće režim putovanja.
+            </p>
+            <p>Oblasti vožnja-vreme kreirane pomoću ovog parametra imaju ograničenje od 15 minuta ili 15 milja (24 kilometra).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Uključi dostupne ulice</h2></div>
+        <hr/>
+        <div>
+            <p>Uključite ulice koje su upotrebljene za kreiranje oblasti vožnja-vreme u obliku izlaznog sloja. 
+            </p>
+            <p>Kreiranje oblasti vožnja-vreme meri razdaljinu do objekta kroz mrežu ulica, pa se oblasti vožnja-vreme kreiraju pomoću ulica kojima se prolazi. Stoga, oblasti predstavljaju približnu vrednost za ulice kojima se prolazi. Ako analizom želite da utvrdite koje ulice su pokrivene određenom razdaljinom putovanja ili vremenom od objekta, generisanje dostupnih ulica može da bude preciznije od kori&scaron;ćenja oblasti vožnja-vreme za procenu da li je određena ulica dostupna.
+            </p>
+            <p>Oblasti vožnja-vreme kreirane pomoću ovog parametra imaju ograničenje od 15 minuta ili 15 milja (24 kilometra).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

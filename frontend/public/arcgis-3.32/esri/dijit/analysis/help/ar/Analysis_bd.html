@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> يوزع GeoAnalytics عمل التحليلات عبر ArcGIS GeoAnalytics Server. وهو ما يُتيح لك تحليل مزيد من البيانات بصورة أسرع عن طريق العديد من الأجهزة. تتوفر الأدوات التالية: <ul>
+                <li> تجميع النقاط
+                </li>
+                <li> إنشاء شبكة متعددة المتغيرات
+                </li>
+                <li> وصف مجموعة البيانات
+                </li>
+                <li> ضم المعالم
+                </li>
+                <li> إعادة إنشاء المسارات
+                </li>
+                <li> تلخيص البيانات الجدولية
+                </li>
+                <li> تلخيص في
+                </li>
+                <li> مواقع الترميز الجغرافي من جدول
+                </li>
+                <li> إثراء من شبكة متعددة المتغيرات
+                </li>
+                <li> اكتشاف الحوادث
+                </li>
+                <li> بحث عن مواقع مشابهة
+                </li>
+                <li> احتساب الكثافة
+                </li>
+                <li> بحث عن تجميعات النقاط
+                </li>
+                <li> بحث عن النقاط الفعالة
+                </li>
+                <li> التصنيف والتراجع اللذان يعتمدان على الغابة
+                </li>
+                <li> الانحدار الخطي المعمم
+                </li>
+                <li> إنشاء النطاقات
+                </li>
+                <li> إلحاق البيانات
+                </li>
+                <li> حساب الحقل
+                </li>
+                <li> نسخ إلى مخزن البيانات
+                </li>
+                <li> تراكب الطبقات
+                </li>
+                <li> إذابة الحدود
+                </li>
+                <li> دمج الطبقات
+                </li>
+                <li> قص الطبقة 
+                </li>
+            </ul>
+            
+        </p>
+        <p>تركز GeoAnalytics على تحليل كميات البيانات الضخمة مع التأكيد على الأنماط المكانية والزمانية. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تجميع النقاط</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="تجميع النقاط">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>باستخدام طبقة معالم نقطية وإما طبقة معالم منطقة أو حاويات مُعرّفة بواسطة مسافة محددة، تُحدد هذه الأداة النقاط التي تقع داخل كل منطقة أو حاوية، وتحسب الإحصائيات المتعلقة بكل نقطة داخل كل منطقة أو حاوية. ويمكنك تطبيق تحليل الوقت إلى شرائح بهذه الأداة. 
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>تقديم نقاط مواقع حوادث الجرائم وحساب عدد الجرائم لكل مقاطعة أو أي مقاطعة إدارية.
+                    </li>
+                    <li>ابحث عن أعلى وأقل الإيرادات شهريًا لمواقع الامتيازات باستخدام  100 سلال-كممتر.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إنشاء شبكة متعددة المتغيرات</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="مخطط سير عمل إلحاق البيانات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تعمل أداة إنشاء شبكة متعددة المتغيرات على إنشاء شبكة من الخانات المربعة والسداسية واحتساب المتغيرات لكل خانة بناءً على تقارب طبقة واحدة أو أكثر من طبقات المدخلات.
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>نظراً للعديد من طبقات البنية الأساسية للنقل العام، ما هو جزء المدينة الذي يمكن الوصول إليه على الأقل بواسطة النقل العام؟
+                    </li>
+                    <li>طبقات معينة من الممرات المائية، مثل البحيرات والأنهار، ما هو اسم المسطح المائي الأقرب إلى كل مكان في الولايات المتحدة؟
+                    </li>
+                    <li>إعطاء طبقة من دخل الأسرة، أين يوجد فروقات الدخل في الولايات المتحدة في الـ 50 ميل المحيطة؟
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>وصف مجموعة البيانات النقطية</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="وصف مخطط تدفق عمل مجموعة البيانات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يلخص معالم الإدخال ذات الإحصائيات وطبقات العينات والمرئيات. يمكنك اختيار إخراج طبقة عينة أو طبقة مدى.
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>ينبغي الرجوع إلى إحصائيات الملخص المحتسب لفهم ما هي القيم التي توجد في مجموعة البيانات.
+                    </li>
+                    <li>بدلاً من رسم مجموعة بيانات كاملة، أنشئ مجموعة طبقة بيانات فرعية لتصوير المعالم وسماتها عند إضافتها إلى خريطة.
+                    </li>
+                    <li>وفّر الوقت والموارد ونفّذ تحليلاً على طبقة عينة قبل تنفيذ التحليل على مجموعة البيانات بأكملها.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ربط المعالم</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="ضم المعالم">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>باستخدام إما طبقات المعالم أو البيانات الجدولية، يمكنك ضم المعالم والسجلات بناءً على علاقات محددة بين الطبقات المدخلة أو الجداول المدخلة.  وسيتم تحديد الصلات بواسطة العلاقات المكانية والمؤقتة والجدولية، وسيتم حساب إحصائيات الملخص اختياريًا.  
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>مواقع نقطية محددة لحوادث جرائم محددة بوقت، وضمّ بيانات الجريمة إليها بتحديد علاقة مكانية للجرائم ضمن 1 كيلومتر من كل حادثة وتلك التي حدثت في غضون ساعة واحدة من كل جريمة لتحديد ما إذا كان يوجد تعاقُب للجرائم بالقرب منها في المسافة والوقت.
+                    </li>
+                    <li>توفير جدول من أكواد ZIP بمعلومات ديموغرافية ومعالم منطقة تُمثّل بمباني سكنية، وضمّ المعلومات الجغرافية إلى المساكن حتى تتوفر المعلومات لكل مسكن.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إعادة إنشاء المسارات</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="إعادة إنشاء التتبعات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>باستخدام طبقة معالم نقطية أو مضلع مُمكنة زمنيًا تُمثل  <code>لحظة</code> في الوقت، تُحدد هذه الأداة المعالم المُدخلة التي تنتمي إلى مسار، وستُرتّب المدخلات في الوقت بشكل مُتعاقب.  يتم حساب الإحصائيات اختياريًا للمعالم المُدخَلَة ضمن كل مسار.
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>باستخدام مواقع النقاط ووقت قياسات الإعصار، احسب متوسط سرعة رياح والحد الأقصى لضغط رياح الإعصار.
+                    </li>
+                    <li>استخدم قياسات GPS للسفن، لإعادة إنشاء مسارات سفن في صورة خطوط. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تلخيص البيانات الجدولية</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="مخطط تلخيص البيانات  الجدولية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>باستخدام المعلم أو بيانات جدول، تُلخّص هذه الأداة إحصائيات الحقول المحددة. 
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>بتوفر مواقع لمتاجر بقالة مع حقل  <i>COMPANY_NAME</i>، لخِّص المتاجر بحسب اسم الشركة لتحديد إحصائيات كل شركة.
+                    </li>
+                    <li>باستخدام جدول متاجر البقالة بحقول  <i>COMPANY_NAME</i> و <i>COUNTY</i>، لخّص المتاجر بواسطة اسم الشركة والمقاطعة لتحديد إحصائيات كل شركة ضمن المقاطعة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تلخيص في</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="تلخيص ضمن">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يجد المناطق (وأجزاء المناطق) التي تتراكب بين طبقتين ويحسب احصائيات التراكب. 
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>يعطي طبقة لمناطق تجمع الأمطار وطبقة مناطق استخدام الأراضي وحساب إجمالي أنواع استخدام الأراضي لتجمع الأمطار. 
+                    </li>
+                    <li>يعطي طبقة لقطع الأرض في المقاطعة وطبقة من حدود المدينة وتلخيص قيمة قطع الأرض داخل كل مدينة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>إيجاد المواقع</h2>
+        <hr/>
+        <p>تُستَخدَم هذه الأدوات لتعريف المناطق التي تتطابق مع عدد المعايير المختلفة التي تُحددها.  
+            <ul>
+                <li> <b>اكتشاف حوادث</b> تعمل مع الطبقات المُمكنة زمنيًا لتحديد المعالم التي تستوفي حالة محددة.
+                </li>
+                <li> <b>مواقع التكويد الجغرافي من الجدول</b> تعمل على تحويل العناوين إلى تنسيقات.
+                </li>
+                <li> <b>إيجاد المواقع المتشابهة</b> تجد أكثر المواقع تشابهًا لمواقع الإسناد المستندة إلى المعايير التي تحددها.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>كشف الأحداث</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="اكتشاف الحوادث">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تتعامل هذه الأداة مع طبقة مُمكّنة زمنيًا لنقاط أو خطوط أو مناطق أو جداول تمثل لحظة في الوقت. باستخدام المعالم المرتبة بشكل تسلسلي، التي تسمى المسارات، تُحدد هذه الأداة المعالم التي تمثل حوادث محل اهتمام. يتم تحديد الحوادث بحسب الشروط التي تحددها. 
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>كشف قياسات إعصار يكون من فئة الأعاصير 4 المستندة إلى البيانات الجدولية لسرعة الرياح.
+                    </li>
+                    <li>عندا استخدام قياسات GPS لحركة السفن مع حقل يُمثل سرعة السفن، قم بالعثور على قياسات تكون أكبر من 1.5 أضعاف متوسط القياسات الخمسة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>مواقع الكود الجغرافي من جدول</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="تكويد المواقع جغرافيًا من جدول">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تحويل العناوين إلى إحداثيات استخدم هذه الأداة في جداول مشاركة ملف البيانات الضخمة.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>العثور على مواقع مشابهة</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="إيجاد المواقع المماثلة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>استنادًا إلى المعايير التي تُحدّدها، ابحث عن المواقع المشابهة بقياس تشابه المواقع في طبقة بحث المُرشّح للعثور على مواق مرجعي واحد أو أكثر. 
+            </p>
+            <p>فيما يلي أمثلة على: 
+                <ul>
+                    <li>العثور على 10 متاجر أكثر تشابهًا من خلال فحص عدد الموظفين والمبيعات السنوية.
+                    </li>
+                    <li>قم بالعثور على أكثر 100 مدينة تشابهًا عن طريق فحص العلاقة بين عدد السكان والنمو السنوي والإيرادات الضريبية.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>تحليل الأنماط</h2>
+        <hr/>
+        <p>  تساعد هذه الأدوات في تعريف الأنماط المكانية في البيانات وتحديد حجمها وتصورها.
+            <ul>
+                <li> <b>حساب الكثافة</b> تنقل كميات بعض الظواهر إلى الخريطة.
+                </li>
+                <li> <b>البحث عن النقاط الفعالة</b> يُحدد التجمعات الإحصائية الهامة في النمط المكاني للبيانات.
+                </li>
+                <li>تبحث أداة  <b>بحث عن تجمعيات النقاط</b> عن تجميعات معالم النقاط في الضوضاء المحيطة بناءً على توزيعها المكاني.
+                </li>
+                <li>تُنشئ أداة  <b>التصنيف والتراجع اللذان يعتمدان على الغابة</b> النماذج وتُنشئ توقعات باستخدام تكيف خوارزمية غابات ليو بريمان العشوائية الخاضعة لإشراف التعلم الآلي
+                </li>
+                <li>تُنشئ  <b>أداة الانحدار الخطي المعمم</b> التوقعات أو نمذجة لمتغير تابع من حيث علاقته بمجموعة من المتغيرات التوضيحية.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>حساب الكثافة</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="حساب الكثافة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>أداة حساب الكثافة تُنشئ خريطة الكثافة من المعالم النقطية بواسطة نشر كميات معروفة من بعض الظواهر (المُمثلة كبيانات جدولية للنقاط) على الخريطة. النتيجة هي طبقة من المناطق تُمثل الكثافة.
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>حساب كثافة المستشفيات داخل المقاطعة. ستظهر طبقة النتيجة المناطق ذات الكثافة المنخفضة والمرتفعة في المستشفيات وإمكانية استخدام هذه المعلومات لتحديد مكان بناء المستشفيات الجديدة.
+                    </li>
+                    <li>يستند تحديد المناطق الموجودة في طبقات المخاطر المرتفعة لحرائق الغابات إلى المواقع التاريخية لحرائق الغابات.
+                    </li>
+                    <li>تحديد مواقع المجتمعات البعيدة لتخطيط مكان إنشاء الطرق الجديدة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>بحث عن مجموعات النقاط</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="بحث عن تجميعات النقاط">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تبحث أداة بحث عن تجمعيات النقاط  عن تجميعات المعالم النقطيةفي الضوضاء المحيطة بناءً على توزيعها المكاني.
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>العثور على تجميعات الأُسَرالمصابة بالوباء للمساعدة في استهداف جهود الاستئصال.  
+                    </li>
+                    <li>الإبلاغ عن والعمل على متطلبات الإنقاذ والإخلاء بناءً على حجم وموقع التجميعات باستخدام التغيراتذات الموقع المحدد جغرافيًا التي تتبع المخاطر الطبيعية أو الهجمات الإرهابية.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>العثور على النقاط الفعالة</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Find Hot Spots">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ستحدد أداة البحث عن النقاط الفعالة ما إذا وجد تجمع إحصائي في الأنماط المكانية للبيانات. 
+                <ul>
+                    <li>هل النقاط (حوادث مرورية أو أشجار أو جرائم) مجمعة حقًا؟ كيف تتأكد من ذلك؟
+                    </li>
+                    <li>هل اكتشفت حقيقةً النقاط الفعالة الاحصائية الفعالة (للإنفاق أو معدل وفيات الرضع أو نتائج الاختبار المرتفعة باطراد) أو هل ستقوم الخريطة بإيضاح نتائج مختلفة في حالة تغيير طريقة ترميزها؟
+                    </li>
+                </ul>
+                ستساعد أداة البحث عن النقاط الفعالة في الإجابة على هذه الأسئلة بثقة.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>التصنيف والتراجع على أساس الغابة</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="مخطط سير عمل التصنيف والتراجع على أساس الغابة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تقوم أداة &quot;التصنيف والتراجع اللذان يعتمدان على الغابة&quot; بإنشاء نماذج وإنشاء توقعات باستخدام تكيف خوارزمية غابات ليو بريمان العشوائية الخاضعة لإشراف التعلم الآلي
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>بالنظر إلى البيانات المتعلقة بحدوث حالات الأعشاب البحرية، علاوة على عدد المتغيرات التوضيحية البيئية التي تمثل كلاً من السمات التي تم إثراؤها باستخدام الشبكة متعددة المتغيرات لحساب المسافات إلى المراحل الأولوية للمصانع والموانئ الرئيسية، يمكن توقع حدوث حالات أعشاب بحرية على أساس التوقعات المستقبلية بشأن نفس المتغيرات التوضيحية البيئية.
+                          
+                    </li>
+                    <li>افتراضًا أن لديك بيانات ناتج المحاصيل في مئات المزارع عبر البلاد جنبًا إلى جنب مع السمات الأخرى في كل هذه المزارع (عدد الموظفين والمساحة المزروعة وما إلى ذلك). باستخدام أجزاء البيانات هذه، يمكنك توفير مجموعة من المعالم التي تمثل المزارع حيث ليس لديك ناتج المحاصيل (لكن لديك كل المتغيرات الأخرى)، وتوقع ناتج المحاصيل.
+                    </li>
+                    <li>يمكن توقع قيّم أماكن الإسكان على أساس أسعار المنازل التي تم بيعها طوال العام الحالي. يمكن استخدام سعر بيع المنازل والمعلومات التي تتناول عدد غرف النوم والمسافة إلى المدرسة والقرب من الطرق السريعة ومتوسط الدخل وعدد حالات الجرائم في توقع أسعار البيع لمنازل مشابهة.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>الانحدار الخطي المعمم</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="مخطط سير عمل GeneralizedLinearRegression">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تُنشئ أداة الانحدار الخطي المعمم  لإنشاء توقعات أو نماذج لمتغير تابع من حيث علاقته بمجموعة من المتغيرات التوضيحية. يمكن استخدام هذه الأداة لملائمة النماذج المستمرة (OLS) والثنائية (لوجستي) والعدد (بواسون).
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>ما هي الخصائص الديموغرافية التي تساهم في ارتفاع معدلات استخدام وسائل المواصلات العامة؟
+                    </li>
+                    <li>هل هناك علاقة إيجابية بين أعمال التخريب والسطو؟
+                    </li>
+                    <li>أي من المتغيرات تتوقع بفعالية حجم الاتصال برقم النجدة؟ بالنظر إلى التوقعات المستقبلية، ما هو الطلب المتوقع لموارد الاستجابة للطوارئ؟
+                    </li>
+                    <li>ما هي المتغيرات التي تؤثر على انخفاض معدلات المواليد؟
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>استخدام القرب</h2>
+        <hr/>
+        <p>تساعد هذه الأدوات في الإجابة على أحد الأسئلة الهامة في التحليل المكاني: ماذا يوجد القرب من ماذا؟
+            <ul>
+                <li> <b>إنشاء نطاقات</b> تقوم بإنشاء مناطق لمسافة محددة من المعالم.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إنشاء النطاقات</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="إنشاء النطاقات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>النطاق هو مساحة تغطي مساحة المعالم النقطية أو الخطية أو المضلعات.
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>عند استخدام معالم النهر الخطية، حدد نطاق كل نهر بـ 50 ضعف عرض النهر لتحديد الحدود النهرية المقترحة.
+                    </li>
+                    <li>عند توفير مناطق تُمثل مقاطعات، حدد نطاق كل مقاطعة بـ 200 ميل بحري لتحديد الحدود البحرية.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>نسخ إلى مخزن البيانات</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="نسخ إلى مخزن البيانات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تقوم بنسخ طبقة معالم مدخلة أو جدول على  ArcGIS Data Store وتقوم بإنشاء طبقة في المحتويات الخاصة بك في  ArcGIS Enterprise. </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>نسخ مجموعة من الملفات  <code>.csv</code> في مشاركة ملف البيانات الضخم لمخزن البيانات الزمانية والمكانية للمرئيات.
+                    </li>
+                    <li>قم بنسخ المعالم في نطاق الخريطة الحالي الذي يتم تخزينه في متجر بيانات مكاني مؤقت إلى مخزن البيانات الارتباطي.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>حقل الحساب</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="احتساب حقل">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يقوم باحتساب القيم الخاصة الحقل الجديد أو الحالي ويقوم بإنشاء طبقة في المحتويات الخاصة بك في  ArcGIS Enterprise. </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>قم بتعديل اسم الحقل الحالي  <i>total</i> ليكون مجموع العائدات من الحقول <i>total_2016</i>, <i>total_2017</i>, و <i>total_2018</i>.
+                    </li>
+                    <li>قم بإنشاء حقل جديد لتصنيف مستويات المخاطر استنادً إلى قيم الحقل مثل  <i>windspeed</i> و <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>قص الطبقة</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="قص الطبقة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تقص معالم الإدخال من مناطق الاهتمام المحددة. ستكون نتيجة الإخراج مجموعة فرعية من معالم الإدخال. 
+            </p>
+            <p>فيما يلي الأمثلة: 
+                <ul>
+                    <li>أنشئ مجموعة فرعية من المباني المعرضة للخطر التي تقع ضمن نطاق مناطق الفيضان.
+                    </li>
+                    <li>حدد الطرق الرئيسية التي تمر من خلال مناطق التطوير المحتملة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إزالة الحدود</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="إذابة الحدود">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يدمج معالم المنطقة التي تتقاطع أو تتشارك في قيمة حقل عامة لإنشاء معالم مستمرة أو متعددة الأجزاء.
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>أنشئ معلمًا فرديًا يمثل ولاية هاواي بإزالة الحدود بين جزر هاواي.
+                    </li>
+                    <li>ادمج بين مناطق الدراسة المتشابهة على أساس نوع التربة لإخراج مجموعة بيانات مستمرة خاصة بالتربة.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تراكب الطبقات</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="تراكب الطبقات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ادمج طبقتين أو أكثر داخل طبقة فردية واحدة. يتم استخدام التراكب للإجابة على واحد من أكثر الأسئلة الأساسية المتعلقة بالجغرافيا، ماذا يقع أعلى ماذا؟
+            </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>ما هي قطع الأراضي الموجودة السهول المعرضة للفيضانات خلال 100 عام؟ (داخل طريق آخر بالأعلى).
+                          
+                    </li>
+                    <li>ما هو استخدام الأراضي أعلى نوع التربة؟
+                         
+                    </li>
+                    <li>ما هي الآبار الموجودة داخل القواعد العسكرية؟
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إلحاق البيانات</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="مخطط سير عمل إلحاق البيانات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>إلحاق المعالم بطبقة مستضافة موجودة في المحتويات في  ArcGIS Enterprise. </p>
+            <p>فيما يلي أمثلة على:
+                <ul>
+                    <li>قم بتحديث طبقة معالم 2018_Sales شهريًا عندما تصبح التقارير متاحة.
+                    </li>
+                    <li>إلحاق مجموعات بيانات تتبع الإعصار من 2016 و2017 في مجموعة بيانات إعصار رئيسية.
+                    </li>
+                    <li>تجميع وإلحاق مجموعات البيانات من مصادر متنوعة بمخططات مختلفة باستخدام تخطيط حقل مخصص.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>دمج الطبقات</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="دمج الطبقات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تدمج بين طبقتي معلم لإنشاء طبقة ناتجة فردية. سيتم تضمين كل الحقول من طبقة دمج بصورة افتراضية، أو يمكنك تحديد قواعد دمج مخصصة لتعريف المخطط الناتج.  
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>ادمج الطبقات الثلاث التي تحتوي على معلومات ديموغرافية من إنجلترا وويلز واسكتلندا لعمل طبقة بريطانيا العظمى فردية.
+                    </li>
+                    <li>ادمج بين طبقتين تحتويان على معلومات قطعة الأرض للبلدات المستمرة مع الاحتفاظ بالحقول التي لها نفس الاسم والنوع فقط في الطبقتين المدخلتين.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>تحسين البيانات</h2>
+        <hr/>
+        <p>تساعد هذه الأداة في استكشاف سمات المناطق.
+            <ul>
+                <li>تضم أداة  <b>إثراء من شبكة متعددة المتغيرات</b> السمات من طبقة شبكة متعددة المتغيرات إلى طبقة نقطة.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إثراء من شبكة متعددة المتغيرات</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="إثراء من شبكة متعددة المتغيرات">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يضم السمات بشكل فعال من شبكة متعددة المتغيرات إلى طبقة نقطة، مما يتيح لك إضافة مجموعات معلومات كبيرة ومتنوعة بسرعة إلى بيانات نقطة للاستخدام في التحليل المكاني الإضافي. 
+            </p>
+            <p>فيما يلي الأمثلة:
+                <ul>
+                    <li>بالنظر إلى طبقة تحتوي على ملايين حوادث انقطاع التيار الكهربائي، قم بإثراء معالم الحوادث بالمعلومات حول الاستخدام النموذجي والمخاطر البيئية وشروط البنية التحتية بهدف دراسة العلاقة بين هذه العوامل وتكرار انقطاع التيار الكهربائي. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

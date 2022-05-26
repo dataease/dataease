@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript">
+	// <!--
+	var noInit = false;
+		
+	function init(){
+		if(noInit){ return; }
+		var hasParentDojo = false;
+		try{
+			hasParentDojo = window.parent != window && window.parent["dojo"];
+		}catch(e){
+			alert("Initializing iframe_history.html failed. If you are using a cross-domain Dojo build,"
+				+ " please save iframe_history.html to your domain and set djConfig.dojoIframeHistoryUrl"
+				+ " to the path on your domain to iframe_history.html");
+			throw e;
+		}
+
+		if(hasParentDojo){
+			//Set the page title so IE history shows up with a somewhat correct name.
+			document.title = window.parent.document.title;
+			
+			//Notify parent that we are loaded.
+			var pdj = window.parent.dojo;
+			if(pdj["back"]){
+				pdj.back._iframeLoaded(null, window.location);
+			}
+		}
+
+	}
+	// -->
+	</script>
+</head>
+<body onload="try{ init(); }catch(e){ alert(e); }">
+	<h4>The Dojo Toolkit -- iframe_history.html</h4>
+
+	<p>This file is used in Dojo's back/fwd button management.</p>
+</body>
+</html>

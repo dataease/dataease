@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/grid/coreUtils/GridFloatingTablesUtil",["dojo/_base/lang","dojo/dom-construct"],function(g,d){var f={renderFloatingTables:function(a,c,h,e){var b=e?a.backgroundFloatingTablesNode:a.foregroundFloatingTablesNode;b&&d.empty(b);if(!c)return null;b={"class":"esriGEAbsoluteStretched adjustableGrid_floatingTablesSection"};b.initialWidth=a.getAllowedWidth();b.initialHeight=a.getHeight();b.json=c;b.viewModel=a.viewModel;b.theme=a.theme;b.parentWidget=a;b.currentFeatureIndex=
+a.currentFeatureIndex;b.initialViewMode=a.getViewMode();b.initialSpecificViewMode=a.getSpecificViewMode();g.mixin(b,h);return a.viewModel.layoutBuilder.createElement("section",b,f._provideNode(a,e))},_provideNode:function(a,c){return c?a.backgroundFloatingTablesNode=a.backgroundFloatingTablesNode||d.create("div",{"class":"adjustableGridFloatingTablesNode"},a.mainNode,"before"):a.foregroundFloatingTablesNode=a.foregroundFloatingTablesNode||d.create("div",{"class":"adjustableGridFloatingTablesNode"},
+a.mainNode,"after")}};return f});

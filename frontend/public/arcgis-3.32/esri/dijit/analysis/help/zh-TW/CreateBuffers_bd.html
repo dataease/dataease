@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>建立緩衝區</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="建立緩衝區"></h2>
+        <hr/>
+    <p>緩衝區是以點、線或區域圖徵為起點並涵蓋已知距離的區域。
+    </p>
+    <p>緩衝區通常用於建立一些區域，以便使用其他工具進行深入分析。例如，假設問題是「在學校 1 英里範圍內存在哪些建築物？」，透過在學校周圍建立一個 1 英里的緩衝區，並將緩衝區與包含建築物覆蓋區的圖層相疊加，即可找到答案。最終結果是一個包含學校 1 英里範圍內建築物的圖層。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要將套用緩衝區的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將用於執行緩衝的點圖徵、線圖徵或區域圖徵。投影的座標系統中必須具有輸入圖層，或必須使用 <b>分析環境</b>，將處理空間參考設為投影座標系統。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>選擇要套用的緩衝區類型</h2></div>
+        <hr/>
+        <div>
+            <p>您可以利用三種方式來指定輸入圖徵的緩衝區大小： 
+                <ul>
+                    <li>指定套用至所有圖徵的距離。
+                    </li>
+                    <li>指定包含距離值的輸入圖層上欄位。您可以使用字串欄位或數值欄位。若未定義線性單位，將使用空間參考的單位。若是使用地理座標系統，會將欠缺單位的欄位假設為公尺。
+                    </li>
+                    <li>建立包含多個欄位和數學運算子的表達式。例如，若要以名為  <i>wind_speed</i> 的欄位值緩衝 10 倍，請新增表達式 <i>$feature[&quot;wind_speed&quot;] x 10</i>。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>選擇緩衝方法</h2></div>
+        <hr/>
+        <div>
+            <p>您可以選擇使用 <b>平面</b>方法或 <b>測地線</b>方法。 <b>平面</b>方法可能較快，並適用於投影資料上的本機分析。 <b>測地線</b>方法適用於大區域及任何地理座標系統。
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>選擇融合方法的類型</h2></div>
+        <hr/>
+        <div>
+            <p>用於指定融合方法的選項。如果選擇融合方法，您可選擇建立多組件或單一組件區域，也可以根據提供的欄位來計算統計資料。
+                <ul>
+                    <li> <b>全部</b> - 將融合所有圖徵。如果允許多組件圖徵，會將所有圖徵融合至單一圖徵。如果不允許多組件，將融合相鄰或重疊的圖徵。
+                    </li>
+                    <li> <b>欄位</b> - 將融合分享相同的指定欄位或指定欄位組合的圖徵。如果允許多組件圖徵，會將包含相同欄位的所有圖徵融合至單一圖徵。如果不允許多組件，會融合包含相同欄位值的相鄰或重疊的圖徵。
+                    </li>
+                    <li> <b>否</b> - 不會融合圖徵。這是預設情況。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>允許多組件圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>如果結果將包含單一組件或多組件圖徵，則為要指定的選項。
+
+            </p>
+            <p>
+                <ul>
+                    <li>已勾選 - 您的分析結果將包含多組件圖徵。
+                    </li>
+                    <li>已取消勾選 - 您的分析結果將包含單一組件圖徵。這是預設值。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>新增統計資料 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p> 您可以在要摘要的圖徵上計算統計資料。您可以在數值欄位上計算：
+                <ul>
+                    <li>計數 - 計算非 null 值的數目。可將其使用於數值欄位或字串。[null, 0, 2] 的計數是 2。
+                    </li>
+                    <li>總和 - 欄位中的數值總和。[null, null, 3] 的總和是 3。
+                    </li>
+                    <li>平均值 - 數值的平均值。[0, 2, null] 的平均值是 1。
+                    </li>
+                    <li>最小值 - 數值欄位的最小值。[0, 2, null] 的最小值是 0。
+                    </li>
+                    <li>最大值 - 數值欄位的最大值。[0, 2, null] 的最大值是 2。
+                    </li>
+                    <li>範圍 - 數值欄位的範圍。這是以最大值減去最小值的計算結果。[0, null, 1] 的範圍為 1。[null, 4] 的範圍為 0。
+                    </li>
+                    <li>變異 - 追蹤中的數值欄位的變異。[1] 的變異為 null。[null, 1,0,1,1] 的變異是 0.25。
+                    </li>
+                    <li>標準差 - 數值欄位的標準差。[1] 的標準差為 null。[null, 1,0,1,1] 的標準差是 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>您可以在字串欄位上計算：
+                <ul>
+                    <li>計數 - 非 null 字串的數目。
+                    </li>
+                    <li>任何 - 此統計資料是指定欄位中字串值的隨機樣本。
+                    </li>
+                </ul>
+                會以非 null 值計算所有統計資料。結果圖層將為每個已計算的統計資料納入一個新欄位。透過選擇屬性和統計資料可新增任意數量的統計資料。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>選擇要儲存結果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 結果是儲存於資料儲存庫，並作為  Portal for ArcGIS 中的圖徵圖層公開。在大多數情況下，必須將結果儲存到大型的時空資料儲存庫，且這是預設值。在某些情況下，將結果儲存至關聯式資料儲存庫是個好選擇。在下列情況下，您可能想要在關聯式資料儲存庫中儲存結果： 
+                <ul>
+                    <li>您可以使用入口網站-至-入口網站協同作業中的結果。
+                    </li>
+                    <li>您可以啟用結果同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您預期 GeoAnalytics 結果會增加，並需要利用大型的時空資料儲存庫的功能來處理大量資料，則不應使用關聯式資料儲存庫。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

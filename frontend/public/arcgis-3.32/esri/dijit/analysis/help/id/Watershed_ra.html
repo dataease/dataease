@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Batas Air</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Tugas batas air"></h2>
+        <hr/>
+    <p>Alat ini menentukan area kontribusi di atas rangkaian sel dalam raster.
+    </p>
+    <p>Batas air adalah daerah dataran tinggi yang menyumbang aliran air &mdash; umumnya air &mdash; ke saluran umum sebagai drainase terkonsentrasi. Ini dapat menjadi bagian dari batas air yang lebih besar dan juga dapat berisi batas air yang lebih kecil, yang disebut subbasin.
+    </p>
+    <p>Nilai setiap batas air akan diambil dari nilai sumber di raster input atau layer titik tuang fitur. Ketika titik tuang adalah kumpulan raster, nilai sel digunakan secara default. Ketika titik tuang adalah set data fitur titik, nilainya akan berasal dari kolom yang ditentukan.
+    </p>
+    <p>Alat Watershed hanya mendukung layer raster arah aliran input D8.
+    </p>
+    <p>Saat menentukan lokasi input titik tuang sebagai data fitur, kolom default akan menjadi kolom valid pertama yang tersedia. Jika tidak ada kolom yang valid, kolom ObjectID (misalnya, OID atau FID) akan menjadi default.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Pilih layer arah aliran</h2></div>
+        <hr/>
+        <div>
+            <p>Input raster yang menunjukkan arah aliran keluar dari setiap sel.
+            </p>
+            <p>Raster arah aliran dapat dibuat menggunakan alat Flow Direction atau tugas FlowDirection dalam layanan RasterAnalysisTools, jalankan menggunakan tipe arah aliran default  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Tentukan lokasi input titik tuang</h2></div>
+        <hr/>
+        <div>
+            <p>Input lokasi titik tuang.
+            </p>
+            <p>Untuk raster, ini menunjukkan sel-sel di atas mana area kontribusi, atau tangkapan, akan ditentukan. Semua sel yang bukan NoData akan digunakan sebagai sel sumber. Untuk input titik, ini mewakili lokasi di atas mana area kontribusi, atau tangkapan, akan ditentukan.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Pilih kolom titik tuang</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom yang digunakan untuk menetapkan nilai ke lokasi titik tuang.
+            </p>
+            <p>Jika layer input pour point adalah raster, Value digunakan. Jika fitur, kolom numerik digunakan. Jika kolom berisi nilai-nilai floating-point, mereka akan dipotong menjadi bilangan bulat.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

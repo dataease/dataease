@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/AddBarrierLayers",{addBarriers:"Vybrat vrstvy p\u0159ek\u00e1\u017eek",pointBarrier:"Bodov\u00e9 p\u0159ek\u00e1\u017eky",lineBarrier:"Liniov\u00e9 p\u0159ek\u00e1\u017eky",polygonBarrier:"Polygonov\u00e9 p\u0159ek\u00e1\u017eky",choosePointBarrier:"Zvolit vrstvu bodov\u00e9 p\u0159ek\u00e1\u017eky",chooseLineBarrier:"Zvolit vrstvu liniov\u00e9 p\u0159ek\u00e1\u017eky",choosePolygonBarrier:"Zvolit vrstvu polygonov\u00e9 p\u0159ek\u00e1\u017eky",selectPointBarrier:"Vybrat bodov\u00e9 p\u0159ek\u00e1\u017eky",
+selectLineBarrier:"Vybrat liniov\u00e9 p\u0159ek\u00e1\u017eky",selectPolygonBarrier:"Vybrat polygonov\u00e9 p\u0159ek\u00e1\u017eky"});

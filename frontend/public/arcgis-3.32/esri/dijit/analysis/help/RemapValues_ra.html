@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Remap Values</h2><p/>
+        <h2><img src="./images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Remap Values tool for Portal"></h2>
+        <hr/>
+    <p>This tool allows you to change or reclassify the pixel values of the raster data. Pixels values are remapped by specifying a range of pixel values to map to an output pixel value. The output pixel value can be a valid value or a NoData value, which are pixels that do not have a known value associated with it.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those cells visible within the current map extent will be remapped. If unchecked, all cells in the raster will be processed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Input Data</h2></div>
+        <hr/>
+        <div>
+            <p>The input data that will have its values remapped.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Remap pixel values to new values</h2></div>
+        <hr/>
+        <div>
+            <p>You enter a range of values by specifying a minimum and maximum value, and then assign an output value or a NoData value to the specified range.
+            </p>
+            <p>To remap a new range of values, click  <b>Add</b>, which adds a row. Click on each value to edit the table to the ranges and remapped value you need. When you specify the value ranges, there are two important rules that are employed:
+                <ul>
+                    <li>The minimum value in the range is inclusive, and the maximum value is exclusive.
+                    </li>
+                    <li>The rows in the table are processed from top to bottom.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>The table below shows that the minimum value is included within the output, but the maximum value is not included in the output.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>The order of the ranges specified in the table is also important. The top row of the table is processed first, then the row below is processed. The two tables below show how the same value ranges will produce a different results, due to the order of the table rows.
+            </p> 
+            <p>The table below shows the output value when the first column is sorted numerically:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>The table below how a different ordering of the rows will produce different output values:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Both rules are employed to reorder the values. Since each row is processed from top to bottom, these values take precedence when determining the output, even when the same ranges are used.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

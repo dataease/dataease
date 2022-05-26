@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>來自表格的地理編碼位置</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="來自表格的地理編碼位置"></h2>
+        <hr/>
+    <p>地理編碼會將地址轉換成座標。此工具會將地址從大數據檔分享表格，轉換成將座標當成額外欄的圖徵圖層。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>選擇輸入表</h2></div>
+        <hr/>
+        <div>
+            <p>包含要地理編碼之地址的輸入表。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>選擇定位器</h2></div>
+        <hr/>
+        <div>
+            <p>選擇要進行地理編碼的定位器服務。如果下拉式功能表沒有您要使用的定位器服務，請要求管理員針對批次地理編碼配置定位器服務。
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>國家/地區</h2></div>
+        <hr/>
+        <div>
+            <p>如果所有地址是來自某個國家，請選擇該國以確保獲得最精確的結果。否則留空此參數。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>選擇資料欄位</h2></div>
+        <hr/>
+        <div>
+            <p>定位器服務預期資料中的特定欄位，例如地址、城市、州和郵遞區號。將輸入檔或輸入表中的資料欄位，與定位器預期使用的下拉式方塊的欄位作比較。製圖的欄位越多，結果就會越精確。如果輸入表的所有資料皆位於某欄，請選擇 <b>單一欄位</b>，並從下拉式功能表選擇一個資料欄位。否則，選擇 <b>多個欄位</b>並製圖適當的定位器欄位，將其納入表格的多個欄位的欄中。
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>對於每個位置</h2></div>
+        <hr/>
+        <div>
+            <p>包含位置服務傳回的其他欄位。若勾選此選項，將傳回定位器建立的所有欄位。若未勾選此選項，將使用地理編碼的座標傳回您的輸入資料。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>輸出結果名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

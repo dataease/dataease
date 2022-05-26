@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kurti kelių kintamųjų tinklelį</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Duomenų pridėjimo darbo eigos diagrama"></h2>
+        <hr/>
+    <p>Įrankis Kurti kelių kintamųjų tinklelį veikia su vienu ar daugiau ta&scaron;kų, linijų arba ploto elementų sluoksniais. Įrankis generuoja keturkampių arba &scaron;e&scaron;iakampių tinklelį ir apskaičiuoja kiekvieno daugiakampio reik&scaron;mes pagal kiekvieno įvesties sluoksnių artumą. Vertėmis gali būti tokie kintamieji: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Atstumas iki artimiausio</b> &ndash; atstumas nuo kiekvieno daugiakampio iki artimiausio elemento
+            </li>
+            <li> <b>Artimiausio atributas</b> &ndash; artimiausio kiekvienam daugiakampiui elemento lauko reik&scaron;mė
+            </li>
+            <li> <b>Artimiausių suvestinė</b> &ndash; nurodyta visų tam tikru atstumu nuo kiekvieno daugiakampio esančių elementų statistika
+            </li>
+            <li> <b>Susikertančių suvestinė</b> &ndash; nurodyta visų kiekvieną daugiakampį kertančių elementų statistika
+            </li>
+        </ul>
+        
+    </p>
+    <p>Rezultatų sluoksnyje bus įtraukti tik jūsų nurodyti kintamieji. Tie kintamieji gali padėti suprasti jūsų duomenų artumą ir pasiskirstymą. Gauti rezultatai gali padėti ie&scaron;koti atsakymų į tokius klausimus:
+        <ul>
+            <li>Turint kelius vie&scaron;ojo transporto infrastruktūros sluoksnius, kuri miesto dalis prasčiausiai pasiekiama vie&scaron;uoju transportu?
+            </li>
+            <li>Turint vandens kelių (pvz.: upių ir ežerų) sluoksnius, kaip vadinasi vandens telkinys, artimiausias kiekvienai vietai JAV?
+            </li>
+            <li>Turint namų ūkių pajamų sluoksnį, kur JAV yra didžiausias pajamų pokytis 50 mylių spinduliu?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Pasirinkite tipą daugiakampių, kurie bus naudojami kuriant kelių kintamųjų tinklelį</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Tokio tipo ir dydžio daugiakampiai bus naudojami kuriant kelių kintamųjų tinklelį. Naudojant parinktį  <b>Kvadratas</b>, nurodyti skaičiai ir vienetai apibrėžia kvadrato ilgį ir plotį. Naudojant parinktį <b>&Scaron;e&scaron;iakampis</b>, nurodyti skaičiai ir vienetai apibrėžia atstumą tarp lygiagrečių kra&scaron;tinių.
+            </p>
+            <p>&Scaron;i analizė naudoja zonas ir reikalauja projekcinės koordinačių sistemos. Galite nustatyti  <b>Apdorojamą koordinačių sistemą</b> <b>analizės aplinkose</b>. Jei jūsų apdorojama koordinačių sistema nenustatyta kaip projekcinė koordinačių sistema, būsite paraginti nustatyti ją, kai <b>vykdysite analizę</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Pasirinkite įvesties sluoksnius ir kintamuosius, kuriuos norite įtraukti į tinklelį</h2></div>
+        <hr/>
+        <div>
+            <p>Spustelėkite pridėjimo mygtuką ( <b>+</b>) ir atidarykite langą <b>Pridėti kintamųjų</b> ir pridėkite sluoksnį į savo analizę. Lange <b>Pridėti kintamųjų</b> pasirinkite įvesties sluoksnį ir sukonfigūruokite kintamuosius, kuriuos norite skaičiuoti tame įvesties sluoksnyje.
+            </p>
+            <p>Kai pasirinksite ir sukonfigūruosite kintamuosius, kuriuos norite skaičiuoti, sluoksnis atsiras įrankio lange kartu su kitais pasirinktais sluoksniais. Paspaudę bet kurio sluoksnio redagavimo mygtuką atidarysite langą  <b>Pridėti kintamųjų</b> ir pamatysite visus tam sluoksniui sukonfigūruotus kintamuosius. Paspausdami bet kurio sluoksnio trynimo mygtuką, i&scaron; analizės pa&scaron;alinsite tą sluoksnį ir visus susijusius kintamuosius.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Pridėti kintamųjų</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is langas leidžia pasirinkti įvesties sluoksnį ir sukonfigūruoti kintamuosius, kuriuos norite skaičiuoti tame įvesties sluoksnyje. Norėdami pradėti, pasinaudodami  <b>Pasirinkti įvesties sluoksnį</b> i&scaron;skleidžiamuoju meniu pasirinkite ta&scaron;kų, plotų arba linijų sluoksnį, kurį norite pridėti į analizę.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+            <p>Pasirinkę įvesties sluoksnį, spustelėkite  <b>Pridėti kintamąjį</b> mygtuką ir atversite naują kintamąjį redagavimui. Kiekvienam kintamajam turite nurodyti unikalų pavadinimą. Taip vadinsis laukas, kuris bus sukurtas rezultatų sluoksnio atributų lentelėje.
+            </p>
+            <p>Naudodamiesi i&scaron;skleidžiamuoju meniu, pasirinkite pridedamo kintamojo tipą. Kiekvieną kintamojo tipą reikia sukonfigūruoti su unikaliu parametrų rinkiniu, visi parametrai būtini.
+            </p>
+            <p>Kai pridėsite visus pasirinktam sluoksniui norimus kintamuosius, i&scaron;saugokite juos paspausdami mygtuką  <b>Pridėti</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

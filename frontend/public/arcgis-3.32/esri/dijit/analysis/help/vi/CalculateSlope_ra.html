@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tính toán Độ dốc</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="C&ocirc;ng cụ T&iacute;nh to&aacute;n Độ dốc cho Cổng th&ocirc;ng tin"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y tạo ra bề mặt để thấy được độ dốc của dữ liệu độ cao đầu v&agrave;o. Độ dốc tượng trưng cho tỷ lệ thay đổi độ cao cho từng cell trong m&ocirc; h&igrave;nh số độ cao (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn dữ liệu đầu vào để tính toán độ dốc</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp độ cao để t&iacute;nh to&aacute;n độ dốc.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Xác định hệ số tỷ lệ đối với độ cao</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập hệ số z.
+            </p>
+            <p>Hệ số z l&agrave; một hệ số tỷ lệ được sử dụng để chuyển đổi c&aacute;c gi&aacute; trị độ cao phục vụ cho hai mục đ&iacute;ch:
+ 
+                <ul>
+                    <li>Để chuyển đổi đơn vị độ cao (như m&eacute;t hoặc feet) th&agrave;nh đơn vị tọa độ ngang của lớp, c&oacute; thể l&agrave; feet, m&eacute;t hoặc độ
+                        
+  
+                    </li>
+                    <li>Để th&ecirc;m độ ph&oacute;ng đại theo chiều thẳng đứng cho hiệu quả trực quan
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Từ Feet
+                    </p>
+                </td>
+                <td>
+                    <p>Từ M&eacute;t
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Từ Feet
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Từ M&eacute;t
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

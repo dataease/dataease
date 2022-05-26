@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extrahovat data (Extract Data)</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extrahovat data"></h2>
+        <hr/>
+    <p>Pomoc&iacute; tohoto n&aacute;stroje můžete vybrat a st&aacute;hnout data pro stanovenou z&aacute;jmovou oblast. Vrstvy, kter&eacute; vyberete, se přidaj&iacute; do souboru ZIP, CSV nebo KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Vrstvy k extrakci</h2></div>
+        <hr/>
+        <div>
+            <p>Toto jsou vrstvy v obsahu, ze kter&yacute;ch můžete extrahovat prvky. Za&scaron;krtnut&eacute; vrstvy se extrahuj&iacute; a přidaj&iacute; do v&yacute;sledn&eacute;ho souboru ZIP nebo CSV.
+            </p>
+            <p>Aby se vrstva zobrazila v seznamu vrstev k extrakci, mus&iacute;te př&iacute;slu&scaron;n&aacute; data vlastnit nebo je třeba, aby jejich vlastn&iacute;k povolil export. Chcete-li povolit export dat, kter&aacute; vlastn&iacute;te: 
+                <ul>
+                    <li>Otevřete popis položky dat.
+                    </li>
+                    <li>Klikněte na kartu  <b>Nastaven&iacute;</b>.
+                    </li>
+                    <li>Posuňte str&aacute;nku dolů do č&aacute;sti  <b>Exportovat data</b>.
+                    </li>
+                    <li>Za&scaron;krtněte možnost  <b>Umožnit ostatn&iacute;m exportovat do jin&yacute;ch form&aacute;tů.</b> Když jste hotovi, klikněte na tlač&iacute;tko <b>Uložit</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pokud vrstva anal&yacute;zy obsahuje př&iacute;lohy, budou extrahov&aacute;ny pouze v př&iacute;padě, že je v&yacute;stupn&iacute;m datov&yacute;m form&aacute;tem souborov&aacute; geodatab&aacute;ze a nen&iacute; za&scaron;krtnuto pole  <b>Oř&iacute;znout prvky</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Zájmová oblast</h2></div>
+        <hr/>
+        <div>
+            <p>Tato oblast určuje, kter&eacute; prvky se přidaj&iacute; do v&yacute;stupn&iacute;ho souboru ZIP nebo CSV. Můžete vyb&iacute;rat z n&aacute;sleduj&iacute;c&iacute;ch:
+                <ul>
+                    <li>Aktu&aacute;lně viditeln&yacute; rozsah mapy ( <b>stejně jako na zobrazen&iacute;</b>).
+                    </li>
+                    <li>Stejně jako v jedn&eacute; z vrstev v obsahu. Pokud je vybran&aacute; vrstva bod nebo liniov&eacute; prvky, rozsah vrstvy bude použit&yacute; jako z&aacute;jmov&aacute; oblast.
+                    </li>
+                    <li>Nakreslen&aacute; hranice z&aacute;jmov&eacute; oblasti.
+                    </li>
+                </ul>
+                 Extrahuj&iacute; se v&scaron;echny prvky v r&aacute;mci rozsahu mapy. U prvků, kter&eacute; proch&aacute;zej&iacute; hranicemi rozsahu mapy nebo je kř&iacute;ž&iacute;, ale nenach&aacute;z&iacute; se v rozsahu mapy &uacute;plně, m&aacute;te dvě možnosti:
+                <ul>
+                    <li> <b>Vybrat prvky</b> &ndash; Prvky, kter&eacute; kř&iacute;ž&iacute; hranici z&aacute;jmov&eacute; oblasti, se extrahuj&iacute; cel&eacute;.
+                    </li>
+                    <li> <b>Oř&iacute;znout prvky</b> &ndash; Extrahuj&iacute; se pouze č&aacute;sti prvků, kter&eacute; se nach&aacute;zej&iacute; v z&aacute;jmov&eacute; oblasti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Formát výstupních dat</h2></div>
+        <hr/>
+        <div>
+            <p>Form&aacute;t dat, kter&aacute; se extrahuj&iacute;. Při exportu liniov&yacute;ch prvků nebo plo&scaron;n&yacute;ch prvků do souborů CSV se extrahuj&iacute; pouze neprostorov&eacute; atributy. Při exportov&aacute;n&iacute; bodov&yacute;ch prvků se extrahuj&iacute; prostorov&eacute; i neprostorov&eacute; atributy.  
+            </p>
+            <p>N&aacute;stroj Extrahovat data použije souřadnicov&yacute; syst&eacute;m Web Mercator 1984. V souborech CSV budou k datům připojena pole  <i>Lat</i> a <i>Long</i> se souřadnicemi v syst&eacute;mu Web Mercator 1984.
+            </p> 
+            <p>Jsou podporov&aacute;ny n&aacute;sleduj&iacute;c&iacute; v&yacute;stupn&iacute; form&aacute;ty:
+                <ul>
+                    <li>Hodnoty oddělen&eacute; č&aacute;rkou (CSV)&mdash; <code>.csv</code> nebo <code>.zip</code>
+                    </li>
+                    <li>Souborov&aacute; geodatab&aacute;ze&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> or <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Název výstupního souboru</h2></div>
+        <hr/>
+        <div>
+            <p>Jde o n&aacute;zev položky, kter&aacute; se přid&aacute; do složky  <b>Můj obsah</b>. N&aacute;zev položky se ř&iacute;d&iacute; zvolen&yacute;m <b>form&aacute;tem v&yacute;stupn&iacute;ch dat</b>.     Pokud položka již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute;m seznamu  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

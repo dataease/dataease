@@ -1,0 +1,18 @@
+<div>
+  <div class="${css.section}">
+    <div class="${css.header}">${labels.current}</div>
+    <div class="${css.content}">
+      <div data-dojo-attach-point="dap_currentScaleLabel" class="${css.item} ${css.current}"></div>
+      <div data-dojo-attach-point="dap_scaleInput" data-dojo-type="dijit/form/TextBox" class="${css.input}"></div>
+    </div>
+  </div>
+  <div class="${css.section}" data-dojo-attach-point="dap_recommendedScaleSection">
+    <div class="${css.header}" data-dojo-attach-point="dap_scaleListHeader"></div>
+    <div class="${css.content}">
+      <ol data-dojo-attach-point="dap_recommendedScales" class="${css.list}">
+        <li data-dojo-attach-point="dap_mapScaleItem" class="${css.item} ${css.selectable}"></li>
+        <!--additional list items added dynamically-->
+      </ol>
+    </div>
+  </div>
+</div>

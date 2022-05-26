@@ -1,0 +1,3 @@
+//>>built
+define("dojox/grid/enhanced/nls/pl/Pagination",{descTemplate:"${2} - ${3} / ${1}",firstTip:"Pierwsza strona",lastTip:"Ostatnia strona",nextTip:"Nast\u0119pna strona",prevTip:"Poprzednia strona",itemTitle:"elementy",singularItemTitle:"element",pageStepLabelTemplate:"Strona ${0}",pageSizeLabelTemplate:"Liczba element\u00f3w na stron\u0119: ${0}",allItemsLabelTemplate:"Wszystkie elementy",gotoButtonTitle:"Przejd\u017a do konkretnej strony",dialogTitle:"Przechodzenie do strony",dialogIndication:"Okre\u015bl numer strony",
+pageCountIndication:" (liczba stron: ${0})",dialogConfirm:"Przejd\u017a",dialogCancel:"Anuluj",all:"Wszystko"});

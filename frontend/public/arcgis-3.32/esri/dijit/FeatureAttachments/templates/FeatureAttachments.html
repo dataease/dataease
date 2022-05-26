@@ -1,0 +1,17 @@
+<div>
+  <div class="${_css.contentContainer}">
+    <div class="${_css.tabContainer}" data-dojo-attach-point= "_tabContainer" data-dojo-type="dijit/layout/TabContainer">
+      <div class="${_css.viewPane}" data-dojo-attach-point= "_viewPane" data-dojo-type="dijit/layout/ContentPane" title="${_i18nStrings.view}" data-dojo-props="selected:true"></div>
+      <div class="${_css.addPane}" data-dojo-attach-point= "_addPane" data-dojo-type="dijit/layout/ContentPane" title="${_i18nStrings.add}" data-dojo-props="disabled:true">
+        <div class="${_css.addPaneContent}" data-dojo-attach-point= "_addPaneContent">
+          <input class="${_css.dragDrop}" type="file" name="ft_attachment_input" size="40" data-dojo-attach-point="_fileInput"></input>
+        </div>
+      </div>
+    </div>
+    <div class="${_css.menuContainer}">
+      <button class='${_css.formButton} ${_css.uploadButton} ${_css.hidden}' data-dojo-attach-point="_uploadButton" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true">${_i18nStrings.upload}</button>
+      <div class="${_css.feedbackNode}" data-dojo-attach-point= "_feedbackNode"></div>
+      <div class="${_css.loadingIndicator} ${_css.hidden}" data-dojo-attach-point="_loadingIndicator"></div>
+    </div>
+  </div>
+</div>

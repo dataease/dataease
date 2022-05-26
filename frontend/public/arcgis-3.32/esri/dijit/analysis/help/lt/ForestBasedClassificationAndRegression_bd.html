@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Medžių schema paremta klasifikacija ir regresija</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Medžių schema paremtos klasifikacijos ir regresijos darbo eigos diagrama"></h2>
+        <hr/>
+    <p>Kuria modelius ir generuoja prognozes pagal Leo Breimano atsitiktinio mi&scaron;ko algoritmą, prižiūrimą ma&scaron;ininio mokymo metodą. Prognozuoti galima ir kategoriniams kintamiesiems (klasifikacija), ir i&scaron;tisiniams (regresija). Paai&scaron;kinantys kintamieji yra mokymo elementų atributų lentelės laukai. Įrankį galima paleisti norint sugeneruoti modelį, kad &scaron;is vertintų na&scaron;umą, arba sugeneruoti modelį ir prognozuoti kitų duomenų rinkinių rezultatus.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analizės tipas</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo įrankio veikimo režimą. Įrankį galima paleisti norint apmokyti modelį, kad &scaron;is vertintų na&scaron;umą, arba apmokyti modelį ir prognozuoti elementus. Prognozavimo tipai yra tokie:
+                <ul>
+                    <li> <b>Apmokyti modelį vertinti modelio na&scaron;umą</b> &ndash; modelis bus mokomas ir pritaikomas įvesties duomenims. &Scaron;ią parinktį naudokite norėdami įvertinti savo modelio tikslumą prie&scaron; generuojant prognozes naujam duomenų rinkiniui. &Scaron;ios parinkties i&scaron;vestis bus pritaikytų mokymo duomenų elementų paslauga, modelio diagnostika ir (nebūtina) kintamųjų reik&scaron;mingumo lentelė.
+                    </li>
+                    <li> <b>Apmokyti modelį ir prognozuoti reik&scaron;mes</b> &ndash; elementams bus sugeneruotos prognozės arba klasifikacijos. Ir mokymo elementams, ir prognozuojamiems elementams turi būti pateikiami paai&scaron;kinantys kintamieji. &Scaron;ios parinkties i&scaron;vestis bus prognozuojamų reik&scaron;mių elementų paslauga, modelio diagnostika ir (nebūtina) kintamųjų reik&scaron;mingumo lentelė.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Apmokyti modelį vertinti modelio našumą</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į režimą, kai norite pritaikyti modelį ir patikrinti, kaip gerai pritaikyta.
+            </p>
+            <p>Jį pasirinkus, modelis bus apmokomas naudojant įvesties sluoksnį. &Scaron;ią parinktį naudokite norėdami įvertinti savo modelio tikslumą prie&scaron; generuojant prognozes naujam duomenų rinkiniui. &Scaron;ios parinkties i&scaron;vestis bus modelio diagnostika prane&scaron;imų lange, ir pritaikys modelį jūsų mokymo duomenims.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Apmokyti modelį ir prognozuoti reikšmes</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į režimą, kai norite adaptuoti modelį, o tada pritaikyti modelį duomenų rinkiniui prognozėms generuoti.
+            </p>
+            <p>Elementams bus sugeneruojamos prognozės arba klasifikacijos. &Scaron;ios parinkties i&scaron;vestis bus elementų paslauga, modelio diagnostika ir (nebūtina) kintamųjų reik&scaron;mingumo lentelė.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Pasirinkite mokymo sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Elementų sluoksnis, kuriame yra prognozuotinas kintamasis ir laukai, kurie bus naudojami prognozėms generuoti.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Pasirinkite, kurio sluoksnio reikšmes prognozuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Elementų sluoksnis, reprezentuojantis padėtis, kuriose bus daromos prognozės. &Scaron;iame elementų sluoksnyje taip pat turi būti visi pai&scaron;kinantys kintamieji, pateikti laukuose, kurie atitinka laukus, naudotus mokymo elementuose.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Pasirinkite prognozuotiną lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Mokymo elementų laukas, kuriame yra reik&scaron;mės, naudojamos apmokyti modelį. &Scaron;iame lauke yra žinomos (mokymo) kintamojo reik&scaron;mės, kurios bus naudojamos prognozuoti reik&scaron;mes nežinomose padėtyse. Jei reik&scaron;mės yra kategorinės (pavyzdžiui, klevas, pu&scaron;is, ąžuolas), pažymėkite laukelį  <b>Kategorinis</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Pasirinkite vieną ar daugiau paaiškinančių kintamųjų</h2></div>
+        <hr/>
+        <div>
+            <p>Vienas ar daugiau laukų, reprezentuojančių paai&scaron;kinančius kintamuosius (laukus), kurie padeda prognozuoti prognozuojamo kintamojo reik&scaron;mę arba kategoriją. Naudokite laukelį Kategorinis visiems kintamiesiems, kurie reprezentuoja klases arba kategorijas (pavyzdžiui, žemės danga, buvimas arba nebuvimas). Nurodykite kintamąjį kaip true (teisingai) visais atvejais, kai kintamasis reprezentuoja klases arba kategorijas, pavyzdžiui, žemės danga, buvimas arba nebuvimas, ir false (neteisingai), jei kintamasis yra i&scaron;tisinis.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Medžių skaičius</h2></div>
+        <hr/>
+        <div>
+            <p>Modelyje sukurtinų medžių skaičius. Paprastai daugiau medžių duoda tikslesnes modelio prognozes, tačiau skaičiavimai trunka ilgiau. Numatytasis medžių skaičius yra 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Mažiausias lapo dydis</h2></div>
+        <hr/>
+        <div>
+            <p>Mažiausias stebėjimų skaičius, reikalingas, kad lapas būtų i&scaron;laikomas (lapas yra galutinis medžio mazgas, kuris toliau nebesi&scaron;akoja). Numatytosios reik&scaron;mės yra 5 regresijai ir 1 klasifikacijai. Itin dideliems duomenims &scaron;ių skaičių sumažinimas sutrumpina įrankio veikimo laiką.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Didžiausias medžio gylis</h2></div>
+        <hr/>
+        <div>
+            <p>Didžiausias skaidymų kiekis, kiek galima padaryti medžio kamiene. Naudojant didelį gylį, bus sukuriama daugiau skaidymų, o tai padidina perteklinio modelio pritaikymo tikimybę. Numatytasis yra paremtas duomenimis ir priklauso nuo sukurtų medžių skaičiaus bei įtrauktų kintamųjų skaičiaus.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Medžiui prieinami duomenys (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo, kokia procentinė mokymo sluoksnio elementų dalis naudojama kiekvienam sprendimų medžiui. Numatytoji reik&scaron;mė yra 100% duomenų. Kiekvienam medžiui pavyzdžiai atsitiktinai paimami i&scaron; dviejų trečdalių nurodytų duomenų.
+            </p>
+            <p>Kiekvienas medžių schemos sprendimų medis sukuriamas naudojant atsitiktinį pavyzdį arba poaibį (apytiksliai dvi trečiąsias) prieinamų mokymo duomenų. Mažesnės įvesties duomenų procentinės dalies naudojimas kiekvienam medžiui padidina įrankio spartą dirbant su itin dideliais duomenų rinkiniais.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Atsitiktinai paimtų kintamųjų skaičius</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo, kiek paai&scaron;kinančių kintamųjų naudojama kiekvienam sprendimų medžiui sukurti.
+            </p>
+            <p>Kiekvienas medžių schemos sprendimų medis sukuriamas naudojant atsitiktinį nurodytų paai&scaron;kinančių kintamųjų poaibį. Kiekvienam sprendimų medžiui naudojamų kintamųjų skaičiaus didinimas didina tikimybę, kad modelis bus perteklinai pritaikytas, ypač jei yra vienas ar du dominuojantys kintamieji. Dažna praktika yra naudoti kvadratinę &scaron;aknį i&scaron; visų paai&scaron;kinančių kintamųjų skaičiaus, jei prognozuojamas kintamasis yra skaitinis, arba padalinti visų paai&scaron;kinančių kintamųjų skaičių i&scaron; 3, jei prognozuojamas kintamasis kategorinis.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Pasirinkite, kaip sutapdinami paaiškinantieji laukai</h2></div>
+        <hr/>
+        <div>
+            <p>Kaip atitinkami mokymo sluoksnio kintamieji sutapdinami su prognozavimo sluoksnio kintamaisiais. Lentelėn įtrauktos bus tik tos reik&scaron;mės, kurios naudotos apmokant modelį.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Vykdymų tikrinant skaičius</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo procentinę dalį (nuo 0% iki 50%) mokymo sluoksnio kintamųjų, kuri rezervuojama kaip testinis duomenų rinkinys tikrinimui. Modelis apmokomas nenaudojant &scaron;io atsitiktinio duomenų poaibio, o &scaron;ių elementų stebėtos reik&scaron;mės bus lyginamos su prognozuojamomis. Numatytoji reik&scaron;mė yra 10%.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>Pateikiami rezultatai priklauso nuo analizės tipo. Jei apmokote vertinti modelio tinkamumą, rezultatas bus mokymo duomenų, pritaikytų modeliui, sluoksnis, ir rezultatų informacija, kuria vertinamas modelio tinkamumas. Jei apmokote ir prognozuojate, rezultatas bus mokymo duomenų, pritaikytų modeliui, sluoksnis, prognozuojamų rezultatų sluoksnis ir rezultatų informacija, kuria vertinamas modelio tinkamumas.
+            </p>
+            <p>Naudodami i&scaron;plečiamo meniu parinktį  <b>Rezultatą įra&scaron;yti į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

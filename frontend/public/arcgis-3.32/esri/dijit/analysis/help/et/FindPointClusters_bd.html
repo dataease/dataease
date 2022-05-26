@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Otsi punktklastreid</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Otsi punktklastreid"></h2>
+        <hr/>
+    <p>T&ouml;&ouml;vahend Otsi punktklastreid leiab &uuml;mbritseva m&uuml;ra hulgast punktobjektide klastrid nende ruumilise jaotuse p&otilde;hjal.
+    </p>
+    <p>Valitsusv&auml;line organisatsioon uurib n&auml;iteks konkreetset kahjuritest p&otilde;hjustatud haigust. Selles kasutatakse punktandmestikku, mis esindab uuringupiirkonna kodusid, millest m&otilde;ned on nakatunud ja m&otilde;ned mitte. T&ouml;&ouml;vahendi  Otsi punktklastreid abil saab anal&uuml;&uuml;tik leida nakatunud kodude klastrid, et aidata m&auml;&auml;rata piirkonda, kus tuleb alustada ravi ja h&auml;vitada kahjurid.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kiht klastrite otsimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Punktkiht, milles leiduvad klastrid.  Kihid peavad olema tasapinnalises ruumilise l&auml;hiseose s&uuml;steemis v&otilde;i tasapinnaliseks ruumilise l&auml;hiseose s&uuml;steemiks peab olema funktsiooni  <b>Anal&uuml;&uuml;sikeskkonnad</b> abil m&auml;&auml;ratud tasapinnaline koordinaats&uuml;steem.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Valige kasutatav klasterdamismeetod</h2></div>
+        <hr/>
+        <div>
+            <p>Klasterdamismeetod, mida kasutatakse punktobjektide klastrite eristamiseks &uuml;mbritsevast m&uuml;rast. V&otilde;ite kasutamiseks valida kas m&auml;&auml;ratletud kauguse v&otilde;i isereguleeruva klasterdamisalgoritmi.
+            </p>
+            <p>M&auml;&auml;ratletud kaugus (DBSCAN) kasutab etten&auml;htud otsinguvahemikku, et eraldada tihedamad klastrid h&otilde;redamast m&uuml;rast. M&auml;&auml;ratletud kaugus (DBSCAN) on kiirem, kuid see sobib ainult juhul, kui kasutatakse v&auml;ga selget otsinguvahemikku, mis toimib h&auml;sti, kui on vaja m&auml;&auml;ratleda k&otilde;ik esineda v&otilde;ivad klastrid. M&auml;&auml;ratletud kaugus (DBSCAN) leiab samasuguse tihedusega klastrid.
+            </p>
+            <p>Isereguleeruv kaugus (HDBSCAN) ei vaja otsinguvahemiku m&auml;&auml;ramist, kuid on rohkem aega n&otilde;udev meetod. Isereguleeruv kaugus (HDBSCAN) leiab punktide klastrid, mis on sarnased m&auml;&auml;ratletud kaugusega (DBSCAN), kuid kasutab erinevaid otsinguvahemikke, mis v&otilde;imaldab leida erineva tihedusega klastreid. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimaalne punktide arv, mida käsitletakse klastrina</h2></div>
+        <hr/>
+        <div>
+            <p>Seda parameetrit kasutatakse erinevalt olenevalt valitud klasterdamismeetodist:
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;&auml;ratletud kaugus (DBSCAN) &mdash; m&auml;&auml;rab objektide arvu, mis peavad leiduma punkti igas konkreetses kauguses, et see punkt hakkaks moodustama klastrit. Kaugus m&auml;&auml;ratletakse parameetriga  <b>Otsinguvahemiku piirang</b>.
+                    </li>
+                    <li>Isereguleeruv (HDBSCAN) &mdash; m&auml;&auml;rab objektide arvu iga punkti (sealhulgas punkti enda) naabruses, mida v&otilde;etakse arvesse tiheduse hindamisel. See arv on ka klastrite minimaalne suurus klastrite eraldamisel.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Piira otsinguvahemikku</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ratletud kauguse (DBSCAN) kasutamisel on see parameeter kaugus, mille piires tuleb leida  <b>Punktide minimaalne arv, mida v&otilde;ib lugeda klastriks</b>. Seda parameetrit ei kasutata, kui klasterdamise kasutatavaks meetodiks valitakse isereguleeruv kaugus (HDBSCAN).
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

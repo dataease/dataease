@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/ClassifyPixelsUsingDeepLearning",{toolDefine:"Slikovne pike klasificiraj s pomo\u010djo globokega u\u010denja",outputLayerName:"${layername}_klasificiran",modelLabel:"Za klasifikacijo slikovnih pik uporabi globoko u\u010denje",modelArgsLabel:"Opredeli argumente modela globokega u\u010denja",nameLabel:"Ime",valueLabel:"Vrednost",queryModelArgsMsg:"Poizvedovanje po argumentih modela ...",analysisLayerLabel:"Izberite sliko za klasifikacijo slikovnih pik",itemDescription:"Storitev analize slike, ki je ustvarjena s pomo\u010djo orodja Klasifikacija slikovnih pik s pomo\u010djo globokega u\u010denja",
+itemTags:"Rezultati rastrske analize, Klasifikacija slikovnih pik s pomo\u010djo globokega u\u010denja, ${layername}",itemSnippet:"Storitev analize slike, ki je ustvarjena s pomo\u010djo orodja Klasificiraj slikovne pike s pomo\u010djo globokega u\u010denja"});

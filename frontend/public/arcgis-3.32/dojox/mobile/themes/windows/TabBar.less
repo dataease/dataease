@@ -1,0 +1,37 @@
+@import "variables.less";
+@import "../common/TabBar.less";
+@import "../common/domButtons/DomButtonWhiteCross.css";
+
+.mblTabBar {
+	border: none;
+	background-image: none;
+
+	.mblTabBarButton {
+		text-shadow: none;
+		background-image: none;
+		border: none;
+		font-family: @win-font-family;
+	}
+}
+
+.mblTabBarSegmentedControl {
+	min-width: 480px;
+	padding: 0px !important;
+
+	.mblTabBarButton {
+		color: @win-disabled-color;
+		border: none;
+		font-size: @win-font-size-extra-large;
+		font-weight: 400;
+		width: auto;
+		margin: 0 8px 0 0;
+		height: auto;
+		line-height: normal;
+		display: inline;
+		float: left;
+	}
+
+	.mblTabBarButtonSelected {
+		color: @win-foreground-color;
+	}
+}

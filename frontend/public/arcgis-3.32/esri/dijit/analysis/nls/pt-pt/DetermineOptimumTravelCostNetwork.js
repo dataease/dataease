@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"Selecionar raster ou camada de localiza\u00e7\u00e3o de elementos entre os quais determinar caminhos de viagem",inputCostRasterLabel:"Selecionar camada raster de custo de viagem",outputOptimumNetworkName:"Resultado de nome de camada de caminhos \u00f3timos de polilinhas",outputNeighborNetworkName:"Resultado de nome de camada de caminhos vizinhos de polilinhas (opcional)",outputLayerName:"Determinar custo \u00f3timo de viagem de ${layername}",
+itemDescription:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o de Determinar rede de custo \u00f3timo de viagem em ${layerName}. ",itemTags:"Resultado de An\u00e1lise, Determinar Rede de Custo de Viagem, ${layername} ${fieldname}",itemSnippet:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o de Determinar Rede de Custo \u00d3timo de Viagem."});

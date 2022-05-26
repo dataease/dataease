@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Lagen overlappen</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Lagen overlappen"></h2>
+        <hr/>
+    <p>Lagen overlappen combineert twee of meer lagen in &eacute;&eacute;n enkele laag. Bij Overlap lijkt het alsof u door een stapel kaarten kijkt en &eacute;&eacute;n kaart maakt die alle informatie bevat die in de stapel is gevonden. Overlap is meer dan het samenvoegen van lijnwerk. Alle attributen van de objecten die deel uitmaken van de overlap, worden overgedragen naar het definitieve product. Overlap wordt gebruikt om een antwoord te bieden op een van de basisvragen in de geografie: 'Wat ligt boven op wat?'. Hier volgen enkele voorbeelden:
+        <ul>
+            <li>Welke percelen bevinden zich binnen het 100-jarige overstromingsgebied? (Binnen betekent hierbij hetzelfde als boven op.)
+                  
+            </li>
+            <li>Welk bodemgebruik ligt boven op welk bodemtype?
+                 
+            </li>
+            <li>Welke bronnen bevinden zich binnen verlaten militaire basissen?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige omvang van de kaart gebruiken</b> is aangevinkt, worden alleen de objecten in de invoer- en overlaplagen bovenop geplaatst die binnen de huidige omvang van de kaart zichtbaar zijn. Als deze optie niet is aangevinkt, worden alle objecten in zowel de invoerlaag als de overlaylaag bovenop geplaatst, zelfs als deze zich buiten de huidige omvang van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies invoerlaag</h2></div>
+        <hr/>
+        <div>
+            <p>De punt-, lijn- of vlakkenlaag die bovenop worden geplaatst.
+            </p>
+            <p class="OnlineOnly">Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag Levende Atlas kiezen</b> of <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Er wordt een galerij geopend met een verzameling lagen die handig zijn voor veel analyses. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Kies overlap-laag</h2></div>
+        <hr/>
+        <div>
+            <p>De laag om bovenop de inputlaag te plaatsen.  
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Kies overlapmethode</h2></div>
+        <hr/>
+        <div>
+            <p>De overlapmethode bepaalt hoe de invoerlaag en de overlaplaag worden gecombineerd.  
+
+                <ul>
+                    <li> <b>Kruisen</b>&mdash;Het resultaat bevat alleen die objecten of delen van objecten in de overlaplaag die overlappen met objecten in de invoerlaag. Bij kruisende lijn- of gebiedsobjecten hebt u de optie om het type objecten aan te geven dat u als uitvoer wilt.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punten met punten
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punten en punteninvoer">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punten en punten met puntenuitvoer">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Lijnen met lijnen 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Lijnen en lijneninvoer">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Lijnen en lijnen met lijnenuitvoer ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Gebieden met gebieden
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Gebieden en gebiedeninvoer">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Gebieden en gebieden met gebiedenuitvoer">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Wissen</b>&mdash;Het resultaat bevat alleen die objecten of delen van objecten in de overlaylaag die overlappen met de gebieden in de invoerlaag. De overlaylaag kan gebieds-, lijn- of puntobjecten bevatten.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. Deze zal hetzelfde objecttype (gebieden, lijnen of punten) hebben als de overlaplagen. De standaardnaam is gebaseerd op de overlapmethode en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>Als u in de vervolgkeuzelijst  <b>Resultaat opslaan</b> gebruikt, kunt u de naam opgeven van een map in <b>Mijn Content</b> waarin het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

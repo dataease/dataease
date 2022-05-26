@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Titik Agregat</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Titik Agregat"></h2>
+        <hr/>
+    <p>Alat ini bekerja dengan layer fitur titik dan layer fitur area.  Input fitur area dapat dilakukan dari layer poligon atau dapat berupa square bin atau hexagonal bin yang dihitung ketika alat dijalankan. Alat itu terlebih dahulu menentukan titik mana yang berada di dalam setiap area yang telah ditentukan. Setelah menentukan hubungan spasial titik di dalam area ini, statistik terkait semua titik di dalam area dihitung dan diisikan ke area. Statistik yang paling dasar adalah jumlah titik di dalam area, tapi Anda juga dapat memperoleh statistik lain. 
+
+    </p>
+    <p>Misalnya, Anda memiliki fitur titik dari lokasi sebuah warung kopi dan fitur area dari suatu daerah, serta Anda ingin merekapitulasi penjualan kopi menurut daerah tertentu.  Misalnya warung kopi memiliki atribut  <i>TOTAL_SALES</i>, Anda dapat memperoleh jumlah dari seluruh <i>TOTAL_SALES</i> di dalam setiap daerah, atau jumlah minimal atau maksimal <i>TOTAL_SALES</i>
+ di dalam setiap daerah, atau setiap statistik lainnya seperti jumlah, rentang, simpangan baku, dan varian.
+    </p>
+    <p>Alat ini pun dapat bekerja dengan data yang waktunya telah diaktifkan. Jika waktu diaktifkan pada titik input, maka opsi pengirisan waktu tersedia. Pengirisan waktu memungkinkan Anda untuk menghitung hubungan titik di dalam area sekaligus melihat irisan tertentu dalam waktu. Misalnya, Anda dapat melihat interval jam yang akan menghasilkan output untuk setiap jam. 
+    </p>
+    <p>Untuk contoh dengan waktu, katakanlah Anda memiliki fitur titik untuk setiap transaksi yang terjadi di berbagai lokasi warung kopi dan tidak ada layer area. Data telah dicatat selama satu tahun dan setiap transaksi memiliki lokasi dan stempel waktu. Dengan mengasumsikan setiap transaksi memiliki atribut <i>TOTAL_SALES</i>, Anda bisa mendapatkan jumlah semua <i>TOTAL_SALES</i> di dalam ruang dan waktu. Jika transaksi ini adalah untuk sebuah kota, kita dapat menghasilkan area dengan jangkauan 1 kilometer dan melihat irisan waktu mingguan untuk merekapitulasi transaksi baik dalam ruang maupun waktu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Pilih sebuah layer berisi titik untuk diagregasikan ke dalam area</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik yang akan diagregasi ke dalam area. Layer titik yang diagregasi menjadi bin  <b>Persegi </b> atau <b>Heksagon</b> harus memiliki referensi spasial pemroses yang harus ditetapkan ke sistem koordinat yang diproyeksikan menggunakan <b>Lingkungan Analisis</b>.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Pilih layer area untuk diagregasi ke dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Area yang layer titiknya akan diagregasi ke dalam. Anda dapat memilih antara layer area yang Anda sediakan atau bin yang dihasilkan ketika alat dijalankan. Ketika membuat bin, untuk  <b>Persegi</b>, angka dan unit yang disebutkan akan menentukan tinggi dan panjang persegi. Untuk <b>Heksagon</b>, angka dan unit yang ditentukan akan menentukan jarak antara sisi paralel.
+            </p>
+            <p>Analisis menggunakan bin  <b>Persegi</b> atau <b>Heksagon</b> memerlukan sistem koordinat terproyeksi. Anda dapat menetapkan <b>Sistem koordinat pemrosesan</b> dalam <b>Lingkungan Analisis</b>. Jika sistem koordinat pemrosesan Anda tidak ditetapkan ke sistem koordinat terproyeksi, Anda akan diminta untuk menetapkannya saat Anda <b>Jalankan Analisis</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Pilih layer area untuk diagregasi ke dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Layer area tempat titik akan diagregasi.  Setiap titik yang berada di dalam batasan area dalam layer ini akan dihitung dan secara opsional akan direkapitulasi menggunakan pilihan statistik Anda. 
+            </p>
+            <p> <b>Ukuran Bin</b> untuk bin atau <b>Layer Area</b> harus ditetapkan.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Pilih jarak untuk membuat bin dan agregat ke dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak yang digunakan untuk membuat bin ke agregat yang ditunjukkan titik input Anda. Untuk square bin, ukuran mewakili tinggi persegi. Untuk heksagon, ukuran mewakili tinggi heksagon (dari sisi paralel).  
+            </p>
+            <p> <b>Ukuran Bin</b> untuk bin atau <b>Layer Area</b> harus ditetapkan.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregat menggunakan langkah waktu (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jika waktu diaktifkan pada layer titik input dan ini adalah tipe instan, Anda dapat menganalisis menggunakan langkah waktu.  Ada tiga parameter yang dapat Anda tentukan ketika menggunakan waktu:
+                <ul>
+                    <li> <b>Interval langkah waktu</b>
+                    </li>
+                    <li> <b>Seberapa sering mengulangi langkah waktu tersebut</b>
+                    </li>
+                    <li> <b>Waktu untuk diselaraskan dengan langkah waktu</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan langkah mingguan, tetapkan  <b>Interval langkah waktu</b> ke <code>1 minggu</code>. 
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan minggu pertama dalam bulan, atur  <b>Interval langkah waktu</b> ke <code>1 minggu</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 bulan</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>1 Januari, pukul 24.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Interval waktu yang digunakan untuk menghasilkan langkah waktu.  <b>Interval langkah waktu</b> dapat digunakan sendirian atau digunakan dengan parameter <b>Seberapa sering mengulangi langkah waktu tersebut</b> atau <b>Waktu untuk menyelaraskan langkah waktu ke</b> parameter.
+            </p>
+            <p>Misalnya, jika Anda ingin membuat langkah waktu yang berlaku setiap hari Senin dari pukul 09.00 hingga 10.00, atur  <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Seberapa sering mengulangi langkah waktu tersebut</h2></div>
+        <hr/>
+        <div>
+            <p> Langkah yang digunakan untuk menghitung langkah waktu. <b>Seberapa sering mengulangi langkah waktu tersebut</b> dapat digunakan sendirian, dengan <b>Interval langkah waktu</b>, dengan <b>Waktu Referensi</b>, atau dengan <b>Interval langkah waktu</b> dan <b>Waktu untuk diselaraskan dengan langkah waktu</b>.
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Waktu untuk diselaraskan dengan langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Tanggal dan waktu yang digunakan untuk menyelaraskan pengirisan waktu. Langkah waktu akan dimulai pada dan dilanjutkan ke belakang dari waktu ini. Jika tidak ada waktu referensi yang dipilih, langkah waktu akan diselaraskan ke 1 Januari 1970. 
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tambahkan statistik (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat menghitung statistik pada fitur yang diringkas. Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Menghitung jumlah nilai nonnull. Dapat digunakan di kolom numerik ataupun string. Jumlah [null, 0, 2] adalah 2.
+                    </li>
+                    <li>Jumlah&mdash;Jumlah nilai numerik di kolom. Jumlah [null, null, 3] adalah 3.
+                    </li>
+                    <li>Rata-rata&mdash;Rata-rata nilai numerik. Rata-rata [0, 2, null] adalah 1.
+                    </li>
+                    <li>Min.&mdash;Nilai minimum kolom numerik. Minimal [0, 2, null] adalah 0. 
+                    </li>
+                    <li>Maks.&mdash;Nilai maksimum kolom numerik. Nilai maksimum [0, 2, null] adalah 2.
+                    </li>
+                    <li>Rentang&mdash;Rentang kolom numerik. Ini dihitung sebagai nilai minimum yang disubtraksi dari nilai maksimum. Rentang [0, null, 1] adalah 1. Rentang [null, 4] adalah 0.
+                    </li>
+                    <li>Varian&mdash;Varian kolom numerik di jalur. Varian [1] adalah null. Varian [null, 1,0,1,1] adalah 0,25.
+                    </li>
+                    <li>Simpangan baku&mdash;Simpangan baku kolom numerik. Simpangan baku [1] adalah null. Simpangan baku [null, 1,0,1,1] adalah 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Jumlah string nonnull.
+                    </li>
+                    <li>Apa saja&mdash;Statistik ini adalah contoh acak nilai string di dalam kolom yang telah ditentukan.
+                    </li>
+                </ul>
+                Semua statistik dihitung pada nilai nonnull. Layer hasil akan berisi kolom baru untuk setiap statistik yang dihitung. Angka statistik berapa pun dapat ditambahkan dengan memilih sebuah atribut dan statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah parameter sementara untuk pra-rilis untuk menetapkan referensi spasial pemrosesan. Banyak alat big data yang mewajibkan bahwa sistem koordinat proyeksi digunakan sebagai referensi spasial untuk pemrosesan. Secara default, alat akan menggunakan sistem koordinat input, tetapi akan gagal jika ini adalah sistem koordinat geografik. Untuk menetapkan sistem koordinat proyeksi, masukkan WKID. Misalnya,  <b>Web Mercator</b> harus dimasukkan sebagai <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih ArcGIS Data Store untuk penyimpanan hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

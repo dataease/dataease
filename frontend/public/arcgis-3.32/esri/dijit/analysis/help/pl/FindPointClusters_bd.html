@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Znajdź klastry punktów</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Znajdź klastry punkt&oacute;w"></h2>
+        <hr/>
+    <p>Narzędzie  Znajdź klastry punkt&oacute;w znajduje klastry obiekt&oacute;w punktowych wśr&oacute;d otaczającego szumu w oparciu o ich rozkład przestrzenny.
+    </p>
+    <p>Na przykład instytucja pozarządowa może badać określone choroby roznoszone przez szkodniki. Dysponuje ona zestawem danych punktowych reprezentujących gospodarstwa domowe znajdujące się na analizowanym obszarze, z kt&oacute;rych część jest zaatakowana przez szkodniki, a część nie. Za pomocą narzędzia  Znajdź klastry punkt&oacute;w analityk może określić klastry gospodarstw domowych zaatakowanych przez szkodniki i wskazać obszar, na kt&oacute;rym zostaną podjęte działania lecznicze oraz eliminujące szkodniki.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, dla której mają zostać znalezione klastry</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, w kt&oacute;rej będą wyszukiwane warstwy. Warstwy muszą korzystać z odwzorowanego odniesienia przestrzennego lub odniesienie przestrzenne przetwarzania musi zostać skonfigurowane w układzie wsp&oacute;łrzędnych odwzorowanych w oknie  <b>Środowiska analizy</b>.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Wybierz metodę klastrowania do użycia</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda klastrowania, kt&oacute;ra będzie używana do odr&oacute;żniania klastr&oacute;w obiekt&oacute;w punktowych od otaczającego szumu. Do wyboru możliwy jest algorytm klastrowania na podstawie zdefiniowanej odległości lub automatycznie dostosowywanego.
+            </p>
+            <p>W metodzie zdefiniowanej odległości (DBSCAN) do oddzielania gęstych klastr&oacute;w od rzadszego szumu używany jest podany zakres wyszukiwania. Metoda zdefiniowanej odległości (DBSCAN) jest szybsza, ale jest odpowiednia tylko w przypadku istnienia bardzo wyraźnego zakresu wyszukiwania umożliwiającego skuteczne zdefiniowanie wszystkich klastr&oacute;w, kt&oacute;re mogą występować. Metoda zdefiniowanej odległości (DBSCAN) pozwala znajdować klastry o podobnej gęstości.
+            </p>
+            <p>Metoda automatycznego dostosowywania (HDBSCAN) nie wymaga określenia zakresu wyszukiwania, ale jest bardziej czasochłonna. Metoda automatycznego dostosowywania (HDBSCAN) pozwala znajdować klastry punkt&oacute;w podobne jak w przypadku metody zdefiniowanej odległości (DBSCAN), ale są w niej używane r&oacute;żne zakresy wyszukiwania, dzięki czemu możliwe jest tworzenie klastr&oacute;w o r&oacute;żnej gęstości. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalna liczba punktów, które są uznawane za klaster</h2></div>
+        <hr/>
+        <div>
+            <p>Ten parametr jest używany w r&oacute;żny spos&oacute;b w zależności od wybranej metody klastrowania:
+            </p>
+            <p>
+                <ul>
+                    <li>W metodzie zdefiniowanej odległości (DBSCAN) określa liczbę obiekt&oacute;w, kt&oacute;re muszą się znaleźć w określonej odległości od danego punktu, aby m&oacute;c rozpocząć tworzenie klastra w tym punkcie. Odległość jest definiowana przy użyciu parametru  <b>Ogranicz zakres wyszukiwania do</b>.
+                    </li>
+                    <li>W metodzie automatycznego dostosowywania (HDBSCAN) określa liczbę obiekt&oacute;w sąsiadujących z każdym punktem (z uwzględnieniem samego punktu), kt&oacute;re będą uwzględniane podczas szacowania gęstości. Ta liczba jest r&oacute;wnież minimalnym dozwolonym rozmiarem klastra podczas ich wyodrębniania.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ogranicz zakres wyszukiwania do</h2></div>
+        <hr/>
+        <div>
+            <p>W metodzie zdefiniowanej odległości (DBSCAN) ten parametr określa odległość, w zakresie kt&oacute;rej konieczne jest odnalezienie  <b>Minimalnej liczby punkt&oacute;w, kt&oacute;re są uznawane za klaster</b>. Ten parametr nie jest używany w metodzie automatycznego dostosowywania (HDBSCAN).
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

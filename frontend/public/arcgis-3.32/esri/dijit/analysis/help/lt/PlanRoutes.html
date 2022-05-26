@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planuoti maršrutus</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planuoti mar&scaron;rutus"></h2>
+        <hr/>
+    <p>Planuoti mar&scaron;rutus leidžia nustatyti, kaip efektyviai paskirstyti užduotis mobiliems darbuotojams.
+    </p>
+    <p>Įrankiui reikalingi sustojimų duomenys ir transporto priemonių skaičius. Įrankis paskirsto sustojimus transporto priemonėms ir pateikia mar&scaron;rutus, kuriais transportas gali greičiausiu būdu pasiekti sustojimo vietas.
+    </p>
+    <p>Naudojat įrankį Planuoti mar&scaron;rutus, mobilūs darbuotojai gali pasiekti daugiau aptarnavimo vietų, o tai didina efektyvumą ir gerina klientų aptarnavimą.
+        <ul>
+            <li>Gyventojų, restoranų, statybviečių lankymas
+                
+
+            </li>
+            <li>Taisymo, diegimo, techninių paslaugų teikimas
+            </li>
+            <li>Daiktų ir paketų pristatymas
+            </li>
+            <li>Prekių pristatymas
+            </li>
+            <li>Žmonių i&scaron;vežiojimas
+            </li>
+        </ul>
+        
+    </p>
+    <p>Įrankio Planuoti mar&scaron;rutus i&scaron;vestyje yra sustojimų sluoksnis, sukoduotas pagal mar&scaron;rutus, kuriems jie priskirti, mar&scaron;rutų sluoksnis, rodantis trumpiausius kelius priskirtiems sustojimams pasiekti, ir nepriskirtų sustojimų sluoksnis, jei yra sustojimų, kurių nepavyko pasiekti. 
+    </p>
+    <p>Jei pažymėta  <b>Naudoti esamą žemėlapio aprėptį</b>, bus analizuojami tik aprėptyje matomi elementai. Jei nepažymėta &ndash; analizuojami visi elementai, net jei jie patenka už matomo žemėlapio ribų.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Pasirinkite taškų sluoksnį, nurodantį vietas, į kurias reikia nuvažiuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite sluoksnį ta&scaron;kų, kuriuos mar&scaron;rutai (ar transporto priemonės) turi pasiekti.  I&scaron;vestyje &scaron;ie ta&scaron;kai tampa priskirtomis arba nepriskirtomis sustojimo vietomis. 
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+            <p>Įrankis leidžia naudoti iki 2 000 įvesties elementų. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Kelionės režimas maršrutams</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite savo kelionės režimą. Gaunami mar&scaron;rutai atkartos kelius arba pėsčiųjų takus ir laikysis taikomų taisyklių, pvz., gatvių su vienpusiu eismu bei neleistinų apsisukimų vairuojant ar važiuojant sunkvežimiu. Galimus kelionės režimus nustato jūsų organizacijos administratorius.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Maršrutai prasideda stotelėse</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, kur ir kada transporto priemonės pradeda mar&scaron;rutus.
+            </p>
+            <p>Naudojant įrankį Planuoti mar&scaron;rutus galima nurodyti vieną ar daugiau pradinių ta&scaron;kų.
+            </p>
+            <p>Kai nurodoma vieno ta&scaron;ko vieta, visos transporto priemonės i&scaron;vyksta i&scaron; to ta&scaron;ko, neatsižvelgiant į galimų transporto priemonių skaičių. Galite pasirinkti ta&scaron;kų sluoksnį su vienu ta&scaron;ku ar pridėti ta&scaron;ką žemėlapyje, pasirinkę  <b>Pridėti ta&scaron;ką žemėlapyje</b>, paspaudę &scaron;alia esantį ta&scaron;ko redagavimo mygtuką, ir spustelėję žemėlapyje. 
+            </p>
+            <p>Kai nurodyta daugiau pradžios ta&scaron;kų, kiekviena transporto priemonė turi būti susieta su savo ta&scaron;ku. Transporto priemonių skaičius turi sutapti su ta&scaron;kų sluoksnyje skaičiumi. Pasirinkite sluoksnį su ta&scaron;kais ir nurodykite lauką, kurio reik&scaron;mės leidžia identifikuoti mar&scaron;rutus, transporto priemones ar vairuotojus  <b>Mar&scaron;ruto ID lauko</b> sąra&scaron;e.
+            </p>
+            <p>Visų mar&scaron;rutų pradžios laikas yra vienodas. Pradžios laiko zona sutampa su ta&scaron;kų laiko zona, įsitikinkite, kad įvestas vietos laikas. Pavyzdžiui, jei naudojate Ramiojo vandenyno Standartinį Laiką (UTC-8:00) ir transporto priemonės i&scaron;dėstytos Kalnų Standartinio Laiko zonoje (UTC-7:00). Jei &scaron;iuo metu yra 9:30 PST (10:30 MST) ir transporto priemonės turi pradėti mar&scaron;rutus po 30 minučių, pradžios laikas nustatomas 11:00. 
+            </p>
+            <p>Jei transporto priemonės i&scaron;dėstytos skirtingose laiko zonose, pradžios laikas skiriasi pagal laiko skirtumą. Pavyzdžiui, jei vienas mar&scaron;rutas pradedamas ta&scaron;ke, kuris yra PST zonoje, o kitas &ndash; MST, bei įvestas laikas 11:00, mar&scaron;rutas i&scaron; PST prasidės 11:00 PST, o mar&scaron;rutas i&scaron; MST prasidės 11:00. MST laiku &ndash; vienos valandos skirtumas.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Maršrutai baigiasi stotelėse</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, kur transporto priemonės užbaigia mar&scaron;rutus.
+            </p>
+            <p>Galima nurodyti pasirinkus vieną i&scaron; trijų vietų: 
+                <ul>
+                    <li>Toje pačioje vietoje, kur mar&scaron;rutas prasidėjo, nepaisant, ar buvo vienas ar daugiau pradžios ta&scaron;kų
+                    </li>
+                    <li>Viename ta&scaron;ke
+                    </li>
+                    <li>Daugelyje ta&scaron;kų &mdash; kiekvienas mar&scaron;rutas atskirame ta&scaron;ke
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pažymėkite  <b>Grįžti į pradžią</b>, jei transporto priemonių mar&scaron;rutų pradžios ir pabaigos ta&scaron;kai sutampa.
+            </p>
+            <p>Jei transporto priemonės turi nuvykti į bendrą pabaigos ta&scaron;ką, kuris skiriasi nuo pradžios ta&scaron;ko, atžymėkite  <b>Grįžti į pradžią</b> arba pridėkite ta&scaron;ką žemėlapyje, arba pasirinkite sluoksnį, kurį sudaro vienas ta&scaron;kas.
+            </p>
+            <p>Jei mar&scaron;rutai turi baigtis atskiruose ta&scaron;kuose, atžymėkite  <b>Grįžti į pradžią</b> ir pasirinkite sluoksnį su daugiau nei vienu ta&scaron;ku. Transporto priemonių skaičius turi sutapti su ta&scaron;kų pasirinktame sluoksnyje skaičiumi. <b>Mar&scaron;ruto ID lauko</b> sąra&scaron;e pasirinkite lauką, kuris identifikuoja atskirus mar&scaron;rutus, transporto priemones ar vairuotojus. Jei transporto priemonės pradeda ir pabaigia mar&scaron;rutus skirtinguose ta&scaron;kuose, mar&scaron;ruto ID pradžios ir pabaigos ta&scaron;kų sluoksniuose turi sutapti.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pasirinkti kliūčių sluoksnius</h2></div>
+        <hr/>
+        <div>
+            <p> Vienas ar daugiau elementų, kurie veikia kaip laikini apribojimai (kliūtys) keliaujant esamomis gatvėmis. Kliūtis galite nurodyti naudodami ta&scaron;ko, linijos arba ploto elementus.
+            </p>
+            <p>Ta&scaron;kinė kliūtis gali reik&scaron;ti nukritusį medį, avariją, nukritusį elektros laidą ar bet kokį kitą objektą, kuris visi&scaron;kai užblokavęs eismą konkrečioje gatvės vietoje. Galima judėti gatve, tačiau ne per &scaron;ią kliūtį. Galite nurodyti iki 250 elementų, rei&scaron;kiančių ta&scaron;kines kliūtis.
+            </p>
+            <p>Linijinė kliūtis neleidžia keliauti niekur, kur &scaron;i kliūtis kerta gatves. Pavyzdžiui, kaip linijinė kliūtis gali būti pažymėtas paradas ar protestas, blokuojantis eismą keliuose gatvės segmentuose. Jei visų linijinių kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 500, įrankis pateikia klaidą.
+            </p>
+            <p>Plotinė kliūtis neleidžia keliauti niekur, kur &scaron;is plotas kerta gatves. Vienas i&scaron; galimų tokio tipo kliūties panaudojimų yra pažymėti potvynius, apimančius tam tikras gatvių tinklo dalis ir neleidžiančius jomis keliauti. Jei visų poligono kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 2 000, įrankis pateikia klaidą.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksimalus transporto priemonių skaičius maršrute</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite transporto priemonių, kurios gali pasiekti sustojimus, skaičių. Įrankis leidžia naudoti iki  100 transporto priemonių. 
+            </p>
+            <p>Įrankis gali rasti sprendimą, kuriam pakanka mažiau nei nurodyta transporto priemonių, atsižvelgiant į bendrą sustojimų skaičių, transporto priemonei leidžiamų sustojimų skaičių, atstumą tarp sustojimų, sustojimo laiką ir kitus ribojimus mar&scaron;rutui.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksimalus sustojimų skaičius transporto priemonei</h2></div>
+        <hr/>
+        <div>
+            <p>Tai vienas i&scaron; dviejų parametrų, leidžiančių tolygiai paskirstyti užduotis. Galima pasirinkti reik&scaron;mę nuo 1 iki  200. 
+            </p>
+            <p>Sumažinus maksimalų transporto priemonių sustojimų skaičių, didėja tikimybė, kad kiekvienai transporto priemonei bus pasiektas pana&scaron;us sustojimų kiekis. Tai leidžia tolygiau paskirstyti užduotis vairuotojams. Deja, gali būti, kad rezultatas bus mažiau efektyvus.
+            </p>
+            <p>Padidinus sustojimų skaičių transporto priemonei, įrankis gali rasti efektyvesnius sprendimus; tačiau tada darbo krūvis bus paskirstytas ne taip tolygiai. Atkreipkite dėmesį, kad darbo krūvis gali būti tolygiai paskirstytas pagal laiką ir pagal sustojimų skaičių nurodžius parametro  <b>Riboti mar&scaron;ruto laiką transporto priemonei</b> reik&scaron;mę.
+            </p>
+            <p>&Scaron;ie pavyzdžiai parodo maksimalaus sustojimų skaičiaus arba laiko automobilyje taikymą. Visuose pavyzdžiuose yra &scaron;e&scaron;i sustojimai ir du mar&scaron;rutai, kurie prasideda ir baigiasi toje pačioje vietoje.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Subalansuoti sustojimai ir kelionės laikas">
+                </td>
+                <td>
+                    <p>Subalansuotas kelionės laikas ir sustojimai mar&scaron;rute:
+                    </p>
+                    <p>Sustojimai daugiau mažiau vienodai nutolę, taigi, maksimalaus sustojimų skaičiaus transporto priemonei nustatymas leidžia sukurti pana&scaron;ios trukmės mar&scaron;rutus.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Nesubalansuota mar&scaron;ruto trukmė">
+                </td>
+                <td>
+                    <p>Subalansuoti sustojimai mar&scaron;rute, bet nesubalansuotas laikas:
+                    </p>
+                    <p>Penki i&scaron; &scaron;e&scaron;ių sustojimų yra netoli nuo pradžios ta&scaron;ko, bet vienas i&scaron; sustojimų yra toli ir jam pasiekti reikės nemažai laiko. Sustojimų paskirstymas po lygiai reik&scaron;, kad dviejų mar&scaron;rutų kelionės laikas stipriai skirsis.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Subalansuotas kelionės laikas">
+                </td>
+                <td>
+                    <p>Subalansuotas laikas, bet nesubalansuoti sustojimai:
+                    </p>
+                    <p>Sustojimai yra tose pačiose vietose kaip ankstesniame pavyzdyje, bet padidinus maksimalų sustojimų skaičių ir apribojus kelionės trukmę, gaunami pana&scaron;ios trukmės mar&scaron;rutai.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Sustojimo laikas kiekviename taške</h2></div>
+        <hr/>
+        <div>
+            <p>Nustatykite numatomą sustojimo kiekviename ta&scaron;ke laiką. Pavyzdžiui, jei planuojama inspektorių darbo diena ir vidutinis inspektavimo laikas yra 45 minutės, įveskite  <code>45</code>.
+            </p>
+            <p>Sustojimo laikas laikomas vienodu kiekviename sustojime.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Riboti maršruto laiką transporto priemonei</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite maksimalią mar&scaron;ruto trukmę nuo pradžios iki pabaigos. &Scaron;is laikas apima kelionės laiką ir laiką, reikalingą kiekvienam sustojimui. Jei vairuotojai negali dirbti ilgesnį už numatytą laiką, pavyzdžiui, a&scaron;tuonias valandas, galite nurodyti &scaron;į ribojimą.
+            </p>
+            <p>Plačiau apie tolygų darbo krūvio paskirstymą ra&scaron;oma  <b>Maksimalus sustojimų skaičius transporto priemonei</b> pagalboje.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai elemento sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> bei pridėtas į žemėlapį, pavadinimas. Jei toks elemento sluoksnis jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą. Elemento sluoksnyje bus &scaron;ie sluoksniai: mar&scaron;rutai, priskirtos ir nepriskirtos stotelės, kai tam tikrų įvestų stotelių negalima priskirti jokiems mar&scaron;rutams.
+            </p>
+            <p>Jei pasirinksite  <b>Įtraukti mar&scaron;ruto sluoksnius</b>, kiekvienas rezultato mar&scaron;rutas taip pat bus įra&scaron;ytas kaip mar&scaron;ruto sluoksnis. Mar&scaron;ruto sluoksnis apima visą konkretaus mar&scaron;ruto informaciją, pvz., stoteles, priskirtas mar&scaron;rutui, taip pat kelionės kryptis. Sukurti mar&scaron;ruto sluoksnius naudinga, jei norite bendrinti individualius mar&scaron;rutus su kitais organizacijos nariais arba toliau modifikuoti mar&scaron;rutus naudodami žemėlapių peržiūros priemonės mygtuką <b>Kryptys</b>. Mar&scaron;ruto sluoksniai naudoja pateiktą elementų sluoksnio pavadinimą kaip prefiksą, o mar&scaron;ruto pavadinimas, sugeneruojamas kaip analizės dalis, pridedamas kuriant unikalų kiekvieno mar&scaron;ruto sluoksnio pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kuriame bus i&scaron;saugotas elementų sluoksnis ir mar&scaron;ruto sluoksnis (jei jie bus sukurti), pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

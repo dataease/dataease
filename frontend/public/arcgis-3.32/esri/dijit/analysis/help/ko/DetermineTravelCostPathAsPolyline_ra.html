@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>폴리라인으로의 이동 비용 경로 결정</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="폴리라인 도구 그림으로의 이동 비용 경로 결정"></h2>
+        <hr/>
+    <p>이 도구는 원본과 알려진 목적지 간의 최저 비용 폴리라인 경로를 계산합니다.
+    </p>
+    <p>적용 예시:
+        <ul>
+            <li>건설 비용과 관련하여 새로운 도로에 가장 적합한 경로를 찾습니다.
+                
+
+            </li>
+            <li>여러 교외 지역(원본)에서 가장 가까운 쇼핑몰(목적지)까지의 경로를 식별합니다.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 입력 레이어의 위치만 분석되고, 선택하지 않으면 현재 맵 범위 외부에 있는 위치를 포함하여 두 입력 레이어에 있는 모든 위치가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>래스터 또는 피처 원본 레이어를 선택하여 다음으로부터의 경로 결정</h2></div>
+        <hr/>
+        <div>
+            <p>최저 비용 경로가 최저 비용 목적지로 결정된 셀을 식별하는 이미지 서비스 또는 피처 서비스입니다.
+            </p>
+            <p>입력이 이미지 서비스인 경우 입력은 유효한 값(0은 유효한 값)을 갖는 셀로 구성되며 나머지 셀에는 NoData가 할당되어야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>이동 비용 래스터 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>각 셀을 통해 평면으로 이동할 임피던스 또는 비용을 정의하는 래스터입니다.
+            </p>
+            <p>각 셀 위치의 값은 셀을 통해 이동하기 위한 단가 거리를 나타냅니다. 각 셀 위치 값과 셀 해상도를 곱해 대각선 이동을 보정하여 셀 통과 총비용을 구합니다.
+            </p>
+            <p>비용 래스터의 값은 정수이거나 부동 소수점일 수 있지만 음수이거나 0일 수는 없습니다(비용이 음수이거나 0일 수 없음).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>입력 목적지 래스터 또는 피처</h2></div>
+        <hr/>
+        <div>
+            <p>거리를 계산하는 데 사용되는 목적지를 정의하는 입력입니다. 래스터나 피처가 레이어로 사용될 수 있습니다.
+            </p>
+            <p>입력이 이미지 서비스인 경우 입력은 유효한 값(0은 유효한 값)을 갖는 셀로 구성되며 나머지 셀에는 NoData가 할당되어야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>결과 폴리라인 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>결정할 경로 유형 선택</h2></div>
+        <hr/>
+        <div>
+            <p>비용 경로 계산에서 입력 목적지 데이터의 값과 영역을 해석하는 방식을 정의합니다.
+            </p>
+            <ul>
+                <li>최고 단일 - 입력 목적지 데이터의 모든 셀이나 위치에 대해 최저 비용 경로는 원본 위치에 대한 최저 비용 경로가 최소인 위치에서 파생됩니다. 이 옵션이 기본 설정입니다.
+                    
+
+                </li>
+                <li>각 셀 - 입력 목적지 데이터에 유효한 값이 있는 각 셀이나 위치에 대해 최저 비용 경로가 결정되어 결과 피처 서비스에 저장됩니다. 이 옵션을 사용하면 입력 목적지 데이터의 각 셀은 개별적으로 처리되며 각 셀에서 최저 비용 경로가 결정됩니다.
+                    
+
+                </li>
+                <li>각 영역 - 입력 목적지 데이터의 각 영역에 대해 최저 비용 경로가 결정되며 결과 피처 서비스에 저장됩니다. 이 옵션을 사용하면 각 영역의 최저 비용 경로는 영역에서 비용 거리 가중치가 가장 낮은 셀 또는 위치에서 시작합니다.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

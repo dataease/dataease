@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Określ ścieżkę kosztów podróży jako polilinię</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Rysunek pokazujący narzędzie Określ ścieżkę koszt&oacute;w podr&oacute;ży jako polilinię"></h2>
+        <hr/>
+    <p>To narzędzie oblicza ścieżkę poliliniową o najmniejszym koszcie między źr&oacute;dłami a znanymi miejscami docelowymi.
+    </p>
+    <p>Poniżej przedstawiono następujące przykładowe zastosowania:
+        <ul>
+            <li>Znajdź najlepszą trasę dla nowej drogi pod względem koszt&oacute;w budowy.
+                
+
+            </li>
+            <li>Określ ścieżkę prowadzącą od kilku lokalizacji podmiejskich (danych źr&oacute;dłowych) do najbliższego centrum handlowego (miejsca docelowego).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli zaznaczona jest opcja  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko obiekty warstwy wejściowej widoczne w bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w obu warstwach wejściowych, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Wybierz raster lub źródłową warstwę obiektową w celu wyznaczenia ścieżek od</h2></div>
+        <hr/>
+        <div>
+            <p>Usługa rastrowa lub usługa obiektowa określająca kom&oacute;rki, od kt&oacute;rych jest wyznaczona ścieżka o najmniejszym koszcie do miejsca docelowego o najmniejszym koszcie.
+            </p>
+            <p>Jeśli dane wejściowe są usługą rastrową, składają się one z kom&oacute;rek o prawidłowych wartościach (zero jest wartością prawidłową), a do pozostałych kom&oacute;rek musi być przypisana wartość Brak danych.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Wybierz warstwę rastrową kosztu podróży</h2></div>
+        <hr/>
+        <div>
+            <p>Raster definiujący impedancję (koszt) ruchu planimetrycznego między poszczeg&oacute;lnymi kom&oacute;rkami.
+            </p>
+            <p>Wartość w każdej lokalizacji kom&oacute;rki reprezentuje odległość kosztu na jednostkę na potrzeby poruszania się przez tę kom&oacute;rkę. Wartość każdej lokalizacji kom&oacute;rki jest mnożona przez rozdzielczość kom&oacute;rki, a jednocześnie następuje kompensacja ruchu ukośnego, aby uzyskać łączny koszt poruszania się przez kom&oacute;rkę.
+            </p>
+            <p>Wartości rastra koszt&oacute;w mogą być całkowitoliczbowe lub zmiennoprzecinkowe, ale nie mogą być ujemne ani r&oacute;wne zero (koszt nie może być wartością ujemną ani mieć wartość zerową).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Wejściowy raster docelowy lub obiekty</h2></div>
+        <hr/>
+        <div>
+            <p>Dane wejściowe określające miejsca docelowe używane do obliczenia odległości. Warstwa może zawierać dane rastrowe lub obiektowe.
+            </p>
+            <p>Jeśli dane wejściowe są usługą rastrową, składają się one z kom&oacute;rek o prawidłowych wartościach (zero jest wartością prawidłową), a do pozostałych kom&oacute;rek musi być przypisana wartość Brak danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nazwa warstwy dla polilinii wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Wybierz typ określanych ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Określa spos&oacute;b interpretowania wartości i stref w wejściowych danych określających miejsca docelowe przy obliczaniu kosztu ścieżki.
+            </p>
+            <ul>
+                <li>Najlepsza pojedyncza &mdash; dla wszystkich kom&oacute;rek lub lokalizacji w wejściowych danych określających miejsca docelowe jako ścieżka o najniższym koszcie jest wybierana ścieżka od lokalizacji odpowiadającej minimum najmniejszych wartości kosztu ścieżek do lokalizacji źr&oacute;dłowej. Jest to opcja domyślna
+                    
+
+                </li>
+                <li>Do każdej kom&oacute;rki &mdash; dla wszystkich kom&oacute;rek lub lokalizacji o prawidłowych wartościach w wejściowych danych określających miejsca docelowe jest określana ścieżka o najniższym koszcie i jest ona zapisywana w wynikowej usłudze obiektowej. Przy tej opcji każda kom&oacute;rka w wejściowych danych określających miejsca docelowe jest traktowana oddzielnie, a ścieżka o najniższym koszcie jest określana dla każdej kom&oacute;rki początkowej.
+                    
+
+                </li>
+                <li>Do każdej strefy &mdash; dla wszystkich stref w wejściowych danych określających miejsca docelowe jest określana ścieżka o najniższym koszcie i jest ona zapisywana w wynikowej usłudze obiektowej. Przy tej opcji ścieżka o najniższym koszcie dla każdej strefy rozpoczyna się w kom&oacute;rce lub lokalizacji o najniższym koszcie odległości w strefie.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

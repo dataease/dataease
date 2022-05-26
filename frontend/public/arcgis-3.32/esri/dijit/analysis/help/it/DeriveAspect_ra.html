@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Deriva aspetto</h2><p/>
+        <h2><img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" alt="Strumento Deriva aspetto per Portal"></h2>
+        <hr/>
+    <p>Questo strumento crea una mappa dell'aspetto da un'origine dati di elevazione. L'aspetto identifica la direzione in discesa con la massima percentuale di variazione da ciascuna cella ai suoi vicini. L'aspetto pu&ograve; essere considerato come la direzione della pendenza. I valori del raster di output saranno la direzione della bussola dell'Aspect.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dati di input</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di elevazione per il quale verr&agrave; calcolato l'aspetto di ciascuna posizione di cella.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

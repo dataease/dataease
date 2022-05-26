@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pronađi slične lokacije</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Pronađi slične lokacije"></h2>
+        <hr/>
+    <p>Ovisno o kriterijima koje odredite, alat Pronađi slične lokacije mjeri sličnost lokacija u va&scaron;em kandidatskom sloju za pretraživanje s jednom ili vi&scaron;e referentnih lokacija.  Ovaj alat može odgovoriti na pitanja kao &scaron;to su
+        <ul>
+            <li>Koja je od va&scaron;ih trgovina najsličnija va&scaron;im trgovinama koje imaju najbolje rezultate prodaje s obzirom na profile kupaca?
+            </li>
+            <li>Na temelju karakteristika sela koja su najteže pogođena bole&scaron;ću, koja su druga sela pod visokim rizikom?
+            </li>
+        </ul>
+        Kako biste dobili odgovore na ovakva pitanja, navedite referentne lokacije, kandidatske lokacije za pretraživanje i polja koja predstavljaju kriterije za koja želite naći podudaranja.  Prvi sloj unosa trebao bi sadržavati referentne lokacije ili lokacije referentne točke.  Primjerice, to bi mogao biti sloj koji sadrži trgovine s najboljim rezultatima prodaje ili sela koja su najteže pogođena bole&scaron;ću.  Tada odredite sloj koji sadrži kandidatske lokacije za pretraživanje.  To bi mogle biti sve va&scaron;e trgovine ili sva druga sela.  Konačno, identificirajte jedno ili vi&scaron;e polja za mjerenje sličnosti.  Alat Pronađi slične lokacije tada će rangirati sve kandidatske lokacije za pretraživanje prema tome koliko se dobro podudaraju s referentnim lokacijama kroz sva polja koje ste odabrali.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj koji sadrži referentne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj koji sadrži referentne lokacije za podudaranje. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Možete upotrijebiti sve lokacije ili izvršite odabir</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite tipke za odabir kako biste identificirali referentne lokacije, ako je potrebno.  Primjerice, ako sloj unosa sadrži sve lokacije, referentne lokacije, kao i kandidatske lokacije za pretraživanje, morat ćete upotrijebiti jedan od alata za odabir kako biste identificirali referentne lokacije.  Ako stvorite dva zasebna sloja, jedan s referentnim lokacijama i drugi sa svim kandidatskim lokacijama za pretraživanje, ne trebate napraviti odabir. 
+            </p>
+            <p>Ako postoji vi&scaron;e od jedne referentne lokacije, računanjem prosječne vrijednosti iz vrijednosti za svako polje upotrijebljeno za analizu sličnosti stvara se jedna lokacija.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Pretraži slične lokacije u</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidatske lokacije za pretraživanje u ovom sloju rangirat će se od najsličnijih do najmanje sličnih.  Sličnost se temelji na tome koliko se dobro svaka lokacija podudara s referentnom lokacijom kroz polja koje odredite. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Temelji sličnost na</h2></div>
+        <hr/>
+        <div>
+            <p>Polja koja odaberete bit će kriteriji za procjenu sličnosti.  Ako odaberete polje populacije i dohotka, primjerice, kandidatske lokacije za pretraživanje s najnižim (najboljim) rangiranjima bi će one koje imaju slične vrijednosti populacije i dohotka s va&scaron;im referentnim lokacijama. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Pokaži mi</h2></div>
+        <hr/>
+        <div>
+            <p>Možete vidjeti sve kandidatske lokacije za pretraživanje rangirane od najsličnijih do najmanje sličnih ili možete odrediti broj rezultata koje biste željeli vidjeti. 
+                <ul>
+                    <li> <b>Sve lokacije od najsličnije do najmanje slične</b> &ndash; svi geoobjekti u kandidatskom sloju za pretraživanje bit će uključeni u poretku ranga u sloju rezultata
+                    </li>
+                    <li> <b>Broj vraćenih lokacija </b> &ndash; vi utvrđujete koliko bi najsličnijih kandidata trebalo biti uključeno u sloj rezultata. Zadani unos je 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati na kartu.  Ovaj sloj rezultata sadržavat će referentne lokacije i broj rangiranih kandidatskih lokacija za pretraživanje koje ste odredili. Ako naziv sloja rezultata već postoji, od vas će se zatražiti da ga preimenujete.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Területen belüli összegzés</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;s"></h2>
+        <hr/>
+    <p>Ezzel az eszk&ouml;zzel az első bemenő r&eacute;teg ter&uuml;let hat&aacute;rvonalain bel&uuml;li vektoros elemek (&eacute;s vektoros elemek r&eacute;szei) kereshetők.  
+        <ul>
+            <li>V&iacute;zv&aacute;laszt&oacute;kat &eacute;s egy felsz&iacute;nhaszn&aacute;lati hat&aacute;rokat tartalmaz&oacute; r&eacute;teg eset&eacute;n kisz&aacute;m&iacute;thatja a felsz&iacute;nhaszn&aacute;lati t&iacute;pusok nagys&aacute;g&aacute;t mindegyik v&iacute;zgyűjtő ter&uuml;letre. 
+            </li>
+            <li>Egy megye parcell&aacute;it &eacute;s telep&uuml;l&eacute;shat&aacute;rait tartalmaz&oacute; r&eacute;teg eset&eacute;n &ouml;sszes&iacute;theti a telep&uuml;l&eacute;shat&aacute;rokon bel&uuml;li szabad parcell&aacute;k &aacute;tlagos &eacute;rt&eacute;k&eacute;t.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s csak az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen l&aacute;that&oacute; bemenő r&eacute;teget &eacute;s az &ouml;sszes&iacute;tendő r&eacute;teget foglalja mag&aacute;ban.  Ha nincs bejel&ouml;lve, az elemz&eacute;s mag&aacute;ban foglal minden vektoros elemet a bemenő r&eacute;tegen &eacute;s az &ouml;sszes&iacute;tendő r&eacute;tegen egyar&aacute;nt, akkor is, ha k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Terület réteg kiválasztása a határain belül található más vektoros elemek összesítéséhez</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let r&eacute;teg, amelyet a hat&aacute;rain bel&uuml;l tal&aacute;lhat&oacute; vektoros elemek &ouml;sszes&iacute;t&eacute;s&eacute;hez haszn&aacute;lni k&iacute;v&aacute;n. V&aacute;laszthatja az &Ouml;n &aacute;ltal megadott polygon-r&eacute;tegen bel&uuml;li vagy az eszk&ouml;z fut&aacute;sakor l&eacute;trehozott n&eacute;gysz&ouml;g vagy hatsz&ouml;g alak&uacute; t&aacute;rol&oacute;kon bel&uuml;li &ouml;sszegz&eacute;st.   <b>N&eacute;gysz&ouml;g</b> t&aacute;rol&oacute;k l&eacute;trehoz&aacute;sakor a megadott sz&aacute;m &eacute;s egys&eacute;gek a n&eacute;gysz&ouml;g magass&aacute;g&aacute;t &eacute;s hossz&uacute;s&aacute;g&aacute;t hat&aacute;rozz&aacute;k meg. <b>Hatsz&ouml;g</b> eset&eacute;n a megadott sz&aacute;m &eacute;s a m&eacute;rt&eacute;kegys&eacute;gek a p&aacute;rhuzamos oldalak k&ouml;z&ouml;tti t&aacute;vols&aacute;got hat&aacute;rozz&aacute;k meg.
+            </p>
+            <p>A  <b>N&eacute;gysz&ouml;g</b> vagy <b>Hatsz&ouml;g</b> alak&uacute; gyűjtőkkel v&eacute;gzett elemz&eacute;shez vet&uuml;leti koordin&aacute;ta-rendszer sz&uuml;ks&eacute;ges. A <b>Feldolgoz&aacute;si koordin&aacute;ta-rendszert</b> az <b>Elemz&eacute;si k&ouml;rnyezetekben</b> &aacute;ll&iacute;thatja be. Ha a feldolgoz&aacute;si koordin&aacute;ta-rendszer nem vet&uuml;leti koordin&aacute;ta-rendszerre van &aacute;ll&iacute;tva, az eszk&ouml;z ennek be&aacute;ll&iacute;t&aacute;s&aacute;t k&eacute;ri az <b>elemz&eacute;s futtat&aacute;sakor</b> .
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Összesítendő réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z a r&eacute;tegnek azokat a vektoros elemeit &ouml;sszes&iacute;ti, amelyek a fent megadott bemenő r&eacute;teg vagy gyűjtők vektoros elemeinek hat&aacute;rain bel&uuml;l tal&aacute;lhat&oacute;k. 
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Válassza ki a távolságot a gyűjtők létrehozásához és az összevonáshoz</h2></div>
+        <hr/>
+        <div>
+            <p>A gyűjtők l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt t&aacute;vols&aacute;g.  
+            </p>
+            <p>Be kell &aacute;ll&iacute;tani a  <b>Gyűjtő m&eacute;ret&eacute;t</b> gyűjtő eset&eacute;n, vagy a <b>Ter&uuml;let r&eacute;teget</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Összevonás időszeletek használatával (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Ha az idő enged&eacute;lyezve van a bemeneti pontr&eacute;tegen, &eacute;s azonnali t&iacute;pus&uacute;, akkor időbeli l&eacute;ptet&eacute;st haszn&aacute;lva is elemezhet.  Idő haszn&aacute;latakor h&aacute;rom param&eacute;ter &aacute;ll&iacute;that&oacute; be:
+                <ul>
+                    <li> <b>Időbeli l&eacute;p&eacute;s intervalluma</b>
+                    </li>
+                    <li> <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b>
+                    </li>
+                    <li> <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul időben egy &eacute;vet le&iacute;r&oacute; adatok &aacute;llnak rendelkez&eacute;sre, &eacute;s ezt heti l&eacute;p&eacute;seket haszn&aacute;lva szeretn&eacute; elemezni, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 h&eacute;tre</code>. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul időben egy &eacute;vet le&iacute;r&oacute; adatok &aacute;llnak rendelkez&eacute;sre, &eacute;s ezt a h&oacute;nap első het&eacute;t haszn&aacute;lva szeretn&eacute; elemezni, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 h&eacute;tre</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&oacute;napra</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>Janu&aacute;r 1., 12:00 &oacute;r&aacute;ra</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Időintervallum, amelybe az összevonás történik</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt időintervallum. Az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;ter haszn&aacute;lhat&oacute; &ouml;nmag&aacute;ban, illetve <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> vagy <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;terrel egy&uuml;tt.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Időbeli lépés, amelybe az összevonás történik</h2></div>
+        <hr/>
+        <div>
+            <p> Egy időbeli l&eacute;p&eacute;s kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt l&eacute;p&eacute;s. <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;ter haszn&aacute;lhat&oacute; &ouml;nmag&aacute;ban, az <b>Időbeli l&eacute;p&eacute;s intervalluma</b>, a <b>Referenciaidő</b> param&eacute;terrel, illetve az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;terek egy&uuml;ttes&eacute;vel.
+            </p>
+            <p> Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Az időszeletek igazításához használt referenciaidő</h2></div>
+        <hr/>
+        <div>
+            <p>Az időszeletek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt d&aacute;tum &eacute;s időpont. Az időbeli l&eacute;ptet&eacute;s enn&eacute;l az időpontn&aacute;l kezdődik, &eacute;s visszafel&eacute; folytat&oacute;dik. Ha nincs kiv&aacute;lasztva referenciaidő, az időbeli l&eacute;ptet&eacute;s 1970. janu&aacute;r 1-hez illeszkedik. 
+            </p>
+            <p> Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statisztika hozzáadása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p> Statisztik&aacute;kat sz&aacute;m&iacute;that &ouml;sszes&iacute;tett vektoros elemeken. Numerikus mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null &eacute;rt&eacute;kek darabsz&aacute;m&aacute;t sz&aacute;m&iacute;tja ki. Numerikus mezők&ouml;n vagy karakterl&aacute;ncokon haszn&aacute;lhat&oacute;. A [null, 0, 2] darabsz&aacute;ma 2.
+                    </li>
+                    <li>&Ouml;sszeg &ndash; egy mezőben l&eacute;vő numerikus &eacute;rt&eacute;kek &ouml;sszege. A [null, null, 3] &ouml;sszege 3.
+                    </li>
+                    <li>&Aacute;tlag &ndash; a numerikus &eacute;rt&eacute;kek &aacute;tlaga. A [0, 2, null] &aacute;tlaga 1.
+                    </li>
+                    <li>Min &ndash; egy numerikus mező legkisebb &eacute;rt&eacute;ke. A [0, 2, null] minimuma 0. 
+                    </li>
+                    <li>Max &ndash; egy numerikus mező legnagyobb &eacute;rt&eacute;ke. A [0, 2, null] maximuma 2.
+                    </li>
+                    <li>Terjedelem &ndash; egy numerikus mező terjedelme. Ennek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz az eszk&ouml;z a legkisebb &eacute;rt&eacute;keket vonja ki a legnagyobb &eacute;rt&eacute;kből. A [0, null, 1] terjedelme 1. A [null, 4] terjedelme 0.
+                    </li>
+                    <li>Variancia &ndash; egy numerikus mező varianci&aacute;ja egy k&ouml;vet&eacute;sben. Az [1] varianci&aacute;ja null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] varianci&aacute;ja 0,25.
+                    </li>
+                    <li>Sz&oacute;r&aacute;s &ndash; egy numerikus mező sz&oacute;r&aacute;sa. Az [1] sz&oacute;r&aacute;sa null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] sz&oacute;r&aacute;sa 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Karakterl&aacute;nc t&iacute;pus&uacute; mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null karakterl&aacute;ncok darabsz&aacute;ma.
+                    </li>
+                    <li>B&aacute;rmelyik &ndash; ez a statisztika a megadott mezőben l&eacute;vő karakterl&aacute;nc egy v&eacute;letlenszerű mint&aacute;ja.
+                    </li>
+                </ul>
+                Mindegyik statisztika sz&aacute;m&iacute;t&aacute;sa nem null &eacute;rt&eacute;keken t&ouml;rt&eacute;nik. Az eredm&eacute;ny&uuml;l kapott r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j mezőt fog tartalmazni. Attrib&uacute;tum &eacute;s statisztika kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztika hozz&aacute;adhat&oacute;. 
+            </p>
+            <p>Ezek mellett a statisztik&aacute;k mellett az eszk&ouml;z ar&aacute;nystatisztik&aacute;kat is sz&aacute;mol az &ouml;sszes numerikus mezőn:
+                <ul>
+                    <li>Sz&aacute;m &ndash; az egyes mezők darabsz&aacute;ma szorozva az &ouml;sszefoglal&oacute; r&eacute;teg polygonokon bel&uuml;li ar&aacute;ny&aacute;val. 
+                    </li>
+                    <li>&Ouml;sszeg &ndash; az egyes mezőkben l&eacute;vő s&uacute;lyozott &eacute;rt&eacute;kek &ouml;sszege. Az alkalmazott s&uacute;ly az &ouml;sszefoglal&oacute; r&eacute;teg ar&aacute;nya a polygon-okon bel&uuml;l.
+                    </li>
+                    <li>&Aacute;tlag &ndash; az egyes mezőkben l&eacute;vő &eacute;rt&eacute;kek s&uacute;lyozott &aacute;tlaga. Az alkalmazott s&uacute;ly az &ouml;sszefoglal&oacute; r&eacute;teg ar&aacute;nya a polygon-okon bel&uuml;l.
+                    </li>
+                    <li>Min &ndash; az egyes mezőkben l&eacute;vő s&uacute;lyozott &eacute;rt&eacute;kek minimuma. Az alkalmazott s&uacute;ly az &ouml;sszefoglal&oacute; r&eacute;teg ar&aacute;nya a polygon-okon bel&uuml;l.
+                    </li>
+                    <li>Max &ndash; az egyes mezőkben l&eacute;vő s&uacute;lyozott &eacute;rt&eacute;kek maximuma. Az alkalmazott s&uacute;ly az &ouml;sszefoglal&oacute; r&eacute;teg ar&aacute;nya a polygon-okon bel&uuml;l.
+                    </li>
+                    <li>Terjedelem &ndash; a maxim&aacute;lis &eacute;s minim&aacute;lis s&uacute;lyozott &eacute;rt&eacute;kek k&uuml;l&ouml;nbs&eacute;ge.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Az &ouml;sszes&iacute;teni k&iacute;v&aacute;nt vektoros elemek t&iacute;pus&aacute;t&oacute;l f&uuml;ggően az eszk&ouml;z a k&ouml;zeli pontok teljes sz&aacute;m&aacute;t, a vonalak teljes hossz&aacute;t, vagy a teljes ter&uuml;letet sz&aacute;m&iacute;tja ki.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Csoportosítás alapjául szolgáló mező kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Ez az vektoros elemekkel v&eacute;gzett  <b>&Ouml;sszes&iacute;t&eacute;s</b> egyik attrib&uacute;tuma, amelynek haszn&aacute;lat&aacute;val k&uuml;l&ouml;n statisztikai sz&aacute;m&iacute;t&aacute;sokat v&eacute;gezhet az egyes egyedi attrib&uacute;tum&eacute;rt&eacute;kekkel. Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy az első bemenő r&eacute;teg telep&uuml;l&eacute;shat&aacute;rokat tartalmaz, &eacute;s az &ouml;sszes&iacute;tendő vektoros elemek parcell&aacute;k.  A parcell&aacute;k egyik attrib&uacute;tuma <i>Status</i>, amely k&eacute;t &eacute;rt&eacute;ket tartalmaz: &Uuml;RES &eacute;s FOGLALT. A telep&uuml;l&eacute;shat&aacute;rokon bel&uuml;li &uuml;res &eacute;s elfoglalt parcell&aacute;k teljes ter&uuml;let&eacute;nek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz a <i>Status</i> csoportos&iacute;t&aacute;si attrib&uacute;tumk&eacute;nt haszn&aacute;lhat&oacute;. Az egyes csoportok statisztik&aacute;ja, valamint az egyes ter&uuml;letek hat&aacute;rvonalain bel&uuml;li vektoros elemek sz&aacute;ma megjelenik az eredm&eacute;ny r&eacute;teg felugr&oacute; ablak&aacute;ban.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Kisebbség, többség hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a jel&ouml;lőn&eacute;gyzet be van jel&ouml;lve, ha kiv&aacute;laszt egy mezőt a csoportos&iacute;t&aacute;s alapj&aacute;ul.    Ha szeretn&eacute; kider&iacute;teni, hogy az egyes csoportokon bel&uuml;l melyik attrib&uacute;tum&eacute;rt&eacute;kek vannak kisebbs&eacute;gben (a legkev&eacute;sb&eacute; meghat&aacute;roz&oacute;k) vagy t&ouml;bbs&eacute;gben (a legink&aacute;bb meghat&aacute;roz&oacute;k) az első bemenő r&eacute;teg egyes hat&aacute;rvonalain bel&uuml;l, akkor jel&ouml;lje be a  <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet.   A <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzet bejel&ouml;l&eacute;sekor k&eacute;t &uacute;j mező ad&oacute;dik hozz&aacute; az eredm&eacute;ny r&eacute;teghez.   Ha a <b>Sz&aacute;zal&eacute;k&eacute;rt&eacute;kek hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet is bejel&ouml;li, akkor az eredm&eacute;ny r&eacute;teg k&eacute;t tov&aacute;bbi mezővel eg&eacute;sz&uuml;l ki, amelyek az egyes csoportok kisebbs&eacute;gi &eacute;s t&ouml;bbs&eacute;gi attrib&uacute;tum&eacute;rt&eacute;keinek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t tartalmazz&aacute;k.
+            </p>
+            <ul>
+                <li>Pontok &ouml;sszes&iacute;t&eacute;sekor az eszk&ouml;z kisz&aacute;m&iacute;tja a kisebbs&eacute;gben &eacute;s a t&ouml;bbs&eacute;gben l&eacute;vő &eacute;rt&eacute;keket a bemenő ter&uuml;let r&eacute;teg egyes k&ouml;r&uuml;lhat&aacute;rolt ter&uuml;letein bel&uuml;li pontok sz&aacute;ma alapj&aacute;n.  
+                </li>
+                <li>Vonalak &ouml;sszes&iacute;t&eacute;sekor az eszk&ouml;z kisz&aacute;m&iacute;tja a kisebbs&eacute;gben &eacute;s a t&ouml;bbs&eacute;gben l&eacute;vő &eacute;rt&eacute;keket a bemenő ter&uuml;let r&eacute;teg egyes k&ouml;r&uuml;lhat&aacute;rolt ter&uuml;letein bel&uuml;li vonalak hossza alapj&aacute;n.  
+                </li>
+                <li>Ter&uuml;letek az eszk&ouml;z kisz&aacute;m&iacute;tja a kisebbs&eacute;gben &eacute;s a t&ouml;bbs&eacute;gben l&eacute;vő &eacute;rt&eacute;keket a bemenő ter&uuml;let r&eacute;teg egyes k&ouml;r&uuml;lhat&aacute;rolt ter&uuml;letein bel&uuml;li ter&uuml;letek alapj&aacute;n.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Százalékértékek hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a jel&ouml;lőn&eacute;gyzet be van jel&ouml;lve, ha kiv&aacute;laszt egy mezőt a csoportos&iacute;t&aacute;s alapj&aacute;ul.    V&aacute;lassza ki a  <b>Sz&aacute;zal&eacute;k&eacute;rt&eacute;kek hozz&aacute;ad&aacute;sa</b> lehetős&eacute;get, ha szeretn&eacute; meghat&aacute;rozni az egyes attrib&uacute;tum&eacute;rt&eacute;kek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t az egyes csoportokon bel&uuml;l.  Az eredm&eacute;nyt&aacute;bl&aacute;zathoz hozz&aacute;ad&oacute;dik egy &uacute;j mező, amely tartalmazza az egyes attrib&uacute;tum&eacute;rt&eacute;kek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t az egyes csoportokon bel&uuml;l.   Ha a <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet is bejel&ouml;li, akkor az eredm&eacute;ny r&eacute;teg k&eacute;t tov&aacute;bbi mezővel eg&eacute;sz&uuml;l ki, amelyek az egyes csoportok kisebbs&eacute;gi &eacute;s t&ouml;bbs&eacute;gi attrib&uacute;tum&eacute;rt&eacute;keinek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t tartalmazz&aacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Adattár kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A geoanalitikai eredm&eacute;nyek ment&eacute;se egy adatt&aacute;rban t&ouml;rt&eacute;nik, &eacute;s a(z)  Portal for ArcGIS vektoros r&eacute;tegeik&eacute;nt szerepelnek. Az eredm&eacute;nyeket t&ouml;bbnyire a t&eacute;rbeli-időbeli adatt&aacute;rban aj&aacute;nlott t&aacute;rolni, &eacute;s az alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s is ez. Egyes esetekben j&oacute; v&aacute;laszt&aacute;s lehet az eredm&eacute;nyek ment&eacute;se a rel&aacute;ci&oacute;s adatt&aacute;rban. Az al&aacute;bbi &eacute;rvek sz&oacute;lnak az eredm&eacute;nyek rel&aacute;ci&oacute;s adatt&aacute;rban t&ouml;rt&eacute;nő t&aacute;rol&aacute;sa mellett: 
+                <ul>
+                    <li>Az eredm&eacute;nyek port&aacute;lok k&ouml;z&ouml;tti egy&uuml;ttműk&ouml;d&eacute;sben haszn&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Enged&eacute;lyezheti az eredm&eacute;nyekkel val&oacute; szinkroniz&aacute;l&aacute;si lehetős&eacute;geket
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nem aj&aacute;nlott a rel&aacute;ci&oacute;s adatt&aacute;r haszn&aacute;lata, ha a geoanalitikai eredm&eacute;nyek mennyis&eacute;g&eacute;nek n&ouml;veked&eacute;se v&aacute;rhat&oacute;, &eacute;s ki kell haszn&aacute;lni a t&eacute;rbeli-időbeli big data-adatt&aacute;r k&eacute;pess&eacute;geit a nagy adatmennyis&eacute;g kezel&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

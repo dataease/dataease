@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Forest-Based Classification and Regression</h2><p/>
+        <h2><img src="./images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Forest-based Classification and Regression workflow diagram"></h2>
+        <hr/>
+    <p>Creates models and generates predictions using an adaptation of Leo Breiman's random forest algorithm, which is a supervised machine learning method. Predictions can be performed for both categorical variables (classification) and continuous variables (regression). Explanatory variables are fields in the attribute table of the training features. The tool can be run to generate a model to assess performance, or generate a model and predict results to another datasets.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysis Type</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the operation mode of the tool. The tool can be run to train a model to only assess performance, or train a model and  predict to features. Prediction types are as follows:
+                <ul>
+                    <li> <b>Train a model to assess model performance</b>&mdash;A model will be trained, and fit to the input data. Use this option to assess the accuracy of your model before generating predictions on a new dataset. The output of this option will be a feature service of your fitted training data, model diagnostics, and an optional table of variable importance.
+                    </li>
+                    <li> <b>Train a model and predict values</b>&mdash; Predictions or classifications will be generated for features. Explanatory variables must be provided for both the training features and the features to be predicted. The output of this option will be a feature service of your predicted values, model diagnostics, and an optional table of variable importance.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Train a model to assess model performance</h2></div>
+        <hr/>
+        <div>
+            <p>Use this mode if you want to fit a model, and investigate the fit.
+            </p>
+            <p>With this choice model will be trained using an input layer. Use this option to assess the accuracy of your model before generating predictions on a new dataset. This option will output model diagnostics in the messages window and apply the model to your training data.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Train a model and predict values</h2></div>
+        <hr/>
+        <div>
+            <p>Use this mode if you want to fit a model, and apply the model to the dataset to generate predictions.
+            </p>
+            <p>Predictions or classifications will be generated for features. The output of this option will be a feature service, model diagnostics, and an optional table of variable importance.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Choose training layer</h2></div>
+        <hr/>
+        <div>
+            <p>The feature layer containing the  variable to predict and the fields that will be used to generate the prediction.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Choose a layer to predict values for</h2></div>
+        <hr/>
+        <div>
+            <p>A feature layer representing locations where predictions will be made. This feature layer must also contain any explanatory variables provided as fields that correspond to those used from the training features.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Choose the field to predict</h2></div>
+        <hr/>
+        <div>
+            <p>The field from the training features containing the values to be used to
+train the model. This field contains known (training) values of the
+variable that will be used to predict at unknown
+locations. If values are categorical (for example, Maple, Pine, Oak) select the  <b>Categorical</b> check box.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Choose one or more explanatory variables</h2></div>
+        <hr/>
+        <div>
+            <p>One or more fields representing the explanatory
+variables (fields) that help predict the value or category of the variable to predict.  Use the  categorical checkbox for any variables that represent
+classes or categories (such as landcover or presence or absence).
+Specify the variable as  true  for any that represent classes or categories
+such as landcover or presence or absence and  false  if the variable is continuous.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Number of trees</h2></div>
+        <hr/>
+        <div>
+            <p>The number of trees to create in the model. More trees will generally result in more accurate model prediction, but the model will take longer to calculate. The default number of trees is 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimum leaf size</h2></div>
+        <hr/>
+        <div>
+            <p>The minimum number of observations required to keep a leaf (that is the terminal node on a tree without further splits). The default minimum for regression is 5 and the default for classification is 1. For very large data, increasing these numbers will decrease the run time of the tool.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maximum tree depth</h2></div>
+        <hr/>
+        <div>
+            <p>The maximum number of splits that will be made down a tree. Using a large maximum depth, more splits will be created, which may increase the chances of overfitting the model. The default is data driven and depends on the number of trees created and the number of variables included.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Data available per tree (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the percentage of the features in the training layer used for each decision
+tree. The default is 100 percent of the data. Samples for each tree
+are taken randomly from two-thirds of the data specified.
+            </p>
+            <p>Each
+decision tree in the forest is created using a random sample or
+subset (approximately two-thirds) of the training data available.
+Using a lower percentage of the input data for each decision tree
+increases the speed of the tool for very large datasets.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Number of randomly sampled variables</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the number of explanatory variables used to create each
+decision tree.
+            </p>
+            <p>Each
+of the decision trees in the forest is created using a random
+subset of the explanatory variables specified. Increasing the
+number of variables used in each decision tree will increase the
+chances of overfitting your model particularly if there is one or a
+couple dominant variables. A common practice is to use the square
+root of the total number of explanatory variables if your  variable to predict is numeric or divide
+the total number of explanatory variables by 3 if  the variable to predict is categorical.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Choose how explanatory fields are matched</h2></div>
+        <hr/>
+        <div>
+            <p>How the corresponding variables in the training layer will match the variables in the prediction layer. Only the variables used in training will be included in the table.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Number of runs for validation</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the percentage (between 0 percent
+and 50 percent) of  features in the training layer to reserve as the test dataset for validation.
+The model will be trained without this random subset of data, and
+the observed values for those features will be compared to the
+predicted value. The default is 10 percent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>The results returned will depend on the type of analysis. If you are training to assess model fit, results  will contain a layer of training data fit to the model and result info assessing the model fit. If you are training and predicting, results will contain a layer of the training data fit to the model, a layer of predicted results, and result info assessing the model fit.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

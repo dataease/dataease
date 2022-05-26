@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extrair Raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Ferramenta Extrair Raster para Portal"></h2>
+        <hr/>
+    <p>Esta ferramenta pode recortar um raster, transformando-o num limite, quer numa &aacute;rea retangular ou num formato definido interativamente por si no ecr&atilde;. Pode recortar a extens&atilde;o da &aacute;rea atualmente em exibi&ccedil;&atilde;o no mapa, ou uma &aacute;rea de estudo definida por um pol&iacute;gono.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar dados de entrada para extrair</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de entrada a recortar.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Especificar geometria de recorte</h2></div>
+        <hr/>
+        <div>
+            <p>Selecione o tipo de extens&atilde;o a utilizar ao recortar a geometria da camada.
+
+                <ul>
+                    <li>Utilizar extens&atilde;o atual&mdash;A atual extens&atilde;o do mapa ser&aacute; utilizada para recortar a camada resultante. Isto &eacute; por omiss&atilde;o.
+                        
+
+                    </li>
+                    <li>Selecionar &aacute;rea de estudo&mdash;Permite-lhe escolher se o resultado exibir&aacute; a &aacute;rea no interior da extens&atilde;o da geometria ou a &aacute;rea no exterior da extens&atilde;o da geometria. Caso selecione a op&ccedil;&atilde;o  <b>Dados no interior da geometria</b> , as imagens que se encontram no exterior da extens&atilde;o ser&atilde;o removidas. Caso selecione a op&ccedil;&atilde;o <b>Dados no exterior da geometria</b> , as imagens que se encontram no interior da extens&atilde;o ser&atilde;o removidas. Pode ainda definir uma geometria de recorte, utilizando a ferramenta desenhar.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

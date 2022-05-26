@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ukloni granice</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Ukloni granice"></h2>
+        <hr/>
+    <p>Poligoni koji se preklapaju ili koji dijele zajedničku granicu ili vrijednost atributa spajaju se da bi oblikovali jedinstveni poligon.
+    </p>
+    <p>Možete upravljati koje će se granice spojiti tako da odredite polje. Na primjer, ako imate sloj općina i ako svaka općina ima atribut  <pre>State_Name</pre>, možete ukloniti granice upotrebom atributa <pre>State_Name</pre>. Županije će se spojiti ako imaju istu vrijednost <pre>State_Name</pre>. Rezultat je sloj državnih granica.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite poligonalni sloj čije će se granice ukloniti</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži poligonalne geoobjekte koji će se ukloniti. 
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Odaberite metodu uklanjanja</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje metodu koja se upotrebljava za uklanjanje polja.
+            </p>
+            <p>Možete odabrati jednu ili dvije metode za spajanje poligonalnih geoobjekata:
+                <ul>
+                    <li> <b>Poligoni koji se preklapaju ili su jedno pored drugog</b> &ndash; dva ili vi&scaron;e poligona čije se granice preklapaju spojit će se u jedan poligon. Osim toga, poligoni koji su jedan pored drugoga (tj. dijele zajedničku granicu) spojit će se u jedan poligon.
+                    </li>
+                    <li> <b>Poligoni s istim vrijednostima polja</b> &ndash; dva ili vi&scaron;e poligona spojit će se u jedan poligon ako imaju istu vrijednost polja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Stvori geoobjekte od više dijelova</h2></div>
+        <hr/>
+        <div>
+            <p>Značajka Vi&scaron;e dijelova predstavlja mjesto ili objekt koji ima vi&scaron;e od jednog dijela, ali su definirani kao jedan geoobjekt jer referencira jedan skup atributa. U sloju država, primjerice, Havaji se mogu smatrati geoobjektom od vi&scaron;e dijelova jer se pojedinačni geometrijski dijelovi smatraju jednom državom.
+            </p>
+            <p> <b>Značajka Stvori geoobjekte od vi&scaron;e dijelova</b> nudi dvije opcije:
+                <ul>
+                    <li>Istinito (označeno) &ndash; izlazna usluga može sadržavati geoobjekte od vi&scaron;e dijelova.
+                    </li>
+                    <li>Neistinito (odznačeno) &ndash; izlazna usluga sadržavat će samo geoobjekte od jednog dijela, stvorit će se pojedinačni geoobjekti za svaki dio. To je zadano.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistike (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Kada se poligoni spoje, možete sažeti njihove vrijednosti atributa značajnom statistikom. Na primjer, ako razgrađujete granicu između županija na temelju  <pre>State_Name</pre>, a svaka županija ima polje <i>Population</i>, možete izračunati ukupni zbroj za polje <pre>Population</pre> države.
+            </p>
+            <p> Možete izračunati statistiku za geoobjekte koji su sažeti. Možete izračunati sljedeće u brojčanim poljima:
+                <ul>
+                    <li>Ukupni broj &ndash; izračunava broj vrijednosti koje imaju neku vrijednost. Može se upotrebljavati na brojčanim poljima ili u tekstu. Ukupni broj od [nema vrijednosti, 0, 2] je 2.
+                    </li>
+                    <li>Zbroj &ndash; zbroj brojčanih vrijednosti u polju. Zbroj od [nema vrijednosti, nema vrijednosti, 3] je 3.
+                    </li>
+                    <li>Srednja vrijednost &ndash; srednja vrijednost brojčanih vrijednosti. Srednja vrijednost od [0, 2, nema vrijednosti] je 1.
+                    </li>
+                    <li>Min. &ndash; minimalna vrijednost brojčanog polja. Minimum od [0, 2, nema vrijednosti] je 0. 
+                    </li>
+                    <li>Maks. &ndash; maksimalna vrijednost brojčanog polja. Maksimalna vrijednost od [0, 2, nema vrijednosti] je 2.
+                    </li>
+                    <li>Raspon &ndash; raspon brojčanog polja. Izračunava se oduzimanjem minimalnih vrijednosti od maksimalnih vrijednosti. Raspon od [0, nema vrijednosti, 1] je 1. Raspon od [nema vrijednosti, 4] je 0.
+                    </li>
+                    <li>Varijanca &ndash; varijanca brojčanog polja u tragu. Varijanca od [1] nema vrijednosti. Varijanca od [nema vrijednosti, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija &ndash; standardna devijacija brojčanog polja. Standardna devijacija od [1] nema vrijednosti. Standardna devijacija od [nema vrijednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete izračunati sljedeće u poljima teksta:
+                <ul>
+                    <li>Ukupni broj &ndash; broj vrijednosti koje imaju neku vrijednost.
+                    </li>
+                    <li>Bilo koje &ndash; ova je statistika nasumični uzorak vrijednosti teksta u određenom polju.
+                    </li>
+                </ul>
+                Sve se statistike računaju za vrijednosti koje nisu nula. Sloj rezultata sadržavat će novo polje za svaki izračun statistike. Može se dodati bilo koliko statistika odabirom atributa i statistike. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-br/BuildMultiVariableGrid",{binsLabel:"Escolha o tipo de caixas que ser\u00e1 utilizado para construir a grade de m\u00faltiplas vari\u00e1veis",layersAttrLabel:"Escolha vari\u00e1veis e camadas de entrada que voc\u00ea gostaria de incluir na grade",itemDescription:"Camada de fei\u00e7\u00e3o gerada a partir da execu\u00e7\u00e3o de Construir Grade de M\u00faltiplas Vari\u00e1veis.",itemTags:"Resultado da An\u00e1lise, Construir Grade de M\u00faltiplas Vari\u00e1veis",
+itemSnippet:"Camada de fei\u00e7\u00e3o gerada de Construir Grade de M\u00faltiplas Vari\u00e1veis.",addVariables:"Adicionar Vari\u00e1veis"});

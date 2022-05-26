@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Converteix una entitat a ràster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Eina Converteix una entitat a r&agrave;ster"></h2>
+        <hr/>
+    <p>Aquesta eina converteix entitats en un dataset r&agrave;ster.
+    </p>
+    <p>Qualsevol classe d'entitat que contingui entitats de punts, l&iacute;nies o pol&iacute;gons es pot convertir en un dataset r&agrave;ster.
+    </p>
+    <p>El centre de la cel&middot;la s'utilitza per decidir el valor del p&iacute;xel de r&agrave;ster de sortida.
+    </p>
+    <p>El tipus de camp d'entrada determina el tipus de r&agrave;ster de sortida. Si el camp &eacute;s un enter, al r&agrave;ster de sortida ser&agrave; un enter; si &eacute;s un punt flotant, la sortida ser&agrave; un punt flotant.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa d'entitats per convertir</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'entitats d'entrada que es convertir&agrave; en un dataset r&agrave;ster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Trieu un camp</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el camp que s'utilitzar&agrave; per assignar valors al r&agrave;ster de sortida.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Mida de la cel·la de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Mida i unitat de la cel&middot;la dels r&agrave;sters de sortida.
+            </p>
+            <p>Les unitats disponibles s&oacute;n milles, peus, quil&ograve;metres i metres. El valor per defecte &eacute;s Peus.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

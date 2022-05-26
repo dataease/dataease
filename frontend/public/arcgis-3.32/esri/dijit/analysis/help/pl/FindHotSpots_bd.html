@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Znajdź lokalizacje hot spot</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Znajdź lokalizacje hot spot"></h2>
+        <hr/>
+    <p>Narzędzie Znajdź lokalizacje hot spot ustala, czy w&nbsp;relacjach przestrzennych danych użytkownika istnieją statystycznie istotne klastry. 
+        <ul>
+            <li>Czy Twoje punkty (reprezentujące przestępstwa, drzewa lub wypadki drogowe) rzeczywiście są zgrupowane? Masz absolutną pewność?
+            </li>
+            <li>Czy naprawdę udało Ci się ustalić, jakie są statystycznie istotne lokalizacje hot spot czy może Twoja mapa przedstawiałaby zupełnie inne zależności, gdyby zmienione zostały użyte symbole?
+            </li>
+        </ul>
+        Narzędzie Znajdź lokalizacje hot spot pomoże Ci w&nbsp;uzyskaniu rzetelnej odpowiedzi na te pytania.
+    </p>
+    <p>Nawet losowo wybrane dane przestrzenne można w&nbsp;większym lub mniejszym stopniu pogrupować. Dodatkowo ludzki m&oacute;zg oraz wzrok charakteryzuje naturalna tendencja do wyszukiwania zależności, nawet jeśli te nie istnieją. W&nbsp;konsekwencji trudno jest ocenić, czy zależności pojawiające się w&nbsp;Twoich danych są wynikiem rzeczywistych proces&oacute;w przestrzennych czy może losowym przypadkiem. Właśnie dlatego badacze oraz analitycy korzystają z&nbsp;metod statystycznych, takich jak Znajdź lokalizacje hot spot (Getis-Ord Gi*) w&nbsp;celu ilościowego określania relacji przestrzennych. Odnalezienie statystycznie istotnych klastr&oacute;w w&nbsp;danych pozwala uzyskać wartościowe informacje. Dzięki wiedzy o tym, gdzie i&nbsp;kiedy pojawiają się klastry, można lepiej poznać procesy sprzyjające powstawaniu widocznych zależności. W przypadku zadań polegających na przykład na opracowaniu skutecznych strategii zapobiegania, rozlokowaniu ograniczonych sił policyjnych, wdrożeniu sąsiedzkich program&oacute;w przeciwdziałania przestępczości, podjęciu decyzji o&nbsp;rozpoczęciu dogłębnego śledztwa kryminalnego czy identyfikacji potencjalnych podejrzanych informacja o&nbsp;tym, że do kradzieży z&nbsp;włamaniem na terenach mieszkalnych regularnie znacznie częściej dochodzi w&nbsp;określonych dzielnicach, nabiera kluczowego znaczenia.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Wybierz warstwę, dla której zostaną wyznaczone lokalizacje hot spot</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, z kt&oacute;rej zostaną wyznaczone lokalizacje hot i cold spot.
+            </p>
+            <p>Podczas wykonywania tej analizy używane są kosze i wymagany jest układ wsp&oacute;łrzędnych odwzorowanych.  <b>Układ wsp&oacute;łrzędnych przetwarzania</b> można skonfigurować w oknie <b>Środowiska analizy</b>. Jeśli układ wsp&oacute;łrzędnych przetwarzania nie zostanie skonfigurowany jako układ wsp&oacute;łrzędnych odwzorowanych, podczas <b>uruchamiania analizy</b> zostanie wyświetlony monit informujący o konieczności wykonania tej czynności.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Znajdź klastry o wysokich i niskich wartościach</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Analiza dostarcza odpowiedzi na pytanie: gdzie są zgrupowane przestrzennie wysokie i&nbsp;niskie wartości?
+            </p>
+            <p>Jeśli dane są przedstawione w postaci punkt&oacute;w i wybrane jest narzędzie  <b>Liczba punkt&oacute;w</b>, narzędzie wykona ocenę przestrzennego rozmieszczenia obiekt&oacute;w punktowych w&nbsp;celu uzyskania odpowiedzi na pytanie: Gdzie punkty te uległy nagłemu zagęszczeniu lub rozproszeniu?
+            </p>
+            <p>Jeśli zostanie wybrane pole, to narzędzie wykona ocenę przestrzennego rozmieszczenia wartości powiązanych z każdym obiektem w&nbsp;celu uzyskania odpowiedzi na pytanie: gdzie są zgrupowane wysokie i&nbsp;niskie wartości?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Wybierz wielkość kosza dla agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Odległość używana do generowania koszy kwadratowych, kt&oacute;re będą używane do analizowania punkt&oacute;w wejściowych.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Znajdź lokalizacje hot spot z użyciem etapów czasowych (opcjonalne)</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli dla warstwy punktowej włączono czas (typu Moment), można przeprowadzić analizę przy użyciu etap&oacute;w czasowych.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Przedział etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p>Interwał czasu używany do tworzenia etap&oacute;w czasowych. Czas można wyr&oacute;wnać w taki spos&oacute;b, aby odpowiadał czasowi rozpoczęcia i zakończenia danych wejściowych lub podanemu czasowi referencyjnemu.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Przedział etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p>Interwał czasu używany do tworzenia etap&oacute;w czasowych. Czas można wyr&oacute;wnać w taki spos&oacute;b, aby odpowiadał czasowi rozpoczęcia i zakończenia danych wejściowych lub podanemu czasowi referencyjnemu.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Wybierz sposób wyrównania etapów czasowych</h2></div>
+        <hr/>
+        <div>
+            <p>Jak wyr&oacute;wnywane są etapy czasowe. Istnieją trzy sposoby wyr&oacute;wnywania etap&oacute;w czasowych:
+                <ul>
+                    <li> <b>Czas rozpoczęcia</b> &mdash; etapy czasowe są wyr&oacute;wnywane względem pierwszego obiektu w czasie.
+                    </li>
+                    <li> <b>Czas zakończenia</b> &mdash; etapy czasowe są wyr&oacute;wnywane względem ostatniego obiektu w czasie.
+                    </li>
+                    <li> <b>Czas referencyjny</b> &mdash; etapy czasowe są wyr&oacute;wnywane względem podanego czasu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Czas referencyjny użyty do wyrównania etapów czasowych</h2></div>
+        <hr/>
+        <div>
+            <p>Data i czas używane do wyr&oacute;wnania etap&oacute;w czasowych.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Wybierz wielkość sąsiedztwa na potrzeby obliczeń lokalizacji hot spot</h2></div>
+        <hr/>
+        <div>
+            <p>Odległość służąca do ustalania sąsiedztwa używanego podczas obliczeń dotyczących lokalizacji hot spot. Sąsiedztwo powinno być większe niż wielkość kosza, aby zapewnić, że każdy kosz ma co najmniej jeden kosz sąsiadujący. Każdy kosz jest analizowany i por&oacute;wnywany z sąsiednimi koszami.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Odniesienie przestrzenne (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to parametr tymczasowy używany w wersji wstępnej do ustawiania odniesienia przestrzennego przetwarzania. Wiele narzędzi do obsługi dużych zbior&oacute;w danych wymaga użycia układu wsp&oacute;łrzędnych odwzorowanych jako odniesienia przestrzennego przetwarzania. Domyślnie narzędzie użyje wejściowego układu wsp&oacute;łrzędnych, ale operacja nie powiedzie się, jeśli będzie to układ wsp&oacute;łrzędnych geograficznych. Aby ustawić układ wsp&oacute;łrzędnych odwzorowanych, wprowadź wartość WKID. Na przykład  <b>Web Mercator</b> zostanie wprowadzony jako <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz aplikację ArcGIS Data Store, w której zostaną zapisane wyniki</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nie należy używać relacyjnego magazynu danych, jeśli liczba wynik&oacute;w analiz geoprzestrzennych może się zwiększyć i może być konieczne zastosowanie magazynu dużych zbior&oacute;w danych czasowo-przestrzennych w celu obsłużenia dużych ilości danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>Warstwa wynikowa będzie przedstawiać miejsca, w&nbsp;kt&oacute;rych znajdują się statystycznie istotne zgrupowania o&nbsp;wysokich lub niskich wartościach bądź z&nbsp;wysoką lub niską liczbą punkt&oacute;w. Jeśli nazwa warstwy wynikowej już istnieje, zostanie wyświetlony komunikat z&nbsp;prośbą o&nbsp;zmianę nazwy.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

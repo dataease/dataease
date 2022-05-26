@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Rastrska analiza vam omogoča izvajanje analize velikih rastrskih sklopov podatkov s pomočjo  ArcGIS Image Server. Tako vam je omogočeno analiziranje večje količine podatkov s pomočjo zmogljivosti strežnika. Trenutno razpoložljivi kompleti orodij prek spletne uporabni&scaron;ke izku&scaron;nje  Portal for ArcGIS so  <b>Povzemi podatke</b>, <b>Analiziraj vzorce</b>, <b>Uporabi bližino</b>, <b>Analiziraj slike</b>, <b>Analiziraj relief</b>, <b>Upravljaj podatke</b> in <b>Globoko učenje</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Povzemi podatke</h2>
+        <hr/>
+        <p>Komplet orodij vsebuje orodje za izračun statistike za rastrski sloj znotraj meja, ki jih sami določite. 
+            <ul>
+                <li> <b>Povzemi raster znotraj</b> izračuna statistiko za rastrske celice, ki padejo znotraj določenih meja območja.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Povzemi raster znotraj</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Orodje Povzemi raster znotraj">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izračuna statistiko povzetka za rastrske celice znotraj določenih območij.
+            </p>
+            <p>Nekaj primerov uporabe vključuje naslednje: 
+
+                <ul>
+                    <li>Če imate rastrska sloja razvodij in vi&scaron;ine, lahko izračunate razpon vi&scaron;in znotraj posameznega razvodja, saj boste tako lahko ugotovili, katera imajo pretok največje energije.
+                        
+
+                    </li>
+                    <li>Če imate sloj enot administrativne uprave in rastrski sloj kategorij rabe tal, lahko izračunate raznolikost vrednosti rabe tal znotraj območja posamezne administrativne uprave, saj boste lahko ugotovili, kje je za določanje načrta upravljanja potrebno največ dela.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analiziraj vzorce</h2>
+        <hr/>
+        <p>Ta orodja vam pomagajo identificirati, količinsko opredeliti in vizualizirati prostorske vzorce v va&scaron;ih podatkih. 
+
+            <ul>
+                <li> <b>Izračun gostote</b> vzame znane količine nekega pojava in ustvari karto gostote z razpr&scaron;evanjem teh količin po karti.
+                    
+
+                </li>
+                <li> <b>Interpolacija točk</b> predvidi vrednosti na novih lokacijah glede na merjene vrednosti zbirk točk.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izračun gostote</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Orodje za izračun gostote">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Analiza gostote vzame znane količine nekega pojava in ustvari karto gostote z razpr&scaron;evanjem teh količin po karti. To orodje lahko na primer uporabite, da prikažete koncentracije udarov strele ali neviht, dostop do zdravstvene oskrbe in gostoto prebivalstva.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolacija točk</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Orodje Interpolacija točk">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To orodje vam omogoča, da predvidite vrednosti na novih lokacijah glede na merjene vrednosti zbirk točk. Orodje vzame točkovne podatke z vrednostmi na vsaki točki in vrne območja, klasificirana po predvidenih vrednostih. To orodje lahko na primer uporabite za napoved količine padavin na razvodju na podlagi meritev, zbranih na posameznih merilnih mestih.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Uporabi bližino</h2>
+        <hr/>
+        <p>Ta orodja vam pomagajo odgovoriti na eno izmed najpogostej&scaron;ih vpra&scaron;anj, zastavljenih v prostorski analizi: &raquo;Kaj je v bližini česa?&laquo;
+
+            <ul>
+                <li> <b>Izračunaj razdaljo</b> Izračuna evklidsko razdaljo, smer in dodelitev iz enega vira ali sklopa virov.
+                    
+
+                </li>
+                <li> <b>Določi omrežje optimalnih potnih stro&scaron;kov</b> Izračuna omrežje optimalnih stro&scaron;kov iz sklopa vhodnih regij.
+                    
+
+                </li>
+                <li> <b>Določi pot potnih stro&scaron;kov kot polilinijo</b> Izračuna polilinijo poti med viri in znanimi cilji z najmanj stro&scaron;ki.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izračunaj razdaljo</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Izračunaj razdaljo">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izračuna evklidsko razdaljo, smer in dodelitev iz enega vira ali sklopa virov. To orodje lahko uporabite, da določite, kako daleč je lokacija do ceste, stavbe ali parka. Določite lahko tudi, v kateri smeri morate potovati z lokacije, da se vrnete nazaj na vir po kar najbolj neposredni poti. Za vsako lahko na va&scaron;em &scaron;tudijskem območju vidite, kateri vir je najbližji.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Določi optimalno omrežje potnih stroškov</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Prikaz orodja Določi optimalno omrežje potnih stro&scaron;kov">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izračuna optimalno omrežje stro&scaron;kov iz sklopa vhodnih regij.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Določi pot potnih stroškov kot polilinijo</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Prikaz orodja Določi pot potnih stro&scaron;kov kot polilinijo">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izračuna polilinijo poti med viris in znanimi cilji z najmanj stro&scaron;ki.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analiziraj slike</h2>
+        <hr/>
+        <p>Naslednje orodje vam bo pomagalo pri analiziranju slik. 
+            <ul>
+                <li> <b>Uporabi predlogo rastrske funkcije</b> obdeluje va&scaron;e slikovje s funkcijo ali verigo funkcij, kot je navedeno s predlogo rastrske funkcije.
+                </li>
+                <li> <b>Monitoring vegetacije</b> zaznava vegetacijo v sliki, ki temelji na aritmetičnih operacijah na pasovih.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Uporabi predlogo rastrske funkcije</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Uporabi predlogo rastrske funkcije">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Obdeluje va&scaron;e slikovje s funkcijo ali verigo funkcij, kot je določeno s predlogo rastrske funkcije.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Monitoring vegetacije</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Orodje Monitoring vegetacije za Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izvaja aritmetične operacije na pasovih večpasovnega rastrskega sloja, da razkrije informacije o pokritosti z vegetacijo na &scaron;tudijskem območju.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analiziraj relief</h2>
+        <hr/>
+        <p>Ta orodja vam pomagajo pri analizi rastrskih povr&scaron;in. 
+            <ul>
+                <li> <b>Izračunaj naklon</b> izračuna strmost reliefa.
+                    
+
+                </li>
+                <li> <b>Tvori lego neba</b> izračuna smer najbolj strmega naklona za posamezno lokacijo.
+                    
+
+                </li>
+                <li> <b>Ustvari območje vidnosti</b> določa, kaj je mogoče videti s poljubne točke pokrajine.
+                    
+
+                </li>
+                <li> <b>Razvodje</b> izračuna prispevno območje nad identificiranimi lokacijami na povr&scaron;ju.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izračunaj naklon</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Orodje za izračun naklona za Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Določa povr&scaron;ino, ki prikazuje naklon vhodnih vi&scaron;inskih podatkov. Naklon predstavlja stopnjo vi&scaron;inske spremembe za vsako celico digitalnega modela vi&scaron;in (DMV).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tvori lego neba</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Orodje Tvori lego neba za Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Določa smer padanja maksimalne stopnje spremembe vrednosti od posamezne celice do sosednjih celic. Na lego neba je mogoče gledati kot na smer nagiba.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ustvari vidno polje</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Orodje Ustvari območje vidnosti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Določa lokacije na rastrski povr&scaron;ini, ki so vidne skupini opazovalcev.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Razvodje</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Razvodna naloga">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Določi prispevno območje nad sklopom celic v rastru.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Upravljaj podatke</h2>
+        <hr/>
+        <p>Ta orodja se uporabljajo tako za vsakdanje upravljanje geografskih podatkov kot za združevanje podatkov pred analizo. 
+            <ul>
+                <li> <b>Ekstrahiraj raster</b> izseka dele iz rastrskega sklopa podatkov za nadaljnje analize.
+                    
+
+                </li>
+                <li> <b>Preslikaj vrednosti</b> dodeli različne vrednosti rastrskim celicam.
+                    
+
+                </li>
+                <li> <b>Pretvori geoobjekt v raster</b> rasterizira vektorske podatke.
+                    
+
+                </li>
+                <li> <b>Pretvori raster v geoobjekt</b> vektorizira rasterske podatke.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ekstrahiraj raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Orodje Ekstrahiraj raster za Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ekstrahirajte celice iz rastra na podlagi vrednosti, oblike ali obsega različnih sklopov podatkov.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Preslikaj vrednosti</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Orodje Preslikaj vrednosti za Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Spremenite posamezne vrednosti celic ali razpone vrednosti celic v nove vrednosti.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pretvori geoobjekt v raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Orodje Pretvori geoobjekt v raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ustvarite nov rastrski sklop podatkov iz obstoječega geoobjektnega sklopa.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pretvori raster v geoobjekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Orodje Pretvori raster v geoobjekt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ustvarite nov geoobjektni sklop podatkov iz obstoječega rastrskega sklopa podatkov.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="regularsize">
+        <h2>Komplet orodja Globoko učenje</h2>
+        <hr/>
+        <p>Ta orodja se uporabljajo za zaznavanje določenih geoobjektov v sliki ali za klasificiranje pikslov v rastrskem sklopu podatkov. Globoko učenje je tip metode strojnega učenja umetne inteligence, ki zaznava geoobjekte v slikovju s pomočjo več slojev v nevronskih mrežah, kjer je vsak sloj sposoben ekstrahirati enega ali več edinstvenih geoobjektov na sliki. Ta orodja porabljajo modele, ki so bili naučeni zaznavanja določenih geoobjektov v ogrodju globokega učenja drugega proizvajalca, kot so TensorFlow, CNTK in Keras, ter izhodnih geoobjektov ali kart razreda.
+            <ul>
+                <li> <b>Klasificiraj piksle z globokim učenjem</b> ustvarja klasificiran raster s pomočjo naučenega modela globokega učenja.
+                </li>
+                <li> <b>Zaznaj objekte z globokim učenjem</b> ustvarja geoobjektni razred, ki vsebuje objekte, ki jih najde v vhodnem rastru s pomočjo naučenega modela globokega učenja.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasificiraj piksle z globokim učenjem</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klasificiraj piksle z globokim učenjem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izvaja naučeni model globokega učenja na vhodnem rastru za izdelavo klasificiranega rastra in vsak veljavni slikovni piksel ima dodeljeno oznako razreda.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Zaznaj objekte z globokim učenjem</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Zaznaj objekte z globokim učenjem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izvaja naučeni model globokega učenja na vhodnem rastru za izdelavo geoobjektnega razreda, ki vsebuje objekte, ki jih najde. Geoobjekti so lahko prostorski obsegi ali poligoni okoli najdenih objektov ali točke na sredi&scaron;čih objektov.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

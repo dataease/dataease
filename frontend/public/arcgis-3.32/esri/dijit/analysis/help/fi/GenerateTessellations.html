@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Luo tesseloinnit</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Luo tesseloinnit"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu luo tesseloinnit tutkimusalueesta m&auml;&auml;ritetyn muodon ja koon perusteella.
+    </p>
+    <p> <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -valintaruutu on poistettu k&auml;yt&ouml;st&auml; t&auml;ss&auml; ty&ouml;kalussa, koska <b>M&auml;&auml;rit&auml; laajuus</b> -parametri ohjaa tesselointien luonnissa k&auml;ytett&auml;v&auml;&auml; laajuutta.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Valitse muoto</h2></div>
+        <hr/>
+        <div>
+            <p>Luotavan tesseloinnin muoto tai geometria.  K&auml;ytett&auml;viss&auml; olevat muodot ovat  <code>neli&ouml;</code>, <code>kuusikulmio</code>, <code>poikittainen kuusikulmio</code>, <code>kolmio</code> tai <code>vinoneli&ouml;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Määritä tutkimusalue</h2></div>
+        <hr/>
+        <div>
+            <p>Tesselointien kattama laajuus tai alue.  Laajuuden voi m&auml;&auml;ritt&auml;&auml; k&auml;ytt&auml;m&auml;ll&auml; nykyist&auml; karttalaajuutta, aiemmin luodun karttatason laajuutta tai piirt&auml;m&auml;ll&auml; vuorovaikutteisesti laajuutena k&auml;ytett&auml;v&auml;n alueen.
+            </p>
+            <p>Jos kohdekarttataso on valittu laajuuden m&auml;&auml;ritt&auml;mist&auml; varten, vain toisensa leikkaavien tesselointien s&auml;ilytysasetus otetaan k&auml;ytt&ouml;&ouml;n.  Jos asetus on valittu, vain ne tesseloinnit, jotka peitt&auml;v&auml;t tai leikkaavat m&auml;&auml;ritetyss&auml; laajuuskarttatasossa olevien kohteiden kanssa, luodaan tuloksena syntyv&auml;&auml;n tesselointikarttatasoon. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Ei valittu
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="T&auml;ysi laajuuden kattavuus">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Valittu
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Kohteen kattavuus">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Määritä lokeron koko määrittämällä</h2></div>
+        <hr/>
+        <div>
+            <p>Kunkin solun koko.  Solun koon voi m&auml;&auml;ritt&auml;&auml; m&auml;&auml;ritt&auml;m&auml;ll&auml; neli&ouml;yksik&ouml;t tai m&auml;&auml;ritt&auml;m&auml;ll&auml; et&auml;isyyden, joka lasketaan k&auml;ytt&auml;m&auml;ll&auml; seuraavia mittoja, joissa d = et&auml;isyys: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Neli&ouml;
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Neli&ouml;n muotoinen tesselointi">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kuusikulmio
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Kuusikulmion muotoinen tesselointi">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Poikittainen kuusikulmio
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Poikittaisen kuusikulmion muotoinen tesselointi">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kolmio
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Kolmion muotoinen tesselointi">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Vinoneli&ouml;
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Vinoneli&ouml;n muotoinen tesselointi">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

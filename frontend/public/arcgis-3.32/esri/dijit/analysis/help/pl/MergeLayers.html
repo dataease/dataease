@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Połącz warstwy</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Połącz warstwy"></h2>
+        <hr/>
+    <p>Narzędzie kopiuje obiekty z dw&oacute;ch warstw do jednej nowej warstwy. Warstwy, kt&oacute;re mają być połączone, muszą zawierać te same typy obiekt&oacute;w (punkty, linie lub obszary). Można sterować procesem łączenia i&nbsp;kopiowania p&oacute;l z&nbsp;warstw wejściowych. Przykład:
+        <ul>
+            <li>Mam trzy warstwy dla Anglii, Walii i Szkocji i chcę mieć jedną warstwę dla Wielkiej Brytanii. 
+            </li>
+            <li>Mam 12 warstw i każda z nich zawiera informacje o działkach w przylegających do siebie obszarach miejskich. Chcę je połączyć w jedną warstwę, zachowując tylko pola, kt&oacute;re mają tę samą nazwę i typ we wszystkich 12 warstwach wejściowych.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, połączone zostaną tylko obiekty widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, zostaną połączone wszystkie obiekty z&nbsp;obu warstw, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe, liniowe lub powierzchniowe do połączenia z warstwą podaną poniżej. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Wybierz warstwę do połączenia</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz warstwę, kt&oacute;ra zostanie połączona z pierwszą warstwą.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Zmień pola łączenia</h2></div>
+        <hr/>
+        <div>
+            <p>Domyślnie do danych wynikowych zostaną przeniesione wszystkie pola z&nbsp;obu warstw wejściowych. Można zmienić spos&oacute;b przenoszenia p&oacute;l do warstwy wynikowej, korzystając z następujących opcji:
+                <ul>
+                    <li> <b>Zmień nazwę</b> &mdash; pole otrzyma nową nazwę w warstwie wynikowej.
+                    </li>
+                    <li> <b>Usuń</b> &mdash; pole zostanie usunięte z warstwy wynikowej.
+                    </li>
+                    <li> <b>Dopasuj</b> &mdash; pola będą miały takie same nazwy. Wartości pola z warstwy, kt&oacute;ra ma być połączona, zostaną przeniesione do odpowiedniego pola w warstwie wynikowej.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jeśli obie warstwy zawierają pole o takiej samej nazwie i typie danych, zawartość obu p&oacute;l zostanie połączona w jednym polu o tej nazwie. Nie dotyczy to p&oacute;l, w przypadku kt&oacute;rych w parametrze  <b>Zmień pola łączenia</b> używana jest wartość <b>Dopasuj</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

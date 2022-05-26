@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>레이어 병합</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="레이어 병합"></h2>
+        <hr/>
+    <p>이 도구는 두 레이어의 피처를 새 레이어에 복사합니다. 병합할 모든 레이어에 같은 피처 유형(포인트, 라인, 영역)이 있어야 합니다.  입력 레이어의 필드를 결합하고 복사할 방법을 제어할 수 있습니다. 예시:
+        <ul>
+            <li>잉글랜드, 웨일즈 및 스코틀랜드에 대한 레이어가 3개 있는 경우 영국이라는 단일 레이어를 생성합니다. 
+            </li>
+            <li>레이어가 12개 있고, 각 레이어에는 인접 마을에 대한 필지 정보가 포함되어 있습니다.  이러한 레이어를 단일 레이어로 결합하여 12개의 입력 레이어에서 이름과 유형이 같은 필드만 유지할 수 있습니다.
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 피처만 병합됩니다.  이 옵션의 선택을 취소한 경우 현재 맵 범위 외부에 있는 피처를 포함하여 두 레이어에 있는 모든 피처가 병합됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>아래에 지정된 레이어와 병합할 포인트, 라인 또는 영역 피처입니다. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>병합할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>첫 번째 레이어와 병합할 레이어를 선택합니다.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>병합 필드 수정</h2></div>
+        <hr/>
+        <div>
+            <p>기본적으로 두 입력의 모든 필드가 결과에 포함됩니다. 필드가 출력으로 전달되는 방식을 다음과 같이 변경할 수 있습니다.
+                <ul>
+                    <li> <b>이름 바꾸기</b> - 결과에서는 필드의 이름이 바뀝니다.
+                    </li>
+                    <li> <b>제거</b> - 결과에서는 필드가 제거됩니다.
+                    </li>
+                    <li> <b>일치</b> - 필드 이름이 동일하게 설정되고,  병합할 레이어의 필드 값이 일치하는 결과 필드에 복사됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>두 레이어에 이름 및 데이터 유형이 동일한 필드가 포함되어 있는 경우 두 필드의 콘텐츠가 해당 이름의 한 필드로 병합됩니다. 이는  <b>병합 필드 수정</b> 매개변수에 <b>일치</b>가 사용된 필드에는 적용되지 않습니다.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

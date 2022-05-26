@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>创建视域</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="创建视域工具"></h2>
+        <hr/>
+    <p>该工具可确定观察点能够看到的区域，以说明表面地形。输入点位置可以表示观察点（例如地面上的人或火警瞭望塔上的人）或被观察的对象（例如，风力涡轮机、水塔、车辆或其他人）。结果即可从观察点位置看到的区域。
+    </p>
+    <p>观察点和被观察对象都距离地面向上有一定高度，这些高度可用于确定可见性。例如，针对地面上 300 英尺的风力涡轮机和 6 英尺高的人计算得到的视域通常要比针对 200 英尺的涡轮机和 5 英尺高的人计算得到的视域大。
+    </p>
+    <p>结果图层将记录输入表面栅格中每个像元位置对于输入观测点可见的次数。不可见像元将得到 NoData 值。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中可见的栅格区域和观察点。如果未选中，则将分析输入图层中的所有观察点，包括超出当前地图范围的观察点。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>高程表面</h2></div>
+        <hr/>
+        <div>
+            <p>用于计算视域的高程表面。
+            </p>
+            <p>如果输入表面的垂直单位与水平单位存在差异（例如，高程值用英尺表示，但坐标系用米表示），则该表面必须具有确定的垂直坐标系。其原因在于，工具将使用垂直 (Z) 和水平 (XY) 单位来计算视域分析所需的 Z 因子。没有了垂直坐标系，也就没有了可用的 Z 单位信息，此时工具将假定 Z 单位与 XY 单位相同。结果导致分析中将使用内部 Z 因子 1.0，从而导致意外的结果。
+            </p>
+            <p>高程表面可为整型或浮点型。
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>表示观察者位置的点要素</h2></div>
+        <hr/>
+        <div>
+            <p>计算视域时表示观察者位置的点要素。
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>优化</h2></div>
+        <hr/>
+        <div>
+            <p>用于计算视域的优化方法。
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+此方法可优化处理速度，牺牲一些精度以获得更高的性能。这是默认设置。
+
+                </li>
+                <li>Accuracy &mdash; 
+此方法可用来优化结果的精度，代价是需要更长的处理时间。
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>最大可视距离</h2></div>
+        <hr/>
+        <div>
+            <p>输入停止计算可见区域的中断距离。超出此距离，就无法确定观察点和其他对象互相能否看见。
+            </p>
+            <p>可以指定表示线性距离的数值或从输入观察点要素中选择一个数值字段。如果提供了字段，则该字段中包含的值的单位必须与输入高程表面的 xy 单位相同。
+            </p>
+            <p>请注意，较大的值会延长计算时间。除非另外指定，否则默认最大距离将根据输入高程表面的分辨率和范围进行计算。
+            </p>
+            <p>此参数可用于为某种现象建模。例如，您可通过限制可见性范围来为薄雾等天气状况建模。同样，您可通过限制可见性范围得到近似黄昏的效果，从而在一定程度上实现对时间的控制。
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>最大可视距离</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>最小可视距离</h2></div>
+        <hr/>
+        <div>
+            <p>输入要开始计算可见区域所需的距离。表面上小于此距离的像元在输出中不可见，但仍会妨碍最小查看距离和最大查看距离之间像元的可见性。
+            </p>
+            <p>可以指定表示线性距离的数值或从输入观察点要素中选择一个数值字段。如果提供了字段，则该字段中包含的值的单位必须与输入高程表面的 xy 单位相同。
+            </p>
+            <p>此参数可用于控制与观察者间存在特定距离的视域分析区域。例如，如果您要评估从某建筑物顶部到远处某公园的可见性，可以设置最小可视距离以排除不相关的附近区域，从而获得更好的处理速度。
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>最小可视距离</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>距离为 3D 距离</h2></div>
+        <hr/>
+        <div>
+            <p>指定最小可视距离和最大可视距离参数是采用三维方式还是更简单的二维方式进行测量。选中此选项后，可视距离即被视为 3D 距离。取消选中时，可视距离将被视为 2D 距离。
+            </p> 
+            <p>2D 距离是观察者和目标之间最简单的线性距离，通过两者在海平面上的投影位置测得。3D 距离可将两者的相关高度纳入考量范围，从而能够得出更为真实的值。
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>观察者位置的高程</h2></div>
+        <hr/>
+        <div>
+            <p>输入观察者位置的高程。
+            </p>
+            <p>您可以指定表示全部观察者高程的数值，或指定表示每个观察者高程的一个字段。如果提供了字段，则该字段中包含的值的单位必须与输入高程表面的 Z 单位相同。
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>观察者位置的高程</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>观察者的高度</h2></div>
+        <hr/>
+        <div>
+            <p>输入观察者所在位置相对于地面的高度。
+            </p> 
+            <p>可以指定高度的数值或指定输入观察点要素中的一个字段。如果提供了字段，则该字段中包含的值的单位必须与输入高程表面的 z 单位相同。
+            </p>
+            <p>默认为 6 英尺。如果您要从较高位置（如瞭望塔或高建筑物）进行观察，请使用该高度。在视域计算过程中，该值（如果指定）会被添加到观察点高程中；否则，它将被添加到插值的表面 z 值中。
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>观察者的高度</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>目标高度</h2></div>
+        <hr/>
+        <div>
+            <p>输入地面上建筑物或人的高度，用于确立可见性。
+            </p>
+            <p>可以指定高度的数值或指定输入观察点要素中的一个字段。如果提供了字段，则该字段中包含的值的单位必须与输入高程表面的 z 单位相同。
+            </p>
+            <p>生成的视域用于标识从观察点可看到地面上对象的区域。反之亦然，地面上的对象也可以看到观察点。
+            </p>
+            <p>以下是目标高度设置的一些示例：
+            </p>
+            <ul>
+                <li>如果您的输入点表示风力涡轮机，并且您想要确定人站在地面上的哪个位置能够看到涡轮机，请输入人的平均身高（约为 6 英尺）。
+                    
+
+                </li>
+                <li>如果您的输入点表示火警瞭望塔，并且您想要确定哪些火警瞭望塔能够看到高度上升至少 20 英尺的烟流，请输入目标高度 20 英尺。
+                    
+
+                </li>
+                <li>如果您的输入点表示沿道路和小径的观景平台，并且您想要确定能够看到至少 400 英尺高的风力涡轮机的区域，请输入高度 400 英尺。
+                    
+
+                </li>
+                <li>如果您的输入点表示观景平台，并且您想要确定人站在该平台能够看到地面上的多大面积，请输入目标高度 0。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>观察者的高度</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>可见的输出高度</h2></div>
+        <hr/>
+        <div>
+            <p>地面以上 (AGL) 输出结果的名称。AGL 结果是一个栅格，其中每个像元值都记录了为保证像元至少对一个观察点可见而需要向该像元添加的最小高度（若不添加此高度，像元不可见）。在输出栅格中为已可见的像元分配 0。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

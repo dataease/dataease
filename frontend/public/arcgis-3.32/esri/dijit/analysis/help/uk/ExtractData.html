@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Витягання даних</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Витягання даних"></h2>
+        <hr/>
+    <p>За допомогою цього інструменту можна вибрати та завантажити дані для визначеної області інтересу. Вибрані шари буде додано до файлу ZIP, CSV або KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Шари для витягання</h2></div>
+        <hr/>
+        <div>
+            <p>Це шари у таблиці змісту, з яких можна витягти об'єкти. Відмічені шари витягаються та включаються у результуючий файл ZIP або CSV.
+            </p>
+            <p>Щоб шар відображався у списку шарів для витягання, дані повинні належати вам або власник даних повинен активувати експорт даних. Для активації експорту даних, які належать вам: 
+                <ul>
+                    <li>Відкрийте опис елементу даних.
+                    </li>
+                    <li>Виберіть вкладку  <b>Налаштування</b>.
+                    </li>
+                    <li>Виконайте прокручування вниз до розділу  <b>Експорт даних</b>.
+                    </li>
+                    <li>Встановіть прапорець  <b>Дозволити іншим експортувати в інші формати</b>. Натисніть кнопку <b>Зберегти</b> для завершення.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Якщо шар аналізу містить прикріплення, зверніть увагу, що вони будуть витягнуті, тільки якщо форматом вихідних даних є файлова база геоданих, а опція  <b>Вирізати об'єкти</b> невідмічена.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Область, що вивчається</h2></div>
+        <hr/>
+        <div>
+            <p>Область, що визначає, які об'єкти будуть включені у вихідний файл ZIP або CSV. Ви можете вибрати наступне:
+                <ul>
+                    <li>Поточний видимий екстент карти ( <b>Так само, як відображається</b>).
+                    </li>
+                    <li>Один з шарів у таблиці змісту. Якщо вибраним шаром є точкові або лінійні об'єкти, екстент шару використовуватиметься в якості області, що вивчається.
+                    </li>
+                    <li>Намалювати область, щоб визначити область, що вивчається.
+                    </li>
+                </ul>
+                 Всі об'єкти, які повністю знаходяться в межах екстенту карти будуть витягнуті. Для об'єктів, які перетинають кордон екстенту карти, проте не повністю знаходяться в межах екстенту, є дві опції:
+                <ul>
+                    <li> <b>Вибрати об'єкти</b> &mdash; об'єкти, які перетинають кордон області, що вивчається, будуть повністю витягнуті.
+                    </li>
+                    <li> <b>Вирізати об'єкти</b> &mdash; будуть витягнуті тільки ті частини об'єктів, які знаходяться в межах області, що вивчається.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Формат вихідних даних</h2></div>
+        <hr/>
+        <div>
+            <p>Формат даних, які будуть витягатись. При експорті лінійних або площадних об&rsquo;єктів у файли CSV витягаються тільки непросторові атрибути. При експорті точкових об&rsquo;єктів витягаються як просторові, так і непросторові атрибути.  
+            </p>
+            <p>У витягнутих даних буде використовуватись проекція Web Mercator 1984. Для файлів CSV files поля  <i>Lat</i> та <i>Long</i> будуть приєднані до даних з координатами в системі Web Mercator 1984.
+            </p> 
+            <p>Підтримуються наступні формати вихідних значень:
+                <ul>
+                    <li>Значення, розділені комою (CSV)&mdash; <code>.csv</code> або <code>.zip</code>
+                    </li>
+                    <li>Файлова база геоданих&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> або <code>.zip</code>
+                    </li>
+                    <li>шейп-файл&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ім'я вихідного файлу</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва елементу, який буде додано до  <b>Мого змісту</b>.  Назва елементу базується на вибраному <b>Форматі вихідних даних</b>.     Якщо елемент вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного списку  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

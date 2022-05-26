@@ -1,0 +1,3 @@
+//>>built
+define("dojox/charting/bidi/Chart3D",["dojo/_base/declare","dojo/dom-style","dojo/dom-attr","./_bidiutils"],function(c,f,d,g){return c(null,{direction:"",isMirrored:!1,postscript:function(a,b,h,c,e){b="ltr";d.has(a,"direction")&&(b=d.get(a,"direction"));this.chartBaseDirection=e?e:b},generate:function(){this.inherited(arguments);this.isMirrored=!1;return this},applyMirroring:function(a,b,c){this.isMirrored&&g.reverseMatrix(a,b,c,"rtl"==this.dir);f.set(this.node,"direction","ltr");return this},setDir:function(a){if("rtl"==
+a||"ltr"==a)this.dir!=a&&(this.isMirrored=!0),this.dir=a;return this},isRightToLeft:function(){return"rtl"==this.dir}})});

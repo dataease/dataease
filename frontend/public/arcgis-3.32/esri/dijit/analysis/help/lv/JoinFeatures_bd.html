@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Elementu savienošana</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Elementu savieno&scaron;ana"></h2>
+        <hr/>
+    <p>Rīks Savienot elementus izmanto divus slāņus. Rīks Savienot elementus apvieno viena elementa atribūtus ar cita elementa atribūtiem, atkarībā no telpiskajām, laika un atribūtu saistībām vai kādām no &scaron;o triju faktoru kombinācijām. Rīks nosaka visus ievades elementus, kas atbilst norādītajiem savienojuma nosacījumiem, un savieno otro ievades slāni ar pirmo ievades slāni. Pēc izvēles varat savienot visus elementus ar atbilsto&scaron;ajiem elementiem vai izveidot atbilsto&scaron;o elementu kopsavilkumu.
+    </p>
+    <p>Rīku Savienot elementus var lietot punktiem, līnijām, laukumiem un tabulām. Lai izveidotu laika savienojumu, jūsu ievades datos ir jābūt aktivizētam laikam, savukārt, lai izveidotu telpisko savienojumu, jūsu datiem ir jābūt ģeometrijai. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Izvēlēties mērķa slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kam  atribūti no savienojuma slāņa tiks pievienoti tā tabulā.
+            </p>
+            <p>Lai veiktu analīzi, izmantojot telpisko saistību  <b>Tuvumā</b>, ir nepiecie&scaron;ama projicētā koordinātu sistēma. Varat iestatīt <b>Apstrādes koordinātu sistēmu</b> <b>Analīzes darba vidē</b>. Ja apstrādes koordinātu sistēma nav iestatīta kā projicētā koordinātu sistēma, jūs saņemsit pamudinājumu to iestatīt, veicot darbību <b>Darbināt analīzi</b> .
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Izvēlēties slāni, ko pievienot mērķa slānim</h2></div>
+        <hr/>
+        <div>
+            <p>Savienojuma slānis ar atribūtiem, kas tiek pievienoti mērķa slānim.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Izvēlēties savienošanas darbību</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ī darbība nosaka, kādas darbības tiks veiktas ar mērķa un savienojuma slāņiem izvadē, ja vairākiem savienojuma elementiem ir viena un tā pati saistība ar slāni, kuram tiek pievienoti elementi. Varat izvēlēties kādu no divām savienojuma darbībām:
+                <ul>
+                    <li> <b>Savienot vienu ar vienu</b>&nbsp;&mdash; izmantojot &scaron;o opciju, tiks izveidots katram pievienotajam elementam atbilsto&scaron;o elementu kopsavilkums.
+                    </li>
+                    <li> <b>Savienot vienu ar vairākiem</b>&nbsp;&mdash; izmantojot &scaron;o opciju, visi atbilsto&scaron;ie elementi tiks pievienoti savienojamajam slānim.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pieņemsim, ka vēlaties atrast lielveikalus 2&nbsp;kilometru attālumā no zemnieka tirdziņa. &Scaron;ajā gadījumā mērķa slānim ir viens elements, kas norāda zemnieka tirdziņu, un savienojamais slānis norāda vietējos pārtikas veikalus, turklāt tam ir vairāki atribūti, piemēram, gada pārdo&scaron;anas rādītāji. Izmantojot rīku Savienot elementus, jūs konstatējat, ka kritērijiem atbilst pieci pārtikas veikali. Ja norādāt savieno&scaron;anas operāciju  <b>Savienot vienu ar vairākiem</b>, tiek iegūti pieci elementi, un katra rinda atbilst zemnieka tirdziņam un lielveikalam. Ja norādāt saistību <b>Savienot vienu ar vienu</b>, tiek iegūts viens elements, kas atbilst zemnieka tidziņam, un lielveikalu informācijas kopsavilkums, piemēram skaits (2) un citi statistikas dati, piemēram, ikgadējo pārdo&scaron;anas rādītāju summa.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Izvēlēties vienu vai vairākus savienojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda izmantoto savieno&scaron;anas opciju. Varat lietot vienu, divus vai trīs tālāk norādītos savieno&scaron;anas veidus. 
+                <ul>
+                    <li> <b>Telpiskais</b>&nbsp;&mdash; izmanto norādīto telpisko saistību, lai savienotu elementus. Lai izmantotu &scaron;o veidu, abiem slāņiem ir jābūt ģeometrijai.
+                    </li>
+                    <li> <b>Laika</b>&nbsp;&mdash; izmanto norādītu laika saistību, lai savienotu elementus. Lai izmantotu &scaron;o veidu, abos slāņos ir jābūt aktivizētam laikam.
+                    </li>
+                    <li> <b>Atribūtu</b>&nbsp;&mdash; savieno elementus, balstoties uz vienādiem laukiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Izvēlēties telpisko saistību</h2></div>
+        <hr/>
+        <div>
+            <p>Telpiskā saistība, kas nosaka, vai elementi tiks savienoti. Tālāk norādītās pieejamās saistības ir atkarīgas no ievades elementos izmantotās ģeometrijas tipa (punkti, līnijas, laukumi).
+                <ul>
+                    <li> <b>&Scaron;ķērso</b>&nbsp;&mdash; elementi tiks saskaņoti, ja tie cits citu &scaron;ķērso.
+                    </li>
+                    <li> <b>Atbilst</b>&nbsp;&mdash; elementi tiks saskaņoti, ja tiem ir vienāda ģeometrija.
+                    </li>
+                    <li> <b>Tuvu</b>&nbsp;&mdash; elementi tiks saskaņoti, ja tie atrodas konkrētā attālumā cits no cita. Mērķa slānim ir jābūt projicētajā koordinātu sistēmā, vai arī apstrādes telpiskā atskaite ir jāiestata uz projicēto koordinātu sistēmu, izmantojot <b>Analīzes darba vidi</b>, ja tiek izmantota telpiskā saistība <b>Tuvu</b>.
+                    </li>
+                    <li> <b>Ietver</b>&nbsp;&mdash; elementi tiks saskaņoti, ja mērķa slānis ir ietverts savienojuma elementos.
+                    </li>
+                    <li> <b>Iek&scaron;pusē</b>&nbsp;&mdash; elementi tiks saskaņoti, ja mērķa slānis atrodas savienojuma elementu iek&scaron;pusē.
+                    </li>
+                    <li> <b>Pieskaras</b>&nbsp;&mdash; elementi tiks saskaņoti, ja tiem ir robeža, kas pieskaras mērķa elementam.
+                    </li>
+                    <li> <b>Krustojas</b>&nbsp;&mdash; elementi tiks saskaņoti, ja to kontūras krustojas.
+                    </li>
+                    <li> <b>Daļēji apklāj</b>&nbsp;&mdash; elementi tiks saskaņoti, ja tie cits citu daļēji apklāj.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Norāda rādiusu, kas tiek lietots telpiskai tuvuma saistībai.
+            </p>
+            <p>Piemēram, ja jums ir datu kopa, kas apzīmē kodolspēkstaciju, un datu kopa, kas apzīmē dzīvesvietas, varat iestatīt 1&nbsp;kilometra attālumu nearSpatial, lai atrastu mājas 1&nbsp;kilometra attālumā no kodolspēkstacijas.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Izvēlēties pagaidu saistību</h2></div>
+        <hr/>
+        <div>
+            <p>Laika saistība, kas noteiks, vai elementi tiks savienoti. &Scaron;ī opcija ir pieejama tikai tad, ja abos slāņos ir aktivizēts laiks, un pieejamās saistības ir atkarīgas no ievades elementiem izmantotā laika tipa (laika moments vai intervāls). Tālāk ir norādītas pieejamās pagaidu saistības.
+                <ul>
+                    <li> <b>Atbilst</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements atbilst otrajam elementam.
+                    </li>
+                    <li> <b>Ir atbilsto&scaron;s</b>&nbsp;&mdash; elementi tiks saskaņoti, ja otrais elements atbilst pirmajam elementam.
+                    </li>
+                    <li> <b>Pārklājas</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements pārklāj otro elementu.
+                    </li>
+                    <li> <b>Ir pārklāts</b>&nbsp;&mdash; elementi tiks saskaņoti, ja otrais elements pārklāj pirmo elementu.
+                    </li>
+                    <li> <b>Laikā</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements norisinās otrā elementa laikā.
+                    </li>
+                    <li> <b>Ietver</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements ietver otro elementu.
+                    </li>
+                    <li> <b>Ir vienāds</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements ir vienāds ar otro elementu.
+                    </li>
+                    <li> <b>Beidz</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements beidz otro elementu.
+                    </li>
+                    <li> <b>Tiek beigts</b>&nbsp;&mdash; elementi tiks saskaņoti, ja otrais elements beidz pirmo elementu.
+                    </li>
+                    <li> <b>Sāk</b>&nbsp;&mdash; elementi tiks saskaņoti, ja pirmais elements sāk otro elementu.
+                    </li>
+                    <li> <b>Tiek sākts</b>&nbsp;&mdash; elementi tiks saskaņoti, ja otrais elements sāk pirmo elementu.
+                    </li>
+                    <li> <b>&Scaron;ķērso</b>&nbsp;&mdash; elementi tiks saskaņoti, ja to laiki jebkādā veidā pārklājas.
+                    </li>
+                    <li> <b>Tuvu</b>&nbsp;&mdash; elementi tiks savienoti, ja tie atrodas tuvu cits citam, ko nosaka norādīts laiks.
+                    </li>
+                    <li> <b>Tuvu pirms</b>&nbsp;&mdash; elementi tiks savienoti, ja pirmais elements ir pirms otrā elementa un norādītajā laikā.
+                    </li>
+                    <li> <b>Tuvu pēc</b>&nbsp;&mdash; elementi tiks savienoti, ja pirmais elements ir pēc otrā elementa un norādītajā laikā.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Norāda pagaidu rādiusu, kas tiek lietots pagaidu saistībai tuvā laikā. Pagaidu saistība tuvā laikā ietver &scaron;ādus saistības veidus: <b>Tuvu</b>, <b>Tuvu pirms</b> un <b>Tuvu pēc</b>.
+            </p>
+            <p>Piemēram, ja jums ir slānis ar ūdens satiksmes negadījumu datiem un viesuļvētras mar&scaron;ruta GPS datu slānis, varat meklēt ūdens satiksmes negadījumus norādītajā attālumā no viesuļvētras mar&scaron;ruta gan noteiktā attālumā (1&nbsp;kilometrs), gan laikā (5&nbsp;stundas). Tā rezultātā ūdens satiksmes negadījumi tiks savienoti ar viesuļvētrām, kas notika tuvu telpā un laikā.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Izvēlēties laukus atbilstību meklēšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Saskaņo vienā slānī eso&scaron;ās lauka vērtības ar lauka vērtībām citā slānī. 
+            </p>
+            <p>Piemērs: pieņemsim, ka jūsu rīcībā ir visa apgabala dzīvesvietu ģeogrāfiskais slānis (ieskaitot lauku  <i>ZIP</i>) un veselības demogrāfisko datu kopas tabula ar pasta indeksiem (lauks ar nosaukumu <i>HEALTHZIP</i>). Jūs varat savienot veselības datu kopu ar dzīvesvietu datiem, saskaņojot lauku <i>ZIP</i> ar lauku <i>HEALTHZIP</i>. &Scaron;ādi var izveidot dzīvesvietu slāni ar atbilsto&scaron;ajiem veselības datiem.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Ja savienojuma darbība ir  <b>Savienot vienu ar vienu</b>, varat aprēķināt savienoto elementu statistiku. Pēc noklusējuma tiks aprēķināta visa statistika.
+            </p>
+            <p>Varat aprēķināt apkopoto elementu statistiku. Ciparu laukos varat aprēķināt tālāk norādītās vērtības. 
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Virkņu laukos varat aprēķināt tālāk norādītās vērtības.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus.
+            </p>
+            <p>Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas tipu.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Izveidot izteiksmi, lai apvienotu elementus pēc (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Lieto nosacījumu norādītiem laukiem. Tikai elementi ar laukiem, kas atbilst &scaron;iem nosacījumiem, tik savienoti.
+            </p>
+            <p>Piemēram, ja vēlaties savienot tikai to elementu datu kopas, kuru vērtība  <i>health_spending</i> ir lielāka par 20 procentiem no vērtības <i>income</i>, lietojiet savieno&scaron;anas nosacījumu <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code>, izmantojot lauku <i>health_spending</i> no pirmās datu kopas (datu kopa, kurai tiek pievienoti elementi) un lauku <i>income</i> no otrās datu kopas (datu kopa, kas tiek pievienota).
+            </p>
+            <p>Savienojuma nosacījumus var lietot, izmantojot izteiksmju kalkulatoru.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlēties datu krātuvi</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot tad, ja ir sagaidām GeoAnalytics rezultātu apjoma palielinā&scaron;anās, kā arī tad, ja ir nepiecie&scaron;ams izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

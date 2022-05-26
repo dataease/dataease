@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pretvori geoobjekt u raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Alat Pretvori geoobjekt u raster"></h2>
+        <hr/>
+    <p>Ovaj alat pretvara geoobjekte u skup podataka rastera.
+    </p>
+    <p>Svaka klasa geoobjekata koja sadrži točkaste, linijske ili poligonalne geoobjekte može se pretvoriti u skup rasterskih podataka.
+    </p>
+    <p>Sredi&scaron;te ćelije upotrebljava se za odlučivanje o vrijednosti dobivenog piksela rastera.
+    </p>
+    <p>Vrsta polja unosa određuje vrstu dobivenog rastera. Ako je polje cijeli broj, dobiveni raster bit će cijeli broj; ako je plutajuća točka, rezultat će biti plutajuća točka.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj geoobjekata za pretvaranje</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazni sloj geoobjekta za pretvaranje u skup rasterskih podataka.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Odaberite polje</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite polje koje će se upotrebljavati za dodjeljivanje vrijednosti dobivenom rasteru.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za rezultate rastera.
+            </p>
+            <p>Dostupne su jedinice milje, stope, kilometri i metri. Zadana je jedinica stopa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Petakan Ulang Nilai</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Alat Petakan Ulang Nilai untuk Portal"></h2>
+        <hr/>
+    <p>Alat ini memungkinkan Anda untuk mengubah atau mereklasifikasi nilai piksel data raster. Nilai piksel dipetakan ulang dengan menentukan rentang nilai piksel pada peta ke nilai piksel output. Nilai piksel output dapat berupa nilai yang valid atau nilai NoData, yaitu piksel yang tidak memiliki hubungan dengan nilai yang telah diketahui.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya sel yang terlihat di dalam jangkauan peta saat ini yang akan dipetakan ulang. Jika tidak dicentang, semua sel pada raster akan diproses, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Masukkan Data</h2></div>
+        <hr/>
+        <div>
+            <p>Data input yang nilainya harus dipetakan ulang.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Petakan ulang nilai piksel ke nilai baru</h2></div>
+        <hr/>
+        <div>
+            <p>Anda memasukkan rentang nilai dengan menentukan nilai minimal dan maksimal, kemudian menugaskan nilai output atau nilai NoData ke rentang yang telah ditentukan.
+            </p>
+            <p>Untuk memetakan ulang kisaran nilai yang baru, klik  <b>Tambah</b>, yang akan menambahkan barisan. Klik pada setiap nilai untuk mengedit tabel ke rentang dan memetakan ulang nilai yang Anda butuhkan. Ketika Anda menentukan rentang nilai, ada dua aturan penting yang harus diterapkan:
+                <ul>
+                    <li>Nilai minimum di rentang adalah inklusif dan nilai maksimum adalah eksklusif.
+                    </li>
+                    <li>Baris di tabel diproses dari atas ke bawah.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tabel di bawah menunjukkan bahwa nilai minimal disertakan di dalam output, tetapi nilai maksimum tidak disertakan ke dalam output.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Urutan rentang yang ditentukan di dalam tabel juga penting. Baris atas tabel diproses terlebih dahulu, kemudian baris di bawahnya. Kedua tabel di bawah menunjukkan bagaimana rentang nilai yang sama akan menghasilkan hasil yang berbeda karena urutan baris tabel.
+            </p> 
+            <p>Tabel di bawah menunjukkan nilai output saat kolom pertama disimpan secara numerik:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabel di bawah menunjukkan bagaimana pengurutan baris yang berbeda akan menghasilkan nilai output yang berbeda:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Kedua aturan digunakan untuk mengurutkan ulang nilai. Karena setiap baris diproses dari atas ke bawah, nilai ini yang akan digunakan ketika menentukan output, bahkan ketika rentang yang sama digunakan.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

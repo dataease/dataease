@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izsekot straumes lejteci</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Izsekot straumes lejteci"></h2>
+        <hr/>
+    <p>&Scaron;is rīks nosaka plūsmas ceļu jeb taku lejteces virzienā no jūsu ievades slāņa punktiem.
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir punktu elementi, kas apzīmē piesārņojuma avotus, un jūs vēlaties noteikt, kurp jūsu pētāmajā apgabalā piesārņojums aizplūdīs. Varat izmantot straumes lejteces izseko&scaron;anas rīku, lai noteiktu piesārņojuma virzī&scaron;anās ceļu. &Scaron;o ceļu var sadalīt arī atsevi&scaron;ķos līnijas segmentos, norādot attāluma vērtības un vienības. Atgrieztā līnija var būt plūsmas ceļa kopējais garums, norādītais maksimālais ceļa garums vai teritorijas elementiem, piemēram, izpētes teritorijai, piesaistīts garums. Bieži vien, ja tiek atgriezts kopējais ceļa garums, tas būs ceļ&scaron; no iztekas avota līdz pat okeānam.
+    </p>
+    <p>Rezultāts ir līnija, kas apzīmē lejteces ceļu. Ja ir norādīts opcijas  <b>Sadalīt ceļu līniju segmentos</b> attālums, ceļa līnija tiks sadalīta vairākās līnijās, no kurām katra būs norādītajā garumā. Piemēram, ja ievades punkts apzīmē piesārņojuma ra&scaron;anās vietu un upe, kurā tas nokļūst, plūst ar ātrumu 0,6&nbsp;jūdzes stundā jeb 15&nbsp;jūdzes dienā, jūs varētu sadalīt upi 15&nbsp;jūdžu segmentos. Ceļa sadalī&scaron;ana 15&nbsp;jūdžu posmos aptuveni parādīs, kurā vietā piesārņojums katru dienu būs nokļuvis. Līnija tiks apzīmēta, izmantojot no attāluma atkarīgas krāsu pārejas un attāluma atzīmes no ceļa sākuma.
+    </p>
+    <p>Rezultāta ceļam būs visi jūsu ievades punktu atribūti, kā arī papildu atribūti. 
+        <ul>
+            <li> <i>PointID</i>&mdash;satur ID vērtību no ievades punkta.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;satur kopējo lejteces ceļa garumu kilometros.
+                
+
+            </li>
+            <li> <i>Description</i> un <i>DataResolution</i>&mdash;satur informāciju, kas attiecas uz hidroloģiskajiem datiem, kas tika izmantoti, lai aprēķinātu ceļu.
+                
+
+            </li>
+            <li> <i>FromDistance</i> un <i>ToDistance</i>&mdash;satur katra līnijas segmenta sākuma un beigu attālumus. &Scaron;ie atribūti tiek rakstīti tad, ja tiek izmantota opcija <b>Sadalīt ceļu līniju segmentos</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai ievades slāņa redzamās daļas elementi pa&scaron;reizējā kartes pārklājumā. Ja nav iezīmēts, tad tiks izmantoti visi ievades slāņa elementi, pat ja tie atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktu elementi, kas izmantojami kā sākumpunkti katram lejteces ceļam</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu elementi, kas izmantojami kā sākumpunkti lejteces ceļam.  Izvade saturēs līniju katram punktam.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Sadalīt izsekošanu līnijas segmentos</h2></div>
+        <hr/>
+        <div>
+            <p>Ceļa līnija tiks sadalīta vairākās līnijās, no kurām katra būs norādītajā garumā. Piemēram, ja ievades punkts apzīmē piesārņojuma ra&scaron;anās vietu un upe, kurā tas nokļūst, plūst ar ātrumu 0,6&nbsp;jūdzes stundā jeb 15&nbsp;jūdzes dienā, jūs varētu sadalīt upi 15&nbsp;jūdžu segmentos. Ceļa sadalī&scaron;ana 15&nbsp;jūdžu posmos aptuveni parādīs, kurā vietā piesārņojums katru dienu būs nokļuvis. Līnija tiks apzīmēta, izmantojot no attāluma atkarīgas krāsu pārejas un attāluma atzīmes no ceļa sākuma. Rezultāta ceļam būs vairāki līniju segmenti, un katram no tiem būs lauki  <i>FromDistance</i> un <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimālais izsekošanas attālums</h2></div>
+        <hr/>
+        <div>
+            <p>Nosaka kopējo atgrieztās līnijas garumu. Ja norādāt teritorijas elementus, pie kā fiksēt ceļu, rezultāts tiks fiksēts pie &scaron;īs teritorijas elementa neatkarīgi no &scaron;eit ievadītā attāluma.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Izgriezt izvadi uz</h2></div>
+        <hr/>
+        <div>
+            <p>Vai nu uzzīmējiet, vai norādiet tās teritorijas slāni, pie kā vēlaties fiksēt ceļu. Piemēram, ja vēlaties izsekot rezultātam tikai savā izpētes teritorijā, piemēram, novadā, kā ievadi izmantojiet apgabala elementu, lai ceļ&scaron; beigtos pie novada robežas.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+            <p> &Scaron;ī rīka izmanto&scaron;ana nepatērē kredītu.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

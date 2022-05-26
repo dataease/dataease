@@ -1,0 +1,118 @@
+/* dojox.mobile.IconContainer */
+.mblIconContainer {
+	margin: 20px 10px;
+	padding: 0;
+}
+
+/* dojox.mobile.IconItem */
+.mblIconItem {
+	position: relative;
+	overflow: hidden; /* for focus frame */
+	list-style-type: none;
+	float: left;
+	.tap-highlight-color(rgba(255, 255, 255, 0));
+}
+.mblIconItemTerminator {
+	list-style-type: none;
+	clear: both;
+}
+.mblIconItemPane {
+	list-style-type: none;
+	.mblIconItemSub-styles;
+}
+.mblIconArea {
+	position: relative;
+	height: 78px;
+	font-family: Helvetica;
+	font-size: 12px;
+	text-align: center;
+	.mblIconArea-styles;
+	img {
+		vertical-align: middle;
+	}
+}
+.mblIconAreaInner {
+	position: relative;
+	height: 65px;
+	line-height: 65px;
+	text-align: center;
+}
+.mblIconItemDeleteIcon {
+	position: absolute;
+	.mblIconItemDeleteIcon-styles;
+}
+.mblIconItemSpriteIcon {
+	position: absolute;
+}
+.mblContent {
+	clear: both;
+	padding-bottom: 20px;
+}
+table.mblClose {
+	clear: both;
+	cursor: pointer;
+}
+.mblVibrate{
+	position: relative;
+	.animation-duration(.5s);
+	.animation-timing-function(ease-in-out);
+	.animation-iteration-count(infinite);
+	.animation-name(mblVibrate);
+	.transform(rotate(0deg));
+}
+.mblCloseContent{
+	.animation-duration(.3s);
+	.animation-timing-function(ease-in-out);
+	.animation-name(mblShrink);
+	.transform(scale(0.01));
+	&.mblShrink0{
+		.animation-name(mblShrink0);
+	}
+	&.mblShrink1{
+		.animation-name(mblShrink1);
+	}
+	&.mblShrink2{
+		.animation-name(mblShrink2);
+	}
+	&.mblShrink3{
+		.animation-name(mblShrink3);
+	}
+}
+
+/* dojox.mobile._IconItemPane */
+.mblIconItemPaneHeading {
+	position: relative;
+	clear: both;
+	overflow: hidden;
+	margin-top: 0px;
+	padding-left: 40px;
+	height: 25px;
+	border-top: 1px solid #f1f3f4;
+	border-bottom: 1px solid #717d85;
+	.background-image-linear-gradient-top-bottom-2-stops(#e0e4e7, #b4bec6, 0.5, #c4ccd2, 0.5, #bfc8ce);
+	font-family: Helvetica;
+	font-size: 14px;
+	color: white;
+	line-height: 26px;
+	text-shadow: rgba(0,0,0,0.6) 0px -1px 0px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.mblIconItemPaneIcon {
+	position: absolute;
+	top: -2px;
+	left: 1px;
+}
+
+@-webkit-keyframes mblVibrate { .keyframes-vibrate-webkit(); }
+@keyframes         mblVibrate { .keyframes-vibrate       (); }
+@-webkit-keyframes mblShrink  { .keyframes-transform-from-to-webkit(scale(1), scale(0.01)); }
+@keyframes         mblShrink  { .keyframes-transform-from-to       (scale(1), scale(0.01)); }
+@-webkit-keyframes mblShrink0 { .keyframes-transform-from-to-webkit(scale(1), translate(-40%,-70%) scale(0.01)); }
+@keyframes         mblShrink0 { .keyframes-transform-from-to       (scale(1), translate(-40%,-70%) scale(0.01)); }
+@-webkit-keyframes mblShrink1 { .keyframes-transform-from-to-webkit(scale(1), translate(-14%,-70%) scale(0.01)); }
+@keyframes         mblShrink1 { .keyframes-transform-from-to       (scale(1), translate(-14%,-70%) scale(0.01)); }
+@-webkit-keyframes mblShrink2 { .keyframes-transform-from-to-webkit(scale(1), translate(14%,-70%)  scale(0.01)); }
+@keyframes         mblShrink2 { .keyframes-transform-from-to       (scale(1), translate(14%,-70%)  scale(0.01)); }
+@-webkit-keyframes mblShrink3 { .keyframes-transform-from-to-webkit(scale(1), translate(40%,-70%)  scale(0.01)); }
+@keyframes         mblShrink3 { .keyframes-transform-from-to       (scale(1), translate(40%,-70%)  scale(0.01)); }

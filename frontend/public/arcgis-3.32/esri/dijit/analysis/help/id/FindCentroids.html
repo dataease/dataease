@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Temukan Titik Berat</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Temukan Titik Berat"></h2>
+        <hr/>
+    <p>Alat ini bekerja dengan layer fitur multititik, garis, atau area untuk menentukan pusat setiap fitur yang representatif.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur di layer input multititik, garis atau area yang terlihat dalam jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, seluruh fitur pada layer input akan dianalisis, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer yang fiturnya akan digunakan untuk menghasilkan titik berat</h2></div>
+        <hr/>
+        <div>
+            <p> Layer multititik, garis, atau area yang akan digunakan untuk menemukan titik berat.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Perlihatkan saya lokasi output</h2></div>
+        <hr/>
+        <div>
+            <p> Jika <b>Pada titik berat sebenarnya</b> dicentang (default), output akan menghasilkan lokasi titik berat untuk setiap fitur input. Titik berat akan ditemukan sebagai berikut:
+                <ul>
+                    <li>Fitur multititik&mdash;titik berat output akan dicari di koordinat rata-rata x dan y dari semua titik dalam fitur multititik.
+                    </li>
+                    <li>Fitur garis&mdash;titik berat output akan dicari di koordinat rata-rata x dan y tertimbang titik tengah dari semau segmen garis dalam fitur garis. Berat didasarkan pada panjang segmen.
+                    </li>
+                    <li>Fitur area&mdash;Titik berat output akan dicari di tengah area.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika  <b>dimuat oleh fitur input</b> dicentang, fitur titik output akan dimuat oleh atau di dalam setiap fitur input. Fitur titik yang dihasilkan akan muncul sebagai berikut:
+                <ul>
+                    <li>Fitur multititik&mdash;Titik berat output akan bertepatan dengan satu titik dalam kelompok multititik.
+                    </li>
+                    <li>Fitur garis&mdash;Titik berat output akan berada di garis.  Jika garis melengkung, output akan berada di titik tengah garis tersebut. 
+                    </li>
+                    <li>Fitur area&mdash;Titik output akan berada di dalam fitur area.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

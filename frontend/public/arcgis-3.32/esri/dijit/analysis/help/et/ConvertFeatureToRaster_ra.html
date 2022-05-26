@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Teisenda vektorist rastriks</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Teisenda vektorist rastriks t&ouml;&ouml;riist"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist teisendab vektorobjektid rasterkihiks.
+    </p>
+    <p>Iga objektiklassi, mis sisaldab punkt-, joon- v&otilde;i pindobjekte, saab teisendada rasterandmestikuks.
+    </p>
+    <p>V&auml;ljundi rasterpiksli v&auml;&auml;rtus m&auml;&auml;ratakse piksli keskpunkti j&auml;rgi.
+    </p>
+    <p>V&auml;ljundrastri t&uuml;&uuml;bi m&auml;&auml;rab sisendv&auml;lja t&uuml;&uuml;p. Kui v&auml;li on t&auml;isarv, on v&auml;ljundraster t&auml;isarv; kui v&auml;li on ujukomaarv, on ka v&auml;ljund ujukomaarv.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige teisendatav objektikiht</h2></div>
+        <hr/>
+        <div>
+            <p>Rasterandmestikuks teisendatav sisendobjektide kiht.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Valige väli</h2></div>
+        <hr/>
+        <div>
+            <p>Valige v&auml;li, mida kasutatakse v&auml;ljundrastrile v&auml;&auml;rtuste m&auml;&auml;ramiseks.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Väljundpiksli suurus</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>Saadaolevad &uuml;hikud on miil, jalg, kilomeeter ja meeter. Vaike&uuml;hik on miil.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

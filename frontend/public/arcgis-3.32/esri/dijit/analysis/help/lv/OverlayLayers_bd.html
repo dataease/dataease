@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pārklāt slāņus</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Pārklāt slāņus"></h2>
+        <hr/>
+    <p>Pārklājuma slāņi kombinē vienu vai vairāk slāņus viena slānī. Jūs varat iedomāties pārklā&scaron;anu kā kar&scaron;u kaudzes izlīdzinā&scaron;anu, izveidojot vienotu karti, kas satur visu kaudzes informāciju. Pārklājums ir daudz vairāk nekā darbu savieno&scaron;ana, visi pārklājuma atribūti tika pārnesti uz gala produktu. Pārklājums tiek izmantots, lai atbildētu uz vienu no ģeogrāfijas pamatjautājumiem: &ldquo;Kas virs kā atrodas?&rdquo; Tālāk sniegtie ir piemēri:
+        <ul>
+            <li>Kuri zemes gabali atrodas simtgadīgā palienē? (&ldquo;Iek&scaron;pusē&rdquo; ir vēl viens veids, kā pateikt, kas virs kā atrodas.)
+                  
+            </li>
+            <li>Kādi zemes lietojuma veidi atrodas uz noteikta augsnes veida?
+                 
+            </li>
+            <li>Kādas akas atrodas pamestajās militārajās bāzēs?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Izmantot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti elementi tikai pa&scaron;reizējā kartes pārklājumā redzamajos ievades un pārklājuma slāņos. Ja nav atzīmēts, tiks pārklāti visi elementi abos slāņos, arī pa&scaron;reizējā kartes pārklājuma ārpusē.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties ievades slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta, līnijas vai laukuma slānis, kas tiks pārklāts.
+            </p>
+            <p class="OnlineOnly">Papildus slāņa izvēlei no kartes nolaižamā saraksta apak&scaron;ā varat atlasīt  <b>Izvēlēties Living Atlas analīzes slāni</b> vai <b>Izvēlēties analīzes slāni</b>. Tādējādi tiek atvērta galerija, kurā apskatāmi dažādi analīzes slāņi. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Izvēlēties pārklājuma slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Pārklājamais slānis uz ievades slāņa.  
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Izvēlēties pārklājuma metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Pārklājuma metode nosaka, kā tiek kombinēts ievades slānis un pārklājuma slānis.  
+
+                <ul>
+                    <li> <b>&Scaron;ķērsojums</b>&nbsp;&mdash; rezultāts ietvers tikai tos pārklājuma slāņa elementus vai elementu daļas, kas pārklājas ar elementiem ievades slānī. Ja krustojas līnijas vai apgabala elementi, jums ir iespēja norādīt elementa tipu, kuru vēlaties kā izvades.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punkti ar punktiem
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punkti un punktu ievade">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punkti un punkti ar punktu izvadi">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Līnijas ar līnijām 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Līnijas ar līniju ievade">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Līnijas un līnijas ar līniju izvadi ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Laukumi ar laukumiem
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Laukumi un laukumu ievade">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Laukumi un laukumi ar laukumu izvadi">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Izdzēst</b>&nbsp;&mdash; rezultāts ietvers tikai tos pārklājuma slāņa elementus vai daļas, kas nepārklājas ar apgabaliem ievades slānī.  Pārklājuma slānis var saturēt laukumu, līniju, vai punktu elementus.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Tam būs tāds pats elementu tips (laukumi, līnijas vai punkti) kā ievades un pārklājuma slāņiem. Noklusējuma nosaukums ir balstīts uz pārklājuma metodi un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta lodziņā, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

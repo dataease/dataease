@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kết nối Đối tượng</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Kết nối Đối tượng"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ Kết nối Đối tượng l&agrave;m việc với hai lớp đối tượng v&agrave; nối c&aacute;c thuộc t&iacute;nh từ một đối tượng với đối tượng c&ograve;n lại dựa tr&ecirc;n mối quan hệ kh&ocirc;ng gian v&agrave; thuộc t&iacute;nh. C&ocirc;ng cụ x&aacute;c định tất cả c&aacute;c đối tượng đầu v&agrave;o n&agrave;o đ&aacute;p ứng những điều kiện li&ecirc;n kết x&aacute;c định v&agrave; th&ecirc;m lớp nối v&agrave;o lớp mục ti&ecirc;u. 
+    </p>
+    <p>C&ocirc;ng cụ Kết nối Đối tượng c&oacute; thể được &aacute;p dụng cho dữ liệu điểm, đường, v&ugrave;ng v&agrave; bảng. Một kết nối kh&ocirc;ng gian y&ecirc;u cầu dữ liệu của bạn phải c&oacute; th&ocirc;ng tin h&igrave;nh học. 
+    </p>
+    <p>Nếu chọn t&ugrave;y chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp mục ti&ecirc;u v&agrave; lớp kết nối sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Chọn lớp được nối</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp mục ti&ecirc;u sẽ c&oacute; c&aacute;c thuộc t&iacute;nh từ lớp kết nối được th&ecirc;m v&agrave;o bảng của n&oacute;.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Chọn lớp để kết nối với lớp mục tiêu</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp kết nối c&oacute; c&aacute;c thuộc t&iacute;nh sẽ được th&ecirc;m v&agrave;o lớp mục ti&ecirc;u.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Chọn (các) loại kết nối</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể sử dụng kết nối kh&ocirc;ng gian, kết nối thuộc t&iacute;nh hoặc kết hợp cả hai. 
+                <ul>
+                    <li> <b>Kh&ocirc;ng gian</b>&mdash;Sử dụng mối quan hệ kh&ocirc;ng gian cụ thể để kết nối c&aacute;c đối tượng. Điều n&agrave;y y&ecirc;u cầu cả hai lớp phải c&oacute; th&ocirc;ng tin h&igrave;nh học.
+                    </li>
+                    <li> <b>Thuộc t&iacute;nh</b>&mdash;Kết nối c&aacute;c đối tượng dựa tr&ecirc;n c&aacute;c trường tương ứng.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Chọn một mối quan hệ không gian</h2></div>
+        <hr/>
+        <div>
+            <p>Mối quan hệ kh&ocirc;ng gian sẽ x&aacute;c định xem đối tượng c&oacute; được kết nối với nhau kh&ocirc;ng. Mối quan hệ hiện c&oacute; sẽ t&ugrave;y thuộc v&agrave;o loại h&igrave;nh học (điểm, đường, v&ugrave;ng) được sử dụng l&agrave;m đối tượng đầu v&agrave;o. C&aacute;c mối quan hệ khả dụng bao gồm:
+                <ul>
+                    <li> <b>Tr&ugrave;ng với</b>&mdash;C&aacute;c đối tượng trong lớp mục ti&ecirc;u sẽ được kết nối nếu ch&uacute;ng tr&ugrave;ng với đối tượng trong lớp kết nối.
+                    </li>
+                    <li> <b>Giao</b>&mdash;C&aacute;c đối tượng trong lớp mục ti&ecirc;u sẽ được kết nối nếu ch&uacute;ng giao với c&aacute;c đối tượng trong lớp kết nối.
+                    </li>
+                    <li> <b>Ho&agrave;n to&agrave;n chứa</b>&mdash;C&aacute;c đối tượng sẽ được kết nối nếu c&aacute;c đối tượng trong lớp mục ti&ecirc;u ho&agrave;n to&agrave;n chứa c&aacute;c đối tượng trong lớp kết nối.
+                    </li>
+                    <li> <b>Ho&agrave;n to&agrave;n nằm trong</b>&mdash;C&aacute;c đối tượng sẽ được kết nối nếu c&aacute;c đối tượng trong lớp mục ti&ecirc;u ho&agrave;n to&agrave;n nằm trong c&aacute;c đối tượng của lớp kết nối.
+                    </li>
+                    <li> <b>Trong khoảng c&aacute;ch với</b>&mdash;C&aacute;c đối tượng trong lớp mục ti&ecirc;u sẽ được kết hợp nếu ch&uacute;ng nằm trong một khoảng c&aacute;ch nhất định so với c&aacute;c đối tượng của lớp kết nối.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Kết nối thuộc tính</h2></div>
+        <hr/>
+        <div>
+            <p>Mối quan hệ thuộc t&iacute;nh sẽ x&aacute;c định xem c&aacute;c đối tượng c&oacute; được kết nối với nhau hay kh&ocirc;ng. C&aacute;c đối tượng được kết nối khi gi&aacute; trị trường trong lớp kết nối giống với gi&aacute; trị trường trong lớp mục ti&ecirc;u. 
+            </p>
+            <p>V&iacute; dụ: giả sử bạn c&oacute; một th&ocirc;ng tin địa chỉ d&acirc;n cư tr&ecirc;n to&agrave;n bang (bao gồm một trường  <i>ZIP</i>) v&agrave; một tập dữ liệu dạng bảng chứa th&ocirc;ng tin nh&acirc;n khẩu học về y tế theo M&atilde; ZIP (bao gồm trường c&oacute; t&ecirc;n <i>HEALTHZIP</i>). Bạn c&oacute; thể li&ecirc;n kết tập dữ liệu về y tế với dữ liệu cư tr&uacute; bằng c&aacute;ch kết nối trường <i>ZIP</i> với <i>HEALTHZIP</i>, sẽ cho ra một lớp về nơi cư tr&uacute; c&oacute; chứa dữ liệu y tế tương ứng.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Chọn phương thức kết nối</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định c&aacute;ch m&agrave; c&aacute;c kết nối giữa lớp mục ti&ecirc;u v&agrave; lớp kết nối sẽ được xử l&yacute; nếu nhiều đối tượng trong lớp kết nối được ph&aacute;t hiện c&oacute; mối quan hệ giống với lớp mục ti&ecirc;u. Bạn c&oacute; thể lựa chọn một trong hai phương thức kết nối:
+                <ul>
+                    <li> <b>Kết nối một - một</b>&mdash; T&ugrave;y chọn n&agrave;y kết nối c&aacute;c t&iacute;nh năng trong lớp mục ti&ecirc;u với một đối tượng duy nhất trong lớp kết nối. C&aacute;ch kết nối c&aacute;c t&iacute;nh năng được x&aacute;c định bằng tham số <b>Th&ecirc;m số liệu thống k&ecirc;</b> hoặc tham số <b>X&aacute;c định bản ghi n&agrave;o được lưu giữ</b>. Nếu <b>Th&ecirc;m số liệu thống k&ecirc;</b> được sử dụng, tất cả đối tượng được kết nối ph&ugrave; hợp sẽ được tổng hợp th&agrave;nh từng đối tượng trong lớp mục ti&ecirc;u. Số lượng c&aacute;c đối tượng được kết nối sẽ được mặc định th&ecirc;m v&agrave;o.Nếu <b>X&aacute;c định bản ghi n&agrave;o được lưu giữ</b>
+được sử dụng, bạn c&oacute; thể chọn giữ bản ghi khớp đầu ti&ecirc;n (mặc định) hoặc chọn giữ bản ghi khớp dựa tr&ecirc;n biểu thức. Biểu thức c&oacute; thể sử dụng trường số
+(t&ugrave;y chọn cho bản ghi lớn nhất hoặc nhỏ nhất) hoặc trường ng&agrave;y (t&ugrave;y chọn mới nhất hoặc cũ nhất).
+                    </li>
+                    <li> <b>Kết nối một - nhiều</b>&mdash;T&ugrave;y chọn n&agrave;y sẽ kết nối tất cả c&aacute;c đối tượng ph&ugrave; hợp trong lớp kết nối với lớp mục ti&ecirc;u. Lớp kết quả sẽ chứa nhiều bản ghi của đối tượng mục ti&ecirc;u.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>V&iacute; dụ: giả sử bạn muốn t&igrave;m kiếm c&aacute;c si&ecirc;u thị nằm trong v&ograve;ng b&aacute;n k&iacute;nh 5 km so với chợ n&ocirc;ng sản. Trong trường hợp n&agrave;y, lớp được kết nối c&oacute; một đối tượng đại diện cho một chợ n&ocirc;ng sản v&agrave; c&aacute;c đối tượng kết nối đại diện cho những cửa h&agrave;ng tạp h&oacute;a tại địa phương c&oacute; c&aacute;c thuộc t&iacute;nh như tổng doanh số h&agrave;ng năm. Bằng c&aacute;ch sử dụng c&ocirc;ng cụ  <b>Kết nối Đối tượng</b>, bạn sẽ t&igrave;m thấy năm cửa h&agrave;ng tạp h&oacute;a đ&aacute;p ứng được ti&ecirc;u ch&iacute; n&agrave;y. Nếu bạn x&aacute;c định phương thức kết nối l&agrave; <b>Kết nối một - nhiều</b>, bạn sẽ phải c&oacute; năm thuộc t&iacute;nh b&ecirc;n trong kết quả của m&igrave;nh, mỗi d&ograve;ng đại diện cho chợ n&ocirc;ng sản v&agrave; một si&ecirc;u thị. Nếu bạn x&aacute;c định mối quan hệ l&agrave; <b>Li&ecirc;n kết một - một</b> v&agrave; chọn một sự thống k&ecirc;, bạn sẽ c&oacute; một đối tượng đại diện cho chợ n&ocirc;ng sản v&agrave; th&ocirc;ng tin tổng kết từ c&aacute;c si&ecirc;u thị, như th&ocirc;ng tin số lượng (5) v&agrave; những dữ liệu thống k&ecirc; kh&aacute;c như tổng doanh số h&agrave;ng năm.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Thêm số liệu thống kê (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Nếu chọn t&ugrave;y chọn  <b>Li&ecirc;n kết một - một</b> cho c&aacute;c trường dạng số, bạn c&oacute; thể tổng hợp v&agrave; t&iacute;nh to&aacute;n dữ liệu thống k&ecirc; tr&ecirc;n c&aacute;c đối tượng được kết nối. Theo mặc định, số lượng đối tượng kết nối ph&ugrave; hợp sẽ được t&iacute;nh to&aacute;n v&agrave; được th&ecirc;m v&agrave;o lớp kết quả. Nếu bạn chọn kh&ocirc;ng th&ecirc;m c&aacute;c dữ liệu thống k&ecirc; bổ sung, đối tượng ph&ugrave; hợp đầu ti&ecirc;n trong lớp kết nối sẽ được kết nối với đối tượng ph&ugrave; hợp đầu ti&ecirc;n trong lớp mục ti&ecirc;u. Bạn c&oacute; thể t&iacute;nh một hoặc nhiều những điều sau đ&acirc;y:
+            </p>
+            <ul>
+                <li>Tổng
+                </li>
+                <li>Tối thiểu
+                </li>
+                <li>Tối đa
+                </li>
+                <li>Trung b&igrave;nh
+                </li>
+                <li>Độ lệch chuẩn
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Tạo các kết quả dưới dạng hiển thị lớp đối tượng được lưu trữ</h2></div>
+        <hr/>
+        <div>
+            <p> Việc tạo kết quả dưới dạng lớp đối tượng được lưu trữ cho ph&eacute;p dữ liệu lu&ocirc;n được cập nhật khi dữ liệu nguồn thay đổi.  Lớp đối tượng địa l&yacute; dưới dạng chế độ hiển thị chứa c&aacute;c kết nối sẽ chỉ đọc v&agrave; kh&ocirc;ng thể sử dụng credits để ph&acirc;n t&iacute;ch v&agrave; lưu trữ.
+            </p>
+            <p>Bạn c&oacute; thể tạo lớp đối tượng địa l&yacute; dưới chế độ hiển thị từ kết quả ph&acirc;n t&iacute;ch nếu đ&aacute;p ứng tất cả c&aacute;c điều kiện sau:
+                <ul>
+                    <li>Bạn l&agrave; chủ sở hữu của cả hai lớp.
+                    </li>
+                    <li>Cả hai lớp đều l&agrave; lớp đối tượng được lưu trữ.
+                    </li>
+                    <li>Bạn đang thực hiện một kết nối dựa tr&ecirc;n thuộc t&iacute;nh.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

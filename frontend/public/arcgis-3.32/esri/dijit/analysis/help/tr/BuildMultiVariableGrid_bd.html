@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Çok Değişkenli Grid Oluştur</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Veri Ekle iş akışı diyagramı"></h2>
+        <hr/>
+    <p>&Ccedil;ok Değişkenli Grid Oluşturma aracı, bir veya daha fazla nokta, &ccedil;izgi veya &ccedil;okgen detay katmanlarıyla &ccedil;alışır. Bu ara&ccedil;, bir kare veya altıgen kutu bi&ccedil;iminde grid oluşturur ve her kutu i&ccedil;in değerleri her bir girdi katmanının yakınlığına dayalı olarak hesaplar. Bu değerler aşağıdaki değişkenleri i&ccedil;erebilir: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>En Yakına Uzaklık</b>&mdash;Her kutudan en yakın detaya olan mesafe
+            </li>
+            <li> <b>En Yakının &Ouml;zniteliği</b>&mdash;Her kutuya en yakın olan detayın alan değeri
+            </li>
+            <li> <b>En Yakının &Ouml;zeti</b>&mdash;Her kutuya bir mesafe i&ccedil;inde olan t&uuml;m detaylar i&ccedil;in belirtilen istatistik
+            </li>
+            <li> <b>Kesişme &Ouml;zeti</b>&mdash;Her kutuyla kesişen t&uuml;m detaylar i&ccedil;in belirtilen istatistik
+            </li>
+        </ul>
+        
+    </p>
+    <p>Yalnızca belirttiğiniz değişkenler sonu&ccedil; katmanına dahil edilir. Bu değişkenler, verilerinizin yakınlığını ve dağılımını anlamanıza yardımcı olabilir. Sonu&ccedil;lar, aşağıdaki gibi soruları yanıtlamaya başlamanıza yardımcı olabilir:
+        <ul>
+            <li>Toplu taşıma altyapısının &ccedil;oklu katmanları verildiğinde, şehrin hangi b&ouml;l&uuml;m&uuml; toplu taşıma ara&ccedil;larıyla en az erişilebilir durumdadır?
+            </li>
+            <li>G&ouml;ller ve nehirler gibi su yolları katmanları verildiğinde, ABD&rsquo;de her konuma en yakın su kaynağının adı nedir?
+            </li>
+            <li>Bir hane geliri katmanı verildiğinde, ABD&rsquo;de nerede 50 mil civarında, gelirdeki değişim en b&uuml;y&uuml;kt&uuml;r?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Çok değişkenli grid oluşturmak için kullanılacak kutuların türünü seçin</h2></div>
+        <hr/>
+        <div>
+             
+            <p>&Ccedil;ok değişkenli grid oluşturmak i&ccedil;in kullanılacak kutuların t&uuml;r&uuml; ve boyutu.  <b>Kare</b> se&ccedil;eneği i&ccedil;in, belirtilen sayı ve birim karenin y&uuml;ksekliğini ve uzunluğunu belirler. <b>Altıgen</b> se&ccedil;eneği i&ccedil;in ise, belirtilen sayı ve birimler paralel kenarlar arasındaki mesafeyi belirler.
+            </p>
+            <p>Bu analiz kutu kullanır ve izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir.  <b>İşlem koordinat sistemini</b> <b>Analiz Ortamları</b> i&ccedil;inden ayarlayabilirsiniz. 
+ İşlem koordinat sisteminiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemine ayarlanmamış ise, <b>Analizi &Ccedil;alıştır</b> dığınızda bu ayarlamayı yapmanız istenir.
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Gride eklemek istediğiniz giriş katmanları ve değişkenleri seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Ekle d&uuml;ğmesine tıklayarak ( <b>+</b>) <b>Değişken Ekle</b> penceresini a&ccedil;ın ve analizinize bir katman ekleyin. <b>Değişken Ekle</b> penceresinde, bir girdi katmanı se&ccedil;in ve o girdi katmanı i&ccedil;in hesaplamak istediğiniz değişkenleri yapılandırın.
+            </p>
+            <p>Hesaplamak istediğiniz değişkenleri se&ccedil;ip yapılandırdıktan sonra, katman diğer se&ccedil;ili katmanlarla birlikte ara&ccedil; penceresinde listelenecektir.  <b>Değişken Ekle</b> penceresini a&ccedil;mak i&ccedil;in herhangi bir katmanda d&uuml;zenle d&uuml;ğmesine tıklayın ve bu katman i&ccedil;in yapılandırılmış t&uuml;m değişkenleri g&ouml;r&uuml;n. Herhangi bir katmanı ve ilgili t&uuml;m değişkenleri analizden kaldırmak i&ccedil;in bu katmanı sil d&uuml;ğmesine tıklayın.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Değişken Ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Bu pencere bir girdi katmanı se&ccedil;menize ve bu girdi katmanı i&ccedil;in hesaplamak istediğiniz değişkenleri yapılandırmanıza izin verir. Başlamak i&ccedil;in,  <b>Bir girdi katmanı se&ccedil;</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak analizinize eklemek istediğiniz nokta, &ccedil;okgen veya &ccedil;izgi katmanını se&ccedil;in.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+            <p>Bir girdi katmanı se&ccedil;tikten sonra, d&uuml;zenlemek &uuml;zere yeni bir değişken a&ccedil;mak i&ccedil;in  <b>Bir değişken ekle</b> d&uuml;ğmesine tıklayın. Her değişken i&ccedil;in benzersiz bir isim girmelisiniz. Bu, sonu&ccedil; katmanının &ouml;znitelik tablosunda oluşturulan alanın adı olacaktır.
+            </p>
+            <p>Eklenecek değişken t&uuml;r&uuml;n&uuml; se&ccedil;mek i&ccedil;in a&ccedil;ılır men&uuml;y&uuml; kullanın. Her değişken t&uuml;r&uuml;, benzersiz bir parametre k&uuml;mesiyle yapılandırılmalıdır ve t&uuml;m parametreler gereklidir.
+            </p>
+            <p>Se&ccedil;ilen katman i&ccedil;in istenen t&uuml;m değişkenleri ekledikten sonra, değişkenleri kaydetmek i&ccedil;in  <b>Ekle</b> d&uuml;ğmesine tıklayın.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

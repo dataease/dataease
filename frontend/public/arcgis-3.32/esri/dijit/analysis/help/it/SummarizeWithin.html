@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Riepiloga Entro</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Riepiloga Entro"></h2>
+        <hr/>
+    <p>Questo strumento consente di trovare feature (e porzioni di feature) che si trovano entro i confini di aree nel primo layer di input.  Ad esempio:
+        <ul>
+            <li>Dati un layer di confini spartiacque ed un layer di confini di utilizzo del suolo per tipo di utilizzo, &egrave; possibile calcolare la superficie totale in acri del tipo di utilizzo del suolo per ogni spartiacque. 
+            </li>
+            <li>Dati un layer di lotti di una regione ed un layer di confini di citt&agrave;, &egrave; possibile riepilogare il valore medio di lotti non occupati entro ciascun confine di citt&agrave;.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, vengono analizzate solo quelle feature nel layer di input e nel layer da riepilogare visibili all'interno dell'estensione mappa corrente.  Se &egrave; deselezionata, vengono analizzate tutte le feature presenti nel layer di input e nel layer da riepilogare, anche se esterne all'estensione di mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Scegli layer areale per riepilogare altre feature entro i suoi confini</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer areale che verr&agrave; utilizzato per riepilogare le feature che rientrano nei suoi confini. 
+            </p>
+            <p>&Egrave; possibile scegliere tra un layer areale fornito e i contenitori generati quando lo strumento &egrave; in esecuzione.   Quando si generano i contenitori, nel caso di  <b>Quadrato</b>, il numero e le unit&agrave; specificate determinano l'altezza e la lunghezza del quadrato. Nel caso di <b>Esagono</b>, il numero e le unit&agrave; specificate determinano la distanza tra i lati paralleli.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Scegliere il layer per il riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Vengono riepilogate le feature in questo layer che si trovano entro i confini di feature presenti nel layer di input sopra menzionato. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Aggiungi statistiche dal layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche per attributi numerici dei punti che si trovano entro i confini delle feature. 
+            </p>
+            <p>Se si seleziona la casella di controllo  <b>Conteggio di punti</b>, viene calcolato il numero totale di punti che si trovano entro ciascun confine di area.  Inoltre, &egrave; possibile calcolare statistiche per attributi numerici dei punti che si trovano entro ciascun confine di area.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Aggiungi statistiche da</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche per attributi numerici delle linee da riepilogare. 
+            </p>
+            <p>Se si seleziona la casella di controllo  <b>Lunghezza totale di linee in</b>, viene calcolata la lunghezza totale di linee all'interno di ciascun confine di area.  Inoltre, &egrave; possibile calcolare statistiche per attributi numerici delle linee che si trovano entro ciascun confine di area.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Aggiungi statistiche da</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche per attributi numerici delle aree da riepilogare. 
+            </p>
+            <p>Se la casella di controllo  <b>Area totale usando</b> &egrave; selezionata, viene calcolata l'area totale delle feature che si trovano entro ciascun confine di area del primo layer di input.  Inoltre, &egrave; possibile calcolare statistiche per attributi numerici delle feature che si trovano entro ciascun confine di area.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Aggiungi statistiche da</h2></div>
+        <hr/>
+        <div>
+            <p>Dopo aver scelto un layer da riepilogare, &egrave; possibile, se lo si desidera, calcolare statistiche di qualsiasi attributo numerico dei punti, delle linee o delle aree che si trovano nel layer di area di input. 
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>In base ai tipi di feature che si stanno riepilogando, &egrave; possibile calcolare il conteggio totale di punti, la lunghezza totale delle linee o l'area totale.
+            </p>
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Scegli il campo in base a cui raggruppare</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; un attributo delle feature di tipo  <b>Riepiloga</b> utilizzabile per calcolare separatamente le statistiche di ciascun valore di attributo univoco. Ad esempio, si supponga che il primo layer di input contenga confini di citt&agrave; e che le feature di riepilogo corrispondano a lotti.  Uno degli attributi dei lotti &egrave; <i>Status</i> e contiene due valori: NON OCCUPATO e OCCUPATO. Per calcolare l'area totale dei lotti occupati e non occupati entro i confini delle citt&agrave;, utilizzare <i>Status</i> come gruppo per attributo. Le statistiche relative a ciascun gruppo, nonch&eacute; il conteggio delle feature incluse in ogni confine di area, verranno visualizzate nel popup del layer dei risultati.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Aggiungi minoranza, maggioranza</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Se si desidera trovare i valori di attributo che in ciascun gruppo costituiscono la minoranza (meno dominanti) o la maggioranza (pi&ugrave; dominanti) in ogni confine del primo layer di input, selezionare  <b>Aggiungi minoranza, maggioranza</b>.   Quando si seleziona <b>Aggiungi minoranza, maggioranza</b>, vengono aggiunti due nuovi campi al layer dei risultati.   Se si seleziona anche <b>Aggiungi percentuali</b>, vengono aggiunti altri due campi, al layer dei risultati, che contengono le percentuali relative ai valori degli attributi di minoranza e maggioranza all'interno di ciascun gruppo.
+            </p>
+            <ul>
+                <li>Se si intende riepilogare punti, i valori di minoranza e maggioranza vengono calcolati sulla base del numero di punti in ogni area di confine nel layer areale di input.  
+                </li>
+                <li>Se si intende riepilogare linee, i valori di minoranza e maggioranza vengono calcolati sulla base della lunghezza delle linee in ogni area di confine nel layer areale di input.  
+                </li>
+                <li>Se si intende riepilogare aree, i valori di minoranza e maggioranza vengono calcolati sulla base delle aree in ogni area di confine nel layer areale di input.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Aggiungi percentuali</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Selezionare  <b>Aggiungi percentuali</b> se si desidera trovare la percentuale di ogni valore di attributo in ogni gruppo.  Un nuovo campo viene aggiunto alla tabella dei risultati contenente le percentuali di ogni valore di attributo in ogni gruppo. Se si seleziona anche <b>Aggiungi minoranza, maggioranza</b>, al layer dei risultati vengono aggiunti altri due campi contenenti le percentuali relative ai valori degli attributi di minoranza e maggioranza all&rsquo;interno di ciascun gruppo.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

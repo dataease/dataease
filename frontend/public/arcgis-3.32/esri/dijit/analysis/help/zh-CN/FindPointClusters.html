@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>查找点聚类</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="查找点聚类"></h2>
+        <hr/>
+    <p>此工具可基于点要素的空间分布查找周围噪点内的点要素聚类。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中输入点图层中的要素。如果未选中，则将分析输入点图层中的所有要素，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>选择要查找聚类的图层</h2></div>
+        <hr/>
+        <div>
+            <p>聚类所在的点图层。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>将视为聚类的最小点数</h2></div>
+        <hr/>
+        <div>
+            <p>要视为聚类的最小要素数。要素数少于给定数量的聚类将被视为噪点。
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>将搜索范围限制为(可选)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>将要素视为同一聚类的一部分的最大距离。如果留空，该工具将运行 HDBSCAN，其使用不同距离将不同密度的聚类与稀疏噪点分离。如果给出了一个值，该工具将运行 DBSCAN，其使用指定距离将密集簇与稀疏噪点分离。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

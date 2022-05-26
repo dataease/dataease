@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Vegetatie controleren</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Tool Vegetatie controleren voor Portal"></h2>
+        <hr/>
+    <p>Deze tool voert een rekenkundige bewerking uit op de banden van een multiband rasterlaag om informatie over de vegetatiedekking te onthullen van het onderzoeksgebied.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>De invoergegevens selecteren</h2></div>
+        <hr/>
+        <div>
+            <p>Kies de multiband rasterlaag. Zorg ervoor dat het invoerraster over de juiste banden beschikt.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Kies methode voor controle van vegetatie</h2></div>
+        <hr/>
+        <div>
+            <p>Kies de methode om de vegetatie-indexlaag te maken. De verschillende vegetatie-indexen kunnen bepaalde objecten helpen benadrukken of verschillende geluiden verminderen.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI is een niet-lineaire vegetatie-index voor het wereldwijde toezicht op het milieu via satellietbeelden. Het is vergelijkbaar met NDVI, maar is minder gevoelig voor atmosferische effecten. Het wordt be&iuml;nvloed door de kale grond. Het wordt daarom niet aanbevolen voor gebruik in gebieden met schaarse of matig dichte vegetatie.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI is oorspronkelijk ontworpen van Landsat MSS-beelden, maar is aangepast voor gebruik met Landsat TM-beelden. Het is ook bekend als de Landsat TM Tasseled Cap groene-vegetatie-index. Deze controle-index kan ook worden gebruikt met beelden waarvan de bands dezelfde spectrale eigenschappen delen.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 is een vegetatie-index die probeert om de invloeden van de kale grond van de SAVI-methode te minimaliseren.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI is een gestandaardiseerde index zodat u een beeld komt vormen van de groenheid of ten opzichte van de biomassa. Deze index maakt gebruik van het contrast van de kenmerken van de twee banden van een multispectraal rasterdataset; de chlorofylpigmentabsorptie in de rode band en de hoge reflectiviteit van plantaardige materialen in het nabije infrarood (NIR) band.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI is vergelijkbaar met een verschil vegetatie-index; het is echter gevoelig voor atmosferische variaties. Bij gebruik van deze methode om verschillende beelden te vergelijken, moet het alleen worden gebruikt voor beelden die atmosferisch zijn gecorrigeerd. Deze informatie kan worden verstrekt door uw dataleverancier.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI is een vegetatie-index die probeert om de bodemhelderheidinvloeden te beperken met behulp van een correctiefactor voor de bodemhelderheid. Dit wordt vaak gebruikt in droge gebieden waar de vegetatieve dekking laag is.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Het Sultan's Formula-proces gebruikt een zes-band 8-bits afbeelding en heeft een specifiek algoritme toegepast om een drie-band 8-bits afbeelding te produceren. Het resulterende beeld arceert rotsformaties genaamd ofioliet op kusten. Deze formule is ontworpen op basis van de TM- en ETM-banden van een Landsat 5- of 7-scene.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Getransformeerde-SAVI is een vegetatie-index die probeert om de helderheid van de bodeminvloeden te minimaliseren door te veronderstellen dat de bodemlijn een willekeurige helling en onderschepping heeft.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Specificeer indexen van NIR-bandbreedte en Red-bandbreedte</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeer de bandindexen voor de NIR en red banden.
+            </p>
+            <p>Elke satellietsensor en luchtfotocamera legt informatie vast die is opgesplitst in bandindexen. Elke bandindex bevat de informatie voor een specifiek deel van het elektromagnetische spectrum. Deze vegetatiecontrolemethode vereist dat u de bandindex specificeert die de NIR en de Red golflengten heeft vastgelegd.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Helling van bodemlijn</h2></div>
+        <hr/>
+        <div>
+            <p>De helling van de bodemlijn. De helling is de geschatte lineaire relatie tussen de NIR en rode banden op een spreidingsdiagram.
+            </p>
+            <p>Deze parameter is alleen geldig voor de Transformed-Soil-Adjusted Vegetation Indexmethode.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Onderscheppen</h2></div>
+        <hr/>
+        <div>
+            <p>De waarde van NIR als de reflectiewaarde van de rood (red) band 0 is voor de bepaalde bodemlijnen.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , als Red 0 is.
+            </p> 
+            <p>Deze parameter is alleen geldig voor de Transformed-Soil-Adjusted Vegetation Indexmethode.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Hoeveelheid dekking groene vegetatie</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de hoeveelheid groene vegetatiebedekking die vereist is volgens de SAVI-methode.
+            </p>
+            <p>Geldige waarden zijn als volgt: 
+
+                <ul>
+                    <li>1 = gebieden zonder groene vegetatiedekking
+                        
+ 
+                    </li>
+                    <li>0,5 = gebieden met gemiddelde groene vegetatiedekking
+                        
+ 
+                    </li>
+                    <li>0 = gebieden met hoge groene vegetatiedekking
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Aanpassingsfactor</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de aanpassingsfactor om het bodemeffect tot een minimum te helpen beperken, wat vereist is bij de methode van de Transformed-Soil-Adjusted Vegetation Index. De standaardwaarde is 0.08.
+            </p>
+            <p>Een lage waarde betekent dat u het bodemeffect negeert. Een hoge waarde betekent dat de bodem het resultaat zal be&iuml;nvloeden.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

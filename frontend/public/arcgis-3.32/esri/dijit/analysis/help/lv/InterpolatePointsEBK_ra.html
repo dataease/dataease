@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punktu interpolēšana</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Punktu interpolē&scaron;anas rīks"></h2>
+        <hr/>
+    <p>&Scaron;is rīks sniedz iespēju prognozēt vērtības jaunos novietojumos, pamatojoties uz mērījumiem no punktu kolekcijas. Rīks izmanto punkta datus ar katra punkta vērtībām un atgriež prognozēto vērtību rastru.
+    </p>
+    <p>Citi &scaron;ī rīka lieto&scaron;anas gadījumi ietver:
+
+        <ul>
+            <li>Gaisa kvalitātes uzraudzības apgabalā ir sensori, kas mēra piesārņojuma līmeni. Interpolēt punktus var izmantot, lai prognozētu piesārņojuma līmeni vietās, kurās nav sensoru, piemēram, novietojumos, kuras ir visvairāk apdraudētas&nbsp;&mdash; skolas vai slimnīcas.
+                
+
+            </li>
+            <li>Prognozējiet smago metālu koncentrāciju ražā, pamatojoties uz paraugiem, kas iegūti no atsevi&scaron;ķiem augiem.
+                
+
+            </li>
+            <li>Prognozējiet augsnes barības vielu līmeņus (slāpeklis, fosfors, kālijs u.c.) un citus indikatorus (piemēram, elektrovadītspēju), lai izpētītu to relāciju ar ražas apjomu un noteiktu precīzu mēslojuma daudzumu katram novietojumam laukā.
+                
+
+            </li>
+            <li>Meteoroloģiskais lietojums ietver temperatūru, nokri&scaron;ņus un citu saistīto mainīgo prognozes (piemēram, skābā lietus).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Izvēlieties punktu slāni, kas satur novietojumus ar zināmām vērtībām</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis, kas satur punktus, kuros ir noteiktas vērtības.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Izvēlēties lauku interpolēšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties lauku, kura vērtības vēlaties interpolēt. Laukam ir jābūt skaitliskam.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizēt</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties savu iestatījumu ātruma un precizitātes attiecībai.
+            </p>
+            <p>Precīzākas prognozes tiek aprēķinātas ilgāk. &Scaron;is parametrs izmaina noklusējuma vērtības vairākiem citiem rīka Punktu interpolē&scaron;ana parametriem, lai optimizētu aprēķina ātrumu, rezultātu akurātumu vai līdzsvarotu abus rādītājus. Pēc noklusējuma rīks optimizē, lai panāktu līdzsvaru.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Pārveidot datus par normālo sadalījumu.</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, vai pārveidot datus par normālo sadalījumu.
+            </p>
+            <p>Interpolācija ir visprecīzākā datiem, kas atbilst normālajam (zvana formas) sadalījumam. Ja jūsu dati ne&scaron;ķiet normāli sadalīti, būs nepiecie&scaron;ams veikt transformāciju.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Lokālo modeļu lielums</h2></div>
+        <hr/>
+        <div>
+            <p>Rīks Punktu interpolē&scaron;ana darbojas, veidojot lokālus interpolācijas modeļus, kas tiek apvienoti, lai izveidotu galīgo prognožu karti. &Scaron;is parametrs nosaka, cik punkti tiks ietverti katrā lokālajā modelī. Mazākas vērtības padarīs rezultātus lokālākus un var atklāt maza mēroga efektus, tomēr tās var padarīt aprēķinus nestabilus. Lielākas vērtības būs stabilākas, tomēr tās var neuzrādīt dažus lokālus efektus.
+            </p>
+            <p>Vērtības diapazons ir 30&ndash;500, tomēr tipiskas vērtības atrodas diapazonā 50&ndash;200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Kaimiņu skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Prognozes tiek aprēķinātas, ņemot vērā kaimiņu punktus. &Scaron;is parametrs nosaka, cik punkti tiks izmantoti aprēķinos. Izmantojot lielu skaitu kaimiņu, parasti tiek iegūti precīzāki rezultāti, tomēr to aprēķins aizņem vairāk laika.
+            </p>
+            <p>&Scaron;īs vērtības diapazons ir 1&ndash;64, tomēr tipiskas vērtības atrodas diapazonā 5&ndash;15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Izvades šūnas lielums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ūnas lielums un izvades mērvienība.
+            </p>
+            <p>Pieejamās mērvienības ir pēdas, jūdzes, metri un kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Izvades prognozes kļūda</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, vai vēlaties izveidot prognozēto vērtību standartkļūdu rastru.
+            </p>
+            <p>Standartkļūdas ir noderīgas, jo sniedz informāciju par prognozēto vērtību uzticamību. Vienkār&scaron;s nosacījums ir tāds, ka patiesā vērtība 95 procentos gadījumu atradīsies starp divām prognozētās vērtības standartkļūdām. Piemēram, pieņemsim, ka jaunā novietojumā tiek prognozēta vērtība 50 ar standartkļūdu&nbsp;5. Tas nozīmē, ka &scaron;is rīks prognozē, ka patiesā vērtībā &scaron;ajā novietojumā ir 50, bet tā var būt arī augstāka vai zemāka, piemēram, 40 vai 60. Lai aprēķinātu &scaron;o saprātīgo vērtību diapazonu, reiziniet standartkļūdu ar&nbsp;2, pieskaitiet &scaron;o vērtību prognozētajai vērtībai, lai iegūtu diapazona aug&scaron;ējo robežu, un atņemiet to no prognozētās vērtības, lai iegūtu diapazona apak&scaron;ējo robežu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

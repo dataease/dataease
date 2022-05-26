@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Găsire cele mai apropiate</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Găsire cele mai apropiate"></h2>
+        <hr/>
+    <p>Acest instrument găsește cele mai apropiate obiecte spațiale și raportează și ordonează distanțele p&acirc;nă la obiectele spațiale din apropiere. Pentru a găsi cele mai apropiate elemente, instrumentul poate măsura folosind o distanță &icirc;n linie dreaptă sau un mod de deplasare selectat. Există opțiuni pentru limitarea numărului celor mai apropiate obiecte spațiale de găsit sau intervalul de căutare &icirc;n care să fie găsite. Rezultatele obținute de la acest instrument vă pot ajuta să răspundeți la următoarele tipuri de &icirc;ntrebări:
+        <ul>
+            <li>Care este cel mai apropiat parc de aici?
+            </li>
+            <li>La ce spital pot ajunge &icirc;n cel mai scurt timp cu mașina? C&acirc;t timp ar dura deplasarea &icirc;ntr-o zi de marți, la ora 17:30, aceasta fiind ora de v&acirc;rf?
+            </li>
+            <li>Care sunt distanțele rutiere dintre aceste orașe importante?
+            </li>
+            <li>Care din acești pacienți locuiesc pe o rază de două mile față de aceste uzine chimice?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Instrumentul Găsire cele mai apropiate returnează un strat tematic conțin&acirc;nd cele mai apropiate obiecte spațiale și un strat tematic linie care leagă locațiile de pornire de cele mai apropiate locații. Stratul tematic linie conține informații despre locațiile de pornire și cele mai apropiate și distanțele dintre ele.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărții</b>, numai obiectele spațiale vizibile &icirc;n extinderea curentă a hărții vor fi considerate drept puncte de pornire și obiecte spațiale potențial aflate cel mai aproape.  Dacă nu se bifează, vor fi luate &icirc;n considerare toate obiectele spațiale din stratul tematic introdus, chiar dacă se află &icirc;n afara extinderii curente a hărții.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Specificați locațiile de pornire</h2></div>
+        <hr/>
+        <div>
+            <p>Instrumentul Găsire cele mai apropiate măsoară de la obiectele spațiale din stratul tematic pe care &icirc;l specificați aici (locațiile de pornire) p&acirc;nă la locațiile pe care la specificați &icirc;n următorul parametru.  Instrumentul acceptă p&acirc;nă la  5.000 de obiecte spațiale pentru fiecare strat tematic. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Găsire cele mai apropiate locaţii din</h2></div>
+        <hr/>
+        <div>
+            <p>Instrumentul Găsire cele mai apropiate măsoară de la fiecare obiect spațial din primul strat tematic p&acirc;nă la locațiile din stratul tematic de față. Instrumentul acceptă p&acirc;nă la  5.000 de locații pentru fiecare strat tematic. </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Măsurați</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți dacă doriți găsirea celor mai apropiate locații &icirc;n funcție de distanța &icirc;n linie dreaptă sau &icirc;n funcție de un mod de deplasare selectat. Modurile de deplasare sunt activate doar atunci c&acirc;nd stratul dvs. tematic de intrare conține puncte. Modurile de deplasare disponibile sunt determinate de administratorul organizației dvs.  C&acirc;nd utilizați unul dintre modurile de deplasare, măsurătorile se fac de-a lungul drumurilor sau traseelor pietonale și respectă regulile &icirc;n vigoare, cum ar fi sensurile unice, interdicțiile de schimbare a direcției și așa mai departe.
+            </p>
+            <p>La măsurarea &icirc;ntre linii sau suprafețe, este determinată distanța de la sau p&acirc;nă la cel mai apropiat punct de-a lungul liniei sau graniței suprafeței. 
+            </p> 
+            <p>Dacă alegeți  <b>Timp de deplasare</b>, <b>Timp de deplasare &icirc;n mediul rural</b> sau <b>Timp de deplasare cu camionul</b>, beneficiați de opțiuni pentru modul de măsurare a timpului de conducere.
+                <ul>
+                    <li>
+                        <p>Debifați  <b>Utilizare trafic</b> pentru a găsi cele mai apropiate obiecte spațiale &icirc;n funcție de vitezele de deplasare fixe, cum ar fi limitele de viteză, &icirc;n locul vitezelor variabile rezultate &icirc;n urma condițiilor de trafic dinamice.
+                        </p>
+                        <p>Aceasta este opțiunea pe care trebuie să o alegeți dacă doriți să știți ce este &icirc;n general cel mai aproape, &icirc;nsă nu neapărat cel mai aproape &icirc;n condițiile de trafic aferente unei anumite ore și unei anumite zile.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Bifați  <b>Utilizare trafic</b> pentru a găsi cele mai apropiate obiecte spațiale &icirc;n funcție de o anumită oră de pornire sau de condițiile de trafic dinamice. Dacă se alege și opțiunea <b>Trafic &icirc;n timp real</b>, ora de pornire din locațiile de pornire este setată la ora curentă, iar vitezele curentă și prevăzute pentru trafic sunt preluate de la senzori și feeduri pentru a determina ce obiecte spațiale sunt cele mai apropiate. Vitezele prevăzute pentru trafic sunt calculate prin luarea &icirc;n considerare a vitezelor traficului &icirc;n timp real, a vitezelor istorice și a evenimentelor curente, cum ar fi buletinul meteo. Vitezele traficului sunt prezise pentru următoarele 12 ore, &icirc;n consecință, puteți deplasa glisorul pentru a seta ora de pornire cu p&acirc;nă la 12 ore &icirc;n avans.
+                        </p>
+                        <p>Utilizați aceste setări pentru traficul &icirc;n timp real pentru a afla la ce obiecte spațiale se poate ajunge &icirc;n cel mai scurt timp dacă se pleacă acum, dacă se pleacă peste o oră și așa mai departe.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Dacă se bifează  <b>Utilizare trafic</b> și se alege <b>Trafic &icirc;n funcție de condițiile normale</b> pentru o zi și o oră, instrumentul găsește cele mai apropiate obiecte spațiale pe baza vitezei medii istorice pentru fiecare interval de cinci minute de pe parcursul unei săptăm&acirc;ni obișnuite. Rezultatele includ traficul, &icirc;nsă elimină influența condițiilor și evenimentelor de trafic curente, care pot să difere semnificativ față de standard.
+                        </p>
+                        <p>Puteți utiliza aceste setări de trafic istorice pentru a &icirc;ntreba, de exemplu, &bdquo;La ce obiecte spațiale se poate ajunge cel mai repede dacă pornesc de la obiectele spațiale de pornire la ora 11:30 &icirc;ntr-o zi de miercuri?&rdquo; 
+                        </p>
+                        <p>Ora pe care o setați este evaluată pe fusul orar &icirc;n care se află obiectele spațiale de pornire. Prin urmare, dacă setați ora la 8:00 a.m. și aveți două obiecte spațiale de pornire, unul &icirc;n New York City și altul &icirc;n Los Angeles, cele mai apropiate locații vor fi găsite presupun&acirc;nd că ora de plecare este 8:00 a.m. ora Coastei de Est și, respectiv, 8:00 a.m. ora Pacificului.
+                        </p>
+                    </li>
+                </ul>
+                Rețineți că, pe măsură ce un vehicul se deplasează &icirc;nainte dintr-un punct, timpul se scurge și condițiile de trafic se modifică. Acest instrument ține cont de aceste variații c&acirc;nd bifați <b>Utilizare trafic</b>; cu toate acestea, nu &icirc;n toate regiunile este oferit suport pentru trafic. Faceți clic pe linkul <b>Vizualizare disponibilitate</b> de pe instrument pentru a afla dacă acest suport este oferit &icirc;n zona care vă interesează. 
+            </p>
+            <p> <b>Timpul de deplasare cu camionul</b> poate utiliza viteze de deplasare dinamice pe baza traficului, dar numai p&acirc;nă la limita legală de viteză a vehiculului. De exemplu, dacă viteza dinamică pentru o stradă, pe baza traficului &icirc;n timp real, este de 65 de mile pe oră, dar limita de viteză a vehiculului pentru strada respectivă este de 55 de mile pe oră, calculul va utiliza 55 de mile pe oră pentru strada respectivă.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selectare straturi tematice tip barieră</h2></div>
+        <hr/>
+        <div>
+            <p> Unul sau mai multe obiecte spațiale care acționează ca restricții temporare (bariere) atunci c&acirc;nd vă deplasați pe străzile subiacente. Puteți specifica barierele utiliz&acirc;nd obiecte spațiale de tip punct, linie sau poligon.
+            </p>
+            <p>O barieră de tip punct poate reprezenta modelul unui copac căzut, al unui accident, al unui cablu electric căzut sau al oricărui element care blochează complet traficul &icirc;ntr-o anumită poziție de pe stradă. Deplasarea este permisă pe stradă, dar nu &icirc;n afara barierei. Puteți specifica p&acirc;nă la 250 de obiecte spațiale care să acționeze ca bariere tip punct.
+            </p>
+            <p>O barieră tip linie interzice deplasarea &icirc;n orice punct &icirc;n care bariera se intersectează cu străzile. De exemplu, o paradă sau un protest care blochează traficul pe mai multe segmente de stradă pot fi modelate cu o barieră tip linie. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip linie depășește 500, instrumentul returnează o eroare.
+            </p>
+            <p>O barieră tip poligon interzice deplasarea &icirc;n orice punct &icirc;n care poligonul se intersectează cu străzile. Un mod de utilizare a acestui tip de barieră este să se modeleze inundațiile care acoperă suprafețele rețelei de străzi și să se facă imposibilă deplasarea pe traseul respectiv. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip poligon depășește 2000, instrumentul returnează o eroare.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Pentru fiecare locație din stratul de intrare</h2></div>
+        <hr/>
+        <div>
+            <p>Pentru a limita căutarea celor mai apropiate locații, aveți două opțiuni. O opțiune este să limitați numărul maxim de locații cele mai apropiate de găsit pentru fiecare locație de pornire. Puteți găsi un parc cel mai apropiat, două cele mai apropiate și așa mai departe. Cealaltă opțiune este să setați o distanță sau un timp de conducere de căutat maxim.
+            </p>
+            <p>Debif&acirc;nd opțiunile, numărul maxim al celor mai apropiate locații de găsit este 100 (limita instrumentului), iar intervalul maxim de căutare este infinit.
+            </p>
+            <p>Timpul de procesare depinde de numărul de locații, numărul de locații din apropiere și intervalul maxim de căutare. Procesarea durează mai mult atunci c&acirc;nd există mai multe locații sau intervale de căutare mai mari.
+            </p>
+            <p>Rețineți că, la setarea unei limite asupra unui interval de căutare, este posibil ca instrumentul să nu găsească nicio locație apropiată &icirc;n intervalul respectiv sau să găsească mai puține locații dec&acirc;t numărul maxim de locații cele mai apropiate pe care &icirc;l specificați.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic de obiecte spațiale care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă. Dacă stratul tematic de obiecte spațiale rezultat există deja, vi se va solicita să furnizați un alt nume. Stratul tematic de obiecte spațiale va conține două straturi: unul reprezent&acirc;nd locațiile cele mai apropiate și al doilea cu liniile care leagă locațiile de intrare de locațiile cele mai apropiate.
+            </p>
+            <p>Dacă selectați  <b>Includere straturi tematice de rute</b>, fiecare rută din rezultat este salvată și ca strat tematic de rute. Un strat tematic de rute include toate informațiile pentru o anumită rută, cum ar fi opririle alocate rutei și indicațiile de deplasare. Crearea straturilor tematice de rute este utilă dacă doriți să partajați rutele individuale cu alți membri din organizația dvs. sau să modificați mai mult rutele utiliz&acirc;nd butonul <b>Indicații</b> din aplicația de vizualizare a hărților. Straturile tematice de rute utilizează numele furnizat pentru stratul tematic de obiecte spațiale ca prefix și numele de rută generat ca parte din analiză este adăugat pentru a crea un nume unic pentru fiecare strat tematic de rută.
+            </p>
+            <p>Numărul maxim de straturi tematice de rute care pot fi create este de  1.000. Dacă rezultatul conține mai mult de  1.000 de rute și opțiunea  <b>Includere straturi tematice de rute</b> este bifată, instrumentul va crea doar serviciul de obiecte spațiale de ieșire.
+            </p>
+            <p>Utiliz&acirc;nd meniul derulant  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care vor fi salvate stratul tematic de obiecte spațiale și straturile tematice de rute, dacă sunt create.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

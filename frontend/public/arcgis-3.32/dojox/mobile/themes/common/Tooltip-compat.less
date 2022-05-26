@@ -1,0 +1,51 @@
+/* dojox.mobile.Tooltip */
+.mblTooltip {
+	background-image: none;
+	.mblHeading {
+		.mblTooltip-Heading-compat;
+		.mblToolBarButton {
+			.mblTooltip-Heading-ToolbarButton-compat;
+		}
+	}
+}
+
+.dj_ff3 {
+	.mblTooltip {
+		-moz-border-radius: @mbl-tooltip-border-radius;
+	}
+}
+
+.dj_ie9 {
+	.mblTooltip .mblHeading {
+		width: auto;
+	}
+}
+
+.dj_ie6, .dj_ie7 {
+	.mblTooltipBefore .mblTooltipArrow {
+		right: 0;
+	}
+	.mblTooltipAbove .mblTooltipArrow {
+		bottom: 0;
+	}
+	.mblTooltipBefore .mblTooltipInnerArrow {
+		right: -1px;
+	}
+	.mblTooltipAbove .mblTooltipInnerArrow {
+		bottom: -1px;
+	}
+	.mblTooltip {
+		.mblHeading {
+			padding: 0 9px 12px;
+			border-top: 1px solid @heading-background-color;
+			border-bottom: 1px solid @heading-background-color;
+			width: auto;
+			height: auto;
+			overflow: visible;
+			line-height: normal;
+			.mblToolBarButton {
+				margin: auto 6px;
+			}
+		}
+	}
+}

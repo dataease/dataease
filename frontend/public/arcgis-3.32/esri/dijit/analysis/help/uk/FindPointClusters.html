@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Пошук кластерів точок</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Пошук кластерів точок"></h2>
+        <hr/>
+    <p>Цей інструмент виконує пошук кластерів точкових об&rsquo;єктів у межах навколишнього шуму на основі їх просторового розподілу.
+    </p>
+    <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть аналізуватись тільки об&rsquo;єкти у вхідному шарі точок в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть аналізуватись всі об'єкти у вхідному шарі точок, навіть якщо вони знаходяться за межами поточного екстенту карти.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Вибрати шар, для якого будуть знаходитися кластери</h2></div>
+        <hr/>
+        <div>
+            <p>Вибрати шар точок, де будуть шукатись кластери. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Мінімальна кількість точок, які слід вважати кластером</h2></div>
+        <hr/>
+        <div>
+            <p>Мінімальна кількість об'єктів, які слід вважати кластером. Будь-який кластер з меншою кількістю об'єктів, ніж надано, буде вважатись шумом. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Обмежити діапазон пошуку до (необов’язково)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Максимальна відстань, на якій об&rsquo;єкти слід вважати частиною одного кластеру. Якщо залишити пустим, інструмент запустить HDBSCAN, який використовує різні відстані для відокремлення кластерів різних щільностей від шуму. Якщо задати значення, інструмент запустить DBSCAN, який використовує задану відстань для відокремлення щільних кластерів від шуму.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

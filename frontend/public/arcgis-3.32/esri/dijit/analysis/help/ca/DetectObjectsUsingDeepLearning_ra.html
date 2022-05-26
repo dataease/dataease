@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Detecta objectes amb Aprenentatge profund</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Detecta objectes amb Aprenentatge profund"></h2>
+        <hr/>
+    <p>Aquesta eina executa un model d'aprenentatge profund format en un r&agrave;ster d'entrada per produir una classe d'entitat que contingui els objectes que troba. Les entitats poden ser quadres de delimitaci&oacute; o pol&iacute;gons al voltant dels objectes trobats, o b&eacute; punts als centres dels objectes.
+    </p>
+    <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, nom&eacute;s s'analitzar&agrave; l'&agrave;rea de r&agrave;ster que sigui visible a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzar&agrave; tot el r&agrave;ster, encara que estigui fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Trieu la imatge utilitzada per detectar objectes</h2></div>
+        <hr/>
+        <div>
+            <p>Imatge d'entrada utilitzada per detectar objectes.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Trieu el model d'aprenentatge profund utilitzat per detectar objectes</h2></div>
+        <hr/>
+        <div>
+            <p>Element del paquet d'aprenentatge profund d'entrada ( <code>.dlpk</code>).
+            </p>
+            <p>El paquet d'aprenentatge profund es compon del fitxer JSON de definici&oacute; del model d'Esri ( <code>.emd</code>), el fitxer del model binari d'aprenentatge profund i, de manera opcional, la funci&oacute; de r&agrave;ster de Python que s'utilitzar&agrave;.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Especifiqueu els arguments del model d'aprenentatge profund</h2></div>
+        <hr/>
+        <div>
+            <p>Els arguments de funci&oacute; es defineixen a la classe de la funci&oacute; de r&agrave;ster de Python a la qual fa refer&egrave;ncia el model d'entrada. Aqu&iacute; &eacute;s on indiqueu els par&agrave;metres i arguments d'aprenentatge profund addicionals per als experiments i el refinament, com ara el llindar de confian&ccedil;a per ajustar la sensibilitat.
+            </p>
+            <p>Els noms dels arguments els emplena l'eina a partir de la lectura del m&ograve;dul de Python al servidor d'an&agrave;lisi de r&agrave;ster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Elimina les entitats duplicades de la sortida (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Realitza la supressi&oacute; no m&agrave;xima, on s'identifiquen els objectes duplicats i s'elimina l'entitat duplicada amb un valor de confian&ccedil;a m&eacute;s baix. 
+                <ul>
+                    <li>Desactivada: tots els objectes que es detecten es troben a la classe d'entitat de sortida. Aquesta &eacute;s l'opci&oacute; per defecte.
+                        
+
+                    </li>
+                    <li>Activada: elimina els objectes duplicats que es detecten.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Camp de puntuació de confiança</h2></div>
+        <hr/>
+        <div>
+            <p>Camp del servei d'entitats que cont&eacute; les puntuacions de confian&ccedil;a tal com els genera el m&egrave;tode de detecci&oacute; d'objectes.
+            </p>
+            <p>Aquest par&agrave;metre &eacute;s obligatori si s'activa el par&agrave;metre  <b>Supressi&oacute; no m&agrave;xima</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Camp del valor de classe</h2></div>
+        <hr/>
+        <div>
+            <p>Camp del valor de classe al servei d'entitats de sortida. Si no s'especifica, l'eina utilitzar&agrave; els camps de valor de classe est&agrave;ndard  <i>Classvalue</i> i <i>Value</i>. Si aquests camps no existeixen, totes les entitats es tractaran com la mateixa classe d'objecte.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Relació de superposició màxima</h2></div>
+        <hr/>
+        <div>
+            <p>Relaci&oacute; de superposici&oacute; m&agrave;xima per a dues entitats superposades, que es defineix com la relaci&oacute; d'&agrave;rea d'intersecci&oacute; a l'&agrave;rea d'uni&oacute;. El valor per defecte &eacute;s 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

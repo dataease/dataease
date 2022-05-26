@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Finn nærmeste</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Finn n&aelig;rmeste"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner de n&aelig;rmeste geoobjektene og rapporterer og rangerer avstanden til geoobjekter i n&aelig;rheten. N&aring;r verkt&oslash;yet skal finne ut hva som er n&aelig;rmest, kan det m&aring;le ved hjelp av luftlinjeavstand eller en valgt reisem&aring;te. Du kan angi alternativer som begrenser hvor mange n&aelig;rliggende geoobjekter verkt&oslash;yet skal finne, eller hvilket omr&aring;de verkt&oslash;yet skal s&oslash;ke i. Med resultatene fra dette verkt&oslash;yet kan du f&aring; svar p&aring; sp&oslash;rsm&aring;l som:
+        <ul>
+            <li>Hvor er n&aelig;rmeste park?
+            </li>
+            <li>Til hvilket sykehus er det kortest kj&oslash;retid? Hvor lang tid vil turen ta en tirsdag ettermiddag klokken fire i rushtrafikken?
+            </li>
+            <li>Hva er veiavstanden mellom disse storbyene?
+            </li>
+            <li>Hvilke av disse pasientene bor mindre enn 3,2 kilometer fra disse kjemiske anleggene?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Finn n&aelig;rmeste-verkt&oslash;yet returnerer et lag som inneholder de n&aelig;rmeste geoobjektene, og et linjelag som knytter startlokasjonene til n&aelig;rmeste lokasjoner. Linjelaget inneholder informasjon om startlokasjon og n&aelig;rmeste lokasjoner og avstandene mellom disse.
+    </p>
+    <p>Hvis det er merket av for   <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene som vises i gjeldende kartutstrekning som kan brukes som startgeoobjekter eller mulige n&aelig;rliggende geoobjekter.  Hvis det ikke er merket av for dette alternativet, vurderes alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Angi startlokasjonene</h2></div>
+        <hr/>
+        <div>
+            <p>Verkt&oslash;yet Finn n&aelig;rmeste m&aring;ler fra geoobjektene i laget du angir her (startlokasjonene), til lokasjonene du angir i den neste parameteren. Verkt&oslash;yet st&oslash;tter opptil  5 000 geoobjekter i hvert lag. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Finn de nærmeste lokasjonene i</h2></div>
+        <hr/>
+        <div>
+            <p>Verkt&oslash;yet Finn n&aelig;rmeste m&aring;ler fra hvert av geoobjektene i det f&oslash;rste laget til lokasjonene i dette laget. Verkt&oslash;yet st&oslash;tter opptil  5 000 lokasjoner i hvert lag. </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mål</h2></div>
+        <hr/>
+        <div>
+            <p>Velg om du vil finne de n&aelig;rmeste lokasjonene basert p&aring; luftlinjeavstand eller en valgt reisem&aring;te. Reisem&aring;ter er kun aktivert n&aring;r inndatalaget inneholder punkter. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen. N&aring;r du bruker en av reisem&aring;tene, foretas m&aring;lingene langs veier og gangstier, og det tas hensyn til gjeldende regler, for eksempel enveiskj&oslash;rte gater og steder der det ikke er lov &aring; snu.
+            </p>
+            <p>N&aring;r du m&aring;ler mellom linjer eller omr&aring;der, beregnes avstanden fra eller til n&aelig;rmeste punkt langs linjen eller grensen for omr&aring;det. 
+            </p> 
+            <p>N&aring;r du velger  <b>Kj&oslash;retid</b>, <b>Kj&oslash;retid i rurale omr&aring;der</b> eller <b>Lastebiltid</b>, har du ulike alternativer for m&aring;ling av kj&oslash;retid.
+                <ul>
+                    <li>
+                        <p>Fjern avmerkingen av  <b>Bruk trafikk</b> for &aring; finne de n&aelig;rmeste geoobjektene ut fra statiske reisehastigheter, for eksempel fartsgrenser, fremfor varierende hastigheter som skyldes skiftende trafikkforhold.
+                        </p>
+                        <p>Velg dette alternativet n&aring;r du vil vite hva som generelt sett er n&aelig;rmest, men som ikke n&oslash;dvendigvis er n&aelig;rmest n&aring;r det tas hensyn til trafikkforholdene p&aring; et gitt tidspunkt p&aring; en bestemt dag.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Merk av for  <b>Bruk trafikk</b> for &aring; finne de n&aelig;rmeste geoobjektene basert p&aring; et gitt starttidspunkt og trafikkforhold. Hvis du i tillegg velger <b>Live traffic</b>, settes avreisetidspunktet fra startlokasjonene til gjeldende klokkeslett, og gjeldende og estimerte trafikkhastigheter innhentes fra sensorer og feeder for &aring; beregne hvilke geoobjekter som er n&aelig;rmest. De estimerte trafikkhastighetene beregnes basert p&aring; faktiske trafikkhastigheter, historiske hastigheter og gjeldende hendelser, for eksempel v&aelig;rforhold. Trafikkhastighetene beregnes 12 timer frem i tid, slik at du kan dra glidebryteren for &aring; angi avreisetidspunktet opptil 12 timer frem i tid.
+                        </p>
+                        <p>Bruk disse live trafikkinnstillingene til &aring; finne ut hvilke geoobjekter som kan n&aring;s p&aring; kortest tid hvis du kj&oslash;rer n&aring;, kj&oslash;rer om &eacute;n time og s&aring; videre.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Hvis du merker av for   <b>Bruk trafikk</b> og velger <b>Trafikk basert p&aring; typiske forhold for</b> en dag eller et klokkeslett, finner verkt&oslash;yet de raskeste rutene basert p&aring; historiske gjennomsnittshastigheter for intervaller p&aring; fem minutter i en vanlig uke. Resultatet omfatter trafikk, men tar ikke hensyn til gjeldende trafikale forhold og hendelser, som kan avvike mye fra normen.
+                        </p>
+                        <p>Du kan bruke disse historiske trafikkinnstillingene til &aring; stille sp&oslash;rsm&aring;l som &quot;Hvilke geoobjekter n&aring;r jeg raskest hvis jeg reiser fra startgeoobjektet klokken 11.30 p&aring; en onsdag?&quot;. 
+                        </p>
+                        <p>Klokkeslettet du angir, refererer til tidssonen som startgeoobjektene befinner seg i. S&aring; hvis du for eksempel velger klokkeslettet 8.00 og du har to startgeoobjekter, ett i New York og ett i Los Angeles, blir de n&aelig;rmeste lokasjonene funnet ved &aring; anta at avreisetidspunktet er henholdsvis klokken 8.00 EST og kl. 8.00 PST.
+                        </p>
+                    </li>
+                </ul>
+                Legg merke til at idet et kj&oslash;ret&oslash;y kj&oslash;rer fra et punkt, s&aring; g&aring;r tiden og trafikkforholdene endres. Verkt&oslash;yet tar hensyn til disse variasjonene n&aring;r du merker av for <b>Bruk trafikk</b>. Det er imidlertid ikke st&oslash;tte for denne funksjonen i alle omr&aring;der. Klikk p&aring; koblingen <b>Vis tilgjengelighet</b> i verkt&oslash;yet for &aring; finne ut om funksjonen st&oslash;ttes i ditt studieomr&aring;de. 
+            </p>
+            <p> <b>Lastebiltid</b> kan bruke dynamiske kj&oslash;rehastigheter basert p&aring; trafikken, men kun opptil den lovlige fartsgrensen for lastebil. Hvis for eksempel den dynamiske hastigheten for en vei basert p&aring; trafikk i sanntid er 100 km/t, men hastighetsgrensen for lastebiler p&aring; denne veien er 90 km/t, bruker beregningen 90 km/t for denne veien.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Velg hindringslag</h2></div>
+        <hr/>
+        <div>
+            <p> Ett eller flere geoobjekter som fungerer som midlertidige begrensninger (hindringer) under transport p&aring; de underliggende gatene. Du kan angi hindringer ved hjelp av punkt-, linje- eller polygongeoobjekter.
+            </p>
+            <p>En punkthindring kan v&aelig;re et veltet tre, en ulykke, en kraftledning som er falt ned, eller andre ting som blokkerer trafikken helt p&aring; et bestemt sted i gaten. Gaten er ikke stengt for trafikk, men det er ikke mulig &aring; passere hindringen. Du kan angi opptil 250 geoobjekter som fungerer som punkthindringer.
+            </p>
+            <p>En linjehindring hindrer trafikk der hindringen krysser gatene. En linjehindring kan for eksempel v&aelig;re en parade eller protestmarsj som blokkerer trafikken over flere gatesegmenter. Hvis antallet gategeoobjekter som krysses av alle linjehindringene overstiger 500, returnerer verkt&oslash;yet en feil.
+            </p>
+            <p>En polygonhindring hindrer trafikk der polygonet krysser gatene. Denne typen hindring kan for eksempel brukes til &aring; modellere oversv&oslash;mte omr&aring;der som dekker deler av gatenettet og gj&oslash;r det umulig &aring; ferdes p&aring; gatene. Hvis antallet gategeoobjekter som krysses av alle polygonhindringene overstiger 2000, returnerer verkt&oslash;yet en feil.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>For hver lokasjon i inndatalaget</h2></div>
+        <hr/>
+        <div>
+            <p>Det finnes to alternativer du kan bruke til &aring; begrense s&oslash;ket etter n&aelig;rmeste lokasjoner. Med det ene alternativet kan du angi maksimum antall n&aelig;rliggende lokasjoner som skal finnes per startlokasjon. Du kan finne den n&aelig;rmeste parken, de to n&aelig;rmeste parkene og s&aring; videre. Med det andre alternativet kan du angi en maksimum avstand eller kj&oslash;retid for s&oslash;ket.
+            </p>
+            <p>Fjerner du avmerkingen for disse alternativene, finner verkt&oslash;yet maksimum de 100 n&aelig;rmeste lokasjonene (begrensning i verkt&oslash;yet), og det er ingen begrensning p&aring; s&oslash;keomr&aring;det.
+            </p>
+            <p>Behandlingstiden avhenger av antall startlokasjoner, antall n&aelig;rliggende lokasjoner og st&oslash;rrelsen p&aring; s&oslash;keomr&aring;det. Behandlingen tar lenger tid n&aring;r det er flere lokasjoner eller et stort s&oslash;keomr&aring;de.
+            </p>
+            <p>Legg merke til at n&aring;r du har angitt en grense for s&oslash;keomr&aring;det, kan det hende at verkt&oslash;yet ikke finner noen n&aelig;rliggende lokasjoner innenfor dette omr&aring;det, eller at det finner f&aelig;rre lokasjoner enn det maksimale antallet n&aelig;rliggende lokasjoner du har angitt.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; geoobjektlaget som opprettes i   <b>Mitt innhold</b> og legges til kartet. Hvis geoobjektlaget allerede finnes, blir du bedt om &aring; oppgi et annet navn. Geoobjektlaget inneholder to lag. Det ene laget representerer de n&aelig;rmeste lokasjonene, og det andre laget representerer linjene som forbinder inndatalokasjonene med de n&aelig;rmeste lokasjonene.
+            </p>
+            <p>Hvis du velger  <b>Inkluder rutelag</b>, lagres hver rute fra resultatet ogs&aring; som et rutelag. Et rutelag inneholder all informasjon for en bestemt rute, for eksempel tildelte stoppesteder langs ruten og reiseretningene. Det er praktisk &aring; opprette rutelag hvis du &oslash;nsker &aring; dele de enkelte rutene med andre medlemmer i organisasjonen eller hvis du vil modifisere rutene ytterligere ved hjelp av knappen for beskrivelser i kartvisningen. <b></b> Rutelagene bruker navnet som er oppgitt for geoobjektlaget som et prefiks, og rutenavnet som genereres som en del av analysen, blir lagt til for &aring; skape et unikt navn for hvert rutelag.
+            </p>
+            <p>Maksimalt antall rutelag som kan opprettes, er  1 000. Hvis resultatet inneholder mer enn  1 000 ruter og  <b>Inkluder rutelag</b> er valgt, oppretter verkt&oslash;yet bare utdatageoobjekttjenesten.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultatet i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som geoobjektlaget og rutelagene &ndash; hvis de er opprettet &ndash; vil bli lagret.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

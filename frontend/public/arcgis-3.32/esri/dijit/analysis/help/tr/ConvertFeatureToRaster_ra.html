@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Detayı Rastera Dönüştür</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Detayı Rastera D&ouml;n&uuml;şt&uuml;rme aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; detayları bir raster veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;r.
+    </p>
+    <p>Nokta, &ccedil;izgi veya alan detayları i&ccedil;eren her detay sınıfı bir raster veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;lebilir.
+    </p>
+    <p>H&uuml;cre merkezi, &ccedil;ıktı rasterı piksel değerini belirlemek i&ccedil;in kullanılır.
+    </p>
+    <p>Girdi alan t&uuml;r&uuml; &ccedil;ıktı rasterı t&uuml;r&uuml;n&uuml; belirler. Alan tamsayı ise, &ccedil;ıktı rasterı tamsayı olur; alan kayan noktalı ise &ccedil;ıktı da kayan noktalı olur.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dönüştürülecek detay katmanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Bir raster veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;lecek girdi detayı katmanı.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Alan seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı rasterına değer atamak i&ccedil;in kullanılacak alanı se&ccedil;in:
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Çıktı hücre boyutu</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı rasterları i&ccedil;in h&uuml;cre boyutu ve birimi.
+            </p>
+            <p>Kullanılabilen birimler şunlardır: Fit, Mil, Metre ve Kilometre. Varsayılan birim Fit&rsquo;tir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

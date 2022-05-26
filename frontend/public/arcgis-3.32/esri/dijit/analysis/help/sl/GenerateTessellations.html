@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ustvari teselacije</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Ustvari teselacije"></h2>
+        <hr/>
+    <p>To orodje ustvarja teselacije čez &scaron;tudijsko območje na podlagi navedene oblike in velikosti.
+    </p>
+    <p>Izbirno polje  <b>Uporabi trenutni obseg karte</b> je onemogočeno za to orodje, ker je obseg, ki se uporablja za ustvarjanje teselacij, nadzorovan s parametrom <b>Določi obseg</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Izberi obliko</h2></div>
+        <hr/>
+        <div>
+            <p>Oblika geometrije teselacije, ki jo želite ustvariti. Na voljo so oblike, kot so  <code>&scaron;tirikotnik</code>, <code>&scaron;estkotnik</code>, <code>transverzalni &scaron;estkotnik</code>, <code>trikotnik</code> ali <code>romb</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Določi študijsko območje</h2></div>
+        <hr/>
+        <div>
+            <p>Obseg ali območje, ki ga bodo prekrile teselacije. Obseg je mogoče določiti s trenutnim obsegom karte, obsegom obstoječega sloja ali z interaktivnim risanjem območja, ki se bo uporabljalo kot obseg.
+            </p>
+            <p>Če je geoobjektni sloj izbran za določitev obsega, bo omogočena možnost, da ohranite samo presečne teselacije. Če je obkljukano, bodo v dobljenem sloju s teselacijami ustvarjene samo tiste teselacije, ki prekrivajo ali sekajo geoobjekte v navedenem obsegu sloja. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Odkljukano
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Pokritost celotnega obsega">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Obkljukano
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Pokritost geoobjekta">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Določite velikost celice tako, da navedete</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost vsake celice. Velikost celice je mogoče določiti z navedbo &scaron;tirikotnih enot ali z določanjem razdalje, ki bo izračunana z naslednjimi meritvami, kjer je d = Razdalja: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kvadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Teselacija &scaron;tirikotnika">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>&Scaron;estkotnik
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Teselacija &scaron;estkotnika">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Transverzalni &scaron;estkotnik
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Teselacija transverzalnega &scaron;estkotnika">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Trikotnik
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Teselacija trikotnika">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Romb
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Teselacija romba">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

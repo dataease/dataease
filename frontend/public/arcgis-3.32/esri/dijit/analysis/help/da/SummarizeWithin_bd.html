@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summér inden for</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summ&eacute;r inden for"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j finder objekter (og dele af objekter), der ligger inden for gr&aelig;nserne for omr&aring;der i det f&oslash;rste inputlag.  
+        <ul>
+            <li>Ved angivelse af et lag med afvandingsomr&aring;der og et lag med gr&aelig;nser for arealanvendelse beregnes det samlede areal for anvendelsestype pr. afvandingsomr&aring;de. 
+            </li>
+            <li>Ved angivelse af et lag med parceller i et amt og et lag med bygr&aelig;nser opsummeres gennemsnitsv&aelig;rdien af ledige parceller inden for hver bygr&aelig;nse.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i inputlaget og laget, som skal summeres, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis umarkeret, analyseres alle objekter i b&aring;de inputlaget og laget, der skal summeres, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Vælg det områdelag, der skal summere andre objekter inden for sine grænser</h2></div>
+        <hr/>
+        <div>
+            <p>Det omr&aring;delag, der skal benyttes til at summere objekter, der falder inden for omr&aring;dets gr&aelig;nser. Du kan v&aelig;lge mellem et polygonlag, som du opretter, eller kvadratiske eller sekskantede beholdere, der genereres, n&aring;r v&aelig;rkt&oslash;jet k&oslash;rer. N&aring;r der genereres beholdere, er det for  <b>Kvadratiske</b> beholdere antallet af angivne enheder, der bestemmer h&oslash;jden og l&aelig;ngden p&aring; kvadratet. For <b>Sekskantede</b> beholdere er det antallet af angivne enheder, der bestemmer afstanden mellem de parallelle sider.
+            </p>
+            <p>Analyse ved hj&aelig;lp af  <b>kvadratiske</b> eller <b>sekskantede</b> beholdere kr&aelig;ver et projiceret koordinatsystem. Du kan indstille <b>koordinatsystem til behandling</b> i <b>Analysemilj&oslash;erne</b>. Hvis dit koordinatsystem til behandling ikke er indstillet til et projiceret koordinatsystem, vil du blive bedt om at indstille det, n&aring;r du benytter funktionen <b>K&oslash;r analyse</b> .
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Vælg et lag at summere</h2></div>
+        <hr/>
+        <div>
+            <p>Objekter i dette lag, der falder inden for objekternes gr&aelig;nser i inputlaget, eller de beholdere, der er angivet ovenfor, opsummeres. 
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Vælg en afstand til generering af intervaller og aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>Den afstand, der benyttes til at generere beholdere.  
+            </p>
+            <p>Enten  <b>Beholderst&oslash;rrelse</b> for beholdere eller <b>Omr&aring;delag</b> skal v&aelig;re indstillet.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggregér ved hjælp af tidsintervaller (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis der er aktiveret tid for inputpunktlaget, og det tilh&oslash;rer &oslash;jeblikstypen, kan du analysere ved hj&aelig;lp af tidstrin. Du kan indstille tre parametre, n&aring;r du bruger tiden:
+                <ul>
+                    <li> <b>Tidstrin-interval</b>
+                    </li>
+                    <li> <b>Hvor ofte skal tidstrinet gentages</b>
+                    </li>
+                    <li> <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis du f.eks.  har data, der repr&aelig;sentereret &aring;r, og du vil  analyseredemved hj&aelig;lp af ugentlige trin, kan du indstille  <b>Tidstrin-interval</b> til <code>1 uge</code>. 
+            </p>
+            <p>Hvis du f.eks. har data, der repr&aelig;senterer et &aring;r, og du vil analysere det ved hj&aelig;lp af f&oslash;rste uge i m&aring;neden, kan du indstille  <b>Tidstrin-interval</b> til <code>1 uge</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 m&aring;ned</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>1. januar kl. 0:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsinterval, der skal aggregeres til</h2></div>
+        <hr/>
+        <div>
+            <p>Det tidsinterval, der benyttes til generere tidstrin.  <b>Tidstrin-interval</b> kan benyttes alene eller sammen med parametrene <b>Hvor ofte skal tidstrinet gentages</b> eller <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>.
+            </p>
+            <p>Hvis du f.eks. viloprette tidsintervaller, somfinder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille  <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Tidstrin, der skal aggregeres til</h2></div>
+        <hr/>
+        <div>
+            <p> Det trin, der benyttes til at beregne et tidstrin. <b>Hvor ofte skal tidstrinet gentages</b> kan benyttes alene , sammen med <b>Tidstrin-interval</b>, med <b>Referencetid</b> eller med b&aring;de <b>Tidstrin-interval</b> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>.
+            </p>
+            <p> Hvis du f.eks. vil oprette tidsintervaller som finder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referencetid, der benyttes til at justere tidsintervaller</h2></div>
+        <hr/>
+        <div>
+            <p>Den dato og det klokkesl&aelig;t, der benyttes til at justere tidsintervallerne. Tidstrin starter fra og forts&aelig;tter bagud fra dette klokkesl&aelig;t. Hvis der ikke er valgt nogen referencetid, justeres tidstrin til 1. januar 1970. 
+            </p>
+            <p> Hvis du f.eks. vil oprette tidsintervaller  som  finder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tilføj statistik (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan beregne statistik for objekter, der er summeret.Dukan beregne f&oslash;lgende for numeriske felter :
+                <ul>
+                    <li>Antal &ndash; Beregner antallet af ikke-nul-v&aelig;rdier.Det anvendes til numeriske felter eller strenge. Opt&aelig;llingen af [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen af numeriske v&aelig;rdier i et felt. Summen af [null, null, 3] er 3.
+                    </li>
+                    <li>Middelv&aelig;rdi &ndash; Middelv&aelig;rdier af de numeriske v&aelig;rdier. Middelv&aelig;rdien af [0, 2, null] er 1.
+                    </li>
+                    <li>Min. &ndash; Minimumv&aelig;rdien for et numerisk felt. Minimumsv&aelig;rdien af [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks. &ndash; Maksimumv&aelig;rdien for et numerisk felt. Maksimumv&aelig;rdien af [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Dette beregnes som minimumv&aelig;rdierne, der er trukket fra maksimumv&aelig;rdien. Omr&aring;det for [0, null, 1] er 1. Omr&aring;det for [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen af et numerisk felt i et spor. Variansen af [1] er nul. Variansen af [null, 1,0, 1,1] er 0,25.
+                    </li>
+                    <li>Standardafvigelse &ndash; Standardafvigelsen for et numerisk felt. Standardafvigelsen for [1] er nul. Standardafvigelsen for [null, 1,0, 1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan beregne f&oslash;lgende for strengfelter :
+                <ul>
+                    <li>Antal &ndash; Antallet af ikke-nul-strenge.
+                    </li>
+                    <li>Vilk&aring;rlig &ndash; Denne statistik er et vilk&aring;rligt eksempel p&aring; en strengv&aelig;rdi i det angivne felt.
+                    </li>
+                </ul>
+                Alle statistiske data beregnes ud fra ikke-nul-v&aelig;rdier. Resultatlaget vil indeholde et nyt felt for hver beregnet statistik. Du kan tilf&oslash;je et vilk&aring;rligt antal statistikker ved at v&aelig;lge attributter og statistikker. 
+            </p>
+            <p>Ud over disse statistikker beregnes der proportionale statistikker p&aring; alle numeriske felter:
+                <ul>
+                    <li>Opt&aelig;lling &ndash; Opt&aelig;lling af hvert felt multipliceret med den del af summeringslaget, der ligger inden for polygonerne. 
+                    </li>
+                    <li>Sum &ndash; Summen af de v&aelig;gtede v&aelig;rdier i hvert felt. Hvor den anvendte v&aelig;gt er den del af summeringslaget, der ligger inden for polygonerne.
+                    </li>
+                    <li>Middel &ndash; De v&aelig;gtede middelv&aelig;rdier i hvert felt. Hvor den anvendte v&aelig;gt er den del af summeringslaget, der ligger inden for polygonerne.
+                    </li>
+                    <li>Min &ndash; De minimale v&aelig;gtede v&aelig;rdier i hvert felt. Hvor den anvendte v&aelig;gt er den del af summeringslaget, der ligger inden for polygonerne.
+                    </li>
+                    <li>Maks &ndash; De maksimale v&aelig;gtede v&aelig;rdier i hvert felt. Hvor den anvendte v&aelig;gt er den del af summeringslaget, der ligger inden for polygonerne.
+                    </li>
+                    <li>Omr&aring;de &ndash; Forskellen mellem de v&aelig;gtede maksimums- og minimumsv&aelig;rdier.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Afh&aelig;ngigt af de objekttyper, du summerer, beregnes det samlede antal punkter i n&aelig;rheden, den samlede linjel&aelig;ngde eller det samlede areal.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Vælg felt at gruppere efter</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en attribut for  <b>Opsumm&eacute;r</b>-objekter i n&aelig;rheden, som du kan bruge til at udarbejde s&aelig;rskilte statistikker for hver entydig attributv&aelig;rdi. Lad os f.eks. antage, at det f&oslash;rste inputlag indeholder bygr&aelig;nser, og at de opsummerede objekter er parceller. En af parcellernes attributter er <i>Status</i>, der indeholder to v&aelig;rdier: VACANT og OCCUPIED. For at beregne det samlede omr&aring;de af ledige og optagede parceller inden for bygr&aelig;nserne skal du anvende <i>Status</i> om gruppe efter attribut. Statistikkerne for de enkelte grupper tillige med antallet af objekter indenfor hver omr&aring;degr&aelig;nse vises i pop-up'en med resultatlaget.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tilføj minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter. V&aelig;lg  <b>Tilf&oslash;j minoritet/majoritet</b>, hvis du vil vide, hvilke attributv&aelig;rdier i hver gruppe der er minoriteten (mindst dominante) eller majoriteten (mest dominante) inden for hver af det f&oslash;rste inputlags gr&aelig;nser. Der f&oslash;jes to nye felter til dit resultatlag, n&aring;r du v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>. Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j procentdele</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+            <ul>
+                <li>Hvis du summerer punkter, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af antal punkter inden for hvert tilgr&aelig;nsende omr&aring;de i inputomr&aring;delaget.  
+                </li>
+                <li>Hvis du summerer linjer, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af l&aelig;ngden af linjer inden for hvert tilgr&aelig;nsende omr&aring;de i inputomr&aring;delaget.  
+                </li>
+                <li>Hvis du summerer omr&aring;der, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af omr&aring;der inden for hvert tilgr&aelig;nsende omr&aring;de i inputomr&aring;delaget.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Tilføj procentdele</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter.    V&aelig;lg  <b>Tilf&oslash;j procentdele</b>, hvis du vil finde procentdelen af hver attributv&aelig;rdi i hver gruppe.  Der f&oslash;jes et nyt felt til resultattabellen, der indeholder procentdelen af hver attributv&aelig;rdi inden for hver gruppe.   Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vælg Datastore</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultater lagres i et datalager og vises som et vektorlag i  Portal for ArcGIS. I de fleste tilf&aelig;lde b&oslash;r resultaterne blive lagret i et spatiotemporalt datalager, hvilket ogs&aring; er standarden. I nogle tilf&aelig;lde er det at lagre resultaterne i et relationsdatalager en god mulighed. Her er &aring;rsagerne til, at du m&aring;ske &oslash;nsker at lagre resultaterne i et relationsdatalager: 
+                <ul>
+                    <li>Du kan  bruge resultaterne i portalen-til-portalsamarbejde.
+                    </li>
+                    <li>Du kan  aktivere synkroniseringsfunktioner i forbindelse med dine resultater
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r benytte et relationsdatalager, hvis du forventer, at m&aelig;ngden af dine GeoAnalytics-resultater vil blive st&oslash;rre, og du &oslash;nsker at drage fordel af det spatiotemporale big data-lagers muligheder for at h&aring;ndtere store datam&aelig;ngder.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

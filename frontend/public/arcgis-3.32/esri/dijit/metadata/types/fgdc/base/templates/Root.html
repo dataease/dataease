@@ -1,0 +1,34 @@
+<div data-dojo-attach-point="containerNode">
+  <!--
+    FGDC root metadata element.
+    From:
+    http://www.fgdc.gov/schemas/metadata/fgdc-std-001-1998.xsd
+    http://www.fgdc.gov/metadata/csdgm/00.html
+  -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'metadata',label:'${i18nFgdc.documentTypes.fgdc.caption}'">
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/idinfo"
+        data-dojo-props="label:'${i18nFgdc.metadata.idinfo}'"></div>
+        
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/dataqual/dataqual"
+        data-dojo-props="label:'${i18nFgdc.metadata.dataqual}'"></div>
+        
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/spref/spref"
+        data-dojo-props="label:'${i18nFgdc.metadata.spref}'"></div>
+
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/eainfo/eainfo"
+        data-dojo-props="label:'${i18nFgdc.metadata.eainfo}'"></div>
+
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/distinfo/distinfo"
+        data-dojo-props="label:'${i18nFgdc.metadata.distinfo}'"></div>
+                
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/metainfo/metainfo"
+        data-dojo-props="label:'${i18nFgdc.metadata.metainfo}'"></div>
+              
+    </div>
+    
+  </div>
+</div>

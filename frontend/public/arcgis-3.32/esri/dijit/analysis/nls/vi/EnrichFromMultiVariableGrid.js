@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/vi/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Ch\u1ecdn \u0111\u1ed1i t\u01b0\u1ee3ng \u0111i\u1ec3m \u0111\u1ec3 b\u1ed5 sung",chooseMVgridLyrLabel:"Ch\u1ecdn l\u01b0\u1edbi \u0111a bi\u1ebfn \u0111\u1ec3 b\u1ed5 sung",chooseVariables:"Ch\u1ecdn bi\u1ebfn \u0111\u1ec3 th\u00eam",outputLayerName:"B\u1ed5 sung ${inputFeatures} t\u1eeb ${gridLayer}",itemDescription:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb vi\u1ec7c ch\u1ea1y gi\u1ea3i ph\u00e1p B\u1ed5 sung t\u1eeb L\u01b0\u1edbi \u0110a bi\u1ebfn cho ${inputFeatures}.",
+itemTags:"K\u1ebft qu\u1ea3 Ph\u00e2n t\u00edch, B\u1ed5 sung t\u1eeb L\u01b0\u1edbi \u0110a bi\u1ebfn, ${inputFeatures}, ${gridLayer}",itemSnippet:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb B\u1ed5 sung t\u1eeb L\u01b0\u1edbi \u0110a bi\u1ebfn."});

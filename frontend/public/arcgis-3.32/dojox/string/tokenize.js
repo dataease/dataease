@@ -1,0 +1,2 @@
+//>>built
+define("dojox/string/tokenize",["dojo/_base/lang","dojo/_base/sniff"],function(c,g){c=c.getObject("dojox.string",!0).tokenize;return c=function(c,e,f,h){var d=[],b,a;for(a=0;b=e.exec(c);){a=c.slice(a,e.lastIndex-b[0].length);a.length&&d.push(a);if(f){if(g("opera")){for(a=b.slice(0);a.length<b.length;)a.push(null);b=a}b=f.apply(h,b.slice(1).concat(d.length));"undefined"!=typeof b&&d.push(b)}a=e.lastIndex}a=c.slice(a);a.length&&d.push(a);return d}});

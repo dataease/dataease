@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>說明資料集</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="說明資料集工作流程圖"></h2>
+        <hr/>
+    <p>說明資料集工具提供了更詳細的資料集資訊。執行大量資料分析前，請使用此工具來判斷輸入資料的內容和位置。預設將導出 JSON 字串，該字串用於概述輸入圖層的關鍵描述元，以及一個詳細說明了每個欄位之摘要統計資料的表格。
+    </p>
+    <p>（選用）您可以建立其他輸出圖徵圖層以進一步說明資料。可選擇範例圖層或範圍圖層。您可以選擇輸出一個或兩個。
+    </p>
+    <p>例如，假設您擁有一個內含 15 個資料集的大數據檔案分享。每一個資料集具有 1 千萬個區域圖徵，用來表示您國家之不同地區的大樓和房屋。您的任務是分析地區 C，但您不知道哪些資料集包含這些圖徵。為了瞭解應使用哪些資料集，請執行「說明資料集」，並選擇建立範圍圖層來調查您的研究地區中有哪些資料集。
+    </p>
+    <p>另外舉一個例子，假設您的任務是完成大量資料的分析工作流程。您想要嘗試工作流程，但處理完整資料集可能會耗費數小時或數天。不需要耗費時間和資源來執行完整分析，建立一個範例圖層就能有效測試完整的工作流程。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要說明的資料集</h2></div>
+        <hr/>
+        <div>
+            <p>包含將要說明、摘要和取樣的點、線、區域或表列圖徵的圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>瞭解您的資料，方法是建立（選用）</h2></div>
+        <hr/>
+        <div>
+            <p>輸出其他描述圖層以改善對大數據的瞭解程度。您可以選擇輸出下列圖層的 0 個或 1 個，或二者皆輸出：
+            </p>
+            <ul>
+                <li> <b>範圍圖層</b> - 建立區域圖徵，該圖徵指出輸入圖徵或感興趣區域的範圍。
+                </li>
+                <li> <b>範例圖層</b> - 建立子集圖層，其包含來自您的資料集或感興趣區域之指定數量的輸入圖徵。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>範例圖層</h2></div>
+        <hr/>
+        <div>
+            <p>輸出包含輸入圖層之圖徵子集的圖層。如果選擇 <b>範例圖層</b>，您可以指定要在範例圖層中傳回的圖徵數目。預設會在輸出圖層中傳回 100 個範例圖徵。
+            </p>
+            <p>值必須大於零。如果指定的數量大於圖徵總數，則將傳回所有圖徵。
+            </p>
+            <p>如果選擇 <b>使用當前地圖範圍</b>，則範例圖層將包含來自地圖範圍中的圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>範圍圖層</h2></div>
+        <hr/>
+        <div>
+            <p>可選擇 <b>範圍圖層</b>按鈕來輸出圖徵圖層，該圖層包含表示輸入圖徵範圍的單一圖徵。預設會選擇此選項。
+            </p>
+            <p>如果選擇 <b>使用當前地圖範圍</b>，則範圍圖層將表示地圖的可見範圍。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

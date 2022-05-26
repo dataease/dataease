@@ -1,0 +1,23 @@
+<div>
+  <div>
+  <div class="${css.container}">
+    <div class="${css.preview} ${css.item}"
+         data-dojo-attach-point="dap_previewRamp"></div>
+    <input class="${css.flipper}" type="button" data-dojo-attach-point="dap_colorFlipper" />
+  </div>
+  <div class="${css.container}">
+    <div class="${css.viewport}">
+      <div data-dojo-attach-point="dap_colorRampPicker"
+           class="${css.list}"></div>
+    </div>
+  </div>
+  </div>
+  <div class="${css.container} ${css.transparencySection}" data-dojo-attach-point="dap_transparencySection">
+    <div data-dojo-attach-point="dap_transparencyLabel" class="${css.label}">${labels.transparency}</div>
+    <div data-dojo-attach-point="dap_transparencySlider"
+         data-dojo-type="esri/dijit/HorizontalSlider"
+         data-dojo-props="intermediateChanges: true, minimum: 0, maximum: 1, discreteValues: 100, labels: ${_transparencyLabels}">
+    </div>
+  </div>
+</div>
+

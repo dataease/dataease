@@ -88,31 +88,41 @@ export const BASE_PIE = {
     }
   },
 
-
   tooltip: {},
 
   series: [
     {
       name: '',
       type: 'pie',
-      data: []
+      data: [
+        // ['Firefox',   45.0],
+        // ['IE',       26.8],
+        // {
+        //   name: 'Chrome',
+        //   y: 12.8,
+        //   sliced: true,
+        //   selected: true
+        // },
+        // ['Safari',    8.5],
+        // ['Opera',     6.2],
+        // ['Others',   0.7]
+      ]
     }
   ]
 }
 
-
 let terminalType = 'pc'
 export function basePieOption(chart_option, chart, terminal = 'pc') {
-  console.log('饼3',chart_option,chart,terminal)
+  console.log('饼3', chart_option, chart, terminal)
   terminalType = terminal
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    /*if (customAttr.color) {
+    /* if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }*/
     // tooltip
-    /*if (customAttr.tooltip) {
+    /* if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
@@ -120,35 +130,35 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
     }*/
   }
   // 处理data
-  if (chart.data) {
-    chart_option.title.text = chart.title
-    if (chart.data.series.length > 0) {
-      chart_option.series[0].name = chart.data.series[0].name
-      // size
-      /*if (customAttr.size) {
-        chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-      }*/
-      // label
-      /*if (customAttr.label) {
-        chart_option.series[0].label = customAttr.label
-        chart_option.series[0].labelLine = customAttr.label.labelLine
-      }*/
-      const valueArr = chart.data.series[0].data
-      for (let i = 0; i < valueArr.length; i++) {
+  // if (chart.data) {
+  //   chart_option.title.text = chart.title
+  //   if (chart.data.series.length > 0) {
+  //     chart_option.series[0].name = chart.data.series[0].name
+  //     // size
+  //     /*if (customAttr.size) {
+  //       chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
+  //     }*/
+  //     // label
+  //     /*if (customAttr.label) {
+  //       chart_option.series[0].label = customAttr.label
+  //       chart_option.series[0].labelLine = customAttr.label.labelLine
+  //     }*/
+  //     const valueArr = chart.data.series[0].data
+  //     for (let i = 0; i < valueArr.length; i++) {
 
-        const y = valueArr[i]
-        y.name = chart.data.x[i]
-        y.y = y.value
-        // color
-        /*y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          borderRadius: 0
-        }
-        y.type = 'pie'*/
-        chart_option.series[0].data.push(y)
-      }
-    }
-  }
+  //       const y = valueArr[i]
+  //       y.name = chart.data.x[i]
+  //       y.y = y.value
+  //       // color
+  //       /*y.itemStyle = {
+  //         color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+  //         borderRadius: 0
+  //       }
+  //       y.type = 'pie'*/
+  //       chart_option.series[0].data.push(y)
+  //     }
+  //   }
+  // }
 
   componentStyle(chart_option, chart)
   return chart_option
@@ -203,7 +213,6 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
-
     }
 
     if (customStyle.background) {
@@ -261,7 +270,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     splitCount: null
   }
 }
+
 export function uuid() {
-  return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
 }
 

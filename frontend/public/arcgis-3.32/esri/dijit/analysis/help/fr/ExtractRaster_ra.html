@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extraire le raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Outil Extraire le raster pour le portail"></h2>
+        <hr/>
+    <p>Cet outil permet de d&eacute;couper un raster selon une limite, soit selon une surface rectangulaire, soit selon une forme que vous d&eacute;finissez interactivement &agrave; l&rsquo;&eacute;cran. Vous pouvez d&eacute;couper selon l'&eacute;tendue de la surface actuellement affich&eacute;e sur votre carte ou en fonction de la zone d'&eacute;tude d&eacute;finie par un polygone.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir les données en entrée à extraire</h2></div>
+        <hr/>
+        <div>
+            <p>La couche en entr&eacute;e &agrave; d&eacute;couper.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Spécifier la géométrie de découpage</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez le type d'&eacute;tendue &agrave; utiliser lors de la d&eacute;coupe de la g&eacute;om&eacute;trie de la couche&nbsp;:
+
+                <ul>
+                    <li>Utiliser l'&eacute;tendue courante&nbsp;: l'&eacute;tendue actuelle de la carte sera utilis&eacute;e pour d&eacute;couper la couche r&eacute;sultante. Il s&rsquo;agit de l&rsquo;option par d&eacute;faut.
+                        
+
+                    </li>
+                    <li>Choisir la zone d'&eacute;tude&nbsp;: permet de choisir si le r&eacute;sultat va afficher la surface au sein de l'&eacute;tendue de la g&eacute;om&eacute;trie ou la surface &agrave; l'ext&eacute;rieur de l'&eacute;tendue de la g&eacute;om&eacute;trie. Si vous choisissez l'option  <b>Donn&eacute;es &agrave; l'int&eacute;rieur de la g&eacute;om&eacute;trie</b>, les images qui se trouvent en dehors de l'&eacute;tendue sont supprim&eacute;es. Si vous choisissez l'option <b>Donn&eacute;es en dehors de la g&eacute;om&eacute;trie</b>, les images qui se trouvent au sein de l'&eacute;tendue sont supprim&eacute;es. Vous pouvez &eacute;galement d&eacute;finir une g&eacute;om&eacute;trie de d&eacute;coupage &agrave; l'aide de l'outil de dessin.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

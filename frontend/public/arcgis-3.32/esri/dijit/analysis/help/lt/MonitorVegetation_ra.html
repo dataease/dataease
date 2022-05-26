@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Stebėti augmeniją</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Augmenijos stebėjimo įrankis portalui"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis atlieka aritmetinius veiksmus daugiakanalio rastrinio sluoksnio kanaluose, kad gautumėte informacijos apie tiriamo ploto padengimą augmenija.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite įvesties duomenis</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite daugiakanalį rastrinį sluoksnį. Įsitikinkite, kad įvesties rastre yra tinkami kanalai.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Pasirinkite augmenijos stebėjimo metodą</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite metodą augmenijos indekso sluoksnio sukūrimui. Skirtingi augmenijos indeksai gali padėti i&scaron;ry&scaron;kinti tam tikrus elementus arba sumažinti įvairų triuk&scaron;mą.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI &ndash; tai nelinijinis augmenijos indeksas, skirtas pasauliniam aplinkos stebėjimui i&scaron; palydovų siunčiamų vaizdų. Jis pana&scaron;us į NDVI, tačiau ne toks jautrus atmosferos veiksniams. Jam daro poveikį dirvožemis be augmenijos, todėl nerekomenduojama naudoti plotuose, kuriuose augmenijos nėra daug.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+I&scaron; pradžių GVI buvo sukurtas taip, kad naudotų Landsat MSS siunčiamus vaizdus, tačiau vėliau buvo modifikuotas, kad naudotų Landsat TM vaizdus. Jis dar žinomas kaip Landsat TM Tasseled Cap žaliosios augmenijos indeksas. &Scaron;į stebėjimo indeksą galima naudoti su vaizdais, kurių kanalai turi tokias pat spektrines charakteristikas.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 &ndash; tai augmenijos indeksas, kuris bando sumažinti dirvožemio be augmenijos poveikį SAVI metodui.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI &ndash; standartizuotas indeksas, leidžiantis sugeneruoti vaizdą, rodantį žalumą arba santykinę biomasę. &Scaron;is indeksas i&scaron;naudoja dviejų daugiakanalio rastrinio duomenų rinkinio kanalų charakteristikų kontrastą: chlorofilo pigmento sugertį raudonųjų spindulių juostoje ir didelę augalų medžiagų atspindėjimo gebą artimųjų infraraudonųjų spindulių (NIR) juostoje.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI yra pana&scaron;us į augmenijos vegetacijos skirtumo indeksą, tačiau jis yra jautrus atmosferos pokyčiams. Jei naudojate &scaron;į metodą skirtingiems vaizdams palyginti, jį reikėtų naudoti tik su vaizdais, kurie buvo pakoreguoti atmosferos atžvilgiu. &Scaron;ią informaciją gali suteikti jūsų duomenų teikėjas.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI &ndash; tai augmenijos indeksas, kuris bando sumažinti dirvožemio ry&scaron;kumo poveikį, naudodamas dirvožemio ry&scaron;kumo koregavimo faktorių. Jis dažnai naudojamas sausringuose regionuose, kur padengimas augmenija nėra didelis.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultan formulė paima &scaron;e&scaron;ių kanalų 8 bitų vaizdą ir pritaiko jam tam tikrą algoritmą, kad būtų gautas trijų kanalų 8 bitų vaizdas. Gautame vaizde i&scaron;ry&scaron;kinamos pakrantėse randamos uolienos, vadinamos ofiolitais. &Scaron;i formulė sukurta remiantis Landsat 5 ar 7 TM ir ETM kanalais.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Transformuotas SAVI &ndash; tai augmenijos indeksas, kuris bando sumažinti dirvožemio ry&scaron;kumo poveikį, atsižvelgdamas į tai, kad dirvožemio linija turi sutartą nuolydį ir susikirtimą.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Nurodykite artimųjų infraraudonųjų spindulių (NIR) ir raudonųjų spindulių kanalų indeksus</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite NIR ir raudonųjų spindulių kanalų indeksus.
+            </p>
+            <p>Visi palydovų jutikliai ir kameros fiksuoja informaciją, kuri padalijama į kanalų indeksus. Kiekvieno kanalo indeksas pateikia informaciją apie tam tikrą elektromagnetinių bangų spektro dalį. Jei norite naudoti &scaron;į augmenijos stebėjimo metodą, turite nurodyti kanalo indeksą, kuris užfiksavo NIR ir raudonųjų spindulių bangų ilgius.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Dirvožemio linijos nuolydis</h2></div>
+        <hr/>
+        <div>
+            <p>Dirvožemio linijos nuolydis. Nuolydis &ndash; tai apytikslis linijinis ry&scaron;ys tarp NIR ir raudonųjų spindulių kanalų reik&scaron;mių i&scaron;sidėstymo diagramoje.
+            </p>
+            <p>&Scaron;is parametras galioja tik transformuoto SAVI indekso metodui.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Susikirtimas</h2></div>
+        <hr/>
+        <div>
+            <p>NIR reik&scaron;mė, kai tam tikrų dirvožemio linijų raudonųjų spindulių atspindžio reik&scaron;mė yra 0.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , kai raudonieji spinduliai yra 0.
+            </p> 
+            <p>&Scaron;is parametras galioja tik transformuoto SAVI indekso metodui.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Žaliosios augmenijos dangos kiekis</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo žalios augmenijos dangos kiekį, reikalingą SAVI indekso metodui.
+            </p>
+            <p>Galimos reik&scaron;mės: 
+
+                <ul>
+                    <li>1 = plotai, visi&scaron;kai nepadengti žalia augmenija
+                        
+ 
+                    </li>
+                    <li>0,5 = plotai, vidutini&scaron;kai padengti žalia augmenija
+                        
+ 
+                    </li>
+                    <li>0 = plotai, gausiai padengti žalia augmenija
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Koregavimo koeficientas</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo koregavimo koeficientą, padedantį minimizuoti dirvos poveikį, ir reikalingą transformuoto, pagal dirvožemį koreguoto augmenijos indekso metodui. Numatytoji reik&scaron;mė yra 0,08.
+            </p>
+            <p>Maža reik&scaron;mė rei&scaron;kia, kad jūs ignoruojate dirvožemio poveikį. Didelė reik&scaron;mė rei&scaron;kia, kad dirvožemis turės įtakos jūsų rezultatams.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

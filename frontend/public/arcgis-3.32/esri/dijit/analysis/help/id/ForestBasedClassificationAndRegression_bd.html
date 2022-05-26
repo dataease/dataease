@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasifikasi dan Regresi Berbasis Hutan</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagram alur kerja Klasifikasi dan Regresi Berbasis Hutan"></h2>
+        <hr/>
+    <p>Membuat model dan menghasilkan prediksi menggunakan adaptasi algoritme hutan acak Leo Breiman, yang mana merupakan metode pembelajaran mesin yang diawasi. Prediksi dapat dilakukan untuk kedua variabel kategoris (klasifikasi) dan variabel kontinu (regresi). Variabel penjelas adalah kolom dalam tabel atribut fitur-fitur latihan. Alat tersebut dapat dijalankan untuk menghasilkan sebuah model untuk menilai kinerja, atau menghasilkan sebuah model dan memprediksikan hasilnya ke set data lain.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Jenis Analisis</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan mode pengoperasian alat. Alat dapat dijalankan untuk melatih model hanya untuk menilai kinerja, atau melatih sebuah model dan memprediksikan ke fitur. Jenis prediksi adalah sebagai berikut:
+                <ul>
+                    <li> <b>Latih sebuah model untuk menilai kinerja model</b>&mdash;Sebuah model akan dilatih, dan dicocokkan ke data input. Gunakan opsi ini untuk menilai akurasi model Anda sebelum membuat prediksi mengenai set data baru. Output opsi ini akan menjadi feature service data latihan Anda yang disesuaikan, diagnostik model, dan tabel opsional tingkat kepentingan variabel.
+                    </li>
+                    <li> <b>Latih model dan prediksikan nilai</b>&mdash; Prediksi atau klasifikasi akan dibuat untuk fitur-fitur. Variabel penjelas harus diberikan baik untuk fitur latihan dan fitur yang akan diprediksikan. Output opsi ini akan menjadi feature service nilai Anda yang diprediksikan, diagnostik model, dan tabel opsional tingkat kepentingan variabel.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Latih model untuk menilai kinerja model</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan mode ini jika Anda ingin mencocokkan sebuah model, lalu selidiki kecocokannya.
+            </p>
+            <p>Dengan pilihan ini, model akan dilatih menggunakan layer input. Gunakan opsi ini untuk menilai akurasi model Anda sebelum membuat prediksi mengenai set data baru. Opsi ini akan membuat output diagnostik model dalam jendela pesan dan menerapkan model ke data latihan Anda.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Latih sebuah model dan prediksikan nilai</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan mode ini jika Anda ingin mencocokkan sebuah model, dan menerapkan model tersebut ke set data untuk membuat prediksi.
+            </p>
+            <p>Prediksi atau klasifikasi akan dibuat untuk fitur. Output opsi ini akan menjadi feature service, diagnostik model, dan tabel opsional tingkat kepentingan variabel.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Pilih layer latihan</h2></div>
+        <hr/>
+        <div>
+            <p>Feature layer berisi variabel untuk memprediksikan dan kolom yang akan digunakan untuk membuat prediksi.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Pilih sebuah layer untuk memprediksikan nilai</h2></div>
+        <hr/>
+        <div>
+            <p>Sebuah feature layer mewakili lokasi tempat prediksi akan dilakukan. Feature layer ini harus juga berisi variabel penjelas yang diberikan sebagai kolom terkait dengan yang digunakan dari fitur latihan.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Pilih kolom untuk diprediksikan</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom dari fitur latihan berisi nilai-nilai yang akan digunakan untuk melatih model. Kolom ini berisi nilai-nilai yang diketahui (latihan) dari variabel yang akan digunakan untuk memprediksikan lokasi-lokasi yang tidak diketahui. Jika nilai bersifat kategoris (contohnya, Maple, Pinus, Ek) pilih kotak centang  <b>Kategoris</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Pilih satu variabel penjelas atau lebih</h2></div>
+        <hr/>
+        <div>
+            <p>Satu kolom atau lebih mewakili variabel penjelas (kolom) yang membantu memprediksikan nilai atau kategori variabel yang akan diprediksikan.  Gunakan kotak centang kategoris untuk variabel apa pun yang mewakili kelas atau kategori (seperti tutupan lahan atau kehadiran atau ketidakhadiran). Tentukan variabel sebagai  benar  untuk apa pun yang mewakili kelas atau kategori seperti tutupan lahan atau kehadiran atau ketidakhadiran, dan salah  jika variabel kontinu.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Jumlah pohon</h2></div>
+        <hr/>
+        <div>
+            <p>Jumlah pohon yang akan dibuat dalam model. Lebih banyak pohon biasanya akan menghasilkan prediksi model yang lebih akurat, tapi model tersebut akan makan waktu yang lebih lama untuk dihitung. Jumlah pohon default adalah 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Ukuran daun minimal</h2></div>
+        <hr/>
+        <div>
+            <p>Jumlah pengamatan minimal yang diperlukan untuk menjaga daun (yaitu node terminal pada sebuah pohon tanpa pemisahan lebih lanjut). Minimal default untuk regresi adalah 5 dan default untuk klasifikasi adalah 1. Untuk data yang sangat besar, meningkatkan angka ini akan mengurangi waktu operasi alat.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Kedalaman pohon maksimal</h2></div>
+        <hr/>
+        <div>
+            <p>Jumlah maksimal pemisahan yang akan dijadikan pengaturan peletakan pohon. Dengan menggunakan kedalaman maksimal, lebih banyak pemisahan akan dibuat, yang mana akan meningkatkan peluang overfitting model. Default diperoleh dari data dan tergantung pada jumlah pohon yang dibuat serta jumlah variabel yang disertakan.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Data tersedia per pohon (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan persentase fitur dalam layer latihan yang digunakan untuk setiap pohon keputusan. Default adalah 100 persen dari data. Sampel untuk setiap pohon akan diambil secara acak dari dua pertiga data yang ditentukan.
+            </p>
+            <p>Setiap pohon keputusan dalam hutan dibuat menggunakan sampel acak atau subset (sekitar dua pertiga) dari data latihan yang tersedia. Menggunakan persentase lebih rendah dari data input untuk setiap pohon keputusan meningkatkan kecepatan alat untuk set data yang sangat besar.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Jumlah dari variabel yang dijadikan sampel secara acak</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan jumlah variabel penjelas yang digunakan untuk membuat setiap pohon keputusan.
+            </p>
+            <p>Setiap pohon keputusan di hutan dibuat menggunakan subset acak dari variabel penjelas yang ditentukan. Meningkatnya jumlah variabel yang digunakan di setiap pohon keputusan akan meningkatkan peluang overfitting model Anda secara khusus jika ada satu atau beberapa variabel dominan. Praktik umumnya adalah menggunakan akar kuadrat dari total jumlah variabel penjelas jika variabel yang akan Anda prediksikan adalah numerik atau bagi jumlah total variabel penjelas dengan 3 jika variabel yang akan diprediksikan bersifat kategoris.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Pilih bagaimana kolom penjelas dicocokkan</h2></div>
+        <hr/>
+        <div>
+            <p>Bagaimana variabel terkait dalam layer pelatihan akan cocok dengan variabel dalam layer prediksi. Hanya variabel yang digunakan dalam pelatihan yang akan disertakan dalam tabel.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Jumlah pengoperasian validasi</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan persentase (antara 0 persen dan 50 persen) fitur-fitur dalam layer latihan untuk dicadangkan sebagai set data uji untuk validasi. Model akan dilatih tanpa subset data acak ini, dan nilai fitur-fitur yang diamati itu akan dibandingkan dengan nilai yang diprediksikan. Default adalah 10 persen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Hasil yang dikembalikan akan tergantung pada jenis analisis. Jika Anda melatih untuk menilai kecocokan model, hasil akan berisi layer data latihan yang cocok dengan model dan info hasil penilaian kecocokan model. Jika Anda melatih dan memprediksi, hasil akan berisi layer data pelatihan yang cocok dengan model, layer hasil yang diprediksikan, dan info hasil penilaian kecocokan model.
+            </p>
+            <p>Dengan menggunakan kotak drop-down  <b>Simpan hasil</b>, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

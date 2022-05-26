@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>إثراء من شبكة متعددة المتغيرات</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="إثراء من شبكة متعددة المتغيرات"></h2>
+        <hr/>
+    <p>تضم أداة  إثراء من شبكة متعددة المتغيرات السمات بفعالية من شبكة متعددة المتغيرات إلى طبقة نقطة.
+    </p>
+    <p>شبكة متعددة المتغيرات تم إنشاؤها باستخدام أداة &quot;بناء شبكة متعددة المتغيرات&quot; والتي تجمع السمات من طبقات متعددة إلى شبكة مضلعات فردية. يتيح لك استخدام شبكة متعددة المتغيرات للإثراء إضافة مجموعات معلومات كبيرة ومتنوعة بسرعة إلى بيانات نقطة للاستخدام في التحليل المكاني الإضافي.
+    </p>
+    <p>على سبيل المثال، افتراضًا أنك حصلت على طبقة أحداث جرائم جديدة حدثت في العام الماضي في مدينة ما. أنت تريد نمذجة العلاقات بين تواتر الجريمة ومجموعة متنوعة من العوامل الديموغرافية والاقتصادية والجغرافية. لديك الوصول إلى البيانات التي تصف هذه العوامل، لكنها مخزنة في خمس طبقات مختلفة مع أنواع شكل هندسي مختلفة. إضافة إلى ذلك، تُخزن بعض الطبقات في مشاركة ملف بيانات ضخمة في حين تُخزن الطبقات الأخرى في كخدمات معالم. بإنشاء شبكة متعددة المتغيرات لتخزين هذه المعلومات ثم ضم الشبكة إلى أحداث الجريمة باستخدام أداة  إثراء من الشبكة متعددة المتغيرات، فستكون قادرًا على ضم مجموعة متنوعة من السمات إلى طبقة نقطة مع اثنين فقط بتشغيل الأداة. يمكنك حينئذ استخدام السمات المنضمة كمتغيرات توضيحية وبدء بناء نموذج تكرار جريمة بطبقة النتيجة.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>اختيار معالم نقطة للإثراء</h2></div>
+        <hr/>
+        <div>
+            <p>معالم النقطة التي سيتم إثراؤها بشبكة متعددة المتغيرات.
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>اختيار شبكة متعددة المتغيرات للأثراء من</h2></div>
+        <hr/>
+        <div>
+            <p>شبكة متعددة المتغيرات تحتوي على السمات التي ستنضم إلى معالم نقاط الإدخال. يجب أن يتم إنشاء الطبقة باستخدام أداة &quot;بناء شبكة متعددة المتغيرات&quot; ويجب أن تكون طبقة معلم مستضافة. طبقات الشبكة متعددة المتغيرات المخزنة في ملف مشاركة بيانات ضخمة غير مدعومة كإدخال في هذه الأداة.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>اختيار المتغيرات لإضافتها</h2></div>
+        <hr/>
+        <div>
+            <p>السمات الموجودة في طبقة الشبكة متعددة المتغيرات التي ستنضم إلى معالم نقطة إدخال عند تقاطع معالم النقطة مع الشبكة.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم إنشاء اسم الطبقة في المحتوى. إذا كنت تقوم بالكتابة إلى ArcGIS Data Store، سيتم حفظ نتائجك في  <b>محتواي</b> وإضافته إلى الخريطة. إذا كنت تقوم بالكتابة إلى مشاركة ملف بيانات ضخمة، ستخزن نتائجك في مشاركة ملف البيانات الضخمة وإضافتها إلى البيان الخاص بها. لن تتم إضافتها إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجِدَت الطبقة بالفعل، ستفشل الأداة.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

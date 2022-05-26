@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planifica les rutes</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planifica les rutes"></h2>
+        <hr/>
+    <p>Planifica les rutes determina la manera de dividir tasques de manera eficient entre els treballadors m&ograve;bils.
+    </p>
+    <p>Heu de proporcionar a l'eina un conjunt de parades i el nombre de vehicles disponibles per visitar-les. L'eina assigna les parades als vehicles i retorna rutes que mostren com pot arribar cada vehicle a les parades assignades amb la menor quantitat de temps possible.
+    </p>
+    <p>Amb Planifica les rutes, els treballadors m&ograve;bils poden arribar a m&eacute;s ubicacions en menys temps, fet que augmenta la productivitat i millora el servei d'atenci&oacute; al client.
+        <ul>
+            <li>Inspecci&oacute; d'habitatges, restaurants o obres de construcci&oacute;
+                
+
+            </li>
+            <li>Serveis de reparaci&oacute;, d'instal&middot;laci&oacute; o t&egrave;cnics
+            </li>
+            <li>Lliurament de mercaderies i paquets petits
+            </li>
+            <li>Visites de vendes
+            </li>
+            <li>Transport de persones des de casa a un esdeveniment
+            </li>
+        </ul>
+        
+    </p>
+    <p>La sortida de Planifica les rutes inclou una capa de parades codificades per les rutes a les que estan assignades, una capa de rutes que mostra les rutes m&eacute;s curtes per visitar les parades assignades i, en funci&oacute; de si hi ha alguna parada a la qual no s'ha pogut arribar, una capa de parades sense assignar. 
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, es tindran en compte totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Trieu la capa de punts que representa les parades que s'han de visitar</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la capa de punts que les rutes (o els vehicles) han de visitar.  Aquests punts es converteixen en parades assignades o sense assignar a la sortida. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+            <p>L'eina admet fins a 2.000 entitats d'entrada. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Modes de viatge per a les rutes</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el mode de viatge.  Les rutes de sortida seguiran carreteres o camins i respectaran les regles aplicables, com ara les vies de sentit &uacute;nic i els girs no permesos en cotxe o en cami&oacute;.  L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Les rutes comencen a les parades</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu on i quan s'inicien les rutes dels vehicles.
+            </p>
+            <p>Amb Planifica les rutes, podeu especificar una o diverses ubicacions d'inici per als vehicles.
+            </p>
+            <p>Quan s'especifica una ubicaci&oacute; de punt, tots els vehicles surten d'aquest punt independentment del nombre de vehicles disponibles. Podeu triar una capa de punts amb un punt o afegir un punt al mapa. Per fer-ho, trieu  <b>Afegeix un punt al mapa</b>, feu clic al bot&oacute; d'edici&oacute; del punt adjacent i feu clic al mapa. 
+            </p>
+            <p>Quan s'especifiquen diverses ubicacions, cada vehicle s'ha d'associar amb el seu punt propi. El nombre de vehicles ha de coincidir amb el nombre de punts de la capa. Trieu una capa amb diversos punts i especifiqueu un camp que identifiqui de forma &uacute;nica cada ruta, cada vehicle o cada conductor a la llista desplegable  <b>Camp de l'ID de ruta</b>.
+            </p>
+            <p>L'hora d'inici &eacute;s la mateixa per a totes les rutes. La zona hor&agrave;ria de l'hora d'inici coincideix amb la zona hor&agrave;ria on hi ha el punt o els punts inicials. Assegureu-vos que l'hora que especifiqueu sigui l'hora local. Per exemple, suposeu que esteu en una ubicaci&oacute; amb l'hora est&agrave;ndard del Pac&iacute;fic o PST (UTC-8.00) i que els vehicles als quals esteu assignant rutes estan estacionats en una zona amb l'hora est&agrave;ndard de les muntanyes o MST (UTC-7.00). Si s&oacute;n les 9.30 hores PST (10.30 hores MST) i els vehicles han d'iniciar les rutes al cap de 30 minuts, haur&iacute;eu de definir l'hora d'inici a les 11.00 hores. 
+            </p>
+            <p>Si els vehicles surten de zones hor&agrave;ries diferents, l'hora d'inici no pot ser simult&agrave;nia i tindr&agrave; un desfasament. Per exemple, si una ruta surt d'un punt a la zona PST, una altra s'inicia a la zona MST i especifiqueu les 11.00 del mat&iacute; com a hora d'inici, la ruta de la zona PST comen&ccedil;ar&agrave; a les 11.00 hores PST i la ruta de la zona MST comen&ccedil;ar&agrave; a les 11.00 hores MST: una hora de difer&egrave;ncia.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Les rutes acaben a les parades</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu on acaben les rutes dels vehicles.
+            </p>
+            <p>Podeu configurar les rutes perqu&egrave; acabin en una de les tres ubicacions possibles: 
+                <ul>
+                    <li>La mateixa ubicaci&oacute; on van comen&ccedil;ar, tant si sortien d'una ubicaci&oacute; com de diverses
+                    </li>
+                    <li>Una sola ubicaci&oacute;
+                    </li>
+                    <li>Moltes ubicacions, &eacute;s a dir, un punt final per a cada ruta
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Activeu  <b>Torna a l'inici</b> si els vehicles inicien i acaben les rutes a les mateixes ubicacions.
+            </p>
+            <p>Perqu&egrave; tots els vehicles vagin fins a un punt final com&uacute; que no coincideixi amb el punt inicial, desactiveu  <b>Torna a l'inici</b> i afegiu un punt al mapa o trieu una capa que contingui exactament un punt.
+            </p>
+            <p>Perqu&egrave; les rutes acabin en ubicacions &uacute;niques, desactiveu  <b>Torna a l'inici</b> i trieu una capa que contingui m&eacute;s d'un punt. El nombre de vehicles ha de coincidir amb el nombre de punts de la capa que s'hagi triat. A la llista desplegable <b>Camp de l'ID de ruta</b>, trieu un camp que identifiqui de forma &uacute;nica cada ruta, cada vehicle o cada conductor. Si els vehicles surten de diverses ubicacions i acaben les rutes en diverses ubicacions, els ID de ruta que s'hagin triat per a les capes d'inici i de finalitzaci&oacute; han de coincidir.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccioneu capes de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o diverses entitats poden actuar com a restriccions temporals (barreres) quan viatgeu per carrers subjacents. Podeu especificar les barreres amb entitats de punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <p>Una barrera de punt pot mostrar un arbre caigut, un accident, una l&iacute;nia el&egrave;ctrica fora de servei o qualsevol element que bloquegi completament el tr&agrave;nsit en un punt espec&iacute;fic del carrer. Es pot viatjar pel carrer, per&ograve; no creuar la barrera. Podeu especificar fins a 250 entitats perqu&egrave; actu&iuml;n com a barreres de punt.
+            </p>
+            <p>Una barrera de l&iacute;nia prohibeix viatjar per qualsevol lloc on la barrera s'intersequi amb els carrers. Per exemple, una desfilada o manifestaci&oacute; que bloquegi el tr&agrave;nsit en diversos segments del carrer es pot mostrar amb una barrera de l&iacute;nia. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de l&iacute;nia &eacute;s superior a 500, l'eina retornar&agrave; un error.
+            </p>
+            <p>Una barrera de pol&iacute;gon prohibeix viatjar per qualsevol lloc on el pol&iacute;gon s'intersequi amb els carrers. Un dels usos d'aquest tipus de barrera &eacute;s mostrar les inundacions que cobreixen &agrave;rees de la xarxa de carrers i que impedeixen el viatge per carretera. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de pol&iacute;gon &eacute;s superior a 2.000, l'eina retornar&agrave; un error.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Nombre màxim de vehicles per assignar-los rutes</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu el nombre de vehicles que estan disponibles per visitar les parades. L'eina admet fins a  100 vehicles. 
+            </p>
+            <p>&Eacute;s possible que l'eina trobi una soluci&oacute; que utilitzi menys vehicles que el nombre que especifiqueu aqu&iacute; en funci&oacute; del nombre total de parades, quantes en permeteu per vehicle, la dist&agrave;ncia que les separa, el temps que es dedica a cadascuna i qualsevol l&iacute;mit que definiu en el temps de ruta total per vehicle.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Nombre màxim de parades per vehicle</h2></div>
+        <hr/>
+        <div>
+            <p>Aquest &eacute;s un dels dos par&agrave;metres que equilibren la c&agrave;rrega de treball total entre les rutes. Podeu especificar un valor entre 1 i  200. 
+            </p>
+            <p>Si es redueix el nombre m&agrave;xim de parades que es poden assignar a cada vehicle, &eacute;s m&eacute;s probable que el nombre de parades assignades sigui el mateix per a cadascun. Aquest fet afavoreix l'equilibri de la c&agrave;rrega de treball entre els conductors. El desavantatge, per&ograve;, &eacute;s que pot generar una soluci&oacute; menys eficient.
+            </p>
+            <p>Si s'incrementen les parades per vehicle, l'eina t&eacute; m&eacute;s llibertat per trobar solucions m&eacute;s eficients; aix&ograve; no obstant, &eacute;s possible que la c&agrave;rrega de treball es distribueixi d'una manera desigual entre els conductors i els vehicles. Tingueu en compte que podeu equilibrar les c&agrave;rregues de treball per temps i per nombre de parades. Per fer-ho, especifiqueu un valor per al par&agrave;metre  <b>Limita el temps de ruta total per vehicle</b>.
+            </p>
+            <p>Els exemples seg&uuml;ents demostren els efectes de limitar el nombre m&agrave;xim de parades per vehicle o el temps total per vehicle. Tots els exemples tenen sis parades i dues rutes que surten de la mateixa ubicaci&oacute;.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Parades i temps de recorregut equilibrats">
+                </td>
+                <td>
+                    <p>Parades i temps de recorreguts equilibrats per ruta:
+                    </p>
+                    <p>Les parades es troben a dist&agrave;ncies m&eacute;s o menys uniformes, aix&iacute; que definir el nombre m&agrave;xim de parades per vehicle per distribuir uniformement la c&agrave;rrega de treball genera rutes que tenen aproximadament la mateixa durada.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Temps de ruta no equilibrats">
+                </td>
+                <td>
+                    <p>Parades per ruta equilibrades, per&ograve; temps de recorregut no equilibrats:
+                    </p>
+                    <p>Cinc de les sis parades estan clusteritzades a prop de la ubicaci&oacute; d'inici, per&ograve; una parada &eacute;s lluny i es necessita un temps de recorregut molt m&eacute;s llarg per arribar-hi. Si es divideixen les parades de manera uniforme entre les dues rutes, es poden generar temps de recorregut desequilibrats.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Temps de recorregut equilibrats">
+                </td>
+                <td>
+                    <p>Parades per ruta no equilibrades, per&ograve; temps de recorregut equilibrats:
+                    </p>
+                    <p>Les parades s&oacute;n a la mateixa ubicaci&oacute; que en el gr&agrave;fic anterior, per&ograve; en augmentar el nombre m&agrave;xim de parades per ruta i limitar el temps de recorregut total per vehicle, els temps de recorregut estan equilibrats.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Temps dedicat a cada parada</h2></div>
+        <hr/>
+        <div>
+            <p>Definiu el temps de servei mitj&agrave; que s'espera per a cada parada. Per exemple, si planifiqueu l'horari d'un dia de treball per als inspectors i el temps mitj&agrave; d'inspecci&oacute; &eacute;s de 45 minuts, especifiqueu  <code>45</code>.
+            </p>
+            <p>Es pressuposa que el temps de servei &eacute;s el mateix en totes les parades.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limita el temps de ruta total per vehicle</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu el temps m&agrave;xim que hauria de durar una ruta de principi a fi. Aix&ograve; inclou el temps de recorregut esperat i els temps de servei dedicats a les parades de la ruta. Si els conductors no han de sobrepassar un temps de treball en un dia, com ara vuit hores, podeu especificar aquest l&iacute;mit aqu&iacute;.
+            </p>
+            <p>Consulteu l'ajuda de  <b>Nombre m&agrave;xim de parades per vehicle</b> per obtenir informaci&oacute; sobre la manera d'equilibrar les c&agrave;rregues de treball.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa d'entitats que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. Si la capa d'entitats ja existeix, se us demanar&agrave; que escriviu un altre nom. La capa d'entitats inclour&agrave; una capa per a cadascun dels elements seg&uuml;ents: rutes, parades assignades i parades sense assignar quan algunes parades d'entrada no es puguin assignar a cap ruta.
+            </p>
+            <p>Si seleccioneu  <b>Inclou les capes de ruta</b>, cada ruta del resultat tamb&eacute; es desar&agrave; com a capa de ruta. Una capa de ruta inclou tota la informaci&oacute; d'una ruta determinada, com ara les parades assignades a la ruta i les indicacions del viatge. La creaci&oacute; de capes de ruta &eacute;s &uacute;til si voleu compartir les rutes individuals amb altres membres de l'organitzaci&oacute; o modificar encara m&eacute;s les rutes mitjan&ccedil;ant el bot&oacute; <b>Indicacions</b> del visor de mapes. Les capes de ruta utilitzen el nom que es proporciona per a la capa d'entitats com a prefix i el nom de la ruta que es genera com a part de l'an&agrave;lisi, que s'afegeix a fi de crear un nom &uacute;nic per a cada capa de ruta.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desaran la capa d'entitats i les capes de rutes (si se n'han creat).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

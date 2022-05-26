@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summer midtpunkt og fordeling</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Summer midtpunkt og fordeling"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner sentrale geoobjekter og retningsfordelinger.
+Det kan brukes til &aring; finne svar p&aring; sp&oslash;rsm&aring;l som:
+        <ul>
+            <li>Hvor er midtpunktet?
+            </li>
+            <li>Hvilket geoobjekt er lettest tilgjengelig fra alle andre geoobjekter?
+            </li>
+            <li>Hvor spredte, kompakte eller integrerte er geoobjektene?
+            </li>
+            <li>Finnes det retningstrender?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalagets gjeldende kartutstrekning som analyseres. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Velg et lag som skal beskrives</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;delaget som skal brukes til &aring; finne sentrale geoobjekter og retningsfordelinger.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Sammendragstyper</h2></div>
+        <hr/>
+        <div>
+            <p>Metoden for &aring; oppsummere midtpunkt og fordeling. 
+            </p>
+            <ul>
+                <li>Sentralt geoobjekt&nbsp;&ndash; Identifiserer det mest sentralt plasserte geoobjektet i et datasett.
+                </li>
+                <li>Snitt for midtpunkt&nbsp;&ndash; Identifiserer det geografiske midtpunktet (eller konsentrasjonens midtpunkt) for et sett geoobjekter.
+                </li>
+                <li>Median for midtpunkt&nbsp;&ndash; Identifiserer lokasjonen som minimerer generell euklidsk avstand til geoobjektene i et datasett.
+                </li>
+                <li>Ellipse &ndash; Oppretter ellipser for standardavvik for &aring; oppsummere de romlige kjennetegnene ved geografiske geoobjekter: sentral tendens, fordeling og retningstrender. Ellipsene kan formateres som 1, 2, eller 3 standardavvik.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Vekt etter (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet brukes til &aring; vekte lokasjoner etter relativ viktighet. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupper etter (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet brukes til &aring; gruppere geoobjekter for separate beregninger av sentrale geoobjekter eller fordeling. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

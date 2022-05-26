@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/FindPointClusters",{clustersLabel:"Zoek de clusters voor de laag ${inputLayerName}.",chooseLayerLabel:"Kies de laag waarvoor clusters zullen worden gevonden",minClusterPtsLabel:"Minimumaantal punten dat als een cluster moet worden beschouwd",minClustersPtsGAXLbl:"Minimumaantal punten om een cluster te starten",limitSearchLabel:"Beperk het zoekbereik tot (optioneel)",limitSearchReqLabel:"Beperk het zoekbereik tot",outputLayerName:"Zoek clusters voor ${inputLayerName}",
+itemDescription:"Objectlaag die is gegenereerd door de oplossing Vind puntclusters uit te voeren voor ${inputLayerName}.",itemTags:"Analyseresultaat, Vind puntclusters, ${inputLayerName}",itemSnippet:"Objectlaag gegenereerd vanuit Vind puntclusters",chooseClusteringMethod:"Kies welke clustermethode u wilt gebruiken",dbscanLabel:"Gedefinieerde afstand (DBSCAN)",hdbscanLabel:"Zelfaanpassend (HDBSCAN)",useTimeToFindCLusters:"Gebruik tijd om clusters te vinden",limitSearchDurLabel:"Beperk de zoekduur tot"});

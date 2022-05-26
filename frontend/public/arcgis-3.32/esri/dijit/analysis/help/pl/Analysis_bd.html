@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> Analiza geoprzestrzenna rozdziela pracę analityczną na wiele serwer&oacute;w ArcGIS GeoAnalytics Server. Umożliwia to szybsze analizowanie większych ilości danych przy użyciu wielu komputer&oacute;w. Dostępne są następujące narzędzia: <ul>
+                <li> Agreguj punkty
+                </li>
+                <li> Buduj siatkę wielu zmiennych
+                </li>
+                <li> Opisz zestaw danych
+                </li>
+                <li> Połącz obiekty
+                </li>
+                <li> Rekonstruuj ścieżki
+                </li>
+                <li> Sumuj atrybuty
+                </li>
+                <li> Sumuj w obrębie
+                </li>
+                <li> Geokoduj lokalizacje z tabeli
+                </li>
+                <li> Wzbogać na podstawie siatki wielu zmiennych
+                </li>
+                <li> Wykryj zdarzenia
+                </li>
+                <li> Znajdź podobne lokalizacje
+                </li>
+                <li> Oblicz zagęszczenie
+                </li>
+                <li> Znajdź klastry punkt&oacute;w
+                </li>
+                <li> Znajdź lokalizacje hot spot
+                </li>
+                <li> Klasyfikacja i regresja oparta na zespołach drzew decyzyjnych
+                </li>
+                <li> Generalizowana regresja liniowa
+                </li>
+                <li> Utw&oacute;rz bufory
+                </li>
+                <li> Dołącz dane
+                </li>
+                <li> Oblicz pole
+                </li>
+                <li> Kopiuj do magazynu danych
+                </li>
+                <li> Nał&oacute;ż warstwy
+                </li>
+                <li> Agreguj obszary
+                </li>
+                <li> Połącz warstwy
+                </li>
+                <li> Przytnij warstwę 
+                </li>
+            </ul>
+            
+        </p>
+        <p>Analiza geoprzestrzenna skupia się na analizie obszernych zbior&oacute;w danych ze szczeg&oacute;lnym uwzględnieniem obydwu wzorc&oacute;w: przestrzennego i czasowego. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agreguj punkty</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Agreguj punkty">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Przy użyciu warstwy obiekt&oacute;w punktowych i warstw obiekt&oacute;w powierzchniowych lub koszy zdefiniowanych dla podanej odległości to narzędzie ustala, kt&oacute;re punkty znajdują się w danym obszarze lub koszu i oblicza statystyki dotyczące wszystkich punkt&oacute;w w każdym obszarze lub koszu. Opcjonalnie w tym narzędziu można zastosować okna czasowe. 
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Na podstawie miejsc wystąpienia przestępstw oblicz liczbę przestępstw w&nbsp;danym powiecie lub innej jednostce podziału administracyjnego.
+                    </li>
+                    <li>Wyszukaj najwyższe i najniższe miesięczne dochody plac&oacute;wek franczyzowych przy użyciu koszy obejmujących 100&nbsp;km.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buduj siatkę wielu wartości</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Diagram procedury wykonywania zadań narzędzia Dołącz dane">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Buduj siatkę wielu zmiennych generuje siatkę kwadratowych lub sześciokątnych koszy i oblicza zmienne dla dowolnego kosza w oparciu o bliskość jednej lub kilku warstw wejściowych.
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Korzystając z r&oacute;żnych warstw infrastruktury transportu określ, kt&oacute;ra część miasta jest najsłabiej dostępna dla os&oacute;b korzystających z transportu publicznego.
+                    </li>
+                    <li>Korzystając z warstw dr&oacute;g wodnych, takich jak jeziora i rzeki, określ nazwę akwenu najbliższego względem dowolnej lokalizacji na terenie Stan&oacute;w Zjednoczonych.
+                    </li>
+                    <li>Korzystając z warstwy dochod&oacute;w gospodarstw domowych określ te obszary na terenie Stan&oacute;w Zjednoczonych, dla kt&oacute;rych zr&oacute;żnicowanie dochod&oacute;w w promieniu 80 km jest największe.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opisz zestaw danych</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Diagram procedury wykonywania zadań narzędzia Opisz zestaw danych">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia podsumowanie obiekt&oacute;w wejściowych z użyciem statystyk, przykładowych warstw i wizualizacji. Można wybrać opcję wyświetlania warstwy przykładowej lub warstwy zasięgu.
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Do obliczonej statystyki sumarycznej można odwołać się w celu objaśnienia wartości zawartych w zestawie danych.
+                    </li>
+                    <li>Zamiast wyświetlać cały zestaw danych, można utworzyć warstwę podzbioru, aby wizualizować obiekty i ich atrybuty po dodaniu do mapy.
+                    </li>
+                    <li>Pozwala to oszczędzić czas i zasoby oraz przeprowadzić analizę na warstwie przykładowej przed wykonaniem analizy dotyczącej całego zestawu danych.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Połącz obiekty</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Połącz obiekty">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Używając warstw obiektowych lub danych tabelarycznych, można połączyć obiekty i rekordy na podstawie określonych relacji między warstwami i tabelami wejściowymi.  Połączenia będą ustalane na podstawie relacji przestrzennych, czasowych lub atrybutowych. Opcjonalnie można obliczyć statystyki zbiorcze.  
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Na podstawie miejsc wystąpienia przestępstw z podanym czasem połącz ze sobą dane o przestępczości, określając przestrzenną relację przestępczości w obrębie 1 kilometra, kt&oacute;re wystąpiły w ciągu 1 godziny, aby określić, czy istnieje sekwencja przestępstw zbliżonych do siebie w czasie i przestrzeni.
+                    </li>
+                    <li>Na podstawie tabeli kod&oacute;w pocztowych z danymi demograficznymi oraz obiekt&oacute;w powierzchniowych reprezentujących budynki mieszkalne połącz dane demograficzne z budynkami, tak aby informacja demograficzna była przypisana do każdego budynku.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rekonstruuj ścieżki</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Rekonstruuj ścieżki">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Korzystając z zawierającej dane czasowe warstwy obiekt&oacute;w punktowych lub poligonowych reprezentujących  <code>moment</code> czasu, to narzędzie określa, kt&oacute;re obiekty wejściowe należą do ścieżki i sekwencyjnie porządkuje dane wejściowe w czasie. Opcjonalnie obliczane są statystyki dotyczące obiekt&oacute;w wejściowych w każdej ścieżce.
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Na podstawie lokalizacji punktowych i czasu pomiar&oacute;w huraganu oblicz średnią prędkość wiatru i maksymalny nap&oacute;r wiatru dla danego huraganu.
+                    </li>
+                    <li>Korzystając z odczyt&oacute;w GPS statk&oacute;w, odtw&oacute;rz trasy statk&oacute;w w postaci linii. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sumuj atrybuty</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Diagram Sumuj atrybuty">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To narzędzie podsumowuje statystyki dla podanych p&oacute;l przy użyciu danych obiektowych lub tabelarycznych. 
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Na podstawie lokalizacji sklep&oacute;w spożywczych z polem  <i>COMPANY_NAME</i> (nazwa firmy) podsumuj sklepy według nazwy firmy w celu określenia statystyk dla każdej firmy.
+                    </li>
+                    <li>Na podstawie lokalizacji sklep&oacute;w spożywczych z polami  <i>COMPANY_NAME</i> (nazwa firmy) i <i>COUNTY</i> (powiat) zsumuj dane sklep&oacute;w według nazwy firmy i powiatu, aby określić statystyki dla każdej firmy w każdym powiecie.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sumuj w obrębie</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Sumuj w obrębie">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia wyszukiwanie obszar&oacute;w (i&nbsp;części obszar&oacute;w) nakładających się na siebie dw&oacute;ch warstw i&nbsp;obliczenie statystyk dotyczących ich pokrycia. 
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Mając warstwę zlewni i warstwę obszar&oacute;w użytkowania terenu według typu użytkowania terenu, oblicz całkowity areał typ&oacute;w użytkowania terenu dla każdej zlewni. 
+                    </li>
+                    <li>Podsumuj średnią wartość działek na sprzedaż w&nbsp;obrębie każdego miasta na podstawie warstwy z&nbsp;działkami w&nbsp;danym powiecie oraz warstwy z&nbsp;granicami miejskimi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Wyszukiwanie lokalizacji</h2>
+        <hr/>
+        <p>Te narzędzia służą do identyfikacji obszar&oacute;w spełniających kryteria podane przez użytkownika. 
+            <ul>
+                <li>Narzędzie  <b>Wykryj zdarzenia</b> określa na warstwach zawierających dane czasowe te obiekty, kt&oacute;re spełniają podany warunek.
+                </li>
+                <li> <b>Geokoduj lokalizacje z tabeli</b> przekształca adresy we wsp&oacute;łrzędne.
+                </li>
+                <li> <b>Znajdź podobne lokalizacje</b> wyszukuje lokalizacje najbardziej podobne do co najmniej jednej lokalizacji referencyjnej na podstawie określonych przez użytkownika kryteri&oacute;w.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wykryj zdarzenia</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Wykryj zdarzenia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To narzędzie działa z zawierającą dane czasowe warstwą punkt&oacute;w, linii, obszar&oacute;w lub tabel reprezentujących momenty w czasie. Za pomocą uporządkowanych sekwencyjnie obiekt&oacute;w nazywanych ścieżkami narzędzie to wskazuje obiekty będące interesującymi zdarzeniami. Zdarzenia są określane na podstawie podanych warunk&oacute;w. 
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Wykryj pomiary huragan&oacute;w kategorii 4 na podstawie atrybutu prędkości wiatru.
+                    </li>
+                    <li>Korzystając z odczyt&oacute;w GPS dotyczących ruchu statku oraz pola określającego jego prędkość, znajdź pomiary, kt&oacute;re są większe niż 1,5 razy średnia z poprzednich pięciu pomiar&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokodowanie lokalizacji z tabeli</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokoduj lokalizacje z tabeli">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Przekształca adresy we wsp&oacute;łrzędne. Narzędzia tego należy używać w przypadku tabel udostępnionych plik&oacute;w dużych zbior&oacute;w danych.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Znajdź podobne lokalizacje</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Znajdź podobne lokalizacje">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Na podstawie podanych kryteri&oacute;w znajdź podobne lokalizacje, mierząc podobieństwo lokalizacji w warstwie propozycji wyszukiwania do co najmniej jednej lokalizacji referencyjnej. 
+            </p>
+            <p>Poniżej podano przykłady: 
+                <ul>
+                    <li>Znajdź najbardziej podobne sklepy, sprawdzając liczbę pracownik&oacute;w i roczną sprzedaż.
+                    </li>
+                    <li>Znajdź 100 najbardziej podobnych miast, sprawdzając relację między populacją, rocznym wzrostem i wpływami podatkowymi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analiza zależności przestrzennych</h2>
+        <hr/>
+        <p>  Narzędzia te pomagają w identyfikacji, ocenie ilościowej oraz wizualizacji wzorc&oacute;w przestrzennych w istniejących w danych.
+            <ul>
+                <li> <b>Oblicz Zagęszczenie</b> to narzędzie wykorzystujące dane ilościowe dotyczących danego zjawiska i&nbsp;rozmieszczające te wartości liczbowe na mapie.
+                </li>
+                <li> <b>Narzędzie Znajdź lokalizacje hot spot</b> identyfikuje statystycznie istotne zgrupowania w zależnościach przestrzennych Twoich danych.
+                </li>
+                <li>Narzędzie  <b>Znajdź klastry punkt&oacute;w</b> znajduje klastry obiekt&oacute;w punktowych wśr&oacute;d otaczającego szumu w oparciu o ich rozkład przestrzenny.
+                </li>
+                <li>Narzędzie  <b>Klasyfikacja i regresja oparta na zespołach drzew decyzyjnych</b> modeluje i generuje prognozy z użyciem dostosowanego algorytmu losowych zespoł&oacute;w drzew decyzyjnych (las&oacute;w) &mdash; opracowanego przez Leo Breimana &mdash; będącego przykładem metody nadzorowanego samouczenia się maszyn.
+                </li>
+                <li>Narzędzie  <b>Generalizowana regresja liniowa</b> służy do generowania prognoz lub modelowania zmiennej zależnej w kontekście jej relacji z zestawem zmiennych objaśniających.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Oblicz zagęszczenie</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Oblicz zagęszczenie">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Oblicz zagęszczenie tworzy mapę zagęszczenia z obiekt&oacute;w punktowych poprzez odpowiednie rozmieszczenie na powierzchni mapy znanych wartości wyrażających dane zjawisko (reprezentowane przez atrybuty punkt&oacute;w). W wyniku powstaje warstwa obszar&oacute;w reprezentujących zagęszczenie.
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Obliczanie liczby szpitali w określonym powiecie. Warstwa wynikowa będzie przedstawiać obszary o dużej i niskiej dostępności szpitali &mdash; informacja ta może zostać wykorzystana w procesie podejmowania decyzji o budowie nowych szpitali.
+                    </li>
+                    <li>Identyfikacja obszar&oacute;w wysokiego zagrożenia pożarami las&oacute;w na podstawie lokalizacji wcześniejszych pożar&oacute;w las&oacute;w
+                    </li>
+                    <li>Lokalizacja społeczności zamieszkujących tereny oddalone od gł&oacute;wnych dr&oacute;g w celu wyznaczenia przebiegu nowych dr&oacute;g
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Znajdź klastry punktów</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Znajdź klastry punkt&oacute;w">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Znajdź klastry punkt&oacute;w znajduje klastry obiekt&oacute;w punktowych wśr&oacute;d otaczającego szumu w oparciu o ich rozkład przestrzenny.
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Znajdź klastry gospodarstw domowych zaatakowanych przez szkodniki w celu ich zwalczania.  
+                    </li>
+                    <li>Powiadamiaj o zagrożeniach i podejmuj działania ratunkowe oraz ewakuacyjne w oparciu o rozmiar i lokalizację klastr&oacute;w używających ulokowanych przestrzennie wpis&oacute;w z serwisu Twitter powiązanych z zagrożeniami naturalnymi lub atakami terrorystycznymi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Znajdź lokalizacje hot spot</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Znajdź lokalizacje hot spot">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Znajdź lokalizacje hot spot ustala, czy w&nbsp;relacjach przestrzennych danych użytkownika istnieją statystycznie istotne klastry. 
+                <ul>
+                    <li>Czy Twoje punkty (reprezentujące przestępstwa, drzewa, wypadki drogowe) rzeczywiście są zgrupowane? Masz absolutną pewność?
+                    </li>
+                    <li>Czy naprawdę udało Ci się ustalić, jakie są statystycznie istotne lokalizacje hot spot (wydatki, umieralność noworodk&oacute;w, systematycznie wysokie wyniki test&oacute;w) czy może Twoja mapa przedstawiałaby zupełnie inne zależności, gdyby zmienione zostały użyte symbole?
+                    </li>
+                </ul>
+                Narzędzie Znajdź lokalizacje hot spot pomoże Ci w&nbsp;uzyskaniu rzetelnej odpowiedzi na te pytania.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasyfikacja i regresja oparta na zespołach drzew decyzyjnych</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Diagram procedury wykonywania zadań związanej z klasyfikacją i regresją opartą na zespołach drzew decyzyjnych">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Klasyfikacja i regresja oparta na zespołach drzew decyzyjnych modeluje i generuje prognozy z użyciem dostosowanego algorytmu losowych zespoł&oacute;w drzew decyzyjnych (las&oacute;w) &mdash; opracowanego przez Leo Breimana &mdash; będącego przykładem metody nadzorowanego samouczenia się maszyn.
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Mając dane dotyczące występowania trawy morskiej oraz pewną liczbę środowiskowych zmiennych objaśniających, kt&oacute;re są reprezentowane w postaci wzbogaconych przy użyciu siatki wielu zmiennych atrybut&oacute;w do obliczania odległości do fabryk znajdujących się w g&oacute;rnym biegu rzeki oraz do gł&oacute;wnych port&oacute;w, można prognozować przyszłe występowanie trawy morskiej na podstawie przewidywanych w przyszłości wartości tych samych środowiskowych zmiennych objaśniających.
+                          
+                    </li>
+                    <li>Można rozważyć sytuację, gdy dostępne są dane o wysokości plon&oacute;w w setkach gospodarstw rolnych na terenie całego kraju oraz inne atrybuty opisujące poszczeg&oacute;lne gospodarstwa (liczba pracownik&oacute;w, areał itd.). Korzystając z tych danych, można określić zestaw obiekt&oacute;w reprezentujących gospodarstwa rolne, dla kt&oacute;rych dane dotyczące wysokości plon&oacute;w nie są dostępne (znane są jednak wartości wszystkich pozostałych zmiennych), i wygenerować prognozę wielkości zbior&oacute;w.
+                    </li>
+                    <li>Wartości danych dotyczących mieszkalnictwa można prognozować na podstawie cen dom&oacute;w, kt&oacute;re zostały sprzedane w bieżącym roku. Ceny sprzedaży dom&oacute;w wraz z informacjami o liczbie sypialni, odległości do szkoły, bliskości do gł&oacute;wnych dr&oacute;g, średnim dochodzie i liczbie przestępstw umożliwiają prognozowanie wartości cen sprzedaży podobnych dom&oacute;w.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generalizowana regresja liniowa</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Diagram procedury wykonywania zadań generalizowanej regresji liniowej">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Narzędzie Generalizowana regresja liniowa  służy do generowania prognoz lub modelowania zmiennej zależnej w kontekście jej relacji z zestawem zmiennych objaśniających. To narzędzie umożliwia dopasowywanie modeli ciągłych (OLS), binarnych (logistycznych) i dyskretnych (Poissona).
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Jakie informacje demograficzne przyczyniają się do wysokiego wskaźnika wykorzystania transportu publicznego?
+                    </li>
+                    <li>Czy istnieje dodatni związek między aktami wandalizmu a kradzieżami?
+                    </li>
+                    <li>Kt&oacute;re zmienne pozwalają skutecznie prognozować liczbę zgłoszeń na telefon alarmowy? Jakie jest oczekiwane zapotrzebowanie na zasoby związane z reagowaniem w sytuacjach kryzysowych, biorąc pod uwagę prognozy?
+                    </li>
+                    <li>Kt&oacute;re zmienne mają wpływ na niskie wskaźniki urodzeń?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Narzędzia bliskości</h2>
+        <hr/>
+        <p>Te narzędzia pomagają w&nbsp;udzieleniu odpowiedzi na jedno z&nbsp;najczęstszych pytań zadawanych podczas wykonywania analizy przestrzennej: Co znajduje się w&nbsp;pobliżu czego?
+            <ul>
+                <li>Narzędzie  <b>Utw&oacute;rz bufory</b> tworzy obszary w&nbsp;określonej odległości od obiekt&oacute;w.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Utwórz bufory</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Utw&oacute;rz bufory">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bufor jest obszarem obejmującym swym zasięgiem obszar w&nbsp;określonej odległości od obiektu punktowego, liniowego lub poligonowego.
+            </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Korzystając z liniowych obiekt&oacute;w rzeki, utw&oacute;rz bufor dla każdej rzeki o szerokości wynoszącej 50-krotność jej szerokości, aby określić proponowane granice obszaru przybrzeżnego.
+                    </li>
+                    <li>Na podstawie obszar&oacute;w reprezentujących kraje utw&oacute;rz bufor dla każdego kraju na 200 mil morskich, aby określić granicę morską.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kopiuj do magazynu danych</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Kopiuj do magazynu danych">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopiuje wejściową warstwę obiektową lub tabelę do aplikacji  ArcGIS Data Store i tworzy warstwę w zasobach oprogramowania  ArcGIS Enterprise. </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Skopiuj zbi&oacute;r plik&oacute;w  <code>.csv</code> w udostępnionym pliku dużego zbioru danych do magazynu danych czasowo-przestrzennych w celu wizualizacji.
+                    </li>
+                    <li>Skopiuj obiekty znajdujące się w zasięgu bieżącej mapy przechowywane w magazynie danych czasowo-przestrzennych do relacyjnego magazynu danych.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Oblicz pole</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Oblicz pole">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Oblicza wartości dla nowych lub istniejących p&oacute;l i tworzy warstwę w zasobach oprogramowania  ArcGIS Enterprise. </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Zmodyfikuj istniejące pole o nazwie  <i>total</i> (suma) w taki spos&oacute;b, aby zawierało sumę przychod&oacute;w z p&oacute;l <i>total_2016</i>, <i>total_2017</i> i <i>total_2018</i>.
+                    </li>
+                    <li>Utw&oacute;rz nowe pole umożliwiające klasyfikowanie poziom&oacute;w ryzyka na podstawie wartości p&oacute;l, takich jak  <i>windspeed</i> (prędkość wiatru) i <i>pollutant</i> (zanieczyszczenie).
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Przytnij warstwę</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Przytnij warstwę">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Służy do wycinania obiekt&oacute;w wejściowych ze zdefiniowanych obszar&oacute;w zainteresowania. Wynikiem jest podzbi&oacute;r obiekt&oacute;w wejściowych. 
+            </p>
+            <p>Przykłady: 
+                <ul>
+                    <li>Utworzenie podzbioru zagrożonych budynk&oacute;w znajdujących się w strefach zalewowych.
+                    </li>
+                    <li>Określenie gł&oacute;wnych dr&oacute;g przechodzących przez potencjalne obszary inwestycyjne.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agreguj obszary</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Agreguj obszary">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Służy do scalania obiekt&oacute;w powierzchniowych, kt&oacute;re przecinają się lub mają taką samą wartość pola, w celu utworzenia obiekt&oacute;w ciągłych lub wieloczęściowych.
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Utworzenie pojedynczego obiektu reprezentującego Hawaje przez zagregowanie granic wysp hawajskich.
+                    </li>
+                    <li>Połączenie podobnych analizowanych obszar&oacute;w na podstawie rodzaju gleb w celu utworzenia ciągłego zestawu danych typu gleby.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Nałóż warstwy</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Nał&oacute;ż warstwy">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Łączy co najmniej dwie warstwy w jedną. Nakładanie służy do uzyskania odpowiedzi na jedno z najbardziej podstawowych pytań z dziedziny geografii: Jakie elementy leżą na obszarze czegoś?
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Kt&oacute;re działki znajdują się na obszarze zalewania przez powodzie występujące w ciągu ostatnich 100 lat? (Gdy coś znajduje się &bdquo;w obrębie&rdquo; czegoś to znaczy r&oacute;wnież, że leży na obszarze czegoś.)
+                          
+                    </li>
+                    <li>Na jakiego rodzaju glebach prowadzi się określone rodzaje upraw?
+                         
+                    </li>
+                    <li>Kt&oacute;re studnie znajdują się w obrębie opuszczonych jednostek wojskowych?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dołącz dane</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Diagram procedury wykonywania zadań narzędzia Dołącz dane">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dołącza obiekty do istniejącej hostowanej warstwy w zasobach użytkownika platformy  ArcGIS Enterprise. </p>
+            <p>Poniżej podano przykłady:
+                <ul>
+                    <li>Aktualizuj swoją warstwę obiektową Sprzedaż_2018 każdego miesiąca, gdy tylko będą dostępne raporty.
+                    </li>
+                    <li>Dołącz zestawy danych dotyczących śledzenia huragan&oacute;w pochodzące z lat 2016 i 2017 do gł&oacute;wnego zestawu danych dotyczących huragan&oacute;w.
+                    </li>
+                    <li>Zbierz i dołącz zestawy danych pochodzących z r&oacute;żnych źr&oacute;deł o odmiennych schematach używających niestandardowego przyporządkowania p&oacute;l.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Połącz warstwy</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Połącz warstwy">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Łączy dwie warstwy obiektowe, tworząc jedną warstwę wynikową. Domyślnie uwzględnione zostaną wszystkie pola z łączonych warstw. Można także określić niestandardowe reguły scalania definiujące schemat wynikowy.  
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Scalenie trzech warstw zawierających dane demograficzne dotyczące Anglii, Walii i Szkocji w jedną warstwę dotyczącą Wielkiej Brytanii.
+                    </li>
+                    <li>Połączenie dw&oacute;ch warstw zawierających informacje o działkach w sąsiadujących powiatach z zachowaniem wyłącznie p&oacute;l, kt&oacute;re mają tę samą nazwę i typ w obu warstwach.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Wzbogacanie danych</h2>
+        <hr/>
+        <p>Narzędzia te pomagają w badaniu charakteru poszczeg&oacute;lnych obszar&oacute;w.
+            <ul>
+                <li>Narzędzie  <b>Wzbogać na podstawie siatki wielu zmiennych</b> pozwala łączyć atrybuty z siatki wielu zmiennych w warstwie punktowej.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wzbogać na podstawie siatki wielu zmiennych</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Wzbogać na podstawie siatki wielu zmiennych">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia efektywne łączenie atrybut&oacute;w z siatki wielu zmiennych z warstwą punktową, dzięki czemu można szybko dodać duży i zr&oacute;żnicowany zbi&oacute;r informacji do danych punktowych na potrzeby dalszej analizy przestrzennej. 
+            </p>
+            <p>Przykłady:
+                <ul>
+                    <li>Mając dostępną warstwę zawierającą miliony przypadk&oacute;w przerw w zasilaniu, można wzbogacić obiekty zdarzeń informacjami na temat typowego użytkowania, negatywnego wpływu na środowisko oraz stanu infrastruktury w celu przeprowadzenia badania związku tych czynnik&oacute;w z częstotliwością przerw w zasilaniu. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

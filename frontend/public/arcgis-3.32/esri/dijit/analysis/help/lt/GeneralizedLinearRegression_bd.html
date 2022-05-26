@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalizuota linijinė regresija</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Genralizuotos linijinės regresijos darbo eigos diagrama"></h2>
+        <hr/>
+    <p>Atlieka generalizuotą linijinę regresiją (GLR) ir generuoja prognozes arba modeliuoja priklausomą kintamąjį pagal jo ry&scaron;ius su paai&scaron;kinančių kintamųjų rinkiniu. &Scaron;is įrankis gali būti naudojamas pritaikyti i&scaron;tisinius (Gauso), dvejetainius (logistinius) ir skaičiavimo (Puasono) modelius.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analizės tipas</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo įrankio veikimo režimą. Įrankį galima paleisti norint apmokyti modelį, kad &scaron;is vertintų na&scaron;umą, arba apmokyti modelį ir prognozuoti elementus. Prognozavimo tipai yra tokie:
+                <ul>
+                    <li> <b>Pritaikyti modelį vertinti modelio na&scaron;umą</b> &ndash; modelis bus adaptuojamas ir taikomas įvesties duomenims. &Scaron;ią parinktį naudokite norėdami įvertinti savo modelio tikslumą prie&scaron; generuojant prognozes naujam duomenų rinkiniui arba suprasti prognozuojamo kintamojo ry&scaron;ius ir veiksnius. &Scaron;ios parinkties i&scaron;vestis bus jūsų pritaikytų duomenų elementų paslauga ir modelio diagnostika.
+                    </li>
+                    <li> <b>Pritaikyti modelį ir prognozuoti reik&scaron;mes</b> &ndash; įvesties elementams ir prognozavimo elementams bus sugeneruotos prognozės arba klasifikacijos. Ir prognozavimo elementams, ir prognozuojamiems elementams turi būti pateikiami paai&scaron;kinantys kintamieji. &Scaron;ios parinkties i&scaron;vestis bus jūsų modelio elementų paslauga, pritaikyta įvesties duomenims, ir prognozuojamų elementų elementų paslauga ir modelio diagnostika.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Pritaikyti modelį vertinti modelio našumą</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į režimą, kai norite pritaikyti modelį ir patikrinti, kaip gerai pritaikyta.
+            </p>
+            <p>Jį pasirinkus, modelis bus apmokomas naudojant įvesties sluoksnį. &Scaron;ią parinktį naudokite norėdami įvertinti savo modelio tikslumą prie&scaron; generuojant prognozes naujam duomenų rinkiniui. &Scaron;ios parinkties i&scaron;vestis bus modelio diagnostika, pritaikius modelį jūsų mokymo duomenims.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Pritaikyti modelį ir prognozuoti reikšmes</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į režimą, kai norite adaptuoti modelį, o tada pritaikyti modelį duomenų rinkiniui prognozėms generuoti.
+            </p>
+            <p>Elementams bus sugeneruojamos prognozės arba klasifikacijos. &Scaron;ios parinkties i&scaron;vestis bus elementų paslauga, modelio diagnostika ir (nebūtina) kintamųjų reik&scaron;mingumo lentelė.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Pasirinkite, iš kurio sluoksnio generuoti modelį</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis, kuriame yra ta&scaron;kų, linijiniai, ploto ar lenteliniai elementai, kuriuose yra priklausomų ir paai&scaron;kinančių kintamųjų.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Pasirinkite modeliuotiną lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Skaitinis laukas, kuriame yra modeliuotinos stebėtos reik&scaron;mės ir modeliuojamos reik&scaron;mės tipas. Modeliuoti galima trijų tipų reik&scaron;mes
+                <ul>
+                    <li>I&scaron;tisinis &ndash; reprezentuoja i&scaron;tisines reik&scaron;mes. Naudojamas Gauso modelis, ir įrankis atlieka įprastinę mažiausių kvadratų regresiją.
+                    </li>
+                    <li>Dvejetainis &ndash; reprezentuoja reik&scaron;mių buvimą arba nebuvimą. Reik&scaron;mės turi būti tik 1 ir 0. Naudojamas modelis &ndash; logistinė regresija.
+                    </li>
+                    <li>Skaičiavimas &ndash; reprezentuoja diskrečius skaičius ir įvykius, pavyzdžiui, nusikaltimų skaičių, susirgimų skaičių arba avarijų skaičių. Naudojamas modelis &ndash; Puasono regresija. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Pasirinkite, kurio sluoksnio reikšmes prognozuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis su elementais, reprezentuojančiais padėtis, kuriose reikia skaičiuoti įvertinimus. Kiekvienas &scaron;io duomenų rinkinio elementas turi turėti visų nurodytų paai&scaron;kinančių kintamųjų reik&scaron;mes. Priklausomi &scaron;ių elementų kintamieji bus skaičiuojami naudojant įvesties sluoksniui sukalibruotą modelį.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Pasirinkite paaiškinančiuosius laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Vienas ar daugiau laukų, reprezentuojančių paai&scaron;kinančius kintamuosius (laukus), kurie padeda prognozuoti reik&scaron;mę. Matomi tik skaitiniai laukai.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Pasirinkite, kaip sutapdinami paaiškinantieji laukai</h2></div>
+        <hr/>
+        <div>
+            <p>Kaip atitinkami įvesties sluoksnio kintamieji sutapdinami su prognozavimo sluoksnio kintamaisiais. Lentelėn įtrauktos bus tik tos reik&scaron;mės, kurios naudotos generuojant modelį. Galima naudoti tik skaitines reik&scaron;mes. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Pateikiami rezultatai priklauso nuo analizės tipo. Jei pritaikote vertinti modelio tinkamumą, rezultatas bus įvesties duomenų, pritaikytų modeliui, sluoksnis, ir rezultatų informacija, kuria vertinamas modelio tinkamumas. Jei pritaikote ir prognozuojate, rezultatas bus įvesties duomenų, pritaikytų modeliui, sluoksnis, prognozuojamų rezultatų sluoksnis ir rezultatų informacija, kuria vertinamas modelio tinkamumas.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

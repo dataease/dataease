@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Phân loại và Hồi quy dựa vào Rừng</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Sơ đồ quy tr&igrave;nh Ph&acirc;n loại v&agrave; Hồi quy dựa v&agrave;o Rừng"></h2>
+        <hr/>
+    <p>Sử dụng thuật to&aacute;n rừng ngẫu nhi&ecirc;n của Leo Breiman, một phương ph&aacute;p machine learning c&oacute; gi&aacute;m s&aacute;t để tạo ra c&aacute;c m&ocirc; h&igrave;nh v&agrave; thực hiện dự đo&aacute;n. C&oacute; thể thực hiện c&aacute;c dự đo&aacute;n cho cả biến ph&acirc;n loại (ph&acirc;n loại) v&agrave; biến li&ecirc;n tục (hồi quy). Biến giải th&iacute;ch l&agrave; c&aacute;c trường trong bảng thuộc t&iacute;nh của c&aacute;c đối tượng đ&agrave;o tạo. C&oacute; thể chạy c&ocirc;ng cụ n&agrave;y để tạo ra một m&ocirc; h&igrave;nh nhằm đ&aacute;nh gi&aacute; hiệu suất hoặc tạo một m&ocirc; h&igrave;nh v&agrave; dự đo&aacute;n kết quả cho c&aacute;c bộ dữ liệu kh&aacute;c.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Loại Phân tích</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định chế độ hoạt động của c&ocirc;ng cụ. C&oacute; thể chạy c&ocirc;ng cụ n&agrave;y để đ&agrave;o tạo một m&ocirc; h&igrave;nh chỉ nhằm đ&aacute;nh gi&aacute; hiệu suất hoặc đ&agrave;o tạo một m&ocirc; h&igrave;nh v&agrave; dự đo&aacute;n c&aacute;c đối tượng. C&aacute;c kiểu dự đo&aacute;n gồm c&oacute;:
+                <ul>
+                    <li> <b>Đ&agrave;o tạo một m&ocirc; h&igrave;nh để đ&aacute;nh gi&aacute; hiệu suất m&ocirc; h&igrave;nh</b>&mdash;Một m&ocirc; h&igrave;nh sẽ được đ&agrave;o tạo v&agrave; l&agrave;m tr&ugrave;ng khớp với dữ liệu đầu v&agrave;o. Sử dụng t&ugrave;y chọn n&agrave;y để đ&aacute;nh gi&aacute; độ ch&iacute;nh x&aacute;c của m&ocirc; h&igrave;nh trước khi tạo dự đo&aacute;n với bộ dữ liệu mới. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng của dữ liệu đ&agrave;o tạo ph&ugrave; hợp, c&aacute;c chẩn đo&aacute;n m&ocirc; h&igrave;nh v&agrave; một bảng mức độ quan trọng của c&aacute;c biến t&ugrave;y chọn.
+                    </li>
+                    <li> <b>Đ&agrave;o tạo một m&ocirc; h&igrave;nh v&agrave; dự đo&aacute;n c&aacute;c gi&aacute; trị</b>&mdash; Tạo dự đo&aacute;n v&agrave; ph&acirc;n loại cho c&aacute;c đối tượng. Biến giải th&iacute;ch phải được cung cấp cho cả c&aacute;c đối tượng đ&agrave;o tạo v&agrave; đối tượng được dự đo&aacute;n. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng của c&aacute;c gi&aacute; trị dự đo&aacute;n của bạn, chẩn đo&aacute;n m&ocirc; h&igrave;nh v&agrave; một bảng mức độ quan trọng của c&aacute;c biến t&ugrave;y chọn.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Đào tạo một mô hình để đánh giá hiệu suất mô hình</h2></div>
+        <hr/>
+        <div>
+            <p>Sử dụng chế độ n&agrave;y nếu bạn muốn l&agrave;m tr&ugrave;ng khớp một m&ocirc; h&igrave;nh v&agrave; kiểm tra sự ph&ugrave; hợp.
+            </p>
+            <p>Khi chọn lựa chọn n&agrave;y, m&ocirc; h&igrave;nh sẽ được đ&agrave;o tạo bằng c&aacute;ch sử dụng một lớp đầu v&agrave;o. Sử dụng t&ugrave;y chọn n&agrave;y để đ&aacute;nh gi&aacute; độ ch&iacute;nh x&aacute;c của m&ocirc; h&igrave;nh trước khi tạo dự đo&aacute;n với bộ dữ liệu mới. T&ugrave;y chọn n&agrave;y sẽ cho ra kết quả l&agrave; chẩn đo&aacute;n m&ocirc; h&igrave;nh trong cửa sổ th&ocirc;ng b&aacute;o v&agrave; &aacute;p dụng m&ocirc; h&igrave;nh cho dữ liệu đ&agrave;o tạo của bạn.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Đào tạo mô hình và dự đoán giá trị</h2></div>
+        <hr/>
+        <div>
+            <p>Sử dụng chế độ n&agrave;y nếu bạn muốn l&agrave;m tr&ugrave;ng khớp m&ocirc; h&igrave;nh v&agrave; &aacute;p dụng m&ocirc; h&igrave;nh cho bộ dữ liệu để tạo ra c&aacute;c dự đo&aacute;n.
+            </p>
+            <p>Dự đo&aacute;n hoặc ph&acirc;n loại sẽ được tạo cho c&aacute;c đối tượng. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng, chẩn đo&aacute;n m&ocirc; h&igrave;nh v&agrave; một bảng mức độ quan trọng của c&aacute;c biến t&ugrave;y chọn.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Chọn lớp đào tạo</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp đối tượng n&agrave;y chứa biến để dự đo&aacute;n v&agrave; c&aacute;c trường sẽ được sử dụng để tạo dự đo&aacute;n.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Chọn một lớp để dự đoán giá trị cho</h2></div>
+        <hr/>
+        <div>
+            <p>Một lớp đối tượng đại diện cho c&aacute;c vị tr&iacute; thực hiện dự đo&aacute;n. Lớp đối tượng n&agrave;y cũng phải chứa mọi biến giải th&iacute;ch được cung cấp dưới dạng trường tương ứng với c&aacute;c biến được sử dụng từ c&aacute;c đối tượng đ&agrave;o tạo.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Chọn trường để dự đoán</h2></div>
+        <hr/>
+        <div>
+            <p>Trường từ c&aacute;c đối tượng đ&agrave;o tạo c&oacute; chứa c&aacute;c gi&aacute; trị sẽ được sử dụng để đ&agrave;o tạo m&ocirc; h&igrave;nh. Trường n&agrave;y chứa c&aacute;c gi&aacute; trị đ&atilde; x&aacute;c định (đ&agrave;o tạo) của biến sẽ được sử dụng để dự đo&aacute;n tại c&aacute;c vị tr&iacute; kh&ocirc;ng x&aacute;c định. Nếu c&aacute;c gi&aacute; trị l&agrave; ph&acirc;n loại (v&iacute; dụ: Phong, Th&ocirc;ng, Sồi), h&atilde;y đ&aacute;nh dấu v&agrave;o hộp chọn  <b>Categorical</b> (Ph&acirc;n loại).
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Chọn một hoặc nhiều biến giải thích</h2></div>
+        <hr/>
+        <div>
+            <p>Một hoặc nhiều trường đại diện cho c&aacute;c biến giải th&iacute;ch (c&aacute;c trường) gi&uacute;p dự đo&aacute;n gi&aacute; trị hoặc danh mục của biến cần dự đo&aacute;n.  Sử dụng hộp chọn ph&acirc;n loại cho bất kỳ biến n&agrave;o đại diện cho c&aacute;c lớp hoặc danh mục (như lớp phủ đất hoặc hiện diện hoặc kh&ocirc;ng hiện diện). X&aacute;c định biến l&agrave; đ&uacute;ng cho bất kỳ biến n&agrave;o đại diện cho lớp hoặc danh mục như lớp phủ đất hoặc hiện diện hoặc kh&ocirc;ng hiện diện v&agrave; sai nếu biến l&agrave; li&ecirc;n tục.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Số lượng cây</h2></div>
+        <hr/>
+        <div>
+            <p>Số lượng c&acirc;y cần tạo trong m&ocirc; h&igrave;nh. Nhiều c&acirc;y hơn nh&igrave;n chung sẽ dẫn đến dự đo&aacute;n m&ocirc; h&igrave;nh ch&iacute;nh x&aacute;c hơn, nhưng mất nhiều thời gian hơn để m&ocirc; h&igrave;nh t&iacute;nh to&aacute;n. Số c&acirc;y mặc định l&agrave; 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Kích cỡ lá tối thiểu</h2></div>
+        <hr/>
+        <div>
+            <p>Số lượng quan s&aacute;t tối thiểu cần thiết để giữ một chiếc l&aacute; (tức l&agrave; n&uacute;t cuối tr&ecirc;n c&acirc;y m&agrave; kh&ocirc;ng bị ph&acirc;n chia th&ecirc;m). Số mặc định tối thiểu cho hồi quy l&agrave; 5 v&agrave; cho ph&acirc;n loại l&agrave; 1. Đối với dữ liệu rất lớn, việc tăng số n&agrave;y sẽ l&agrave;m giảm thời gian chạy của c&ocirc;ng cụ.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Độ sâu tối đa của cây</h2></div>
+        <hr/>
+        <div>
+            <p>Số lượng ph&acirc;n chia tối đa sẽ được thực hiện ở một c&acirc;y. Nhiều phần ph&acirc;n t&aacute;ch sẽ được tạo ra khi sử dụng độ s&acirc;u tối đa lớn, l&agrave;m tăng cơ hội tr&ugrave;ng khớp m&ocirc; h&igrave;nh hơn. Mặc định l&agrave; dữ liệu được định hướng v&agrave; phụ thuộc v&agrave;o số lượng c&acirc;y được tạo v&agrave; số lượng biến được đưa v&agrave;o.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dữ liệu có sẵn trên mỗi cây (%)</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định tỷ lệ của c&aacute;c đối tượng trong lớp đ&agrave;o tạo được sử dụng cho mỗi c&acirc;y quyết định. Mặc định l&agrave; 100 phần trăm của dữ liệu. C&aacute;c mẫu cho mỗi c&acirc;y được lấy ngẫu nhi&ecirc;n từ hai phần ba dữ liệu được chỉ định.
+            </p>
+            <p>Mỗi c&acirc;y quyết định trong rừng được tạo bởi một mẫu hoặc tập hợp con ngẫu nhi&ecirc;n (khoảng hai phần ba) của dữ liệu đ&agrave;o tạo sẵn c&oacute;. Sử dụng tỷ lệ dữ liệu đầu v&agrave;o thấp hơn cho mỗi c&acirc;y quyết định sẽ tăng tốc độ của c&ocirc;ng cụ cho c&aacute;c bộ dữ liệu cực lớn.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Số lượng biến được lấy mẫu ngẫu nhiên</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định số lượng c&aacute;c biến giải th&iacute;ch được sử dụng để tạo mỗi c&acirc;y quyết định.
+            </p>
+            <p>Mỗi c&acirc;y quyết định trong rừng được tạo ra bằng một tập hợp con ngẫu nhi&ecirc;n của c&aacute;c biến giải th&iacute;ch được chỉ định. Việc tăng số lượng biến sử dụng trong mỗi c&acirc;y quyết định sẽ l&agrave;m tăng cơ hội tr&ugrave;ng khớp m&ocirc; h&igrave;nh hơn, đặc biệt nếu c&oacute; một hoặc một v&agrave;i biến chiếm ưu thế. Một thực tế phổ biến l&agrave; sử dụng căn bậc hai của tổng số biến giải th&iacute;ch nếu biến cần dự đo&aacute;n của bạn l&agrave; số hoặc chia tổng số biến giải th&iacute;ch cho 3 nếu biến dự đo&aacute;n l&agrave; ph&acirc;n loại.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Chọn cách so khớp các trường giải thích</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c biến tương ứng trong lớp đ&agrave;o tạo sẽ khớp với c&aacute;c biến trong lớp dự đo&aacute;n như thế n&agrave;o. Chỉ c&aacute;c biến được sử dụng trong đ&agrave;o tạo mới được đưa v&agrave;o bảng.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Số lần chạy để xác nhận</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định tỷ lệ (từ 0 phần trăm đến 50 phần trăm) của c&aacute;c đối tượng trong lớp đ&agrave;o tạo để dự trữ dưới dạng bộ dữ liệu thử nghiệm d&ugrave;ng cho x&aacute;c thực. M&ocirc; h&igrave;nh sẽ được đ&agrave;o tạo m&agrave; kh&ocirc;ng c&oacute; tập hợp con dữ liệu ngẫu nhi&ecirc;n n&agrave;y v&agrave; c&aacute;c gi&aacute; trị quan s&aacute;t được cho c&aacute;c đối tượng đ&oacute; sẽ được so s&aacute;nh với gi&aacute; trị dự đo&aacute;n. Gi&aacute; trị mặc định l&agrave; 10 phần trăm.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới.
+            </p>
+            <p>Kết quả trả về sẽ phụ thuộc v&agrave;o loại ph&acirc;n t&iacute;ch. Nếu bạn đang đ&agrave;o tạo để đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh, kết quả sẽ chứa một lớp dữ liệu đ&agrave;o tạo tr&ugrave;ng khớp với m&ocirc; h&igrave;nh v&agrave; th&ocirc;ng tin kết quả đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh. Nếu bạn đang đ&agrave;o tạo v&agrave; dự đo&aacute;n, kết quả sẽ chứa một lớp dữ liệu đ&agrave;o tạo tr&ugrave;ng khớp với m&ocirc; h&igrave;nh, một lớp kết quả dự đo&aacute;n v&agrave; th&ocirc;ng tin kết quả đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> hộp xổ xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

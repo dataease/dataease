@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>可視領域の作成</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="可視領域の作成"></h2>
+        <hr/>
+    <p>[可視領域の作成] ツールは、観測者が地上でオブジェクトを確認できる範囲をエリア フィーチャとして作成します。入力観測点によって、観測者 (地上にいる人または火の見櫓の監視人など) または観測されるオブジェクト (風力タービン、給水塔、乗り物、またはその他の人など) を表すことができます。生成されるエリアは、観測者から観測対象のオブジェクトを見ることができる、または観測対象オブジェクトから観測者を見ることができるエリアです。
+    </p>
+    <p>観測者と観測対象オブジェクトのどちらでも、地面からの高さを設定できます。これらの高さは、可視性を決定する際に使用されます。たとえば、風力タービンの高さが 120 m で、地上に立っている人の身長が 180 cm の場合に計算される可視領域は、風力タービンが 60 m の場合に計算される可視領域よりも大きくなるのが一般的です。
+    </p>
+    <p>可視領域の計算は、樹木や建物などの障害物を考慮しないことに注意してください。この計算は、観測者および観測対象オブジェクト以外には地表に何もないものとして実行されると考えることができます。
+    </p>
+    <p>生成されるレイヤーには、表示可能な範囲を表すエリア フィーチャが含まれます。 <i>Frequency</i> フィールドには、各エリアを見通すことができる観測ポイントの数が記録されます。たとえば、5 つの入力ポイントがあり、それぞれが火の見櫓を表している場合、 <i>Frequency</i> フィールドには、1 から 5 の値が使用されます。1 の値を持つエリアを見ることができるのは、1 の火の見櫓のみであり、5 の値を持つエリアはすべての火の見櫓から見ることができます。また、レイヤーには、 <i>DEMResolution</i> フィールドが含まれます。このフィールドには、可視領域の作成に使用されるデジタル標高モデル (DEM) の解像度が記録されます。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲に表示される観測点だけが解析されます。オフの場合、入力レイヤーのすべての観測点が、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>観測点の位置を表すポイント フィーチャ</h2></div>
+        <hr/>
+        <div>
+            <p>観測位置として使用するポイント フィーチャ。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>観測点の位置の高さ</h2></div>
+        <hr/>
+        <div>
+            <p>これは、観測位置の地面からの高さです。デフォルト値は、平均的な人の身長です。
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>地上のその他のオブジェクトの高さ</h2></div>
+        <hr/>
+        <div>
+            <p>これは、可視性の評価に使用される地上の構造物または人の高さです。生成される可視領域は、観測点からこれらの他のオブジェクトを見ることができるエリアです。その逆も同じことが当てはまります。その他のオブジェクトから観測点を見ることができます。
+            </p>
+            <p>
+                <ul>
+                    <li>観測点が風力タービンを表していて、地上に立っている人からそのタービンを見ることができる場所を判断する必要がある場合は、人の平均的な高さ (約 180 cm) を入力します。結果は、地上に立っている人から風力タービンを見ることができるエリアになります。
+                    </li>
+                    <li>観測点が火の見櫓を表していて、6 m 以上の高さに立ち上がる煙を見ることができる火の見櫓はどれかを判断する必要がある場合は、高さに 6 m を入力します。結果は、火の見櫓から最低 6 m の高さの立ち上がる煙を見ることができるエリアになります。
+                    </li>
+                    <li>観測点が道路や小道沿いの展望台を表していて、120 m 以上の高さの風力タービンを見ることができる場所を判断する必要がある場合は、高さに 120 m 入力します。結果は、展望台に立っている人から最低 120 m の高さの風力タービンを見ることができるエリアになります。
+                    </li>
+                    <li>観測点が展望台を表していて、展望台に立っている人が見ることができる地上のエリアを判断する必要がある場合は、ゼロを入力します。結果は、展望台から見ることができるエリアになります。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>最大表示距離</h2></div>
+        <hr/>
+        <div>
+            <p>これは、表示可能エリアの計算を停止する距離を指定するオプションです。この距離を超えると、観測点およびその他のオブジェクトが互いに見えるかどうかはわかりません。値を大きくすると、計算時間が長くなります。許容最大値は、31 マイル (50 キロメートル) です。
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+            <p> このツールを実行してもクレジットを消費しません。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

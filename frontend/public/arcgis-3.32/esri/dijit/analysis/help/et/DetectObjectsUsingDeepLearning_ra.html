@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Objektide tuvastamine süvaõppe teel</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Objektide tuvastamine s&uuml;va&otilde;ppe teel"></h2>
+        <hr/>
+    <p>This tool runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+    </p>
+    <p>Kui tingimus  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid rasterkihi piksleid, mis on kaardi praeguses ulatuses n&auml;htavad. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel kogu rastrit ka siis, kui see on v&auml;ljaspool kaardi praegust ulatust.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Objektide tuvastamiseks kasutatava pildi valimine</h2></div>
+        <hr/>
+        <div>
+            <p>Objektide tuvastamiseks kasutatav sisendpilt
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Valige objektide tuvastamisel kasutatav süvaõppemudel</h2></div>
+        <hr/>
+        <div>
+            <p>The input deep learning package ( <code>.dlpk</code>) item.
+            </p>
+            <p>The deep learning package is composed of the Esri model definition JSON file ( <code>.emd</code>), the deep learning binary model file, and optionally, the Python raster function to be used.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Määrake süvaõppemudeli argumendid</h2></div>
+        <hr/>
+        <div>
+            <p>The function arguments are defined in the Python raster function class referenced by the input model. This is where you list additional deep learning parameters and arguments for experiments and refinement, such as a confidence threshold for adjusting the sensitivity.
+            </p>
+            <p>The names of the arguments are populated by the tool from reading the Python module on the raster analysis server.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Eemaldage väljundilt duplikaatorobjektid (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Teostab mittemaksimaalse summutuse, kui identifitseeritakse dubleeritud objektid ja v&auml;iksema usaldusv&auml;&auml;rtusega duplikaatobjekt eemaldatakse. 
+                <ul>
+                    <li>Ruut on m&auml;rkimata &mdash; K&otilde;ik tuvastatavad objektid on v&auml;ljundobjekti klassist. See on vaikimisi valik.
+                        
+
+                    </li>
+                    <li>Ruut on m&auml;rgitud &mdash; Eemaldab tuvastatud duplikaatobjektid.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Usaldustaseme tulemusväli</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;li objektiteenuses, mis sisaldab usaldustaseme tulemusi v&auml;ljundina objekti tuvastamise meetodist.
+            </p>
+            <p>See parameeter on vajalik  <b>mittemaksimaalse summutuse</b> parameetri kontrollimisel.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Väärtuse klassi väli</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;&auml;rtuse klassi v&auml;li v&auml;ljundobjekti teenuses. Kui see ei ole m&auml;&auml;ratud, kasutab t&ouml;&ouml;riist standardseid v&auml;&auml;rtuse klassi v&auml;lju  <i>Classvalue</i> ja <i>Value</i>. Kui need v&auml;ljad puuduvad, k&auml;sitletakse k&otilde;iki objekte sama objekti klassi kuuluvatena.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maksimaalne ülekattesuhe</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimaalne &uuml;lekattesuhe kahel &uuml;lekattega objektil, mis m&auml;&auml;ratletakse l&otilde;ikumispinna ja &uuml;lekattepinna suhtena. Vaikev&auml;&auml;rtus on 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

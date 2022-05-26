@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Valuma-alue</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Valuma-alueteht&auml;v&auml;"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; rasterin solujoukon yl&auml;puolella olevan osallisuusalueen.
+    </p>
+    <p>Valuma-alue on nouseva alue, joka v&auml;litt&auml;&auml; virtauksen (yleens&auml; vesivirtauksen) yleiseen poistopaikkaan, kuten keskitettyyn viem&auml;riin. Se voi olla osa isompaa valuma-aluetta ja se voi my&ouml;s sis&auml;lt&auml;&auml; pienempi&auml; valuma-alueita eli osavesist&ouml;j&auml;.
+    </p>
+    <p>Kunkin valuma-alueen arvo saadaan l&auml;ht&ouml;aineiston rasteril&auml;hd&ouml;n arvosta tai kohteen laskupisteen karttatasosta. Kun laskupiste on rasteriaineistoryhm&auml;, solujen arvoja k&auml;ytet&auml;&auml;n oletuksena. Kun laskupiste on pistekohdeaineistoryhm&auml;, arvot saadaan m&auml;&auml;ritetyst&auml; kent&auml;st&auml;.
+    </p>
+    <p>Valuma-alue-ty&ouml;kalu tukee ainoastaan D8-l&auml;ht&ouml;aineiston virtaussuunnan rasteria.
+    </p>
+    <p>Kun l&auml;ht&ouml;aineiston laskupisteiden sijainnit m&auml;&auml;ritet&auml;&auml;n kohdetietoina, oletuskentt&auml; on ensimm&auml;inen saatavilla oleva kelvollinen kentt&auml;. Jos kelvollisia kentti&auml; ei ole, ObjectiD-kentt&auml; (esim. OID tai FID) on oletuksena.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Valitse virtaussuunnan karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston rasteri, joka n&auml;ytt&auml;&auml; virtaussuunnan jokaisesta solusta.
+            </p>
+            <p>Virtaussuunnan rasterin voi luoda k&auml;ytt&auml;m&auml;ll&auml; Rasterianalyysity&ouml;kalut-palvelun Virtaussuunta-ty&ouml;kalua tai Virtausssuunta-teht&auml;v&auml;&auml; sek&auml; oletuksena olevaa virtaussuuntatyyppi&auml;  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Määritä lähtöaineiston laskupisteiden sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston laskupisteiden sijainnit
+            </p>
+            <p>Rasterille t&auml;m&auml; edustaa soluja, joiden yl&auml;puolinen osallisuusalue tai vesist&ouml; on m&auml;&auml;ritett&auml;v&auml;. Kaikkia niit&auml; soluja, jotka eiv&auml;t ole NoData, k&auml;ytet&auml;&auml;n l&auml;hdesoluina. Pistel&auml;ht&ouml;aineistolle t&auml;m&auml; edustaa sijainteja, joiden yl&auml;puolinen osallisuusalue tai vesist&ouml; on m&auml;&auml;ritett&auml;v&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Valitse laskupisteen kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;t&auml; kentt&auml;&auml; k&auml;ytet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n laskupistesijaintien arvot.
+            </p>
+            <p>Jos l&auml;ht&ouml;aineiston laskupistetaso on rasteri, Arvo on k&auml;yt&ouml;ss&auml;. Jos se on ominaisuus, numerokentt&auml; on k&auml;yt&ouml;ss&auml;. Jos kent&auml;ss&auml; on liukulukuarvoja, ne typistet&auml;&auml;n kokonaisluvuiksi.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Lõika kihti</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="Kihi l&otilde;ikamine"></h2>
+        <hr/>
+    <p>Kihi l&otilde;ikamise t&ouml;&ouml;riist eraldab sisendpunkti, joone v&otilde;i ala objektid, mis paiknevad l&otilde;igatava ala suhtes &uuml;lekattega. V&auml;ljund on sisendandmete alamhulk, mis p&otilde;hineb huvialadel. Allpool on toodud n&auml;ited t&ouml;&ouml;riista utiliidi kohta:
+        <ul>
+            <li>Millised on Nebraska osariigi suuremad j&otilde;ed?
+                  
+            </li>
+            <li>Millised majad on ranniku &uuml;leujutuste piirkonnas?
+            </li>
+            <li>Millised orkaanid p&otilde;hjustasid 2011. aastal maalihke?
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige lõigatavad objektid</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti-, joone- v&otilde;i alakiht, mida l&otilde;igatakse. Loote nende objektide alamhulga.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>Valige lõigatav ala</h2></div>
+        <hr/>
+        <div>
+            <p>Ala kiht, millele l&otilde;ikate sisendkihi objektid.  Need alad m&auml;&auml;ravad alamkihi piirid.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

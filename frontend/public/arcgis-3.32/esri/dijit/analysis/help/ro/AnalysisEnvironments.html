@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Setări mediu analiză portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Setări de mediu pentru analiză &icirc;n Portal for ArcGIS și  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Suprascriere strat tematic rezultate</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Se specifică dacă se suprascriu straturile tematice existente. Atunci c&acirc;nd este bifată, dacă un strat tematic cu acelaşi nume există deja &icirc;n conţinutul dvs., va fi suprascrisă.
+            </p>
+            <p>
+                <ul>
+                    <li>Bifată - Dacă un strat tematic cu acelaşi nume există deja &icirc;n conţinutul dvs., va fi suprascrisă. Rezultatul va avea acelaşi sistem de coordonate precum intrarea.
+                    </li>
+                    <li>Debifată - Dacă numele de strat tematic rezultat furnizat există deja, va apărea o eroare şi stratul tematic rezultat trebuie redenumit &icirc;nainte ca instrumentul să poată fi executat. Aceasta este setarea implicită.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Închidere widget analiză după executarea analizei</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică dacă să se menţină caseta de dialog pentru analiză deschisă şi activată &icirc;n timp ce instrumentul procesează. Această setare vă permite să efectuaţi modificări asupra parametrilor de analiză &icirc;n timp ce lucrarea de analiză anterioară continuă. Analiza este un proces iterativ şi, prin menţinerea casetei de dialog a instrumentului deschisă, vă permite să efectuaţi modificări ale parametrilor şi să executaţi din nou analiza.
+            </p>
+            <p>
+                <ul>
+                    <li>Bifată - Caseta de dialog a instrumentului de analiză se va &icirc;nchide şi &icirc;n primplan va reveni cuprinsul. Aceasta este acţiunea implicită
+                    </li>
+                    <li>Debifată - Caseta de dialog a instrumentului de analiză va răm&acirc;ne deschisă şi activată.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Stocare rezultate analiză ca straturi tematice de obiecte spaţiale găzduite</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Se specifică dacă stratul tematic rezultat creat &icirc;n baza analizei dumneavoastră urmează a fi un strat tematic de colecție de obiecte spațiale sau un strat tematic de obiecte spațiale găzduite. 
+            </p>
+            <p>
+                <ul>
+                    <li>Bifată&mdash;Rezultatele analizei dumneavoastră vor crea un strat tematic de obiecte spaţiale găzduite şi &icirc;n conţinutul dumneavoastră se va crea un element. Aceasta este setarea implicită.
+                    </li>
+                    <li>Debifată - Rezultatele analizei vor crea o colecţie de obiecte spaţiale.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Sistem de coordonate de ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică sistemul de coordonate al stratului tematic rezultat pentru analiza raster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>La fel ca intrarea</b> - Rezultatele analizei dvs. va fi &icirc;n acelaşi sistem de coordonate ca intrare. Aceasta este setarea implicită.
+                    </li>
+                    <li> <b>După cum este specificat</b> - Rezultatul analizei dvs. va fi &icirc;n sistemul de coordonate pe care &icirc;l alegeți. Atunci c&acirc;nd este selectată această opţiune, faceţi clic pe butonul glob și alegeți dintr-o listă de sisteme de coordonate cunoscute sau adăugați WKID al referinţei spaţiale &icirc;n caseta furnizată.
+                    </li>
+                    <li> <b>&lt;Nume&gt; strat tematic</b>&mdash;Rezultatul analizei dvs. va fi &icirc;n același sistem de coordonate ca și cel al unui strat tematic existent pe care &icirc;l alegeți &icirc;n harta web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Se procesează sistemul de coordonate</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică sistemul de coordonate pe care &icirc;l va utiliza analiza dvs. &icirc;n timpul execuţiei analizei GeoAnalytics.   
+            </p>
+            <p>Pentru GeoAnalytics, unele analize necesită ca procesarea să fie executată &icirc;ntr-un sistem de coordonate proiectat.   Orice instrument care are implementat includerea datelor sau unităţilor liniare &icirc;n containere necesită un sistem de coordonate proiectat. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>La fel ca intrarea</b> - Analiza dvs. va fi procesată &icirc;n acelaşi sistem de coordonate ca intrarea. Aceasta este setarea implicită.
+                    </li>
+                    <li> <b>După cum este specificat</b> - Analiza dvs. va fi &icirc;n sistemul de coordonate pe care &icirc;l alegeți. Atunci c&acirc;nd este selectată această opţiune, faceţi clic pe butonul glob și alegeți dintr-o listă de sisteme de coordonate proiectate cunoscute sau adăugați WKID al referinţei spaţiale &icirc;n caseta furnizată.
+                    </li>
+                    <li> <b>&lt;Nume&gt; strat tematic</b>&mdash;Analiza dvs. va fi &icirc;n același sistem de coordonate ca și cel al unui strat tematic existent pe care &icirc;l alegeți &icirc;n harta web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extindere</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică extinderea sau limita care va fi utilizată &icirc;n timpul execuţiei analizei. Toate obiectele spaţiale de intrare care sunt complet &icirc;n interiorul sau care se intersectează cu extinderea specificată vor fi utilizate &icirc;n analiză.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Implicit</b> - Extinderea furnizată de instrument.
+                    </li>
+                    <li> <b>După cum este specificat</b>&mdash;Extinderea este definită de coordonatele pe care le furnizați.
+                    </li>
+                    <li> <b>&lt;Nume&gt; strat tematic</b>&mdash;Extinderea utilizată pentru a procesa analiza dvs. va fi aceeași cu extinderea spațială a unui strat tematic existent pe care &icirc;l alegeți &icirc;n harta web. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Fixare raster</h2></div>
+        <hr/>
+        <div>
+            <p>Se reglează extinderea stratului tematic raster de ieșire pentru a se potrivi cu alinierea celulelor stratului tematic specificat  <b>Fixare raster</b> &icirc;n analiza raster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Dimensiune celulă</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică dimensiunea celulei sau rezoluţia care va fi utilizată pentru a crea stratul tematic raster de ieşire &icirc;n analiza raster. Rezoluţia de ieşire implicită este determinată de cea mai mare dimensiune de celulă din stratul tematic raster de intrare.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Număr minim de intrări</b> - Utilizaţi cea mai mică dimensiune de celulă pentru toate straturile tematice de intrare.
+                    </li>
+                    <li> <b>Număr maxim de intrări</b> - Utilizaţi cea mai mare dimensiune de celulă pentru toate straturile tematice de intrare. Aceasta este setarea implicită.
+                    </li>
+                    <li> <b>După cum se specifică</b> - Specificaţi o valoare numerică pentru a seta dimensiunea celulei. Dacă este selectată această opţiune, valoarea implicită este 1.
+                    </li>
+                    <li> <b>&lt;Nume&gt; strat tematic</b>&mdash;Setează dimensiunea de celulă la stratul tematic raster ales.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Mască</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică un strat tematic care va fi folosit pentru a defini zona de interes &icirc;n analiza raster. Doar celulele care se &icirc;ncadrează &icirc;n masca de analiză vor fi luate &icirc;n considerare &icirc;n operaţia de analiză.
+            </p>
+            <ul>
+                <li>Masca poate fi un raster sau un strat tematic de obiecte spaţiale.
+                </li>
+                <li>Dacă masca de analiză este un raster, toate celulele care au o valoare vor fi luate &icirc;n considerare pentru definirea măştii. Celulele dintr-un raster de mască care au valoarea NoData vor fi considerate ca fiind &icirc;n afara măştii şi vor avea valoarea NoData &icirc;n stratul tematic de analiză rezultat. 
+                </li>
+                <li>Dacă masca de analiză este un strat tematic de obiecte spaţiale, va fi convertit intern &icirc;n raster la execuţie. Din acest motiv, asiguraţi-vă că
+ <b>Dimensiunea celulei</b> şi <b>Fixare Raster</b> sunt setate &icirc;n mod adecvat pentru analiza dumnevoastră.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Depozit de date</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultatele GeoAnalytics pot fi stocate fie &icirc;n  ArcGIS Data Store și expuse ca un start tematic de obiecte spaţiale in  Portal for ArcGIS fie stocate &icirc;ntr-o partajare de fişiere big data configurată. 
+            </p>
+            <p>Atunci c&acirc;nd stocați un rezultat &icirc;n  ArcGIS Data Store, &icirc;n cele mai multe cazuri, rezultatele ar trebui stocate &icirc;n depozitul de date spaţio-temporal. Aceasta este setarea implicită. Următoarele sunt motivele pentru care aţi dori să memorați rezultatele &icirc;ntr-un depozit de date relaţionale: 
+                <ul>
+                    <li>Pentru a utiliza rezultatele &icirc;n colaborări portal-la-portal
+                    </li>
+                    <li>Pentru a activa capacităţile de sincronizare cu rezultatele dvs.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nu trebuie să utilizaţi un depozit de date relaţionale dacă vă aşteptaţi ca rezultatele GeoAnalytics să crească &icirc;n cantitate şi vreţi să profitaţi de capacităţile depozitului mare de stocare spaţio-temporal de a gestiona cantităţi mari de date. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Factor de procesare paralelă</h2></div>
+        <hr/>
+        <div>
+            <p>Se distribuie analiza prin mai multe instanțe ale serviciului de procesare raster. 
+            </p>
+            <p>Instrumentele care respectă mediul  <b>Factorului de procesare paralelă</b> vă permit să controlați numărul de instanțe ale serviciului de procesare raster care poate fi utilizat pentru procesarea datelor.
+            </p>
+            <p>Dacă instrumentul nu respectă  <b>tipul de Procesor</b>, sau dacă mediul <b>tipului de Procesor</b> este setat la <b>CPU</b>, mediul <b>Factorului de procesare paralelă</b> controlează instanțele serviciului de procesare raster (CPU). Dacă <b>tipul de Procesor</b> este setat la <b>GPU</b>, mediul <b>Factorului de procesare paralelă</b> controlează numărul de instanțe GPU de procesare raster.
+            </p> 
+            <p>Prin setarea  <b>Factorului de procesare paralelă</b>, puteți solicita numărul de unități de procesare (workers) &icirc;n paralel pe care serverul de imagine de analiză raster &icirc;l utilizează pentru a procesa o sarcină de analiză raster. Cu toate acestea, dacă numărul total de procese &icirc;n paralel depășește numărul maxim de instanțe ale serviciului de procesare raster (CPU sau GPU), procesele suplimentare &icirc;n paralel vor fi &icirc;n așteptare.
+            </p>
+            <p>Dacă  <b>Factorul de procesare paralelă</b> nu este specificat (setarea implicită), instrumentul va folosi 80% din numărul maxim de instanțe ale serviciului de procesare raster. Ca factor de procesare paralelă poate fi specificat fie un număr &icirc;ntreg fie un procent.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tipul de procesor</h2></div>
+        <hr/>
+        <div>
+            <p>Instrumentele care respectă mediul  <b>tipului de Procesor</b> vă permit să alegeți unde și cum doriți să procesați datele. Puteți procesa datele utiliz&acirc;nd CPU-ul sau GPU-ul serverului. Dacă mediul <b>tipului de Procesor</b> este gol, instrumentul utilizează CPU pentru a procesa datele. Aceasta este setarea implicită.
+            </p> 
+            <p>Procesarea cu ajutorul CPU poate fi paralelizată pe mai multe nuclee și instanțe, după cum este gestionată de  <b>Factorul de procesare paralelă</b>.
+            </p>
+            <p>GPU-urile sunt eficiente &icirc;n ceea ce privește grafica și procesarea imaginilor, caz &icirc;n care structura lor cu un grad ridicat de paralelism le face eficiente &icirc;n procesarea blocurilor mari de date &icirc;ntr-o manieră repetitivă. Instrumentele de analiză raster care respectă acest mediu pot distribui sarcina lor la multiple instanțe GPU la mai multe servere de analiză raster, după cum este gestionat de  <b>Factorul de procesare paralelă</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Datele vor fi procesate folosind unitatea de procesare grafică.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Datele vor fi procesate folosind unitatea centrală de procesare a computerului.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

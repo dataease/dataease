@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Calcular Distância</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calcular Dist&acirc;ncia"></h2>
+        <hr/>
+    <p>Esta ferramenta calcula a dist&acirc;ncia Euclidiana, dire&ccedil;&atilde;o e aloca&ccedil;&atilde;o de uma fonte &uacute;nica ou conjunto de fontes.
+    </p>
+    <p>Aplica&ccedil;&otilde;es de exemplo incluem respostas a perguntas como as seguintes:
+
+        <ul>
+            <li>Qual &eacute; a dist&acirc;ncia at&eacute; a cidade mais pr&oacute;xima?
+                
+
+            </li>
+            <li>Qual &eacute; a dist&acirc;ncia at&eacute; a estrada mais pr&oacute;xima?
+                
+
+            </li>
+            <li>Qual &eacute; a dist&acirc;ncia at&eacute; a fonte de &aacute;gua mais pr&oacute;xima?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de an&aacute;lise que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas. Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Escolha camada de localização de feição ou raster para calcular a distância até</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que define as fontes para as quais a dist&acirc;ncia ser&aacute; calculada. A camada pode ser um servi&ccedil;o de imagem ou um servi&ccedil;o da fei&ccedil;&atilde;o.
+            </p>
+            <p>Para um servi&ccedil;o de imagem, o tipo de entrada pode ser inteiro ou ponto flutuante.
+            </p>
+            <p>Para um servi&ccedil;o da fei&ccedil;&atilde;o, a entrada pode ser ponto, linha ou pol&iacute;gono.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distância máxima para calcular</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia m&aacute;xima a ser calculada. Por exemplo, se voc&ecirc; fornecer um valor de 10.000 metros, a dist&acirc;ncia Euclidiana ser&aacute; calculada a partir dos locais de origem at&eacute; este valor (dist&acirc;ncia).
+            </p>
+            <p>Se nenhum valor for fornecido, a dist&acirc;ncia ser&aacute; calculada na extens&atilde;o definida.
+            </p>
+            <p>As unidades dispon&iacute;veis s&atilde;o Quil&ocirc;metros, Metros, Milhas e P&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamanho da Célula de Saída</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho da c&eacute;lula e a unidade para os rasters de sa&iacute;da.
+            </p>
+            <p>As unidades podem ser quil&ocirc;metros, metros, milhas ou p&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nome da camada de distância resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nome da camada de direção resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b>. Voc&ecirc; deve fornecer um nome que n&atilde;o exista atualmente em <b>Meu Conte&uacute;do</b>.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nome da camada de Alocação resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b>. Voc&ecirc; deve fornecer um nome que n&atilde;o exista atualmente em <b>Meu Conte&uacute;do</b>.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Escolher campo de alocação</h2></div>
+        <hr/>
+        <div>
+            <p>Um campo na camada de origem de entrada que cont&eacute;m os valores que definem cada origem. Pode ser um campo de string ou inteiro do conjunto de dados de origem.
+            </p>
+            <p>O padr&atilde;o &eacute;  <i>Value</i>. Se estiver utilizando um servi&ccedil;o da fei&ccedil;&atilde;o e nenhum campo <i>Value</i> estiver dispon&iacute;vel, ent&atilde;o o primeiro campo de string ou inteiro dispon&iacute;vel ser&aacute; utilizado. Se n&atilde;o existir nenhum campo v&aacute;lido, o campo ObjectID (por exemplo, OID ou FID, dependendo do tipo de entrada da fei&ccedil;&atilde;o) ser&aacute; utilizado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

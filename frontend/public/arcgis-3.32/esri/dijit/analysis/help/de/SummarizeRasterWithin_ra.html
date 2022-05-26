@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raster zusammenfassen (innerhalb)</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Werkzeug &quot;Raster zusammenfassen (innerhalb)&quot;"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug wird ein Raster basierend auf Fl&auml;chen (Zonen) zusammengefasst, die durch den ersten Eingabe-Layer definiert werden.
+    </p>
+    <p>Folgende Beispielanwendungen stehen zur Verf&uuml;gung:
+    </p>
+    <p>
+        <ul>
+            <li>Anhand eines Layers mit Grenzen von Abflussgebieten und eines Layers mit Grenzen von Landnutzungsfl&auml;chen nach Landnutzungstyp die Gesamtlandwirtschaftsfl&auml;che des Landnutzungstyps f&uuml;r jedes Abflussgebiet ermitteln.
+                
+
+            </li>
+            <li>Fassen Sie anhand eines Flurst&uuml;cks-Layers in einem Landkreis und eines Stadtgrenzen-Layers den durchschnittlichen Grundst&uuml;ckswert unbebauter Flurst&uuml;cke je Stadt zusammen.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer und dem zusammenfassenden Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe- und im zusammenfassenden Layer analysiert, auch wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Flächen-Layer auswählen, um einen Raster-Layer innerhalb definierter Grenzen zusammenzufassen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer, der die Grenzen der Fl&auml;chen bzw. Zonen definiert, wird zusammengefasst.
+            </p>
+            <p>Bei dem Layer kann es sich um ein Raster oder um Feature-Daten handeln. F&uuml;r Raster werden die Zonen durch alle Positionen in der Eingabe definiert, die denselben Zellenwert haben. Die Fl&auml;chen m&uuml;ssen nicht zusammenh&auml;ngend sein.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Feld zum Definieren der Grenzen auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist das Attribut des Layers zum Definieren der Grenzen der Fl&auml;chen.
+            </p>
+            <p>Angenommen, der erste Eingabe-Layer definiert die Grenzen der Verwaltungseinheit, wobei Attribute die Region, den Bezirk und die Flurst&uuml;cks-ID der jeweiligen Einheit definieren. Au&szlig;erdem verf&uuml;gen Sie &uuml;ber einen Raster-Layer, der einen Biodiversit&auml;tsindex f&uuml;r jede Position definiert. Anhand des ausgew&auml;hlten Feldes k&ouml;nnen Sie die durchschnittliche Biodiversit&auml;t auf lokalen, Bezirks- und regionalen Ebenen berechnen.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Zusammenzufassenden Raster-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Raster-Zellen in diesem Layer werden nach den Fl&auml;chen (Zonen) zusammengefasst, in denen sie sich befinden.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Zu berechnende Statistik auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Nachdem Sie einen Layer ausgew&auml;hlt haben, der zusammengefasst werden soll, k&ouml;nnen Sie optional Statistiken aller numerischen Attribute der Punkte, Linien oder Fl&auml;chen innerhalb des Eingabe-Fl&auml;chen-Layers berechnen.
+            </p>
+            <p>Bei einem ganzzahligen Feld stehen folgende Statistiktypen zur Auswahl: Durchschnitt, Mehrheit, Maximum, Medianwert, Minimum, Minderheit, Bereich, Standardabweichung, Summe und Varianz.
+            </p>
+            <p>Wenn das Feld den Typ &quot;Gleitkomma&quot; aufweist, sind folgende Optionen verf&uuml;gbar: Durchschnitt, Maximum, Minimum, Bereich, Standardabweichung und Summe.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Fehlende Werte in Berechnung ignorieren</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn fehlende Werte ignoriert werden sollen, werden nur die Zellen, die &uuml;ber einen Wert im zusammenzufassenden Layer verf&uuml;gen, verwendet, um den Ausgabewert f&uuml;r diesen Bereich zu bestimmen. Andernfalls, also bei fehlenden Werten in einem Bereich, wird davon ausgegangen, dass nicht gen&uuml;gend Informationen vorhanden sind, um statistische Berechnungen f&uuml;r alle Zellen in dieser Zone durchzuf&uuml;hren, und dieser Bereich erh&auml;lt in der Ausgabe den Wert NULL (NoData).
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoloi pisteet</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoloi pisteet"></h2>
+        <hr/>
+    <p>   Interpoloi pisteet -ty&ouml;kalun avulla voit ennustaa uusien sijaintien arvoja ker&auml;tyist&auml; pisteist&auml; tehtyjen mittausten perusteella. Ty&ouml;kalu analysoi kustakin pisteest&auml; ker&auml;ttyjen arvojen pisteaineiston ja palauttaa alueet luokiteltuna ennustetuilla arvoilla. Esimerkki
+        <ul>
+            <li>Ilmanlaadun valvonta-alueella on antureita, jotka mittaavat saastetasoja. Interpoloi pisteet -ty&ouml;kalua voidaan k&auml;ytt&auml;&auml; saatetasojen ennustamiseen sijainneissa, joihin antureita ei ole sijoitettu. T&auml;llaisia sijainteja voivat olla esimerkiksi koulut, sairaat ja muut riskiv&auml;est&ouml;jen sijainnit.
+            </li>
+            <li>Ennusta raskasmetallipitoisuuksia viljakasveissa yksitt&auml;isist&auml; kasveista otettujen n&auml;ytteiden perusteella.
+            </li>
+            <li>Ennusta maaper&auml;n ravinnepitoisuuksia (typpi, fosfori, kalium jne.) ja muita indikaattoreita (kuten s&auml;hk&ouml;njohtavuutta) tutkittaessa niiden suhdetta satoon ja m&auml;&auml;ritett&auml;ess&auml; tarkkoja lannoitem&auml;&auml;ri&auml; pellon kullekin alueelle.
+
+            </li>
+            <li>Ilmatieteelliset sovellukset, joihin sis&auml;ltyy l&auml;mp&ouml;tilojen, sadem&auml;&auml;rien ja niihin liittyvien muuttujien (kuten happosateen) ennustamista. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse pistekarttataso, joka sisältää tunnettujen arvojen sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>Interpoloinnin pohjana k&auml;ytett&auml;v&auml; pistekarttataso.  
+
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Valitse interpolointikenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse kentt&auml;, joka sis&auml;lt&auml;&auml; interpoloitavat arvot.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimointiperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, suositko nopeutta vai tarkkuutta. Tarkkojen ennusteiden laskeminen kest&auml;&auml; kauemmin.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Tulosaineiston ennustevirheet</h2></div>
+        <hr/>
+        <div>
+            <p> Jos t&auml;m&auml; asetus on valittuna, interpolointiennusteille luodaan keskivirheiden karttataso. Tuloskarttatason nimi on tulostason nimi, jonka lopussa lukee Virheet.
+            </p>
+            <p>Keskivirheet ovat hy&ouml;dyllisi&auml;, koska ne antavat tietoja ennustettujen arvojen luotettavuudesta. Hyv&auml; muistis&auml;&auml;nt&ouml; on, ett&auml; oikea arvo sijoittuu ennustetun arvon kahden keskivirheen v&auml;liin 95 prosentin todenn&auml;k&ouml;isyydell&auml;. Oletetaan, ett&auml; uuden sijainnin ennustettu arvo on 50 ja keskivirhe 5. T&auml;m&auml; tarkoittaa, ett&auml; ty&ouml;kalu ennustaa oikean arvon olevan 50 kyseisess&auml; sijainnissa, mutta arvo voisi perustellusti olla matalimmillaan 40 tai korkeimmillaan 60. Voit laskea luottamusv&auml;lin kertomalla keskivirheen ensin kahdella. Kun lis&auml;&auml;t t&auml;m&auml;n arvon ennustettuun arvoon, saat alueen yl&auml;rajan, ja kun v&auml;henn&auml;t arvon ennustetusta arvosta, saat alueen alarajan.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Luokitteluperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, miten ennustetut arvot luokitellaan alueisiin.
+                <ul>
+                    <li>Geometrinen v&auml;li &ndash; alueet perustuvat geometrisen sarjan mukaisesti m&auml;&auml;ritettyihin luokkav&auml;leihin. T&auml;m&auml; menetelm&auml; varmistaa, ett&auml; kullakin luokka-alueella on keskim&auml;&auml;rin saman verran arvoja ja ett&auml; luokkien v&auml;liset siirtym&auml;t ovat yhdenmukaisia.
+                    </li>
+                    <li>Tasav&auml;linen &ndash; Alueet luodaan niin, ett&auml; ennustettujen arvojen alueet jaetaan samankokoisiin alueisiin.
+                    </li>
+                    <li>Samanlainen alue &ndash; Alueet luodaan niin, ett&auml; kunkin alueen aineistoarvojen m&auml;&auml;r&auml; on sama. Jos aineistossa on esimerkiksi enemm&auml;n suuria arvoja kuin pieni&auml; arvoja, korkeille arvoille luodaan enemm&auml;n alueita.
+                    </li>
+                    <li>Manuaalinen &ndash; T&auml;m&auml;n asetuksen avulla voit m&auml;&auml;ritt&auml;&auml; alueille omat arvoalueet. Arvot m&auml;&auml;ritet&auml;&auml;n alla kuvattuun  <b>Luokan raja-arvot</b> -parametriin.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Luokkien määrä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; tulostason luokkien (ennustettujen arvojen alueiden) m&auml;&auml;r&auml;n. Luokat m&auml;&auml;ritt&auml;v&auml;t alueiden rajat. N&auml;iden luokkien arvot m&auml;&auml;r&auml;ytyv&auml;t  <b>Luokitteluperuste</b>-parametrin mukaan.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Luokan raja-arvot</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; luokkien raja-arvot erotettuna v&auml;lily&ouml;nneill&auml;. Jos esimerkiksi haluat raja-arvojen olevan 1,5, 3 ja 7, kirjoita  <code>1,5 3 7</code>. Arvot m&auml;&auml;ritt&auml;v&auml;t luokkien yl&auml;rajan siten, ett&auml; luokkien m&auml;&auml;r&auml; on sama kuin sy&ouml;tettyjen arvojen m&auml;&auml;r&auml;. Alueita ei luoda sellaisille sijainneille, joiden ennustetut arvot ylitt&auml;v&auml;t suurimman sy&ouml;tetyn raja-arvon. M&auml;&auml;rit&auml; v&auml;hint&auml;&auml;n kaksi ja enint&auml;&auml;n 32 arvoa.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Leikkaa tulosaineisto kohteeseen</h2></div>
+        <hr/>
+        <div>
+            <p>Piirr&auml; tai m&auml;&auml;rit&auml; karttataso, jonka alueelle tulokset piirret&auml;&auml;n. Jos esimerkiksi interpoloit j&auml;rven saastemittauksia, voit k&auml;ytt&auml;&auml; tulosaineiston rajoina j&auml;rven rajaa, jolloin tulokset piirret&auml;&auml;n vain j&auml;rven rajojen sis&auml;puolelle.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Ennusta näissä sijainneissa</h2></div>
+        <hr/>
+        <div>
+            <p>Piirr&auml; tai m&auml;&auml;rit&auml; karttataso, joka m&auml;&auml;ritt&auml;&auml; ennustearvojen laskemisessa k&auml;ytett&auml;vien pisteiden sijainnit. T&auml;m&auml;n avulla voit tehd&auml; ennustuksia tietyiss&auml; kohdesijainneissa. Jos l&auml;ht&ouml;karttataso esitt&auml;&auml; esimerkiksi saastetasojen mittauksia, voit t&auml;m&auml;n parametrin avulla ennustaa saastetasoja korkean riskin sijainneissa, kouluissa tai sairaaloissa. N&auml;it&auml; tietoja voidaan k&auml;ytt&auml;&auml; annettaessa suosituksia kyseisten sijaintien terveysviranomaisille.
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t t&auml;m&auml;n parametrin, ty&ouml;kalu tulostaa pistekarttatason m&auml;&auml;ritettyjen sijaintien ennusteista. Tuloskarttatason nimi on tulostason nimi, jonka lopussa lukee Pisteet.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

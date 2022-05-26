@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Vegetation überwachen</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Das Werkzeug &quot;Vegetation &uuml;berwachen&quot; f&uuml;r Portal"></h2>
+        <hr/>
+    <p>Dieses Werkzeug f&uuml;hrt eine arithmetische Operation f&uuml;r die B&auml;nder eines Multiband-Raster-Layers durch, um die Informationen zur Vegetationsabdeckung des Einzugsgebiets aufzudecken.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Die Eingabedaten auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Multiband-Raster-Layer aus. Stellen Sie sicher, dass das Eingabe-Raster &uuml;ber die entsprechenden B&auml;nder verf&uuml;gt.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Methode zum Überwachen der Vegetation auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie die Methode zum Erstellen des Vegetationsindex-Layers aus. Mit den unterschiedlichen Vegetationsindizes k&ouml;nnen bestimmte Features hervorgehoben oder verschiedene Arten von Rauschen reduziert werden.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI ist ein nicht linearer Vegetationsindex f&uuml;r globale Umgebungs&uuml;berwachung aus Satellitenbildern. Er &auml;hnelt dem NDVI, ist aber weniger empfindlich gegen atmosph&auml;rische St&ouml;rungen. Er wird von nacktem Boden beeinflusst. Daher wird er nicht zur Verwendung in Bereichen mit wenig oder nicht allzu dichter Vegetation empfohlen.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+Der GVI wurde urspr&uuml;nglich aus Landsat-MSS-Bilddaten entworfen, wurde aber f&uuml;r die Verwendung mit Landsat TM-Bilddaten ge&auml;ndert. Er wird auch als Landsat TM Tasseled Cap Green Vegetation Index bezeichnet. Dieser &Uuml;berwachungsindex kann auch mit Bilddaten verwendet werden, deren B&auml;nder die gleichen Spektraleigenschaften aufweisen.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 ist ein Vegetationsindex, der versucht, Helligkeitseinfl&uuml;sse des nackten Erdbodens der SAVI-Methode zu minimieren.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI ist ein standardisierter Index, der Ihnen das Erstellen eines Bildes mit Gr&uuml;nanteilen (relative Biomasse) erm&ouml;glicht. Dieser Index nutzt den Kontrast der Eigenschaften zweier B&auml;nder aus einem multispektralen Raster-Dataset: die Absorption durch die Chlorophyllpigmente im roten Band und den Pflanzen-Reflexionsgrad im nahinfraroten Band (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+Der PVI ist einem Difference Vegetation Index &auml;hnlich; er ist jedoch gegen atmosph&auml;rische Variationen empfindlich. Wenn Sie diese Methode verwenden, um verschiedene Bilder miteinander zu vergleichen, sollten Sie sie nur f&uuml;r Bilder verwenden, die atmosph&auml;risch korrigiert wurden. Diese Informationen k&ouml;nnen von Ihrem Datenanbieter bereitgestellt werden.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI ist ein Vegetationsindex, der versucht, Einfl&uuml;sse durch die Bodenhelligkeit mit einem Bodenhelligkeits-Korrekturfaktor zu minimieren. Dies wird oft in trockenen Regionen verwendet, wo die vegetative Bodendeckung niedrig ist.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Bei der Sultan-Formel wird ein bestimmter Algorithmus auf ein Sechsband-8-Bit-Bild angewendet, um ein Dreiband-8-Bit-Bild zu erzeugen. Das sich ergebende Bild hebt Felsformationen, so genannte Ophiolite, an K&uuml;stenlinien hervor. Diese Formel wurde auf Grundlage der TM- und ETM-B&auml;nder einer Landsat 5- oder Landsat 7-Szene entworfen.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Der Transformed-SAVI ist ein Vegetationsindex, der versucht, Bodenhelligkeitseinfl&uuml;sse zu minimieren, indem angenommen wird, dass die Bodenlinie eine beliebige Neigung und einen beliebigen Schnittpunkt hat.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Index des NIR- und des roten Bands festlegen</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die Bandindizes f&uuml;r das NIR- und das rote Band ein.
+            </p>
+            <p>Jeder Satellitensensor und jede Luftbildkamera erfasst Informationen, die in Bandindizes unterteilt sind. Jeder Bandindex enth&auml;lt die Informationen f&uuml;r einen bestimmten Teil des elektromagnetischen Spektrums. F&uuml;r diese Methode zur &Uuml;berwachung der Vegetation ist es erforderlich, den Bandindex anzugeben, der die NIR- und die roten Wellenl&auml;ngen erfasst hat.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Neigung der Bodenlinie</h2></div>
+        <hr/>
+        <div>
+            <p>Die Neigung der Bodenlinie. Die Neigung ist die ungef&auml;hre lineare Beziehung zwischen NIR- und Rot-B&auml;ndern in einem Scatterplot.
+            </p>
+            <p>Dieser Parameter ist nur f&uuml;r die Methode &quot;Transformed Soil-Adjusted Vegetation Index&quot; g&uuml;ltig.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Intercept</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der NIR-Wert, wenn der Reflexionswert des roten (Rot) Bandes f&uuml;r die speziellen Bodenlinien 0 ist.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , wenn Rot 0 betr&auml;gt.
+            </p> 
+            <p>Dieser Parameter ist nur f&uuml;r die Methode &quot;Transformed Soil-Adjusted Vegetation Index&quot; g&uuml;ltig.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Grüne vegetative Bodenbedeckung</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Anteil der gr&uuml;nen Vegetations-Bodendeckung an, der f&uuml;r die SAVI-Methode erforderlich ist.
+            </p>
+            <p>Zul&auml;ssige Werte: 
+
+                <ul>
+                    <li>1 = Fl&auml;chen ohne gr&uuml;ne Vegetations-Bodendeckung
+                        
+ 
+                    </li>
+                    <li>0.5 = Fl&auml;chen mit m&auml;&szlig;iger gr&uuml;ner Vegetations-Bodendeckung
+                        
+ 
+                    </li>
+                    <li>0 = Fl&auml;chen mit hoher gr&uuml;ner Vegetations-Bodendeckung
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Anpassungsfaktor</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Anpassungsfaktor zur Minimierung der Auswirkungen des Bodens an, der f&uuml;r die Methode &quot;Transformed Soil-Adjusted Vegetation Index&quot; erforderlich ist. Der Standardwert ist 0.08.
+            </p>
+            <p>Ein niedriger Wert bedeutet, dass die Auswirkungen des Bodens ignoriert werden. Ein hoher Wert bedeutet, dass das Ergebnis durch die Bodenbeschaffenheit beeinflusst wird.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

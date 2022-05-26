@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Escolher Melhores Instalações</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Escolher Melhores Instala&ccedil;&otilde;es"></h2>
+        <hr/>
+    <p>Escolher Melhores Instala&ccedil;&otilde;es permite-lhe escolher as melhores localiza&ccedil;&otilde;es para instala&ccedil;&otilde;es. A ferramenta aloca localiza&ccedil;&otilde;es com procura por instala&ccedil;&otilde;es de uma forma que satisfa&ccedil;a o objectivo especificado.
+    </p>
+    <p>Instala&ccedil;&otilde;es representa&ccedil;&atilde;o localiza&ccedil;&otilde;es que oferecem um tipo de servi&ccedil;o como esta&ccedil;&otilde;es de bombeiros, escolas, livrarias, armaz&eacute;ns ou centros de distribui&ccedil;&atilde;o. Locais de demanda representam locais que t&ecirc;m procura pelos servi&ccedil;os oferecidos pelas instala&ccedil;&otilde;es, tais como pontos de bloco censo que resumem a popula&ccedil;&atilde;o de uma determinada &aacute;rea.
+    </p>
+    <p>A ferramenta Escolher Melhores Instala&ccedil;&otilde;es ajuda-o a responder a perguntas tais como
+        <ul>
+            <li>Em caso de emerg&ecirc;ncia, como &eacute; que os domic&iacute;lios podem ser atribu&iacute;dos ao centro de socorro correcto, quando a capacidade de camas est&aacute; limitada e n&atilde;o deve ser excedida?
+            </li>
+            <li>Como pode associar vizinhan&ccedil;as ao ramo de biblioteca que lhes est&aacute; mais pr&oacute;ximo e determinar o n&uacute;mero de potenciais clientes que cada ramo est&aacute; a servir? 
+            </li>
+            <li>Como &eacute; que pode encontrar a melhor localiza&ccedil;&atilde;o para o centro de distribui&ccedil;&atilde;o de mercadorias que minimize o tempo de viagem (e custo) para entrega a uma cadeia de mercearias?
+            </li>
+            <li>Onde dever&aacute; ser localizado um novo parque de modo a garantir que o maior n&uacute;mero de moradores da cidade vivam a menos de cinco minutos a p&eacute; de um parque?
+            </li>
+            <li>Quais s&atilde;o as melhores localiza&ccedil;&otilde;es para v&aacute;rias lojas de animais num munic&iacute;pio de modo a que 40 porcento do donos de animais do munic&iacute;pio estejam a cinco minutos de condu&ccedil;&atilde;o de cada uma das lojas?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Objectivo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique o objectivo que deva ser satisfeito ao alocar locais de pesquisa de instala&ccedil;&otilde;es.
+            </p>
+            <p>Com Escolher Melhores Instala&ccedil;&otilde;es pode especificar o tipo de problemas que est&aacute; a resolver&mdash;o Objectivo. A ferramenta est&aacute; optimizada para fornecer uma solu&ccedil;&atilde;o para o objectivos particular. Independentemente do objectivo, essencialmente o mesmo m&eacute;todo subjacente &eacute; usado para chegar a uma solu&ccedil;&atilde;o&mdash;a quantidade da procura a partir de um determinado local de procura &eacute; atribu&iacute;da ao servi&ccedil;o mais pr&oacute;ximo. Os objectivos variam com a interac&ccedil;&atilde;o entre distancia (ou tempo) e da procura &eacute; tratado. A ferramenta considera tanto dist&acirc;ncia de viagem / hora e quantidade de procura, e alguns casos, a capacidade das instala&ccedil;&otilde;es. Se um objectivo favorece minimizando o tempo de viagem, por exemplo, a ferramenta tentar&aacute; ainda secundariamente tentar maximizar a procura que lhe est&aacute; atribu&iacute;da. Da mesma forma, se o objectivo &eacute; maximizar a procura atribu&iacute;da, a ferramenta ir&aacute; faz&ecirc;-lo, minimizando o tempo de viagem (atrav&eacute;s da atribui&ccedil;&atilde;o de locais de demanda para a instala&ccedil;&atilde;o mais pr&oacute;xima ao inv&eacute;s de apenas qualquer instala&ccedil;&atilde;o).
+            </p>
+            <p>Dependendo dos seus dados e das defini&ccedil;&otilde;es que usar, objectivos diferentes podem produzir o mesmo resultado ou resultados semelhantes. No entanto, deve especificar o objectivo que mais se apropria &agrave; sua an&aacute;lise.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Atribuir a instalações existentes</h2></div>
+        <hr/>
+        <div>
+            <p>Use este objectivo se n&atilde;o pretende localizar novas instala&ccedil;&otilde;es e pretende atribuir a procura a instala&ccedil;&otilde;es existentes que podem ter capacidade limitada ou ilimitada.    
+            </p>
+            <p>Este objectivo procura por instala&ccedil;&otilde;es baseado na capacidade da instala&ccedil;&atilde;o e do total da procura na &aacute;rea circundante. A procura &eacute; atribu&iacute;da &agrave; instala&ccedil;&atilde;o mais pr&oacute;xima at&eacute; a capacidade dispon&iacute;vel ser atendida. Se especificar um alcance m&aacute;ximo de viagem, todos os locais de procura al&eacute;m do alcance n&atilde;o ser&atilde;o atribu&iacute;dos a uma instala&ccedil;&atilde;o, mesmo que toda a procura n&atilde;o tenha sido completamente alocada.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimizar viagem</h2></div>
+        <hr/>
+        <div>
+            <p>Use este objectivo se pretende localizar instala&ccedil;&otilde;es que a dist&acirc;ncia do tempo de viagem, ou de viagem em geral, entre os locais e instala&ccedil;&otilde;es de procura seja minimizado.
+            </p>
+            <p>Este objectivo &eacute; muitas vezes aplicado quando existe uma viagem entre a instala&ccedil;&atilde;o e todos os locais de procura regularmente. Deve usar este objectivo, por exemplo, para minimizar a dist&acirc;ncia total percorrida para transportar mercadorias a partir de centros de distribui&ccedil;&atilde;o para as lojas, ou para seleccionar um local para uma confer&ecirc;ncia de uma forma que minimiza o tempo de viagem para todos os participantes.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Cobertura máxima</h2></div>
+        <hr/>
+        <div>
+            <p>Use este objectivo se pretende maximizar a quantidade de procura coberta dentro de um per&iacute;odo de tempo especifico ou de distancia das instala&ccedil;&otilde;es.    
+            </p>
+            <p>Este objectivo escolhe instala&ccedil;&otilde;es de modo que a quantidade m&aacute;xima de procura seja alocada, com toda a procura de cada local de procura atribu&iacute;do &agrave; instala&ccedil;&atilde;o &uacute;nica mais pr&oacute;xima dele.
+            </p>
+            <p>Um alcance de viagem m&aacute;ximo finito &eacute; necess&aacute;rio para este objectivo; de outra forma, toda a procura pode ser atribu&iacute;da a uma &uacute;nica instala&ccedil;&atilde;o. Locais de procura que est&atilde;o al&eacute;m da dist&acirc;ncia ou tempo de qualquer uma das instala&ccedil;&otilde;es n&atilde;o ser&atilde;o atribu&iacute;das (isto ir&aacute; mostrar-lhe onde a procura n&atilde;o est&aacute; a ser atendida e instala&ccedil;&otilde;es adicionais podem ser necess&aacute;rias).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximizar a cobertura com capacidade</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este objectivo se quer maximizar a quantidade de procura coberta pelas instala&ccedil;&otilde;es, mas as instala&ccedil;&otilde;es t&ecirc;m capacidade limitada.    
+            </p>
+            <p>Este objectivo escolhe instala&ccedil;&otilde;es de modo que a quantidade m&aacute;xima de procura &eacute; atribu&iacute;da sem exceder a capacidade de qualquer instala&ccedil;&atilde;o. Toda a procura de cada local de procura &eacute; atribu&iacute;do a instala&ccedil;&atilde;o &uacute;nica mais pr&oacute;xima a ele que tenha capacidade dispon&iacute;vel (ou seja, se a atribui&ccedil;&atilde;o de um local de procura a uma instala&ccedil;&atilde;o excede a capacidade da instala&ccedil;&atilde;o, a localiza&ccedil;&atilde;o da procura n&atilde;o ser&aacute; atribu&iacute;da, em vez de atribuir uma parte da procura).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Cobrir uma porcentagem da demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Use este objectivo se pretende descobrir o n&uacute;mero m&iacute;nimo de instala&ccedil;&otilde;es que precisa para cobrir uma determinada porcentagem de procura.
+            </p>
+            <p>Este objectivo escolhe o n&uacute;mero m&iacute;nimo de Instala&ccedil;&otilde;es necess&aacute;rias para alcan&ccedil;ar a porcentagem especificada de procura. O local de procura que est&aacute; dentro de um alcance m&aacute;ximo de viagem de duas ou mais instala&ccedil;&otilde;es ter&aacute; a sua procura dividida proporcionalmente entre as instala&ccedil;&otilde;es baseadas na dist&acirc;ncia entre cada. Este objectivo &eacute; muitas vezes usado quando as pessoas t&ecirc;m uma escolha de que instala&ccedil;&atilde;o visitar e presume-se que, em geral, v&atilde;o visitar as instala&ccedil;&otilde;es mais pr&oacute;ximas (todas as outras coisas sendo iguais).
+            </p>
+            <p>Ao contr&aacute;rio dos outros objectivos que escolhem instala&ccedil;&otilde;es, em que especifica quantas instala&ccedil;&otilde;es escolher, este objectivo escolhe o n&uacute;mero de instala&ccedil;&otilde;es para si, com base no porcentual da procura que pretende conhecer. Assume as instala&ccedil;&otilde;es que n&atilde;o tem capacidades limitadas.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Tal como com outras ferramentas que envolvem viagens na an&aacute;lise, pode especificar se a viagem &eacute; medida usando dist&acirc;ncia ou tempo, e pode escolher entre v&aacute;rios modos de viagem, tais como o tempo de caminhada, tempo de condu&ccedil;&atilde;o, dist&acirc;ncia de condu&ccedil;&atilde;o rural, e assim por diante. Os modos de viagem dispon&iacute;veis s&atilde;o definidos pelo administrador da sua organiza&ccedil;&atilde;o. Ao utilizar o   <b>Tempo de Condu&ccedil;&atilde;o</b>, o <b>Tempo de Condu&ccedil;&atilde;o Rural</b>, ou <b>Tempo de Condu&ccedil;&atilde;o em Cami&atilde;o</b> pode optar por incluir tr&aacute;fego para um dia espec&iacute;fico da semana e uma hora do dia espec&iacute;fica.
+            </p>
+            <p> A fim de alocar com precis&atilde;o locais de procura para instala&ccedil;&otilde;es, especifica se a viagem &eacute; a partir das instala&ccedil;&otilde;es para os locais de procura (de esta&ccedil;&otilde;es de bombeiros a casas, por exemplo) ou a partir de locais de procura para as instala&ccedil;&otilde;es (como de clientes para bibliotecas). Escolha Melhores Instala&ccedil;&otilde;es ser&atilde;o respons&aacute;veis por direc&ccedil;&atilde;o de viagem em ruas de sentido &uacute;nico, se pode mudar de uma rua para outra, se cruzamentos n&atilde;o s&atilde;o curva &agrave; esquerda, e assim por diante, dependendo se a viagem &eacute; para fora da instala&ccedil;&atilde;o para os locais de procura, ou de locais de procura para as instala&ccedil;&otilde;es.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Camada Locais de Procura</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos de ponto representando locais que t&ecirc;m procura para os servi&ccedil;os oferecidos pelas instala&ccedil;&otilde;es. A ferramenta atribui esses locais de procura para as instala&ccedil;&otilde;es adequadas, com base no objectivo seleccionado.
+            </p>
+            <p>Locais de procura tem uma quantidade associada de procura. Use uma constante para especificar o valor se todos os locais de procura t&ecirc;m a mesma procura. Se a quantidade de procura varia conforme a localiza&ccedil;&atilde;o da procura, use um campo na Camada Locais de Procura para especificar o valor para cada local de procura.
+            </p>
+            <p>Procura ser&aacute; alocado a instala&ccedil;&otilde;es at&eacute; toda a demanda tenha sido atribu&iacute;da, independentemente de qu&atilde;o longe os locais de procura s&atilde;o das instala&ccedil;&otilde;es. Pode atribuir um alcance m&aacute;ximo de viagem para a Camada de Localiza&ccedil;&atilde;o de Procura para criar uma distancia ou tempo de corte&mdash;qualquer local de procura para al&eacute;m do valor de corte n&atilde;o ser&aacute; alocada. Use uma constante para especificar o valor se todos os locais de procura tem o mesmo alcance m&aacute;ximo de viagem. Se o alcance m&aacute;ximo de viagem varia por local de procura, use um campo na Camada Local de Procura para especificar o valor para cada local de procura.
+            </p>
+            <p>Se um tipo de objectivo &eacute;  <b>Cobrir uma porcentagem de procura</b>, precisa de especificar uma porcentagem m&iacute;nima de procura que quer que as instala&ccedil;&otilde;es capturem.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+            <p>A ferramenta suporta at&eacute; 10,000 elementos na Camada Locais de Procura
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Camada de Instalações Solicitadas</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos de ponto representam locais que actuam como instala&ccedil;&otilde;es ao fornecer o mesmo tipo de servi&ccedil;o. Instala&ccedil;&otilde;es requeridas normalmente representam locais que j&aacute; existem comparativamente a instala&ccedil;&otilde;es candidatas que normalmente representam as instala&ccedil;&otilde;es que ser&atilde;o constru&iacute;das ou colocadas. Ao alocar localiza&ccedil;&otilde;es procuradas, a ferramenta usa as instala&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es Solicitadas</b> antes de qualquer instala&ccedil;&atilde;o de <b>Camada de Instala&ccedil;&otilde;es Candidatas</b>.
+            </p>
+            <p>Instala&ccedil;&otilde;es requeridas podem ter capacidade ilimitada (isto &eacute;, podem responder a toda a procura atribu&iacute;da a elas) ou ter capacidade limitada. Se todas as instala&ccedil;&otilde;es tem a mesma capacidade limitada (tal como o n&uacute;mero de fam&iacute;lias que uma esta&ccedil;&atilde;o de bombeiros serve&mdash;digamos, 4,000), especifique um valor constante. Se a capacidade varia entre instala&ccedil;&otilde;es (tais como o n&uacute;mero de slots dispon&iacute;veis para actualiza&ccedil;&atilde;o em cada escola secund&aacute;ria), especifique um campo contendo o valor de capacidade para cada instala&ccedil;&atilde;o.
+            </p>
+            <p>A ferramenta suporta at&eacute; 100 elementos na  <b>Camada de Instala&ccedil;&otilde;es Solicitadas</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Camada de Instalações Candidatas</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos de ponto representam locais que actuam como instala&ccedil;&otilde;es ao fornecer o mesmo tipo de servi&ccedil;o. Instala&ccedil;&otilde;es candidatas normalmente representam as localiza&ccedil;&otilde;es nas quais as novas instala&ccedil;&otilde;es ser&atilde;o constru&iacute;das ou colocadas em oposto &agrave;s instala&ccedil;&otilde;es requeridas que normalmente representam locais onde j&aacute; existem.
+            </p>
+            <p>Dependendo do objectivo da sua an&aacute;lise, precisa de especificar o n&uacute;mero de instala&ccedil;&otilde;es candidatas para escolher a partir de um conjunto de candidatos. Se voc&ecirc; especificar ambas as instala&ccedil;&otilde;es necess&aacute;rias e candidatas, a ferramenta usa as instala&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es Solicitadas</b> antes de qualquer instala&ccedil;&atilde;o de <b>Camada de Instala&ccedil;&otilde;es Candidatas</b>.
+            </p>
+            <p>Instala&ccedil;&otilde;es Candidatas podem ter capacidade ilimitada (isto &eacute;, podem responder a toda a procura atribuida a elas) ou podem ter capacidade limitada. Se todas as instala&ccedil;&otilde;es tem a mesma capacidade limitada (tal como o n&uacute;mero de fam&iacute;lias que uma esta&ccedil;&atilde;o de bombeiros serve&mdash;digamos, 4,000), especifique um valor constante. Se a capacidade varia entre instala&ccedil;&otilde;es (tais como o n&uacute;mero de slots dispon&iacute;veis para actualiza&ccedil;&atilde;o em cada escola secund&aacute;ria), especifique um campo contendo o valor de capacidade para cada instala&ccedil;&atilde;o.
+            </p>
+            <p>A ferramenta suporta at&eacute; 1,000 elementos na  <b>Camada de Instala&ccedil;&otilde;es Candidatas</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selecionar camadas de barreiras</h2></div>
+        <hr/>
+        <div>
+            <p> Um ou mais elementos que atuem como restri&ccedil;&otilde;es tempor&aacute;rias (barreiras) ao transitar pelas ruas subjacentes. Pode especificar as barreiras utilizando elementos de pontos, linhas ou pol&iacute;gonos.
+            </p>
+            <p>Uma barreira de pontos pode delinear uma &aacute;rvore ca&iacute;da, um acidente, uma linha el&eacute;trica derrubada ou algo que bloqueie completamente o tr&acirc;nsito numa posi&ccedil;&atilde;o espec&iacute;fica ao longo da rua. &Eacute; poss&iacute;vel transitar na rua, mas n&atilde;o pela barreira. Pode especificar at&eacute; 250 elementos para atuarem como barreiras de pontos.
+            </p>
+            <p>Uma barreira de linhas pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre a barreira e as ruas. Por exemplo, um desfile ou protesto que bloqueie o tr&aacute;fego por v&aacute;rios segmentos de ruas pode ser delineado com uma barreira de linhas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de linhas for superior a 500 elementos, a ferramenta devolve um erro.
+            </p>
+            <p>Uma barreira de pol&iacute;gonos pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre o pol&iacute;gono e as ruas. Este tipo de barreira pode ser utilizado para delinear inunda&ccedil;&otilde;es que abranjam &aacute;reas da rede de estradas e n&atilde;o permitam que se transite por elas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de pol&iacute;gonos for superior a 2000 elementos, a ferramenta devolve um erro.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>A camada resultante ir&aacute; conter uma camada para cada um dos seguintes: instala&ccedil;&otilde;es que tem procura atribu&iacute;da a eles, locais de procura que est&atilde;o alocados a instala&ccedil;&otilde;es, e linhas de aloca&ccedil;&atilde;o que ligam locais de procura para as suas instala&ccedil;&otilde;es atribu&iacute;das. As linhas de aloca&ccedil;&atilde;o s&atilde;o desenhadas em linhas rectas; no entanto, o tempo de viagem ou a distancia de tempo entre a instala&ccedil;&atilde;o e o local de procura &eacute; sempre baseado no modo de viagem que especificar e n&atilde;o usando distancias em linha recta.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

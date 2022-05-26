@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/GenerateTessellations",{chooseShape:"Odaberite oblik",defineExtent:"Defini\u0161i obuhvat",defineBin:"Defini\u0161i veli\u010dinu bloka navo\u0111enjem",area:"Povr\u0161ina",distance:"Rastojanje",resultLayerName:"Naziv sloja sa rezultatima",hexagon:"\u0160estougaonik",transverseHexagon:"Transverzalni \u0161estougaonik",square:"Kvadrat",triangle:"Trougao",diamond:"Romb",sameAsDisplay:"Isto kao prikaz",emptyBinSize:"Veli\u010dina bloka ne mo\u017ee da bude prazna",
+currentExtent:"trenutni obuhvat",intersectExtent:"Zadr\u017ei samo teselacije koje se seku",outputLayerName:"Generi\u0161i teselacije na ${extentLayerName}",itemDescription:"Kori\u0161\u0107en je obuhvat iz ${extentLayerName}.",itemTags:"Rezultat analize, Generi\u0161i teselacije, ${extentLayerName}",itemSnippet:"Sloj geoobjekata nastao iz zadatka Generi\u0161i teselacije."});

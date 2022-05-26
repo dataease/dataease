@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>图层叠加</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="图层叠加"></h2>
+        <hr/>
+    <p>叠加操作可将两个或多个图层合并成一个图层。您可以认为叠加就是通过地图堆栈查看并创建包含在堆栈中找到的所有信息的单个地图。叠加操作不仅仅合并线要素，还会将参与叠加的要素的所有属性传递到最终产品。叠加用于回答一个最基本的地理问题，&ldquo;什么在什么上？&rdquo;例如：
+        <ul>
+            <li>哪些宗地位于百年一遇的洪泛区中？ （&ldquo;在...中&rdquo;只是&ldquo;在...上&rdquo;的另一种表达方式。）
+                  
+            </li>
+            <li>什么道路在什么国家中？
+            </li>
+            <li>什么土地利用在什么土壤类型上？
+                 
+            </li>
+            <li>什么井在废弃的军事基地中？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，仅叠加当前地图范围中可见的输入和叠加图层的要素。 如果尚未选中，则叠加输入图层和叠加图层中的所有要素，即使它们处于当前地图范围外。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择输入图层</h2></div>
+        <hr/>
+        <div>
+            <p>将要叠加的点、线或区域图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>选择叠加图层</h2></div>
+        <hr/>
+        <div>
+            <p>要叠加到输入图层上的图层。  
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>选择叠加方法</h2></div>
+        <hr/>
+        <div>
+            <p>叠加方法定义了如何合并输入图层和叠加图层。
+                <ul>
+                    <li> <b>相交</b> - 结果仅包括叠加图层中与输入图层中的要素相重叠的要素或部分要素。 当对线要素或区域要素执行相交操作时，您可以通过该选项来指定作为输出的要素类型。
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>点与点相交
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="点与点输入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="点与带有点输出的点">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>点与线相交
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="点与线输入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="点与带有点输出的线">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>点与区域相交
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="点与区域输入">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="点与带有点输出的区域">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>线与线相交 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="线与线输入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="线与带有点输出的线">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="线与带有线输出的线">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>线与区域相交
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="线与区域输入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="线与带有点输出的区域">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="线与带有线输出的区域">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>区域与区域相交
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="区域与区域输入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="区域与带有点输出的区域">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="区域与带有线输出的区域">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="区域与带有区域输出的区域">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>联合</b> - 结果包含输入图层及叠加图层中的要素。 &ldquo;联合&rdquo;选项仅在输入图层和叠加图层都包含区域要素时可用。
+                    </li>
+                    <li> <b>相交</b> - 结果将包括叠加图层中不与输入图层中的区域相重叠的要素或部分要素。 叠加图层可以包含区域要素、线要素或点要素。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果选中 <b>使用当前地图范围</b>，仅叠加当前地图范围中可见的输入和叠加图层的要素。 如果尚未选中，则叠加输入图层和叠加图层中的所有要素，即使它们处于当前地图范围外。
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 在 <b>我的内容</b>中创建并添加到地图中的图层的名称。 它的要素类型与叠加图层相同（区域、线或点）。 默认名称基于叠加方法以及输入图层名称。如果该名称的图层已存在，则系统将要求您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存到</b>下拉框，可以在 <b>我的内容</b>中指定文件夹的名称，结果将保存到该文件夹中。
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

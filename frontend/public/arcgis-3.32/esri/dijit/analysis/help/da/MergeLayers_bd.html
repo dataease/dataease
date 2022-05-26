@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Flet lag</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Flet lag"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j kombinerer to vektorlag for at oprette et enkelt outputlag. Lagene, der skal flettes, skal have samme geometritype og tidstype. Du bestemmer, hvordan felter fra inputlagene skal samles og kopieres. For eksempel:
+        <ul>
+            <li>Jeg har tre lag for England, Wales og Skotland, og jeg vil gerne have et enkelt lag for Storbritannien. 
+            </li>
+            <li>Jeg har 2 lag, og hvert lag indeholder parcel-information for tilst&oslash;dende distrikter. Jeg vil gerne l&aelig;gge dem sammen til et enkelt lag og kun bevare de felter, der har sammen navn og type i de 2 input-lag.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag</h2></div>
+        <hr/>
+        <div>
+            <p>Laget med tabel-, punkt-, linje eller omr&aring;deobjekter, som skal flettes med det andet vektorlag. Alle felter fra dette lag bliver medtaget i resultatlaget.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Vælg det lag, der skal flettes</h2></div>
+        <hr/>
+        <div>
+            <p>Det vektorlag, der skal flettes med inputlaget. Det lag, der skal flettes, skal have samme geometritype og tidstype som inputlaget.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Redigér flettefelter</h2></div>
+        <hr/>
+        <div>
+            <p>Som standard medtages alle felter fra begge inputlag i outputlaget. Du kan &aelig;ndre m&aring;den, hvorp&aring; felter fra det lag, der skal flettes, medtages i outputtet, med f&oslash;lgende indstillinger:
+                <ul>
+                    <li> <b>Omd&oslash;b</b> &ndash; Feltet omd&oslash;bes i outputtet.
+                    </li>
+                    <li> <b>Fjern</b> &ndash; Feltet fjernes fra outputtet.
+                    </li>
+                    <li> <b>Ens</b> &ndash; Feltnavnene bliver ens. V&aelig;rdier for felter fra laget, der skal flettes, kopieres til det tilsvarende outputfelt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis begge lag indeholder et felt med identisk navn og datatype, flettes indholdet af felterne til et felt med det p&aring;g&aelig;ldende navn. Det g&aelig;lder ikke felter, hvor  <b>Ens</b> benyttes i parameteren <b>Redig&eacute;r flettefelter</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

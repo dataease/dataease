@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>范围内汇总</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="范围内汇总"></h2>
+        <hr/>
+    <p>此工具用于查找第一个输入图层中处于区域边界内的要素（和部分要素）。例如：
+        <ul>
+            <li>给定一个流域边界图层和一个按土地利用类型划分的土地利用边界图层，计算每个流域的土地使用类型的总面积。
+            </li>
+            <li>给定某县的宗地图层和城市边界图层，汇总各城市边界内闲置宗地的平均值。
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围内可见的输入图层和待汇总图层中的要素。如果未选中，则会对输入图层和待汇总图层内的所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>选择区域图层以汇总其边界内的其他要素</h2></div>
+        <hr/>
+        <div>
+            <p>将用于汇总其边界内要素的区域图层。
+            </p>
+            <p>可以在您提供的区域图层或工具运行时生成的图格之间进行选择。生成 <b>正方形</b>图格时，由指定的数字和单位决定正方形的高度和长度。生成 <b>六边形</b>图格时，由指定的数字和单位决定平行边之间的距离。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>选择汇总图层</h2></div>
+        <hr/>
+        <div>
+            <p>汇总此图层中位于上述输入图层的要素边界内的要素。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>从图层添加统计数据以进行汇总</h2></div>
+        <hr/>
+        <div>
+            <p>对于要素边界内的点，您可以计算其数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>点计数</b>复选框，则会计算每个区域边界内点的总数。另外，您还可以计算每个区域边界内点的数值属性的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值。
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值。
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值。
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值。
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差。
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>添加统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>您还可以计算要汇总的线的数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>线的总长度</b>复选框，则会计算每个区域边界内线的总长度。另外，您还可以计算每个区域边界内线的数值属性的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值。
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值。
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值。
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值。
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差。
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>添加统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>您还可以计算要汇总的面的数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>计算总面积</b>复选框，则会计算第一个输入图层中每个区域边界内要素的总面积。另外，您还可以计算每个区域边界内要素的数值属性的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值。
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值。
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值。
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值。
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差。
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>添加统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>选择要汇总的图层后，您还可以计算输入面图层中所有点、线或面的数值属性的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差
+                </li>
+            </ul>
+            
+            <p>根据要汇总的要素类型，您可以计算点的总数、线的总长度或总面积。
+            </p>
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>选择作为分组依据的字段</h2></div>
+        <hr/>
+        <div>
+            <p>这是 <b>汇总</b>要素的一个属性，可用于分别计算每个唯一属性值的统计数据。例如，假设第一个输入图层包含城市边界，汇总要素为宗地。 <i>Status</i> 是宗地的一个属性，包含两个值：VACANT 和 OCCUPIED。要计算城市边界内空闲和占用宗地的总面积，请使用 <i>Status</i> 作为按属性分组的条件。每个组的统计数据以及每个区域边界内的要素计数将显示在结果图层的弹出窗口中。
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>添加少数、多数</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解第一个输入图层的每条边界内每个组中哪些属性值为少数（所占比例最小）、哪些属性值为多数（所占比例最大），请选择 <b>添加少数、多数</b>。选择 <b>添加少数、多数</b>后，两个新字段将添加到结果图层。如果同时选择 <b>添加百分比</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+            <ul>
+                <li>如果汇总点，则会根据第一个输入图层中每个边界区域内的点数计算少数值和多数值。
+                </li>
+                <li>如果汇总线，则会根据第一个输入图层中每个边界区域内线的长度计算少数值和多数值。
+                </li>
+                <li>如果汇总面积，则会根据第一个输入图层中每个边界区域内的面积计算少数值和多数值。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>添加百分比</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解每组内每个属性值所占的百分比，可选择 <b>添加百分比</b>。向结果表添加一个新字段，其中包含每组内每个属性值所占的百分比。如果也选中了 <b>添加少数、多数</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fr/GenerateTessellations",{chooseShape:"Choisir une forme",defineExtent:"D\u00e9finir l'\u00e9tendue",defineBin:"D\u00e9finir la taille du groupe en sp\u00e9cifiant",area:"Superficie",distance:"Distance",resultLayerName:"Nom de la couche de r\u00e9sultat",hexagon:"Hexagone",transverseHexagon:"Hexagone transversal",square:"Carr\u00e9",triangle:"Triangle",diamond:"Losange",sameAsDisplay:"Identique \u00e0 l'affichage",emptyBinSize:"Vous devez indiquer la taille du groupe",
+currentExtent:"\u00e9tendue actuelle",intersectExtent:"Converser uniquement les tessellations d\u2019intersection",outputLayerName:"G\u00e9n\u00e9rer des tessellations sur ${extentLayerName}",itemDescription:"L\u2019\u00e9tendue de ${extentLayerName} a \u00e9t\u00e9 utilis\u00e9e.",itemTags:"R\u00e9sultat d\u2019analyse, G\u00e9n\u00e9rer des tessellations, ${extentLayerName}",itemSnippet:"Couche d\u2019entit\u00e9s g\u00e9n\u00e9r\u00e9e avec G\u00e9n\u00e9rer des tessellations"});

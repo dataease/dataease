@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Seskupit body (Aggregate Points)</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Seskupit body"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj pracuje s vrstvou bodov&yacute;ch prvků a s vrstvou plo&scaron;n&yacute;ch prvků. Nejdř&iacute;ve urč&iacute;, jak&eacute; body spadaj&iacute; do jednotliv&yacute;ch oblast&iacute;. Po určen&iacute; těchto prostorov&yacute;ch vztahů pak vypoč&iacute;t&aacute; statistick&eacute; &uacute;daje v&scaron;ech bodů v&nbsp;oblasti a přiřad&iacute; je př&iacute;slu&scaron;n&eacute; oblasti. Nejz&aacute;kladněj&scaron;&iacute; statistikou je počet bodů v&nbsp;oblasti, ale vypoč&iacute;tat lze i jin&eacute; statistiky. 
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že m&aacute;te k&nbsp;dispozici bodov&eacute; prvky um&iacute;stěn&iacute; kav&aacute;ren a prvky oblasti krajů. Chcete shrnout prodej k&aacute;vy podle krajů. Za předpokladu, že maj&iacute; kav&aacute;rny atribut  <i>TOTAL_SALES</i>, můžete pro jednotliv&eacute; kraje vypoč&iacute;tat součet v&scaron;ech hodnot atributů <i>TOTAL_SALES</i>, minim&aacute;ln&iacute; či maxim&aacute;ln&iacute; hodnotu atributu <i>TOTAL_SALES</i>, př&iacute;padně směrodatnou odchylku celkov&eacute;ho prodeje.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; bodov&eacute; vrstvě a vrstvě oblasti, kter&eacute; jsou viditeln&eacute; v rozsahu aktu&aacute;ln&iacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; bodov&eacute; vrstvě a vrstvě oblasti, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo rozsah aktu&aacute;ln&iacute; mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Vyberte vrstvu obsahující body, které chcete seskupit do oblastí</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, kter&aacute; se seskup&iacute; do oblast&iacute;.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Vyberte vrstvu obsahující agregační oblasti</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva oblasti, do kter&eacute; se body seskup&iacute;. V&scaron;echny body spadaj&iacute;c&iacute; do hranic oblast&iacute; v t&eacute;to vrstvě budou spoč&iacute;t&aacute;ny a př&iacute;padně shrnuty s použit&iacute;m va&scaron;ich statistick&yacute;ch voleb.  
+            </p>
+            <p>Můžete si vybrat mezi vrstvou plochy, kterou zad&aacute;te, nebo přihr&aacute;dkami, kter&eacute; se vygeneruj&iacute; při spu&scaron;těn&iacute; n&aacute;stroje.   Při generov&aacute;n&iacute; přihr&aacute;dek počet a jednotky uveden&eacute; u položky  <b>Čtverec</b> určuj&iacute; v&yacute;&scaron;ku a d&eacute;lku čtverce. Pro <b>&Scaron;esti&uacute;heln&iacute;k</b> zadan&yacute; počet a jednotky určuj&iacute; vzd&aacute;lenost mezi rovnoběžn&yacute;mi stranami.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Ponechat oblasti bez bodů</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje, zda se oblasti neobsahuj&iacute;c&iacute; body zobraz&iacute; ve v&yacute;sledn&eacute; vrstvě. Pokud toto pole za&scaron;krtnuto nen&iacute;, oblasti bez bodů se ve v&yacute;sledn&eacute; mapě nezobraz&iacute;. Pokud je pole za&scaron;krtnuto, oblasti bez bodů se ve v&yacute;sledn&eacute; mapě zobraz&iacute;.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Přidat statistiky</h2></div>
+        <hr/>
+        <div>
+            <p>Umožňuje poč&iacute;tat statistiky atributů ve vstupn&iacute; bodov&eacute; vrstvě, např&iacute;klad součet, průměr, minimum, maximum a směrodatnou odchylku. V&yacute;sledn&aacute; vrstva bude obsahovat nov&yacute; atribut pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky (objev&iacute; se nov&yacute; rozbalovac&iacute; seznam).
+ 
+            </p>
+            <p>Pokud vrstva, kter&aacute; m&aacute; b&yacute;t sumarizov&aacute;na, nem&aacute; ž&aacute;dn&aacute; č&iacute;seln&aacute; pole, nebudou dal&scaron;&iacute; statistiky k dispozici.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Vybrat pole k seskupení</h2></div>
+        <hr/>
+        <div>
+            <p> Umožňuje vytv&aacute;řet statistick&eacute; skupiny pomoc&iacute; atributu ve vstupn&iacute; bodov&eacute; vrstvě.    Pokud např&iacute;klad agregujete trestn&eacute; činy v hranic&iacute;ch čtvrt&iacute;, můžete m&iacute;t atribut <i>Crime_type</i> obsahuj&iacute;c&iacute; pět různ&yacute;ch typů trestn&yacute;ch činů. Každ&yacute; jedinečn&yacute; typ trestn&eacute;ho činu tvoř&iacute; skupinu. Statistiky, kter&eacute; zvol&iacute;te, budou vypočteny pro každou jedinečnou hodnotu atributu <i>Crime_type</i>.  Statistiky pro každou skupinu se spolu s počtem bodů zobraz&iacute; ve vyskakovac&iacute;m okně v&yacute;sledn&eacute; vrstvy. Pokud zvol&iacute;te atribut seskupov&aacute;n&iacute;, budou vytvořeny dva druhy v&yacute;sledků: v&yacute;sledn&aacute; vrstva a v&yacute;sledn&aacute; tabulka obsahuj&iacute;c&iacute; statistiku každ&eacute; jedinečn&eacute; skupiny.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Přidat menšinu, většinu</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, pokud zvol&iacute;te pole k seskupen&iacute;. Pokud chcete zjistit, kter&eacute; hodnoty atributů v každ&eacute; skupině, uvnitř každ&eacute; ohraničen&eacute; oblasti vrstvy anal&yacute;zy, jsou men&scaron;inou (nejm&eacute;ně dominantn&iacute;) nebo vět&scaron;inou (nejv&iacute;ce dominantn&iacute;), vyberte možnost  <b>Přidat men&scaron;inu, vět&scaron;inu</b>.   Když vyberete možnost <b>Přidat men&scaron;inu, vět&scaron;inu</b>, do v&yacute;sledn&eacute; vrstvy budou přid&aacute;na dvě nov&aacute; pole.   Pokud vyberete i možnost <b>Přidat procenta</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v&nbsp;r&aacute;mci každ&eacute; skupiny.
+            </p>
+            <p>Pokud se např&iacute;klad zab&yacute;v&aacute;te městsk&yacute;m pl&aacute;nov&aacute;n&iacute;m a chcete zjistit, kter&eacute; druhy stromů jsou ve v&scaron;ech městsk&yacute;ch parc&iacute;ch v men&scaron;ině a kter&eacute; ve vět&scaron;ině, proveďte agregaci va&scaron;ich dat stromů v oblastech parků a za&scaron;krtněte tuto možnost.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Přidat procenta</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, když zvol&iacute;te pole k seskupen&iacute;. Zvolte  <b>Přidat procenta</b>, pokud chcete zjistit procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Do v&yacute;sledn&eacute; tabulky bude přid&aacute;no nov&eacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Pokud je za&scaron;krtnuto i pol&iacute;čko <b>Přidat men&scaron;inu, vět&scaron;inu</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v r&aacute;mci každ&eacute; skupiny.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

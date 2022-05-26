@@ -1,0 +1,3 @@
+//>>built
+define("dojox/date/relative",["dojox/main","dojo/_base/lang","dojo/date/locale","dojo/i18n"],function(c,l,h,m){function k(a){a=new Date(a);a.setHours(0,0,0,0);return a}c=l.getObject("date.relative",!0,c);var d=dojo.delegate,n=h._getGregorianBundle,e=h.format;c.format=function(a,b){b=b||{};var c=k(b.relativeDate||new Date),g=c.getTime()-k(a).getTime(),f={locale:b.locale};return 0===g?e(a,d(f,{selector:"time"})):5184E5>=g&&0<g&&!1!==b.weekCheck?e(a,d(f,{selector:"date",datePattern:"EEE"}))+" "+e(a,
+d(f,{selector:"time",formatLength:"short"})):a.getFullYear()==c.getFullYear()?(b=n(m.normalizeLocale(b.locale)),e(a,d(f,{selector:"date",datePattern:b["dateFormatItem-MMMd"]}))):e(a,d(f,{selector:"date",formatLength:"medium",locale:b.locale}))};return c});

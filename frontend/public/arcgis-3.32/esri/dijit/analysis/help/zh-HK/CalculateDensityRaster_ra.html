@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>計算密度</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="計算密度工具"></h2>
+        <hr/>
+    <p>此工具透過將已知數量的某種現象（表示為點或線的屬性）散佈到整個地圖上，來從點圖徵或線圖徵建立密度地圖。結果是按密度從小到大分類的區域圖層。
+    </p>
+    <p>對於點輸入，每個點應表示某一事件或事件點的位置，結果圖層應表示每個單位面積中的事件點計數。新位置中的密度值越大則表示此位置附近的點越多。在多數情况下，結果圖層可視爲未來事件的風險表面。例如，如果輸入點表示受到雷擊的位置，則結果圖層可視爲未來可能受到雷擊的風險表面。
+    </p>
+    <p>對於線輸入，線密度表面表示每個位置附近線的總數。所計算的密度值的單位是每單位面積的線長度。例如，如果線表示河流，則結果圖層表示搜尋半徑範圍內的河流總長度。此結果可用於確定適合放牧動物的區域。
+    </p>
+    <p>此工具的其他使用範例如下：
+
+        <ul>
+            <li>建立犯罪密度地圖以幫助警方適當分配資源到高犯罪率區域。
+                
+ 
+            </li>
+            <li>計算某郡的醫院密度。結果圖層將顯示容易到達醫院和不容易到達醫院的區域，此資訊可用於確定新建醫院的位置。
+                
+ 
+            </li>
+            <li>根據發生森林火災的歷史位置，確定森林火災的高風險區域。
+                
+ 
+            </li>
+            <li>尋找距離主幹道較遠的社區，以計劃修建新道路的位置。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>選擇計算密度所使用的輸入點圖層或線圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將用來計算密度圖層的輸入點或線圖層。
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>使用計數欄位</h2></div>
+        <hr/>
+        <div>
+            <p>提供一個欄位，用於指定每個位置處的事件點數量。例如，如果您具有表示城市的點，則您可以將表示城市人口的欄位作爲計數欄位，産生的人口密度圖層將計算擁有較多人口之城市附近的較大的人口密度。
+            </p>
+            <p>如果使用預設選項 <b>無</b>，則會將每個位置假設代表單一點。
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>搜尋距離</h2></div>
+        <hr/>
+        <div>
+            <p>輸入距離，以指定計算密度值時尋找點圖徵或線圖徵的搜尋距離。例如，如果提供的搜尋距離是 10,000 公尺，則輸出圖層中任意位置的密度將根據距此位置 10,000 公尺範圍內的圖徵進行計算。在 10,000 公尺範圍內任何不具有事件點的位置所得到的密度值均為零。
+            </p>
+            <p>如果未提供距離，則根據輸入圖徵的位置和計數欄位中的值（如果已提供計數欄位）計算預設值。
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>輸出面積單位</h2></div>
+        <hr/>
+        <div>
+            <p>指定輸出面積單位。密度等於計數除以面積，此參數用於指定密度計算中的面積單位。
+            </p>
+            <p>可用的區域單位為平方英哩、平方英呎、平方公尺和平方公里。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>輸出儲存格大小</h2></div>
+        <hr/>
+        <div>
+            <p>輸出點陣的儲存格大小和單位。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

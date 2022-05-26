@@ -1,0 +1,54 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- Application Schema -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'appSchInfo',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.appSchInfo.caption}'">
+    
+    <!-- citation -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'asName',minOccurs:1,label:'${i18nArcGIS.appSchInfo.asName}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>    
+    </div>
+    
+    <!-- schema language -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asSchLang',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asSchLang}'">
+    </div>
+    
+    <!-- constraint language -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asCstLang',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asCstLang}'">
+    </div>
+    
+    <!-- ASCII -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asAscii',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asAscii}'">
+    </div>
+    
+    <!-- graphics file and source -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asGraFile',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asGraFile}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputText"></div>
+      <div style="margin-top:8px;"></div>
+      <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+        data-dojo-props="target:'src',minOccurs:0,noIndent:true,label:'${i18nArcGIS.appSchInfo.asGraFile_src}'">
+      </div>
+    </div>
+    
+    <!-- software file and source -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asSwDevFile',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asSwDevFile}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputText"></div>
+      <div style="margin-top:8px;"></div>
+      <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+        data-dojo-props="target:'src',minOccurs:0,noIndent:true,label:'${i18nArcGIS.appSchInfo.asSwDevFile_src}'">
+      </div>
+    </div>
+    
+    <!-- software file format -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'asSwDevFiFt',minOccurs:0,label:'${i18nArcGIS.appSchInfo.asSwDevFiFt}'">
+    </div>
+    
+  </div>
+</div>

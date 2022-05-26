@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Unir entidades</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Unir entidades"></h2>
+        <hr/>
+    <p>La herramienta Unir entidades funciona con dos capas. La tarea Unir entidades une atributos de una entidad a otra en funci&oacute;n de las relaciones espacial, temporal y de atributos o de alguna combinaci&oacute;n de las tres. La herramienta determina todas las entidades de entrada que cumplen las condiciones de uni&oacute;n especificadas y una la segunda capa de entrada con la primera. Si lo desea, puede unir todas las entidades con las entidades coincidentes o resumir las entidades coincidentes.
+    </p>
+    <p>La tarea Unir entidades se puede aplicar a puntos, l&iacute;neas, &aacute;reas y tablas. Para una uni&oacute;n temporal es necesario que los datos de entrada tengan el tiempo habilitado y para una uni&oacute;n espacial es necesario que los datos tengan una geometr&iacute;a. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Elegir capa de destino</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de destino que tendr&aacute; atributos procedentes de la capa de uni&oacute;n incorporados a su tabla.
+            </p>
+            <p>El an&aacute;lisis con la relaci&oacute;n espacial  <b>Cercano</b> requiere un sistema de coordenadas proyectadas. Puede definir el <b>Sistema de coordenadas de procesamiento</b> en <b>Entornos de an&aacute;lisis</b>. Si el sistema de coordenadas de procesamiento no se ha definido en un sistema de coordenadas proyectadas, se le pedir&aacute; que lo defina cuando use <b>Ejecutar an&aacute;lisis</b> .
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Elegir la capa que se va a unir a la capa de destino</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de uni&oacute;n cuyos atributos se incorporar&aacute;n a la capa de destino.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Elegir una operación de unión</h2></div>
+        <hr/>
+        <div>
+            <p>Determina c&oacute;mo se manejar&aacute;n las uniones entre las capas de objetivo y uni&oacute;n en la salida si se encuentran varias entidades de uni&oacute;n que tienen la misma relaci&oacute;n con la capa que se va a unir. Se puede elegir entre dos operaciones de uni&oacute;n:
+                <ul>
+                    <li> <b>Unir uno a uno</b>: todas las entidades coincidentes se resumen con cada entidad que se va a unir.
+                    </li>
+                    <li> <b>Unir uno a muchos</b>: todas las entidades coincidentes se unen con la capa de uni&oacute;n.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por ejemplo, supongamos que quiere buscar los supermercados que est&aacute;n en un radio de 2 kil&oacute;metros de un mercado agr&iacute;cola.   En este caso, la capa de destino tiene una &uacute;nica entidad que representa un mercado agr&iacute;cola y la capa de uni&oacute;n representa las tiendas de comestibles locales que tienen atributos del tipo total de ventas anuales. Utilizando la herramienta Unir entidades, observar&aacute; que existen cinco tiendas de comestibles que cumplen los criterios. Si especificara una operaci&oacute;n de uni&oacute;n de  <b>Unir de uno a muchos</b>, obtendr&iacute;a cinco entidades en el resultado, donde cada fila representa el mercado agr&iacute;cola y un supermercado. Si especificara una relaci&oacute;n <b>Unir uno a uno</b>, el resultado ser&iacute;a una entidad que representa el mercado agr&iacute;cola y la informaci&oacute;n resumida de los supermercados como, por ejemplo, el recuento (2), y otras estad&iacute;sticas tales como, la suma de las ventas anuales.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Seleccionar una o varias uniones</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la opci&oacute;n de uni&oacute;n usada. Puede aplicar uno, dos o tres de los siguientes tipos de uni&oacute;n: 
+                <ul>
+                    <li> <b>Espacial</b>: utiliza una relaci&oacute;n espacial especificada para unir entidades. Es necesario que las dos capas tengan una geometr&iacute;a.
+                    </li>
+                    <li> <b>Temporal</b>: utiliza una relaci&oacute;n temporal para unir entidades. Es necesario que el tiempo est&eacute; habilitado en las dos capas.
+                    </li>
+                    <li> <b>Atributo</b>: une entidades bas&aacute;ndose en campos iguales.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Elegir una relación espacial</h2></div>
+        <hr/>
+        <div>
+            <p>La relaci&oacute;n espacial que determinar&aacute; si las entidades se van a unir entre s&iacute;. Las siguientes relaciones disponibles dependen del tipo de geometr&iacute;a (punto, polil&iacute;nea o pol&iacute;gono) que se va a utilizar como entidades de entrada:
+                <ul>
+                    <li> <b>Interseca</b>: las entidades coincidir&aacute;n si se intersecan entre s&iacute;.
+                    </li>
+                    <li> <b>Igual a</b>: las entidades se cotejar&aacute;n si tienen la misma geometr&iacute;a.
+                    </li>
+                    <li> <b>Cerca de</b>: las entidades se cotejar&aacute;n si est&aacute;n dentro de una distancia especificada entre s&iacute;. La capa de destino debe estar en un sistema de coordenadas proyectadas, o bien la referencia espacial de procesamiento debe estar definida en un sistema de coordenadas proyectadas mediante los <b>Entornos de an&aacute;lisis</b> si se utiliza una relaci&oacute;n espacial <b>Cerca de</b>.
+                    </li>
+                    <li> <b>Contiene</b>: las entidades se cotejar&aacute;n si la capa de destino est&aacute; contenida en las entidades de uni&oacute;n.
+                    </li>
+                    <li> <b>Dentro de</b>: las entidades se cotejar&aacute;n si la capa de destino est&aacute; dentro de las entidades de uni&oacute;n.
+                    </li>
+                    <li> <b>Toca</b>: las entidades se cotejar&aacute;n si tienen un l&iacute;mite que toca la entidad de destino.
+                    </li>
+                    <li> <b>Cruza</b>: las entidades se cotejar&aacute;n si tienen un contorno que las cruza.
+                    </li>
+                    <li> <b>Se superpone a</b>: las entidades se unir&aacute;n si se superponen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Especifica el radio aplicado a una relaci&oacute;n de cercan&iacute;a espacial.
+            </p>
+            <p>Por ejemplo, si tuviera un dataset que representa una planta nuclear y un dataset que representa residencias, podr&iacute;a establecer una distancia nearSpatial de 1 kil&oacute;metro para buscar las casas que est&aacute;n dentro de 1 kil&oacute;metro respecto a la planta nuclear.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Elegir una relación temporal</h2></div>
+        <hr/>
+        <div>
+            <p>La relaci&oacute;n temporal que determinar&aacute; si las entidades se van a unir entre s&iacute;. Esta opci&oacute;n solo est&aacute; disponible si el tiempo est&aacute; habilitado en las dos capas y las relaciones disponibles dependen del tipo de tiempo (instante o intervalo) utilizado para las entidades de entrada. Las relaciones temporales disponibles son las siguientes:
+                <ul>
+                    <li> <b>Encuentra</b>: las entidades se cotejar&aacute;n si la primera entidad se encuentra con la segunda.
+                    </li>
+                    <li> <b>Encontrada por</b>: las entidades se cotejar&aacute;n si la segunda entidad se encuentra con la primera.
+                    </li>
+                    <li> <b>Se superpone</b>: las entidades se cotejar&aacute;n si la primera entidad se superpone con la segunda.
+                    </li>
+                    <li> <b>Superpuesta por</b>: las entidades se cotejar&aacute;n si la segunda entidad se superpone con la primera.
+                    </li>
+                    <li> <b>Durante</b>: las entidades se cotejar&aacute;n si la primera entidad est&aacute; durante la segunda.
+                    </li>
+                    <li> <b>Contiene</b>: las entidades se cotejar&aacute;n si la primera entidad contiene la segunda.
+                    </li>
+                    <li> <b>Igual a</b>: las entidades se cotejar&aacute;n si la primera entidad es igual que la segunda.
+                    </li>
+                    <li> <b>Termina</b>: las entidades se cotejar&aacute;n si la primera entidad termina la segunda.
+                    </li>
+                    <li> <b>Terminada por</b>: las entidades se cotejar&aacute;n si la segunda entidad termina la primera.
+                    </li>
+                    <li> <b>Empieza</b>: las entidades se cotejar&aacute;n si la primera entidad empieza la segunda.
+                    </li>
+                    <li> <b>Empezada por</b>: las entidades se cotejar&aacute;n si la segunda entidad empieza la primera.
+                    </li>
+                    <li> <b>Interseca</b>: las entidades se cotejar&aacute;n si todos los tiempos intersecan.
+                    </li>
+                    <li> <b>Cerca de</b>: las entidades se unir&aacute;n si est&aacute;n cerca entre s&iacute;, seg&uacute;n un tiempo especificado.
+                    </li>
+                    <li> <b>Cerca de antes</b>: las entidades se unir&aacute;n si la primera entidad est&aacute; antes de la segunda entidad y dentro del tiempo especificado.
+                    </li>
+                    <li> <b>Cerca de despu&eacute;s</b>: las entidades se unir&aacute;n si la primera entidad est&aacute; despu&eacute;s de la segunda entidad y dentro del tiempo especificado.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica el radio temporal aplicado a una relaci&oacute;n de cercan&iacute;a temporal. Las relaciones de cercan&iacute;a temporal son  <b>Cerca de</b>, <b>Cerca de antes</b> y <b>Cerca de despu&eacute;s</b>.
+            </p>
+            <p>Por ejemplo, si tiene una capa de incidentes n&aacute;uticos y una capa de rastreos de GPS de un hurac&aacute;n, podr&iacute;a buscar los incidentes n&aacute;uticos producidos dentro de una distancia especificada respecto a los rastreos del hurac&aacute;n tanto en espacio (1 kil&oacute;metro) como en tiempo (5 horas). El resultado ser&iacute;an los incidentes n&aacute;uticos unidos a los huracanes producidos cerca tanto en espacio como en tiempo.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Elegir los campos que se van a cotejar</h2></div>
+        <hr/>
+        <div>
+            <p>Coteja los valores de un campo de una capa con los valores de un campo de otra capa. 
+            </p>
+            <p>Por ejemplo, si tuviera una capa geogr&aacute;fica por condado de las direcciones de viviendas (incluido un campo  <i>ZIP</i>) y un dataset tabular de informaci&oacute;n demogr&aacute;fica y de salud por c&oacute;digo postal (un campo llamado <i>HEALTHZIP</i>), podr&iacute;a unir el dataset de salud con los datos residenciales cotejando el campo <i>ZIP</i> con el campo <i>HEALTHZIP</i>. Dar&iacute;a como resultado una capa de las viviendas con los datos de salud correspondientes.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Agregar estadísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Calcula estad&iacute;sticas a partir de las entidades unidas, si la operaci&oacute;n de uni&oacute;n es  <b>Unir uno a uno</b>. De forma predeterminada, se calcular&aacute;n todas las estad&iacute;sticas.
+            </p>
+            <p>Puede calcular estad&iacute;sticas sobre las entidades resumidas. En los campos num&eacute;ricos, puede calcular lo siguiente: 
+                <ul>
+                    <li>Recuento: calcula el n&uacute;mero de valores no nulos. Se puede usar en campos num&eacute;ricos o cadenas de caracteres. El recuento de [nulo, 0, 2] es 2.
+                    </li>
+                    <li>Suma: la suma de valores num&eacute;ricos en un campo. La suma de [nulo, nulo, 3] es 3.
+                    </li>
+                    <li>Media: la media de valores num&eacute;ricos. La media de [0, 2, nulo] es 1.
+                    </li>
+                    <li>M&iacute;n: el valor m&iacute;nimo de un campo num&eacute;rico. El m&iacute;nimo de [0, 2, nulo] es 0. 
+                    </li>
+                    <li>M&aacute;x: el valor m&aacute;ximo de un campo num&eacute;rico. El m&aacute;ximo de [0, 2, nulo] es 2.
+                    </li>
+                    <li>Rango: el rango de un campo num&eacute;rico. Se calcula como los valores m&iacute;nimos restados del valor m&aacute;ximo. El rango de [0, nulo, 1] es 1. El rango de [nulo, 4] es 0.
+                    </li>
+                    <li>Varianza: la varianza de un campo num&eacute;rico en un recorrido. La varianza de [1] es nulo. La varianza de [nulo, 1,0,1,1] es 0,25.
+                    </li>
+                    <li>Desviaci&oacute;n est&aacute;ndar: la desviaci&oacute;n est&aacute;ndar de un campo num&eacute;rico. La desviaci&oacute;n est&aacute;ndar de [1] es nulo. La desviaci&oacute;n est&aacute;ndar de [nulo, 1,0,1,1] es 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>En los campos de cadenas de caracteres, puede calcular lo siguiente:
+                <ul>
+                    <li>Recuento: el n&uacute;mero de cadenas de caracteres no nulas.
+                    </li>
+                    <li>Cualquiera: esta estad&iacute;stica es una muestra aleatoria del valor de una cadena de caracteres en el campo especificado.
+                    </li>
+                </ul>
+                Todas las estad&iacute;sticas se calculan sobre valores no nulos. La capa resultante contendr&aacute; un nuevo campo para cada estad&iacute;stica calculada. Se puede agregar cualquier n&uacute;mero de estad&iacute;sticas eligiendo un atributo y una estad&iacute;stica.
+            </p>
+            <p>Todas las estad&iacute;sticas se calculan sobre valores no nulos. La capa resultante contendr&aacute; un nuevo campo para cada estad&iacute;stica calculada. Se puede agregar cualquier n&uacute;mero de estad&iacute;sticas eligiendo un atributo y una estad&iacute;stica.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Crear una expresión por la que unir entidades (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Aplica una condici&oacute;n a los campos especificados. Solo se unir&aacute;n las entidades con campos que cumplan estas condiciones.
+            </p>
+            <p>Por ejemplo, si desea aplicar una uni&oacute;n a un dataset solo para aquellas entidades donde  <i>health_spending</i> es superior al 20 por ciento de <i>income</i>, aplique una condici&oacute;n de <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> utilizando el campo <i>health_spending</i> del primer dataset (el dataset al que est&aacute;n unidas las entidades) y el campo <i>income</i> del segundo dataset (el dataset que se va a unir).
+            </p>
+            <p>Las condiciones de uni&oacute;n se pueden aplicar utilizando la calculadora de expresiones.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Elija el data store</h2></div>
+        <hr/>
+        <div>
+            <p>Los resultados de GeoAnalytics se almacenan en un data store y se exponen como capa de entidades en  Portal for ArcGIS. En la mayor&iacute;a de los casos, conviene almacenar los resultados en el almac&eacute;n de datos espaciotemporal y este es el predeterminado. En algunos casos, guardar los resultados en el data store relacional es una buena opci&oacute;n. A continuaci&oacute;n, se exponen motivos por los que guardar los resultados en el data store relacional es una buena idea: 
+                <ul>
+                    <li>Puede usar los resultados en una colaboraci&oacute;n de portal a portal.
+                    </li>
+                    <li>Puede habilitar capacidades de sincronizaci&oacute;n con sus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Conviene no usar el data store relacional si espera que los resultados de GeoAnalytics aumenten y necesita aprovechar las capacidades del big data store espaciotemporal para manejar grandes cantidades de datos.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

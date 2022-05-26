@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Mesafeyi Hesapla</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Mesafeyi Hesapla"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, tek bir veya bir dizi kaynaktan &Ouml;klid uzaklığını, y&ouml;n&uuml; ve yerleşimi hesaplar.
+    </p>
+    <p>&Ouml;rnek uygulamalar, aşağıdaki gibi soruları verilen yanıtları i&ccedil;erir:
+
+        <ul>
+            <li>En yakın şehre uzaklık nedir?
+                
+
+            </li>
+            <li>En yakın yola uzaklık nedir?
+                
+
+            </li>
+            <li>En yakın su kaynağına uzaklık nedir?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki detaylar analiz edilir. İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita ekran yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Uzaklığı hesaplamak için raster veya detay konum katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Mesafenin hesaplanacağı kaynakları tanımlayan katman. Bu katman, g&ouml;r&uuml;nt&uuml; servisi veya detay servisi olabilir.
+            </p>
+            <p>Bir g&ouml;r&uuml;nt&uuml; servisi i&ccedil;in girdi t&uuml;r&uuml;, tamsayı veya kayan nokta olabilir.
+            </p>
+            <p>Bir detay servisi i&ccedil;in girdi nokta, &ccedil;izgi veya &ccedil;okgen olabilir.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Hesaplanacak maksimum uzaklık</h2></div>
+        <hr/>
+        <div>
+            <p>Hesaplanacak maksimum mesafedir. &Ouml;rneğin, bir değer olarak 10.000 metre girdiğinizde, kaynak konumlarından o değere (mesafe) kadar olan &Ouml;klid uzaklığı hesaplanır.
+            </p>
+            <p>Hi&ccedil;bir değer girilmediği takdirde, mesafe tanımlanan alana kadar hesaplanacaktır.
+            </p>
+            <p>Kullanılabilen birimler şunlardır: Kilometre, Metre, Mil ve Fit.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Çıktı Hücre Boyutu</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı rasterları i&ccedil;in h&uuml;cre boyutu ve birimi.
+            </p>
+            <p>Birim, kilometre, metre, mil veya fit olarak belirtilebilir.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Sonuç uzaklık katman adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Sonuç yön katman adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b> b&ouml;l&uuml;m&uuml;nde oluşturulacak katmanın adı. <b>İ&ccedil;eriğim</b>&rsquo;de hen&uuml;z mevcut olmayan bir ad belirtmeniz gerekir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Sonuç Tahsis katman adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b> b&ouml;l&uuml;m&uuml;nde oluşturulacak katmanın adı. <b>İ&ccedil;eriğim</b>&rsquo;de hen&uuml;z mevcut olmayan bir ad belirtmeniz gerekir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Tahsis alanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi kaynağı katmanında her kaynağı tanımlayan değerleri tutan bir alan. Kaynak veri k&uuml;mesindeki bir tamsayı veya bir dize alanı olabilir.
+            </p>
+            <p>Varsayılan:  <i>Value</i>. Bir detay servisi kullanılıyorsa ve herhangi bir <i>Value</i> alanı mevcut değilse, ilk kullanılabilir tam sayı veya dize alanı kullanılacaktır. Ge&ccedil;erli bir alan yoksa, ObjectID alanı (&ouml;rneğin, OID veya FID, detay girdisinin t&uuml;r&uuml;ne bağlı olarak) kullanılacaktır.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

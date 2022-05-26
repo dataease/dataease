@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/ClassifyPixelsUsingDeepLearning",{toolDefine:"Classificar p\u00edxeis utilizando aprendizagem detalhada",outputLayerName:"${layername}_classified",modelLabel:"Escolher modelo de aprendizagem detalhada utilizado para classificar p\u00edxeis",modelArgsLabel:"Especificar argumentos do modelo de aprendizagem detalhada",nameLabel:"Nome",valueLabel:"Valor",queryModelArgsMsg:"A consultar argumentos do modelo...",analysisLayerLabel:"Escolher imagem utilizada para classificar p\u00edxeis",
+itemDescription:"Servi\u00e7o de imagens de an\u00e1lise gerado por Classificar p\u00edxeis utilizando aprendizagem detalhada",itemTags:"Resultado de an\u00e1lise de raster, Classificar p\u00edxeis utilizando aprendizagem detalhada, ${layername}",itemSnippet:"Servi\u00e7o de imagens de an\u00e1lise gerado por Classificar p\u00edxeis utilizando aprendizagem detalhada"});

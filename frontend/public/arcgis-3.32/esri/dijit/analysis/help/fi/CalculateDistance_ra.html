@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Laske etäisyys</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Laske et&auml;isyys"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu laskee euklidisen et&auml;isyyden, suunnan ja allokaation yhdest&auml; l&auml;hteest&auml; tai l&auml;hdejoukosta.
+    </p>
+    <p>Esimerkkikohteisiin sis&auml;ltyy kysymyksiin vastaaminen, kuten alla:
+
+        <ul>
+            <li>Miten kaukana l&auml;hin kaupunki on?
+                
+
+            </li>
+            <li>Miten kaukana l&auml;hin tie on?
+                
+
+            </li>
+            <li>Miten kaukana l&auml;hin vesist&ouml; on?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -asetus on valittuna, vain l&auml;ht&ouml;karttatasossa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason kohteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen kartan n&auml;ytt&ouml;laajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Valitse kohdesijainnin karttatason rasteri etäisyyden laskemiseksi kohteeseen</h2></div>
+        <hr/>
+        <div>
+            <p>Taso, joka m&auml;&auml;ritt&auml;&auml; l&auml;ht&ouml;paikat, josta et&auml;isyydet lasketaan. Karttataso voi olla kuva- tai kohdepalvelu.
+            </p>
+            <p>L&auml;ht&ouml;aineiston tyyppi voi kuvapalvelua varten olla joko kokonaisluku tai liukuluku.
+            </p>
+            <p>L&auml;ht&ouml; voi kohdepalvelua varten olla piste, viiva tai aluekohde.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Laskettava enimmäisetäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>Lakettavat enimm&auml;iset&auml;isyys Jos esimerkiksi lis&auml;&auml;t arvoksi 10 000 metri&auml;, euklidinen et&auml;isyys lasketaan l&auml;ht&ouml;sijainneista t&auml;h&auml;n arvoon (et&auml;isyys).
+            </p>
+            <p>Jos arvoa ei anneta, et&auml;isyys lasketaan m&auml;&auml;ritettyyn suuruuteen saakka.
+            </p>
+            <p>K&auml;ytett&auml;viss&auml; olevat yksik&ouml;t ovat: kilometri, metri, maili ja jalka.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tulosaineiston solukoko</h2></div>
+        <hr/>
+        <div>
+            <p>Tulosaineiston rasterien solun koko ja yksikk&ouml;.
+            </p>
+            <p>Yksikk&ouml; voi olla kilometri, metri, maili tai jalka.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Tulosetäisyystason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Tulossuuntatason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Karttatason nimi luodaan  <b>Oma sis&auml;lt&ouml; -osiossa</b>. Sinun on annettava nimi, jota ei t&auml;ll&auml; hetkell&auml; ole <b>Oma sis&auml;lt&ouml; -osiossa</b>.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Tulosallokointitason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Karttatason nimi luodaan  <b>Oma sis&auml;lt&ouml; -osiossa</b>. Sinun on annettava nimi, jota ei t&auml;ll&auml; hetkell&auml; ole <b>Oma sis&auml;lt&ouml; -osiossa</b>.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Valitse allokointikenttä</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston kentt&auml;, jossa on kutakin l&auml;hdett&auml; m&auml;&auml;ritt&auml;v&auml;t arvot. T&auml;m&auml; voi olla l&auml;hdeaineistoryhm&auml;n kokonaisluku tai merkkijonokentt&auml;.
+            </p>
+            <p>Oletuksena on  <i>Value</i>. Jos k&auml;ytet&auml;&auml;n kohdepalvelua eik&auml; <i>Value</i> -kentt&auml; ole k&auml;yt&ouml;ss&auml;, k&auml;ytet&auml;&auml;n ensimm&auml;ist&auml; saatavilla olevaa kokonaislukukentt&auml;&auml; tai merkkijonokentt&auml;&auml;. Jos kelvollisia kentti&auml; ei ole, ObjectiD-kentt&auml; (esim. OID tai FID riippuen l&auml;hd&ouml;n tyypist&auml; riippuen) on k&auml;yt&ouml;ss&auml;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

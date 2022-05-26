@@ -1,0 +1,129 @@
+/* Tree 
+ * 
+ * Styling Tree mostly means styling the TreeRow (dijitTreeRow)
+ * There are 4 basic states to style:
+ * 
+ * Tree Row:
+ * 1. tree row (default styling): 
+ * 		.dijitTreeRow - styles for each row of the tree
+ *
+ * 2. hovered tree row (mouse hover on a tree row)
+ * 		.dijitTreeRowHover - styles when mouse over on one row
+ * 
+ * 3. active tree row (mouse down on a tree row)
+ * 		.dijitTreeRowActive - styles when mouse down on one row
+ * 
+ * 4. selected tree row
+ * 		dijitTreeRowSelected - style when the row has been selected
+ * 
+ * Tree Expando:
+ * 	    dijitTreeExpando - the expando at the left of the text of each tree row
+ * 
+ * Drag and Drop on TreeNodes: (insert line on dijitTreeContent node so it'll aligned w/ target element)
+ * 		.dijitTreeNode .dojoDndItemBefore/.dojoDndItemAfter - use border style simulate a separate line
+ */
+
+@import "variables";
+
+.claro .dijitTreeNode {
+    zoom: 1;	/* force layout on IE (TODO: may not be needed anymore) */
+}
+.claro .dijitTreeIsRoot {
+    background-image: none;
+}
+
+/* Styling for basic tree node (unhovered, unselected)
+ * Also use this styling when dropping between items on the tree (in other words, don't
+ * use hover effect)
+ */
+.claro .dijitTreeRow,
+.claro .dijitTreeNode .dojoDndItemBefore,
+.claro .dijitTreeNode .dojoDndItemAfter {
+	/* so insert line shows up on IE when dropping after a target element */
+	padding: 4px 0 2px 0;
+
+	background-color: none;	// IE6 doesn't understand rgba() or transparent below
+	background-color: transparent;	// IE8 doesn't understand rgba() below
+	background-color: rgba(171,214,255,0);	// rgba() instead of transparent to prevent flash on hover fade-in
+	background-position:0 0;
+	background-repeat:repeat-x;
+
+	border: solid 0 transparent;
+
+	color: @text-color;
+
+	.transition-property(background-color, border-color);
+	.transition-duration(.25s);
+	.transition-timing-function(ease-out);
+}
+
+.claro .dijitTreeRowSelected {
+	background-color: @selected-background-color;
+	.standard-gradient;
+	padding: 3px 0 1px;
+	border-color: @selected-border-color;
+	border-width: 1px 0;
+	color: @selected-text-color;
+}
+.claro .dijitTreeRowHover {
+	background-color: @hovered-background-color;
+	.standard-gradient;
+	padding: 3px 0 1px;
+	border-color: @hovered-border-color;
+	border-width: 1px 0;
+	color: @hovered-text-color;
+	.transition-duration(.25s);
+}
+.claro .dijitTreeRowActive {
+	background-color:@pressed-background-color;
+	.active-gradient;
+	padding: 3px 0 1px;
+	border-color: @pressed-border-color;
+	border-width: 1px 0;
+	color: @selected-text-color;
+}
+.claro .dijitTreeRowFocused {
+	background-repeat: repeat;
+}
+
+/* expando (open/closed) icon */
+
+.claro .dijitTreeExpando {
+	background-image: url(@image-tree-expand);
+    width: 16px;
+    height: 16px;
+	background-position: -35px 0;		/* for dijitTreeExpandoOpened */
+}
+.dj_ie6 .claro .dijitTreeExpando {
+	background-image: url(@image-tree-expand-ie6);
+}
+.claro .dijitTreeRowHover .dijitTreeExpandoOpened {
+	background-position: -53px 0;
+}
+.claro .dijitTreeExpandoClosed {
+	background-position: 1px 0;
+}
+.claro .dijitTreeRowHover .dijitTreeExpandoClosed {
+	background-position: -17px 0;
+}
+.claro .dijitTreeExpandoLeaf,
+.dj_ie6 .claro .dijitTreeExpandoLeaf {
+	background-image:none;
+}
+
+.claro .dijitTreeExpandoLoading {
+	background-image: url(@image-loading-animation);
+	background-position: 0 0;
+}
+
+/* Drag and Drop on TreeNodes
+ * Put insert line on dijitTreeContent node so it's aligned w/
+ * (ie, indented equally with) target element, even
+ * though dijitTreeRowNode is the actual "drag object"
+ */
+.claro .dijitTreeNode .dojoDndItemBefore .dijitTreeContent {
+	border-top: 2px solid @dnd-dropseparator-color;		// TODO: normal separator is just 1px, why is this 2px?
+}
+.claro .dijitTreeNode .dojoDndItemAfter .dijitTreeContent {
+	border-bottom: 2px solid @dnd-dropseparator-color;	// TODO: normal separator is just 1px, why is this 2px?
+}

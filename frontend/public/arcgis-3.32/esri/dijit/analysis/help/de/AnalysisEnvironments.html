@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Umgebungseinstellungen für die Portal-Analyse</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Umgebungseinstellungen f&uuml;r die Analyse in Portal for ArcGIS und  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Ergebnis-Layer überschreiben</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Legt fest, ob vorhandene Layer &uuml;berschrieben werden sollen.    Wenn sie aktiviert wird, wird ein Layer mit dem gleichen Namen, der bereits in Ihrem Inhalt vorhanden ist, &uuml;berschrieben.
+            </p>
+            <p>
+                <ul>
+                    <li>Aktiviert: Wenn bereits ein Layer mit dem gleichen Namen in Ihrem Inhalt vorhanden ist, wird dieser &uuml;berschrieben. Die Ausgabe erfolgt in demselben Koordinatensystem wie die Eingabe.
+                    </li>
+                    <li>Nicht aktiviert: Wenn der angegebene Name des Ergebnis-Layers bereits vorhanden ist, verursacht dies einen Fehler, und das Werkzeug kann erst ausgef&uuml;hrt werden, nachdem der Ergebnis-Layer umbenannt worden ist. Dies ist die Standardeinstellung.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Analyse-Widget nach Ausführung der Analyse schließen</h2></div>
+        <hr/>
+        <div>
+            <p>Legt fest, ob das Analysedialogfenster w&auml;hrend der Werkzeugausf&uuml;hrung ge&ouml;ffnet oder aktiviert bleiben soll.     Mit dieser Einstellung k&ouml;nnen Sie &Auml;nderungen an den Analyseparametern vornehmen, w&auml;hrend der vorherige Analyseauftrag noch ausgef&uuml;hrt wird. Die Analyse ist ein iterativer Prozess. Wenn das Werkzeug-Dialogfeld ge&ouml;ffnet bleibt, k&ouml;nnen Sie Parameter &auml;ndern und die Analyse wiederholen.
+            </p>
+            <p>
+                <ul>
+                    <li>Aktiviert: Das Analysewerkzeug-Dialogfeld wird geschlossen, der Fokus kehrt zum Inhaltsverzeichnis zur&uuml;ck. Hierbei handelt es sich um die Standardeinstellung.
+                    </li>
+                    <li>Nicht aktiviert: Das Analysewerkzeug-Dialogfeld bleibt ge&ouml;ffnet und aktiviert.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Analyseergebnisse als gehostete Feature-Layer speichern</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Gibt an, ob der aus der Analyse resultierende Layer als Feature-Sammlung oder gehosteter Feature-Layer erstellt wird. 
+            </p>
+            <p>
+                <ul>
+                    <li>Aktiviert: Das Ergebnis der Analyse wird als gehosteter Feature-Layer erstellt, und im Inhalt wird ein Element erstellt. Dies ist die Standardeinstellung.
+                    </li>
+                    <li>Nicht aktiviert: Das Ergebnis der Analyse wird als Feature-Sammlung erstellt.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Ausgabe-Koordinatensystem</h2></div>
+        <hr/>
+        <div>
+            <p>Legt das Koordinatensystem des Ergebnis-Layers f&uuml;r die Raster-Analyse fest.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Gleich wie Eingabe</b>: Das Ergebnis der Analyse wird im selben Koordinatensystem ausgegeben wie die Eingabe. Dies ist die Standardeinstellung.
+                    </li>
+                    <li> <b>Wie angegeben</b>: Das Ergebnis der Analyse befindet sich im ausgew&auml;hlten Koordinatensystem.   Wenn diese Option aktiviert ist, k&ouml;nnen Sie &uuml;ber die Globus-Schaltfl&auml;che eine Auswahl aus einer Liste bekannter Koordinatensysteme treffen oder die Raumbezugs-WKID in das entsprechende Feld eingeben.
+                    </li>
+                    <li> <b>Layer
+&lt;Name&gt;</b>: Das Ergebnis der Analyse befindet sich im selben Koordinatensystem wie ein vorhandener Layer, den Sie in Ihrer Webkarte ausw&auml;hlen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Verarbeitungskoordinatensystem</h2></div>
+        <hr/>
+        <div>
+            <p>Legt das Koordinatensystem fest, das die Analyse w&auml;hrend der Ausf&uuml;hrung der GeoAnalytics-Analyse verwendet.   
+            </p>
+            <p>Bei GeoAnalytics muss f&uuml;r manche Analysen die Verarbeitung in einem projizierten Koordinatensystem erfolgen.   Jedes Werkzeug, das Daten-Binning oder lineare Einheiten unterst&uuml;tzt, erfordert ein projiziertes Koordinatensystem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Gleich wie Eingabe</b>: Die Analyse wird im selben Koordinatensystem verarbeitet wie die Eingabe. Dies ist die Standardeinstellung.
+                    </li>
+                    <li> <b>Wie angegeben</b>: Das Ergebnis der Analyse befindet sich im ausgew&auml;hlten Koordinatensystem.   Wenn diese Option aktiviert ist, k&ouml;nnen Sie &uuml;ber die Globus-Schaltfl&auml;che eine Auswahl aus einer Liste projizierter Koordinatensysteme treffen oder die Raumbezugs-WKID in das entsprechende Feld eingeben.
+                    </li>
+                    <li> <b>Layer
+&lt;Name&gt;</b>: Die Analyse befindet sich im selben Koordinatensystem wie ein vorhandener Layer, den Sie in Ihrer Webkarte ausw&auml;hlen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Ausdehnung</h2></div>
+        <hr/>
+        <div>
+            <p>Legt die Ausdehnung oder Grenze fest, die w&auml;hrend der Ausf&uuml;hrung der Analyse verwendet wird.  Alle Eingabe-Features, die sich vollst&auml;ndig in der angegebenen Ausdehnung befinden oder diese schneiden, werden bei der Analyse ber&uuml;cksichtigt.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Standard</b>: Die vom Werkzeug vorgegebene Ausdehnung.
+                    </li>
+                    <li> <b>Wie angegeben</b>: Die Ausdehnung wird durch die von Ihnen bereitgestellten Koordinaten definiert.
+                    </li>
+                    <li> <b>Layer
+&lt;Name&gt;</b>: Die zum Verarbeiten der Analyse verwendete Ausdehnung ist mit der r&auml;umlichen Ausdehnung eines vorhandenen Layers identisch, den Sie in Ihrer Webkarte ausw&auml;hlen. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Fang-Raster</h2></div>
+        <hr/>
+        <div>
+            <p>Passt die Ausdehnung des Ausgabe-Raster-Layers an, sodass er mit der Zellenausrichtung des angegebenen  <b>Fang-Raster</b>-Layers in der Raster-Analyse identisch ist.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Legt bei der Durchf&uuml;hrung der Raster-Analyse die Zellengr&ouml;&szlig;e oder Aufl&ouml;sung fest, die zum Erstellen des Ausgabe-Raster-Layers verwendet wird. Die Standard-Ausgabeaufl&ouml;sung wird anhand der gr&ouml;&szlig;ten Zellengr&ouml;&szlig;e des Eingabe-Raster-Layers bestimmt.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimum der Eingabedaten</b>: Verwendet die kleinste Zellengr&ouml;&szlig;e aller Eingabe-Layer.
+                    </li>
+                    <li> <b>Maximum der Eingabedaten</b>: Verwendet die gr&ouml;&szlig;te Zellengr&ouml;&szlig;e aller Eingabe-Layer. Dies ist die Standardeinstellung.
+                    </li>
+                    <li> <b>Wie angegeben</b>: Geben Sie einen numerischen Wert ein, um die Zellengr&ouml;&szlig;e festzulegen. Der Standardwert bei dieser Option lautet 1.
+                    </li>
+                    <li> <b>Layer &lt;Name&gt;</b>: Die Zellengr&ouml;&szlig;e des gew&auml;hlten Raster-Layers wird festgelegt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maske</h2></div>
+        <hr/>
+        <div>
+            <p>Legt einen Layer fest, mit dem der Interessenbereich in der Raster-Analyse definiert wird.   Nur die Zellen, die innerhalb der Analysemaske liegen, werden bei der Analyse ber&uuml;cksichtigt.
+            </p>
+            <ul>
+                <li>Die Maske kann ein Raster oder ein Feature-Layer sein.
+                </li>
+                <li>Wenn die Analysemaske ein Raster ist, werden alle Zellen, die einen Wert haben, bei der Definition der Maske ber&uuml;cksichtigt. Zellen in einem Masken-Raster, die NoData sind, liegen au&szlig;erhalb der Maske und werden zu NoData-Werten im Analyseergebnis-Layer. 
+                </li>
+                <li>Wenn die Analysemaske ein Feature-Layer ist, wird sie bei der Ausf&uuml;hrung intern in ein Raster konvertiert. Deshalb sollten Sie sicherstellen, dass
+ <b>Zellengr&ouml;&szlig;e</b> und <b>Fang-Raster</b> entsprechend f&uuml;r die Analyse eingestellt sind.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datenspeicher</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse k&ouml;nnen in einem  ArcGIS Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS bereitgestellt oder in einer konfigurierte Big-Data-Dateifreigabe gespeichert werden. 
+            </p>
+            <p>Wenn Sie ein Ergebnis in  ArcGIS Data Store speichern, werden Ergebnisse in den meisten F&auml;llen im the Big Data Store vom Typ &quot;spatiotemporal&quot; gespeichert. Dies ist die Standardeinstellung. Speichern Sie Ergebnisse in einem Data Store vom Typ &quot;relational&quot;, wenn die folgenden Gr&uuml;nde zutreffen: 
+                <ul>
+                    <li>Verwenden der Ergebnisse in portal&uuml;bergreifender Zusammenarbeit
+                    </li>
+                    <li>Aktivieren von Synchronisierungsfunktionen f&uuml;r Ihre Ergebnisse
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz eines Data Stores vom Typ &quot;relational&quot; ist nicht angezeigt, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie stattdessen die Funktionen des Big-Data-Store vom Typ &quot;spatiotemporal&quot;, um gro&szlig;e Datenmengen zu verwalten. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Faktor für parallele Verarbeitung</h2></div>
+        <hr/>
+        <div>
+            <p>Verteilt Analysen auf mehrere Instanzen des Service &quot;Raster-Verarbeitung&quot;. 
+            </p>
+            <p>Mit Werkzeugen, die die Umgebung  <b>Faktor f&uuml;r parallele Verarbeitung</b> ber&uuml;cksichtigen, k&ouml;nnen Sie die Anzahl der Instanzen des Service &quot;Raster-Verarbeitung&quot; steuern, die f&uuml;r die Verarbeitung Ihrer Daten herangezogen werden k&ouml;nnen.
+            </p>
+            <p>Wenn das Werkzeug den  <b>Prozessortyp</b> nicht ber&uuml;cksichtigt oder die Umgebung <b>Prozessortyp</b> auf <b>CPU</b> festgelegt ist, steuert die Umgebung <b>Faktor f&uuml;r parallele Verarbeitung</b> die (CPU-)Instanzen des Service &quot;Raster-Verarbeitung&quot;. Ist der <b>Prozessortyp</b> auf <b>GPU</b> festgelegt, steuert die Umgebung <b>Faktor f&uuml;r parallele Verarbeitung</b> die Anzahl der GPU-Instanzen f&uuml;r die Raster-Verarbeitung.
+            </p> 
+            <p>Durch Festlegen der Option  <b>Faktor f&uuml;r parallele Verarbeitung</b> k&ouml;nnen Sie die Anzahl der parallelen Worker anfordern, die der Image-Server f&uuml;r Raster-Analysen zum Verarbeiten eines Raster-Analyse-Tasks verwendet. Wenn die Gesamtzahl der parallelen Prozesse die maximale Anzahl der (CPU- oder GPU-)Service-Instanzen f&uuml;r die Raster-Verarbeitung jedoch &uuml;berschreitet, werden die zus&auml;tzlichen parallelen Prozesse in eine Warteschlange gestellt.
+            </p>
+            <p>Wenn der  <b>Faktor f&uuml;r parallele Verarbeitung</b> nicht angegeben ist, was der Standardeinstellung entspricht, verwendet das Werkzeug 80&nbsp;Prozent der maximalen Anzahl von Service-Instanzen f&uuml;r die Raster-Verarbeitung. Als paralleler Verarbeitungsfaktor kann ein ganze Zahl oder ein Prozentsatz angegeben werden.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Prozessortyp</h2></div>
+        <hr/>
+        <div>
+            <p>Mithilfe von Werkzeugen, die die Umgebungseinstellung  <b>Prozessortyp</b> ber&uuml;cksichtigen, k&ouml;nnen Sie ausw&auml;hlen, wo und wie Sie die Daten verarbeiten m&ouml;chten. Ihre Daten k&ouml;nnen mit der CPU oder GPU des Servercomputers verarbeitet werden.  Wenn die Umgebung <b>Prozessortyp</b> leer ist, verwendet das Werkzeug die CPU zum Verarbeiten der Daten. Dies ist die Standardeinstellung.
+            </p> 
+            <p>Die CPU-Verarbeitung kann auf mehreren Kernen und Instanzen parallel laufen. Dies wird vom  <b>Faktor f&uuml;r parallele Verarbeitung</b> bestimmt.
+            </p>
+            <p>GPUs eignen sich hervorragend f&uuml;r die Grafik- und Bildverarbeitung, da ihre hochgradig parallele Struktur daf&uuml;r sorgt, dass gro&szlig;e Datenbl&ouml;cke effizient repetitiv verarbeitet werden. Die Raster-Analysewerkzeuge, die diese Umgebung ber&uuml;cksichtigen, k&ouml;nnen deren Auftrag auf die GPU-Instanzen mehrerer Raster-Analyse-Servercomputer verteilen. Dies wird vom  <b>Faktor f&uuml;r parallele Verarbeitung</b> bestimmt.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>: Daten werden mithilfe der GPU verarbeitet.
+                    </li>
+                    <li> <b>CPU</b>: Daten werden mithilfe der CPU des Computers verarbeitet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

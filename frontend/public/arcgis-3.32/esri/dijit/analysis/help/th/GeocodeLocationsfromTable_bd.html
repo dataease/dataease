@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ตำแหน่งจีโอโค้ดที่ได้จากตาราง</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="ตำแหน่งจีโอโค้ดจากตาราง"></h2>
+        <hr/>
+    <p>จีโอโค้ดแปลงที่อยู่เป็นพิกัด เครื่องมือนี้จะแปลงที่อยู่จากตารางแบ่งปันไฟล์ข้อมูลขนาดใหญ่เป็นชั้นข้อมูลฟีเจอร์ ขณะที่พิกัดแสดงเป็นคอลัมน์พิเศษ
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>เลือกตารางอินพุต</h2></div>
+        <hr/>
+        <div>
+            <p>ตารางอินพุต ต้องมีที่อยู่ เพื่อใช้ระบุพิกัดทางภูมิศาสตร์ 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>เลือกรูปแบบการระบุตำแหน่ง</h2></div>
+        <hr/>
+        <div>
+            <p>เลือกบริการระบุตำแหน่ง เพื่อกำหนดพิกัดทางภูมิศาสตร์ ถ้าบริการระบุตำแหน่งที่คุณต้องการที่จะใช้ ไม่ได้อยู่ในเมนูแบบเลื่อนลง ติดต่อผู้ดูแลระบบของคุณ ให้จัดหาบริการระบุตำแหน่งพิกัดทางภูมิศาสตร์ให้กำหนดสำหรับการระบุตำแหน่งแบบชุด  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>ประเทศ</h2></div>
+        <hr/>
+        <div>
+            <p>ถ้าที่อยู่ทั้งหมดของคุณมาจากประเทศใดประเทศหนึ่งให้กำหนดประเทศ เพื่อให้แน่ใจว่าผลลัพธ์ที่ถูกต้องมากที่สุด มิฉะนั้น ให้พารามิเตอร์นี้ว่างไว้
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>เลือกฟิลด์ข้อมูล</h2></div>
+        <hr/>
+        <div>
+            <p>บริการระบุตำแหน่ง จะค้นหาฟิลด์ที่คาดว่าจะเกี่ยวข้อง เช่น ที่อยู่ ชื่อเมือง หรือรหัสไปรษณีย์ จับคู่ฟิลด์จากข้อมูลในไฟล์อินพุต หรือตาราง กับฟิลด์ของการระบุตำแหน่งที่จะใช้จากรายการแบบเลื่อนลง ยิ่งจับคู่ฟิลด์ได้มาก ผลลัพธ์ที่ได้จะแม่นยำมากขึ้น หากตารางอินพุตมีข้อมูลทั้งหมดในคอลัมน์หนึ่ง ให้เลือก  <b>ฟิลด์เดี่ยว</b> และเลือกฟิลด์ข้อมูลจากเมนูแบบเลื่อนลง หรือเลือก <b>หลายฟิลด์ข้อมูล</b> และจับคู่ฟิลด์ข้อมูลสำหรับระบุตำแหน่งที่เหมาะสม กับคอลัมน์ฟิลด์แต่ละฟิลด์ในตารางของคุณ
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>สำหรับแต่ละสถานที่</h2></div>
+        <hr/>
+        <div>
+            <p>รวมฟิลด์เพิ่มเติมที่ส่งคืนมาจากบริการแจ้งตำแหน่งที่ตั้ง หากตัวเลือกนี้ถูกเลือก ฟิลด์ทั้งหมดที่สร้างจากบริการระบุตำแหน่งจะถูกส่งคืน หากตัวเลือกนี้ไม่ถูกเลือก ข้อมูลอินพุตของคุณจะถูกส่งคืนพร้อมพิกัดทางภูมิศาสตร์ 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อผลลัพธ์เอาต์พุต</h2></div>
+        <hr/>
+        <div>
+            <p> ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้น หากคุณกำลังเขียนถึง ArcGIS Data Store, ผลลัพธ์ ของคุณจะถูกบันทึกเก็บใน<b>My Content</b> และเพิ่มเข้าในแผนที่ หากคุณกำลังเขียนไปยังไฟล์แชร์ข้อมูลขนาดใหญ่, ผลลัพธ์ ของคุณจะถูกเก็บในไฟล์แชร์ข้อมูลใหญ่นั้น และเพิ่้มใน ข้อความ ที่แสดง ซึ่งจะ ไม่ถูกเพิ่มเข้าในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลมีอยู่แล้วเครื่องมือจะล้มเหลว
+            </p>
+            <p>เมื่อคุณเขียน  ArcGIS Data Store (แหล่งข้อมูลใหญ่สเปชิโอเทมโพรัลหรือเชิงสัมพันธ์) ที่ใช้เพื่อ  <b>บันทึกผลลัพธ์ในช่องแบบเลื่อนลง </b>, คุณสามารถระบุชื่อของโฟลเดอร์ใน <b>My Content</b> ซึ่งจะถูกบันทึกไว้ในโฟลเดอร์นี้
+            </p>
+        </div>
+    </div>
+</div>
+</html>

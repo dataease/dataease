@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raszter átalakítása vektoros elemmé</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Raszter &aacute;talak&iacute;t&aacute;sa vektoros elemm&eacute; eszk&ouml;z"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy rasztert alak&iacute;t &aacute;t vektoros adathalmazz&aacute;, vagyis pontokk&aacute;, vonalakk&aacute; vagy polygonokk&aacute;.
+    </p>
+    <p>A  <b>V&aacute;lasszon mezőt</b> param&eacute;terrel kiv&aacute;laszthat&oacute;, hogy a bemeneti raszteres adathalmaz melyik attrib&uacute;tummezője legyen attrib&uacute;tum a kimeneti vektoros oszt&aacute;lyban. Ez a param&eacute;ter csak integer t&iacute;pus&uacute;, &eacute;s a kapcsol&oacute;d&oacute; t&aacute;bl&aacute;zatban tov&aacute;bbi attrib&uacute;tumokkal rendelkező raszterek eset&eacute;n &eacute;rhető el.
+    </p>
+    <p>A bemeneti raszter b&aacute;rmilyen cellam&eacute;rettel rendelkezhet.
+    </p>
+    <p>Az integer t&iacute;pus&uacute; raszterek pont-t&iacute;pus&uacute;, vonalas vagy polygon vektoros elemekk&eacute; is alak&iacute;that&oacute;k, a lebegőpontos raszterek azonban csak pontszerű vektoros elemekk&eacute;.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen l&aacute;that&oacute; raszteres cell&aacute;kat alak&iacute;tja &aacute;t. Ha nincs bejel&ouml;lve, akkor a raszteres r&eacute;teg &ouml;sszes cell&aacute;j&aacute;t &aacute;talak&iacute;tja, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen. &Uuml;gyeljen erre, amikor a raszteres r&eacute;teg nagy, vagy nagyon nagy felbont&aacute;ssal rendelkezik.
+    </p>
+    <p>Az eszk&ouml;z p&eacute;ld&aacute;ul az al&aacute;bbiakra haszn&aacute;lhat&oacute;:
+ 
+        <ul>
+            <li>Polygon vektoros elemek l&eacute;trehoz&aacute;sa f&ouml;ldhaszn&aacute;lat-oszt&aacute;lyoz&aacute;st tartalmaz&oacute; raszterből.
+                
+ 
+            </li>
+            <li>Egy DMM-ben azonos&iacute;tott adatfolyamok vonalas vektoros elemekk&eacute; alak&iacute;that&oacute;k.
+                
+
+            </li>
+            <li>Egy DMM nem raszteres munkafolyamatban haszn&aacute;lhat&oacute;, pont-t&iacute;pus&uacute; vektoros elemekk&eacute; alak&iacute;that&oacute;.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki az átalakítani kívánt raszteres réteget</h2></div>
+        <hr/>
+        <div>
+            <p>A vektoros r&eacute;tegekk&eacute; alak&iacute;tand&oacute; bemeneti raszteres r&eacute;teg.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Válasszon mezőt</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg az &aacute;talak&iacute;t&aacute;shoz haszn&aacute;lt &eacute;rt&eacute;ket meghat&aacute;roz&oacute; mezőt.
+            </p>
+            <p>Ez lehet integer vagy sz&ouml;veges &eacute;rt&eacute;k.
+            </p>
+            <p>Lebegőpontos &eacute;rt&eacute;keket tartalmaz&oacute; mező csak akkor haszn&aacute;lhat&oacute;, ha a kimenet pont-t&iacute;pus&uacute; adathalmaz.
+            </p>
+            <p>Az alap&eacute;rtelmezett v&aacute;laszt&aacute;s a(z)  <i>Value</i> mező haszn&aacute;lata, amely az &eacute;rt&eacute;ket minden egy raszteres cell&aacute;ban tartalmazza.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Válasszon kimenettípust</h2></div>
+        <hr/>
+        <div>
+            <p>Kimenett&iacute;pusk&eacute;nt v&aacute;laszthat pontot, vonalat vagy polygont.
+            </p>
+            <ul>
+                <li>Pont &ndash; a rasztert pont-t&iacute;pus&uacute; adathalmazz&aacute; alak&iacute;tja.
+                    
+ 
+                </li>
+                <li>Vonal &ndash; a rasztert vonalas vektoros elemeket tartalmaz&oacute; adathalmazz&aacute; alak&iacute;tja.
+                    
+ 
+                </li>
+                <li>Polygon &ndash; a rasztert polygon vektoros elemeket tartalmaz&oacute; adathalmazz&aacute; alak&iacute;tja.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Vonalak vagy polygonok egyszerűsítése</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhatja, hogy szeretn&eacute;-e a vektoros elemek egyszerűs&iacute;t&eacute;s&eacute;t.
+            </p>
+            <p>Bejel&ouml;l&eacute;se eset&eacute;n (alap&eacute;rtelmez&eacute;s) kisim&iacute;tja a vonalas &eacute;s polygon vektoros elemeket, ami generaliz&aacute;lja az eredm&eacute;nyt. Ha a lehetős&eacute;g nincs bejel&ouml;lve, a vonalas vektoros elemek a raszteres adathalmaz cell&aacute;inak hat&aacute;rvonalait fogj&aacute;k k&ouml;vetni.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

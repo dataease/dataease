@@ -1,0 +1,5 @@
+$popover-arrow-width:                 10px !default;
+$popover-arrow-color:                 $Calcite_Gray_050 !default;
+$popover-arrow-outer-width:           ($popover-arrow-width + 1) !default;
+$popover-arrow-outer-color:           fade_in(rgba(0,0,0,.15), 0.05) !default;
+$popover-arrow-outer-fallback-color:  $Calcite_Gray_350 !default;

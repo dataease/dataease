@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Metsanduspõhine klassifikatsioon ja regressioon</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Metsandusp&otilde;hise klassifikatsiooni ja regressiooni t&ouml;&ouml;voo skeem"></h2>
+        <hr/>
+    <p>Loob mudelid ja koostab ennustused, kasutades Leo Breimani juhusliku metsa algoritmi kohandatud varianti, mis on masina juhendatud &otilde;petamise meetod. Ennustusi saab koostada nii kategoorilistele muutujatele (klassifikatsioon) kui pidevatele muutujateles (regressioon). Selgitavad muutujad on v&auml;ljad &otilde;petusobjektide atribuuditabelis. T&ouml;&ouml;riista v&otilde;ib kasutada selleks, et luua mudelit toimivuse hindamiseks, v&otilde;i luua mudelit ja ennustada muude andmestike tulemusi.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analüüsitüüp</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab t&ouml;&ouml;riista t&ouml;&ouml;režiimi. T&ouml;&ouml;riista v&otilde;ib kasutada selleks, et &otilde;petada mudelit ainult toimivuse hindamiseks, v&otilde;i luua mudelit ja ennustada objekte. Ennustamise t&uuml;&uuml;bid on allj&auml;rgnevad:
+                <ul>
+                    <li> <b>Mudeli &otilde;petamine mudeli toimivuse hindamiseks</b>&mdash; Mudelit &otilde;petatakse ja see sobitatakse kokku sisendandmetega. Kasutage seda varianti, et hinnata oma mudeli t&auml;psust enne uue andmestiku ennustuste koostamist. Selle valiku v&auml;ljund on teie sobitatud &otilde;petusandmete objektiteenus, mudeli diagnostika ja muutuja t&auml;htsuse valikuline tabel.
+                    </li>
+                    <li> <b>Mudeli &otilde;petamine ja v&auml;&auml;rtuste ennustamine</b>&mdash; Ennustused v&otilde;i klassifikatsioonid luuakse objektide  jaoks. Selgitavad muutujad tuleb esitada nii &otilde;petusobjektide kui ka ennustatavate objektide kohta. Selle valiku v&auml;ljund on teie ennustatud v&auml;&auml;rtuste objektiteenus, mudeli diagnostika ja muutuja t&auml;htsuse valikuline tabel.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Mudeli õpetamine mudeli toimivuse hindamiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda režiimi, kui soovite mudelit sobitada ja uurida selle sobivust.
+            </p>
+            <p>Selle valiku korral &otilde;petatakse mudelit sisendkihi abil. Kasutage seda varianti, et hinnata oma mudeli t&auml;psust enne uue andmestiku ennustuste koostamist. See valik v&auml;ljastab mudeli diagnostika s&otilde;numiaknas ja rakendab mudelit teie &otilde;petusandmetele.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Mudeli õpetamine ja väärtuste ennustamine</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda režiimi, kui soovite sobitada mudelit ja rakendage mudelit andmestikule, et koostada ennustusi.
+            </p>
+            <p>Ennustused v&otilde;i klassifikatsioonid luuakse objektidele. Selle valiku v&auml;ljund on objektiteenus, mudeli diagnostika ja muutuja t&auml;htsuse valikuline tabel.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Vali õpetuskiht</h2></div>
+        <hr/>
+        <div>
+            <p>Objektikiht sisaldab ennustatavat muutujat ja v&auml;ljasid, mida kasutatakse ennustuse koostamiseks.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Valige kiht, millele on vaja ennustada väärtusi</h2></div>
+        <hr/>
+        <div>
+            <p>Objektikiht, mis v&auml;ljendab asukohti, kus ennustusi koostatakse. See objektikiht peab samuti sisaldama selgitavaid muutujaid, mis esitatakse v&auml;ljadena, mis vastavad &otilde;petusobjektides kasutatavatele v&auml;ljadele.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Ennustatava välja valimine</h2></div>
+        <hr/>
+        <div>
+            <p>&Otilde;petusobjektidest p&auml;rit v&auml;li, mis sisaldab mudeli &otilde;petamiseks kasutatavaid v&auml;&auml;rtusi. See v&auml;li sisaldab teadaolevaid (&otilde;petus)v&auml;&auml;rtusi muutuja kohta, mida kasutatakse tundmatutes kohtades ennustamiseks. Kui v&auml;&auml;rtused on kategoorilised (n&auml;iteks vaher, m&auml;nd, tamm), valige m&auml;rkeruut  <b>Kategooriline</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Valige üks selgitav muutuja või mitu selgitavat muutujat</h2></div>
+        <hr/>
+        <div>
+            <p>&Uuml;ks v&auml;li v&otilde;i mitu v&auml;lja, mis v&auml;ljendavad selgitavaid muutujaid (v&auml;lju), mis aitavad ennustada ennustatava muutuja v&auml;&auml;rtust v&otilde;i kategooriat. Kasutage kategoorilist m&auml;rkeruutu k&otilde;igile muutujatele, mis v&auml;ljendavad klasse v&otilde;i kategooriaid (nt pinnakattena v&otilde;i olemasolu v&otilde;i puudumisena). M&auml;&auml;rake muutuja t&otilde;eseks k&otilde;igil juhtudel, mis v&auml;ljendavad klasse v&otilde;i kategooriaid, n&auml;iteks pinnakattena v&otilde;i olemasolu v&otilde;i puudumisena, ning v&auml;&auml;rana, kui muutuja on pidev.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Puude arv</h2></div>
+        <hr/>
+        <div>
+            <p>Mudelis loodavate puude arv. Puude suurem arv annab tavaliselt mudeli t&auml;psema ennustuse, kuid mudeli arvutamine v&otilde;tab rohkem aega. Puude vaikearv on 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Lehe minimaalne suurus</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;helepanekute minimaalne arv, mis on vajalik lehe hoidmiseks (leht on puul l&otilde;plik s&otilde;lm, mida t&auml;iendavalt ei jaotata). Regressiooni korral on minimaalne arv 5 ja klassifikatsiooni korral 1. V&auml;ga suurte andmete puhul v&auml;hendab nende arvude suurendamine t&ouml;&ouml;riista t&ouml;&ouml;aega.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Puu maksimaalne paksus</h2></div>
+        <hr/>
+        <div>
+            <p>L&otilde;igete maksimaalne arv, mida saab teha m&ouml;&ouml;da puud allapoole minnes. Suure maksimaalse paksuse korral tehakse rohkem l&otilde;ikeid, mis v&otilde;ib suurendada mudeli &uuml;lesobitamise v&otilde;imalusi. Vaikev&auml;&auml;rtus on andmep&otilde;hine ja s&otilde;ltub loodud puude arvust ja kaasatud muutujate arvust.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Saadaolevad andmed puu kohta (%)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab objektide protsendi &otilde;petuskihis, mida kasutatakse iga otsusepuu korral. Vaikev&auml;&auml;rtus on 100 protsenti andmeid. Iga puu kohta v&otilde;etakse juhuslikult proovid kahe kolmandiku m&auml;&auml;ratud andmete hulgast.
+            </p>
+            <p>K&otilde;ik otsusepuud luuakse metsas saadaolevate &otilde;petusandmete juhusliku prooviv&otilde;tu (umbes kaks kolmandikku) abil. Iga otsusepuu sisendandmete v&auml;iksema protsendi kasutamine suurendab t&ouml;&ouml;riista kiirust v&auml;ga suurte andmestike puhul.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Juhusliku proovivõtuga muutujate arv</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab selgitavate muutujate arvu, mida kasutatakse iga otsusepuu loomisel.
+            </p>
+            <p>K&otilde;ik otsusepuud luuakse metsas m&auml;&auml;ratletud selgitavate muutujate juhusliku alamhulga abil. Igas otsusepuus kasutatavate muutujate arvu suurendamine suurendab mudeli &uuml;lesobitamise t&otilde;en&auml;osust eelk&otilde;ige, kui on &uuml;ks v&otilde;i mitu dominantset muutujat. Tavaline praktika on kasutada selgitavate muutujate &uuml;ldarvu ruutjuurt, kui teie ennustatav muutuja on numbriline, v&otilde;i jagada selgitavate muutujate arv kolmega, kui ennustatav muutuja on kategooriline.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Valige selgitavate väljade sobitamise viis</h2></div>
+        <hr/>
+        <div>
+            <p>Kuidas &otilde;petuskihi vastavad muutujad sobivad kokku ennustuskihi muutujatega. Tabelisse kaasatakse ainult &otilde;petamisel kasutatavad muutujad.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Valideerimistsüklite arv</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab objektide arvu protsendi (0-50 protsenti) &otilde;petuskihis, mis reserveeritakse valideerimise katseandmestikuna. Mudelit saab &otilde;petada ilma selle andmete juhusliku alamhulgata ja nende objektide t&auml;heldatud v&auml;&auml;rtusi v&otilde;rreldakse ennustatud v&auml;&auml;rtusega. Vaikev&auml;&auml;rtus on 10 protsenti.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Saadud tulemused s&otilde;ltuvad anal&uuml;&uuml;si t&uuml;&uuml;bist. Kui &otilde;petate mudeli sobivuse hindamist, sisaldavad tulemused mudelitega sobivate &otilde;petusandmete kihti ja annavad teavet mudeli sobivuse hindamiseks. Kui &otilde;petate ja ennustate, sisaldavad tulemused mudelitega sobivate &otilde;petusandmete kihti, ennustatud tulemuste kihti ja annavad teavet mudeli sobivuse hindamiseks.
+            </p>
+            <p>Kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

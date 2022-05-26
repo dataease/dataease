@@ -1,0 +1,3 @@
+//>>built
+define("dojox/color/NeutralColorModel",["dojo/_base/array","dojo/_base/declare","./SimpleColorModel"],function(g,h,k){return h("dojox.color.NeutralColorModel",k,{_min:0,_max:0,_e:0,constructor:function(a,e){},initialize:function(a,e){var c=[],f=0,b=1E8,d=-b;g.forEach(a,function(a){a=e(a);b=Math.min(b,a);d=Math.max(d,a);f+=a;c.push(a)});c.sort(function(a,b){return a-b});a=this.computeNeutral(b,d,f,c);this._min=b;this._max=d;this._e=this._min==this._max||a==this._min?-1:Math.log(.5)/Math.log((a-this._min)/
+(this._max-this._min))},computeNeutral:function(a,e,c,f){},getNormalizedValue:function(a){if(0>this._e)return 0;a=(a-this._min)/(this._max-this._min);return Math.pow(a,this._e)}})});

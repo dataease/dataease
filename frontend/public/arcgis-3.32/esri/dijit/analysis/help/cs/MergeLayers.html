@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spojit vrstvy (Merge Layers)</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Spojit vrstvy"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj kop&iacute;ruje prvky ze dvou vrstev do nov&eacute; vrstvy. Vrstvy určen&eacute; ke spojen&iacute; mus&iacute; obsahovat stejn&eacute; typy vlastnost&iacute; (body, linie či plochy). Můžete zvolit způsob, jak&yacute;m se maj&iacute; vstupn&iacute; vrstvy spojit a kop&iacute;rovat. Např&iacute;klad:
+        <ul>
+            <li>M&aacute;te tři vrstvy pro Anglii, Wales a Skotsko a potřebujete jedinou vrstvu &ndash; Velkou Brit&aacute;nii. 
+            </li>
+            <li>M&aacute;te 12 vrstev a každ&aacute; obsahuje informace o parcel&aacute;ch pro souvisl&eacute; městsk&eacute; oblasti. Potřebujete je sloučit do jedin&eacute; vrstvy a ponechat pouze pole, kter&aacute; maj&iacute; ve 12 vstupn&iacute;ch vrstv&aacute;ch stejn&yacute; n&aacute;zev a typ.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah současn&eacute; mapy</b>, slouč&iacute; se pouze prvky ve vrstvě anal&yacute;zy viditeln&eacute; v rozsahu současn&eacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, spoj&iacute; se z obou vrstev v&scaron;echny prvky tj. i ty, kter&eacute; se nach&aacute;z&iacute; mimo oblast rozsahu současn&eacute; mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vybrat vrstvu</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute;, liniov&eacute; nebo polygonov&eacute; prvky, kter&eacute; chcete spojit s vrstvou zadanou n&iacute;že. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Vyberte vrstvu pro spojení</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte vrstvu, kterou chcete spojit s prvn&iacute; vrstvou.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Upravit pole pro spojení</h2></div>
+        <hr/>
+        <div>
+            <p>Při v&yacute;choz&iacute;m nastaven&iacute; budou do v&yacute;stupu přeneseny v&scaron;echny prvky ze vstupu. Můžete změnit způsob, jak&yacute;m se budou pole do v&yacute;stupu přen&aacute;&scaron;et:
+                <ul>
+                    <li> <b>Přejmenovat</b> &ndash; Pole se na v&yacute;stupu přejmenuje.
+                    </li>
+                    <li> <b>Odebrat</b> &ndash; Pole se z v&yacute;stupu odstran&iacute;.
+                    </li>
+                    <li> <b>Přiřadit</b> &ndash; N&aacute;zvy pol&iacute; budou shodn&eacute;.  Hodnota pole z vrstvy určen&eacute; ke spojen&iacute; se zkop&iacute;ruje do odpov&iacute;daj&iacute;c&iacute;ho v&yacute;stupn&iacute;ho pole.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pokud obě vrstvy obsahuj&iacute; pole se stejn&yacute;m n&aacute;zvem a typem dat, spoj&iacute; se obsah obou pol&iacute; do jednoho pole s t&iacute;mto n&aacute;zvem. To neplat&iacute; pro pole, kde se použ&iacute;v&aacute;  <b>Přiřadit</b> v parametru <b>Upravit pole pro spojen&iacute;</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

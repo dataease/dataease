@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pasirinkti geriausias paslaugas</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Pasirinkti geriausias paslaugas"></h2>
+        <hr/>
+    <p>Įrankis Pasirinkti geriausias paslaugas suteikia galimybę pasirinkti tinkamiausią vietą paslaugoms. &Scaron;is įrankis i&scaron;skiria vietas, kurioms reikia paslaugų konkretiems poreikiams patenkinti.
+    </p>
+    <p>Paslaugos nurodo vietas, kuriose teikiamos tam tikros paslaugos, pvz., gaisrinės, mokyklos, bibliotekos, parduotuvės arba paskirstymo centrai. Poreikio vietos rei&scaron;kia vietas, kuriose yra susidaręs paslaugų poreikis, pvz., gyventojų sura&scaron;ymo rezultatai, kurie nurodo konkrečios vietovės populiaciją.
+    </p>
+    <p>Įrankis Pasirinkti geriausias paslaugas gali padėti atsakyti į kai kuriuos klausimus, pvz.,
+        <ul>
+            <li>Kaip nelaimės atveju namų ūkius galima priskirti medicinos centrui, kai priimamų ligonių skaičius yra ribotas ir jo negalima vir&scaron;yti?
+            </li>
+            <li>Kaip priskirti miesto rajonus artimiausiems bibliotekų skyriams ir sužinoti, kiek gyventojų yra prisiregistravę konkrečioje bibliotekoje? 
+            </li>
+            <li>Kaip rasti tinkamiausią vietą logistikos centrui, kad pristatymo kelias (ir kaina) iki prekybos tinklo parduotuvės būtų trumpiausias?
+            </li>
+            <li>Kur turėtų būti įrengtas naujas parkas, kad kuo daugiau gyventojų jį galėtų pasiekti pėsčiomis per penkias minutes?
+            </li>
+            <li>Kuriose rajono vietose geriausia įrengti gyvūnų parduotuves, kad 40 procentų rajono gyvūnų &scaron;eimininkų gyventų ne didesniu atstumu, kaip 10 minučių kelio automobiliu?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Tikslas</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite sąlygą, kurią reikia patenkinti, kad priskirtų poreikio vietas paslaugoms.
+            </p>
+            <p>Naudodami Pasirinkti geriausias vietas, galite nurodyti sprendžiamos problemos tipą &ndash; tikslą. Įrankis skirtas konkretaus tikslo sprendimui rasti. I&scaron; esmės visiems tikslams spręsti taikomas tas pats metodas &ndash; reikiamo kiekio i&scaron; pasirinktos vietos priskyrimas artimiausiai paslaugai. Atsižvelgiant į tikslą parenkama atstumo (arba laiko) ir poreikio sąveika. Įrankis apskaičiuoja kelionės atstumą / laiką ir poreikio kiekį, o kartais ir paslaugų galimybes. Jeigu pvz., tikslui pasiekti reikia minimizuoti kelionės laiką, įrankis vis vien papildomai stengsis priskirti didžiausią poreikį. Taip pat, jeigu tikslui įgyvendinti reikia priskirti didžiausią poreikį, įrankis minimizuos kelionės kelią (priskirdamas poreikio vietas artimiausioms paslaugoms, o ne tiesiog bet kuriai paslaugai)
+            </p>
+            <p>Atsižvelgiant į duomenis ir naudojamus parametrus, skirtingi tikslai gali lemti tokius pat arba pana&scaron;ius rezultatus. Tačiau jūsų analizei reikėtų nurodyti tinkamiausią tikslą.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Priskirti esamoms paslaugoms</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;į tikslą naudokite, jeigu nenorite rasti naujų paslaugų vietų, ir norite priskirti poreikį esamoms ribotų arba neribotų galimybių paslaugoms.    
+            </p>
+            <p>&Scaron;is tikslas priskiria poreikį paslaugoms, atsižvelgdamas į paslaugos galimybes ir ją supančios aplinkos poreikį. Paklausa priskiriama artimiausiai paslaugai, kol nepasiekiama paslaugos galimybių riba. Jeigu nurodote maksimalų kelionės atstumą, toliau esančios vietos nebus paskirtos paslaugai, net jei nebuvo priskirtas visas poreikis.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Sutrumpinti kelionę</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į tikslą paslaugoms rasti, kad bendras kelionės laikas arba kelionės atstumas tarp pageidaujamų vietų ir paslaugų būtų kuo mažesnis.
+            </p>
+            <p>&Scaron;is tikslas paprastai taikomas, kai tarp paslaugos ir poreikio vietų reikia keliauti reguliariai. &Scaron;į tikslą vertėtų naudoti, pvz., bendram kelionės atstumui sutrumpinti gabenant prekės i&scaron; logistikos centrų į parduotuves arba, norint pasirinkti konferencijos salę, kurią dalyviai pasiektų greičiausiai.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Padidinti aprėptį</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;į tikslą naudokite, jei norite padidinti pasiekiamą zoną per nurodytą laiką arba atstumą nuo paslaugos.    
+            </p>
+            <p>&Scaron;is tikslas parenka paslaugas, kurioms priskirtas didžiausias poreikis, kai visas poreikis i&scaron; kiekvienos pageidaujamos vietos priskiriamas vienai, arčiausiai esančiai, paslaugai.
+            </p>
+            <p>&Scaron;iam tikslui būtinas galutinis didžiausias atstumas; antraip visas poreikis gali būti priskirtas vienai paslaugai. Poreikio vietos, i&scaron; kurių iki paslaugos reikia keliauti toliau arba ilgiau, nebus priskirtos (tai jums parodys, kur poreikis nepatenkinamas ir kur reikia daugiau paslaugų).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Padidinti aprėptį su apimtimi</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į tikslą, jeigu ribotos apimties paslaugoms norite priskirti didžiausią poreikio kiekį.    
+            </p>
+            <p>&Scaron;is tikslas parenka paslaugas taip, kad didžiausias poreikio kiekis būtų priskirtas nevir&scaron;ijant nė vienos i&scaron; paslaugų galimybių. Visas poreikis i&scaron; kiekvienos poreikio vietos priskiriamas vienai arčiausiai paslaugai, galinčiai patenkinti pageidaujamą poreikį (t. y. jei priskirtos vietos poreikis vir&scaron;ija paslaugos galimybes, poreikio vieta nepriskiriama net dalinai).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Padengti poreikio procentinę dalį</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite &scaron;į tikslą, jei norite sužinoti minimalų paslaugų kiekį, kurio pakaktų nurodytai daliai poreikio patenkinti.
+            </p>
+            <p>&Scaron;is tikslas parenka minimalų paslaugų skaičių, kad būtų patenkinta nurodyta poreikio dalis. Poreikio vietos, esančios maksimalaus atstumo esančios tarp dviejų ar daugiau paslaugų, bus proporcingai padalintos paslaugoms, atsižvelgiant į atstumą iki jų. &Scaron;is tikslas paprastai naudojamas, kai žmonėms tenka rinktis kurią paslaugą aplankyti ir manoma, kad paprastai jie pasirinks artimiausią paslaugą (visos kitos paslaugų ypatybės yra vienodos).
+            </p>
+            <p>Skirtingai nei kiti tikslai, kuriems reikia nurodyti kiek paslaugų reikia rinktis, &scaron;is tikslas pats parenka paslaugų skaičių, atsižvelgdamas į pageidaujamą patenkinti poreikio dalį. Jis numato, kad paslaugų apimtis yra neribota.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Matavimai</h2></div>
+        <hr/>
+        <div>
+            <p>Kaip ir kitų tikslų, analizuojančių kelionės parametrus atveju, galėsite nurodyti: ar skaičiuoti kelionės atstumą, ar laiką. Ir pasirinkti skirtingus kelionės būdus, pvz., kelionės pėsčiomis laiką, važiavimo laiką, važiavimo užmiestyje laiką ir t. t. Galimus kelionės režimus nustato jūsų organizacijos administratorius. Naudodami parametrus  <b>Važiavimo laikas</b>, <b>Važiavimo užmiestyje laikas</b> arba <b>Važiavimo sunkvežimiu laikas</b>, pasirinktinai galite įtraukti konkrečios savaitės dienos, arba paros laiko eismo sąlygas.
+            </p>
+            <p> Kad tiksliai&nbsp;priskirtumėte poreikio vietas paslaugoms, reikia nurodyti: ar&nbsp;keliaujama i&scaron; paslaugos į poreikio vietą&nbsp;(pvz., i&scaron; gaisrinės iki įvykio) ar i&scaron; poreikio vietos&nbsp;iki paslaugos&nbsp;(pvz., i&scaron; namų iki bibliotekos). Įrankis&nbsp;Pasirinkti geriausias paslaugas&nbsp;atsižvelgs į vienpusių gatvių kryptis, draudimą sukti i&scaron; vienos gatvės į kitą, sukti į kairę draudžiančias sankryžas ir t. t., tuo&nbsp;pačiu atsižvelgdamas į tai, ar keliaujama i&scaron; poreikio vietos iki paslaugos, ar i&scaron; paslaugos iki poreikio vietos.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Poreikio vietų sluoksnis</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kais pažymėtos vietos, kuriose paslaugų vietose yra teikiamų paslaugų poreikis. Įrankis priskiria &scaron;ias poreikio vietas atitinkamoms paslaugoms, atsižvelgdamas į pasirinktą tikslą.
+            </p>
+            <p>Poreikio vietoms yra priskirtas poreikio kiekis. Jeigu visų poreikio vietų poreikis yra vienodas, reik&scaron;mę nurodykite naudodami konstantą. Jeigu poreikio vietų poreikiai skiriasi, kiekvienos poreikio vietos reik&scaron;mę nurodykite Poreikio vietų sluoksnio laukuose.
+            </p>
+            <p>Paslaugoms bus i&scaron;skirstytas visas poreikis, nepaisant to, koks atstumas skiria poreikio vietas nuo paslaugų. Galite priskirti didžiausią kelionės atstumą Poreikio vietų sluoksniui tam, kad nurodytumėte maksimalų atstumą arba kelionės laiką, kurį vir&scaron;ijus poreikio vieta paslaugai nebepriskiriama. Jeigu visų poreikio vietų kelionės atstumas yra vienodas, reik&scaron;mę nurodykite naudodami konstantą. Jeigu poreikio vietų kelionės atstumas skiriasi, kiekvienos poreikio vietos reik&scaron;mę nurodykite Poreikio vietų sluoksnio lauke.
+            </p>
+            <p>Jeigu tikslo tipas yra  <b>Patenkinti poreikio dalį</b>, būtina nurodyti mažiausią poreikio dalį, kurią turėtų patenkinti paslaugos.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+            <p>Įrankis Poreikio vietų sluoksnyje palaiko iki 10 000 elementų.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Pageidaujamų Paslaugų Sluoksnis</h2></div>
+        <hr/>
+        <div>
+            <p>Erdviniai ta&scaron;kai nurodo vietas, kuriose teikiamos kokios nors paslaugos. Pageidaujamos paslaugos paprastai nurodo jau esančias vietas, o ne potencialias vietas, kuriose kuriamos arba steigiamos naujos paslaugos. Priskirdamas poreikio vietas, įrankis pirmiausia naudoja  <b>Pageidaujamų paslaugų sluoksnio</b> paslaugas ir tik tada atsižvelgia į <b>Potencialių paslaugų sluoksnio</b> paslaugas.
+            </p>
+            <p>Pageidaujamos paslaugos gali būti neribotos (t. y., jos gali patenkinti bet kokį poreikį) arba ribotos apimties. Jeigu visų paslaugų apimtis yra vienoda (pavyzdžiui, gaisrinės gali aptarnauti vienodą 4 000 namų skaičių), nurodykite konstantą. Jeigu paslaugų apimtis skiriasi (pavyzdžiui, kiekviena mokykla gali priimti skirtingą pradinukų skaičių), kiekvienos paslaugos reik&scaron;mę nurodykite apimties langelyje.
+            </p>
+            <p>Įrankis  <b>Pageidaujamų paslaugų sluoksnyje</b> palaiko iki 100 elementų .
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Potencialių Paslaugų Sluoksnis</h2></div>
+        <hr/>
+        <div>
+            <p>Erdviniai ta&scaron;kai nurodo vietas, kuriose teikiamos kokios nors paslaugos. Potencialios paslaugos paprastai nurodo vietas, kuriose steigiamos naujos paslaugos, o ne pageidaujamas paslaugas, kurios paprastai nurodo vietas, kuriose paslaugos jau teikiamos.
+            </p>
+            <p>Kai kuriems analizės tikslams reikia nurodyti, kiek potencialių paslaugų pasirinkti i&scaron; potencialių paslaugų rinkinio. Jeigu nurodote tiek pageidaujamas, tiek potencialias paslaugas, įrankis pirmiausia naudoja  <b>Pageidaujamų paslaugų sluoksnio</b> paslaugas ir tik paskui ima rinkti paslaugas i&scaron; <b>Potencialių paslaugų sluoksnio</b>.
+            </p>
+            <p>Potencialių paslaugų apimtis gali būti neribota (t. y., jos gali patenkinti bet kokį poreikį) arba ribota. Jeigu visų paslaugų apimtis yra vienoda (pavyzdžiui, gaisrinės gali aptarnauti vienodą 4 000 namų skaičių), nurodykite konstantą. Jeigu paslaugų apimtis skiriasi (pavyzdžiui, kiekviena mokykla gali priimti skirtingą pradinukų skaičių), kiekvienos paslaugos reik&scaron;mę nurodykite apimties langelyje.
+            </p>
+            <p>Įrankis  <b>Potencialių paslaugų sluoksnyje</b> palaiko iki 1000 elementų.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pasirinkti kliūčių sluoksnius</h2></div>
+        <hr/>
+        <div>
+            <p> Vienas ar daugiau elementų, kurie veikia kaip laikini apribojimai (kliūtys) keliaujant esamomis gatvėmis. Kliūtis galite nurodyti naudodami ta&scaron;ko, linijos arba ploto elementus.
+            </p>
+            <p>Ta&scaron;kinė kliūtis gali reik&scaron;ti nukritusį medį, avariją, nukritusį elektros laidą ar bet kokį kitą objektą, kuris visi&scaron;kai užblokavęs eismą konkrečioje gatvės vietoje. Galima judėti gatve, tačiau ne per &scaron;ią kliūtį. Galite nurodyti iki 250 elementų, rei&scaron;kiančių ta&scaron;kines kliūtis.
+            </p>
+            <p>Linijinė kliūtis neleidžia keliauti niekur, kur &scaron;i kliūtis kerta gatves. Pavyzdžiui, kaip linijinė kliūtis gali būti pažymėtas paradas ar protestas, blokuojantis eismą keliuose gatvės segmentuose. Jei visų linijinių kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 500, įrankis pateikia klaidą.
+            </p>
+            <p>Plotinė kliūtis neleidžia keliauti niekur, kur &scaron;is plotas kerta gatves. Vienas i&scaron; galimų tokio tipo kliūties panaudojimų yra pažymėti potvynius, apimančius tam tikras gatvių tinklo dalis ir neleidžiančius jomis keliauti. Jei visų poligono kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 2 000, įrankis pateikia klaidą.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>Rezultato sluoksnis bus sudarytas i&scaron; atskirų sluoksnių: paslaugoms, turinčioms priskirtą poreikį; poreikio vietoms, kurios priskirtos paslaugoms; priskyrimo linijoms, jungiančioms poreikio vietas su joms priskirtomis paslaugomis. Priskyrimo linijos yra tiesios, tačiau kelionės laikas arba kelionės atstumas nuo paslaugos iki poreikio vietos visada apskaičiuojamas pagal nurodytą kelionės būdą, o ne pagal tiesią liniją.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

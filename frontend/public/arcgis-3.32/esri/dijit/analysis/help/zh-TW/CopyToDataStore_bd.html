@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>複製到資料儲存庫</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="複製到資料儲存庫"></h2>
+        <hr/>
+    <p>此工具會採用輸入圖層，並將圖層複製到資料儲存庫。您可以將結果複製到  ArcGIS Data Store（關聯式或大型的時空資料儲存庫），隨即將在您的入口網站中建立圖層，或可以將結果複製到大數據檔案。 </p>
+    <p>例如，您可以將 <code>大數據檔案分享</code>儲存的圖徵複製到 <code>關聯式資料儲存庫</code>，並指定僅複製目前地圖範圍內部的圖徵。這會建立託管圖徵服務，該服務只包含指定的地圖範圍內部的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要複製的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將複製的圖層或表格。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>您可以使用所有圖徵或進行選擇 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>（選用）使用選擇按鈕來識別要複製的位置。
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>選擇要複製到的資料儲存庫</h2></div>
+        <hr/>
+        <div>
+            <p>要將圖層複製到的資料儲存庫。 此參數將覆寫 <b>分析環境</b>中的選擇。 以下是選項：
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>時空</b> - 這是預設值。
+                            </li>
+                            <li> <b>關聯式</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>大數據檔案分享輸出樣板</b>
+                        <ul>
+                            <li>格式為  <b>bigDataFileShareName-templateName</b> 的可用大數據檔案分享樣板。必須先配置大數據檔案分享樣板再執行工具。
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

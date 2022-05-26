@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>將圖徵轉換為點陣</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="將圖徵轉換為點陣工具"></h2>
+        <hr/>
+    <p>此工具可將圖徵轉換成點陣資料集。
+    </p>
+    <p>可將包含點、線或多邊形圖徵的任何圖徵類別轉換成點陣資料集。
+    </p>
+    <p>儲存格中心可用來決定輸出點陣像素的值。
+    </p>
+    <p>輸入欄位類型可決定輸出點陣的類型。如果欄位為整數，輸出點陣將是整數；如果為浮點，輸出將是浮點。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要轉換的圖徵圖層</h2></div>
+        <hr/>
+        <div>
+            <p>要轉換為點陣資料集的輸入圖徵圖層。
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>選擇欄位</h2></div>
+        <hr/>
+        <div>
+            <p>選擇會將值指派給輸出點陣的欄位。
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>輸出儲存格大小</h2></div>
+        <hr/>
+        <div>
+            <p>輸出點陣的儲存格大小和單位。
+            </p>
+            <p>可用的單位是英哩、英呎、公里和公尺。預設為英呎。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

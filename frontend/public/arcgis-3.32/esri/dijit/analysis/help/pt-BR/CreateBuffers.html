@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Buffers</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Criar Buffers"></h2>
+        <hr/>
+    <p>O buffer &eacute; uma &aacute;rea que cobre uma determinada dist&acirc;ncia a partir de uma fei&ccedil;&atilde;o de ponto, linha ou &aacute;rea. 
+    </p>
+    <p>Buffers s&atilde;o normalmente utilizados para criar &aacute;reas que tamb&eacute;m podem ser analisadas utilizando uma ferramenta como Sobrepor Camadas. Por exemplo, se a pergunta for &quot;Quais edif&iacute;cios est&atilde;o dentro de uma milha da escola?&quot;, a resposta poder&aacute; ser encontrada ao criar um buffer de uma milha em torno da escola e utilizar a ferramenta Sobrepor Camadas para sobrepor o buffer com a camada contendo as &aacute;reas de cobertura dos edif&iacute;cios.  O resultado final &eacute; uma camada destes edif&iacute;cios dentro de uma milha da escola.  
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ter&atilde;o o buffer.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ter&atilde;o o buffer, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolha a camada contendo as feições para gerar o buffer</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto, linha ou &aacute;rea a serem geradas com o buffer. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Inserir tamanho do buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode inserir um &uacute;nico valor de dist&acirc;ncia ou m&uacute;ltiplos valores, separando cada valor com um espa&ccedil;o.  Voc&ecirc; tamb&eacute;m pode especificar um atributo na camada de entrada que cont&eacute;m o valor de dist&acirc;ncia clicando em  <b>Campo</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opções</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha como voc&ecirc; deseja que os buffers de sobreposi&ccedil;&atilde;o sejam manipulados. Para qualquer buffer que esteja sobre outro buffer, as &aacute;reas em comum poder&atilde;o ser mantidas (Sobrepor) ou combinadas (Dissolver). Ao utilizar  <b>Dissolver</b>, todos os buffers s&atilde;o dissolvidos juntos em uma fei&ccedil;&atilde;o de parte m&uacute;ltipla &uacute;nica, removendo qualquer sobreposi&ccedil;&atilde;o.
+            </p>  
+            <p> Ao utilizar m&uacute;ltiplas dist&acirc;ncias, voc&ecirc; pode escolher como representar a dist&acirc;ncia da &uacute;ltima dist&acirc;ncia de buffer; por exemplo, se as dist&acirc;ncias forem 10 e 14:
+                <ul>
+                    <li>A escolha de  <b>An&eacute;is</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 10 at&eacute; 14.
+                    </li>
+                    <li>A escolha de  <b>Discos</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 0 at&eacute; 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opções</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha como voc&ecirc; deseja que os buffers de sobreposi&ccedil;&atilde;o sejam manipulados. Para qualquer buffer que esteja sobre outro buffer, as &aacute;reas em comum poder&atilde;o ser mantidas (Sobrepor) ou combinadas (Dissolver). Ao utilizar  <b>Dissolver</b>, todos os buffers s&atilde;o dissolvidos juntos em uma fei&ccedil;&atilde;o de parte m&uacute;ltipla &uacute;nica, removendo qualquer sobreposi&ccedil;&atilde;o.
+            </p>
+            <p>Ao criar um &uacute;nico buffer ao redor das fei&ccedil;&otilde;es de &aacute;rea (uma dist&acirc;ncia inserida), &eacute; poss&iacute;vel escolher se a fei&ccedil;&atilde;o do buffer ser&aacute; inclu&iacute;da ou exclu&iacute;da no buffer resultante.
+            </p>
+            <p>Ao utilizar m&uacute;ltiplas dist&acirc;ncias, voc&ecirc; pode escolher como representar a dist&acirc;ncia da &uacute;ltima dist&acirc;ncia de buffer; por exemplo, se as dist&acirc;ncias forem 10 e 14:
+                <ul>
+                    <li>A escolha de  <b>An&eacute;is</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 10 at&eacute; 14.
+                    </li>
+                    <li>A escolha de  <b>Discos</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 0 at&eacute; 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opções</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha como voc&ecirc; deseja que os buffers de sobreposi&ccedil;&atilde;o sejam manipulados. Para qualquer buffer que esteja sobre outro buffer, as &aacute;reas em comum poder&atilde;o ser mantidas (Sobrepor) ou combinadas (Dissolver). Ao utilizar  <b>Dissolver</b>, todos os buffers s&atilde;o dissolvidos juntos em uma fei&ccedil;&atilde;o de parte m&uacute;ltipla &uacute;nica, removendo qualquer sobreposi&ccedil;&atilde;o.
+            </p>
+            <p>Ao criar um &uacute;nico buffer ao redor de linhas (uma dist&acirc;ncia inserida), &eacute; poss&iacute;vel escolher que lado da linha aplicar o buffer.  Normalmente, voc&ecirc; escolhe ambos os lados. Esquerdo e direito s&atilde;o determinados como se voc&ecirc; estivesse caminhando da primeira coordenada x,y da linha (a coordenada inicial) at&eacute; a &uacute;ltima coordenada x,y da linha (a coordenada final). Escolher esquerdo ou direito normalmente significa que voc&ecirc; sabe que as fei&ccedil;&otilde;es de linha foram criadas e armazenadas em uma dire&ccedil;&atilde;o em particular (por exemplo, jusante ou montante em uma rede do rio). No final das linhas o buffer pode ser arredondado (Arredondar) ou aplanado (Aplanar).
+            </p>
+            <p>Ao criar m&uacute;ltiplos buffers (mais de uma dist&acirc;ncia) &eacute; poss&iacute;vel escolher como representar a dist&acirc;ncia da &uacute;ltima dist&acirc;ncia de buffer; por exemplo, se as dist&acirc;ncias forem 10 e 14:
+                <ul>
+                    <li>A escolha de  <b>An&eacute;is</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 10 at&eacute; 14.
+                    </li>
+                    <li>A escolha de  <b>Discos</b> resulta em buffers que v&atilde;o de 0 at&eacute; 10 e 0 at&eacute; 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opções</h2></div>
+        <hr/>
+        <div>
+            <p>Ap&oacute;s escolher uma camada para gerar o buffer, voc&ecirc; pode escolher como deseja que os de sobreposi&ccedil;&atilde;o sejam tratados. Para qualquer buffer que esteja sobre outro buffer, as &aacute;reas em comum poder&atilde;o ser mantidas (Sobrepor) ou combinadas (Dissolver). Ao utilizar  <b>Dissolver</b>, todos os buffers s&atilde;o dissolvidos juntos em uma fei&ccedil;&atilde;o de parte m&uacute;ltipla &uacute;nica, removendo qualquer sobreposi&ccedil;&atilde;o. Al&eacute;m disso, voc&ecirc; pode especificar como as dist&acirc;ncias m&uacute;ltiplas s&atilde;o representadas.   Para camadas contendo fei&ccedil;&otilde;es de linha, voc&ecirc; pode escolher que lado da linha deseja gerar o buffer.  Para camadas contendo fei&ccedil;&otilde;es de &aacute;rea, voc&ecirc; pode escolher se a fei&ccedil;&atilde;o que ser&aacute; gerada o buffer &eacute; inclu&iacute;da ou exclu&iacute;da no resultado do buffer.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

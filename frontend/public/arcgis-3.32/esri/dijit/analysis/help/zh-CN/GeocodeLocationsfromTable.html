@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>对表格中的位置进行地理编码</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="对表格中的位置进行地理编码"></h2>
+        <hr/>
+    <p>地理编码是一种将地址转换为坐标的方法。此工具可将表格、CSV 文件或 Excel 文件中的地址转换为要素图层或输出文件，其中坐标作为额外列列出。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>选择输入表</h2></div>
+        <hr/>
+        <div>
+            <p>含地理编码地址的输入表。输入必须为表格、CSV 文件或 Excel 文件。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>选择定位器</h2></div>
+        <hr/>
+        <div>
+            <p>选择地理编码所依据的定位器服务。如果下拉菜单中没有需要的定位器服务，请联系您的管理员为批处理地理编码配置定位器服务。
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>国家</h2></div>
+        <hr/>
+        <div>
+            <p>如果所有地址均来自同一国家/地区，请选择该国家/地区以确保获得最精确的结果。否则，请将此参数留空。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>选择数据字段</h2></div>
+        <hr/>
+        <div>
+            <p>定位器服务需要在数据中包含某些字段，例如地址、城市、州和邮政编码。使用下拉框将输入文件或表格中的数据字段与定位器所需字段进行匹配。映射的字段越多，结果越准确。如果输入表的所有数据均在一列中，请选择 <b>单一字段</b>，并从下拉菜单中选择一个数据字段。否则请选择 <b>多个字段</b>，将相应定位器字段映射到表格中的多个字段列。
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>选择输出格式</h2></div>
+        <hr/>
+        <div>
+            <p>输出结果的格式。如果您选择创建要素服务，那么输入表中的地址将作为点要素图层添加到地图中。CSV 和 XLS 选项会在作业完成后将含地理编码作业结果的文件添加到 <b>我的内容</b>中。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>输出结果名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

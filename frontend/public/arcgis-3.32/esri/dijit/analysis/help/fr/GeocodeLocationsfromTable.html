@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Géocoder des emplacements à partir d'une table</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="G&eacute;ocoder des emplacements &agrave; partir d'une table"></h2>
+        <hr/>
+    <p>Le g&eacute;ocodage permet de convertir des adresses en coordonn&eacute;es. Cet outil permet de convertir les adresses d'une table, d'un fichier CSV ou d'un fichier Excel en couche d'entit&eacute;s ou en fichier en sortie avec les coordonn&eacute;es dans des colonnes suppl&eacute;mentaires.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Sélectionner une table en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>La table en entr&eacute;e avec les adresses &agrave; g&eacute;ocoder. L'entr&eacute;e doit &ecirc;tre une table, un fichier CSV ou un fichier Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Choisissez un localisateur</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez un service de localisation pour proc&eacute;der au g&eacute;ocodage. Si le service de localisation que vous souhaitez utiliser ne figure pas dans le menu d&eacute;roulant, contactez votre administrateur afin qu'il soit configur&eacute; pour le g&eacute;ocodage par lots.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Pays</h2></div>
+        <hr/>
+        <div>
+            <p>Si toutes vos adresses proviennent d'un pays, s&eacute;lectionnez ce pays pour optimiser la pr&eacute;cision des r&eacute;sultats. Sinon, laissez ce param&egrave;tre vide.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Sélectionner les champs de données</h2></div>
+        <hr/>
+        <div>
+            <p>Le service de localisation attend certains champs dans les donn&eacute;es, tels que l'adresse, la ville, l'&eacute;tat et le code postal. Appariez les champs de donn&eacute;es dans votre fichier ou table en entr&eacute;e aux champs que le service de localisation attend &agrave; l'aide des zones de liste d&eacute;roulante. Plus vous appariez de champs et plus les r&eacute;sultats sont pr&eacute;cis. Si toutes les donn&eacute;es de la table en entr&eacute;e se trouvent dans une colonne, s&eacute;lectionnez  <b>Champ unique</b> et choisissez un champ de donn&eacute;es dans le menu d&eacute;roulant. Sinon, s&eacute;lectionnez <b>Champs multiples</b> et appariez les champs du localisateur appropri&eacute;s aux diff&eacute;rentes colonnes de votre table.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Sélectionner un format de sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Format des r&eacute;sultats en sortie. Si vous choisissez de cr&eacute;er un service d'entit&eacute;s, les adresses de la table en entr&eacute;e sont ajout&eacute;es &agrave; la carte sous forme d'une couche d'entit&eacute;s ponctuelles. Les options CSV et XLS permettent d'ajouter des fichiers avec les r&eacute;sultats de la t&acirc;che de g&eacute;ocodage dans  <b>Mon contenu</b> une fois la t&acirc;che termin&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom du résultat en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

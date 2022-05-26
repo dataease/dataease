@@ -1,0 +1,101 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject" data-dojo-props="target:'gmi:MI_Objective',minOccurs:0">
+  
+    <!-- 
+      http://www.isotc211.org/2005/gmi/acquisitionInformation.xsd
+      <xs:sequence>
+        <xs:element name="identifier" type="gmd:MD_Identifier_PropertyType" maxOccurs="unbounded"/>
+        <xs:element name="priority" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+        <xs:element name="type" type="gmi:MI_ObjectiveTypeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="function" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="extent" type="gmd:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="pass" type="gmi:MI_PlatformPass_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="sensingInstrument" type="gmi:MI_Instrument_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="objectiveOccurrence" type="gmi:MI_Event_PropertyType" maxOccurs="unbounded"/>
+      </xs:sequence>
+     -->
+     
+     <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+     
+      <!-- identification section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Objective.sections.identification}'">
+
+        <!-- identifier -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:identifier',maxOccurs:'unbounded',label:'${i18nIso.MI_Objective.identifier}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/identification/SimpleMD_Identifier"></div>
+        </div>
+        
+        <!-- priority - priority applied to the target -->
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'gmi:priority',minOccurs:0,label:'${i18nIso.MI_Objective.priority}'">
+          <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" data-dojo-props="target:'gco:CharacterString'"></div>
+        </div>
+        
+        <!-- type - collection technique for the objective -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/CodeListReference"
+          data-dojo-props="target:'gmi:type',minOccurs:0,maxOccurs:'unbounded',
+            label:'${i18nIso.MI_ObjectiveTypeCode.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmi/acquisitionInformation/MI_ObjectiveTypeCode"></div>
+        </div>
+        
+        <!-- function - role or purpose performed by or activity performed at the objective -->
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'gmi:function',minOccurs:0,maxOccurs:'unbounded',label:'${i18nIso.MI_Objective.sFunction}'">
+          <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" data-dojo-props="target:'gco:CharacterString'"></div>
+        </div>
+        
+      </div>
+      
+      <!-- extent section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Objective.sections.extent}'">
+          
+        <!-- extent -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:extent',minOccurs:0,maxOccurs:'unbounded',label:'${i18nIso.MI_Objective.extent}'">
+          <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject" data-dojo-props="target:'gmd:EX_Extent',minOccurs:0">
+            <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/extent/GeographicElement"></div>
+            <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/extent/TemporalElement"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- pass section 
+      <div data-dojo-type="gxe/form/Section" 
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Objective.sections.pass}'">
+        <div data-dojo-type="gxe/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:pass',minOccurs:0,maxOccurs:'unbounded',label:'${i18nIso.MI_Objective.pass}'">
+          <div data-dojo-type="gxe/types/iso/gmi/acquisitionInformation/MI_PlatformPass"></div>
+        </div>
+      </div>
+      -->
+      
+      <!-- sensingInstrument section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Objective.sections.sensingInstrument}'">
+      
+        <!-- sensingInstrument (allow MI_Instrument references) -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:sensingInstrument',minOccurs:0,maxOccurs:'unbounded',
+            label:'${i18nIso.MI_Objective.sensingInstrumentReference}'">
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute" data-dojo-props="target:'xlink:href',showHeader:false"></div>
+        </div>
+      </div>
+      
+      <!-- objectiveOccurrence section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Objective.sections.objectiveOccurrence}'">
+      
+        <!-- objectiveOccurrence - event or events associated with objective completion -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:objectiveOccurrence',maxOccurs:'unbounded',
+            label:'${i18nIso.MI_Objective.objectiveOccurrence}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmi/acquisitionInformation/MI_Event"></div>
+        </div>
+      </div>
+      
+    </div>    
+  </div>
+</div>

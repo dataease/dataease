@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruksi Jalur</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstruksi Jalur"></h2>
+        <hr/>
+    <p> Alat ini bekerja dengan layer yang diaktifkan waktu di titik mana saja atau fitur yang mewakili sebuah <code>instan</code> dalam waktu.   Alat ini terlebih dahulu menentukan fitur manakah yang dimiliki jalur dengan menggunakan pengidentifikasi. Dengan menggunakan waktu di setiap lokasi, jalur diatur secara berurutan dan diubah menjadi garis atau area yang mewakili jalur pergerakan seiring berjalannya waktu. Secara opsional, input dapat di-buffer oleh kolom, yang akan menciptakan area di setiap lokasi. Titik atau area input yang di-buffer ini, kemudian digabungkan secara berurutan untuk membuat sebuah jalur sebagai area yang mana lebar merupakan perwakilan dari atribut yang diinginkan. Jalur yang dihasilkan memiliki waktu mulai dan waktu akhir, yang sementara waktu mewakili fitur pertama dan terakhir dalam jalur yang ada. Ketika jalur dibuat, statistik tentang fitur input dihitung dan ditugaskan pada jalur output. Statistik yang paling dasar adalah jumlah titik di dalam area, tapi statistik lain pun dapat dihitung.
+    </p>
+    <p>Fitur pada layer yang diaktifkan waktu dapat diwakili pada satu atau dua cara:
+        <ul>
+            <li>Instan&mdash;Sebuah momen dalam waktu
+            </li>
+            <li>Interval&mdash;Waktu mulai dan waktu akhir
+            </li>
+        </ul>
+        
+    </p>
+    <p>Misalnya, katakanlah Anda memiliki pengukuran GPS badai setiap 10 menit. Setiap ukuran GPS mencatat nama, lokasi, waktu perekaman, dan kecepatan angin dari badai itu. Dengan informasi ini, Anda dapat membuat jalur untuk setiap badai dengan menggunakan nama untuk identifikasi jalur dan jalur untuk setiap badai yang akan dihasilkan. Selain itu, Anda dapat menghitung statistik seperti kecepatan angin rata-rata, maks. dan min. dari setiap badai serta penghitungan ukuran di dalam setiap jalur.
+    </p>
+    <p>Menggunakan contoh yang sama, Anda dapat buffer jalur Anda dengan kecepatan angin. Ini akan melakukan buffer terhadap setiap pengukuran berdasarkan kolom kecepatan angin di lokasi itu, dan menggabungkan area yang di-buffer bersama-sama, menciptakan area yang mewakili jalur, serta perubahan dalam kecepatan angin saat badai berlalu.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih fitur untuk merekonstruksi jalur dari</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik atau area yang akan direkonstruksi ke dalam jalur. Layer input harus diaktifkan waktu dengan fitur yang mewakili satu saat dalam waktu. Layer harus berada pada sistem koordinat yang diproyeksikan atau referensi spasial yang diproses harus ditetapkan ke sistem koordinat yang diproyeksikan menggunakan  <b>Lingkungan Analisis</b> jika buffer diterapkan.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Pilih satu kolom atau lebih untuk mengidentifikasi jalur</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom yang mewakili pengidentifikasi jalur. 
+            </p>
+            <p>Contoh, jika Anda sedang merekonstruksi jalur badai, Anda dapat menggunakan nama badai sebagai kolom jalur.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Pilih metode yang digunakan untuk merekonstruksi jalur</h2></div>
+        <hr/>
+        <div>
+            <p>Metode yang digunakan untuk menggabungkan jalur dan menerapkan buffer (jika berlaku). Metode  <b>Planar</b> dapat menghitung hasil dengan lebih cepat, tetapi tidak akan membentuk jalur pada garis waktu internasional atau memperhitungkan bentuk aktual bumi ketika melakukan buffering. Metode <b>Geodesic</b> akan membentuk jalur pada garis waktu jika diperlukan dan menerapkan buffer geodesic untuk memperhitungkan bentuk bumi.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Buat ekspresi untuk melakukan buffer pada fitur input berdasarkan (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Persamaan yang digunakan untuk menghitung jarak buffer di sekitar fitur input. Persamaan ini dapat dihasilkan dengan menggunakan kalkulator buffer dan mendukung operasi dasar seperti tambah, kurang, kali, dan bagi. Nilai dihitung berdasarkan sistem koordinat analisis. Layer harus berada pada sistem koordinat yang diproyeksikan atau referensi spasial yang diproses harus ditetapkan ke sistem koordinat yang diproyeksikan menggunakan  <b>Lingkungan Analisis</b> jika buffer diterapkan.
+            </p>
+            <p>Persamaan seperti  <code>$feature.windspeed * 1000</code> akan menerapkan buffer 1.000 dikalikan dengan kolom <i>windspeed</i>. Anda dapat menggunakan lebih dari satu kolom di kalkulator buffer.
+            </p>
+            <p> Anda juga dapat menetapkan ekspresi pengingat jalur. Contoh, Anda dapat menghitung jumlah nilai kolom <i>windspeed</i> untuk fitur saat ini dan dua fitur sebelumnya dengan persamaan seperti <code>$track.field(windspeed).history(-3)</code>. Di setiap lokasi, jumlah <i>windspeed</i> saat ini, dan dua pengukuran berikutnya akan dihitung dan di-buffer.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Pilih waktu untuk memisahkan jalur berdasarkan (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Waktu yang digunakan untuk memisahkan jalur. Jika titik atau area input tidak lagi memiliki durasi lebih lama antara keduanya dibandingkan pemisahan waktu, maka mereka akan dipisahkan ke jalur yang berbeda.
+            </p>
+            <p>Jika Anda menentukan pemisahan waktu dan pemisahan jarak, jalur akan dipisah ketika satu atau kedua kondisi terpenuhi. 
+            </p>
+            <p>Bayangkan Anda memiliki fitur titik yang mewakili jalur penerbangan, di mana kolom jalur adalah ID pesawat. Pesawat ini dapat melakukan beberapa perjalanan dan akan diwakili sebagai satu jalur.  Jika Anda tahu bahwa ada jeda 1 jam antara setiap penerbangan, Anda dapat menggunakan  <code>1 jam</code> sebagai pemisah jalur dan setiap penerbangan akan dipisah ke jalurnya sendiri.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Pisahkan jalur (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memisahkan jalur menggunakan tiga metode berbeda. Anda dapat menggunakan kombinasi dari semua metode, beberapa, atau tidak satu pun dari metode pemisahan. 
+            </p>
+            <p>Pemisahan dapat diselesaikan dengan cara-cara berikut:
+                <ul>
+                    <li> <b>Berdasarkan jarak antar input</b>&mdash;Jika titik atau area input memiliki jarak yang lebih lebar di antaranya dibandingkan jarak yang ditentukan, maka mereka akan dipisahkan menjadi beberapa jalur yang berbeda. Contohnya, jika Anda menentukan jarak 10 kilometer, titik urutan yang lebih besar dari 10 kilometer akan menjadi jalur yang terpisah.
+                    </li>
+                    <li> <b>Berdasarkan waktu antara input</b>&mdash; Jika titik atau area input tidak lagi memiliki durasi lebih lama antara keduanya dibandingkan pemisahan waktu, maka mereka akan dipisahkan ke jalur yang berbeda. Contohnya, bayangkan Anda memiliki fitur titik mewakili penerbangan pesawat, yang mana kolom jalur adalah ID pesawat. Pesawat ini dapat melakukan beberapa perjalanan dan akan diwakili sebagai satu jalur.  Jika Anda tahu bahwa ada jeda 1 jam antara setiap penerbangan, Anda dapat menggunakan <code>1 jam</code> sebagai pemisah jalur dan setiap penerbangan akan dipisah ke jalurnya sendiri.
+                    </li>
+                    <li> <b>Pada interval waktu yang ditentukan</b>&mdash;Pisahkan dengan interval waktu berkala, ditentukan oleh interval waktu dan waktu referensi. Jika Anda tidak menentukan waktu referensi, 1 Januari 1970 akan digunakan. Contohnya, jika Anda menentukan 1 tahun dengan waktu referensi 2 Februari 1990 pukul 10:00, Anda akan memisahkan jalur pada 2 Februari 1990 pukul 10:00, 2 Februari 1991 pukul 10:00 dan berlanjut pada interval satu tahun setelahnya.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika Anda menentukan beberapa opsi pemisahan, jalur akan dipisahkan saat satu atau beberapa kondisi terpenuhi. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Pilih jarak untuk memisahkan jalur berdasarkan (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak digunakan untuk memisahkan jalur. Jika titik atau area input memiliki jarak yang lebih lebar di antaranya dibandingkan pemisahan jarak, maka titik atau area input akan dipisahkan ke dalam jalur yang berbeda.
+            </p>
+            <p>Jika Anda menentukan pemisahan waktu dan pemisahan jarak, jalur akan dipisah ketika satu atau kedua kondisi terpenuhi. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tambahkan statistik (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat menghitung statistik pada fitur yang diringkas. Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Menghitung jumlah nilai nonnull. Dapat digunakan di kolom numerik ataupun string. Jumlah [null, 0, 2] adalah 2.
+                    </li>
+                    <li>Jumlah&mdash;Jumlah nilai numerik di kolom. Jumlah [null, null, 3] adalah 3.
+                    </li>
+                    <li>Rata-rata&mdash;Rata-rata nilai numerik. Rata-rata [0, 2, null] adalah 1.
+                    </li>
+                    <li>Min.&mdash;Nilai minimum kolom numerik. Minimal [0, 2, null] adalah 0. 
+                    </li>
+                    <li>Maks.&mdash;Nilai maksimum kolom numerik. Nilai maksimum [0, 2, null] adalah 2.
+                    </li>
+                    <li>Rentang&mdash;Rentang kolom numerik. Ini dihitung sebagai nilai minimum yang disubtraksi dari nilai maksimum. Rentang [0, null, 1] adalah 1. Rentang [null, 4] adalah 0.
+                    </li>
+                    <li>Varian&mdash;Varian kolom numerik di jalur. Varian [1] adalah null. Varian [null, 1,0,1,1] adalah 0,25.
+                    </li>
+                    <li>Simpangan baku&mdash;Simpangan baku kolom numerik. Simpangan baku [1] adalah null. Simpangan baku [null, 1,0,1,1] adalah 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Jumlah string nonnull.
+                    </li>
+                    <li>Apa saja&mdash;Statistik ini adalah contoh acak nilai string di dalam kolom yang telah ditentukan.
+                    </li>
+                </ul>
+                Semua statistik dihitung pada nilai nonnull. Layer hasil akan berisi kolom baru untuk setiap statistik yang dihitung. Angka statistik berapa pun dapat ditambahkan dengan memilih sebuah atribut dan statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih ArcGIS Data Store untuk penyimpanan hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

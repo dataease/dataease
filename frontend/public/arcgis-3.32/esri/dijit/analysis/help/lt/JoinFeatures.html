@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sujungti elementus</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Sujungti elementus"></h2>
+        <hr/>
+    <p>Jungti elementus veikia su dviem sluoksniais ir sujungia vieno elemento atributus su kito elemento atributais, atsižvelgdamas į erdvinius ir atributų ry&scaron;ius. Įrankis nustato visus įvesties elementus, atitinkančius nurodytas sujungimo sąlygas ir prideda sujungimo sluoksnį prie tikslinio sluoksnio. 
+    </p>
+    <p>Įrankį Sujungti elementus galima taikyti ta&scaron;kams, linijoms, plotams ir lentelėms. Erdvinis sujungimas reikalauja, kad jūsų duomenys turėtų geometrinius požymius. 
+    </p>
+    <p>Jei parinktis  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojami tik dabartiniame žemėlapyje matomi elementai. Jei nepažymėta, bus analizuojami visi abiejų (tikslinio ir prijungto) sluoksnių elementai, net jei jie yra už esamos žemėlapio aprėpties.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Pasirinkite tikslinį sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Tikslinis sluoksnis, kuris turės atributų i&scaron; jungtinio sluoksnio, pridėto prie jo lentelės.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Pasirinkite sluoksnį, kurį prijungsite prie tikslinio sluoksnio</h2></div>
+        <hr/>
+        <div>
+            <p>Jungtinis sluoksnis su atributais, kurie bus pridėti prie tikslinio sluoksnio.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Pasirinkite sujungimo tipą</h2></div>
+        <hr/>
+        <div>
+            <p>Galite taikyti erdvinį jungimą, atributų jungimą arba jų abiejų derinį. 
+                <ul>
+                    <li> <b>Erdvinis</b> &ndash; sujungiant elementus naudojami nurodyti erdviniai ry&scaron;iai. Abu sluoksniai privalo turėti geometriją.
+                    </li>
+                    <li> <b>Atributų</b> &ndash; elementai sujungiami atsižvelgiant į vienodas reik&scaron;mes turinčius laukus.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Pasirinkite erdvinį ryšį</h2></div>
+        <hr/>
+        <div>
+            <p>Erdvinis ry&scaron;ys, pagal kurį nustatoma, ar elementai sujungiami vienas su kitu. Galimi ry&scaron;iai priklausys nuo geometrijos tipo (ta&scaron;kas, linija, plotai), naudojamo kaip įvesties elementai. Galimi ry&scaron;iai:
+                <ul>
+                    <li> <b>Yra identi&scaron;kas</b> &ndash; elementai tiksliniame sluoksnyje atitiks, jei jie bus identi&scaron;ki jungtinio sluoksnio elementams.
+                    </li>
+                    <li> <b>Susikerta</b> &ndash; elementai tiksliniame sluoksnyje atitiks, jei jie susikirs su jungtinio sluoksnio elementais.
+                    </li>
+                    <li> <b>Turi visus</b> &ndash; elementai atitiks, jei tikslinio sluoksnio elementuose bus visi jungtinio sluoksnio elementai.
+                    </li>
+                    <li> <b>Yra visi</b> &ndash; elementai atitiks, jei visi tikslinio sluoksnio elementai bus jungtinio sluoksnio elementuose.
+                    </li>
+                    <li> <b>Nurodytu atstumu</b> &ndash; elementai tiksliniame sluoksnyje atitiks, jei jie bus nurodytu atstumu nuo jungtinio sluoksnio elementų.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Atributų sujungimas</h2></div>
+        <hr/>
+        <div>
+            <p>Atributų ry&scaron;ys, kuris nustatys ar elementus galima sujungti vieną su kitu. Elementai atitinka, kai lauko reik&scaron;mės jungtiniame sluoksnyje yra lygios lauko reik&scaron;mėms tiksliniame sluoksnyje. 
+            </p>
+            <p>Pavyzdžiui, turite vienos apygardos gyventojų adresų (įskaitant lauką  <i>ZIP</i>) geografinį sluoksnį ir sveikatos būklės demografinių duomenų lentelių rinkinį pagal pa&scaron;to kodą (įskaitant lauką <i>HEALTHZIP</i>). Galite sujungti sveikatos būklės duomenų rinkinį su gyventojų duomenimis pagal atitinkančius laukus <i>ZIP</i> su <i>HEALTHZIP</i> ir bus pateiktas gyventojų sluoksnio rezultatas su atitinkamais sveikatos būklės duomenimis.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Pasirinkite prijungimo operaciją</h2></div>
+        <hr/>
+        <div>
+            <p>Nustato, kaip bus apdorojami tikslinio ir jungtinio sluoksnio sujungimai, jei aptinkama, kad keli jungtinio sluoksnio elementai turi tokius pat ry&scaron;ius tiksliniame sluoksnyje. Toliau pateikiamos dvi sujungimo operacijos, i&scaron; kurių galite rinktis.
+                <ul>
+                    <li> <b>Sujungti vieną su vienu</b> &ndash; &scaron;i parinktis sujungia tikslinio sluoksnio elementus į vieną elementą bendrame sluoksnyje. Kaip elementai sujungiami nustatoma parametru <b>Pridėti statistiką</b> arba <b>Nustatyti, kuris įra&scaron;as paliekamas</b>. Jei naudojamas parametras <b>Pridėti statistiką</b>, visi atitinkantys sujungtus elementus įra&scaron;ai bus apibendrinti tiksliniame sluoksnyje. Sujungtų elementų skaičius bus įtrauktas pagal numatytuosius nustatymus.Jei naudojamas parametras <b>Nustatyti, kuris įra&scaron;as paliekamas</b>, galite pasirinkti palikti pirmąjį suderintą įra&scaron;ą (numatytasis nustatymas) arba suderintą įra&scaron;ą pagal i&scaron;rai&scaron;ką. I&scaron;rai&scaron;koje gali būti naudojamas skaitinis laukas
+(parinktis didžiausiam arba mažiausiam įra&scaron;ui) arba datos laukas (parinktis naujausiam arba seniausiam).
+                    </li>
+                    <li> <b>Sujungti vieną su daugeliu</b> &ndash; &scaron;i operacija prijungia visus atitinkančius jungtinio sluoksnio elementus prie tikslinio sluoksnio. Rezultatų sluoksnyje bus keli tikslinio elemento įra&scaron;ai.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pavyzdžiui, norite rasti prekybos centrus 5 kilometrų atstumu nuo ūkininkų turgaus.   Tokiu atveju sujungiamas sluoksnis turi vieną elementą, atvaizduojantį ūkininkų turgų ir jungtinius elementus, atvaizduojančius vietines bakalėjos parduotuves ir turinčius tokius atributus, kaip metinis pardavimas. Naudodami įrankį  <b>Jungti elementus</b> pastebėsite, kad &scaron;ios penkios bakalėjos parduotuvės atitinka reikiamus kriterijus. Jei nurodysite sujungimo operaciją <b>Sujungti vieną su daugeliu</b>, gausite penkių elementų rezultatą, kiekviena eilutė atspindės ūkininkų turgų ir prekybos centrą. Jei nurodysite ry&scaron;į <b>Sujungti vieną su vienu</b> ir pasirinksite statistiką, gausite rezultatą, kai vienas elementas atvaizduos ūkininkų turgų ir apibendrintą informaciją i&scaron; prekybos centrų, pvz., jų skaičių (5) ir kitą pasirinktinę statistiką, pvz., metinio pardavimo sumą.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pridėti statistiką (pasirinktinis nustatymas)</h2></div>
+        <hr/>
+        <div>
+            <p>Jei pasirinksite skaitinių laukų parinktį  <b>Sujungti vieną su vienu</b>, galėsite apibendrinti ir apskaičiuoti sujungtų elementų statistiką. Pagal numatytuosius nustatymus atitinkantys sujungti elementai bus suskaičiuoti ir jų skaičius įtrauktas į rezultatų sluoksnį. Jei pasirenkate neįtraukti statistikos, pirmasis atitinkantis jungtinio sluoksnio elementas bus prijungtas prie pirmojo atitinkančio tikslinio sluoksnio elemento.   Galite atlikti vieną ar kelis i&scaron; &scaron;ių skaičiavimų:
+            </p>
+            <ul>
+                <li>Suma
+                </li>
+                <li>Minimumas
+                </li>
+                <li>Maksimumas
+                </li>
+                <li>Vidurkis
+                </li>
+                <li>Standartinį nuokrypį
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Kurti rezultatus kaip talpinamą elementų sluoksnio peržiūrą.</h2></div>
+        <hr/>
+        <div>
+            <p> Sukūrus rezultatus kaip talpinamą elementų peržiūros sluoksnį, jo duomenys bus atnaujinami, kai pasikeis &scaron;altinio duomenys. Talpinimas elementų peržiūros sluoksnis, kuriame yra jungčių, bus skirtas tik skaitymui ir nenaudos kreditų analizuojant ir saugant jį turinyje.
+            </p>
+            <p>Talpinamą elementų sluoksnio rodinį galima sukurti naudojant analizės rezultatus, jei i&scaron;pildomos &scaron;ios sąlygos:
+                <ul>
+                    <li>Esate abiejų sluoksnių savininkas.
+                    </li>
+                    <li>Abu sluoksniai yra talpinami elementų sluoksniai.
+                    </li>
+                    <li>Atliekate sujungimą, pagrįstą atributais.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

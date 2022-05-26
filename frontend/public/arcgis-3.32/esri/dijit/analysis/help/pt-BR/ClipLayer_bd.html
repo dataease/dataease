@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Camada de Recorte</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="Camada de Recorte"></h2>
+        <hr/>
+    <p>A ferramenta Camada de Recorte extrai as fei&ccedil;&otilde;es de ponto, linha ou &aacute;rea de entrada que cobrem as &aacute;reas de recorte. A sa&iacute;da &eacute; um subconjunto dos seus dados de entrada com base nas &aacute;reas de interesse. Os seguintes s&atilde;o exemplos de utilidade da ferramenta:
+        <ul>
+            <li>Quais s&atilde;o os principais rios dentro do estado de Nebraska?
+                  
+            </li>
+            <li>Quais casas est&atilde;o dentro de uma zona de inunda&ccedil;&atilde;o costeira?
+            </li>
+            <li>Quais furac&otilde;es atingiram a terra em 2011?
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher feições para recortar</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto, linha ou &aacute;rea que ser&aacute; recortada. Voc&ecirc; criar&aacute; um subconjunto destas fei&ccedil;&otilde;es.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>Escolher área para recortar</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de &aacute;rea na qual voc&ecirc; recortar&aacute; as fei&ccedil;&otilde;es da camada de entrada. Estas &aacute;reas determinam os limites dos subconjuntos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

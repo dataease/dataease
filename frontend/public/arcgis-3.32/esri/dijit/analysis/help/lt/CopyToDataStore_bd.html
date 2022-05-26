@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopijuoti į duomenų bazę</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopijuoti į duomenų bazę"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis nukopijuos įvesties sluoksnį į duomenų saugyklą. Galite nukopijuoti rezultatus į  ArcGIS Data Store (santykinių arba erdvėlaikinių didelių duomenų saugyklą), ir jūsų portale bus sukuriamas sluoksnis, arba galite nukopijuoti rezultatus į didelių duomenų failo saugyklą. 
+    </p>
+    <p>Pavyzdžiui, galite nukopijuoti elementus i&scaron;  <code>didelių duomenų failų saugyklos</code> į <code>reliacinę duomenų saugyklą</code> ir nurodyti, kad būtų kopijuojami tik elementai, patenkantys į dabartinę žemėlapio aprėptį. Tai sukurs talpinamą elementų paslaugą tik su tais elementais, kurie patenka į nurodytą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kurį norite nukopijuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis arba lentelė, kurie bus nukopijuoti. 
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Galite naudoti visus elementus arba atlikti pasirinkimą (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinktinai naudokite žymėjimo mygtuką, kad nustatytumėte kopijuotinas vietas.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Pasirinkite duomenų saugyklą, į kurią norite kopijuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Duomenų saugykla, į kurią bus kopijuojamas sluoksnis. &Scaron;is parametras perra&scaron;ys pasirinkimą  <b>analizės aplinkose</b>. Galimos parinktys:
+                <ul>
+                    <li> <b>ArcGIS duomenų saugykla</b> ArcGIS Data Store <ul>
+                            <li> <b>Erdvėlaikio</b> &ndash; numatytoji parinktis.
+                            </li>
+                            <li> <b>Santykinė</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Didelių duomenų failo bendrinimo i&scaron;vesties &scaron;ablonai</b>
+                        <ul>
+                            <li>Prieinamų didelių duomenų failo bendrinimo &scaron;ablonų formatu  <b>bigDataFileShareName-templateName</b> sąra&scaron;as. Prie&scaron; paleidžiant įrankį reikia sukonfigūruoti didelių&nbsp;duomenų failo bendrinimą.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

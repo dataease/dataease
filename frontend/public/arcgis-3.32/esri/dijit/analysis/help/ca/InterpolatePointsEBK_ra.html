@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpola els punts</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Eina Interpola els punts"></h2>
+        <hr/>
+    <p>Aquesta eina permet predir els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts. L'eina pren les dades de punts amb valors en cada punt i retorna un r&agrave;ster de valors predits.
+    </p>
+    <p>Altres casos d'&uacute;s d'aquesta eina inclouen els seg&uuml;ents:
+
+        <ul>
+            <li>Un districte de control de la qualitat de l'aire t&eacute; sensors que mesuren els nivells de contaminaci&oacute;. Interpola els punts es pot utilitzar per predir els nivells de contaminaci&oacute; a les ubicacions que no tenen sensors, com ara ubicacions amb poblacions de risc (per exemple, hospitals o escoles).
+                
+
+            </li>
+            <li>Predigueu les concentracions de metalls pesants de les collites en funci&oacute; de les mostres que s'hagin pres de plantes individuals.
+                
+
+            </li>
+            <li>Predigueu els nivells de nutrients del s&ograve;l (nitrogen, f&ograve;sfor, potassi, etc.) i altres indicadors (com ara la conductivitat el&egrave;ctrica) per estudiar-ne la relaci&oacute; amb la producci&oacute; de la collita i prescriure quantitats de fertilitzant exactes per a cada ubicaci&oacute; del camp.
+                
+
+            </li>
+            <li>Les aplicacions meteorol&ograve;giques inclouen la predicci&oacute; de les temperatures, les precipitacions i les variables associades (com ara la pluja &agrave;cida).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Trieu la capa de punts que conté les ubicacions amb valors coneguts</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts que cont&eacute; els punts on s'han mesurat els valors.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Trieu el camp que s'interpolarà</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el camp els valors del qual voleu interpolar. El camp ha de ser num&egrave;ric.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimitza per a</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la vostra prefer&egrave;ncia: velocitat o precisi&oacute;.
+            </p>
+            <p>Les prediccions m&eacute;s precises tarden m&eacute;s temps a calcular-se. Aquest par&agrave;metre altera els valors per defecte d'alguns altres par&agrave;metres d'Interpola els punts per poder optimitzar la velocitat del c&agrave;lcul, la precisi&oacute; dels resultats o l'equilibri entre tots dos. Per defecte, l'eina optimitzar&agrave; l'equilibri.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transforma les dades a la distribució normal</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu si voleu transformar les dades a la distribuci&oacute; normal.
+            </p>
+            <p>La interpolaci&oacute; &eacute;s l'opci&oacute; m&eacute;s precisa per a les dades que segueixen una distribuci&oacute; normal (forma de campana). Si sembla que les vostres dades no tenen una distribuci&oacute; normal, haureu de dur a terme una transformaci&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Mida dels models locals</h2></div>
+        <hr/>
+        <div>
+            <p>Interpola els punts crea models d'interpolaci&oacute; locals que es combinen entre si per crear el mapa de predicci&oacute; final. Aquest par&agrave;metre controla quants punts s'inclouran a cada model local. Els valors m&eacute;s baixos generaran resultats m&eacute;s locals i poden revelar efectes a petita escala, per&ograve; poden provocar inestabilitat als c&agrave;lculs. Els valors m&eacute;s alts seran m&eacute;s estables, per&ograve; pot ser que es perdin alguns efectes locals.
+            </p>
+            <p>El valor pot ser d'entre 30 i 500, per&ograve; els valors t&iacute;pics s&oacute;n de 50 a 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Nombre de veïns</h2></div>
+        <hr/>
+        <div>
+            <p>Les prediccions es calculen en funci&oacute; dels punts ve&iuml;ns. Aquest par&agrave;metre controla quants punts s'utilitzaran per al c&agrave;lcul. L'&uacute;s d'un nombre superior de ve&iuml;ns produir&agrave;, en general, resultats m&eacute;s precisos, per&ograve; els resultats tardaran m&eacute;s a calcular-se.
+            </p>
+            <p>El valor pot ser d'entre 1 i 64, per&ograve; els valors t&iacute;pics s&oacute;n de 5 a 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Mida de la cel·la de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Mida i unitat de la cel&middot;la dels r&agrave;sters de sortida.
+            </p>
+            <p>Les unitats disponibles s&oacute;n peus, milles, metres i quil&ograve;metres.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Error de predicció de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu si voleu crear un r&agrave;ster d'errors est&agrave;ndard per als valors predits.
+            </p>
+            <p>Els errors est&agrave;ndard s&oacute;n &uacute;tils perqu&egrave; proporcionen informaci&oacute; sobre la fiabilitat dels valors predits. Una regla general senzilla &eacute;s que el valor real estar&agrave; compr&egrave;s entre dos errors est&agrave;ndard del valor predit el 95&nbsp;% de les vegades. Per exemple, suposeu que una ubicaci&oacute; nova obt&eacute; un valor predit de 50 amb un error est&agrave;ndard de 5. Aix&ograve; significa que l'estimaci&oacute; m&eacute;s aproximada d'aquesta eina &eacute;s que el valor real en aquesta ubicaci&oacute; &eacute;s de 50, per&ograve; que podria ser de 40 o de 60. Per calcular aquest interval de valors raonables, multipliqueu l'error est&agrave;ndard per 2, sumeu-lo al valor predit per obtenir el l&iacute;mit superior de l'interval i resteu-lo del valor predit per obtenir-ne el l&iacute;mit inferior.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

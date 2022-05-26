@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Prekrij sloje</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Prekrij sloje"></h2>
+        <hr/>
+    <p>Prekrivanje združi dva ali več slojev v en enojen sloj. Prekrivanje si lahko predstavljate kot gledanje skozi skupek kart in ustvarjanje enojne karte, ki vsebuje vse informacije, ki se nahajajo v skupku. Prekrivanje je več kot združevanje elementov; vsi atributi geoobjektov, ki sodelujejo pri prekrivanju, so preneseni na končni izdelek. Prekrivanje se uporablja za odgovor na enega izmed najosnovnej&scaron;ih geografskih vpra&scaron;anj: &raquo;Kaj se nahaja nad nečem?&laquo; Na primer:
+        <ul>
+            <li>Katere parcele se nahajajo na poplavnem območju s 100-letno povratno dobo? (Znotraj je samo drug način, da se pove nad nečim.)
+                  
+            </li>
+            <li>Katere ceste se nahajajo na plazovith tleh?
+            </li>
+            <li>Kak&scaron;na raba tal se nahaja na katerem talnemu tipu?
+                 
+            </li>
+            <li>Kateri vodni viri se nahajajo znotraj zapu&scaron;čenih industrijskih con?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo prekriti samo geoobjekti vhodnega sloja in sloja za prekrivanje, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo prekriti vsi geoobjekti tako na vhodnem sloju kot na sloju za prekrivanje, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi vhodni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni, linijski ali poligonski sloj, ki bo prekrit.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Izberi sloj za prekrivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki ga je treba prekriti, na vhodnem sloju.  
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Izberi metodo za prekrivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda za prekrivanje določa, kako sta združena vhodni sloj in sloj za prekrivanje.  
+
+                <ul>
+                    <li> <b>Presek</b> &ndash; Rezultat bo vseboval samo tiste geoobjekte ali dele geoobjekta v sloju za prekrivanje, ki se prekrivajo z geoobjekti v vhodnem sloju. Pri preseku linijskih ali poligonskih geoobjektov imate možnost navesti tip geoobjektov, ki jih želite kot izhodne.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Točke s točkami
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Točke in vhodne točke">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Točke in točke z izhodnimi točkami">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Točke z linijami
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Točke in vhodne linije">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Točke in linije z izhodnimi točkami">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Točke s poligoni
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Točke in vhodni poligoni">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Točke in poligoni z izhodnimi točkami">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linije z linijami 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linije in vhodne linije">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Linije in linije z izhodnimi točkami">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linije in linije z izhodnimi linijami">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linije s poligoni
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Linije in vhodni poligoni">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Linije in poligoni z izhodnimi točkami">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Linije in poligoni z izhodnimi linijami">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Poligoni s poligoni
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Poligoni in vhodni poligoni">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Poligoni in poligoni z izhodnimi točkami">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Poligoni in poligoni z izhodnimi linijami">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Poligoni in poligoni z izhodnimi poligoni">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Unija</b> &ndash; Rezultat bo vseboval geoobjekte iz vhodnega sloja in sloja za prekrivanje. Možnost Unija je na voljo samo, če vhodni sloj in sloj za prekrivanje vsebujeta poligonske geoobjekte.
+                    </li>
+                    <li> <b>Izbri&scaron;i</b> &ndash; Rezultat bo vseboval geoobjekte ali dele geoobjektov v sloju za prekrivanje, ki se ne prekrivajo s poligoni v vhodnem sloju. Sloj za prekrivanje lahko vsebuje poligonske, linijske ali točkovne geoobjekte.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo prekriti samo geoobjekti vhodnega sloja in sloja za prekrivanje, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo prekriti vsi geoobjekti tako na vhodnem sloju kot na sloju za prekrivanje, tudi če so zunaj trenutnega obsega karte.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen v <b>Moji vsebini</b> in dodan na karto. Imel bo enak tip geoobjekta (poligone, linije ali točke) kot sloj za prekrivanje. Privzeto ime temelji na metodi prekrivanja in imenu vhodnega sloja. Če sloj že obstaja, boste morali navesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,19 @@
+@mixin esri-icon-button-default($has-box-shadow: "true", $add-icon-styles: "true") {
+  padding: 0;
+  width: $esri-btn-width;
+  height: $esri-btn-height;
+  @include button-variant($btn-default-color, $btn-default-bg);
+  border-width: 0;
+  border-style: none;
+  text-align: center;
+  cursor: pointer;
+  @include user-select(none);
+  @if($has-box-shadow == "true") {
+    @include calcite-box-shadow-base;
+  }
+  @if($add-icon-styles == "true") {
+    @include dijit-icons();
+  }
+  font-size: $font-size-base;
+  line-height: $esri-btn-height / $font-size-base;
+}

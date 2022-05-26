@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detectar incidentes</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detectar incidentes"></h2>
+        <hr/>
+    <p> Esta herramienta funciona con una capa de puntos, l&iacute;neas, &aacute;reas o tablas con la funci&oacute;n de tiempo habilitada que representa un instante en el tiempo.   Si utiliza entidades ordenadas secuencialmente, denominadas recorridos, esta herramienta determina qu&eacute; entidades son incidentes de inter&eacute;s. Los incidentes se determinan atendiendo a las condiciones que usted especifique.
+    </p>
+    <p>Primero, la herramienta determina qu&eacute; entidades pertenecen a un recorrido utilizando uno o varios campos. Al utilizar la hora de cada entidad, los recorridos se ordenan secuencialmente y la condici&oacute;n del incidente se aplica. Las entidades que cumplan la condici&oacute;n inicial de incidente se marcan como incidentes. Opcionalmente, puede aplicar una condici&oacute;n final de incidente; cuando la condici&oacute;n final se cumpla, la entidad deja de ser un incidente.  Los resultados se devolver&aacute;n con las entidades originales (con columnas nuevas que representen el nombre del incidente) e indican qu&eacute; entidad cumple la condici&oacute;n de incidente. Puede devolver todas las entidades originales o solo las entidades que sean incidentes.
+    </p>
+    <p>Por ejemplo, supongamos que tiene mediciones de GPS de huracanes cada 10 minutos. Cada medici&oacute;n de GPS registra el nombre, la ubicaci&oacute;n, la hora de registro y la velocidad del viento del hurac&aacute;n. Al utilizar estos campos, podr&iacute;a crear un incidente en el que toda medici&oacute;n con una velocidad de viento superior a los 208&nbsp;km/h constituye un incidente denominado  <code>Catastr&oacute;fico</code>. Si no establece ninguna condici&oacute;n final, el incidente finalizar&iacute;a si la entidad deja de cumplir la condici&oacute;n inicial (la velocidad del viento pasa a ser menor que 208).
+    </p>
+    <p>Probemos con otro ejemplo: supongamos que est&aacute; monitorizando las concentraciones de una sustancia qu&iacute;mica en su red local de suministro de agua con un campo denominado  <code>contaminateLevel</code>. Sabe que los niveles recomendados son los inferiores a 0,01&nbsp;mg/L, y que los niveles peligrosos son los superiores a 0,03&nbsp;mg/L. Para detectar incidentes en los que un valor superior a 0,03&nbsp;mg/L constituye un incidente y permanece como tal hasta que los niveles de contaminaci&oacute;n vuelvan a ser normales, usted crea un incidente utilizando una condici&oacute;n inicial de <code>contaminateLevel &gt; 0.03</code> y una condici&oacute;n final de <code>contaminateLevel &lt; 0.01</code>. Con ello, se marcar&aacute; toda secuencia cuyos valores superen los 0,03&nbsp;mg/L hasta que vuelvan a ser inferiores a 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir una capa en la que detectar incidentes desde</h2></div>
+        <hr/>
+        <div>
+            <p>Los puntos, l&iacute;neas, &aacute;reas o tablas que se utilizar&aacute;n para buscar incidentes. La capa de entrada debe tener habilitada la funci&oacute;n de tiempo, con entidades que representen un instante en el tiempo, as&iacute; como uno o varios campos que se puedan utilizar para identificar recorridos.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Seleccionar uno o varios campos para identificar recorridos</h2></div>
+        <hr/>
+        <div>
+            <p>Los campos que representan el identificador del recorrido. Puede utilizar uno o varios campos para representar valores &uacute;nicos de recorridos.
+            </p>
+            <p>Por ejemplo, si estuviera reconstruyendo recorridos de huracanes, podr&iacute;a utilizar el nombre del hurac&aacute;n como el campo del recorrido.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Crear una condición de expresión para marcar el inicio de un incidente</h2></div>
+        <hr/>
+        <div>
+            <p>Agregar una condici&oacute;n con el constructor de expresiones para determinar qu&eacute; es un incidente. Si la condici&oacute;n que especifica se cumple, la entidad es un incidente. Si no especifica ninguna condici&oacute;n final, el incidente termina cuando la condici&oacute;n inicial ya no se cumple.
+            </p>
+            <p>Por ejemplo, supongamos que quiere recibir una alerta cuando la suma de los campos  <code>concentration_1</code> y <code>concentration_2</code> sea mayor que <code>concentration_3</code>.   Para ello, aplique la condici&oacute;n de <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Si le interesase saber c&oacute;mo cambian las concentraciones con el paso del tiempo y deseara recibir una alerta cuando el valor actual de  <code>concentration_1</code> fuera superior a las dos mediciones anteriores de <code>concentration_2</code>, podr&iacute;a usar una expresi&oacute;n como <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Crear una condición de expresión para marcar el fin de un incidente (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalmente, puede agregar una condici&oacute;n con el constructor de expresiones para determinar el final de un incidente. Si la condici&oacute;n que especifica se cumple, la entidad deja de ser un incidente. Si no especifica ninguna condici&oacute;n final, el incidente termina cuando la condici&oacute;n inicial ya no se cumple.    
+            </p>
+            <p>Por ejemplo, supongamos que quiere recibir una alerta cuando la suma de los campos  <code>concentration_1</code> y <code>concentration_2</code> sea mayor que <code>concentration_3</code>, y quiere que el incidente finalice si <code>concentration_4</code> es menor que <code>concentration_1</code>. Para ello, aplique una condici&oacute;n inicial de <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> y una condici&oacute;n final de <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Si deseara que un incidente finalizara cuando la media del valor actual de  <code>concentration_1</code> y las cuatro mediciones anteriores fuera superior a la primera medici&oacute;n, podr&iacute;a usar una expresi&oacute;n como <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Mostrar</h2></div>
+        <hr/>
+        <div>
+            <p>Todos los m&eacute;todos de salida incorporar&aacute;n campos a las entidades originales. Existen dos formas de determinar qu&eacute; entidades se devuelven:
+                <ul>
+                    <li> <b>Todas las entidades</b>: esta es la opci&oacute;n predeterminada. Se devolver&aacute;n todas las entidades de la entrada.
+                    </li>
+                    <li> <b>Solo incidentes</b>: este m&eacute;todo devolver&aacute; &uacute;nicamente las entidades que sean incidentes. No se devolver&aacute;n aquellas entidades que no se consideren incidentes.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizar datos con intervalos de tiempo (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique si desea detectar incidentes con intervalos de tiempo que segmentan las entidades de entrada para el an&aacute;lisis. Si utiliza intervalos de tiempo, debe establecer el intervalo de tiempo que desee utilizar y, si lo desea, establecer el tiempo de referencia. Si no establece ning&uacute;n tiempo de referencia, se utilizar&aacute; el 1 de enero de 1970. 
+            </p>
+            <p>Por ejemplo, si establece el l&iacute;mite de tiempo en 1 d&iacute;a, a partir de las 9:00 AM del 1 de enero de 1990, cada recorrido se truncar&aacute; a las 9:00 AM para cada d&iacute;a y se analizar&aacute; dentro de ese segmento. 
+            </p>
+            <p>El uso de intervalos de tiempo es una forma r&aacute;pida de acelerar el tiempo de procesamiento, ya que crea r&aacute;pidamente recorridos m&aacute;s peque&ntilde;os para el an&aacute;lisis. Si a su an&aacute;lisis le conviene dividir por un intervalo de tiempo recurrente, le recomendamos que lo haga para procesar big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

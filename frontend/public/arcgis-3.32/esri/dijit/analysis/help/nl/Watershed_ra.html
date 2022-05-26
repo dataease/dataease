@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Watershed</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Watershed-taak"></h2>
+        <hr/>
+    <p>Dit hulpmiddel bepaalt het bijdragende gebied boven een set cellen in een raster.
+    </p>
+    <p>Een watershed is het omgekeerde gebied dat stroom - over het algemeen water - toevoegt aan een gemeenschappelijke afvoer als geconcentreerde drainage. Het kan deel uitmaken van een grotere watershed en kan ook kleinere watersheds bevatten, de zogenaamde subbasins.
+    </p>
+    <p>De waarde van elk keerpunt wordt ontleend aan de waarde van de bron in het invoerveld of de functie gietpoint-laag. Wanneer het vloeipunt een raster dataset is, worden de celwaarden standaard gebruikt. Wanneer het vloeipunt een dataset van puntfuncties is, komen de waarden uit het opgegeven veld.
+    </p>
+    <p>De Watershed-tool ondersteunt alleen een D8-ingangsrichting rasterlaag.
+    </p>
+    <p>Wanneer u de invoerpuntlocaties specificeert als functiegegevens, zal het standaardveld het eerste beschikbare geldige veld zijn. Als er geen geldige velden bestaan, wordt het ObjectID-veld (bijvoorbeeld OID of FID gebruikt, wordt de standaard.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Kies stroomrichtingslaag</h2></div>
+        <hr/>
+        <div>
+            <p>Het invoerraster dat de richting van de flow uit elke cel toont.
+            </p>
+            <p>Het raster voor de stromingsrichting kan worden gemaakt met behulp van de tool Flow Direction of de taak van FlowDirection in de service RasterAnalysisTools met de standaard stroomrichting type  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Bepaal de locaties van het ingangsstortpunt</h2></div>
+        <hr/>
+        <div>
+            <p>De locaties van het ingangsstortpunt
+            </p>
+            <p>Voor een raster zijn dit de cellen waarboven het bijdragende gebied, of het stroomgebied, zal worden bepaald. Alle cellen die geen NoData zijn, worden gebruikt als broncellen. Voor een puntinvoer zijn dit de locaties waarboven het bijdragende gebied, of het stroomgebied, zal worden bepaald.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Kies het gietpuntveld</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld dat wordt gebruikt om waarden toe te wijzen aan de gietmeetpunten.
+            </p>
+            <p>Als de invoerpuntslaag een raster is, wordt Waarde gebruikt. Als het een object is, wordt een numeriek veld gebruikt. Als het veld floating-pointwaarden bevat, worden deze integers afgekapt.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

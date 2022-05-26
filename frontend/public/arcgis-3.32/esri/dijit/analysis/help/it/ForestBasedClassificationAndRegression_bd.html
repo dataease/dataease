@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Classificazione e regressione basate sulla foresta</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagramma del flusso di lavoro di Classificazione e regressione basate sulla foresta"></h2>
+        <hr/>
+    <p>Crea modelli e genera previsioni utilizzando un adattamento dell'algoritmo della foresta causale di Leo Breiman, un metodo di apprendimento automatico revisionato. Le previsioni possono essere eseguite tanto per variabili categoriche (classificazione) quanto per variabili continue (regressione). Le variabili esplicative sono campi nella tabella degli attributi delle feature di addestramento. &Egrave; possibile eseguire lo strumento per generare un modello per valutare le prestazioni o per generare un modello e prevedere risultati su altri dataset.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo di analisi</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica la modalit&agrave; operativa dello strumento. &Egrave; possibile eseguire lo strumento per addestrare un modello solo per valutare le prestazioni o per addestrare un modello ed eseguire previsioni sulle feature. I tipi di previsioni sono i seguenti:
+                <ul>
+                    <li> <b>Addestrare un modello per valutare le prestazioni del modello</b>: un modello sar&agrave; addestrato e adattato ai dati di input. Usare questa opzione per valutare la precisione del modello prima di generare previsioni su un nuovo dataset. Il risultato di questa opzione sar&agrave; un feature service dei dati di addestramento adattati, le diagnostiche del modello e una tabella opzionale di importanza variabile.
+                    </li>
+                    <li> <b>Addestrare un modello e prevedere i valori</b>: si genereranno previsioni o classificazioni per le feature. &Egrave; necessario fornire variabili esplicative sia per le feature di addestramento sia per le feature da prevedere. Il risultato di questa opzione sar&agrave; un feature service dei valori previsti, le diagnostiche del modello e una tabella opzionale di importanza variabile.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Addestrare un modello per valutare le prestazioni del modello</h2></div>
+        <hr/>
+        <div>
+            <p>Usare questa modalit&agrave; se si desidera adattare un modello e indagare sull'adattamento.
+            </p>
+            <p>Con questa scelta il modello sar&agrave; addestrato usando un layer di input. Usare questa opzione per valutare la precisione del modello prima di generare previsioni su un nuovo dataset. Questa opzione generer&agrave; diagnostiche del modello nella finestra dei messaggi e applicher&agrave; il modello ai dati di addestramento.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Addestrare un modello e prevedere valori</h2></div>
+        <hr/>
+        <div>
+            <p>Usare questa modalit&agrave; se si desidera adattare un modello e applicare il modello al dataset per generare previsioni.
+            </p>
+            <p>Si genereranno previsioni o classificazioni per le feature. Il risultato di questa opzione sar&agrave; un feature service, le diagnostiche del modello e una tabella opzionale di importanza variabile.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Scegliere un layer di addestramento</h2></div>
+        <hr/>
+        <div>
+            <p>Il feature layer contenente la variabile da prevedere e i campi che saranno usati per generare la previsione.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Scegliere un layer per il quale prevedere valori</h2></div>
+        <hr/>
+        <div>
+            <p>Un feature layer che rappresenta le posizioni in cui si eseguiranno le previsioni. Questo feature layer deve contenere anche qualunque variabile esplicativa fornita come campo che corrisponda a quelle usate nelle feature di addestramento.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Scegliere il campo da prevedere</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo delle feature di addestramento contenente i valori da usare per addestrare il modello. Questo campo contiene valori (di addestramento) noti della variabile che si useranno per le previsioni in posizione sconosciute. Se i valori sono categorici (ad esempio, Acero, Pino, Quercia), selezionare la casella  <b>Categorico</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Scegliere una o più variabili esplicative</h2></div>
+        <hr/>
+        <div>
+            <p>Uno o pi&ugrave; campi che rappresentano variabili esplicative (campi) che contribuiscano a prevedere il valore o la categoria della variabile da prevedere. Usare la casella Categorico per qualunque variabile che rappresenti classi o categorie (come copertura del suolo o presenza o assenza). Specificare le variabili come true se rappresentano classi o categorie, come copertura del suolo o presenza o assenza, e false se la variabile &egrave; continua.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Numero di alberi</h2></div>
+        <hr/>
+        <div>
+            <p>Il numero di alberi da creare nel modello. Un numero maggiore di alberi generer&agrave; solitamente una previsione di modello pi&ugrave; precisa, ma il calcolo del modello impiegher&agrave; pi&ugrave; tempo. Il numero predefinito di alberi &egrave; 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Dimensione minima foglia</h2></div>
+        <hr/>
+        <div>
+            <p>Il numero minimo di osservazioni richiesto per tenere una foglia (ovvero il nodo terminale su un albero senza ulteriori divisioni). Il minimo predefinito per la regressione &egrave; 5 e quello predefinito per la classificazione &egrave; 1. Per dati molto estesi, aumentando questi numeri si diminuir&agrave; il tempo di avvio dello strumento.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Profondità massima albero</h2></div>
+        <hr/>
+        <div>
+            <p>Il numero massimo di divisioni che si eseguir&agrave; sotto a un albero. Usando una profondit&agrave; massima elevata, si creeranno pi&ugrave; divisioni, il che potrebbe aumentare le possibilit&agrave; di adattamento eccessivo del modello. Il valore predefinito si basa sui dati e dipende dal numero di alberi creato e dal numero di variabili incluse.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dati disponibili per albero (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica la percentuale di feature nel layer di addestramento usate per ciascun albero decisionale. Il valore predefinito &egrave; il 100% dei dati. Per ciascun albero si prendono dei campioni in modo causale a partire dai due terzi dei dati specificati.
+            </p>
+            <p>Ogni albero decisionale nella foresta viene creato usando un campione o sottoinsieme casuale (circa i due terzi) dei dati di addestramento disponibili. Quanto minore la percentuale dei dati di input per ciascun albero decisionale, tanto maggiore la velocit&agrave; dello strumento per dataset molto grandi.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Numero di variabili campionate in modo casuale</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica il numero di variabili esplicative usate per creare ciascun albero decisionale.
+            </p>
+            <p>Ognuno degli alberi decisionali nella foresta viene creato usando un sottoinsieme casuale delle variabili esplicative specificate. Quanto maggiore &egrave; il numero di variabili usato in ciascun albero decisionale, tanto maggiori le possibilit&agrave; di adattamento eccessivo del modello, soprattutto se c'&egrave; una o un paio di variabili dominanti. Una prassi comune consiste nell'usare la radice quadrata del numero totale di variabili esplicative se la variabile da prevedere &egrave; numerica o nel dividere il numero totale di variabili esplicative per 3 se la variabile da prevedere &egrave; categorica.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Scegliere come abbinare i campi esplicativi</h2></div>
+        <hr/>
+        <div>
+            <p>Come saranno abbinate le variabili corrispondenti nel layer di addestramento con le variabili del layer delle previsioni. Solo le variabili usate nell'addestramento saranno incluse nella tabella.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Numero di avvii per la validazione</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica la percentuale (tra lo 0% e il 50%) di feature nel layer di addestramento da riservare come dataset di prova per la validazione. Il modello sar&agrave; addestrato senza questo sottoinsieme casuale di dati e i valori osservati per quelle feature saranno paragonati al valore previsto. Il valore predefinito &egrave; il 10%.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>I risultati restituiti dipenderanno dal tipo di analisi. Se si sta eseguendo l'addestramento per valutare l'adattamento del modello, i risultati conterranno un layer dell'adattamento dei dati di addestramento al modello e informazioni di valutazione sull'adattamento del modello. Se si sta eseguendo l'addestramento e le previsioni, i risultati conterranno un layer dell'adattamento dei dati di addestramento al modello, un layer con i risultati previsti e informazioni di valutazione sull'adattamento del modello.
+            </p>
+            <p>Utilizzare la casella a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

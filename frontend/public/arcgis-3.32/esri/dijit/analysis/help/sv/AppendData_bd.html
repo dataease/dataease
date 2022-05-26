@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Bifoga data</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Arbetsfl&ouml;desschema f&ouml;r Bifoga data"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget l&auml;gger till data i ett befintligt driftat geoobjektlager. Bifoga data &auml;ndrar de ursprungliga indatalagren och genererar inte ett nytt utdatalager. Du kan matcha f&auml;lt baserat p&aring; f&auml;ltnamnet och f&auml;lttypen, eller du kan till&auml;mpa mer avancerade matchningsmetoder.
+    </p>
+    <p>F&ouml;ljande &auml;r exempel: 
+        <ul>
+            <li>Du &auml;r anst&auml;lld p&aring; ett stort f&ouml;rs&auml;kringsbolag som genererar f&ouml;rs&auml;ljningsrekord m&aring;nadsvis. F&ouml;r &aring;rsredovisningen m&aring;ste m&aring;nadernas data sammanst&auml;llas f&ouml;r analys.  N&auml;r du ska inleda f&ouml;rs&auml;ljningsanalysen kan du utnyttja Bifoga data till att uppdatera lagret AnnualReport_2018 n&auml;r siffrorna f&ouml;r de olika m&aring;naderna blir tillg&auml;ngliga. Eftersom du vet att din organisation g&ouml;r saker och ting enligt en best&auml;md ordning varje m&aring;nad kan du anv&auml;nda standardf&auml;ltkarteringsmetoden f&ouml;r att effektivt l&auml;gga till geoobjekt baserat p&aring; f&auml;ltnamn och typ.
+            </li>
+            <li>Tio milj&ouml;grupper samlar var och en in hundratusentals klimatm&auml;tningar inom sina verksamhetsomr&aring;den.  Dessa organisationer vill sammanst&auml;lla sina data f&ouml;r att b&auml;ttre f&ouml;rst&aring; regionala och globala m&ouml;nster. Varje organisation best&auml;mmer schemat f&ouml;r deras dataset. Var och en av dem angav de olika f&auml;ltnamnen f&ouml;r temperatur- och vindhastighetsdata.  Med tanke p&aring; skillnader i f&auml;ltnamn mellan olika dataset kan f&auml;ltkartering utnyttjas f&ouml;r att ange hur man ska l&auml;gga till m&auml;tningar av temperatur och vindhastighet i deras respektive f&auml;lt.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager att bifoga till</h2></div>
+        <hr/>
+        <div>
+            <p>Tabellen eller punkt-, linje- eller polygongeoobjekten d&auml;r informationen ska l&auml;ggas till.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Det lager som du l&auml;gger till p&aring; kommer att &auml;ndras under k&ouml;rningen av verktyget. Se till att du &auml;r s&auml;ker p&aring; att du vill &auml;ndra detta lager innan du forts&auml;tter.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett driftat geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Välj lager att bifoga</h2></div>
+        <hr/>
+        <div>
+            <p>Tabellen eller punkt-, linje- eller polygongeoobjekten som ska l&auml;ggas till i indatalagret.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Bifoga alla geoobjekt eller definiera en delmängd (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifierar de geoobjekt som ska l&auml;ggas till. Den h&auml;r parametern &auml;r valfri.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Välj hur fält bifogas (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Anger hur till&auml;ggslagrets f&auml;lt l&auml;ggs till i indatalagret. Som standard l&auml;ggs alla matchande indata- och till&auml;ggsf&auml;lt till. F&auml;lten matchar varandra om de har samma f&auml;ltnamn och samma f&auml;lttyp. Alternativt kan du v&auml;lja hur f&auml;lt matchar varandra, eller ber&auml;kna Arcade-uttryck f&ouml;r att fylla i f&auml;ltv&auml;rden.
+            </p>
+            <p>Anta till exempel att du har ett indatalager med f&auml;lten  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> och ett till&auml;ggslager med f&auml;lten <i>field_string</i>, <i>field_number</i> och <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Som standard kommer d&aring; verktyget att matcha  <i>field_number</i> i indatalagret med <i>field_number</i> i till&auml;ggslagret och <i>field_string</i> i indatalagret med <i>field_string</i> i till&auml;ggslagret.
+                    </li>
+                    <li>Som standard fylls f&auml;lten  <i>date_field</i> och <i>unused_field</i> i med v&auml;rdet <i>null</i> eftersom de inte har n&aring;gra matchande f&auml;lt i till&auml;ggslagret.
+                    </li>
+                    <li>Du kan ocks&aring; l&auml;gga till v&auml;rden i f&auml;lt som inte matchas automatiskt som standard. F&auml;ltet  <i>date_field</i> i indatalagret kan matchas med till&auml;ggsf&auml;ltet <i>MY_DATE_FIELD</i>. On du vill g&ouml;ra detta anv&auml;nder du listrutan bredvid <i>date_field</i> i den f&ouml;rsta kolumnen och v&auml;ljer <i>MY_DATE_FIELD</i> i listrutan i den andra kolumnen.
+                    </li>
+                </ul>
+                 I ett annat exempel har ett indatalager de numeriska f&auml;lten <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, och <i>my_Average</i>, och ett till&auml;ggslager har de numeriska f&auml;lten <i>value_1</i>, <i>value_2</i> och <i>value_3</i>.
+                <ul>
+                    <li>Som standard kommer  <i>value_1</i>, <i>value_2</i> och <i>value_3</i> att matchas och l&auml;ggas till.
+                    </li>
+                    <li>Ut&ouml;ver standardbeteendet kan v&auml;rden ber&auml;knas f&ouml;r f&auml;ltet  <i>my_Average</i>. Detta g&ouml;r du med flera f&auml;lt och matematiska operationer genom att v&auml;lja listrutealternativet <b>Uttryck</b> i kolumnen bredvid <i>my_Average</i> och bygga egna Arcade-uttryck, som <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

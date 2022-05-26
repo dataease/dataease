@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Skapa tessellationer</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Skapa tessellationer"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget skapar tessellationer &ouml;ver ett unders&ouml;kningsomr&aring;de baserat p&aring; specificerad form och storlek.
+    </p>
+    <p>Kryssrutan  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r inaktiverad f&ouml;r det h&auml;r verktyget eftersom den utbredning som anv&auml;nds f&ouml;r att skapa tessellationerna styrs av parametern <b>Definiera utbredning</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Välj form</h2></div>
+        <hr/>
+        <div>
+            <p>Form eller geometri f&ouml;r den tessellation du vill skapa.  De tillg&auml;ngliga formerna &auml;r  <code>Kvadrat</code>, <code>Hexagon</code>, <code>Tv&auml;rst&auml;lld hexagon</code>, <code>Triangel</code> eller <code>Diamant</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definiera undersökningsområde</h2></div>
+        <hr/>
+        <div>
+            <p>Den utbredning eller det omr&aring;de som tessellationerna ska t&auml;cka.  Utbredningen kan avg&ouml;ras med den aktuella kartutbredningen, utbredningen f&ouml;r ett befintligt lager, eller genom att interaktivt rita ett omr&aring;de som ska anv&auml;ndas som utbredning.
+            </p>
+            <p>Om ett geoobjektlager har valts f&ouml;r att avg&ouml;ra utbredningen &auml;r alternativet att endast beh&aring;lla korsande tessellationer aktiverat.  Om det &auml;r markerat skapas endast de tessellationer som t&auml;cker eller korsar geoobjekt i det angivna utbredningslagret i det resulterade tessellationslagret. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Omarkerat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Fullst&auml;ndig utbredningscoverage">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Markerat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Geoobjektcoverage">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definiera klasstorlek genom att ange</h2></div>
+        <hr/>
+        <div>
+            <p>Storleken f&ouml;r varje cell.  Cellstorleken kan avg&ouml;ras genom att ange kvadratenheter eller genom att ange ett avst&aring;nd som ber&auml;knas med f&ouml;ljande m&aring;tt, d&auml;r d = Avst&aring;nd: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Fyrkant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Kvadratisk tessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Hexagontessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Tv&auml;rst&auml;lld hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tv&auml;rst&auml;lld hexagontessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangel
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Triangeltessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Diamanttessellation">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om lagret redan finns uppmanas du att ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

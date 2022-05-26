@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Opløs grænser</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Opl&oslash;s gr&aelig;nser"></h2>
+        <hr/>
+    <p>Omr&aring;der, der overlapper eller deler en f&aelig;lles gr&aelig;nse, flettes sammen, s&aring; de udg&oslash;r &eacute;t omr&aring;de.    
+    </p>
+    <p>Du kan styre, hvilke gr&aelig;nser der skal flettes ved at angive et felt Hvis du f.eks. har et lag best&aring;ende af regioner, og hver region har en  <i>State_Name</i>-attribut, kan du opl&oslash;se gr&aelig;nserne vha. attributten <i>State_Name</i>.  Naboregioner flettes sammen, hvis de har samme v&aelig;rdi for <i>State_Name</i>.  Slutresultatet er et lag best&aring;ende af landegr&aelig;nser.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det områdelag, hvis grænser skal opløses</h2></div>
+        <hr/>
+        <div>
+            <p>Det lag, der indeholder de omr&aring;deobjekter, der skal opl&oslash;ses. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Vælg en opløsningsmetode</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan flette omr&aring;deobjekter vha. &eacute;n af to metoder:
+                <ul>
+                    <li> <b>Omr&aring;der, der overlapper eller er naboer</b> &ndash; To eller flere omr&aring;der, hvis gr&aelig;nser overlapper hinanden, flettes til &eacute;t omr&aring;de. Desuden flettes omr&aring;der, der er naboer til hinanden (dvs. de deler en f&aelig;lles gr&aelig;nse) til &eacute;t omr&aring;de.
+                    </li>
+                    <li> <b>Omr&aring;der med samme feltv&aelig;rdi</b> &ndash; Omr&aring;der, der overlapper eller deler en f&aelig;lles gr&aelig;nse, flettes til &eacute;t omr&aring;de, hvis de har samme feltv&aelig;rdi.
+                        <p>Hvis du f.eks. har et lag best&aring;ende af amter, og hvert amt har et  <i>State_Name</i>-felt, kan du opl&oslash;se gr&aelig;nserne vha. feltet <i>State_Name</i>. Naboregioner flettes sammen, hvis de har samme v&aelig;rdi for <i>State_Name</i>.  Slutresultatet er et lag best&aring;ende af landegr&aelig;nser.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, vil kun de objekter i inputlaget, der er synlige i den aktuelle kortudstr&aelig;kning, blive opl&oslash;st. Hvis markeringen fjernes, opl&oslash;ses alle objekter i inputlaget, ogs&aring; selv om de er uden for den aktuelle kortudstr&aelig;kning.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Opret multipart-objekter</h2></div>
+        <hr/>
+        <div>
+            <p>I ArcGIS en digital visning af et sted eller en ting, der har mere end en del, men defineres som &eacute;t objekt,  fordi det henviser til et s&aelig;t attributter. I et lag med stater kan staten Hawaii f.eks. betragtes som et multipart-objekt, fordi dens separate geometriske dele er klassificeret som en enkelt stat. Boolean-parameteren giver to valgmuligheder:
+                <ul>
+                    <li>Sand (markeret): output-tjenesten kan indeholde multipart-objekter.
+                    </li>
+                    <li>Falsk (ikke markeret): output-tjenesten vil kun indeholde single-part-objekter, og der oprettes enkelte objekter til hver del.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Tilføj statistik</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan opsummere omr&aring;dernes attributter, n&aring;r omr&aring;der flettes sammen. Du kan eksempelvis beregne summen af  <i>State_Name</i> for amter ved at opl&oslash;se gr&aelig;nserne mellem amter baseret p&aring; <i>Population</i>, hvor hvert amt har et <i>Population</i>-felt.
+            </p>
+            <p>De tilg&aelig;ngelige statistiktyper er:
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Tilf&oslash;jer den samlede v&aelig;rdi for det angivne felt.
+                    
+
+                </li>
+                <li> <b>Gennemsnit</b> &ndash; Beregner gennemsnittet for det angivne felt.
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; Finder den mindste v&aelig;rdi af alle for det angivne felts poster.
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &ndash; Finder den st&oslash;rste v&aelig;rdi af alle for det angivne felt poster.
+                    
+
+                </li>
+                <li> <b>Std. Afvigelse</b> &ndash; Finder standardafvigelsen af v&aelig;rdier i det angivne felt.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

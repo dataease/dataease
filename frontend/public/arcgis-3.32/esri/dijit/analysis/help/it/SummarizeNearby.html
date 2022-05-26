@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Riepiloga nelle Vicinanze</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Riepiloga nelle Vicinanze"></h2>
+        <hr/>
+    <p>Questo strumento consente di trovare e di riepilogare feature posizionate entro una distanza specifica di feature nel primo layer di input. La distanza pu&ograve; essere calcolata lungo una linea retta o usando una modalit&agrave; di viaggio selezionata. Le opzioni disponibili per la modalit&agrave; di viaggio sono la distanza di guida, il tempo di guida, la distanza in camion, il tempo in camion, la distanza a piedi o il tempo a piedi. Vengono quindi calcolate le statistiche per le feature nelle vicinanze. Ad esempio:
+        <ul>
+            <li>&Egrave; possibile calcolare la popolazione totale che si trova ad un tempo di guida di cinque minuti dalla posizione proposta per l'apertura di un nuovo negozio.
+            </li>
+            <li>&Egrave; possibile calcolare il numero di rampe di accesso all'autostrada che si trovano a una distanza di un chilometro dalla posizione proposta per l'apertura di un nuovo negozio allo scopo di valutare l'accessibilit&agrave; al negozio.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, vengono analizzate solo le feature nel layer di input e nel layer da riepilogare visibili all'interno dell'estensione mappa corrente.  Se &egrave; deselezionata, vengono analizzate tutte le feature presenti nel layer di input e nel layer da riepilogare, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Scegli il layer a partire dal quale verranno misurate le distanze rispetto alle feature nel layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale, lineare o areale che verr&agrave; utilizzato come posizione di partenza per riepilogare le feature nelle vicinanze.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+            <p>Lo strumento supporta fino a 1000 feature in questo layer. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Scegliere il layer per il riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Verranno riepilogate le feature nel layer che si trovano entro la distanza specificata dalle feature nel layer specificato sopra. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Riepiloga le feature più vicine utilizzando</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile stabilire quale tipo di misurazione delle distanze si desidera usare: la distanza in linea retta o una modalit&agrave; di viaggio selezionata. Le modalit&agrave; di viaggio sono abilitate solo quando il primo layer di input (il layer da cui vengono misurate le distanze) contiene dei punti.  Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione. Quando si usa una delle modalit&agrave; di viaggio, le misurazioni vengono effettuate su strade o passaggi pedonali, rispettando le norme stradali vigenti come, ad esempio, le strade a senso unico, le svolte non consentite e cos&igrave; via. <b>Tempo di guida</b>, <b>Tempo di guida in aree non urbane</b> e <b>Tempo di guida in camion</b> mantiene la scelta di velocit&agrave; di viaggio, sia quelle basate sul traffico in tempo reale che quelle basate sul traffico standard. Le velocit&agrave; per il traffico in tempo reale vengono raccolte tramite i valori di appositi sensori, mentre quelle per il traffico standard vengono calcolate in base a medie storiche.
+            </p>
+            <p>&Egrave; possibile immettere pi&ugrave; distanze. Verranno riepilogate le feature che si trovano all'interno (o sono uguali) alle distanze immesse.  
+            </p>
+            <p>Se la casella di controllo  <b>Restituisci aree di confine</b> &egrave; selezionata, verr&agrave; visualizzato un layer di aree definito dalla misurazione della distanza specificata. Il layer risultante includer&agrave; il riepilogo di tutte le informazioni richieste. Ad esempio, quando si riepilogano punti nelle vicinanze, se si usa una <b>Distanza tra linee</b> di 5 miglia, il risultato conterr&agrave; aree in un raggio di 5 miglia intorno alle feature di input e tutte le informazioni di riepilogo, come il conteggio dei punti e qualsiasi statistica aggiunta. Se &egrave; deselezionata, il layer risultante restituir&agrave; le stesse feature del primo layer di input con tutte le informazioni di riepilogo richieste.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Aggiungi statistiche dal layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche di qualsiasi attributo numerico dei punti nelle vicinanze. 
+            </p>
+            <p>Se si seleziona la casella di controllo  <b>Conteggio di punti</b>, viene calcolato il numero totale di punti nelle vicinanze.  Inoltre, &egrave; possibile calcolare statistiche per campi numerici dei punti nelle vicinanze.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Aggiungi statistiche dal layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche di qualsiasi attributo numerico delle linee nelle vicinanze. 
+            </p>
+            <p>Se si seleziona la casella di controllo  <b>Lunghezza totale</b>, viene calcolata la lunghezza totale di linee nelle vicinanze.  Inoltre, &egrave; possibile calcolare statistiche per campi numerici delle linee nelle vicinanze.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Aggiungi statistiche dal layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile calcolare statistiche di qualsiasi attributo numerico delle aree nelle vicinanze. 
+            </p>
+            <p>Se si seleziona la casella di controllo  <b>Area totale</b>, viene calcolata l'area totale di feature nelle vicinanze.  Inoltre, &egrave; possibile calcolare statistiche per campi numerici delle feature nelle vicinanze.
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Aggiungi statistiche dal layer da riepilogare</h2></div>
+        <hr/>
+        <div>
+            <p>Dopo aver scelto un layer da riepilogare &egrave; possibile, se lo si desidera, calcolare statistiche di qualsiasi attributo numerico dei punti vicini, delle linee o delle aree. 
+            </p>
+            <ul>
+                <li> <b>Somma</b>: il valore totale del campo specificato.
+                </li>
+                <li> <b>Media</b>: il valore medio del campo specificato.
+                </li>
+                <li> <b>Minimo</b>: il valore minimo nel campo specificato.
+                </li>
+                <li> <b>Massimo</b>: il valore massimo nel campo specificato.
+                </li>
+                <li> <b>Deviazione standard</b>: la deviazione standard dei valori nel campo specificato.
+                </li>
+            </ul>
+            
+            <p>In base ai tipi di feature che si stanno riepilogando, &egrave; possibile calcolare il conteggio totale dei punti vicini, la lunghezza totale delle linee vicine o l'area totale di feature areali vicine.
+            </p>
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Scegli il campo in base a cui raggruppare</h2></div>
+        <hr/>
+        <div>
+            <p> Questo &egrave; un attributo delle feature vicine utilizzabile per calcolare statistiche di ciascun valore di attributo univoco separatamente. Ad esempio, si supponga che il primo layer di input (il layer da cui vengono misurate le distanze) contenga lotti di terreno non occupati in vendita e che le proprie feature vicine corrispondano a Building Footprints.  Uno degli attributi dei Building Footprints &egrave; <i>UseType</i>, che contiene valori quali VENDITA AL DETTAGLIO, RESIDENZIALE, PRODUTTIVO, PUBBLICO e cos&igrave; via.  Per caratterizzare i vari tipi di usi degli edifici vicini a ciascun lotto non occupato, si potrebbe calcolare l&rsquo;area totale di ciascun tipo di uso degli edifici entro un raggio di due chilometri dai lotti non occupati, utilizzando <i>UseType</i> come gruppo per attributo.   Le statistiche relative a ciascun gruppo, nonch&eacute; il conteggio delle feature vicine, verranno visualizzate nel popup del layer dei risultati.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Aggiungi minoranza, maggioranza</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Se si desidera trovare i valori di attributo che in ciascun gruppo costituiscono la minoranza (meno dominanti) o la maggioranza (pi&ugrave; dominanti) per una distanza o un tempo specificati, selezionare  <b>Aggiungi minoranza, maggioranza</b>.   Quando si seleziona <b>Aggiungi minoranza, maggioranza</b>, vengono aggiunti due nuovi campi al layer dei risultati.   Se si seleziona anche <b>Aggiungi percentuali</b>, vengono aggiunti altri due campi, al layer dei risultati, che contengono le percentuali relative ai valori degli attributi di minoranza e maggioranza all'interno di ciascun gruppo.
+            </p>
+            <ul>
+                <li>Se si intende riepilogare i punti nelle vicinanze, i valori di minoranza e maggioranza vengono calcolati sulla base del numero di punti presenti all'interno della distanza o del tempo specificati.
+                </li>
+                <li>Se si intende riepilogare le linee nelle vicinanze, i valori di minoranza e maggioranza vengono calcolati sulla base della lunghezza delle linee presenti all'interno della distanza o del tempo specificati.  
+                </li>
+                <li>Se si intende riepilogare le aree nelle vicinanze, i valori di minoranza e maggioranza vengono calcolati sulla base delle aree presenti all'interno della distanza o del tempo specificati.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Aggiungi percentuali</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Selezionare  <b>Aggiungi percentuali</b> se si desidera trovare la percentuale di ogni valore di attributo in ogni gruppo.  Un nuovo campo viene aggiunto alla tabella dei risultati contenente le percentuali di ogni valore di attributo in ogni gruppo. Se si seleziona anche <b>Aggiungi minoranza, maggioranza</b>, al layer dei risultati vengono aggiunti altri due campi contenenti le percentuali relative ai valori degli attributi di minoranza e maggioranza all&rsquo;interno di ciascun gruppo.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

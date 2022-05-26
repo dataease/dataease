@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/BrowseLayerMixin",{defaultAnaysisLayerTitle:"Wybierz warstw\u0119 analizy Living Atlas",customAnalysisLayerTitle:"Wybierz warstw\u0119 analizy",searchPlaceholderText:"Wyszukaj warstwy analizy atlasu Living Atlas",searchCustomPlaceholderText:"Wyszukaj warstwy analizy",mainActionTitle:"Zaznacz",customActionName:"Wybierz i dodaj do mapy",customeSectionName:"Warstwy analizy atlasu Living Atlas",Categories:"Kategorie",boundaries:"Granice",places:"Miejsca",boundariesAndPlaces:"Granice i miejsca",
+hexbins:"Elementy hexbin",transportation:"Transport",point:"Warstwy punktowe",line:"Warstwy poliliniowe",polygon:"Warstwy poligonowe",pointFilterName:"Punkt",lineFilterName:"Polilinia",polygonFilterName:"Poligon",multiPointFilterName:"Wiele punkt\u00f3w",geometryFilterName:"Geometria",featureLayerName:"Warstwa obiektowa",tableLayerName:"Tabela",itemTypeFilterName:"Typ elementu",instantFilterName:"Moment",intervalFilterName:"Przedzia\u0142",timeFilterName:"Czas",edit:"Edycja",boundaryLayers:"Warstwy granic firmy Esri",
+customAnalysisGroupName:"Grupa analiz instytucji"});

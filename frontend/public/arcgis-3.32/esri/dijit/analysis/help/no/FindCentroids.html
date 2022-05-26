@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Finn tyngdepunkter</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Finn tyngdepunkter"></h2>
+        <hr/>
+    <p>Verkt&oslash;yet fungerer med et lag med multipunkt-, linje- eller omr&aring;degeoobjekter og finner det representative senteret for hvert geoobjekt.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres kun geoobjektene i multipunkt-, linje- eller omr&aring;delaget som vises i gjeldende kartutstrekning. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg laget som inneholder geoobjektene du vil bruke til å generere tyngdepunkter</h2></div>
+        <hr/>
+        <div>
+            <p> Multipunkt-, linje- eller omr&aring;degeoobjektet brukes til &aring; finne tyngdepunkter.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Vis utdatalokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p> N&aring;r det er merket av for <b>Ved det ekte tyngdepunktet</b> (standard), returnerer utdataene den faktiske lokasjonen for tyngdepunktet for hvert inndatageoobjekt. Slik blir tyngdepunktene funnet:
+                <ul>
+                    <li>Multipunktgeoobjekter &ndash; utdatatyngdepunktet plasseres ved de gjennomsnittlige x- og y-koordinatene for alle punkter i multipunktgeoobjektet.
+                    </li>
+                    <li>Linjegeoobjekter &ndash; utdatatyngdepunktet plasseres ved de vektede gjennomsnittlige x- og y-koordinatene for midtpunktene p&aring; alle linjesegment i linjegeoobjektet. Vektingen er basert p&aring; lengden p&aring; segmentet.
+                    </li>
+                    <li>Omr&aring;degeoobjekter &ndash; utdatatyngdepunktet plasseres ved omr&aring;dets midtpunkt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aring;r det er merket av for  <b>avgrenset av inndatageoobjekter</b>, vil utdatapunktgeoobjektene v&aelig;re avgrenset av eller inni hvert inndatageoobjekt. Resulterende punktgeoobjekter vises slik:
+                <ul>
+                    <li>Multipunktgeoobjekter &ndash; utdatatyngdepunktet sammenfaller med ett av punktene i multipunktgruppen.
+                    </li>
+                    <li>Linjegeoobjekter &ndash;  utdatatyngdepunktet havner p&aring; linjen.  Hvis linjen er kurvet, ligger utdata p&aring; linjens midtpunkt. 
+                    </li>
+                    <li>Omr&aring;degeoobjekter &ndash; utdatapunktet vil v&aelig;re inne i omr&aring;degeoobjektet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

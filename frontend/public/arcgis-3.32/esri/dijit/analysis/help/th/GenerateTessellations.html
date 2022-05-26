@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>สร้างเทสเซลเลชัน</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="สร้างเทสเซลเลชัน"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะสร้างเทสเซลเลชันเหนือพื้นที่การเรียนรู้โดยยึดตามรูปทรงและขนาดที่ระบุ
+    </p>
+    <p>ช่องทำเครื่องหมาย  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> ปิดการทำงานสำหรับเครื่องมือนี้ เนื่องจากขอบเขตที่ใช้เพื่อสร้างเทสเซลเลชันถูกควบคุมโดยพารามิเตอร์ <b>กำหนดขอบเขต</b>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>เลือกรูปทรง</h2></div>
+        <hr/>
+        <div>
+            <p>รูปทรงหรือรูปทรงเรขาคณิตของเทสเซลเลชันที่คุณต้องการสร้าง รูปทรงที่ใช้งานได้ คือ  <code>สี่เหลี่ยมจัตุรัส</code>, <code>หกเหลี่ยม</code>, <code>หกเหลี่ยมแนวขวาง</code>, <code>สามเหลี่ยม</code> หรือ <code>สี่เหลี่ยมข้าวหลามตัด</code>
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>กำหนดพื้นที่การศึกษา</h2></div>
+        <hr/>
+        <div>
+            <p>ขอบเขตหรือพื้นที่ที่เทสเซลเลชันจะครอบคลุม สามารถกำหนดขอบเขตโดยใช้ขอบเขตแผนที่ปัจจุบัน ขอบเขตของชั้นข้อมูลที่มีอยู่ หรือตามการวาดพื้นที่ที่จะใช้เป็นขอบเขตแบบอินเทอร์แอคทีฟ
+            </p>
+            <p>หากมีการเลือกชั้นข้อมูลฟีเจอร์เพื่อกำหนดขอบเขต ตัวเลือกที่จะทำให้มีการตัดเทสเซลเลชันต่อไปจะถูกเปิดใช้งาน หากเลือกไว้ จะมีการสร้างเฉพาะเทสเซลเลชันที่ครอบคลุมหรือตัดกับฟีเจอร์ในชั้นข้อมูลขอบเขตที่ระบุในชั้นข้อมูลเทสเซลเลชันผลลัพธ์ 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>ไม่ได้เลือก
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="การครอบคลุมขอบเขตเต็มพื้นที่">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>เลือกไว้
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="การครอบคลุมฟีเจอร์">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>กำหนดขนาดถังขยะด้วยการระบุุ</h2></div>
+        <hr/>
+        <div>
+            <p>ขนาดของแต่ละเซลล์ สามารถกำหนดขนาดของเซลล์ได้ด้วยการระบุหน่วยตารางพื้นที่หรือการกำหนดระยะห่างที่คำนวณโดยใช้การวัดต่อไปนี้ โดยให้ d = ระยะห่าง: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>สี่เหลี่ยม
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="เทสเซลเลชันของสี่เหลี่ยมจัตุรัส">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>หกเหลี่ยม
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="เทสเซลเลชันของหกเหลี่ยม">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>หกเหลี่ยมแนวขวาง
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="เทสเซลเลชันของหกเหลี่ยมแนวขวาง">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>สามเหลี่ยม
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="เทสเซลเลชันของสามเหลี่ยม">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>สี่เหลี่ยมข้าวหลามตัด
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="เทสเซลเลชันของสี่เหลี่ยมข้าวหลามตัด">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>เป็นชื่อชั้นข้อมูลที่จะถูกสร้างใน <b>เนื้อหาของฉัน</b> และเพิ่มเข้าไปในแผนที่ ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกถามให้ตั้งชื่อใหม่
+            </p>
+            <p>ใช้  <b>บันทึกผลลัพธ์ใน</b> เมนูแบบเลื่อนลง เพื่อระบุชื่อของโฟล์เดอร์ใน <b>เนื้อหาของฉัน</b> เมื่อบันทึกผล
+            </p>
+        </div>
+    </div>
+</div>
+</html>

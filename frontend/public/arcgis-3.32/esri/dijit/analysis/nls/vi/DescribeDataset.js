@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/vi/DescribeDataset",{inputLayerLabel:"Ch\u1ecdn b\u1ed9 d\u1eef li\u1ec7u s\u1ebd m\u00f4 t\u1ea3",describeDataLabel:"Hi\u1ec3u d\u1eef li\u1ec7u c\u1ee7a b\u1ea1n b\u1eb1ng c\u00e1ch t\u1ea1o m\u1ed9t (t\u00f9y ch\u1ecdn)",sampleLayer:"L\u1edbp m\u1eabu",extentLayer:"L\u1edbp ph\u1ea1m vi",noOfFeaturesLabel:"S\u1ed1 l\u01b0\u1ee3ng \u0111\u1ed1i t\u01b0\u1ee3ng s\u1ebd \u0111\u01b0a v\u00e0o",outputLayerName:"T\u00ean l\u1edbp k\u1ebft qu\u1ea3",resultName:"M\u00f4 t\u1ea3 d\u1eef li\u1ec7u c\u1ee7a ${layerName}",
+itemDescription:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb vi\u1ec7c ch\u1ea1y c\u00f4ng c\u1ee5 M\u00f4 t\u1ea3 B\u1ed9 d\u1eef li\u1ec7u tr\u00ean ${layerName}. ",itemTags:"K\u1ebft qu\u1ea3 Ph\u00e2n t\u00edch, M\u00f4 t\u1ea3 B\u1ed9 d\u1eef li\u1ec7u, ${layername}",itemSnippet:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb c\u00f4ng c\u1ee5 M\u00f4 t\u1ea3 B\u1ed9 d\u1eef li\u1ec7u."});

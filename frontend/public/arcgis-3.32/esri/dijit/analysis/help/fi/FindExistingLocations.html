@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Hae nykyiset sijainnit</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Hae nykyiset sijainnit"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu valitsee tutkittavalta alueelta olemassa olevat kohteet, jotka vastaavat m&auml;&auml;ritt&auml;mi&auml;si kriteereit&auml;. Kriteereit&auml; voivat olla attribuuttikyselyt (esimerkiksi vapaat kiinteist&ouml;t) tai sijaintikyselyt (esimerkiksi yhden kilometrin s&auml;teell&auml; joesta). 
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -asetus on valittuna, vain l&auml;ht&ouml;karttatasossa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos asetus ei ole valittuna, kaikki kohteet analysoidaan, vaikka ne eiv&auml;t kuuluisi nykyiseen karttalaajuuteen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Valitse karttataso, joka sisältää kohteet, joita haluat etsiä käyttämällä ominaisuustieto- ja sijaintikyselyjä.</h2></div>
+        <hr/>
+        <div>
+            <p>Piste-, viiva- tai aluekarttataso, jolle haluat etsi&auml; kohteita alla m&auml;&auml;ritettyjen ominaisuustieto- ja sijaintikyselyjen perusteella.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Etsi kohteita muodostamalla kysely</h2></div>
+        <hr/>
+        <div>
+            <p>Lis&auml;&auml; ehtolauseke napsauttamalla  <b>Lis&auml;&auml; ehtolauseke</b> -painiketta. Voit lis&auml;t&auml; useita lausekkeita. Kun olet lis&auml;nnyt ehtolausekkeet ja napsauttanut <b>Suorita analyysi</b> -painiketta, l&auml;ht&ouml;karttatason kohteet suodatetaan m&auml;&auml;ritettyjen ehtolausekkeiden perusteella. Kaikkien lausekkeiden ehdot t&auml;ytt&auml;v&auml;t kohteet kirjoitetaan tulostasoon.
+            </p>
+            <p>Voit luoda kahdenlaisia ehtolausekkeita: attribuuttilausekkeita ja sijaintilausekkeita. Attribuuttilausekkeet kyselev&auml;t kenttien arvoja, esimerkiksi  <code>miss&auml; nimi on &rsquo;San Francisco&rsquo;</code>. Sijaintilausekkeita on nelj&auml;&auml; tyyppi&auml;:
+                <ul>
+                    <li> <b>et&auml;isyydell&auml;</b>: Kohteen on oltava annetulla et&auml;isyydell&auml; toisen tason kohteesta. Voit esimerkiksi etsi&auml; kaikki kiinteist&ouml;t, jotka ovat 500 metrin et&auml;isyydell&auml; Los Angeles -joesta.
+                    </li>
+                    <li> <b>sis&auml;lt&auml;&auml; kokonaan</b>: Kohteen on sis&auml;llett&auml;v&auml; toisen tason kohde kokonaan. Voit esimerkiksi etsi&auml; valuma-alueet, jotka sis&auml;lt&auml;v&auml;t kokonaisia teollisuusk&auml;ytt&ouml;&ouml;n kaavoitettuja kiinteist&ouml;j&auml;. Mik&auml;&auml;n kiinteist&ouml;n osa ei saa olla valuma-alueen ulkopuolella.
+                    </li>
+                    <li> <b>kokonaan sis&auml;ll&auml;</b>: Kohteen on oltava t&auml;ysin toisen tason kohteen ymp&auml;r&ouml;im&auml;. Voit esimerkiksi etsi&auml; koulupiirej&auml;, jotka ovat kokonaan kaupungin rajojen sis&auml;puolella. Mik&auml;&auml;n koulupiirin osa ei saa olla kaupungin rajojen ulkopuolella.
+                    </li>
+                    <li> <b>leikkaa</b>: Kohde sis&auml;lt&auml;&auml; osan toisen tason kohteesta. Voit esimerkiksi etsi&auml; jokia leikkaavia kiinteist&ouml;j&auml;. Mik&auml; tahansa osa joesta, joka kulkee kiinteist&ouml;n l&auml;pi tai koskettaa kiinteist&ouml;n rajaa, leikkaa kiinteist&ouml;&auml;.
+                    </li>
+                    <li> <b>l&auml;hinn&auml;</b>: kohteen on oltava l&auml;hinn&auml; toisen karttatason kohdetta. Voit esimerkiksi etsi&auml; kutakin hotellia l&auml;hinn&auml; olevan ravintolan.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kullakin sijaintilausekkeella on vastaava negaatio; poikkeuksena ovat kuitenkin seuraavat:  <b>l&auml;hinn&auml;</b>, <b>ei ole et&auml;isyydell&auml;</b>, <b>ei sis&auml;ll&auml; kokonaan</b>, <b>ei ole kokonaan sis&auml;ll&auml;</b> ja <b>ei leikkaa</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

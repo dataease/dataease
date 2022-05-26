@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/bs/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Odaberite to\u010dkaste geoobjekte za oboga\u0107ivanje",chooseMVgridLyrLabel:"Odaberite vi\u0161evarijabilnu mre\u017eu za oboga\u0107ivanje",chooseVariables:"Odaberite varijable koje \u0107e se dodati",outputLayerName:"Oboga\u0107eno ${inputFeatures} iz ${gridLayer}",itemDescription:"Sloj geoobjekata koji je generiran pokretanjem rje\u0161enja Obogati iz vi\u0161evarijabilne mre\u017ee za ${inputFeatures}.",itemTags:"Rezultat analize, Obogati iz vi\u0161evarijabilne mre\u017ee, ${inputFeatures}, ${gridLayer}",
+itemSnippet:"Sloj geoobjekata generiran iz opcije Obogati iz vi\u0161evarijabilne mre\u017ee."});

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ähnliche Positionen suchen</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="&Auml;hnliche Positionen suchen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;&Auml;hnliche Positionen suchen&quot; misst die &Auml;hnlichkeit von Positionen im Layer f&uuml;r die Kandidatensuche im Vergleich zu einer oder mehreren Referenzpositionen auf Grundlage der angegebenen Kriterien. Mit diesem Werkzeug k&ouml;nnen verschiedene Fragen beantwortet werden, z. B.:
+        <ul>
+            <li>Welche Ihrer Gesch&auml;fte sind Ihren Gesch&auml;ften mit den h&ouml;chsten Umsatzzahlen im Hinblick auf Kundenprofile am &auml;hnlichsten?
+            </li>
+            <li>Welche Orte sind basierend auf den Eigenschaften von Orten, die besonders von einer Krankheitswelle betroffen sind, m&ouml;glicherweise auch gef&auml;hrdet?
+            </li>
+        </ul>
+        Um Fragen wie diese zu beantworten, stellen Sie die Referenzpositionen, die Positionen f&uuml;r die Kandidatensuche und die Felder bereit, die die Kriterien darstellen, die Sie zuordnen m&ouml;chten. Der erste Eingabe-Layer sollte Ihre Referenz- und Bezugswertpositionen enthalten.  Dabei kann es sich beispielsweise um einen Layer handeln, der Ihre Gesch&auml;fte mit den h&ouml;chsten Umsatzzahlen oder die Orte enth&auml;lt, die am st&auml;rksten von der Krankheit betroffen sind. Anschlie&szlig;end geben Sie den Layer an, der die Positionen f&uuml;r die Kandidatensuche enth&auml;lt. Dies k&ouml;nnen all Ihre Gesch&auml;fte oder alle anderen Orte sein.  Abschlie&szlig;end identifizieren Sie mindestens ein Feld, das zum Messen der &Auml;hnlichkeit dienen soll. Danach ordnet das Werkzeug &quot;&Auml;hnliche Positionen suchen&quot; alle Positionen f&uuml;r die Kandidatensuche nach dem Grad der jeweiligen &Uuml;bereinstimmung mit Ihren Referenzpositionen aller ausgew&auml;hlten Felder.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer festlegen, der die Referenzpositionen enthält</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-, Linien- oder Fl&auml;chen-Layer, der die abzugleichenden Referenzpositionen enth&auml;lt. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Sie können alle Positionen verwenden oder eine Auswahl treffen</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie die Auswahl-Schaltfl&auml;chen, um die Referenzpositionen (falls erforderlich) zu identifizieren. Wenn der Eingabe-Layer beispielsweise alle Positionen enth&auml;lt &ndash; die Referenzpositionen und die Positionen f&uuml;r die Kandidatensuche &ndash; m&uuml;ssen Sie eines der Auswahlwerkzeuge verwenden, um die Referenzpositionen zu identifizieren. Wenn Sie zwei getrennte Layer erstellen, einen mit den Referenzpositionen und den anderen mit allen Positionen f&uuml;r die Kandidatensuche, m&uuml;ssen Sie keine Auswahl vornehmen. 
+            </p>
+            <p>Wenn mehr als eine Referenzposition vorhanden ist, wird eine einzelne Position erstellt, indem der Durchschnitt der Werte f&uuml;r jedes der Felder ermittelt wird, die zum Analysieren der &Auml;hnlichkeit herangezogen werden.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Ähnliche Positionen suchen in</h2></div>
+        <hr/>
+        <div>
+            <p>Die Positionen f&uuml;r die Kandidatensuche in diesem Layer werden von gr&ouml;&szlig;ter nach geringster &Auml;hnlichkeit geordnet. &Auml;hnlichkeit basiert auf dem Grad der &Uuml;bereinstimmung jeder Position mit der Referenzposition in den angegebenen Feldern. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Ähnlichkeit basiert auf</h2></div>
+        <hr/>
+        <div>
+            <p>Die ausgew&auml;hlten Felder sind die Kriterien f&uuml;r die Auswertung der &Auml;hnlichkeit. Wenn Sie ein Bev&ouml;lkerungs- und Einkommensfeld ausw&auml;hlen, handelt es sich beispielsweise bei den Positionen f&uuml;r die Kandidatensuche mit den niedrigsten (besten) Rangstufen um Positionen, die &auml;hnliche Bev&ouml;lkerungs- und Einkommenswerte wie Ihre Referenzpositionen aufweisen. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Anzeigen:</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen alle Positionen f&uuml;r die Kandidatensuche von gr&ouml;&szlig;ter zu geringster &Auml;hnlichkeit geordnet anzeigen, oder Sie k&ouml;nnen festlegen, wie viele Ergebnisse angezeigt werden sollen. 
+                <ul>
+                    <li> <b>Alle Positionen von gr&ouml;&szlig;ter zu geringster &Auml;hnlichkeit</b>: Alle Features im Layer f&uuml;r die Kandidatensuche werden in Rangfolge in den Ergebnis-Layer aufgenommen.
+                    </li>
+                    <li> <b>Anzahl der zur&uuml;ckgegebenen Positionen</b>: Sie legen fest, wie viele Kandidaten mit der gr&ouml;&szlig;ten &Auml;hnlichkeit in den Ergebnis-Layer einbezogen werden sollen. Die Standardeingabe ist&nbsp;1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie einen Namen f&uuml;r den Layer an, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Dieser Ergebnis-Layer enth&auml;lt die Referenzpositionen und die Anzahl der nach Rangfolge geordneten Positionen f&uuml;r die Kandidatensuche, die Sie angegeben haben. Wenn der Name des Ergebnis-Layers bereits vorhanden ist, werden Sie aufgefordert, ihn umzubenennen.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

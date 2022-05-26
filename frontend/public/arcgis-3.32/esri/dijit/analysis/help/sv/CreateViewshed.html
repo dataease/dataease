@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skapa siktområde</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Skapa siktomr&aring;de"></h2>
+        <hr/>
+    <p>Verktyget Skapa siktomr&aring;de anv&auml;nds f&ouml;r att skapa omr&aring;den d&auml;r observat&ouml;rer kan se objekt p&aring; marken. Indataobservat&ouml;rspunkterna kan representera antingen observat&ouml;rer (till exempel personer p&aring; marken eller spanare i ett brandtorn) eller objekt som observeras (till exempel vindkraftverk, vattentorn, fordon eller andra m&auml;nniskor). Resultatomr&aring;dena &auml;r de omr&aring;den d&auml;r observat&ouml;rerna kan se de observerade objekten och tv&auml;rt om &ndash; de observerade objekten kan se observat&ouml;rerna.
+    </p>
+    <p>B&aring;de observat&ouml;rerna och de observerade objekten kan ha en h&ouml;jd &ouml;ver marken, och den h&auml;r h&ouml;jden anv&auml;nds f&ouml;r att fastst&auml;lla synligheten. Ett siktomr&aring;de som ber&auml;knas f&ouml;r 140 meter h&ouml;ga vindkraftverk och tv&aring; meter l&aring;nga m&auml;nniskor &auml;r till exempel normalt sett st&ouml;rre &auml;n ett siktomr&aring;de ber&auml;knat f&ouml;r 70 meter h&ouml;ga vindkraftverk och tv&aring; meter l&aring;nga m&auml;nniskor.
+    </p>
+    <p>Observera att ber&auml;kningen av siktomr&aring;det inte tar h&auml;nsyn till hinder som tr&auml;d eller byggnader. Du kan t&auml;nka dig att ber&auml;kningen utf&ouml;rs p&aring; bar mark d&auml;r det inte finns n&aring;got annat &auml;n observat&ouml;ren och det observerade objektet.
+    </p>
+    <p>Resultatlagret inneh&aring;ller omr&aring;desgeoobjekt som representerar synliga omr&aring;den. F&auml;ltet  <i>Frequency</i> inneh&aring;ller antalet analyspunkter som kan se varje omr&aring;de. Om du till exempel har fem indatapunkter som var och en representerar ett brandtorn, inneh&aring;ller f&auml;ltet <i>Frequency</i> v&auml;rden mellan ett och fem. Omr&aring;den med v&auml;rdet ett g&aring;r bara att se fr&aring;n ett torn, medan omr&aring;den med v&auml;rdet fem g&aring;r att se fr&aring;n alla torn. Resultatlagret inneh&aring;ller ocks&aring; f&auml;ltet <i>DEMResolution</i>, som sparar uppl&ouml;sningen f&ouml;r den digitala h&ouml;jdmodell (DEM) som anv&auml;nds f&ouml;r att skapa siktomr&aring;dena.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat analyseras endast de observat&ouml;rspunkter som &auml;r synliga i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla observat&ouml;rspunkter i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekt som representerar observatörsplatser</h2></div>
+        <hr/>
+        <div>
+            <p>De punktgeoobjekt som ska anv&auml;ndas som observat&ouml;rsplatser. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Höjd för observatörsplatser</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r h&ouml;jden ovan mark f&ouml;r dina observat&ouml;rsplatser. Standard &auml;r den ungef&auml;rliga l&auml;ngden f&ouml;r en person.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Höjd för andra objekt på marken</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r h&ouml;jden f&ouml;r byggnader eller personer p&aring; marken som anv&auml;nds f&ouml;r att fastst&auml;lla synligheten. Det resulterande siktomr&aring;det &auml;r de omr&aring;den d&auml;r en observat&ouml;rspunkt kan se dessa andra objekt. Motsatsen st&auml;mmer ocks&aring;, de &ouml;vriga objekten kan se en observat&ouml;rspunkt. 
+            </p>
+            <p>
+                <ul>
+                    <li>Om din observat&ouml;rspunkt representerar vindkraftverk och du vill avg&ouml;ra var personer som st&aring;r p&aring; marken kan se dem, anger du den ungef&auml;rliga l&auml;ngden p&aring; en person (cirka 2 meter). Resultatet &auml;r de omr&aring;den d&auml;r en person som st&aring;r p&aring; marken kan se vindkraftverken.
+                    </li>
+                    <li>Om observat&ouml;rspunkten representerar brandtorn och du vill avg&ouml;ra vilka torn som kan se ett r&ouml;kmoln som stiger 6 meter eller h&ouml;gre, anger du 6 meter som h&ouml;jd. Resultatet &auml;r de omr&aring;den d&auml;r ett brandtorn kan se ett r&ouml;kmoln som &auml;r minst 6 meter h&ouml;gt.
+                    </li>
+                    <li>Om din observat&ouml;rspunkt representerar utsiktsplatser l&auml;ngs v&auml;gar och stigar och du vill fastst&auml;lla var vindkraftverk som &auml;r minst 150 meter h&ouml;ga kan ses, anger du 150 meter som h&ouml;jd. Resultatet &auml;r de omr&aring;den d&auml;r en person som st&aring;r p&aring; en utsiktsplats kan se ett vindkraftverk som &auml;r minst 150 meter h&ouml;gt.
+                    </li>
+                    <li>Om observat&ouml;rspunkten representerar utsiktsplatser och du vill avg&ouml;ra hur stort omr&aring;de personer som st&aring;r p&aring; marken kan se anger du noll. Resultatet &auml;r de platser som kan ses fr&aring;n den utsiktsplatsen.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maximalt siktavstånd</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r ett brytavst&aring;nd d&auml;r ber&auml;kningen av synliga omr&aring;den stoppas. Bortom det h&auml;r avst&aring;ndet &auml;r det ok&auml;nt om observat&ouml;rspunkterna och de andra objekten kan se varandra. Stora v&auml;rden &ouml;kar ber&auml;kningstiden. Det maximala till&aring;tna v&auml;rdet &auml;r 50 kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+            <p> Det h&auml;r verktyget f&ouml;rbrukar inte krediter.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

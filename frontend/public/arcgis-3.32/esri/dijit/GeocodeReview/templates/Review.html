@@ -1,0 +1,20 @@
+<div style="width:100%; height:100%;">
+  <div class="${baseClass}" data-dojo-attach-point="BorderContainerNode"  data-dojo-type="dijit.layout.BorderContainer" gutters="false">
+    <div id="${headerID}" class="esriControllerContainer" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top'">
+      <div data-dojo-attach-point="stackControllerNode" data-dojo-type="dijit.layout.StackController" data-dojo-props="containerId:'${stackContainerID}'"></div>
+      <div class="learnMoreDiv"><span><a href="#">${i18n.common.learnMore}</a></span></div>
+    </div>
+    <div class="StackContainerNode" id="${stackContainerID}" data-dojo-props="region: 'center'" data-dojo-attach-point="stackContainerNode" data-dojo-type="dijit/layout/StackContainer" style="width:100%; height:100%;">
+      <div data-dojo-attach-point="_tab1Node" data-dojo-type="dijit/layout/ContentPane" name="Unmatched" title="${unmatchedUC}">
+        <div class="esriGeocodeGrid" data-dojo-attach-point="_grid1Node"></div>
+      </div>
+      <div  data-dojo-attach-point="_tab2Node"  data-dojo-type="dijit/layout/ContentPane" name="Matched" title="${matchedUC}">
+        <div class="esriGeocodeGrid" data-dojo-attach-point="_grid2Node"></div>
+      </div>
+      <div  data-dojo-attach-point="_tab3Node"  data-dojo-type="dijit/layout/ContentPane" name="Reviewed" title="${reviewedUC}">
+        <div class="esriGeocodeGrid" data-dojo-attach-point="_grid3Node"></div>
+      </div>
+    </div>
+  </div>
+</div>
+

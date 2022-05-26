@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pianifica itinerari</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Pianifica Itinerari"></h2>
+        <hr/>
+    <p>Pianifica itinerari consente di stabilire come dividere in modo efficiente le attivit&agrave; tra gli addetti che operano sul campo.
+    </p>
+    <p>&Egrave; sufficiente specificare il numero di fermate e il numero di vetture disponibili per le visite. Lo strumento assegna le fermate alle vetture e restituisce gli itinerari indicando in che modo ciascuna vettura pu&ograve; raggiungere le destinazioni assegnate alle fermate nel minor tempo possibile.
+    </p>
+    <p>Con Pianifica itinerari, gli addetti che operano sul campo possono raggiungere i vari siti in minor tempo, con conseguente incremento della produttivit&agrave; ed ottimizzazione del servizio offerto ai clienti.
+        <ul>
+            <li>Ispezionare case, ristoranti o cantieri edili
+                
+
+            </li>
+            <li>Gestire servizi tecnici, di riparazione o installazione
+            </li>
+            <li>Consegnare merci e pacchi di piccole dimensioni
+            </li>
+            <li>Visitare potenziali clienti
+            </li>
+            <li>Prelevare persone a casa ed accompagnarle ad un evento
+            </li>
+        </ul>
+        
+    </p>
+    <p>L'output di Pianifica itinerari include un layer di fermate codificate in base agli itinerari cui sono assegnate, un layer di itinerari che indicano i percorsi pi&ugrave; brevi per raggiungere le fermate assegnate e, nel caso in cui non fosse possibile raggiungere alcune localit&agrave;, un layer delle fermate non assegnate. 
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, nell'analisi verranno considerate solo le feature visibili nell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, vengono considerate tutte le feature presenti nel layer di input, anche se sono esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Scegli il layer punto che rappresenta le fermate da visitare</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il layer di punti che gli itinerari (o veicoli) devono visitare.  Questi punti diventano fermate assegnate o non assegnate nell'output. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+            <p>Lo strumento supporta fino a 2.000 feature di input. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Modalità viaggio per itinerari</h2></div>
+        <hr/>
+        <div>
+            <p>Seleziona la modalit&agrave; di viaggio. Gli itinerari di output seguiranno le strade o i passaggi pedonali, rispettando le norme stradali vigenti come, ad esempio, le strade a senso unico e le svolte non consentite in auto o con il camion. Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Inizio itinerari durante le fermate</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare la localit&agrave; e la data per l'inizio degli itinerari.
+            </p>
+            <p>Con Pianifica itinerari &egrave; possibile specificare uno o pi&ugrave; localit&agrave; di partenza per i veicoli.
+            </p>
+            <p>Quando si specifica una sola localit&agrave; di tipo punto, tutti i veicoli partiranno da tale punto indipendentemente dal numero di veicoli disponibili. &Egrave; possibile selezionare un layer di punti contenente un solo punto oppure aggiungere un punto alla mappa scegliendo  <b>Aggiungi punto alla mappa</b>, facendo clic sul pulsante di modifica del punto adiacente e quindi sulla mappa. 
+            </p>
+            <p>Quando si specificano pi&ugrave; localit&agrave;, &egrave; necessario associare un punto a ogni veicolo. Il numero di veicoli deve essere uguale al numero di punti nel layer. Selezionare un layer contenente pi&ugrave; punti e specificare un campo che identifica in modo univoco i singoli itinerari, veicoli o autisti nell'elenco a discesa  <b>Campo ID itinerario</b>.
+            </p>
+            <p>L'ora di inizio &egrave; uguale per tutti gli itinerari. Il fuso orario dell'ora di inizio &egrave; uguale a quello della zona in cui si trovano i punti di partenza, di conseguenza assicurarsi di specificare l'ora locale. Ad esempio, si supponga che il fuso orario corrente sia Ora del Pacifico (PST) (UTC-8.00) e che quello dei veicoli utilizzati per l'itinerario &egrave; sia Ora solare fuso occidentale (MST) (UTC-7.00). Se sono al momento le 9:30 PST (10:30 MST) e i veicoli devono iniziare il giro tra 30 minuti, impostare l'ora di inizio alle 11:00. 
+            </p>
+            <p>Se i veicoli partono in zone con fusi orari diversi, l'ora di inizio non pu&ograve; essere simultanea, ma risulta sfalsata. Ad esempio, se un itinerario inizia in un punto con fuso orario PST e un altro itinerario inizia in un punto con fuso orario MST, immettendo le 11:00 come ora di inizio, l'itinerario con fuso PST inizier&agrave; alle 11:00 PST e quello con fuso MST inizier&agrave; alle 11:00 MST, ovvero con un'ora di differenza.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Fine itinerari durante le fermate</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare la localit&agrave; di arrivo degli itinerari.
+            </p>
+            <p>&Egrave; possibile configurare gli itinerari in modo che terminino in tre diverse localit&agrave;: 
+                <ul>
+                    <li>La stessa localit&agrave; in cui sono iniziati, indipendentemente dal fatto che l'origine sia una o pi&ugrave; localit&agrave;
+                    </li>
+                    <li>Un'unica localit&agrave;
+                    </li>
+                    <li>Pi&ugrave; localit&agrave;, ovvero un punto di arrivo per ciascun itinerario
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Selezionare  <b>Torna all'inizio</b> se la localit&agrave; di partenza &egrave; uguale a quella di arrivo.
+            </p>
+            <p>Per utilizzare per tutti i veicoli un punto di arrivo comune ma diverso da quello di partenza, deselezionare  <b>Torna all'inizio</b> e aggiungere un punto alla mappa oppure scegliere un layer contenente un unico punto.
+            </p>
+            <p>Per utilizzare localit&agrave; diverse per i punti di arrivo, deselezionare  <b>Torna all'inizio</b> e scegliere un layer contenente pi&ugrave; di un punto. Il numero di veicoli deve essere uguale al numero di punti nel layer selezionato. Nell'elenco a discesa <b>Campo ID itinerario</b> selezionare un campo che identifichi in modo univoco i singoli itinerari, veicoli o autisti. Se per i veicoli vengono utilizzate pi&ugrave; localit&agrave; come punti partenza e di arrivo, gli ID itinerario scelti per i layer di partenza e di arrivo devono essere uguali.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleziona i layer delle barriere</h2></div>
+        <hr/>
+        <div>
+            <p> Una o pi&ugrave; feature che agiscono come restrizioni temporanee (barriere) mentre si viaggia sulle strade sottostanti. &Egrave; possibile specificare le barriere utilizzando feature puntuali, lineari o poligonali.
+            </p>
+            <p>Una barriera puntuale pu&ograve; essere un albero caduto, un incidente, una linea elettrica fuori uso o qualsiasi elemento che blocchi completamente il traffico in un punto specifico sulla strada. &Egrave; possibile viaggiare sulla strada ma non &egrave; possibile attraversare la barriera. &Egrave; possibile specificare fino a 250 feature affinch&eacute; fungano da barriere puntuali.
+            </p>
+            <p>Una barriera lineare impedisce di viaggiare lungo il perimetro di intersezione tra la barriera e le strade. Per esempio, tramite una barriera lineare, &egrave; possibile creare un corteo o una protesta in grado di bloccare il traffico interessando vari segmenti di strade. Se il numero di feature di strade che si intersecano con tutte le barriere lineari supera il numero 500, lo strumento restituir&agrave; un errore.
+            </p>
+            <p>Una barriera poligonale impedisce di viaggiare all&rsquo;interno di tutta l&rsquo;area di intersezione tra il poligono e le strade. &Egrave; possibile utilizzare questo tipo di barriera per creare alluvioni che coprano aree di rete di strade, rendendo impossibile la circolazione stradale. Se il numero di feature di strade che si intersecano con tutte le barriere poligonali supera il numero 2000, lo strumento restituir&agrave; un errore.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Numero massimo di veicoli per itinerario</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare il numero di veicoli disponibili per le fermate. Lo strumento supporta fino a  100 veicoli. 
+            </p>
+            <p>&Egrave; possibile che lo strumento individui una soluzione che implichi l'uso di un numero di veicoli inferiore a quello specificato a seconda del numero totale di fermate, del numero di fermate per veicolo consentite, della distanza tra le fermate, del tempo dedicato a ogni fermata e di eventuali limiti impostati per il tempo totale dell'itinerario per veicolo.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Numero massimo di fermate per veicolo</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; uno dei due parametri che consente di bilanciare il carico di lavoro complessivo tra gli itinerari. &Egrave; possibile specificare un valore compreso tra 1 e  200. 
+            </p>
+            <p>Abbassando il numero massimo di fermate che &egrave; possibile assegnare a ciascun veicolo, &egrave; pi&ugrave; probabile che a tutti i veicoli venga assegnato un numero uguale di fermate. In tal modo i carichi di lavoro risultano bilanciati tra gli autisti. Questo per&ograve; potrebbe portare a una soluzione meno efficiente.
+            </p>
+            <p>Aumentando il numero di fermate per veicolo, lo strumento potr&agrave; individuare liberamente soluzioni pi&ugrave; efficienti, tuttavia &egrave; possibile che il carico di lavoro non sia distribuito uniformemente tra autisti e veicoli. Tenere presente che &egrave; possibile bilanciare i carichi di lavoro in base al tempo oltre che al numero di fermate specificando un valore per il parametro  <b>Limita la durata totale dell'itinerario per veicolo</b>.
+            </p>
+            <p>Negli esempi seguenti vengono illustrati gli effetti associati alla riduzione del numero massimo di fermate per veicolo o della durata totale per veicolo. In tutti gli esempi vengono utilizzati sei fermate e due itinerari che partono tutti dalla stessa localit&agrave;.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Fermate e tempi di percorrenza bilanciati">
+                </td>
+                <td>
+                    <p>Tempi di percorrenza e fermate bilanciati per itinerario:
+                    </p>
+                    <p>le fermate sono dislocate in modo pi&ugrave; o meno uniforme, di conseguenza impostando il numero massimo di fermate per veicolo in modo da distribuire uniformemente il carico di lavoro si otterranno itinerari di durata quasi uguale.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Tempi di percorrenza non bilanciati">
+                </td>
+                <td>
+                    <p>Fermate bilanciate per itinerario ma tempi di percorrenza non bilanciati
+                    </p>
+                    <p>Cinque delle sei fermate sono raggruppate in prossimit&agrave; della localit&agrave; di partenza, ma una &egrave; distante pertanto richiede tempi di percorrenza pi&ugrave; lunghi. Dividendo equamente le fermate tra i due itinerari si otterranno tempi di percorrenza non bilanciati.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Tempi di percorrenza bilanciati">
+                </td>
+                <td>
+                    <p>Fermate non bilanciate per itinerario ma tempi di percorrenza bilanciati
+                    </p>
+                    <p>Le fermate sono dislocate nella stessa posizione dell'immagine precedente, ma aumentando il numero massimo di fermate per itinerario e limitando il tempo totale di percorrenza per veicolo, i tempi di percorrenza risultano bilanciati.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Durata singola fermata</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di impostare il tempo medio di servizio previsto per ciascuna fermata. Ad esempio, se si intende programmare la giornata lavorativa degli ispettori e la durata media di un'ispezione &egrave; 45 minuti, immettere  <code>45</code>.
+            </p>
+            <p>Si presuppone che il tempo di servizio sia uguale per tutte le fermate.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limita la durata totale dell'itinerario per veicolo</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare la durata massima di un itinerario dalla partenza all'arrivo. Sono inclusi i tempi di percorrenza e di servizio per le fermate previste dall'itinerario. Se gli autisti non devono lavorare oltre un tempo indicato durante una giornata, ad esempio otto ore, &egrave; possibile specificare qui tale limite.
+            </p>
+            <p>Per le considerazioni sul bilanciamento dei carichi di lavoro, consultare la Guida per  <b>Numero massimo di fermate per veicolo</b>.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Nome del Feature Layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Se il Feature Layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome. Il feature layer conterr&agrave; un layer per ciascuno dei seguenti elementi: itinerari e fermate assegnate e non assegnate quando alcune fermate di input non possono essere assegnate agli itinerari.
+            </p>
+            <p>Se si seleziona  <b>Includi layer percorso</b>, anche ogni percorso incluso nei risultati viene salvato come layer percorso. Un layer percorso include tutte le informazioni relative a un percorso specifico, ad esempio le fermate assegnate al percorso e le direzioni di viaggio. La creazione di Route Layer &egrave; utile se si desidera condividere i singoli percorsi con altri membri dell&rsquo;organizzazione oppure modificare i percorsi utilizzando il pulsante <b>Direzioni</b> in Map Viewer. I layer percorso utilizzano il nome fornito per il feature layer come prefisso, mentre il nome percorso generato nell'ambito dell'analisi viene aggiunto per creare un nome univoco per ogni layer percorso.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il feature layer e i layer percorso, se sono stati creati.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

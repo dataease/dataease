@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buffer létrehozása</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Buffer l&eacute;trehoz&aacute;sa"></h2>
+        <hr/>
+    <p>A buffer egy pont, vonal vagy ter&uuml;let vektoros elemtől egy meghat&aacute;rozott t&aacute;vols&aacute;got lefedő ter&uuml;let. 
+    </p>
+    <p>A bufferekkel &aacute;ltal&aacute;ban olyan ter&uuml;letek hozhat&oacute;k l&eacute;tre, amelyek p&eacute;ld&aacute;ul a Fedv&eacute;nyműveletek eszk&ouml;zzel tov&aacute;bb elemezhetők. A &bdquo;Milyen &eacute;p&uuml;letek tal&aacute;lhat&oacute;k az iskol&aacute;t&oacute;l egy m&eacute;rf&ouml;ld&ouml;n bel&uuml;l?&rdquo; k&eacute;rd&eacute;s megv&aacute;laszol&aacute;s&aacute;hoz p&eacute;ld&aacute;ul l&eacute;trehozhatunk egy egym&eacute;rf&ouml;ldes buffert az iskola k&ouml;r&uuml;l, &eacute;s a Fedv&eacute;nyműveletek eszk&ouml;zzel a bufferre fedv&eacute;nyk&eacute;nt r&aacute;helyezhetj&uuml;k az &eacute;p&uuml;letek alaprajzait tartalmaz&oacute; r&eacute;teget.  A v&eacute;geredm&eacute;ny az iskol&aacute;t&oacute;l egy m&eacute;rf&ouml;ld&ouml;n bel&uuml;l tal&aacute;lhat&oacute; &eacute;p&uuml;leteket tartalmaz&oacute; r&eacute;teg  
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket buffereli.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t buffereli, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bufferelni kívánt vektoros elemeket tartalmazó réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A bufferelni k&iacute;v&aacute;nt pont, vonal vagy ter&uuml;let vektoros elemek. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Buffer méretének megadása</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhat egyetlen t&aacute;vols&aacute;g&eacute;rt&eacute;ket vagy t&ouml;bb &eacute;rt&eacute;ket, az egyes &eacute;rt&eacute;keket sz&oacute;k&ouml;zzel elv&aacute;lasztva.  A  <b>Mező</b> lehetős&eacute;gre kattintva megadhat egy t&aacute;vols&aacute;g&eacute;rt&eacute;ket tartalmaz&oacute; attrib&uacute;tumot is a bemenő r&eacute;tegen.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opciók</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az egym&aacute;st &aacute;tfedő bufferek kezel&eacute;s&eacute;nek m&oacute;dj&aacute;t. B&aacute;rmely buffer eset&eacute;n, amely egy m&aacute;sik buffer felett tal&aacute;lhat&oacute;, a k&ouml;z&ouml;s ter&uuml;letek megtarthat&oacute;k (&Aacute;tfed&eacute;s) vagy egyes&iacute;thetők (&Ouml;sszeolvaszt&aacute;s). Az  <b>&Ouml;sszeolvaszt</b> eszk&ouml;z haszn&aacute;lat&aacute;val az &ouml;sszes buffer &ouml;sszeolvaszthat&oacute; egyetlen, t&ouml;bb r&eacute;szből &aacute;ll&oacute; vektoros elemm&eacute;, mindenfajta &aacute;tfed&eacute;s elt&aacute;vol&iacute;t&aacute;s&aacute;val.
+            </p>  
+            <p> T&ouml;bb t&aacute;vols&aacute;g haszn&aacute;lata eset&eacute;n kiv&aacute;laszthatja a t&aacute;vols&aacute;g megjelen&iacute;t&eacute;s&eacute;nek m&oacute;dj&aacute;t az utols&oacute; buffert&aacute;vols&aacute;gt&oacute;l; p&eacute;ld&aacute;ul ha a t&aacute;vols&aacute;g 10 &eacute;s 14:
+                <ul>
+                    <li>A  <b>Gyűrűk</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 10&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                    <li>A  <b>Lemezek</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 0&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opciók</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az egym&aacute;st &aacute;tfedő bufferek kezel&eacute;s&eacute;nek m&oacute;dj&aacute;t. B&aacute;rmely buffer eset&eacute;n, amely egy m&aacute;sik buffer felett tal&aacute;lhat&oacute;, a k&ouml;z&ouml;s ter&uuml;letek megtarthat&oacute;k (&Aacute;tfed&eacute;s) vagy egyes&iacute;thetők (&Ouml;sszeolvaszt&aacute;s).  Az  <b>&Ouml;sszeolvaszt</b> eszk&ouml;z haszn&aacute;lat&aacute;val az &ouml;sszes buffer &ouml;sszeolvaszthat&oacute; egyetlen, t&ouml;bb r&eacute;szből &aacute;ll&oacute; vektoros elemm&eacute;, mindenfajta &aacute;tfed&eacute;s elt&aacute;vol&iacute;t&aacute;s&aacute;val.
+            </p>
+            <p>Ter&uuml;let vektoros elemek k&ouml;r&uuml;l egyetlen buffer l&eacute;trehoz&aacute;sa (egy t&aacute;vols&aacute;g megad&aacute;sa) eset&eacute;n v&aacute;laszthat, hogy az eredm&eacute;nyk&eacute;nt kapott buffer tartalmazza-e a bufferelt vektoros elemet.
+            </p>
+            <p>T&ouml;bb t&aacute;vols&aacute;g haszn&aacute;lata eset&eacute;n kiv&aacute;laszthatja a t&aacute;vols&aacute;g megjelen&iacute;t&eacute;s&eacute;nek m&oacute;dj&aacute;t az utols&oacute; buffert&aacute;vols&aacute;gt&oacute;l; p&eacute;ld&aacute;ul ha a t&aacute;vols&aacute;g 10 &eacute;s 14:
+                <ul>
+                    <li>A  <b>Gyűrűk</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 10&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                    <li>A  <b>Lemezek</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 0&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opciók</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az egym&aacute;st &aacute;tfedő bufferek kezel&eacute;s&eacute;nek m&oacute;dj&aacute;t. B&aacute;rmely buffer eset&eacute;n, amely egy m&aacute;sik buffer felett tal&aacute;lhat&oacute;, a k&ouml;z&ouml;s ter&uuml;letek megtarthat&oacute;k (&Aacute;tfed&eacute;s) vagy egyes&iacute;thetők (&Ouml;sszeolvaszt&aacute;s). Az  <b>&Ouml;sszeolvaszt</b> eszk&ouml;z haszn&aacute;lat&aacute;val az &ouml;sszes buffer &ouml;sszeolvaszthat&oacute; egyetlen, t&ouml;bb r&eacute;szből &aacute;ll&oacute; vektoros elemm&eacute;, mindenfajta &aacute;tfed&eacute;s elt&aacute;vol&iacute;t&aacute;s&aacute;val.
+            </p>
+            <p>Vonalak k&ouml;r&uuml;l egyetlen buffer l&eacute;trehoz&aacute;sa (egy t&aacute;vols&aacute;g megad&aacute;sa) eset&eacute;n v&aacute;laszthat, hogy a vonal melyik oldal&aacute;t k&iacute;v&aacute;nja bufferelni.  &Aacute;ltal&aacute;ban mindk&eacute;t oldalt aj&aacute;nlott kiv&aacute;lasztani.  A bal &eacute;s a jobb oldal a vonal első x,y koordin&aacute;t&aacute;j&aacute;t&oacute;l (a kezdő koordin&aacute;t&aacute;t&oacute;l) a vonal utols&oacute; x,y koordin&aacute;t&aacute;ja (a befejező koordin&aacute;ta) fel&eacute; haladva hat&aacute;rozhat&oacute; meg.  A bal vagy a jobb oldal kiv&aacute;laszt&aacute;sa &aacute;ltal&aacute;ban annak ismeret&eacute;ben t&ouml;rt&eacute;nik, hogy a vonalas vektor elemeket egy bizonyos ir&aacute;nyban hozt&aacute;k l&eacute;tre &eacute;s t&aacute;rolt&aacute;k (p&eacute;ld&aacute;ul foly&aacute;sir&aacute;nyban vagy  azzal ellent&eacute;tesen egy foly&oacute;rendszerben).   A buffer a vonalv&eacute;gekn&eacute;l lehet lekerek&iacute;tett, vagy egyenes.
+            </p>
+            <p>T&ouml;bb buffer (t&ouml;bb t&aacute;vols&aacute;g) l&eacute;trehoz&aacute;sa eset&eacute;n kiv&aacute;laszthatja a t&aacute;vols&aacute;g megjelen&iacute;t&eacute;s&eacute;nek m&oacute;dj&aacute;t az utols&oacute; buffert&aacute;vols&aacute;gt&oacute;l; p&eacute;ld&aacute;ul ha a t&aacute;vols&aacute;g 10 &eacute;s 14:
+                <ul>
+                    <li>A  <b>Gyűrűk</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 10&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                    <li>A  <b>Lemezek</b> kiv&aacute;laszt&aacute;sa 0&ndash;10 &eacute;s 0&ndash;14 k&ouml;z&ouml;tti buffereket eredm&eacute;nyez.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opciók</h2></div>
+        <hr/>
+        <div>
+            <p>A bufferelni k&iacute;v&aacute;nt r&eacute;teg kiv&aacute;laszt&aacute;sa ut&aacute;n kiv&aacute;laszthatja az egym&aacute;st &aacute;tfedő bufferek kezel&eacute;s&eacute;nek m&oacute;dj&aacute;t. B&aacute;rmely buffer eset&eacute;n, amely egy m&aacute;sik buffer felett tal&aacute;lhat&oacute;, a k&ouml;z&ouml;s ter&uuml;letek megtarthat&oacute;k (&Aacute;tfed&eacute;s) vagy egyes&iacute;thetők (&Ouml;sszeolvaszt&aacute;s). Az  <b>&Ouml;sszeolvaszt</b> eszk&ouml;z haszn&aacute;lat&aacute;val az &ouml;sszes buffer &ouml;sszeolvaszthat&oacute; egyetlen, t&ouml;bb r&eacute;szből &aacute;ll&oacute; vektoros elemm&eacute;, mindenfajta &aacute;tfed&eacute;s elt&aacute;vol&iacute;t&aacute;s&aacute;val.  Ezenk&iacute;v&uuml;l megadhatja a t&ouml;bb t&aacute;vols&aacute;g&eacute;rt&eacute;k megjelen&iacute;t&eacute;s&eacute;nek m&oacute;dj&aacute;t.   Vonalas vektor elemeket tartalmaz&oacute; r&eacute;tegek eset&eacute;n v&aacute;laszthat, hogy a vonal melyik oldal&aacute;t k&iacute;v&aacute;nja bufferelni.  Ter&uuml;let vektoros elemeket tartalmaz&oacute; r&eacute;tegek eset&eacute;n v&aacute;laszthat, hogy az eredm&eacute;nyk&eacute;nt kapott buffer tartalmazza-e a bufferelt vektoros elemet.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

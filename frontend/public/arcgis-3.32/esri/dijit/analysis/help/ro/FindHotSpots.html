@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Găsire puncte de interes</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Găsire hot spoturi"></h2>
+        <hr/>
+    <p> Instrumentul Găsire hot spot-uri va determina dacă există grupări semnificative din punct de vedere statistic &icirc;n modelul spaţial al datelor dvs.
+        <ul>
+            <li>Punctele dvs. (incidente criminale, arbori, accidente &icirc;n trafic) sunt cu adevărat grupate? Cum puteţi fi siguri?
+            </li>
+            <li>Aţi descoperit cu adevărat un punct de interes semnificativ statistic (pentru cheltuieli, mortalitate infantilă, note la teste consecvent mari) sau harta dvs. ar arăta altceva dacă aţi modifica modul de simbolizare?
+            </li>
+        </ul>
+        Instrumentul Găsire puncte de interes vă va ajuta să răspundeţi cu &icirc;ncredere la aceste &icirc;ntrebări.
+    </p>
+    <p>Chiar şi modelele spaţiale aleatorii prezintă un anumit grad de grupare. &Icirc;n plus, ochii şi mintea &icirc;ncearcă &icirc;n mod natural să găsească modele chiar şi atunci c&acirc;nd acestea nu există. &Icirc;n consecinţă, poate fi dificil de ştiut dacă modelele din datele dvs. sunt rezultatul unor procese spaţiale reale existente sau doar rezultatul unor coincidenţe aleatorii. Din acest motiv cercetătorii şi analiştii folosesc metode statistice precum Găsire hot spot-uri (Getis-Ord Gi*) pentru a cuantifica modele spaţiale. C&acirc;nd &icirc;ntr-adevăr găsiţi &icirc;n date grupări semnificative din punct de vedere statistic, aveţi informaţii de valoare. Ştiind c&acirc;nd şi unde survin grupări, puteţi furniza indicii importante referitoare la procesele care contribuie la modelele pe care le constataţi. Cunoaşterea, de exemplu, a faptului că spargerile &icirc;n locuinţe sunt consecvent mai mare &icirc;n anumite cartiere reprezintă o informaţie vitală dacă trebuie să concepeţi strategii de prevenire eficiente, să alocaţi resurse limitate ale poliţiei, să iniţiaţi programe de supraveghere civilă, să autorizaţi investigaţii criminalistice amănunţite sau să identificaţi potenţiali suspecţi.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Alegeţi stratul tematic pentru care vor fi calculate punctele de interes</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte sau suprafeţe &icirc;n care vor fi găsite zone fierbinţi şi zone reci. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Găsiţi grupări de densităţi ridicate sau scăzute</h2></div>
+        <hr/>
+        <div>
+            <p>Această analiză răspunde la &icirc;ntrebarea: Unde sunt grupate spaţial valori mari şi mici?
+            </p>
+            <p>Dacă datele dvs. sunt compuse din puncte şi alegeţi  <b>Numărare de puncte</b>, acest instrument va evalua aranjamentul spaţial al obiectelor spaţiale punct pentru a răspunde la &icirc;ntrebarea: Unde sunt punctele grupate sau răsp&acirc;ndite neaşteptat?
+            </p>
+            <p>Dacă alegeţi un c&acirc;mp, acest instrument va evalua aranjamentul spaţial al valorilor asociate cu fiecare obiect spaţial pentru a răspunde la &icirc;ntrebarea: Unde se grupează valorile mari şi mici?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Număr de puncte în cadrul</h2></div>
+        <hr/>
+        <div>
+            <p>Setarea implicită este numărarea punctelor &icirc;ntr-o grilă de tip plasă (fishnet) creată de instrument &icirc;n baza datelor punctelor. Alternativ, puteţi alege să număraţi puncte dintr-o grilă hexagonală sau să furnizaţi un strat tematic de suprafaţă (de obicei acestea reflectă zone administrative precum circumscripţii, arii municipale sau judeţe) pentru a răspunde la &icirc;ntrebarea: Ştiind numărul de puncte calculate din fiecare obiect spaţial de suprafaţă, există locaţii cu grupare spaţială semnificativă statistic cu numere mari sau mici de puncte?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definiţi unde sunt posibile puncte</h2></div>
+        <hr/>
+        <div>
+            <p>Trasaţi sau furnizaţi un strat tematic care defineşte unde sunt posibile incidente pentru a răspunde la &icirc;ntrebarea: &Icirc;n interiorul suprafeţelor, există locaţii cu concentraţii ridicate sau scăzute neaşteptate de puncte?   
+            </p>
+            <p>Obiectele spaţiale suprafaţă pe care le trasaţi sau obiectele spaţiale din stratul tematic de suprafeţe pe care &icirc;l specificaţi trebuie să definească locaţiile &icirc;n care ar putea surveni aceste puncte. Pentru a trasa aceste suprafeţe, faceţi clic pe butonul  <b>Trasare</b>, apoi faceţi clic pe o locaţie de hartă pentru a crea o formă de suprafaţă.  Pentru a trasa alte suprafeţe, faceţi clic pe butonul de trasare, apoi faceţi clic pe o locaţie de pe hartă pentru a continua.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Împărţire la</h2></div>
+        <hr/>
+        <div>
+            <p>Uneori este posibil să doriţi să analizaţi modele care iau &icirc;n considerare distribuţiile corespondente. De exemplu, dacă punctele dvs. reprezintă infracţiuni, prin &icirc;mpărţirea la populaţia totală se va obţine o analiză a infracţiunilor pe cap de locuitor, &icirc;n loc de un număr brut de infracţiuni.  Alegerea unui atribut la care să se efectueze &icirc;mpărţirea este adesea denumită normalizare.
+            </p>
+            <p>Dacă alegeţi  <i>Populaţie Esri</i> fiecare obiect spaţial de suprafaţă va fi &icirc;mbogăţit cu valori de populaţie care vor fi, apoi, utilizate ca atribut la care se va efectua &icirc;mpărţirea.  Această opţiune va utiliza credite.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Ignorare opţiuni</h2></div>
+        <hr/>
+        <div>
+            <p> Instrumentul va găsi setările optime pentru valorile implicite <b>Dimensiune celulă</b> şi <b>Bandă distanţă</b> &icirc;n baza caracteristicilor datelor dvs. Totuşi, dacă aveţi o <b>Dimensiune de celulă</b> sau o <b>Bandă de distanţă</b> specifică, ce are sens pentru analiza dvs., se poate utiliza <b>Ignorare opţiuni</b> pentru setarea respectivelor valori.
+            </p>
+            <p> <b>Ignorare opţiuni</b> este utilă şi atunci c&acirc;nd executaţi o analiză asupra unor seturi de date diferite, ceea ce vă permite să menţineţi opţiunile <b>Bandă distanţă</b> şi <b>Dimensiune celulă</b> constante &icirc;n mai multe seturi de date.  Apoi, puteţi să comparaţi &icirc;n mod adecvat rezultatele, de exemplu, ratele obezităţii şi diabetului sau chiar ratele infracţiunilor pentru doi ani diferiţi.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Dimensiune celulă</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea celulelor grilei utilizată pentru a număra punctele din interior.  
+            </p>
+            <p>Atunci c&acirc;nd utilizaţi o grilă hexagonală pentru a număra punctele din interior, Această distanţă este utilizată ca &icirc;ncălţime pentru hexagoane.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Bandă distanţă</h2></div>
+        <hr/>
+        <div>
+            <p>Fiecare obiect spaţial este analizat &icirc;n contextul obiectelor spaţiale &icirc;nvecinate localizate la distanţa specificată de dvs.  Instrumentul va calcula o distanţă implicită p&acirc;nă la dvs. sau puteţi utiliza această opţiune pentru a seta o distanţă specifică ce are sens pentru analiza dvs. 
+            </p>
+            <p>Spre exemplu, dacă studiaţi modele de deplasare către locul de muncă şi ştiţi că &icirc;n medie călătoria este de 15 mile, puteţi dori să adăugaţi banda de distanţă de 15 mile pentru analiza dvs.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Furnizaţi un nume pentru stratul tematic care va fi creat &icirc;n  <b>Resursele mele</b> şi adăugat &icirc;n hartă.  Acest strat tematic rezultat vă va arăta grupări de valori mari şi mici, semnificative din punct de vedere statistic. Dacă stratul tematic rezultat există deja, vi se va solicita să &icirc;l redenumiţi.
+            </p>
+            <p>Utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteţi specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -335,11 +335,19 @@ export const TYPE_CONFIGS = [
     icon: 'diagram'
   }
   /* 下面是highcharts图表类型 */
-  // {
-  //   render: 'highcharts',
-  //   category: 'chart.chart_type_distribute',
-  //   value: '3Dpie',
-  //   title: 'chart.chart_3Dpie',
-  //   icon: '3Dpie'
-  // },
+  // highcharts
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: '3dpie',
+    title: 'chart.chart_pie',
+    icon: '3dpie'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: 'arc_map',
+    title: 'chart.chart_arcgis_map',
+    icon: 'arc_map'
+  }
 ]

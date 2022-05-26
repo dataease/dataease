@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggreger punkter</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggreger punkter"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet fungerer med et lag med punktgeoobjekter og et lag med omr&aring;degeoobjekter. Verkt&oslash;yet avgj&oslash;r f&oslash;rst hvilke punkter som h&oslash;rer til hvert enkelt omr&aring;de. N&aring;r verkt&oslash;yet har fastsatt den geografiske relasjonen mellom punkter og omr&aring;de, beregnes statistikken for alle punktene i omr&aring;det og tilordnes omr&aring;det. Den mest grunnleggende statistikken er antall punkter innenfor omr&aring;det, men du kan beregne annen statistikk ogs&aring;. 
+    </p>
+    <p>La oss for eksempel si at du har punktgeoobjekter for kafeer og omr&aring;degeoobjekter for fylker, og du vil oppsummere kaffesalget per fylke. Forutsatt at kafeene har et  <i>TOTAL_SALES</i>-attributt, kan du f&aring; summen av alle <i>TOTAL_SALES</i> ] i hvert fylke, eller minimum eller maksimum <i>TOTAL_SALES</i>
+ i hvert fylke eller standardavviket for alt salg i hvert fylke.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatapunktlaget og omr&aring;delaget som vises i gjeldende kartutstrekning, som analyseres.  Hvis det ikke er merket av for dette alternativet, blir alle geoobjekter i inndatapunktlaget og omr&aring;delaget analysert, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Velg laget som inneholder punkter som skal samles i områder</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget som samles i omr&aring;dene
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Velg laget som inneholder samlingsområder</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;delaget som punktene skal samles i. Alle punkter som er innenfor grensene til omr&aring;dene i dette laget, telles og blir eventuelt oppsummert ved hjelp av de statistikktypene du velger.  
+            </p>
+            <p>Du kan velge mellom et omr&aring;delag som du oppgir eller beholdere som genereres n&aring;r verkt&oslash;yet kj&oslash;res.   N&aring;r du genererer beholdere for  <b>Kvadrat</b>, avgj&oslash;r antallet og enhetene som er spesifisert h&oslash;yden og lengden p&aring; kvadratet. For <b>Heksagon</b> avgj&oslash;r antallet og enhetene som er angitt, avstanden mellom de parallelle sidene.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Behold områder uten punkter</h2></div>
+        <hr/>
+        <div>
+            <p>Bestemmer om omr&aring;dene som ikke inneholder punkter, skal vises i resultatlaget. Hvis det ikke er merket av for dette alternativet, vises ikke omr&aring;der som ikke inneholder punkter, i resultatet. Hvis det er merket av for dette alternativet, vises omr&aring;der som ikke inneholder punkter, i resultatet.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Legg til statistikk</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan beregne statistikk for attributter i inndatapunktlaget, for eksempel sum, middelverdi, minimum, maksimum og standardavvik. Resultatlaget inneholder et nytt attributt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og statistikk (det vises en ny rullegardinliste).
+ 
+            </p>
+            <p>Hvis laget som skal summeres, ikke har noen numeriske felter, vil ytterligere statistikk ikke v&aelig;re tilgjengelig.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Velg feltet det skal grupperes etter</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan opprette statistiske grupper ved &aring; bruke et attributt i inndatapunktlaget. Hvis du for eksempel aggregerer lovbrudd med tanke p&aring; nabolagsgrenser, har du kanskje et <i>Crime_type</i>-attributt med fem ulike lovbruddstyper.  Hver unik lovbruddstype utgj&oslash;r en gruppe, og statistikken du velger beregnes for hver unike verdi av <i>Crime_type</i>.  Statistikken for hver gruppe vises i resultatlagets popupvindu sammen med antall punkter. N&aring;r du velger et grupperingsattributt, opprettes to resultater &ndash; resultatlaget og en resultattabell som inneholder statistikken for hver unike gruppe.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Legg til minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Denne avmerkingsboksen er aktivert n&aring;r du velger &aring; gruppere etter et felt. Hvis du vil finne ut hvilke attributtverdier innenfor hver gruppe som er minoriteten (minst dominerende) eller majoriteten (mest dominerende) innenfor hver grense, velger du  <b>Legg til minoritet, majoritet</b>. N&aring;r du velger <b>Legg til minoritet, majoritet</b>, legges det til to felt i resultatlaget. Hvis du ogs&aring; velger <b>Legg til prosenter</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+            <p>Hvis du for eksempel er byplanlegger og &oslash;nsker &aring; finne ut hvilke treslag det er f&aelig;rrest og flest av i alle byens parker, kobler du tredataene sammen med parkomr&aring;dene og merker av for dette alternativet.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Legg til prosenter</h2></div>
+        <hr/>
+        <div>
+            <p>Denne boksen er aktivert n&aring;r du velger et felt &aring; gruppere etter. Velg  <b>Legg til prosenter</b>  hvis du vil finne prosenten for hver attributtverdi innenfor hver gruppe. Det legges til et nytt felt i resultattabellen som inneholder prosentene for hver attributtverdi innenfor hver gruppe. Hvis det ogs&aring; er merket av for <b>Legg til minoritet, majoritet</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

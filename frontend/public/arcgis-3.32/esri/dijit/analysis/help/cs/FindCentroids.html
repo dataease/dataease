@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Najít centroidy</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Naj&iacute;t centroidy"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj pracuje s vrstvou v&iacute;cebodov&yacute;ch, liniov&yacute;ch nebo polygonov&yacute;ch prvků a stanovuje reprezentativn&iacute; střed každ&eacute;ho prvku.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; v&iacute;cebodov&eacute;, liniov&eacute; nebo polygonov&eacute; vrstvě, kter&eacute; jsou viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolit vrstvy, jejichž prvky budou použity pro generování centroidů.</h2></div>
+        <hr/>
+        <div>
+            <p> V&iacute;cebodov&aacute;, liniov&aacute; nebo polygonov&aacute; vrstva, kter&aacute; bude použita k vyhled&aacute;n&iacute; centroidů.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Zobrazit výstupní umístění</h2></div>
+        <hr/>
+        <div>
+            <p> Pokud je za&scaron;krtnuto pole <b>V prav&eacute;m centroidu</b> (v&yacute;choz&iacute;), v&yacute;stup vr&aacute;t&iacute; prav&eacute; um&iacute;stěn&iacute; centroidu každ&eacute;ho vstupn&iacute;ho prvku. Centroidy budou um&iacute;stěny n&aacute;sledovně:
+                <ul>
+                    <li>V&iacute;cebodov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude um&iacute;stěn v m&iacute;stě průměru souřadnic X a Y v&scaron;ech bodů v&iacute;cebodov&eacute;ho prvku.
+                    </li>
+                    <li>Liniov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude um&iacute;stěn v m&iacute;stě v&aacute;žen&eacute;ho průměru souřadnic X a Y středov&yacute;ch bodů v&scaron;ech liniov&yacute;ch segmentů prvku. V&aacute;ha vych&aacute;z&iacute; z d&eacute;lky segmentu.
+                    </li>
+                    <li>Polygonov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude um&iacute;stěn ve středu plochy.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pokud je za&scaron;krtnuto  <b>Obsaženy ve vstupn&iacute;ch prvc&iacute;ch</b>, budou v&yacute;stupn&iacute; bodov&eacute; prvky obsaženy či uvnitř každ&eacute;ho vstupn&iacute;ho prvku. V&yacute;sledn&eacute; bodov&eacute; prvky budou vypadat n&aacute;sledovně:
+                <ul>
+                    <li>V&iacute;cebodov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude shodn&yacute; s jedn&iacute;m ze skupiny bodů.
+                    </li>
+                    <li>Liniov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude na linii. Pokud se jedn&aacute; o křivku, bude v&yacute;stup na jej&iacute;m středov&eacute;m bodě. 
+                    </li>
+                    <li>Polygonov&eacute; prvky &ndash; V&yacute;stupn&iacute; centroid bude uvnitř polygonov&eacute;ho prvku.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

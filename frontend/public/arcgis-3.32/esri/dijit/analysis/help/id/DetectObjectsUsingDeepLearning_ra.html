@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Deteksi Objek Menggunakan Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Deteksi Objek Menggunakan Deep Learning"></h2>
+        <hr/>
+    <p>Alat ini menjalankan model deep learning terlatih pada sebuah raster input untuk menghasilkan kelas fitur berisi objek yang ditemukannya. Fitur tersebut bisa jadi kotak atau poligon keliling di sekitar objek yang ditemukan, atau titik di tengah objek.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya area raster yang terlihat dalam jangkauan peta saat ini yang akan dianalisis. Jika tidak dicentang, keseluruhan raster akan dianalisis, bahkan jika raster berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Pilih gambar yang digunakan untuk mendeteksi objek</h2></div>
+        <hr/>
+        <div>
+            <p>Gambar input yang digunakan untuk mendeteksi objek.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Pilih model deep learning yang digunakan untuk mendeteksi objek</h2></div>
+        <hr/>
+        <div>
+            <p>Item paket deep learning input ( <code>.dlpk</code>).
+            </p>
+            <p>Paket deep learning terdiri atas file JSON definisi model Esri ( <code>.emd</code>), file model biner deep learning, dan secara opsional, fungsi raster Python yang akan digunakan.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Tentukan argumen model deep learning</h2></div>
+        <hr/>
+        <div>
+            <p>Argumen fungsi yang ditentukan dalam kelas fungsi raster Python direferensikan oleh model input. Ini adalah tempat Anda mencantumkan parameter deep learning tambahan dan argumen untuk eksperimen dan perbaikan, seperti misalnya ambang batas keyakinan untuk menyesuaikan sensitivitas.
+            </p>
+            <p>Nama argumen dikumpulkan oleh alat dari membaca modul Python pada server analisis raster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Hapus fitur duplikasi dari output (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Lakukan tekanan non-maksimal, yang mana duplikasi objek diidentifikasi dan fitur duplikat dengan nilai keyakinan lebih rendah akan dihapus. 
+                <ul>
+                    <li>Tidak dicentang&mdash;Semua objek yang terdeteksi akan berada dalam kelas fitur output. Ini adalah default.
+                        
+
+                    </li>
+                    <li>Dicentang&mdash;Hapus semua objek duplikat yang terdeteksi.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Kolom skor tingkat keyakinan</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom dalam feature service yang berisi skor keyakinan sebagai output oleh metode deteksi objek.
+            </p>
+            <p>Parameter ini diperlukan jika Anda memeriksa parameter  <b>Tekanan Non Maksimal</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Kolom nilai kelas</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom nilai kelas dalam feature service output. Jika tidak ditentukan, alat akan menggunakan kolom nilai kelas standar  <i>Classvalue</i> dan <i>Value</i>. Jika kolom-kolom ini tidak ada, semua fitur akan diperlakukan sebagai kelas objek yang sama.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Rasio tumpang tindih maksimal</h2></div>
+        <hr/>
+        <div>
+            <p>Rasio tumpang tindih maksimal untuk dua fitur yang saling tumpang tindih, yang ditentukan sebagai rasio area perpotongan di atas area gabungan. Default adalah 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

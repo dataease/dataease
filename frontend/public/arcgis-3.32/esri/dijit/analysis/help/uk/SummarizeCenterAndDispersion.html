@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Підсумування центру та дисперсії</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Підсумування центру та дисперсії"></h2>
+        <hr/>
+    <p>Цей інструмент виконує пошук центральних об'єктів та розподіли за напрямками. Він може дати відповіді на наступні запитання:
+        <ul>
+            <li>Де розташований центр?
+            </li>
+            <li>Який об'єкт є найбільш доступним з усіх інших об'єктів?
+            </li>
+            <li>Наскільки розкинутими, компактними або інтегрованими є об'єкти?
+            </li>
+            <li>Чи є тренди за напрямками?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть аналізуватись тільки об&rsquo;єкти у вхідному шарі, видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть аналізуватись всі об'єкти у вхідному шарі, навіть якщо вони знаходяться за межами поточного екстенту карти.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Вибрати шар для опису</h2></div>
+        <hr/>
+        <div>
+            <p>Шар точок, ліній або областей, який буде використовуватись для пошуку центральних об&rsquo;єктів та розподілу за напрямками.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Типи підсумування</h2></div>
+        <hr/>
+        <div>
+            <p>Метод підсумування центру та дисперсії. 
+            </p>
+            <ul>
+                <li>Центральний об'єкт &mdash; ідентифікує найбільш центрально розташований об'єкт у наборі даних.
+                </li>
+                <li>Усереднений центр &mdash; ідентифікує географічний центр (або центр концентрації) набору об'єктів.
+                </li>
+                <li>Медіана &mdash; ідентифікує місце розташування, яке мінімізує загальну евклідову відстань до об'єктів у наборі даних.
+                </li>
+                <li>Еліпс &mdash; створює еліпси зі середньоквадратичним відхиленням для підсумування просторових характеристик географічних об'єктів: центральна тенденція, дисперсія та тренди за напрямками. Еліпси можуть мати розмір як 1, 2 або 3 середньоквадратичних відхилення.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Зважити за (необов’язково)</h2></div>
+        <hr/>
+        <div>
+            <p>Поле, яке використовується для зважування місць розташування відповідно до їх відносної важливості. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Групувати за (необов’язково)</h2></div>
+        <hr/>
+        <div>
+            <p>Поле, яке використовується для групування об'єктів для окремих обчислень центральних об'єктів або дисперсії. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

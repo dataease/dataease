@@ -1,0 +1,86 @@
+/* ========= Styling rules to affect widgets ========= */
+
+@import "variables";
+
+.claro .dijitPopup {
+	.box-shadow(0 1px 5px rgba(0,0,0,0.25));
+}
+.claro .dijitTooltipDialogPopup {
+	/* exception popups: do not use a shadow on these because they aren't rectangular */
+	.box-shadow(none);
+}
+
+/* The highlight is shown in the ComboBox menu.  TODO: move to form/Common.less */
+.claro .dijitComboBoxHighlightMatch {
+	background-color: @select-matchedtext-background-color;
+}
+
+.claro .dijitFocusedLabel {
+	/* for checkboxes or radio buttons, hatch border around the corresponding label, to indicate focus */
+	outline: 1px dotted @focus-outline-color;
+}
+
+/* Drag and Drop*/
+.claro .dojoDndItem {
+	border-color: rgba(0,0,0,0);	// rgba() instead of none to prevent flash on hover fade-in
+	.transition-duration(.25s);
+	.transition-property(background-color, border-color)
+}
+.claro .dojoDndItemOver {
+    // Hovered item.  Matches dijitTreeRowHover.
+	background-color:@hovered-background-color;
+	.standard-gradient;
+	padding: 1px;	// reduce from 2px in dijit.css
+	border:solid 1px @hovered-border-color;
+	color:@hovered-text-color;
+}
+.claro .dojoDndItemAnchor,
+.claro .dojoDndItemSelected {
+    // Selected items(s).   Matches dijitTreeRowSelected.
+	background-color:@selected-background-color;
+	.standard-gradient;
+	padding: 1px;	// reduce from 2px in dijit.css
+	border:solid 1px @selected-border-color;
+	color:@selected-text-color;
+}
+
+.claro .dojoDndItemBefore,
+.claro .dojoDndItemAfter {
+    // line to indicate that user is dropping before/after this dojoDndItem
+	border-color: @dnd-dropseparator-color;
+}
+
+.claro table.dojoDndAvatar {
+	border: 1px solid @border-color;
+	border-collapse: collapse;
+	background-color: @dnd-avatar-background-color;
+	.box-shadow(0 1px 3px rgba(0, 0, 0, .25));
+}
+.claro .dojoDndAvatarHeader td	{ 
+	height: 20px;
+	padding-left:21px;
+}
+.claro.dojoDndMove .dojoDndAvatarHeader, .claro.dojoDndCopy .dojoDndAvatarHeader {
+	background-image: url(@image-dnd);
+	background-repeat: no-repeat;
+	background-position:2px -122px;
+}
+.claro .dojoDndAvatarItem td {
+	padding: 5px;
+}
+.claro.dojoDndMove .dojoDndAvatarHeader	{
+	background-color: @dnd-avatar-header-background-color; 
+	background-position:2px -103px;
+}
+.claro.dojoDndCopy .dojoDndAvatarHeader	{
+	background-color: @dnd-avatar-header-background-color; 
+	background-position:2px -68px;
+}
+.claro.dojoDndMove .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{
+	background-color: @dnd-avatar-candrop-header-background-color; 
+	background-position:2px -33px;
+}
+.claro.dojoDndCopy .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{
+	background-color: @dnd-avatar-candrop-header-background-color;
+	background-position:2px 2px;
+}

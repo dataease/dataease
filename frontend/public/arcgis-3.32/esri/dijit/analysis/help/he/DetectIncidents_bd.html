@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>זיהוי תקריות</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="זיהוי תקריות"></h2>
+        <hr/>
+    <p> כלי זה עובד עם שכבת נקודות, קווים, אזורים או טבלאות עם רכיב זמן מופעל אשר מייצגות רגע בזמן.   תוך שימוש בישויות המסודרות ברצף, שנקראות מסלולים, כלי זה קובע אילו ישויות הן תקריות שיש בהן עניין. תקריות נקבעות על ידי תנאים שאתה מציין.
+    </p>
+    <p>תחילה, הכלי קובע אילו ישויות שייכות למסלול בעזרת שדה אחד או יותר. תוך שימוש בזמן בכל ישות, המסלולים מסודרים ברצף ותנאי התקרית מוחל. ישויות שעומדות בתנאי התקרית התחלתי מסומנות כתקרית. באפשרותך לבחור להחיל תנאי תקרית סיום; כאשר תנאי הסיום מתקיים, הישות חדלה להיות תקרית.  התוצאות יוחזרו עם הישויות המקוריות - כולל עמודות חדשות שמייצגות את שם התקרית - ויציינו אילו ישויות עונות על תנאי התקרית. באפשרותך להחזיר את כל הישויות המקוריות או רק את הישויות שהן תקריות.
+    </p>
+    <p>לדוגמה, נניח שיש לך מדידות GPS של סופת הוריקן כל 10 דקות. כל מדידת GPS מתעדת את השם, המיקום, שעת התיעוד ומהירות הרוח של ההוריקן. בעזרת שדות אלה, באפשרותך ליצור תקרית שבה כל מדידה עם מהירות רוח שעולה על 208 קמ&quot;ש היא תקרית שמקבלת את הכותרת  <code>קטלני</code>. בכך שלא תגדיר תנאי סיום, התקרית תסתיים אם הישות חדלה לענות על תנאי ההתחלה (הרוח מעטה לפחות מ-208 קמ&quot;ש).
+    </p>
+    <p>בדוגמה אחרת, נניח שאתה מנטר ריכוזים של חומר כימי באספקת המים המקומית, תוך שימוש בשדה שנקרא  <code>contaminateLevel</code>. אתה יודע שהרמות המומלצות הן פחות מ-0.01 מ&quot;ג/ל', ורמות מסוכנות הן מעל 0.03 מ&quot;ג/ל'. כדי לזהות תקריות שבהן ערך גבוה מ-0.03 מ&quot;ג/ל' הוא תקרית ונשאר תקרית עד שרמות הזיהום חוזרות לנורמלי, אתה יוצר תקרית תוך שימוש בתנאי ההתחלה <code>contaminateLevel &gt; 0.03</code> ובתנאי הסיום <code>contaminateLevel &lt; 0.01</code>. פעולה זו תסמן כל רצף שבו ערכים עולים על 0.03 מ&quot;ג/ל' עד שהם חוזרים לערך של פחות מ-0.01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה לזיהוי תקריות</h2></div>
+        <hr/>
+        <div>
+            <p>הנקודות, הקווים, האזורים או הטבלאות אשר ישמשו לאיתור תקריות. שכבת הקלט חייבת לכלול רכיב זמן מפועל עם ישויות שמייצגות רגע בזמן, וכן לכלול שדה אחד או יותר שניתן להשתמש בהם כדי לזהות מסלולים.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>בחר שדה אחד או יותר כדי לזהות מסלולים</h2></div>
+        <hr/>
+        <div>
+            <p>השדות שמייצגת את מזהה המסלול. באפשרותך להשתמש בשדה אחד או במספר שדות כדי לייצג ערכים ייחודיים של מסלולים.
+            </p>
+            <p>לדוגמה, אם אתה משחזר מסלולים של הוריקנים, באפשרותך להשתמש בשם ההוריקן כשדה המסלול.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>הגדר תנאי לציון תחילת התקרית</h2></div>
+        <hr/>
+        <div>
+            <p>הוסף תנאי בעזרת בונה הביטויים כדי לקבוע מהי תקרית. אם התנאי שציינת מתקיים, הישות היא תקרית. אם אתה לא מציין תנאי סיום, תקרית תסתיים כאשר תנאי ההתחלה כבר לא מתקיים.
+            </p>
+            <p>לדוגמה, נניח שאתה רוצה לקבל התראה כאשר הסכום של השדות   <code>concentration_1</code> ו- <code>concentration_2</code> גדול מ- <code>concentration_3</code>.   כדי לעשות זאת, החל את התנאי הבא: &lrm; <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>אם ברצונך לדעת כיצד הריכוזים השתנו במהלך הזמן, ולקבל התראה כאשר הערך הנוכחי של  <code>concentration_1</code> גודל משתי המדידות הקודמות של <code>concentration_2</code> תוכל להשתמש בביטוי כגון <code>&lrm;$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)&lrm;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>הגדר ביטוי לציון סיום התקרית (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>אופציונלית, הוסף תנאי בעזרת בונה הביטויים כדי לקבוע את הסיום של תקרית. אם תנאי הסיום שציינת מתקיים, הישות חדלה להיות תקרית. אם אתה לא מציין תנאי סיום, תקרית תסתיים כאשר תנאי ההתחלה כבר לא מתקיים.    
+            </p>
+            <p>לדוגמה, נניח שברצונך לקבל התראה כאשר הסכום של השדות  <code>concentration_1</code> ו- <code>concentration_2</code> גדול מ- <code>concentration_3</code>, ושהתקרית תסתיים אם <code>concentration_4</code> קטן מ- <code>concentration_1</code>. לשם כך, החל תנאי התחלה של &lrm; <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> ותנאי סיום של <code>&lrm;($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>אם ברצונך לדעת כיצד הריכוזים השתנו במהלך הזמן, ולקבל התראה כאשר הערך הנוכחי של  <code>concentration_1</code> גודל משתי המדידות הקודמות של concentration_2 תוכל להשתמש בביטוי כגון <code>&lrm;$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_1&quot;].history(0,-1)&lrm;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>הצג בפני</h2></div>
+        <hr/>
+        <div>
+            <p>כל שיטות הפלט יוסיפו שדות לישויות המקוריות. קיימות שתי דרכים לקבוע אילו ישויות יוחזרו:
+                <ul>
+                    <li> <b>כל הישויות</b> - זוהי ברירת המחדל. כל הישויות בקלט יוחזרו.
+                    </li>
+                    <li> <b>רק תקריות</b> - שיטה זו תחזיר רק את הישויות שהן תקריות. ישויות שלא נצא שהן תקריות לא יוחזרו.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>ניתוח נתונים עם מרווחי זמן (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>ציין אם ברצונך לזהות תקריות תוך שימוש במרווחי זמן, אשר מחלקים את ישויות הקלט למקטעים לצורך ניתוח. אם תשתמש במרווחי זמן, עליך להגדיר את מרווח הזמן הרצוי, ואופציונלית להגדיר זמן ייחוס. אם לא תגדיר זמן ייחוס, יעשה שימוש ב-1 בינואר 1970. 
+            </p>
+            <p>לדוגמה, אם תגדיר את גבול הזמן ליום אחד, שמתחיל ב-09:00 ב-1 בינואר 1990, כל מסלול ייחתך ב-09:00 בכל יום וינותח במסגרת מקטע זה. 
+            </p>
+            <p>שימוש במרווחי זמן זו דרך מהירה להאיץ את זמן החישוב, מכיוון שהם יוצרים במהירות מסלולים קטנים יותר לניתוח. אם פיצול לפי מרווח זמן חוזר ונשנה מתאים לצורך הניתוח שלך, אפשרות זאת מומלצת עבור עיבוד של Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

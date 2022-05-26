@@ -1,0 +1,54 @@
+<div class="esriRFxAttributeTable">
+    <table class="esriRFxAttributeTable__table">
+      <tr class="esri-rfx-args-editor__tr--arg-name">
+          <td data-dojo-attach-point="rasterLabel"></td>
+      </tr>
+      <tr class="esri-rfx-args-editor__tr--arg-widget">
+        <td>
+            <div data-dojo-type="esri/dijit/RasterFunctionEditor/RFxRasterInput" data-dojo-attach-point="_layerSelect" data-dojo-props="inputLayers: this.inputLayers, allowScalar: this.allowScalar"></div>
+        </td>
+      </tr>
+    </table>
+  
+    <div data-dojo-attach-point="attributeTable"></div>
+    
+    <div class="esriGenerateTableOptions" data-dojo-attach-point="generateOptions" data-dojo-type="dijit/TitlePane" data-dojo-props="title: '${_i18n.generateTable}', open: false">
+      <table>
+        <tr>
+          <td>
+            ${_i18n.minVal}
+          </td>
+          <td>
+            <div data-dojo-attach-point="minValSelect"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            ${_i18n.maxVal}
+          </td>
+          <td>
+            <div data-dojo-attach-point="maxValSelect"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            ${_i18n.baseClassName}
+          </td>
+          <td>
+            <div data-dojo-type="dijit/form/TextBox" data-dojo-attach-point="baseClassNameInput" value="${_i18n.defaultClassName}"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            ${_i18n.colorScheme}
+          </td>
+          <td>
+            <div data-dojo-attach-point="colorRampNode"></div>
+          </td>
+        </tr>
+      </table>
+      <button class="esriAttributeTableGenerateTable" data-dojo-attach-point="generateButton" data-dojo-type="dijit/form/Button" type="button">${_i18n.generateTable}</button>
+    </div>
+   
+  </div>
+  

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summarize Within</h2><p/>
+        <h2><img src="./images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summarize Within"></h2>
+        <hr/>
+    <p>This tool finds features (and portions of features) that are within the boundaries of areas in the first input layer.  For example:
+        <ul>
+            <li>Given a layer of watershed boundaries and a layer of land-use boundaries by land-use type, calculate total acreage of land-use type for each watershed. 
+            </li>
+            <li>Given a layer of parcels in a county and a layer of city boundaries, summarize the average value of vacant parcels within each city boundary.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those features in the input layer and the layer to be summarized that are visible within the current map extent will be analyzed.  If unchecked, all features in both the input layer and the  layer to be summarized will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Choose area layer to summarize other features within its boundaries</h2></div>
+        <hr/>
+        <div>
+            <p>The area layer that will be used to summarize features that fall within its boundaries.
+
+            </p>
+            <p>You can choose between an area layer that you
+provide or bins that are generated when the tool runs. When
+generating bins, for  <b>Square</b>, the number and units specified determine the
+height and length of the square. For <b>Hexagon</b>, the number and units specified determine the
+distance between parallel sides.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Choose layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>Features in this layer that fall within the boundaries of features in the input layer above will be summarized. 
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Add statistics from
+the layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics for numerical attributes of the points that fall within the boundaries of features. 
+            </p>
+            <p>The  <b>Count of points</b> check box, if checked, will calculate the total number of points within each area boundary.  In addition, you can calculate statistics for numerical attributes of the  points that are within each area boundary.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field.
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field.
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field.
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field.
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field.
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Add statistics from</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics for numerical attributes of the lines to be summarized. 
+            </p>
+            <p>The  <b>Total length of lines in</b> check box, if checked, will calculate the total length of lines within each area boundary.  In addition, you can calculate statistics for numerical attributes of the lines that are within each area boundary.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field.
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field.
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field.
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field.
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field.
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Add statistics from</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics for numerical attributes of the areas to be summarized. 
+            </p>
+            <p>The  <b>Sum area using</b> check box, if checked, will calculate the total area of  features that are within each area boundary of the first input layer.  In addition, you can calculate statistics for numerical attributes of the features within each area boundary.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field.
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field.
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field.
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field.
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field.
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Add statistics from</h2></div>
+        <hr/>
+        <div>
+            <p>Once you choose a layer to summarize, you can optionally calculate statistics of
+any numerical attributes of the points, lines, or areas within the input area layer. 
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field
+                </li>
+            </ul>
+            
+            <p>Depending on the types of features you are summarizing, you can calculate total count of points, total length of lines, or total area.
+            </p>
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choose field to group by</h2></div>
+        <hr/>
+        <div>
+            <p>This is an attribute of the  <b>Summarize</b> features that you can use to calculate statistics separately for each unique attribute value. For example, suppose the first input layer contains city boundaries and the summary features are parcels.  One of the attributes of the parcels is <i>Status</i> which contains two values: VACANT and OCCUPIED. To calculate the total area of vacant and occupied parcels within the boundaries of cities,  use <i>Status</i> as the group by attribute.
+ The statistics for each group, as well as the count of features within each area boundary, will be displayed in the result layer's pop-up.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Add minority, majority</h2></div>
+        <hr/>
+        <div>
+            <p>This checkbox is enabled  when you choose a field to group by.    If you want to find out which attribute values within each group are the minority (least dominant) or the majority (most dominant)  within each boundary of the first input layer,  select  <b>Add minority, majority</b>.   When you select <b>Add minority, majority</b>, two new fields are added to your result layer.   If you also select <b>Add percentages</b>, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+            <ul>
+                <li>If you are summarizing points, minority and majority values are calculated based on the count of points within each bounding area in the input area layer.  
+                </li>
+                <li>If you are summarizing  lines, minority and majority values are calculated based on the length of  lines within each bounding area in the input area layer.  
+                </li>
+                <li>If you are summarizing  areas, minority and majority values are calculated based on the areas within each bounding area in the input area layer.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Add percentages</h2></div>
+        <hr/>
+        <div>
+            <p>This check box is enabled  when you choose a field to group by.    Select  <b>Add percentages</b>   if you want to find the percentage of each attribute value within each group.  A new field  is added to the result table containing the percentages of each attribute value within each group.   If <b>Add minority, majority</b> is also checked, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

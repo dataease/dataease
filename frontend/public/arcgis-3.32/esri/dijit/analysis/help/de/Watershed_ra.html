@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Abflussgebiet</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Task &quot;Abflussgebiet&quot;"></h2>
+        <hr/>
+    <p>Dieses Werkzeug ermittelt die relevante Fl&auml;che &uuml;ber einer Gruppe von Zellen in einem Raster.
+    </p>
+    <p>Ein Abflussgebiet ist das h&ouml;her gelegene Gebiet, das einen Durchfluss &ndash; normalerweise Wasser &ndash; in Form einer konzentrierten Drainage zu einem gemeinsamen Abfluss beitr&auml;gt. Es kann sowohl Teil eines gr&ouml;&szlig;eren Wassereinzugsgebiets sein als auch kleinere Wassereinzugsgebiete (sogenannte Teileinzugsgebiete) enthalten.
+    </p>
+    <p>Der Wert des jeweiligen Abflussgebiets wird dem Wert der Quelle im Eingabe-Raster bzw. Feature-Abflusspunkt-Layer entnommen. Wenn der Abflusspunkt ein Raster-Dataset ist, werden standardm&auml;&szlig;ig die Zellenwerte verwendet. Wenn der Abflusspunkt ein Punkt-Feature-Dataset ist, stammen die Werte aus dem angegebenen Feld.
+    </p>
+    <p>Das Werkzeug &quot;Abflussgebiet&quot; unterst&uuml;tzt nur D8-Eingabe-Flie&szlig;richtungs-Raster-Layer.
+    </p>
+    <p>Beim Festlegen der Abflusspunktpositionen der Eingabe als Feature-Daten entspricht das Standardfeld dem ersten g&uuml;ltigen Feld. Sind keine g&uuml;ltigen Felder vorhanden, wird das ObjectID-Feld als Standardfeld verwendet (z.&nbsp;B. OID oder FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Fließrichtungs-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Das Eingabe-Raster, das die Flie&szlig;richtung aus jeder Zelle anzeigt.
+            </p>
+            <p>Das Flie&szlig;richtungs-Raster kann mit dem Werkzeug &quot;Flie&szlig;richtung&quot; oder dem Task &quot;FlowDirection&quot; im RasterAnalysisTools-Service unter Verwendung des Standardflie&szlig;richtungstyps  <b>D8</b> erstellt werden.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Abflusspunktpositionen der Eingabe angeben</h2></div>
+        <hr/>
+        <div>
+            <p>Die Abflusspunktpositionen der Eingabe.
+            </p>
+            <p>Bei einem Raster stellt dies Zellen dar, &uuml;ber denen die relevante Fl&auml;che bzw. das Reservoir, ermittelt wird. Alle Zellen, die keine NoData-Zellen sind, werden als Quellenzellen verwendet. Bei einer Punkteingabe stellt dies Positionen dar, &uuml;ber denen die relevante Fl&auml;che, also das Einzugsgebiet, ermittelt wird.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Abflusspunkt-Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Das Feld f&uuml;r die Zuweisung von Werten zu den Abflusspunktpositionen.
+            </p>
+            <p>Wenn der Eingabe-Layer f&uuml;r den Abflusspunkt ein Raster ist, wird der Wert verwendet. Handelt es sich um ein Feature, wird ein numerisches Feld verwendet. Wenn das Feld Gleitkommawerte enth&auml;lt, werden sie in Ganzzahlwerte gek&uuml;rzt.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

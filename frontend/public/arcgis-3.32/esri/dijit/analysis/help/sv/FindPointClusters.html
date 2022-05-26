@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Hitta punktkluster</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Hitta punktkluster"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget hittar kluster av punktgeoobjekt i bakgrundsbrus baserat p&aring; deras rumsliga f&ouml;rdelning.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras endast geoobjekten i indatapunktlagret inom den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla geoobjekt i indatapunktlagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Välj det lager som klustren ska hittas från</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager d&auml;r klustren kommer att hittas. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalt antal punkter för att betraktas som ett kluster</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalt antal geoobjekt f&ouml;r att betraktas som ett kluster Varje kluster med f&auml;rre geoobjekt &auml;n de angivna betraktas som brus. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Begränsa sökintervallet till (valfritt)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Det maximala avst&aring;ndet f&ouml;r att geoobjekt ska anses ing&aring; i samma kluster. Om f&auml;ltet l&auml;mnas tomt k&ouml;r verktyget HDBSCAN, vilket anv&auml;nder varierande avst&aring;nd f&ouml;r att separera kluster med olika t&auml;thet fr&aring;n glesare brus. Om ett v&auml;rde anges k&ouml;rs verktyget DBSCAN, vilket anv&auml;nder ett angivet avst&aring;nd f&ouml;r att separera t&auml;ta kluster fr&aring;n glesare brus.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

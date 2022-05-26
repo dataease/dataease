@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Berig fra multivariabel-gitter</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Berig fra multivariabel-gitter"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet  Berig fra multivariabel-gitter Forbinder effektivt attributter fra et multivariabel-gitter med et punktlag.
+    </p>
+    <p>Et multivariabel-gitter er ethvert lag, der er oprettet med v&aelig;rkt&oslash;jet Opret multivariabel-gitter, som kompilerer attributter fra flere lag til et enkelt gitter af polygoner. Med et et multivariabel-gitter til berigelse kan du hurtigt tilf&oslash;je stor og forskelligartet samling af oplysninger til punktdata til brug i yderligere spatial analyse.
+    </p>
+    <p>Du f.eks. har f&aring;et et lag af nye forekomster af kriminalitet, der er fundet sted i det forl&oslash;bne &aring;r i en by. Du vil modellere forholdet mellem frekvensen af kriminalitet og en r&aelig;kke demografiske, &oslash;konomiske og geografiske faktorer. Du har adgang til data, der beskriver disse faktorer, men de er gemt i fem forskellige lag med forskellige geometrityper. Desuden er hogle lag gemt i en big data fildeling, mens andre er gemt som featuretjenester. Ved at oprette et multivariabel-gitter til at gemme disse oplysninger i, og derefter forbinde gitteret med   dine kriminalitetsforekomster med v&aelig;rkt&oslash;jet  Berig fra multivariabel-gitter, kandu effektivt forbinde en bred vifte af attributter med dit punktlag ved kun at k&oslash;re v&aelig;rkt&oslash;jet to gange. Du  kan derefter bruge de forbundne attributter som forklarende variabler og begynde at oprette en model over kriminalitetsfrekvens med resultatlag.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Vælg de punktobjekter, der skal beriges</h2></div>
+        <hr/>
+        <div>
+            <p>De punktobjekter, der bliver beriget af multivariabel-gitteret.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Vælg det multivariabel-gitter, der skal berige fra</h2></div>
+        <hr/>
+        <div>
+            <p>Det multivariabel-gitter-lag, der indeholder attributter, som vil blive forbundet med inputpunktobjekterne. Laget skal v&aelig;re oprettet med v&aelig;rkt&oslash;jet Opret multivariabel-gitter og skal v&aelig;re et hosted vektorlag. Multivariabel-gitter-lag, der er gemt i en big data fildeling underst&oslash;ttes ikke som input til dette v&aelig;rkt&oslash;j.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Vælg de variabler, der skal tilføjes</h2></div>
+        <hr/>
+        <div>
+            <p>Attributterne i det multivariabel-gitter-lag, der bliver forbundet med inputpunktobjekterne, n&aring;r punktobjekterne sk&aelig;rer gitteret.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

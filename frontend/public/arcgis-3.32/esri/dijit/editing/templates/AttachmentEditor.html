@@ -1,0 +1,14 @@
+<div class="attachmentEditor">
+    <br />
+    <div>
+        <b>${NLS_attachments}</b>
+        <hr />
+        <div dojoAttachPoint="_attachmentError" style='color:red;display:none'></div>
+        <br />
+        <span dojoAttachPoint='_attachmentList' style='word-wrap: break-word;'></span>
+        <br><br>
+        <div data-dojo-type="dijit/ProgressBar" dojoAttachPoint="_attachmentProgress" indeterminate="true" style='display:none'></div>
+        <br />        
+        <form dojoAttachPoint='_uploadForm'> ${NLS_add}:&nbsp;&nbsp;<input type='file' name='attachment' dojoAttachPoint='_uploadField' /> </form>
+    </div>
+</div>

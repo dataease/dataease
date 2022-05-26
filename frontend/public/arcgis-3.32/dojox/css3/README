@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------------
+dojox/css3
+-------------------------------------------------------------------------------
+Version: 0.1
+Release date: 03/06/2010
+-------------------------------------------------------------------------------
+Project state: beta
+-------------------------------------------------------------------------------
+Project author
+	Nicola Rizzo
+-------------------------------------------------------------------------------
+Project description
+Common animations (flip, bounce, puff, rotate, expand, shrink)
+using the CSS3 Transform property
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo core (package loader, connect, dom-style, fx, html)
+dojox/html/ext-dojo/style to handle transform and transform origin
+dojox/fx/ext-dojo/complex to handle animations with multiple values
+
+-------------------------------------------------------------------------------
+Documentation:
+
+See the Dojo API tool (http://dojotoolkit.org/api)
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/src/dojo/dojox/trunk/css3/*
+
+Install into the following directory structure:
+/dojox/css3/
+
+...which should be at the same level as your Dojo checkout.

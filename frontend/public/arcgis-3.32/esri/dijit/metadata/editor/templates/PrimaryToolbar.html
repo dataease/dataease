@@ -1,0 +1,59 @@
+<div class="gxePrimaryToolbar" data-dojo-attach-point="containerNode">
+  <div class="gxeTabs gxeFloatLeft">
+    <div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="viewButton"
+      data-dojo-props="label:'${i18nBase.editor.primaryToolbar.view}'"
+      data-dojo-attach-event="onClick: _onViewClick">'
+    </div><div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="viewXmlButton"
+      data-dojo-props="label:'${i18nBase.editor.primaryToolbar.viewXml}'"
+      data-dojo-attach-event="onClick: _onViewXmlClick">
+    </div><div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="editButton"
+      data-dojo-props="label:'${i18nBase.editor.primaryToolbar.edit}'"
+      data-dojo-attach-event="onClick: _onEditClick">
+    </div>
+    <div class="gxeMessageArea" data-dojo-attach-point="messageArea" style="display:none">
+      <div class="gxeIconWorking" data-dojo-attach-point="workingIcon" style="display:none"></div>
+      <span class="gxeWorkingMessage" data-dojo-attach-point="workingNode"></span>
+    </div>
+  </div>
+  <div class="gxeToolsets gxeFloatRight">
+    <div class="gxeToolset gxeViewToolset" data-dojo-attach-point="viewToolset" style="display:none;">
+      <button class="gxeButton gxeDownloadButton simple" data-dojo-attach-event="onclick: _onDownloadClick"
+        data-dojo-attach-point="downloadButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.download.caption}</button>
+    </div>
+    <div class="gxeToolset gxeEditToolset" data-dojo-attach-point="editToolset" style="display:none;">
+      <button class="gxeButton gxeViewHtmlButton simple" data-dojo-attach-event="onclick: _onViewHtmlClick"
+        data-dojo-attach-point="viewHtmlButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.viewHtml.caption}</button>
+      <button class="gxeButton gxeValidateButton simple" data-dojo-attach-event="onclick: _onValidateClick"
+        data-dojo-attach-point="validateButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.validate.caption}</button>
+      <button class="gxeButton gxeSaveDraftButton simple" data-dojo-attach-event="onclick: _onSaveDraftClick"
+        data-dojo-attach-point="saveDraftButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.saveDraft.caption}</button>
+      <span class="gxeSeparator"></span>
+      <button class="gxeButton gxeDeleteButton simple" data-dojo-attach-event="onclick: _onDeleteClick"
+        data-dojo-attach-point="deleteButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.del.caption}</button>
+      <button class="gxeButton gxeLoadButton simple" data-dojo-attach-event="onclick: _onLoadClick"
+        data-dojo-attach-point="loadButton"
+        ><span class="gxeBtnIcon"></span><span data-dojo-attach-point="loadButtonLabel"</span>${i18nBase.editor.load.caption}</button>
+      <button class="gxeButton gxeTransformButton simple" data-dojo-attach-event="onclick: _onTransformClick"
+        data-dojo-attach-point="transformButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.transform.caption}</button>
+      <span class="gxeSeparator"></span>
+      <button class="gxeButton gxeSaveButton prominent" data-dojo-attach-event="onclick: _onSaveClick"
+        data-dojo-attach-point="saveButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.save.caption}</button>
+      <button class="gxeButton gxeSaveAndCloseButton" data-dojo-attach-event="onclick: _onSaveAndCloseClick"
+        data-dojo-attach-point="saveAndCloseButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.editor.saveAndClose.caption}</button>
+    </div>
+    <div class="gxeToolset gxeCommonToolset" data-dojo-attach-point="commonToolset" style="display:none;">
+      <button class="gxeButton gxeCloseButton" data-dojo-attach-event="onclick: _onCloseClick"
+        data-dojo-attach-point="closeButton"
+        ><span class="gxeBtnIcon"></span>${i18nBase.general.close}</button>
+    </div>
+  </div>
+  <div class="gxeClear"></div>
+</div>

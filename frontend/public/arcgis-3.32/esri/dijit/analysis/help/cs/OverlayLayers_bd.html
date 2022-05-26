@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Překrýt vrstvy (Overlay Layers)</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Překr&yacute;t vrstvy"></h2>
+        <hr/>
+    <p>N&aacute;stroj Překr&yacute;t vrstvy zkombinuje dvě nebo v&iacute;ce vrstev do jedn&eacute; vrstvy. Překryv si můžete představit jako situaci, kdy na sebe polož&iacute;te sadu průhledn&yacute;ch map, a vytvoř&iacute;te tak jen jednu mapu, ve kter&eacute; budou obsaženy v&scaron;echny informace. Překryv je mnohem v&iacute;ce než pouh&eacute; spojen&iacute; nakreslen&yacute;ch lini&iacute;. V&scaron;echny atributy prvků, kter&eacute; jsou souč&aacute;st&iacute; překryvu, jsou přeneseny do v&yacute;sledn&eacute;ho produktu. Překryv slouž&iacute; k&nbsp;zodpovězen&iacute; jedn&eacute; z&nbsp;nejz&aacute;kladněj&scaron;&iacute;ch ot&aacute;zek geografie: Kter&eacute; prvky se nach&aacute;zej&iacute; nad kter&yacute;mi prvky? N&aacute;sleduj&iacute; př&iacute;klady:
+        <ul>
+            <li>Kter&eacute; parcely se nach&aacute;zej&iacute; v&nbsp;oblasti stolet&yacute;ch z&aacute;plav? (&bdquo;Nach&aacute;zet se v&ldquo; znamen&aacute; tot&eacute;ž co &bdquo;nach&aacute;zet se nad&ldquo;.)
+                  
+            </li>
+            <li>Jak&eacute; je využit&iacute; pozemků nad jednotliv&yacute;mi druhy půdy?
+                 
+            </li>
+            <li>Kter&eacute; studny se nach&aacute;zej&iacute; v&nbsp;m&iacute;stech opu&scaron;těn&yacute;ch vojensk&yacute;ch z&aacute;kladen?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou překryty pouze prvky ve vstupn&iacute;ch vrstv&aacute;ch a v překryvn&eacute; vrstvě viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy. Pokud toto pole za&scaron;krtnuto nen&iacute;, budou překryty v&scaron;echny prvky ve vstupn&iacute; vrstvě a v překryvn&eacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vstupní vrstvu</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, lini&iacute; nebo polygonů, kterou bude překryta.
+            </p>
+            <p class="OnlineOnly">Kromě v&yacute;běru vrstvy z mapy můžete tak&eacute; zvolit položky  <b>Vybrat vrstvu anal&yacute;zy živ&eacute;ho atlasu</b> nebo <b>Vybrat vrstvu anal&yacute;zy</b>, kter&eacute; se nach&aacute;zej&iacute; v doln&iacute; č&aacute;sti rozbalovac&iacute;ho seznamu. Otevře se galerie obsahuj&iacute;c&iacute; sb&iacute;rku vrstev určen&yacute;ch pro mnoho různ&yacute;ch anal&yacute;z. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Vybrat překryvnou vrstvu</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva, kter&aacute; bude použita k překryt&iacute; vstupn&iacute; vrstvy.  
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Vybrat metodu překryvu</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda překryvu definuje způsob, jak&yacute;m je vstupn&iacute; vrstva zkombinov&aacute;na s překryvnou vrstvou.  
+
+                <ul>
+                    <li> <b>Průnik</b> &ndash; V&yacute;sledn&aacute; vrstva bude obsahovat pouze prvky nebo č&aacute;sti prvků v překryvn&eacute; vrstvě, kter&eacute; se překr&yacute;vaj&iacute; s prvky ve vstupn&iacute; vrstvě. Při protnut&iacute; liniov&yacute;ch nebo plo&scaron;n&yacute;ch prvků m&aacute;te možnost určit typ prvků, kter&eacute; chcete jako v&yacute;stup.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Body s body
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Vstup body a body">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Body a body s bodov&yacute;m v&yacute;stupem">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linie s liniemi 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Vstup linie a linie">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linie a linie s liniov&yacute;m v&yacute;stupem ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Plochy s plochami
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Vstup plochy a plochy">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Plochy a plochy s plo&scaron;n&yacute;m v&yacute;stupem">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Rozd&iacute;l</b> &ndash; V&yacute;sledn&aacute; vrstva bude obsahovat prvky nebo č&aacute;sti prvků v překryvn&eacute; vrstvě, kter&eacute; se nepřekr&yacute;vaj&iacute; s plochami ve vstupn&iacute; vrstvě.  Překryvn&aacute; vrstva může obsahovat polygony, linie nebo body.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. Bude obsahovat stejn&yacute; typ prvků (polygony, linie nebo body) jako vstupn&iacute; a překryvn&eacute; vrstvy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; metodou překryvu a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute;m seznamu  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

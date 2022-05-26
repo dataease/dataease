@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tambahkan Data</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagram alur kerja Tambahkan Data"></h2>
+        <hr/>
+    <p>Alat ini menambahkan data ke layer fitur yang ada. Tambahkan Data memodifikasi layer input asli dan tidak menghasilkan layer output baru. Anda dapat mencocokkan kolom berdasarkan nama kolom dan jenis kolom, atau Anda dapat menerapkan metode pencocokan yang lebih canggih.
+    </p>
+    <p>Berikut ini adalah contohnya: 
+        <ul>
+            <li>Anda adalah karyawan dari perusahaan asuransi besar yang menghasilkan catatan penjualan setiap bulan. Untuk laporan tahunan Anda, data bulanan harus dikompilasi untuk analisis.  Untuk memulai analisis penjualan, Anda dapat memanfaatkan Append Data untuk memperbarui layer AnnualReport_2018 Anda setelah nomor bulanan Anda tersedia. Karena Anda tahu organisasi Anda mempertahankan skema yang konsisten setiap bulan, Anda dapat menggunakan metode pemetaan lapangan default untuk secara efisien menambahkan fitur berdasarkan nama dan jenis kolom.
+            </li>
+            <li>Sepuluh kelompok lingkungan masing-masing mengumpulkan ratusan ribu pengukuran iklim dalam yurisdiksi mereka.  Organisasi-organisasi ini ingin mengumpulkan data mereka untuk lebih memahami pola regional dan global. Setiap organisasi menentukan skema untuk set data mereka. Mereka masing-masing ditentukan nama kolom yang berbeda untuk suhu dan data kecepatan angin.  Mengingat perbedaan nama field antara set data, pemetaan kolom dapat dimanfaatkan untuk menentukan bagaimana cara menambahkan pengukuran suhu dan kecepatan angin ke kolomnya masing-masing.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer untuk ditambahkan</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur tabel, titik, garis, atau poligon yang datanya akan ditambahkan.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Layer yang Anda tambahkan akan dimodifikasi selama pelaksanaan alat. Sebelum melanjutkan, pastikan Anda ingin memodifikasi layer ini.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk feature layer yang di-host.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Pilih layer untuk ditambahkan</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur tabel, titik, garis, atau poligon untuk ditambahkan ke layer input.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Tambahkan semua fitur atau tentukan subset (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Mengidentifikasi fitur yang akan ditambahkan. Parameter ini opsional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Pilih cara menambahkan kolom (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan bagaimana kolom layer tambahan ditambahkan ke layer input. Secara default, semua input yang cocok dan kolom tambahan akan ditambahkan. Kolom adalah kecocokan jika mereka memiliki nama kolom yang sama dan jenis kolom yang sama. Secara opsional, Anda dapat memilih bagaimana kolom dicocokkan, atau menghitung ekspresi Arcade untuk mengisi nilai kolom.
+            </p>
+            <p>Misalnya, Anda memiliki layer input dengan kolom  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i>, dan layer tambahan dengan kolom <i>field_string</i>, <i>field_number</i>, dan <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Secara default, alat ini akan cocok dengan  <i>field_number</i> pada layer input ke <i>field_number</i> pada layer tambahan, dan <i>field_string</i> pada layer input ke <i>field_string</i> pada layer tambahan.
+                    </li>
+                    <li>Secara default, layer input  <i>date_field</i> dan <i>unused_field</i> akan diisi dengan nilai <i>null</i> karena mereka tidak memiliki kolom yang cocok pada layer tambahan.
+                    </li>
+                    <li>Secara opsional, Anda bisa menambahkan nilai ke kolom yang tidak secara otomatis dicocokkan secara default. Sebagai contoh,  <i>date_field</i> dalam layer input dapat dicocokkan dengan kolom tambahan <i>MY_DATE_FIELD</i>. Untuk melakukan ini, gunakan menu drop-down di sebelah <i>date_field</i> di kolom pertama dan pilih <i>MY_DATE_FIELD</i> dari menu drop-down di kolom kedua.
+                    </li>
+                </ul>
+                 Sebagai contoh lain, layer input memiliki kolom numerik <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, dan <i>my_Average</i>, dan layer tambahan memiliki kolom angka <i>value_1</i>, <i>value_2</i>, dan <i>value_3</i>.
+                <ul>
+                    <li>Secara default,  <i>value_1</i>, <i>value_2</i>, dan <i>value_3</i> akan dicocokkan dan ditambahkan.
+                    </li>
+                    <li>Selain perilaku default, nilai dapat dihitung untuk kolom  <i>my_Average</i>. Lakukan ini menggunakan beberapa kolom dan operasi matematika dengan memilih <b>Ekspresi</b> pilihan drop-down di kolom di samping <i>my_Average</i> dan membuat ekspresi Arcade kustom seperti <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

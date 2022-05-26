@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Znajdź istniejące lokalizacje</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Znajdź istniejące lokalizacje"></h2>
+        <hr/>
+    <p>Narzędzie to umożliwia wybieranie w badanym obszarze takich istniejących obiekt&oacute;w, kt&oacute;re spełniają podane kryteria. Kryteria można tworzyć na podstawie zapytań o&nbsp;atrybut (na przykład działki, kt&oacute;re są wolne) oraz zapytań przestrzennych (na przykład w&nbsp;odległości do jednego kilometra od rzeki). 
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, przeanalizowane zostaną jedynie obiekty w&nbsp;warstwie wejściowej widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty, nawet jeśli znajdują się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Wybierz warstwę zawierającą obiekty, które zostaną wyszukane za pomocą zapytań przestrzennych i opisowych</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, liniowa lub powierzchniowa,  kt&oacute;rej obiekty zostaną wyszukane za pomocą zapytań obejmujących poniższe kombinacje kryteri&oacute;w atrybutowych i przestrzennych.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Utwórz zapytanie umożliwiające wyszukiwanie obiektów</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknij przycisk  <b>Dodaj wyrażenie</b>, aby zdefiniować wyrażenie. Można dodać wiele wyrażeń. Po wprowadzeniu wyrażeń i&nbsp;kliknięciu przycisku <b>Uruchom analizę</b> obiekty w&nbsp;warstwie wejściowej filtrowane są według każdego z&nbsp;wyrażeń. Obiekty spełniające warunki wszystkich wyrażeń zapisywane są w&nbsp;warstwie wynikowej.
+            </p>
+            <p>Można tworzyć następujące dwa podstawowe typy wyrażeń: zapytanie o&nbsp;atrybut i&nbsp;zapytanie przestrzenne. Wyrażenia oparte na atrybutach to zapytania bazujące na wartości p&oacute;l, na przykład polach  <code>o&nbsp;nazwie nazwę &bdquo;San Francisco&rdquo;</code>. Dostępne są cztery typy wyrażeń przestrzennych:
+                <ul>
+                    <li> <b>w odległości do</b>: obiekt musi znajdować się w określonej odległości od obiektu w innej warstwie. Na przykład znajdź działki znajdujące się w odległości do 500 metr&oacute;w od rzeki Los Angeles.
+                    </li>
+                    <li> <b>w pełni obejmuje</b>: obiekt musi całkowicie obejmować obiekt z innej warstwy. Na przykład znajdź zlewnie, kt&oacute;re całkowicie zawierają działki przeznaczone pod działalność przemysłową. Żadna część działki nie może w&oacute;wczas wychodzić poza granice wododziału.
+                    </li>
+                    <li> <b>w pełni otoczony</b>: obiekt musi znajdować się całkowicie wewnątrz obiektu z innej warstwy. Na przykład znajdź okręgi szkolne w&nbsp;całości mieszczące się w&nbsp;granicach miasta. Żadna część okręgu nie może w&oacute;wczas wychodzić poza granice miasta.
+                    </li>
+                    <li> <b>przecina się</b>: obiekt zawiera część obiektu z innej warstwy. Na przykład znajdź działki przecinające się z&nbsp;rzekami. Jako przecinające się z działką uznawane są wszelkie odcinki rzeki, kt&oacute;re przechodzą przez działkę lub stykają się z jej granicami.
+                    </li>
+                    <li> <b>najbliższy</b>: obiekt musi znajdować się najbliżej obiektu w innej warstwie. Na przykład, można znaleźć restauracje znajdujące się najbliżej poszczeg&oacute;lnych hoteli.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Każde wyrażenie przestrzenne ma swoje zaprzeczenie, z wyjątkiem wyrażenia  <b>najbliższy</b>: <b>nie w&nbsp;odległości do</b>, <b>nie całkowicie zawiera</b>, <b>nie całkowicie wewnątrz</b> oraz <b>nie przecina się</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

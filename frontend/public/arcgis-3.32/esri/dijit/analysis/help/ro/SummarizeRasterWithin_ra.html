@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rezumare raster în cadrul</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Instrument Rezumare raster &icirc;n cadrul"></h2>
+        <hr/>
+    <p>Acest instrument rezumă un raster bazat pe suprafeţe (zone) definit de primul strat tematic de intrare.
+    </p>
+    <p>Printre exemplele de aplicaţii se numără:
+    </p>
+    <p>
+        <ul>
+            <li>Av&acirc;nd un strat tematic de graniţe de cumpănă de ape şi un strat tematic cu graniţe de utilizare a terenurilor &icirc;n funcţie de tipul utilizărilor, calculaţi suprafaţa totală pentru fiecare tip de utilizare a terenului pentru fiecare cumpănă de ape.
+                
+
+            </li>
+            <li>Av&acirc;nd un strat tematic de parcele dintr-un judeţ şi un strat tematic de limite ale localităţilor, rezumaţi valoarea medie a parcelelor libere dintre graniţele fiecărei localităţi.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai acele obiecte spaţiale din stratul tematic de intrare şi din stratul tematic de sumarizat care sunt vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, vor fi analizate toate obiectele spaţiale at&acirc;t din stratul tematic de intrare, c&acirc;t şi din stratul tematic de analizat, chiar dacă acestea se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Alegeţi un strat tematic de suprafeţe pentru a rezuma un strat tematic raster în graniţele definite</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic care defineşte limitele suprafeţelor sau zonelor care vor fi rezumate.
+            </p>
+            <p>Stratul tematic poate fi reprezentat de un raster sau de date de obiecte spaţiale. Pentru rastere, zonele sunt definite de toate locaţiile din intrare care au aceeaşi valoare a celulelor. Suprafeţele nu trebuie să fie continue.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Alegeţi câmpul pentru a defini graniţele</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este atributul stratului tematic care va fi utilizat pentru a defini limitele suprafeţelor.
+            </p>
+            <p>De exemplu, să presupunem că primul strat tematic de intrare defineşte limitele unităţii de administrare, cu atribute care definesc regiunea, districtul şi ID-ul de parcelă pentru fiecare unitate. De asemenea, aveţi un strat tematic raster care defineşte un index de biodiversitate pentru fiecare locaţie. Cu c&acirc;mpul pe care &icirc;l selectaţi, puteţi decide să calculaţi biodiversitatea medie la nivel local, districtual sau regional.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Alegeţi un strat tematic raster pentru rezumat</h2></div>
+        <hr/>
+        <div>
+            <p>Celulele raster din acest strat tematic vor fi rezumate după suprafeţele (zonele) &icirc;n care sunt incluse.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Selectare statistici pentru calcul</h2></div>
+        <hr/>
+        <div>
+            <p>După ce alegeţi un strat tematic pentru a fi sumarizat, opţional, puteţi calcula statistici pentru oricare dintre atributele numerice ale punctelor, liniilor sau suprafeţelor din stratul tematic de suprafeţe de intrare.
+            </p>
+            <p>The available statistics types when the selected field is integer are Average, Majority, Maximum, Median, Minimum, Minority, Range, Standard deviation, Sum, and Variety.
+            </p>
+            <p>&Icirc;n cazul &icirc;n care c&acirc;mpul este un punct mobil, opţiunile sunt Medie, Maxim, Minim, Interval, Deviaţie standard şi Sumă.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorare valori lipsă în calcul</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă alegeţi să ignoraţi valorile lipsă, doar celulele care au o valoare &icirc;n stratul tematic care trebuie rezumat vor fi utilizate la determinarea valorii de ieşire pentru suprafaţa respectivă. Altfel, dacă există valori lipsă oriunde &icirc;ntr-o suprafaţă, se consideră că există informaţii insuficiente pentru a efectua calcule statistice pentru toate celulele din respectiva zonă şi respectiva suprafaţă va primi o valoare nulă (NoData) &icirc;n rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

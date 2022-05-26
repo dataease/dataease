@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kreiraj vidno polje</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Kreiraj vidno polje"></h2>
+        <hr/>
+    <p>Alatka Kreiraj vidno polje kreira oblasti gde jedan posmatrač može da vidi objekte na zemlji. Ulazne tačke opservacije mogu da predstavljaju posmatrače (kao &scaron;to su ljudi na zemlji ili u tornjevima za uočavanje požara) ili posmatrane objekte (kao &scaron;to su vetrogeneratori, vodotornjevi, vozila ili drugi ljudi). Rezultujuće oblasti su one oblasti gde posmatrači mogu da vide posmatrane objekte i obrnuto: objekti opservacije mogu da vide posmatrače.
+    </p>
+    <p>Posmatrači i objekti opservacije mogu da imaju visinu iznad tla, a ove visine se koriste u određivanju vidljivosti. Na primer, vidna polja izračunata za vetrogeneratore visine 120 metara i ljude visine 180 cm koji stoje na zemlji obično će biti veća od vidnih polja izračunatih za vetrogeneratore visine 60 metara i ljude visine 180 cm.
+    </p>
+    <p>Imajte u vidu to da izračunavanja vidna polja ne uzimaju u obzir prepreke kao &scaron;to su drveće ili zgrade. O izračunavanju možete da razmi&scaron;ljate kao da se obavlja na brisanom prostoru bez ičega osim posmatrača i objekata opservacije.
+    </p>
+    <p>Rezultujući sloj sadrži geoobjekte oblasti koji predstavljaju vidljive oblasti. Polje  <i>Frequency</i> beleži broj tačaka opservacije koje mogu da vide svaku oblast. Na primer, ako imate pet ulaznih tačaka, od kojih svaka predstavlja toranj za uočavanje požara, polje <i>Frequency</i> imaće vrednosti između jedan i pet; oblasti sa vredno&scaron;ću jedan može da vide samo jedan toranj, a oblasti sa vredno&scaron;ću pet mogu da se vide svi tornjevi. Sloj sa rezultatima sadrži i polje <i>DEMResolution</i>, koje beleži rezoluciju digitalnog elevacionog modela (DEM) koji se koristi za kreiranje vidnih polja.
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirane samo one tačke opservacije koje su vidljive unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se sve tačke opservacije u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tačkasti geoobjekti koji predstavljaju lokacije posmatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji se koriste kao lokacije opservacije. 
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Visina lokacija posmatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je visina iznad tla va&scaron;ih lokacija opservacije. Podrazumevana vrednost je približno prosečna visina osobe.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Visina drugih objekata na tlu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je visina konstrukcija ili ljudi na zemlji koja se koristi za utvrđivanje vidljivosti. Rezultujuća vidna polja predstavljaju one oblasti gde tačka opservacije može da vidi druge objekte. Obrnuto je takođe tačno; drugi objekti mogu da vide tačku opservacije. 
+            </p>
+            <p>
+                <ul>
+                    <li>Ako tačke opservacije predstavljaju vetrogeneratore, a želite da odredite odakle ljudi koji stoje na zemlji mogu da vide generatore, unesite prosečnu visinu osobe (približno 180 cm). Rezultat su one oblasti iz kojih osoba koja stoji na zemlji može da vidi vetrogeneratore.
+                    </li>
+                    <li>Ako va&scaron;e tačke opservacije predstavljaju tornjeve za uočavanje požara, a želite da odredite koji tornjevi za uočavanje požara mogu da vide dim visine 6 metara ili vi&scaron;i, unesite 6 metara za visinu. Rezultat su one oblasti iz kojih toranj za uočavanje požara mogu da vide dim visine najmanje 6 metara.
+                    </li>
+                    <li>Ako va&scaron;e tačke opservacije predstavljaju vidikovce duž puteva i staza, a želite da odredite odakle mogu da se vide vetrogeneratori visine 120 metara ili vi&scaron;i, unesite 120 metara za visinu. Rezultat su one oblasti iz kojih osoba koja stoji na vidikovcu može da vidi vetrogeneratore visine najmanje 120 metara.
+                    </li>
+                    <li>Ako va&scaron;e tačke opservacije predstavljaju vidikovce, a želite da odredite koliku oblast na zemlji mogu da vide ljudi koji stoje na vidikovcu, unesite nulu. Rezultat su one oblasti koje mogu da se vide sa vidikovca.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimalno rastojanje dogledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je granica razdaljine gde se prekida izračunavanje vidljivih oblasti. Nije poznato da li tačke opservacije i njihovi objekti mogu međusobno da se vide dalje od ove razdaljine. Velike vrednosti povećavaju vreme izračunavanja. Maksimalna dozvoljena vrednost je 31 milja (50 kilometara).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+            <p> Pokretanje ove alatke ne tro&scaron;i kredite.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

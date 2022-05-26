@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Valgala</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Valgala &uuml;lesanne"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;vahend m&auml;&auml;rab m&otilde;jupiirkonna, mis paikneb rastris pikslikomplekti kohal.
+    </p>
+    <p>Veekogu on kaldega ala, mis soodustab voolu - eelk&otilde;ige veevoolu - &uuml;hisesse v&auml;ljalaskesse kontsentreeritud drenaažina. See v&otilde;ib olla suurema valgala osa ja sisaldada ka v&auml;iksemaid valgalasid, mida nimetatakse alambasseinideks.
+    </p>
+    <p>Iga valgala v&auml;&auml;rtus v&otilde;etakse sisendrastri allika v&otilde;i objekti valgumispunkti kihi v&auml;&auml;rtusest. Kui valgumispunkt on rastriandmestik, kasutatakse vaikimisi piksliv&auml;&auml;rtusi. Kui valgumispunkt on punktobjekti andmestik, on v&auml;&auml;rtused p&auml;rit etten&auml;htud v&auml;ljalt.
+    </p>
+    <p>Valgala t&ouml;&ouml;riist toetab ainult D8 sisendvoolusuuna rastrikihti.
+    </p>
+    <p>Kui sisend-valgumispunkti asukohad m&auml;&auml;ratakse objektiandmetena, on vaikev&auml;li esimene saadaolev kehtiv v&auml;li. Kui kehtivaid v&auml;lju ei ole, kasutatakse vaikimisi v&auml;lja objekti ID-d (n&auml;iteks OID v&otilde;i FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Valige voolusuuna kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendraster, mis n&auml;itab voolu suunda igast pikslist v&auml;lja.
+            </p>
+            <p>Voolusuuna rastri saab luua, kasutades voolusuuna t&ouml;&ouml;riista teenuse RasterAnalysisTools &uuml;lesannet FlowDirection. Selle k&auml;itamiseks tuleb kasutada voolusuuna vaiket&uuml;&uuml;pi  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Määrake sisend-valgumispunkti asukohad</h2></div>
+        <hr/>
+        <div>
+            <p>Sisend-valgumispunkti asukohad.
+            </p>
+            <p>Rastri puhul v&auml;ljendab see piksleid, millest k&otilde;rgemal m&auml;&auml;ratakse m&otilde;jupiirkond v&otilde;i valgala. K&otilde;iki piksleid, mis ei ole NoData-pikslid, kasutatakse l&auml;htepikslitena. Punktsisendi puhul v&auml;ljendab see asukohti, millest k&otilde;rgemal m&auml;&auml;ratakse m&otilde;jupiirkond v&otilde;i valgala.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Valige valgumispunkti väli</h2></div>
+        <hr/>
+        <div>
+            <p>Seda v&auml;lja kasutatakse v&auml;&auml;rtuste m&auml;&auml;ramiseks valgumispunkti asukohtadele.
+            </p>
+            <p>Kui sisend-valgumispunkt on raster, kasutatakse seda v&auml;&auml;rtust. Kui see on objekt, kasutatakse numbriv&auml;lja. Kui v&auml;li sisaldab ujuvpunktiga v&auml;&auml;rtusi, l&uuml;hendatakse need t&auml;isarvudeks.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

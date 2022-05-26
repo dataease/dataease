@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Rastrov&aacute; anal&yacute;za v&aacute;m umožňuje prov&aacute;dět anal&yacute;zu velk&yacute;ch rastrov&yacute;ch datov&yacute;ch sad pomoc&iacute;  ArcGIS Image Server. Můžete tak d&iacute;ky využit&iacute; v&yacute;konu serveru analyzovat v&iacute;ce dat rychleji. Sady n&aacute;strojů aktu&aacute;lně dostupn&eacute; přes  Portal for ArcGIS webovou uživatelskou službu  <b>Shrnout data</b>, <b>Anal&yacute;za prostorov&eacute;ho uspoř&aacute;d&aacute;n&iacute;</b>, <b>Obalov&eacute; z&oacute;ny, vzd&aacute;lenost</b>, <b>Analyzovat sn&iacute;mek</b>, <b>Analyzovat ter&eacute;n</b>, <b>Spravovat data</b>, and <b>Deep Learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Sumarizovat data</h2>
+        <hr/>
+        <p>Tato sada n&aacute;strojů obsahuje n&aacute;stroj pro v&yacute;počet někter&yacute;ch statistik pro rastrovou vrstvu uvnitř hranic oblasti, kter&eacute; definujete. 
+            <ul>
+                <li>N&aacute;stroj  <b>Sumarizace rastru uvnitř</b> vypoč&iacute;t&aacute;v&aacute; statistiku pro rastrov&eacute; buňky, kter&eacute; spadaj&iacute; do definovan&yacute;ch hranic oblasti.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Souhrn hodnot rastru v rozmezí (Summarize Raster Within)</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="N&aacute;stroj Souhrn hodnot rastru v rozmez&iacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vypoč&iacute;t&aacute;v&aacute; někter&eacute; souhrnn&eacute; statistiky pro rastrov&eacute; buňky v&nbsp;definovan&yacute;ch oblastech.
+            </p>
+            <p>Mezi př&iacute;klady použit&iacute; patř&iacute;: 
+
+                <ul>
+                    <li>Na z&aacute;kladě vrstvy oblast&iacute; povod&iacute; a rastrov&eacute; vrstvy nadmořsk&eacute; v&yacute;&scaron;ky vypoč&iacute;tat rozsah nadmořsk&yacute;ch v&yacute;&scaron;ek v&nbsp;každ&eacute;m povod&iacute; za &uacute;čelem zji&scaron;těn&iacute;, kter&aacute; povod&iacute; budou m&iacute;t tok s&nbsp;nejvy&scaron;&scaron;&iacute; energi&iacute;.
+                        
+
+                    </li>
+                    <li>Na z&aacute;kladě vrstvy jednotek administrativn&iacute; spr&aacute;vy a rastrov&eacute; vrstvy kategori&iacute; využit&iacute; půdy vypoč&iacute;tat &scaron;k&aacute;lu hodnot využit&iacute; půdy v&nbsp;každ&eacute; oblasti spr&aacute;vy za &uacute;čelem zji&scaron;těn&iacute;, kter&eacute; vyžaduj&iacute; nejv&iacute;ce pr&aacute;ce k&nbsp;vytvořen&iacute; pl&aacute;nu spr&aacute;vy.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analyzovat vzorce</h2>
+        <hr/>
+        <p>Tyto n&aacute;stroje v&aacute;m pom&aacute;haj&iacute; odhalit, kvantifikovat a vizualizovat prostorov&eacute; souvislosti v&nbsp;datech. 
+
+            <ul>
+                <li>N&aacute;stroj  <b>Vypoč&iacute;tat hustotu</b> vytv&aacute;ř&iacute; mapu hustoty ze zn&aacute;m&yacute;ch množstv&iacute; určit&eacute;ho jevu rozprostřen&iacute;m těchto množstv&iacute; po mapě.
+                    
+
+                </li>
+                <li>N&aacute;stroj  <b>Interpolovat body</b> předpov&iacute;d&aacute; hodnoty v&nbsp;nov&yacute;ch um&iacute;stěn&iacute;ch na z&aacute;kladě hodnot sady vstupn&iacute;ch bodů.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vypočítat hustotu (Calculate Density)</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="N&aacute;stroj Vypoč&iacute;tat hustotu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Anal&yacute;za hustoty vytv&aacute;ř&iacute; mapu hustoty ze zn&aacute;m&yacute;ch množstv&iacute; určit&eacute;ho jevu rozprostřen&iacute;m těchto množstv&iacute; po mapě. Pomoc&iacute; tohoto n&aacute;stroje můžete např&iacute;klad zobrazit koncentrace &uacute;derů blesků nebo torn&aacute;d, dostupnost l&eacute;kařsk&yacute;ch zař&iacute;zen&iacute; a hustotu populace.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolovat body (Interpolate Points)</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="N&aacute;stroj Interpolovat body">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tento n&aacute;stroj v&aacute;m umožňuje odhadovat hodnoty v&nbsp;nov&yacute;ch um&iacute;stěn&iacute;ch na z&aacute;kladě hodnot existuj&iacute;c&iacute;ch bodů. N&aacute;stroj poč&iacute;t&aacute; s&nbsp;hodnotami v&scaron;ech zn&aacute;m&yacute;ch bodů a vytv&aacute;ř&iacute; nov&eacute; plochy klasifikovan&eacute; podle předpov&iacute;dan&yacute;ch hodnot. Pomoc&iacute; tohoto n&aacute;stroje můžete např&iacute;klad předpov&iacute;dat &uacute;roveň sr&aacute;žek v&nbsp;r&aacute;mci cel&eacute;ho povod&iacute; na z&aacute;kladě v&yacute;sledků měřen&iacute; z&iacute;skan&yacute;ch z&nbsp;jednotliv&yacute;ch př&iacute;strojů pro měřen&iacute; sr&aacute;žek.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Obalové zóny, vzdálenost</h2>
+        <hr/>
+        <p>Tyto n&aacute;stroje v&aacute;m pomohou odpovědět na jednu z nejčastěj&scaron;&iacute;ch ot&aacute;zek prostorov&eacute; anal&yacute;zy: &bdquo;Co je v bl&iacute;zkosti čeho&ldquo;?
+
+            <ul>
+                <li> <b>Vypoč&iacute;tat vzd&aacute;lenost</b> vypoč&iacute;t&aacute; euklidovskou vzd&aacute;lenost, směr a přiřazen&iacute; z jedin&eacute;ho zdroje nebo sady zdrojů.
+                    
+
+                </li>
+                <li> <b>Stanovit s&iacute;ť optim&aacute;ln&iacute;ch cestovn&iacute;ch n&aacute;kladů </b> vypoč&iacute;t&aacute; s&iacute;ť optim&aacute;ln&iacute;ch n&aacute;kladů ze sady vstupn&iacute;ch regionů.
+                    
+
+                </li>
+                <li> <b>Stanovit cestovn&iacute; n&aacute;klady tras jako polylinii</b> vypoč&iacute;t&aacute; polyliniovou trasu s nejniž&scaron;&iacute;mi n&aacute;klady mezi zdroji a zn&aacute;m&yacute;mi destinacemi.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vypočítat vzdálenost (Calculate Distance)</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Vypoč&iacute;tat vzd&aacute;lenost">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vypoč&iacute;t&aacute; euklidovskou vzd&aacute;lenost, směr a přiřazen&iacute; z jedin&eacute;ho zdroje nebo sady zdrojů. Tento n&aacute;stroj můžete využ&iacute;t pro určen&iacute; vzd&aacute;lenosti lokace od silnice, budovy nebo parku. Můžete tak&eacute; určit, jak&yacute;m směrem mus&iacute;te cestovat z lokace, abyste se do zdroje vr&aacute;tili nepř&iacute;měj&scaron;&iacute;m způsobem. Můžete zobrazit každou lokaci ve sv&eacute; studijn&iacute; oblasti, kter&aacute; je nejbliž&scaron;&iacute;m zdrojem.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Stanovit síť optimálních cestovních nákladů (Determine Optimum Travel Cost Network)</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Obr&aacute;zek n&aacute;stroje Stanovit s&iacute;ť optim&aacute;ln&iacute;ch cestovn&iacute;ch n&aacute;kladů">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vypoč&iacute;t&aacute; optim&aacute;ln&iacute; s&iacute;ť n&aacute;kladů ze souboru vstupn&iacute;ch regionů.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Stanovit cestovní náklady tras jako polylinii (Determine Travel Cost Path As Polyline)</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Obr&aacute;zek n&aacute;stroje Stanovit cestovn&iacute; n&aacute;klady tras jako polylinii">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vypoč&iacute;t&aacute; polyliniovou trasu s nejniž&scaron;&iacute;mi n&aacute;klady mezi zdroji a zn&aacute;m&yacute;mi destinacemi.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="regularsize">
+        <h2>Analyzovat obrázek</h2>
+        <hr/>
+        <p>N&aacute;sleduj&iacute;c&iacute; n&aacute;stroj v&aacute;m pomůže analyzovat sn&iacute;mky. 
+            <ul>
+                <li>N&aacute;stroj <b>Použ&iacute;t &scaron;ablonu rastrov&yacute;ch funkc&iacute;</b> zpracuje va&scaron;e sn&iacute;mky pomoc&iacute; sledu funkc&iacute;, dle specifikace v &scaron;abloně rastrov&yacute;ch funkc&iacute;.
+                </li>
+                <li>N&aacute;stroj  <b>Monitorovat vegetaci</b> nalezne v obr&aacute;zku vegetaci na z&aacute;kladě aritmetick&yacute;ch operac&iacute; p&aacute;sem.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Použít šablonu rastrových funkcí (Apply Raster Function Template)</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Použ&iacute;t &scaron;ablonu rastrov&yacute;ch funkc&iacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>zpracuje va&scaron;e sn&iacute;mky pomoc&iacute; s&eacute;rie funkc&iacute;, dle specifikace v &scaron;abloně rastrov&yacute;ch funkc&iacute;.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Monitorovat vegetaci (Monitor Vegetation)</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="N&aacute;stroj Monitorovat vegetaci pro port&aacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>N&aacute;stroj provede aritmetickou operaci s&nbsp;p&aacute;smy v&iacute;cep&aacute;smov&eacute; rastrov&eacute; vrstvy, aby zjistil informace o pokryt&iacute; vegetac&iacute; v z&aacute;jmov&eacute; oblasti.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analyzovat terén</h2>
+        <hr/>
+        <p>Tyto n&aacute;stroje v&aacute;m pom&aacute;haj&iacute; analyzovat rastrov&eacute; povrchy. 
+            <ul>
+                <li> <b>Vypoč&iacute;tat svažitost</b> vypoč&iacute;t&aacute; svažitost ter&eacute;nu.
+                    
+
+                </li>
+                <li> <b>Odvodit orientaci</b> vypoč&iacute;t&aacute; směrovou orientaci nejstrměj&scaron;&iacute;ho svahu pro každ&eacute; um&iacute;stěn&iacute;.
+                    
+
+                </li>
+                <li> <b>Vytvořit viditeln&yacute; povrch</b> urč&iacute;, co je možn&eacute; vidět z&nbsp;libovoln&eacute;ho bodu v&nbsp;krajině.
+                    
+
+                </li>
+                <li> <b>Povod&iacute;</b> vypoč&iacute;t&aacute; př&iacute;tokovou oblast nad identifikovan&yacute;mi lokacemi na povrchu.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vypočítat svažitost (Calculate Slope)</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="N&aacute;stroj Vypoč&iacute;tat svažitost pro port&aacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Urč&iacute; povrch, kter&yacute; ukazuje svažitost vstupn&iacute;ch dat nadmořsk&eacute; v&yacute;&scaron;ky. Svažitost představuje m&iacute;ru změny nadmořsk&eacute; v&yacute;&scaron;ky pro každou buňku digit&aacute;ln&iacute;ho v&yacute;&scaron;kov&eacute;ho modelu (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Odvodit orientaci (Derive Aspect)</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="N&aacute;stroj Odvodit orientaci pro port&aacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifikuje směr svažitosti, tzn. maxim&aacute;ln&iacute; m&iacute;ru změny hodnot mezi buňkami a jejich okol&iacute;m. Orientaci si lze představit jako směr svahu.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vytvořit viditelný povrch (Create Viewshed)</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="N&aacute;stroj Vytvořit viditeln&yacute; povrch">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Urč&iacute; um&iacute;stěn&iacute; na rastrov&eacute;m povrchu, kter&aacute; jsou viditeln&aacute; pro sadu pozorovatelů.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Povodí (Watershed)</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="&Uacute;loha Povod&iacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Stanov&iacute; př&iacute;tokovou oblast nad sadou buněk v rastru.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Spravovat data</h2>
+        <hr/>
+        <p>Tyto n&aacute;stroje lze použ&iacute;t pro každodenn&iacute; spr&aacute;vu geografick&yacute;ch dat a pro kombinov&aacute;n&iacute; dat před anal&yacute;zou. 
+            <ul>
+                <li>N&aacute;stroj  <b>Extrahovat rastr</b> vyřez&aacute;v&aacute; č&aacute;sti z&nbsp;rastrov&eacute; datov&eacute; sady pro dal&scaron;&iacute; anal&yacute;zu.
+                    
+
+                </li>
+                <li>N&aacute;stroj  <b>Přemapovat hodnoty</b> přiděluje různ&eacute; hodnoty rastrov&yacute;m buňk&aacute;m.
+                    
+
+                </li>
+                <li>N&aacute;stroj  <b>Přev&eacute;st prvek na rastr</b> měn&iacute; vektorov&aacute; data na rastry.
+                    
+
+                </li>
+                <li>N&aacute;stroj  <b>Přev&eacute;st rastr na prvek</b> měn&iacute; rastrov&aacute; data na vektory.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extrahovat rastr (Extract Raster)</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="N&aacute;stroj Extrahovat rastr pro port&aacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extrahovat buňky z&nbsp;rastru na z&aacute;kladě hodnoty, tvaru nebo rozsahu jin&eacute; datov&eacute; sady.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Přemapovat hodnoty (Remap Values)</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="N&aacute;stroj Přemapovat hodnoty pro port&aacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Změnit jednotliv&eacute; hodnoty buněk nebo jejich rozsahy na nov&eacute; hodnoty.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Převést prvek na rastr</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="N&aacute;stroj Přev&eacute;st prvek na rastr">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vytvořit novou rastrovou datovou sadu z&nbsp;existuj&iacute;c&iacute; datov&eacute; sady prvků.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Převést rastr na prvek (Convert Raster to Feature)</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="N&aacute;stroj Přev&eacute;st rastr na prvek">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vytvořit novou datovou sadu prvků z&nbsp;existuj&iacute;c&iacute; rastrov&eacute; datov&eacute; sady.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Sada nástrojů Deep Learningu</h2>
+        <hr/>
+        <p>Tyto n&aacute;stroje detekuj&iacute; specifick&eacute; prvky na sn&iacute;mku nebo klasifikuj&iacute; pixely v rastrov&eacute; datov&eacute; sadě. Deep learning je typem metody strojov&eacute;ho učen&iacute; uměl&eacute; inteligence, kter&aacute; detekuje prvky na sn&iacute;mc&iacute;ch pomoc&iacute; v&iacute;ce vrstev v neutr&aacute;ln&iacute;ch s&iacute;t&iacute;ch, kde každ&aacute; vrstva je schopna extrahovat jeden nebo v&iacute;ce jedinečn&yacute;ch prvků na sn&iacute;mku. Tento n&aacute;stroj využ&iacute;v&aacute; modely, kter&eacute; byly učeny pro detekov&aacute;n&iacute; prvků v programech deep learningu třet&iacute; strany&mdash;jako např&iacute;klad TensorFlow, CNTK a Keras&mdash;a v&yacute;stupn&iacute; prvky nebo mapy tř&iacute;dy.
+            <ul>
+                <li> <b>Klasifikovat pixely pomoc&iacute; deep learningu (Classify Pixels Using Deep Learning)</b> vytv&aacute;ř&iacute; rastr pomoc&iacute; učen&eacute;ho modelu deep learningu.
+                </li>
+                <li> <b>Detekovat objekty pomoc&iacute; deep learningu (Detect Objects Using Deep Learning)</b> vytv&aacute;ř&iacute; tř&iacute;du prvků obsahuj&iacute;c&iacute; objekty, kter&eacute; nalezne ve vstupn&iacute;m rastru pomoc&iacute; učen&eacute;ho modelu deep learningu.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasifikovat pixely pomocí deep learningu (Classify Pixels Using Deep Learning)</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klasifikovat pixely pomoc&iacute; deep learningu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Spust&iacute; model &scaron;kolen&iacute; deep learningu na vstupn&iacute;m rastru pro vytvořen&iacute; klasifikovan&eacute;ho rastru se tř&iacute;dou popisků přiřazenou ke každ&eacute;mu platn&eacute;mu pixelu.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Detekovat objekty pomocí deep learningu (Detect Objects Using Deep Learning)</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Detekovat objekty pomoc&iacute; deep learningu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Spust&iacute; model &scaron;kolen&iacute; deep learningu na vstupn&iacute;m rastru pro vytvořen&iacute; tř&iacute;dy prvků obsahuj&iacute;c&iacute; objekty, kter&eacute; nalezne. Prvky mohou b&yacute;t ohraničuj&iacute;c&iacute; v&yacute;řezy nebo polygony kolem nalezen&yacute;ch objektů, nebo body ve středech objektů.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Laadi yhteenveto ominaisuustiedoista</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Laadi yhteenveto ominaisuustiedoista -kaavio"></h2>
+        <hr/>
+    <p> T&auml;m&auml; ty&ouml;kalu laatii yhteenvedon kaikista vastaavista arvoista v&auml;hint&auml;&auml;n yhdess&auml; kent&auml;ss&auml; ja laskee niille tilastotiedot. Perustilastotietoja ovat niiden kohteiden m&auml;&auml;r&auml;, joista yhteenveto on laadittu. Voit my&ouml;s laskea lis&auml;tilastotietoja.
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; sinulla pistekohteita myym&auml;l&auml;sijainneista ja kentt&auml;  <i>DISTRICT_MANAGER_NAME</i>, ja ett&auml; haluat laatia yhteenvedon kahvinmyynnist&auml; esimiehen mukaan. Voit m&auml;&auml;ritt&auml;&auml; kent&auml;n <i>DISTRICT_MANAGER_NAME</i> kentt&auml;n&auml;, johon sulautetaan, ja yhteenveto laaditaan kaikista yksitt&auml;isi&auml; esimiehi&auml; edustavista aineistoriveist&auml;. T&auml;m&auml; tarkoittaa, ett&auml; kaikista myym&auml;l&auml;sijainneista, joita johtaa <pre>Manager1</pre>, laaditaan yhteenveto yhdelle riville. Lis&auml;ksi lasketaan yhteenvetotilastotiedot. T&auml;ss&auml; tapauksessa lasketaan tilastotiedot, kuten myym&auml;l&ouml;iden m&auml;&auml;r&auml; ja kaikkien niiden myym&auml;l&ouml;iden ominaisuustiedon <i>TOTAL_SALES</i> summa, joita johtaa <pre>Manager1</pre> sek&auml; kuka tahansa kent&auml;ss&auml; <i>DISTRICT_MANAGER_NAME</i> lueteltu esimies.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse lähtöaineisto, josta yhteenveto laaditaan</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; kent&auml;t, joista yhteenveto laaditaan.  
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Valitse aineiston yhteenvetotapa</h2></div>
+        <hr/>
+        <div>
+            <p>Aineiston yhteenvedon voi laatia kahdella tavalla:
+                <ul>
+                    <li> <b>Kaikki kohteet yhteen kohteeseen</b> &ndash; Laskee tilastotiedot kaikista kohteista.
+                    </li>
+                    <li> <b>Kenttien mukaan</b> &ndash; Ryhmittelee kohteet m&auml;&auml;ritettyjen kenttien arvojen perusteella.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; sinulla on sellaisten puiden aineistoryhm&auml;, jotka sis&auml;lt&auml;v&auml;t kentti&auml;, kuten  <i>treetype</i>, joiden arvot ovat <code>Vaahtera</code>, <code>Pihtakuusi</code> ja <code>M&auml;nty</code>, ja kent&auml;n <i>treeheight</i>, ja haluat tiet&auml;&auml; puiden keskipituuden <i>treeheight</i>. Jos laadit yhteenvedon kaikista kohteista ja teet niist&auml; yhden kohteen, l&ouml;yd&auml;t kaikkien puiden keskikorkeuden, ja lopputuloksena on yksi keskiarvo. Jos laadit yhteenvedon kent&auml;n <i>treeheight</i> perusteella, saat tulokseksi vaahterapuiden keskipituuden, pihtakuusien keskipituuden ja m&auml;ntyjen keskipituuden.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p> Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto.Voit laskea seuraavat numerokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voit laskea seuraavat merkkijonokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse aineistosäilö</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

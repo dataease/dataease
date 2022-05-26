@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>El quadre d'eines An&agrave;lisi d'entitats cont&eacute; una s&egrave;rie d'eines que podeu utilitzar i a les quals podeu accedir.  Aquestes tasques es classifiquen en categories, que s&oacute;n simplement agrupacions l&ograve;giques i no afecten en cap cas la manera com accediu a les tasques o les utilitzeu.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Resumir les dades</h2>
+        <hr/>
+        <p>Aquestes eines calculen recomptes totals, longituds, &agrave;rees i estad&iacute;stiques descriptives b&agrave;siques d'entitats i dels seus atributs que es troben dins d'&agrave;rees o prop d'altres entitats.
+            <ul>
+                <li> <b>Consolida punts</b> calcula estad&iacute;stiques dels punts que es troben dins de les &agrave;rees especificades.
+                </li>
+                <li> <b>Uneix les entitats</b> transfereix atributs d'una capa o taula a una altra d'acord amb les relacions espacials i d'atributs
+                </li>
+                <li> <b>Resumir prop de</b> calcula estad&iacute;stiques d'entitats i dels seus atributs que es troben dins d'una dist&agrave;ncia especificada.
+                </li>
+                <li> <b>Resumir dins de</b> calcula estad&iacute;stiques d'entitats d'&agrave;rees i atributs que se superposen entre si.
+                </li>
+                <li> <b>Resumir centre i dispersi&oacute;</b> calcula les entitats centrals i les distribucions direccionals.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Consolida punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Consolida punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mitjan&ccedil;ant una capa d'entitats de punts i una capa d'entitats d'&agrave;rees, aquesta eina determina quins punts es troben dins de cada &agrave;rea i calcula estad&iacute;stiques de tots els punts de dins de cada &agrave;rea. Per exemple:
+                <ul>
+                    <li>Donades les ubicacions de punts d'incidents delictius, compta el nombre de delictes per comtat o per altres districtes administratius.
+                    </li>
+                    <li>Cerca els ingressos m&eacute;s alts i m&eacute;s baixos per ubicacions de franqu&iacute;cies en cada estat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Uneix les entitats</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Uneix les entitats">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Uneix les entitats transferir&agrave; atributs d'una capa o taula a una altra d'acord amb les relacions espacials i d'atributs Per exemple:
+                <ul>
+                    <li>Afegeix un l&iacute;mit com&uacute; o informaci&oacute; demogr&agrave;fica a les dades d'incidents.
+                    </li>
+                    <li>Identifica les instal&middot;lacions m&eacute;s properes d'una ubicaci&oacute; coneguda.
+                    </li>
+                    <li>Determina el nombre de resid&egrave;ncies que es troben en zones d'inundaci&oacute;.
+                    </li>
+                    <li>Identifica h&agrave;bitats comuns per a diferents esp&egrave;cies salvatges.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir prop de</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Resumir prop de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cerca entitats que estan dins d'una dist&agrave;ncia especificada de les entitats de la capa d'entrada.   La dist&agrave;ncia es pot mesurar al llarg de l&iacute;nies rectes o rutes viables d'un mode de viatge.  Posteriorment es calculen les estad&iacute;stiques per a les entitats properes.  Per exemple:
+                <ul>
+                    <li>Calcula la poblaci&oacute; total que estigui a menys de cinc minuts de la ubicaci&oacute; proposada per a una botiga nova.
+                    </li>
+                    <li>Calcula el nombre d'incorporacions a l'autovia que estiguin a menys de cinc minuts d'una ubicaci&oacute; proposada per a una botiga nova per fer-les servir de mesura per a l'accessibilitat de la botiga.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir dins de</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Resumir dins de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cerca &agrave;rees (i porcions d'&agrave;rees) que se superposen entre dues capes i calcula estad&iacute;stiques sobre la superposici&oacute;. Per exemple:
+                <ul>
+                    <li>Donada una capa d'&agrave;rees de conques hidrogr&agrave;fiques i una capa d'&agrave;rees d'&uacute;s del s&ograve;l per tipus d'&uacute;s, calcula la superf&iacute;cie total del tipus d'&uacute;s del s&ograve;l per a cada conca hidrogr&agrave;fica. 
+                    </li>
+                    <li>Donada una capa de parcel&middot;les d'un comtat i una capa de l&iacute;mits de ciutats, resumir el valor mitj&agrave; de les parcel&middot;les buides en cada ciutat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir centre i dispersió</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Resumir centre i dispersi&oacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina utilitza entitats de punts per calcular l'entitat central, el centre mig, el centre mitj&agrave; o l'el&middot;lipse (distribuci&oacute;).  Per exemple:
+                <ul>
+                    <li>Donada una capa de centroides de grup de blocs, l'entitat central ponderada per poblaci&oacute; es podria fer servir per identificar quina part de la poblaci&oacute; &eacute;s m&eacute;s accessible per a un centre d'art.
+                    </li>
+                    <li>Donada una capa d'observacions d'ants en un parc durant diversos anys, el centre mig es pot utilitzar per veure on es congrega l'ant a l'estiu i a l'hivern.
+                    </li>
+                    <li>Donada una capa d'incidents d'incendi, el centre mitj&agrave; es pot utilitzar per mesurar la tend&egrave;ncia central dels incendis sense que es vegin afectats per valors at&iacute;pics perif&egrave;rics.
+                    </li>
+                    <li>Donada una capa de mostres d'aigua subterr&agrave;nia, es pot utilitzar una el&middot;lipse per determinar com es propaga un contaminant.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Enriquiment de dades</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a explorar el car&agrave;cter de les &agrave;rees. Es retornen estad&iacute;stiques i dades demogr&agrave;fiques detallades per a les &agrave;rees que trieu. 
+            <ul>
+                <li> <b>Enriqueix la capa</b> recupera informaci&oacute; de les persones, els llocs i els negocis d'una &agrave;rea espec&iacute;fica o que estiguin dins d'una dist&agrave;ncia o un temps de viatge seleccionat des d'una ubicaci&oacute;.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enriqueix la capa</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Enriqueix la capa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Recupera informaci&oacute; de les persones, els llocs i els negocis d'una &agrave;rea espec&iacute;fica o que estiguin dins d'una dist&agrave;ncia o un temps de viatge seleccionat des d'una ubicaci&oacute;. 
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Cerca ubicacions</h2>
+        <hr/>
+        <p>Aquestes eines es fan servir per identificar o crear entitats que compleixin els criteris que especifiqueu.  El tipus de criteri dependr&agrave; de l'eina que feu servir. Per exemple, &eacute;s possible que el vostre criteri es basi en consultes espacials o d'atributs, &agrave;rees visibles des d'una altura especificada, &agrave;rees aigua avall per a punts de drenatge espec&iacute;fic o temps de conducci&oacute; en condicions de tr&agrave;nsit concretes.
+            <ul>
+                <li> <b>Tria les millors instal&middot;lacions</b> selecciona les millors ubicacions per a les instal&middot;lacions. Per fer-ho, assigna ubicacions que tenen demanda d'aquestes instal&middot;lacions de manera que s'assoleixi un objectiu determinat.
+                </li>
+                <li> <b>Crea una conca visual</b> crea &agrave;rees que s&oacute;n visibles en funci&oacute; de les ubicacions que especifiqueu.
+                </li>
+                <li> <b>Crea conques hidrogr&agrave;fiques</b> crea zones de captaci&oacute; basades en les ubicacions que especifiqueu.
+                </li>
+                <li> <b>Deriva ubicacions noves</b> crea &agrave;rees noves a partir d'ubicacions de l'&agrave;rea d'estudi que compleixen una s&egrave;rie de criteris.
+                </li>
+                <li> <b>Cerca centroides</b> troba el centre representatiu (centroide) de les entitats d'entrada.
+                </li>
+                <li> <b>Cerca ubicacions existents</b> cerca &agrave;rees existents d'una capa que compleixen una s&egrave;rie de criteris.
+                </li>
+                <li> <b>Cerca ubicacions similars</b> cerca les ubicacions m&eacute;s similars a una o diverses ubicacions de refer&egrave;ncia en funci&oacute; dels criteris que especifiqueu.
+                </li>
+                <li class="PortalOnly"> <b>Geocodifica les ubicacions a partir d'una taula</b> converteix adreces d'una taula en coordenades. 
+                </li>
+                <li> <b>Tra&ccedil;at aigua avall</b> determina els recorreguts del flux aig&uuml;es avall des de les ubicacions que especifiqueu.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tria les millors instal·lacions</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Tria les millors instal&middot;lacions">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selecciona les millors ubicacions per a les instal&middot;lacions. Per fer-ho, assigna ubicacions que tenen demanda d'aquestes instal&middot;lacions de manera que s'assoleixi un objectiu determinat.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea una conca visual</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Crea una conca visual">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea &agrave;rees que siguin visibles en funci&oacute; de les ubicacions que especifiqueu.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea conques hidrogràfiques</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Crea conques hidrogr&agrave;fiques">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea zones de captaci&oacute; basades en les ubicacions que especifiqueu.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deriva ubicacions noves</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Deriva ubicacions noves">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea entitats noves a l'&agrave;rea d'estudi que compleixen una s&egrave;rie de criteris que especifiqueu. Aquests criteris poden basar-se en consultes d'atributs (per exemple, parcel&middot;les que estan buides) i consultes espacials (per exemple, parcel&middot;les que estan a una milla com a m&agrave;xim d'un riu). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca centroides</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Cerca centroides">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Troba el centre representatiu (centroide) per a cada entitat multipunt, de l&iacute;nies o d'&agrave;rees d'entrada.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca ubicacions existents</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Cerca ubicacions existents">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selecciona entitats existents a l'&agrave;rea d'estudi que compleixen una s&egrave;rie de criteris que especifiqueu. Aquests criteris poden basar-se en consultes d'atributs (per exemple, parcel&middot;les que estan buides) i consultes espacials (per exemple, parcel&middot;les que estan a una milla com a m&agrave;xim d'un riu). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocodifica les ubicacions a partir d'una taula</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocodifica les ubicacions a partir d'una taula">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Converteix adreces en coordenades. Feu servir aquesta eina amb adreces en un full de c&agrave;lcul de l'Excel o un fitxer CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca ubicacions similars</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Cerca ubicacions similars">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cerca les ubicacions que s&oacute;n m&eacute;s similars a una o diverses ubicacions de refer&egrave;ncia en funci&oacute; dels criteris que especifiqueu.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Traçat aigua avall</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Tra&ccedil;at aigua avall">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina els recorreguts del flux aig&uuml;es avall des de les ubicacions que especifiqueu.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analitza els patrons</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a identificar, quantificar i visualitzar els patrons espacials de les vostres dades.  
+            <ul>
+                <li> <b>Calcula la densitat</b> pren quantitats conegudes d'algun fenomen i les dispersa pel mapa.
+                </li>
+                <li> <b>Cerca punts calents</b> identifica clusteritzacions estad&iacute;sticament significatives al patr&oacute; espacial de les vostres dades.
+                </li>
+                <li> <b>Cerca valors at&iacute;pics</b> determina si hi ha algun valor at&iacute;pic estad&iacute;sticament significatiu al patr&oacute; espacial de les vostres dades.
+                </li>
+                <li> <b>Cerca cl&uacute;sters de punts</b> cerca cl&uacute;sters d'entitats de punts dins del soroll de l'entorn en funci&oacute; de la seva distribuci&oacute; espacial.
+                </li>
+                <li> <b>Interpola els punts</b> prediu els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula la densitat</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calcula la densitat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'an&agrave;lisi de densitat pren quantitats conegudes d'algun fenomen i les dispersa pel mapa. Per exemple, podeu fer servir aquesta eina per mostrar concentracions de llamps o tornados, l'acc&eacute;s a instal&middot;lacions m&egrave;diques i densitats de poblaci&oacute;.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca punts calents</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Cerca punts calents">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina crea un mapa que mostra qualsevol clusteritzaci&oacute; espacial estad&iacute;sticament significativa que hi hagi a les vostres dades.   Feu servir aquesta eina per descobrir punts calents (vermells) i freds (blaus) inesperats de valors alts i baixos d'habitatges, densitats de delictes, v&iacute;ctimes mortals d'accidents de tr&agrave;nsit, atur o biodiversitat, per exemple.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca valors atípics</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Cerca valors at&iacute;pics">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina crea un mapa que mostra qualsevol clusteritzaci&oacute; i valors at&iacute;pics espacials estad&iacute;sticament significatius que hi hagi a les vostres dades. Utilitzeu aquesta eina per identificar entitats que tinguin valors considerablement diferents dels que tenen els seus ve&iuml;ns.  Per exemple, podeu utilitzar aquesta eina per cercar patrons de despesa an&ograve;mals, determinar on s&oacute;n els l&iacute;mits m&eacute;s marcats entre la riquesa i la pobresa en una &agrave;rea d'estudi o determinar si hi ha comtats als Estats Units amb una esperan&ccedil;a de vida excepcionalment baixa en comparaci&oacute; dels seus ve&iuml;ns.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca clústers de punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Cerca cl&uacute;sters de punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina detecta &agrave;rees on els punts estan concentrats i on estan separats per &agrave;rees buides o disperses. Els punts que no formen part d'un cl&uacute;ster s'etiqueten com soroll.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpola els punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpola els punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina us permet predir els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts. L'eina pren les dades de punts amb valors en cada punt i retorna &agrave;rees classificades pels valors predits. Per exemple, podeu fer servir aquesta eina per predir els nivells de precipitacions en una conca hidrogr&agrave;fica a partir de les mesures de diversos pluvi&ograve;metres.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Utilitza la proximitat</h2>
+        <hr/>
+        <p>  Aquestes eines us ajuden a respondre una de les preguntes m&eacute;s habituals de l'an&agrave;lisi espacial: &quot;Qu&egrave; hi ha a prop de qu&egrave;?&quot;
+            <ul>
+                <li> <b>Connecta or&iacute;gens amb destinacions</b> mesura la dist&agrave;ncia o el temps de recorregut entre parells de punts.
+                </li>
+                <li> <b>Crea &agrave;rees d'influ&egrave;ncia</b> crea &agrave;rees equidistants de les entitats.
+                </li>
+                <li> <b>Crea &agrave;rees de temps de recorregut</b> troba &agrave;rees al voltant d'ubicacions a les quals es pot arribar en un per&iacute;ode de temps.
+                </li>
+                <li> <b>Cerca el m&eacute;s proper</b> identifica aquells llocs que estan m&eacute;s a prop de les ubicacions conegudes.
+                </li>
+                <li> <b>Planifica les rutes</b> determina la millor manera d'assignar una ruta a una flota de vehicles perqu&egrave; visitin moltes parades.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Connecta orígens amb destinacions</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Connecta or&iacute;gens amb destinacions">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Connecta or&iacute;gens amb destinacions mesura la dist&agrave;ncia o el temps de recorregut entre parells de punts. L'eina pot notificar dist&agrave;ncies en l&iacute;nia recta, dist&agrave;ncies de carretera o temps de recorregut. Si utilitzeu aquesta eina, podreu
+            </p>
+            <p>
+                <ul>
+                    <li>Calcular el total de la dist&agrave;ncia o el temps que els treballadors necessiten per anar de casa a la feina.
+                    </li>
+                    <li>Mesurar quina dist&agrave;ncia recorren els clients per comprar a les vostres botigues. Feu servir aquesta informaci&oacute; per definir el vostre abast de mercat, especialment quan trieu els destinataris de les campanyes publicit&agrave;ries o decidiu les ubicacions dels establiments nous.
+                    </li>
+                    <li>Calcular el quilometratge esperat de la vostra flota de vehicles. Despr&eacute;s, executeu l'eina Resumir dins de per con&egrave;ixer el quilometratge per estat o per una altra regi&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Heu de proporcionar punts inicials i finals; l'eina retorna una capa que cont&eacute; les l&iacute;nies de ruta (amb les mesures) entre els parells d'or&iacute;gens i destinacions.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea àrees d'influència</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Crea &agrave;rees d'influ&egrave;ncia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Una &agrave;rea d'influ&egrave;ncia &eacute;s una &agrave;rea que cobreix una dist&agrave;ncia determinada d'una entitat de punts, de l&iacute;nies o d'&agrave;rees. 
+            </p>
+            <p>Les &agrave;rees d'influ&egrave;ncia se solen utilitzar per crear &agrave;rees que es poden analitzar amb m&eacute;s profunditat mitjan&ccedil;ant altres eines, com ara Superposa les capes. Per exemple, per trobar la resposta de la pregunta &quot;Quins edificis estan a un quil&ograve;metre de l'escola?&quot;, es pot crear una &agrave;rea d'influ&egrave;ncia d'un quil&ograve;metre al voltant de l'escola i superposar l'&agrave;rea d'influ&egrave;ncia amb la capa que cont&eacute; les superf&iacute;cies dels edificis.  El resultat final &eacute;s una capa amb els edificis que es troben a menys d'un quil&ograve;metre de l'escola.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea àrees de temps de recorregut</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Crea &agrave;rees de temps de recorregut">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Una &agrave;rea de temps de recorregut &eacute;s l'&agrave;rea a qu&egrave; es pot arribar en un temps o una dist&agrave;ncia conduint que s'especifiquin. Les &agrave;rees de temps de recorregut us poden ajudar a respondre preguntes com ara:
+                <ul>
+                    <li>On puc anar des d'aqu&iacute; si condueixo 30 minuts?
+                    </li>
+                    <li>On puc anar des d'aqu&iacute; si condueixo 30 minuts a les 18.00 en hora punta?
+                    </li>
+                    <li>A quines &agrave;rees de la ciutat poden arribar els bombers en cinc minuts? Fins a quin punt milloraria la cobertura de la resposta en cas d'incendi si es constru&iacute;s un parc de bombers nou aqu&iacute;?
+                    </li>
+                    <li>Quines &agrave;rees de mercat cobreix el meu negoci? Quines &agrave;rees estan a 10 quil&ograve;metres de les meves botigues?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca el més proper</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Cerca el m&eacute;s proper">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mesura el cost del recorregut entre els incidents i les instal&middot;lacions i determina quins s&oacute;n m&eacute;s a prop entre si. El resultat &eacute;s una capa que mostra les millors rutes entre incidents i instal&middot;lacions a banda del cost del recorregut (temps i dist&agrave;ncia) de cada ruta.  Per exemple, podeu fer servir aquesta eina per trobar l'hospital m&eacute;s a prop d'un accident o el caixer que tingueu m&eacute;s a prop actualment.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planifica les rutes</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planifica les rutes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Proporcioneu un conjunt de parades i el nombre de vehicles disponibles per visitar-les. L'eina Planifica les rutes determina com assignar de manera eficient les parades als vehicles i com assignar-los rutes fins a les parades.
+            </p>
+            <p>Feu servir aquesta eina per planificar la feina d'un equip m&ograve;bil d'inspectors, taxadors, prove&iuml;dors de serveis d'assist&egrave;ncia a domicili, entre d'altres; lliureu o recolliu elements d'ubicacions remotes; o b&eacute; oferiu serveis de transport a les persones.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Administra les dades</h2>
+        <hr/>
+        <p>Aquestes eines es fan servir per a l'administraci&oacute; di&agrave;ria de les dades geogr&agrave;fiques i per combinar dades abans de l'an&agrave;lisi.  
+            <ul>
+                <li> <b>Dissol els l&iacute;mits</b> fusiona &agrave;rees que comparteixen un l&iacute;mit i un valor d'atribut comuns.
+                </li>
+                <li> <b>Extreu les dades</b> crea conjunts de dades a partir de l'extracci&oacute; d'entitats de les dades existents.
+                </li>
+                <li> <b>Genera tessel&middot;lacions</b> crea tessel&middot;lacions basades en l'extensi&oacute; de les vostres dades.
+                </li>
+                <li> <b>Fusiona les capes</b> copia totes les entitats de dues o m&eacute;s capes existents en una capa nova.
+                </li>
+                <li> <b>Superposa les capes</b> combina dues o m&eacute;s capes en una de sola.  La superposici&oacute; equival a examinar una pila de mapes i crear un mapa &uacute;nic que contingui tota la informaci&oacute; que s'hagi trobat a la pila.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dissol els límits</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissol els l&iacute;mits">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Les &agrave;rees que se superposen o comparteixen un l&iacute;mit com&uacute; es fusionen per formar una sola &agrave;rea.    
+            </p>
+            <p>Podeu especificar un camp per controlar quins l&iacute;mits es fusionen. Per exemple, si teniu una capa de comtats i cada comtat t&eacute; un atribut  <i>State_Name</i>, podeu dissoldre els l&iacute;mits mitjan&ccedil;ant l'atribut <i>State_Name</i>.  Els comtats adjacents es fusionaran si tenen el mateix valor de <i>State_Name</i>.  El resultat final &eacute;s una capa de l&iacute;mits d'estat.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extreu les dades</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extreu les dades">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea un fitxer de dades ZIP, CSV o KMZ de les vostres capes i una &agrave;rea d'inter&egrave;s que especifiqueu.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Genera tessel·lacions</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Genera tessel&middot;lacions">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Genera tessel&middot;lacions sobre una &agrave;rea d'estudi en funci&oacute; de la forma i la mida especificades.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Fusiona les capes</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Fusiona les capes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copia entitats de dues o m&eacute;s capes existents en una capa nova, per exemple:
+                <ul>
+                    <li>Tinc tres capes que corresponen a Anglaterra, Gal&middot;les i Esc&ograve;cia i vull obtenir una sola capa de Gran Bretanya. 
+                    </li>
+                    <li>Tinc 12 capes i cadascuna cont&eacute; informaci&oacute; de parcel&middot;les de municipis contigus.  Vull unir-les totes en una sola capa i conservar &uacute;nicament els atributs que tinguin el mateix nom i tipus a les 12 capes d'entrada.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Superposa les capes</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Superposa les capes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>La superposici&oacute; combina dues o m&eacute;s capes en una de sola.  La superposici&oacute; equival a examinar una pila de mapes i crear un mapa &uacute;nic que contingui tota la informaci&oacute; que s'hagi trobat a la pila, per exemple:
+                <ul>
+                    <li>Quines parcel&middot;les estan dins de les planes d'inundaci&oacute; de 100 anys? (Dins &eacute;s nom&eacute;s una altra forma de dir a sobre de.)
+                          
+                    </li>
+                    <li>Quines carreteres estan dins de quins pa&iuml;sos?
+                    </li>
+                    <li>Quin &uacute;s del s&ograve;l est&agrave; a sobre de quin tipus de s&ograve;l?
+                         
+                    </li>
+                    <li>Quins pous estan dins de bases militars abandonades?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

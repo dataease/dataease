@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Skapa buffertar</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Skapa buffertar"></h2>
+        <hr/>
+    <p>En buffert &auml;r ett omr&aring;de som t&auml;cker ett givet avst&aring;nd fr&aring;n ett punkt-, linje- eller omr&aring;desgeoobjekt. 
+    </p>
+    <p>Buffertar anv&auml;nds normalt sett f&ouml;r att skapa omr&aring;den som kan analyseras ytterligare med andra verktyg. Om fr&aring;gan till exempel &auml;r &quot;Vilka byggnader ligger inom en kilometer fr&aring;n skolan?&quot;, kan du hitta svaret genom att skapa en buffert p&aring; en kilometer kring skolan och sedan &ouml;verlagra bufferten med det lager som inneh&aring;ller byggnadsavtrycken. Slutresultatet blir ett lager med de byggnader som ligger inom en kilometer fr&aring;n skolan.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager att tillämpa buffert på</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;desgeoobjekt som ska bilda bufferten. Indatalager m&aring;ste finnas i ett projicerat koordinatsystem eller s&aring; m&aring;ste den geografiska referensen f&ouml;r bearbetning st&auml;llas in f&ouml;r ett projicerat koordinatsystem med  <b>Analysmilj&ouml;</b>.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Välj typ av buffert att tillämpa</h2></div>
+        <hr/>
+        <div>
+            <p>Det finns tre s&auml;tt du kan ange buffertstorleken f&ouml;r dina indatageoobjekt: 
+                <ul>
+                    <li>Ange ett avst&aring;nd som ska till&auml;mpas f&ouml;r alla geoobjekt.
+                    </li>
+                    <li>Ange ett f&auml;lt p&aring; indatalagret som inneh&aring;ller avst&aring;ndsv&auml;rdet. Du kan anv&auml;nda ett str&auml;ngf&auml;lt eller ett numeriskt f&auml;lt. Om ingen linj&auml;r enhet &auml;r definierad anv&auml;nds enheterna i den geografiska referensen. Om du anv&auml;nder ett geografiskt koordinatsystem antas det enhetsl&ouml;sa f&auml;ltet vara meter. 
+                    </li>
+                    <li>Skapa ett uttryck med flera f&auml;lt och matematiska operatorer. Om du till exempel vill till&auml;mpa en buffert p&aring; 10 g&aring;nger v&auml;rdet f&ouml;r ett f&auml;lt med namnet  <i>wind_speed</i> l&auml;gger du till uttrycket <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Välj buffertmetod</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan anv&auml;nda en  <b>Plan</b> metod eller en <b>Geodetisk</b> metod. Den <b>Plana</b> metoden kan vara snabbare och l&auml;mpar sig f&ouml;r lokal analys p&aring; projicerade data. Den <b>geodetiska</b> metoden l&auml;mpar sig f&ouml;r stora ytor och alla geografiska koordinatsystem.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Välj typ av metod för att lösa upp</h2></div>
+        <hr/>
+        <div>
+            <p>Alternativ f&ouml;r att ange metod f&ouml;r att l&ouml;sa upp.   Om en metod f&ouml;r att l&ouml;sa upp har valts f&aring;r du alternativet att skapa flerdels- eller enkeldelsomr&aring;den och kan ber&auml;kna statistik utifr&aring;n de f&auml;lt som tillhandah&aring;lls.
+                <ul>
+                    <li> <b>Alla</b> &ndash; Alla geoobjekt l&ouml;ses upp. Om flerdelade geoobjekt till&aring;ts uppl&ouml;ses alla geoobjekt till ett enda geoobjekt. Om flerdelade geoobjekt inte till&aring;ts l&ouml;ses intilliggande eller &ouml;verlappande geoobjekt upp.
+                    </li>
+                    <li> <b>F&auml;lt</b> &ndash; Geoobjekt som delar samma angivna f&auml;lt eller f&auml;ltkombination l&ouml;ses upp. Om flerdelade geoobjekt till&aring;ts uppl&ouml;ses alla geoobjekt med samma f&auml;lt till ett enda geoobjekt. Om flerdelade geoobjekt inte till&aring;ts l&ouml;ses intilliggande eller &ouml;verlappande geoobjekt med samma f&auml;ltv&auml;rde upp.
+                    </li>
+                    <li> <b>Inga</b> &ndash; Inga geoobjekt l&ouml;ses upp.  Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Tillåt flerdelade geoobjekt</h2></div>
+        <hr/>
+        <div>
+            <p>Alternativ f&ouml;r att ange om resultatet ska best&aring; av endelade eller flerdelade geoobjekt. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Markerat &ndash; Resultaten av analysen inneh&aring;ller flerdelade geoobjekt.   
+                    </li>
+                    <li>Omarkerat &ndash; Resultaten av analysen inneh&aring;ller endelade geoobjekt. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lägg till statistik (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan ber&auml;kna statistik p&aring; summerade geoobjekt. Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Ber&auml;knar antal v&auml;rden som inte &auml;r null. Kan anv&auml;ndas p&aring; numeriska f&auml;lt eller str&auml;ngar. Antalet f&ouml;r [null, 0, 2] &auml;r 2.
+                    </li>
+                    <li>Summa &ndash; Summan av de numeriska v&auml;rdena i ett f&auml;lt. Summan f&ouml;r [null, null, 3] &auml;r 3.
+                    </li>
+                    <li>Medelv&auml;rde &ndash; Medelv&auml;rdet f&ouml;r numeriska v&auml;rden. Medelv&auml;rde f&ouml;r [0, 2, null] &auml;r 1.
+                    </li>
+                    <li>Min &ndash; Minimiv&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Minimiv&auml;rde f&ouml;r [0, 2, null] &auml;r 0. 
+                    </li>
+                    <li>Max &ndash; Det maximala v&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Det maximala v&auml;rdet f&ouml;r [0, 2, null] &auml;r 2.
+                    </li>
+                    <li>Intervall &ndash; Intervallet f&ouml;r ett numeriskt f&auml;lt. Det ber&auml;knas som det maximala v&auml;rdet minus minimiv&auml;rdena. Intervallet f&ouml;r [0, null, 1] &auml;r 1. Intervallet f&ouml;r [null, 4] &auml;r 0.
+                    </li>
+                    <li>Varians &ndash; Variansen hos ett numeriskt f&auml;lt i ett sp&aring;r. Variansen hos [1] &auml;r null. Variansen hos [null, 1,0,1,1] &auml;r 0,25.
+                    </li>
+                    <li>Standardavvikelse &ndash; Standardavvikelsen hos ett numeriskt f&auml;lt. Standardavvikelsen hos [1] &auml;r null. Standardavvikelsen hos [null, 1,0,1,1] &auml;r 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Antalet str&auml;ngar som inte &auml;r null.
+                    </li>
+                    <li>Alla &ndash; Det statistiska v&auml;rdet &auml;r ett slumpm&auml;ssigt exempel p&aring; ett str&auml;ngv&auml;rde i det angivna f&auml;ltet.
+                    </li>
+                </ul>
+                All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj ett ArcGIS-datalager att spara resultat till</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Derivar nuevas ubicaciones</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Derivar nuevas ubicaciones"></h2>
+        <hr/>
+    <p>Esta herramienta determina las nuevas entidades del &aacute;rea de estudio que cumplen una serie de criterios especificados. Estos criterios se pueden basar en consultas de atributos (por ejemplo, parcelas que est&aacute;n vac&iacute;as) y consultas espaciales (por ejemplo, parcelas que est&aacute;n en zonas inundables).
+
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se analizar&aacute;n las entidades que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si no se ha activado, se analizar&aacute;n todas las entidades, aunque est&eacute;n fuera de la extensi&oacute;n del mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Derivar nuevas ubicaciones que se ajusten a las siguientes expresiones</h2></div>
+        <hr/>
+        <div>
+            <p>Haz clic en el bot&oacute;n  <b>Agregar expresi&oacute;n</b> para definir una expresi&oacute;n.  Puedes a&ntilde;adir varias expresiones. Despu&eacute;s de introducir las expresiones y hacer clic en el bot&oacute;n <b>Ejecutar an&aacute;lisis</b>, las entidades de tu capa de an&aacute;lisis se filtran mediante cada expresi&oacute;n.  Las porciones de las entidades que satisfacen todas las expresiones se escriben en la capa de resultados.
+            </p>
+            <p>Existen dos tipos b&aacute;sicos de expresiones que puedes crear: de atributos y espaciales. Las expresiones de atributos son consultas sobre valores de campo, como  <code>donde nombre es 'San Francisco'</code>.  Hay cuatro tipos de expresiones espaciales:
+                <ul>
+                    <li> <b>dentro de una distancia de</b>: las porciones de una entidad deben estar a una distancia de una entidad en otra capa.  Por ejemplo, buscar porciones de parcelas a menos de 500 metros del r&iacute;o Los Angeles.
+                    </li>
+                    <li> <b>contiene totalmente</b>: la entidad debe contener la entidad completa de otra capa.  Por ejemplo, encontrar cuencas hidrogr&aacute;ficas que contienen completamente parcelas calificadas para uso industrial. Ninguna parte de la parcela puede estar fuera de la cuenca hidrogr&aacute;fica.
+                    </li>
+                    <li> <b>completamente dentro</b>: la entidad debe estar totalmente rodeada de una entidad en otra capa.  Por ejemplo, encontrar distritos escolares que est&eacute;n completamente dentro del l&iacute;mite de una ciudad. Ninguna parte del distrito escolar puede estar fuera del l&iacute;mite de la ciudad.
+                    </li>
+                    <li> <b>intersecar</b>: la entidad o porciones de la entidad deben superponerse o intersecarse con una entidad de otra capa.  Por ejemplo, encuentra &aacute;reas de vegetaci&oacute;n quemada en diferentes incendios dentro de un parque nacional. Las zonas quemadas fuera de los l&iacute;mites del parque no se incluir&aacute;n.
+                    </li>
+                    <li> <b>m&aacute;s cercano a</b>: la entidad debe ser la m&aacute;s cercana a una entidad de otra capa.  Por ejemplo, encuentre el espacio verde m&aacute;s cercano a cada escuela.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada expresi&oacute;n espacial tiene una negaci&oacute;n correspondiente, con la excepci&oacute;n de  <b>m&aacute;s cercano a</b>; <b>fuera de una distancia de</b>, <b>no contiene completamente</b>, <b>no completamente dentro</b> y <b>no interseca</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

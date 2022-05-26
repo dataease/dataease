@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Preslikaj vrednosti</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Orodje Preslikaj vrednosti za Portal"></h2>
+        <hr/>
+    <p>To orodje vam omogoča, da spremenite ali prerazvrstite vrednosti pikslov rastrskih podatkov. Vrednosti pikslov se preslikajo z navedbo razpona vrednosti pikslov v izhodno vrednost piksla. Izhodna vrednost piksla je lahko veljavna vrednost ali vrednost brez podatkov, kar so piksli, ki nimajo povezane znane vrednosti.
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo ponovno preslikane samo tiste celice, ki so vidne znotraj trenutnega obsega karte. Če je odkljukano, bodo obdelane vse celice v rastru, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vhodni podatki</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodni podatki, katerih vrednosti bodo preslikane.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Znova kartiraj vrednosti pikslov na nove vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite razpon vrednosti z navedbo minimalne in maksimalne vrednosti, nato pa določenemu razponu dodelite izhodno vrednost ali vrednost brez podatkov.
+            </p>
+            <p>Če želite preslikati nov razpon vrednosti, kliknite  <b>Dodaj</b>, s čimer dodate vrstico. Kliknite na posamezno vrednost, če želite urejati tabelo razponov in preslikati želene vrednosti. Ko navedete razpone vrednosti, veljata dve pomembni pravili:
+                <ul>
+                    <li>Minimalna vrednost v razponu je vključujoča, maksimalna vrednost pa izključujoča.
+                    </li>
+                    <li>Vrstice v tabeli se obdelujejo od zgoraj navzdol.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Spodnja tabela prikazuje, da je minimalna vrednost vključena v rezultat, medtem ko maksimalna vrednost ni vključena.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Pomembno je tudi zaporedje razponov, navedenih v tabeli. Najprej se obdeluje zgornja vrstica tabele, nato pa naslednja vrstica. V spodnjih dveh tabelah je prikazano, kako bodo enaki razponi vrednosti ustvarili različne rezultate zaradi vrstnega reda vrstic v tabeli.
+            </p> 
+            <p>Spodnja tabela prikazuje izhodne vrednosti, ko je prvi stolpec razvr&scaron;čen &scaron;tevilsko:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Spodnja tabela prikazuje, kako da različno razvr&scaron;čanje vrstic različne izhodne vrednosti:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Obe pravili se uporabljata za prerazporeditev vrednosti. Ker obdelava vsake vrstice poteka od zgoraj navzdol, imajo te vrednosti prednost pri določanju rezultata, tudi če se uporabljajo isti razponi.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

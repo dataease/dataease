@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokoda platser från tabell</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokoda platser fr&aring;n tabell"></h2>
+        <hr/>
+    <p>Geokodning &auml;r ett s&auml;tt att konvertera adresser till koordinater. Verktyget konverterar adresser fr&aring;n en tabell, CSV-fil eller Excel-fil till ett geoobjektslager eller en utdatafil med koordinaterna som extra kolumner.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Välj en indatatabell</h2></div>
+        <hr/>
+        <div>
+            <p>Indatatabellen med adresserna som ska geokodas. Indata m&aring;ste finnas i en tabell, CSV-fil eller Excel-fil.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Välj en placeringsfil</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj en placeringstj&auml;nst att geokoda mot. Om den placeringstj&auml;nst du vill anv&auml;nda inte finns i listrutan kontaktar du administrat&ouml;ren s&aring; att placeringstj&auml;nsten kan konfigureras f&ouml;r batchgeokodning.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Om alla adresserna &auml;r fr&aring;n ett land v&auml;ljer du det landet f&ouml;r att s&auml;kerst&auml;lla de mest korrekta resultaten. L&auml;mna annars denna parameter tom.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Välj datafält</h2></div>
+        <hr/>
+        <div>
+            <p>Placeringstj&auml;nsten f&ouml;rv&auml;ntar sig vissa f&auml;lt i dina data, som adress, ort och postnummer. Se till att dataf&auml;lten i din indatafil &ouml;verensst&auml;mmer med de f&auml;lt som lokaliseringsfilen f&ouml;rv&auml;ntar sig genom att anv&auml;nda listrutorna. Ju fler f&auml;lt du mappar, desto mer noggranna blir resultaten. Om alla data i indatatabellen &auml;r i en kolumn v&auml;ljer du  <b>Enstaka f&auml;lt</b> och v&auml;ljer ett dataf&auml;lt i listrutan. V&auml;lj annars <b>Multipelf&auml;lt</b> och mappa l&auml;mpliga lokaliseringsf&auml;lt till Multipelf&auml;lt-kolumnerna i tabellen.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Välj ett utdataformat</h2></div>
+        <hr/>
+        <div>
+            <p>Resultatens format. Om du v&auml;ljer att skapa en geoobjektstj&auml;nst l&auml;ggs adresserna fr&aring;n indatatabellen till i kartan som ett lager med punktgeoobjekt. Med alternativen CSV och XLS l&auml;gger du till filer med resultaten fr&aring;n geokodningsjobbet till  <b>Mitt inneh&aring;ll</b> n&auml;r jobbet &auml;r slutf&ouml;rt.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatnamn som utdata</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

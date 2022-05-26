@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Îmbogățire din grilă cu variabile multiple</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="&Icirc;mbogățire din grilă cu variabile multiple"></h2>
+        <hr/>
+    <p>Instrumentul  &Icirc;mbogățire din grilă cu variabile multiple unește eficient atribute dintr-o grilă cu variabile multiple &icirc;ntr-un strat tematic cu obiecte de tip punct.
+    </p>
+    <p>O grilă cu variabile multiple este orice strat tematic creat cu instrumentul Creare grilă cu variabile multiple, care compilează atributele de la mai multe straturi tematice &icirc;ntr-o singură grilă de poligoane. Utilizarea unei grile cu variabile multiple pentru imbogățire, vă permite să adăugați rapid colecții largi și diverse de informații la datele de tip punct pentru fi utilizate &icirc;n analiza spațială ulterioară.
+    </p>
+    <p>De exemplu, să presupunem că ați obținut un strat tematic de evenimente noi de criminalitate care au avut loc &icirc;n ultimul an &icirc;ntr-un oraș. Vreți să modelați relațiile dintre frecvența criminalității și o varietate de factori demografici, economici și geografici. Aveți acces la date care descriu acești factori, dar sunt stocate &icirc;n cinci straturi tematice diferite cu tipuri diferite de geometrie. &Icirc;n plus, unele straturi tematice sunt stocate &icirc;ntr-o partajare de fișiere big data, &icirc;n timp ce altele sunt stocate ca servicii de obiecte spațiale. Prin crearea unei grile cu variabile multiple pentru a stoca informația și apoi prin unirea grilei cu  evenimentele criminalistice folosind instrumentul  &Icirc;mbogățire din grilă cu variabile multiple,  puteți uni eficient o mare varietate de atribute cu stratul tematic de obiecte spațiale de tip punct doar prin două executări ale instrumentului. Puteți apoi utiliza atributele unite ca variabile explicative și să &icirc;ncepeți să construiți un model al frecvenței criminalității cu stratul tematic rezultat.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Alegeți obiectele spațiale de tip punct pentru a le îmbogăți</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale de tip punct care vor fi &icirc;mbogățite de grila cu variabile multiple.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Alegeți grila cu variabile multiple de la care să îmbogăți</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic grilă cu variabile multiple care conține atribute care vor fi unite cu obiectele spațiale de intrare de tip punct. Stratul tematic trebuie să fi fost creat utiliz&acirc;nd instrumentul Creare grilă cu variabile multiple și trebuie să fie un strat tematic de obiecte spațiale găzduite. Straturile tematice grilă cu variabile multiple stocate &icirc;ntr-o partajare de fișiere big data nu sunt acceptate ca date de intrare pentru acest instrument.   
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Alegeți variabilele pe care doriți să le adăugați</h2></div>
+        <hr/>
+        <div>
+            <p>Atributele din stratul tematic grilă cu variabile multiple care vor fi unite cu obiectele spațiale de intrare de tip punct de fiecare dată c&acirc;nd obiectele spațiale de tip punct intersectează grila.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

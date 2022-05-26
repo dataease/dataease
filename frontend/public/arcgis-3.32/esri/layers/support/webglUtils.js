@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/support/webglUtils",["dojo/_base/lang","dojo/_base/array","dojo/has","../../kernel"],function(g,d,c,h){var f=!1,a=c("esri-webgl-max-contexts"),a=null!=a?a:c("esri-mobile")?8:16,b={isWebGLSupported:function(){return!!f},isWebGLEnabled:function(){return this.isWebGLSupported()&&!!c("esri-featurelayer-webgl")},createCanvas:function(e,b){var a=document.createElement("canvas");a.style.width=e+"px";a.style.height=b+"px";return a},createWebGLContext:function(b){var a;d.some(["webgl",
+"experimental-webgl","webkit-3d","moz-webgl"],function(e){try{a=b.getContext?b.getContext(e):null}catch(k){a=null}return!!a});return a},_contextOwners:[],isContextAvailable:function(){return-1===a||0<a&&b._contextOwners.length<a},acquireContext:function(a){return-1!==d.indexOf(b._contextOwners,a)?!0:b.isContextAvailable()?(b._contextOwners.push(a),!0):!1},releaseContext:function(a){a=d.indexOf(b._contextOwners,a);-1!==a&&b._contextOwners.splice(a,1)}},f=b.createWebGLContext(b.createCanvas());c("extend-esri")&&
+g.setObject("layers.support.webglUtils",b,h);return b});

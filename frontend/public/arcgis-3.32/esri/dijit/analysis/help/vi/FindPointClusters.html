@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tìm Cụm điểm</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="T&igrave;m Cụm điểm"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y sẽ t&igrave;m c&aacute;c cụm đối tượng điểm trong phạm vi nhiễu xung quanh căn cứ tr&ecirc;n ph&acirc;n bổ kh&ocirc;ng gian của ch&uacute;ng.
+    </p>
+    <p>Nếu  <b>Sử dụng phạm vi bản đồ hiện tại</b> được chọn, th&igrave; chỉ c&aacute;c đối tượng trong lớp điểm đầu v&agrave;o trong phạm vi bản đồ hiện tại sẽ được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả đối tượng trong lớp điểm đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Chọn lớp cần tìm các cụm cho nó</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm c&oacute; c&aacute;c cụm sẽ được t&igrave;m thấy. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Số điểm tối thiểu cần xem xét một cụm</h2></div>
+        <hr/>
+        <div>
+            <p>Số lượng đối tượng tối thiểu để coi l&agrave; một cụm. Bất kỳ cụm n&agrave;o c&oacute; &iacute;t đối tượng hơn mức được cung cấp sẽ được coi l&agrave; nhiễu. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Giới hạn phạm vi tìm kiếm đến (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Khoảng c&aacute;ch tối đa để coi đối tượng thuộc c&ugrave;ng một cụm điểm. Nếu để trống, c&ocirc;ng cụ sẽ chạy HDBSCAN, sử dụng c&aacute;c khoảng c&aacute;ch kh&aacute;c nhau để ph&acirc;n t&aacute;ch c&aacute;c cụm c&oacute; mật độ kh&aacute;c nhau từ tiếng ồn thưa thớt. Nếu gi&aacute; trị được x&aacute;c định, c&ocirc;ng cụ sẽ chạy DBSCAN, sử dụng một khoảng c&aacute;ch x&aacute;c định để t&aacute;ch c&aacute;c cụm d&agrave;y đặc từ tiếng ồn thưa thớt.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

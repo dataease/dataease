@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detecta incidents</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detecta incidents"></h2>
+        <hr/>
+    <p> Aquesta eina funciona amb una capa de punts, l&iacute;nies, &agrave;rees o taules que t&eacute; la funci&oacute; de temps habilitada i que representa un instant de temps.   Mitjan&ccedil;ant entitats ordenades de manera seq&uuml;encial, anomenades recorreguts, aquesta eina determina quines entitats s&oacute;n incidents d'inter&egrave;s. Els incidents estaran determinats per les condicions que especifiqueu.
+    </p>
+    <p>En primer lloc, l'eina determina quines entitats pertanyen a un recorregut mitjan&ccedil;ant un o diversos camps. Els recorreguts s'ordenen de manera seq&uuml;encial mitjan&ccedil;ant l'hora de cada entitat i s'aplica la condici&oacute; d'incident. Les entitats que compleixen la condici&oacute; d'incident inicial es marquen com un incident. Teniu l'opci&oacute; d'aplicar una condici&oacute; d'incident final; si es compleix la condici&oacute; final, l'entitat deixa de ser un incident.  Els resultats es retornaran amb les entitats originals (amb noves columnes que representaran el nom de l'incident) i indicaran quina entitat compleix la condici&oacute; d'incident. Podeu retornar totes les entitats originals o nom&eacute;s aquelles que siguin incidents.
+    </p>
+    <p>Per exemple, suposem que teniu mesures GPS d'huracans cada 10 minuts. Cada mesura GPS registra el nom, la ubicaci&oacute;, l'hora de l'enregistrament i la velocitat del vent de l'hurac&agrave;. Amb aquests camps, podeu crear un incident on qualsevol mesura amb una velocitat del vent de m&eacute;s de 208 km/h sigui un incident considerat  <code>Catastr&ograve;fic</code>. Si no es defineix una condici&oacute; final, l'incident finalitzar&agrave; quan l'entitat ja no compleix la condici&oacute; inicial (la velocitat del vent baixa a menys de 208).
+    </p>
+    <p>Un altre exemple: suposem que controleu concentracions d'una subst&agrave;ncia qu&iacute;mica a la vostra xarxa de subministrament d'aigua local mitjan&ccedil;ant un camp anomenat  <code>contaminateLevel</code>. Sabeu que els nivells recomanats s&oacute;n menys de 0,01 mg/L i que els nivells perillosos estan per sobre dels 0,03 mg/L. Per detectar incidents en qu&egrave; un valor superior a 0,03mg/L sigui un incident i ho continu&iuml; essent fins que els nivells de contaminaci&oacute; tornin a ser normals, creeu un incident amb una condici&oacute; inicial de <code>contaminateLevel &gt; 0,03</code> i una condici&oacute; final de <code>contaminateLevel &lt; 0,01</code>. D'aquesta manera, es marcar&agrave; qualsevol seq&uuml;&egrave;ncia en qu&egrave; els valors superin 0,03&nbsp;mg/L fins que tornin a un valor inferior a 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa de la qual es detectaran els incidents</h2></div>
+        <hr/>
+        <div>
+            <p>Punts, l&iacute;nies, &agrave;rees o taules que s'utilitzaran per trobar incidents. La capa d'entrada ha tenir la funci&oacute; de temps habilitada i entitats que representin un instant de temps, aix&iacute; com un o diversos camps que es puguin utilitzar per identificar recorreguts.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Seleccioneu un o diversos camps per identificar recorreguts</h2></div>
+        <hr/>
+        <div>
+            <p>Camps que representen l'identificador del recorregut. Podeu utilitzar un o diversos camps per representar valors &uacute;nics de recorreguts.
+            </p>
+            <p>Per exemple, si esteu reconstruint recorreguts d'huracans, podeu utilitzar el nom de l'hurac&agrave; com a camp de recorregut.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Crea una condició d'expressió per marcar l'inici d'un incident</h2></div>
+        <hr/>
+        <div>
+            <p>Afegiu una condici&oacute; mitjan&ccedil;ant el builder d'expressions per determinar qu&egrave; &eacute;s un incident. Si la condici&oacute; que especifiqueu &eacute;s certa, l'entitat &eacute;s un incident. Si no especifiqueu una condici&oacute; final, un incident finalitza quan la condici&oacute; inicial deixa de ser certa.
+            </p>
+            <p>Per exemple, suposem que voleu rebre un av&iacute;s quan la suma dels camps  <code>concentration_1</code> i <code>concentration_2</code> sigui superior al valor del camp <code>concentration_3</code>.   Per fer-ho, apliqueu la condici&oacute; <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Si us interessa com canvien les concentracions amb el temps i voleu rebre un av&iacute;s quan el valor actual de  <code>concentration_1</code> superi les dues mesures anteriors de <code>concentration_2</code>, podeu utilitzar una expressi&oacute; com ara <code>$feature[&quot;concentration_1&quot;] &gt; $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Crea una condició d'expressió per a marcar l'acabament d'un incident (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>De manera opcional, afegiu una condici&oacute; mitjan&ccedil;ant el builder d'expressions per determinar la fi d'un incident. Si la condici&oacute; final que especifiqueu &eacute;s certa, l'entitat ja no &eacute;s un incident. Si no especifiqueu una condici&oacute; final, un incident finalitza quan la condici&oacute; inicial deixa de ser certa.    
+            </p>
+            <p>Per exemple, suposem que voleu rebre un av&iacute;s quan la suma dels camps  <code>concentration_1</code> i <code>concentration_2</code> sigui superior al valor del camp <code>concentration_3</code>, i que voleu que l'incident finalitzi si <code>concentration_4</code> &eacute;s inferior a <code>concentration_1</code>. Per fer-ho, apliqueu una condici&oacute; inicial <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> i una condici&oacute; final <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Si voleu que un incident finalitzi quan la mitjana del valor actual de  <code>concentration_1</code> i les quatre mesures anteriors superi la primera mesura, podeu utilitzar una expressi&oacute; com ara <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Mostra-m'ho</h2></div>
+        <hr/>
+        <div>
+            <p>Tots els m&egrave;todes de sortida afegiran camps a les entitats originals. Hi ha dues maneres de determinar quines entitats es retornaran:
+                <ul>
+                    <li> <b>Totes les entitats</b>: aquesta &eacute;s l'opci&oacute; per defecte. Es retornaran totes les entitats de l'entrada.
+                    </li>
+                    <li> <b>Nom&eacute;s els incidents</b>: aquest m&egrave;tode nom&eacute;s retornar&agrave; les entitats que s&oacute;n incidents. Les entitats que no siguin incidents no es retornaran.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analitza les dades amb intervals de temps (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu si voleu detectar incidents mitjan&ccedil;ant intervals de temps que segmentin les entitats d'entrada per a l'an&agrave;lisi. Si utilitzeu intervals de temps, heu de definir l'interval de temps que voleu utilitza i, de manera opcional, definir el temps de refer&egrave;ncia. Si no definiu un temps de refer&egrave;ncia, s'utilitzar&agrave; l'1 de gener de 1970. 
+            </p>
+            <p>Per exemple, si definiu el l&iacute;mit de temps en 1 dia, a partir de les 9:00 de l'1 de gener de 1990, tots els seguiments es truncaran a les 9:00 cada dia i s'analitzaran dins d'aquest segment. 
+            </p>
+            <p>Els intervals de temps s&oacute;n un m&egrave;tode r&agrave;pid per accelerar el temps de c&agrave;lcul, ja que creen seguiments m&eacute;s petits r&agrave;pidament per a l'an&agrave;lisi. Si la divisi&oacute; per un interval de temps recurrent t&eacute; sentit per a la vostra an&agrave;lisi, &eacute;s recomanable per al processament de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

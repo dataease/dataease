@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planear Rotas</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planear Rotas"></h2>
+        <hr/>
+    <p>Planear Percursos determina como dividir de forma eficiente tarefas entre uma for&ccedil;a de trabalho m&oacute;vel.
+    </p>
+    <p>Voc&ecirc; fornece a ferramenta com um conjunto de paragens e o n&uacute;mero de ve&iacute;culos dispon&iacute;veis para visitar as paragens. A ferramenta atribui as paragens aos ve&iacute;culos e retorna percursos que mostram como cada ve&iacute;culo pode chegar &aacute;s suas paragens atribu&iacute;das, no menor espa&ccedil;o de tempo.
+    </p>
+    <p>Com Planear Rotas, for&ccedil;as de trabalho m&oacute;veis chegam a mais locais de trabalho em menos tempo, o que aumenta a produtividade e melhora o servi&ccedil;o ao cliente.
+        <ul>
+            <li>Inspeccione casas, restaurantes ou locais de constru&ccedil;&atilde;o
+                
+
+            </li>
+            <li>Forne&ccedil;a repara&ccedil;&otilde;es, instala&ccedil;&otilde;es ou servi&ccedil;os t&eacute;cnicos
+            </li>
+            <li>Entregar itens e pacotes pequenos
+            </li>
+            <li>Fa&ccedil;a chamadas de vendas
+            </li>
+            <li>Transporte pessoas de suas casas para um evento
+            </li>
+        </ul>
+        
+    </p>
+    <p>O resultado final da ferramenta Planear Percursos inclui uma camada de paragens com a informa&ccedil;&atilde;o da rota a que dizem respeito, uma camada de rotas exibindo os caminhos mais curtos para visitar as paragens designadas, e, dependendo se existem ou n&atilde;o paragens que n&atilde;o podem ser alcan&ccedil;adas, uma camada de paragens inalcan&ccedil;&aacute;veis. 
+    </p>
+    <p>Se marcar a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o actual do mapa</b>, apenas os elementos que est&atilde;o vis&iacute;veis dento da extens&atilde;o de mapa corrente ser&atilde;o considerados para an&aacute;lise. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o considerados todos os elementos na camada de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Escolher camada de ponto representando paragens a visitar</h2></div>
+        <hr/>
+        <div>
+            <p>Escolher a camada de pontos que as rotas (ou ve&iacute;culos) dever&atilde;o visitar.  Estes pontos tornam-se paragens atribuidas e n&atilde;o atribuidas de sa&iacute;da. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+            <p>A ferramenta suporta at&eacute; 2&nbsp;000 elementos de entrada. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Modo de viagem para rotas</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o seu modo de viagem. As rotas de sa&iacute;da seguir&atilde;o estradas ou passeios e honram as regras aplic&aacute;veis, tais como ruas de sentido &uacute;nico e invers&otilde;es de marcha proibidas ou de camionagem. Os modos de viagem dispon&iacute;veis s&atilde;o definidos pelo administrador da sua organiza&ccedil;&atilde;o.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Os percursos iniciam-se em paragens</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica onde e quando os ve&iacute;culos come&ccedil;am as suas percursos.
+            </p>
+            <p>Com Planear Percursos pode especificar um ou mais s&iacute;tios de partida para os seus ve&iacute;culos.
+            </p>
+            <p>Quando um ponto de localiza&ccedil;&atilde;o &eacute; especificado, todos os ve&iacute;culos partir&atilde;o desse local independentemente do n&uacute;mero de ve&iacute;culos dispon&iacute;veis. Pode escolher uma camada de pontos com um ponto ou adicionar um ponto ao mapa escolhendo  <b>Adicionar Ponto no mapa</b>, clicando no bot&atilde;o editar e clicando no mapa. 
+            </p>
+            <p>Quando v&aacute;rios locais s&atilde;o especificados, cada ve&iacute;culo tem de ser associado ao seu pr&oacute;prio ponto. O n&uacute;mero de ve&iacute;culos deve coincidir com o n&uacute;mero de pontos na camada. Escolha uma camada com m&uacute;ltiplos pontos e especifique um campo que identifique os percursos individuais, ve&iacute;culos, ou condutores no campo da lista deslizante  <b>campo de Identifica&ccedil;&atilde;o de Percurso (Route ID field)</b>.
+            </p>
+            <p>O tempo de inicio &eacute; igual para todas os percursos. O fuso hor&aacute;rio para a hora de in&iacute;cio &eacute; o mesmo que o fuso hor&aacute;rio em que o ponto de partida ou pontos est&atilde;o localizados, por isso certifique-se de que o tempo que introduz &eacute; a hora local. Por exemplo, suponha que est&aacute; na Hora Padr&atilde;o do Pac&iacute;fico (UTC-8: 00) e os ve&iacute;culos que est&aacute; a rotear est&atilde;o estacionados em Mountain Standard Time (UTC-7: 00). Se actualmente s&atilde;o 9:30 PST (10:30  MST) e seus ve&iacute;culos precisam come&ccedil;ar os seus percursos em 30 minutos, deve definir o hor&aacute;rio de in&iacute;cio &agrave;s 11:00 
+            </p>
+            <p>Se os seus ve&iacute;culos come&ccedil;am a partir de diferentes fusos hor&aacute;rios, a hora de in&iacute;cio n&atilde;o pode ser simult&acirc;nea, em vez disso, eles s&atilde;o compensados​​. Por exemplo, se um percursos come&ccedil;a a partir de um ponto no PST e outro percurso come&ccedil;a a partir de MST, e introduz 11:00 como hora de in&iacute;cio, o percurso em PST ir&aacute; come&ccedil;ar &agrave;s 11:00  PST e a rota em MST ir&aacute; come&ccedil;ar &agrave;s 11:00  MST&mdash;a uma hora de diferen&ccedil;a.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Os percursos terminam em paragens</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique o local onde os ve&iacute;culos terminam o seus percursos.
+            </p>
+            <p>Pode configurar as rotas para o fim numa das tr&ecirc;s localiza&ccedil;&otilde;es: 
+                <ul>
+                    <li>O mesmo local onde os percursos come&ccedil;aram, independentemente se a sua origem foi de um ou v&aacute;rios locais
+                    </li>
+                    <li>Um &uacute;nico local
+                    </li>
+                    <li>Muitos locais-isto &eacute;, um ponto de chegada para cada percurso
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Verifique  <b>Voltar ao in&iacute;cio</b> se os ve&iacute;culos come&ccedil;am e terminam os seus percursos nos mesmos locais.
+            </p>
+            <p>Para encaminhar todos os ve&iacute;culos para um ponto final comum que n&atilde;o seja o ponto de partida, desmarque  <b>Voltar ao inicio</b> e adicionar um ponto ao mapa ou escolher a camada que cont&ecirc;m exactamente um ponto.
+            </p>
+            <p>Para ter percursos a terminar em locais &uacute;nicos, desmarque  <b>Voltar ao inicio</b> e escolha uma camada que contenha mais de um ponto.  O n&uacute;mero de ve&iacute;culos tem de ser igual ao n&uacute;mero de pontos na camada escolhida. No campo da lista deslizante <b>Identifica&ccedil;&atilde;o de Rota (Route ID)</b>, escolha um campo que identifique as rotas individuais, ve&iacute;culos ou condutores.  Se os ve&iacute;culos est&atilde;o a partir de v&aacute;rios locais e a terminar em v&aacute;rios locais, os IDs da rota escolhida para as camadas come&ccedil;ar e terminar precisam corresponder.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selecionar camadas de barreiras</h2></div>
+        <hr/>
+        <div>
+            <p> Um ou mais elementos que atuem como restri&ccedil;&otilde;es tempor&aacute;rias (barreiras) ao transitar pelas ruas subjacentes. Pode especificar as barreiras utilizando elementos de pontos, linhas ou pol&iacute;gonos.
+            </p>
+            <p>Uma barreira de pontos pode delinear uma &aacute;rvore ca&iacute;da, um acidente, uma linha el&eacute;trica derrubada ou algo que bloqueie completamente o tr&acirc;nsito numa posi&ccedil;&atilde;o espec&iacute;fica ao longo da rua. &Eacute; poss&iacute;vel transitar na rua, mas n&atilde;o pela barreira. Pode especificar at&eacute; 250 elementos para atuarem como barreiras de pontos.
+            </p>
+            <p>Uma barreira de linhas pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre a barreira e as ruas. Por exemplo, um desfile ou protesto que bloqueie o tr&aacute;fego por v&aacute;rios segmentos de ruas pode ser delineado com uma barreira de linhas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de linhas for superior a 500 elementos, a ferramenta devolve um erro.
+            </p>
+            <p>Uma barreira de pol&iacute;gonos pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre o pol&iacute;gono e as ruas. Este tipo de barreira pode ser utilizado para delinear inunda&ccedil;&otilde;es que abranjam &aacute;reas da rede de estradas e n&atilde;o permitam que se transite por elas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de pol&iacute;gonos for superior a 2000 elementos, a ferramenta devolve um erro.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Número máximo de veículos para traçar rota</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique o n&uacute;mero de ve&iacute;culos que est&atilde;o dispon&iacute;veis para visitar as paragens. A ferramenta suporta at&eacute;  100 ve&iacute;culos. 
+            </p>
+            <p>A ferramenta pode ser capaz de encontrar uma solu&ccedil;&atilde;o que usa menos ve&iacute;culos do que o n&uacute;mero que especificar, dependendo do n&uacute;mero total de paragens, quantas paragens por ve&iacute;culo s&atilde;o permitidas, a dist&acirc;ncia entre paragens, o tempo gasto em cada paragens, e qualquer limite definido no tempo total de percurso por ve&iacute;culo.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Número máximo de paragens por veículo</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um dos dois par&acirc;metros que equilibra a carga de trabalho global em toda rotas. Pode especificar um valor entre 1 e  200. 
+            </p>
+            <p>Ao reduzir o n&uacute;mero m&aacute;ximo de paragens que podem ser atribu&iacute;dos a cada ve&iacute;culo, os ve&iacute;culos s&atilde;o mais propensos a ter o mesmo n&uacute;mero de paragens que lhes s&atilde;o atribu&iacute;das. Isso ajuda a equilibrar as cargas de trabalho entre os condutores. A desvantagem, no entanto, &eacute; que ela pode resultar em uma solu&ccedil;&atilde;o que &eacute; menos eficiente.
+            </p>
+            <p>Ao aumentar as paragens por ve&iacute;culo, a ferramenta tem mais liberdade para encontrar solu&ccedil;&otilde;es mais eficientes; no entanto, a carga de trabalho pode ser distribu&iacute;da de forma desigual entre os motoristas e ve&iacute;culos. Repare que pode equilibrar as cargas de trabalho por tempo assim como o n&uacute;mero de paragens, especificando um valor para o par&acirc;metro  <b>Limite do tempo total de percurso por ve&iacute;culo</b> .
+            </p>
+            <p>Os exemplos a seguir demonstram os efeitos de limita&ccedil;&atilde;o de paragens m&aacute;ximas por ve&iacute;culo ou o tempo total por ve&iacute;culo. Em todos os exemplos, h&aacute; seis pontos e duas rotas, que come&ccedil;am no mesmo local.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Paragens equilibradas e tempos de viagem">
+                </td>
+                <td>
+                    <p>Tempos de viagem equilibrada e paragens por percurso:
+                    </p>
+                    <p>As paragens s&atilde;o mais ou menos uniformemente afastados, assim, definir as paragens m&aacute;ximas por ve&iacute;culo para distribuir uniformemente os resultados de carga de trabalho em percursos que s&atilde;o mais ou menos a mesma dura&ccedil;&atilde;o.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Tempos de percurso desequilibrados">
+                </td>
+                <td>
+                    <p>Paragens equilibradas por percurso, mas os tempos de viagem desequilibrados:
+                    </p>
+                    <p>Cinco dos seis paradas est&atilde;o agrupados perto do local de partida, mas uma paragem &eacute; separado e exige uma unidade muito mais tempo para ser alcan&ccedil;ado. Dividindo as paradas igualmente entre as duas vias provoca tempos de viagem desequilibradas.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Tempos de viagem equilibradas">
+                </td>
+                <td>
+                    <p>Paragens desequilibradas por percurso, mas os tempos de viagem equilibrados:
+                    </p>
+                    <p>As paragens est&atilde;o no mesmo local que o gr&aacute;fico anterior, mas aumentando as paragens m&aacute;ximas por rota e limitando o tempo total de viagem por ve&iacute;culo, os tempos de viagem s&atilde;o equilibrados.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Tempo despendido em cada paragem</h2></div>
+        <hr/>
+        <div>
+            <p>Defina o tempo de servi&ccedil;o m&eacute;dio esperado gasto em cada paragens. Por exemplo, se est&aacute; a planear uma programa&ccedil;&atilde;o de jornada de trabalho para inspectores e o tempo m&eacute;dio de inspec&ccedil;&atilde;o &eacute; de 45 minutos, introduza  <code>45</code>.
+            </p>
+            <p>O tempo de servi&ccedil;o em todos as paragens &eacute; assumido como sendo o mesmo.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limitar o tempo total de rota por veículo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique a quantidade m&aacute;xima de tempo que um percurso deve durar do in&iacute;cio ao fim. Isto inclui o tempo de viagem esperado e tempos de servi&ccedil;o gasto nas paragens ao longo do percurso. Se os condutores n&atilde;o devem trabalhar mais de um determinado tempo durante um dia, como oito horas, pode especificar esse limite aqui.
+            </p>
+            <p>Consulte a ajuda para  <b>N&uacute;mero m&aacute;ximo de paragens por ve&iacute;culo</b> para considera&ccedil;&otilde;es ao equilibrar cargas de trabalho.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada de elementos que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. Se a camada de elementos j&aacute; existir, ser-lhe-&aacute; pedido que forne&ccedil;a outro nome. A camada de elementos conter&aacute; uma camada para cada um dos seguintes: rotas, paragens designadas e paragens n&atilde;o designadas, no caso de algumas paragens introduzidas n&atilde;o poderem ser atribu&iacute;das a quaisquer rotas.
+            </p>
+            <p>Caso selecione  <b>Incluir camadas de rotas</b>, cada rota do resultado ser&aacute; tamb&eacute;m guardada como camada de rota. Uma camada de rota inclui todas as informa&ccedil;&otilde;es de uma rota espec&iacute;fica, tais como as paragens atribu&iacute;das &agrave; rota, assim como, as dire&ccedil;&otilde;es do percurso. Criar camadas de rotas &eacute; &uacute;til caso pretenda partilhar as rotas individuais com outros membros da sua organiza&ccedil;&atilde;o ou para aplicar modifica&ccedil;&otilde;es adicionais &agrave;s rotas utilizando o bot&atilde;o <b>Dire&ccedil;&otilde;es</b> no visualizador de mapas. As camadas de rotas utilizam o nome introduzido para a camada de elementos como prefixo e o nome da rota gerada como parte da an&aacute;lise, que &eacute; adicionado para criar um nome &uacute;nico para cada camada de rotas.
+            </p>
+            <p>Ao utilizar o menu pendente  <b>Guardar resultado em</b>, pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b> onde a camada de elementos e as camadas de rotas, caso sejam criadas, ser&atilde;o guardadas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sűrűség számítása</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa"></h2>
+        <hr/>
+    <p>A Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa eszk&ouml;z sűrűs&eacute;gt&eacute;rk&eacute;pet hoz l&eacute;tre pont vagy vonalas vektoros elemekből egy bizonyos (pontok vagy vonalak attrib&uacute;tumai &aacute;ltal k&eacute;pviselt) jelens&eacute;g ismert mennyis&eacute;geit a t&eacute;rk&eacute;pen kiterjesztve. Az eredm&eacute;ny a legkev&eacute;sb&eacute; sűrűtől a legsűrűbbig terjedő kateg&oacute;ri&aacute;kba sorolt ter&uuml;leteket tartalmaz&oacute; r&eacute;teg.   
+
+    </p>
+    <p>Pont bemenet eset&eacute;n az egyes pontok feleljenek meg egy bizonyos esem&eacute;ny vagy incidens hely&eacute;nek, &eacute;s az eredm&eacute;ny r&eacute;teg megjelen&iacute;ti az egys&eacute;gnyi ter&uuml;letre eső incidensek sz&aacute;m&aacute;t.  Az &uacute;j helyen a nagyobb sűrűs&eacute;g&eacute;rt&eacute;k azt jelenti, hogy t&ouml;bb pont tal&aacute;lhat&oacute; az adott hely k&ouml;zel&eacute;ben.  Sok esetben az eredm&eacute;ny r&eacute;teg j&ouml;vőbeni esem&eacute;nyek kock&aacute;zat&aacute;t megjelen&iacute;tő felsz&iacute;nk&eacute;nt &eacute;rtelmezhető. Ha p&eacute;ld&aacute;ul a bemenő pontok vill&aacute;mcsap&aacute;sok hely&eacute;nek felelnek meg, akkor az eredm&eacute;ny r&eacute;teg a j&ouml;vőbeni vill&aacute;mcsap&aacute;sok kock&aacute;zat&aacute;t megjelen&iacute;tő felsz&iacute;nk&eacute;nt &eacute;rtelmezhető.
+    </p>
+    <p>Vonal bemenet eset&eacute;n a vonal sűrűs&eacute;g felsz&iacute;n megfelel az egyes helyek k&ouml;zel&eacute;ben tal&aacute;lhat&oacute; teljes vonalmennyis&eacute;gnek.  A sz&aacute;m&iacute;tott sűrűs&eacute;g&eacute;rt&eacute;kek m&eacute;rt&eacute;kegys&eacute;ge az egys&eacute;gnyi ter&uuml;letre eső vonalhossz&uacute;s&aacute;g. Ha p&eacute;ld&aacute;ul a vonalak foly&oacute;knak felelnek meg, akkor az eredm&eacute;ny r&eacute;teg a keres&eacute;si sug&aacute;ron bel&uuml;li foly&oacute;k teljes hossz&uacute;s&aacute;g&aacute;nak felel meg.  Ez az eredm&eacute;ny felhaszn&aacute;lhat&oacute; &aacute;llatok legeltet&eacute;s&eacute;re alkalmas ter&uuml;letek azonos&iacute;t&aacute;s&aacute;ra.
+    </p>
+    <p> Az eszk&ouml;z ezenk&iacute;v&uuml;l az al&aacute;bbiakra is haszn&aacute;lhat&oacute;:
+        <ul>
+            <li>Bűncselekm&eacute;nyek sűrűs&eacute;gi t&eacute;rk&eacute;p&eacute;nek l&eacute;trehoz&aacute;sa, seg&iacute;tve ezzel a rendőrs&eacute;gnek az erőforr&aacute;sokat azokra a ter&uuml;letekre csoportos&iacute;tani, ahol nagy ar&aacute;ny&uacute; a bűn&ouml;z&eacute;s.
+            </li>
+            <li>A megy&eacute;ben tal&aacute;lhat&oacute; k&oacute;rh&aacute;zak sűrűs&eacute;g&eacute;nek kisz&aacute;m&iacute;t&aacute;sa.  Az eredm&eacute;ny r&eacute;teg mutatja azokat a ter&uuml;leteket, ahol a k&oacute;rh&aacute;zak k&ouml;nnyen vagy nehezen &eacute;rhetők el &eacute;s ez az inform&aacute;ci&oacute; felhaszn&aacute;lhat&oacute; annak eld&ouml;nt&eacute;s&eacute;re, hogy hol &eacute;p&uuml;ljenek &uacute;j k&oacute;rh&aacute;zak.
+            </li>
+            <li>Olyan ter&uuml;letek azonos&iacute;t&aacute;sa, ahol magas az erdőtűz kock&aacute;zata a kor&aacute;bbi erdőtűz helysz&iacute;nek alapj&aacute;n.
+            </li>
+            <li>A nagyobb fő&uacute;tvonalakt&oacute;l t&aacute;vol &eacute;lő k&ouml;z&ouml;ss&eacute;gek hely&eacute;nek meghat&aacute;roz&aacute;sa, annak megtervez&eacute;s&eacute;hez, hogy hol &eacute;p&uuml;ljenek &uacute;j utak.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pont vagy vonal réteg kiválasztása, amelyből sűrűséget kíván számítani</h2></div>
+        <hr/>
+        <div>
+            <p>A pont vagy vonal r&eacute;teg, amelyből a sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa t&ouml;rt&eacute;nik. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Számláló mező használata</h2></div>
+        <hr/>
+        <div>
+            <p>Adjon meg az egyes helyeken bek&ouml;vetkezett balesetek sz&aacute;m&aacute;t meghat&aacute;roz&oacute; mezőt.  V&aacute;rosokat k&eacute;pviselő pontok eset&eacute;n p&eacute;ld&aacute;ul a v&aacute;ros n&eacute;pess&eacute;g&eacute;nek megfelelő mezőt haszn&aacute;lhat sz&aacute;ml&aacute;l&oacute; mezők&eacute;nt, &eacute;s az eredm&eacute;ny&uuml;l kapott n&eacute;psűrűs&eacute;g r&eacute;teg nagyobb n&eacute;psűrűs&eacute;get fog sz&aacute;ml&aacute;lni a nagyobb n&eacute;pess&eacute;gű v&aacute;rosok k&ouml;zel&eacute;ben.
+            </p>
+            <p> Ha az alap&eacute;rtelmezett Nincs lehetős&eacute;get haszn&aacute;lja, akkor az eszk&ouml;z felt&eacute;telezi, hogy az egyes helyek egyetlen &eacute;rt&eacute;ket k&eacute;pviselnek.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Keresési távolság</h2></div>
+        <hr/>
+        <div>
+            <p>Adjon meg egy t&aacute;vols&aacute;got, amely meghat&aacute;rozza, hogy milyen t&aacute;vols&aacute;gban keres pont vagy vonalas vektoros elemeket a sűrűs&eacute;g&eacute;rt&eacute;kek sz&aacute;m&iacute;t&aacute;sakor.  P&eacute;d&aacute;ul a 10&nbsp;000 m&eacute;ter keres&eacute;si t&aacute;vols&aacute;g megad&aacute;sakor az eszk&ouml;z a kimenő r&eacute;teg b&aacute;rmely hely&eacute;nek sűrűs&eacute;g&eacute;t a helytől 10&nbsp;000 m&eacute;ter t&aacute;vols&aacute;gban tal&aacute;lhat&oacute; vektoros elemek alapj&aacute;n sz&aacute;m&iacute;tja ki.  Azokon a helyeken, ahol nem t&ouml;rt&eacute;nt incidens 10&nbsp;000 m&eacute;teren bel&uuml;l, a sűrűs&eacute;g&eacute;rt&eacute;k nulla lesz.     
+
+            </p>
+            <p>Ha nem ad meg t&aacute;vols&aacute;got, az eszk&ouml;z kisz&aacute;m&iacute;tja a bemenő vektoros elemek hely&eacute;n &eacute;s (ha van sz&aacute;ml&aacute;l&oacute; mező) a sz&aacute;ml&aacute;l&oacute; mezőben l&eacute;vő &eacute;rt&eacute;keken alapul&oacute; alap&eacute;rtelmezett &eacute;rt&eacute;ket.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Kivágás kimeneti helye</h2></div>
+        <hr/>
+        <div>
+            <p>Rajzoljon vagy adjon meg egy r&eacute;teget, amely megadja a ter&uuml;letet, ahol sűrűs&eacute;geket k&iacute;v&aacute;n sz&aacute;m&iacute;tani. Ha p&eacute;ld&aacute;ul egy t&oacute; halsűrűs&eacute;g&eacute;t k&iacute;v&aacute;nja kisz&aacute;m&iacute;tani, akkor haszn&aacute;lhatja a t&oacute; hat&aacute;rvonal&aacute;t ebben a param&eacute;terben, &eacute;s az eszk&ouml;z csak a t&oacute; hat&aacute;rvonal&aacute;n bel&uuml;l rajzolja meg a kimenetet.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Osztályozás alapja</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a sűrűs&eacute;g&eacute;rt&eacute;kek ter&uuml;letekre t&ouml;rt&eacute;nő besorol&aacute;s&aacute;nak m&oacute;dj&aacute;t.
+                <ul>
+                    <li>Egyenlő intervallum &ndash; ter&uuml;letek l&eacute;trehoz&aacute;sa &uacute;gy, hogy az egyes ter&uuml;letek sűrűs&eacute;g&eacute;rt&eacute;keinek tartom&aacute;nya megegyzeik.
+                    </li>
+                    <li>Geometriai intervallum &ndash; geometriai sorozatokkal rendelkező kateg&oacute;riaintervallumokon alapul&oacute; ter&uuml;letek. Ezzel a m&oacute;dszerrel biztos&iacute;that&oacute;, hogy az egyes kateg&oacute;riatartom&aacute;nyok &eacute;rt&eacute;keinek sz&aacute;ma k&ouml;zel azonos, &eacute;s hogy az intervallumok k&ouml;z&ouml;tti v&aacute;lt&aacute;s &aacute;lland&oacute; legyen.
+                    </li>
+                    <li>Term&eacute;szetes oszt&aacute;sk&ouml;z&ouml;k &ndash; a ter&uuml;letek oszt&aacute;lyintervallumai az adatok term&eacute;szetes csoportos&iacute;t&aacute;s&aacute;n alapulnak.  Az oszt&aacute;lyok oszt&aacute;sk&ouml;z&eacute;rt&eacute;kei &uacute;gy vannak meghat&aacute;rozva, hogy a legjobban csoportos&iacute;ts&aacute;k a hasonl&oacute; &eacute;rt&eacute;keket, &eacute;s hogy az oszt&aacute;lyok k&ouml;z&ouml;tt a lehető legnagyobb legyen a k&uuml;l&ouml;nbs&eacute;g. 
+                    </li>
+                    <li>Egyenlő ter&uuml;let &ndash; ter&uuml;letek l&eacute;trehoz&aacute;sa &uacute;gy, hogy az egyes ter&uuml;letek m&eacute;rete megegyezik.  Ha p&eacute;ld&aacute;ul az eredm&eacute;ny r&eacute;teg t&ouml;bb nagy sűrűs&eacute;g&eacute;rt&eacute;ket tartalmaz, mint kis sűrűs&eacute;g&eacute;rt&eacute;ket, akkor t&ouml;bb ter&uuml;let j&ouml;n l&eacute;tre a nagy sűrűs&eacute;gekhez.
+                    </li>
+                    <li>Sz&oacute;r&aacute;s &ndash; a v&aacute;rhat&oacute; sűrűs&eacute;g&eacute;rt&eacute;kek sz&oacute;r&aacute;s alapj&aacute;n l&eacute;trehozott ter&uuml;letei. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Osztályok száma</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza a kateg&oacute;ri&aacute;k sz&aacute;m&aacute;t (a v&aacute;rhat&oacute; &eacute;rt&eacute;kek tartom&aacute;ny&aacute;t) az eredm&eacute;ny r&eacute;tegen.  Az egyes kateg&oacute;ri&aacute;k meghat&aacute;rozz&aacute;k a ter&uuml;letek hat&aacute;rvonalait.  Az oszt&aacute;lyok a fenti 
+ <b>Oszt&aacute;lyoz&aacute;s alapja</b> param&eacute;ter hat&aacute;rozza meg.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Kimeneti területegységek</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a kimeneti ter&uuml;letegys&eacute;get.  A sűrűs&eacute;g a darabsz&aacute;m &eacute;s a ter&uuml;let h&aacute;nyadosa, &eacute;s ez a param&eacute;ter hat&aacute;rozza meg a ter&uuml;letegys&eacute;get a sűrűs&eacute;gsz&aacute;m&iacute;t&aacute;sban.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

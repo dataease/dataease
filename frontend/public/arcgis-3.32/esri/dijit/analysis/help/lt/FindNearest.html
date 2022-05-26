@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rasti artimiausią</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Rasti artimiausią"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis randa visus artimiausius elementus, įvertina ir pateikia jų atstumą iki artimų elementų. Norint surasti artimiausią, įrankis gali naudoti atstumą tiesia linija arba pasirinktą kelionės režimą. Galima apriboti ie&scaron;komų artimiausių elementų skaičių ar paie&scaron;kos atstumą. Įrankis gali padėti atsakyti į tokio tipo klausimus:
+        <ul>
+            <li>Kur yra artimiausias parkas nuo čia?
+            </li>
+            <li>Kokią ligoninę galime pasiekti per trumpiausią važiavimo laiką? Kiek užtruks kelionė i&scaron;vykus antradienį, 5:30, popiet, piko valandą?
+            </li>
+            <li>Koks atstumas tarp miestų automobilių keliais?
+            </li>
+            <li>Kurie i&scaron; pacientų gyvena dviejų kilometrų atstumu nuo chemijos gamyklų?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Rasti artimiausią sukuria sluoksnį, turintį artimiausius elementus ir linijinį sluoksnį, jungiantį įvesties vietas su artimiausiais elementais. Linijiniame sluoksnyje saugoma informacija apie pradžios ir artimiausias vietas bei atstumus tarp jų.
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėtas, bus analizuojami tik žemėlapio aprėptyje matomi elementai. Jei nepažymėta &ndash; analizuojami visi elementai, net jei jie patenka už matomo žemėlapio ribų.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Nurodykite pradžios padėtis</h2></div>
+        <hr/>
+        <div>
+            <p>Įrankis Rasti artimiausią i&scaron;matuoja atstumą nuo jūsų čia nurodyto sluoksnio elementų (i&scaron;vykimo vietos) iki jūsų kitame parametre nurodytų vietų.  Kiekviename sluoksnyje gali būti iki  5 000 elementų. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Rasti artimiausias vietas</h2></div>
+        <hr/>
+        <div>
+            <p>Įrankis Rasti artimiausią i&scaron;matuoja atstumą nuo kiekvieno pirmajame sluoksnyje esančio elemento iki &scaron;iame sluoksnyje esančių vietų. Kiekviename sluoksnyje gali būti iki  5 000 vietų. </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Matavimai</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, ar atstumas bus apskaičiuojamas tiesia linija, ar pagal pasirinktą kelionės režimą. Kelionės režimus galima įgalinti tik tada, kai įvesties sluoksnyje yra ta&scaron;kų. Galimus kelionės režimus nustato jūsų organizacijos administratorius.  Naudojant vieną i&scaron; kelionės režimų, atliekami kelių ir pėsčiųjų takų matavimai, laikomasi taikomų taisyklių, pvz., važiavimo vienpusėmis gatvėmis, neleistino apsisukimo ir kt.
+            </p>
+            <p>Jei atstumai matuojami tarp linijų ar plotinių objektų, jie apskaičiuojami tarp arčiausiai esančių jų ta&scaron;kų. 
+            </p> 
+            <p>Kai pasirenkate  <b>Važiavimo laikas</b>, <b>Važiavimo užmiestyje laikas</b> arba <b>Važiavimo sunkvežimiu laikas</b>, galite nurodyti, kaip matuojama važiavimo trukmė.
+                <ul>
+                    <li>
+                        <p>Atžymėkite  <b>Naudoti eismo būseną</b>, jei norite rasti artimiausius objektus tik pagal fiksuotus greičio dydžius, pavyzdžiui, leidžiamą greitį.
+                        </p>
+                        <p>Tai bendro pobūdžio paie&scaron;ka, leidžianti aptikti artimiausius objektus nevertinant eismo sąlygų konkrečiu kelionės metu.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėkite  <b>Naudoti eismo būseną</b>, jei ie&scaron;kote elementų pagal kelionės pradžios laiką ir kintančias eismo sąlygas. Pasirinkus <b>Esamos sąlygos</b>, kelionės pradžios laikas bus prilygintas analizės vykdymo laikui, bus įvertintos esamos eismo sąlygos ir prognozuojamas važiavimo greitis pagal sensorių pateikiamą informaciją. Prognozuojamas važiavimo greitis bus apskaičiuotas pagal esamas eismo sąlygas, istorinius greičio duomenis bei papildomus, pavyzdžiui, meteorologinius įvykius. Važiavimo greitis prognozuojamas 12 valandų laikotarpiui, todėl kelionės pradžią galite nurodyti iki 12 val. pirmyn nuo esamo laiko.
+                        </p>
+                        <p>Naudokite esamas eismo sąlygas, jei norite rasti trumpiausius atstumus i&scaron;vykdami &scaron;iuo ar artimu laiku, pavyzdžiui, po valandos.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėjus  <b>Naudoti eismo būseną</b> ir <b>Tipinės eismo sąlygos</b> bei nurodžius dieną ir laiką, įrankis aptinka artimiausius objektus remdamasis istoriniais vidutinio greičio kiekvieną 5 minučių intervalą savaitėje duomenimis. Apskaičiavimas vyks įvertinant eismo sąlygų įtaką, bet ne esamas konkrečias sąlygas; tai gali lemti besiskiriančius rezultatus.
+                        </p>
+                        <p>Galite naudoti istorinius duomenis, jei norite sužinoti, kokie artimiausi objektai būtų pasiekiami greičiausiu būdu, i&scaron;vykus, pavyzdžiui, trečiadienį 11:30. 
+                        </p>
+                        <p>Laikas priklauso nuo pradiniams elementams priskirtos laiko zonos. Taigi, jei laikas bus nurodytas 8:00 ir bus dvi i&scaron;vykimo vietos, viena Niujorke, o kita - Los Andžele, artimiausios vietos bus rastos pagal numanomą i&scaron;vykimo laiką 8:00. Rytų pakrantės laiku ir 8:00 Ramiojo vandenyno pakrantės laiku
+                        </p>
+                    </li>
+                </ul>
+                Atkreipkite dėmesį, kad automobiliui judant i&scaron; ta&scaron;ko, bėga laikas ir eismo sąlygos kinta. Įrankis įvertins sąlygas pažymėjus <b>Naudoti eismo būseną</b>, tačiau tokie duomenys prieinami ne visuose regionuose. Paspauskite <b>Tikrinti prieinamumą</b>, jei norite sužinoti, ar duomenys prieinami jūsų regione. 
+            </p>
+            <p> <b>Važiavimo sunkvežimiu laikas</b> galite naudoti dinaminį važiavimo greitį, pagrįstą eismo sąlygomis, bet nevir&scaron;ijančio leistino sunkvežimių greičio. Pavyzdžiui, jeigu dinaminis greitis kelyje, atsižvelgiant į eismą, yra 105 km/h, o leistinas sunkvežimių greitis tame kelyje &ndash; 90 km/h, &scaron;iame kelyje skaičiuojant bus naudojamas 90 km/h greitis.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pasirinkti kliūčių sluoksnius</h2></div>
+        <hr/>
+        <div>
+            <p> Vienas ar daugiau elementų, kurie veikia kaip laikini apribojimai (kliūtys) keliaujant esamomis gatvėmis. Kliūtis galite nurodyti naudodami ta&scaron;ko, linijos arba ploto elementus.
+            </p>
+            <p>Ta&scaron;kinė kliūtis gali reik&scaron;ti nukritusį medį, avariją, nukritusį elektros laidą ar bet kokį kitą objektą, kuris visi&scaron;kai užblokavęs eismą konkrečioje gatvės vietoje. Galima judėti gatve, tačiau ne per &scaron;ią kliūtį. Galite nurodyti iki 250 elementų, rei&scaron;kiančių ta&scaron;kines kliūtis.
+            </p>
+            <p>Linijinė kliūtis neleidžia keliauti niekur, kur &scaron;i kliūtis kerta gatves. Pavyzdžiui, kaip linijinė kliūtis gali būti pažymėtas paradas ar protestas, blokuojantis eismą keliuose gatvės segmentuose. Jei visų linijinių kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 500, įrankis pateikia klaidą.
+            </p>
+            <p>Plotinė kliūtis neleidžia keliauti niekur, kur &scaron;is plotas kerta gatves. Vienas i&scaron; galimų tokio tipo kliūties panaudojimų yra pažymėti potvynius, apimančius tam tikras gatvių tinklo dalis ir neleidžiančius jomis keliauti. Jei visų poligono kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 2 000, įrankis pateikia klaidą.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Kiekvienai įvesties sluoksnio vietai</h2></div>
+        <hr/>
+        <div>
+            <p>Artimiausių objektų paie&scaron;ką galite apriboti dviem būdais. Viena galimybė yra apriboti ie&scaron;komų elementų skaičių kiekvienam pradiniam elementui. Galite rasti vieną artimiausią parką, du ar daugiau. Kitas  būdas - nurodyti maksimalų paie&scaron;kos atstumą ar važiavimo trukmę.
+            </p>
+            <p>Neapribojus, dižiausias aptinkamų objektų skaičius yra 100, paie&scaron;kos atstumas neribojamas.
+            </p>
+            <p>Analizės trukmė priklauso nuo pradinių elementų skaičiaus, artimiausių ie&scaron;komų objektų skaičiaus bei paie&scaron;kos atstumo. Paie&scaron;ka užtruks ilgiau, jei bus daugiau elementų ar bus didesni paie&scaron;kos atstumai.
+            </p>
+            <p>Atkreipkite dėmesį, kad kai paie&scaron;kos intervalui naudojamas limitas, gali būti, kad įrankis nesuras jokių artimiausių vietų &scaron;iame intervale arba suras mažiau artimiausių elementų negu nurodytas maksimalus artimiausių vietų skaičius.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai elemento sluoksnis, kuris bus sukurtas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Jei toks elemento sluoksnis jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą. Elemento sluoksnį sudarys du sluoksniai: vienas sluoksnis, atvaizduojantis artimiausiais vietas, ir antras, atvaizduojantis linijas, jungiančias įvesties ir artimiausias vietas.
+            </p>
+            <p>Jei pasirinksite  <b>Įtraukti mar&scaron;ruto sluoksnius</b>, kiekvienas rezultato mar&scaron;rutas taip pat bus įra&scaron;ytas kaip mar&scaron;ruto sluoksnis. Mar&scaron;ruto sluoksnis apima visą konkretaus mar&scaron;ruto informaciją, pvz., stoteles, priskirtas mar&scaron;rutui, taip pat kelionės kryptis. Sukurti mar&scaron;ruto sluoksnius naudinga, jei norite bendrinti individualius mar&scaron;rutus su kitais organizacijos nariais arba toliau modifikuoti mar&scaron;rutus naudodami žemėlapių peržiūros priemonės mygtuką <b>Kryptys</b>. Mar&scaron;ruto sluoksniai naudoja pateiktą elementų sluoksnio pavadinimą kaip prefiksą, o mar&scaron;ruto pavadinimas, sugeneruojamas kaip analizės dalis, pridedamas kuriant unikalų kiekvieno mar&scaron;ruto sluoksnio pavadinimą.
+            </p>
+            <p>Mar&scaron;rutų sluoksnių, kuriuos galima sukurti, maksimalus skaičius yra  1 000. Jei gaunamas rezultatas yra didesnis negu  1 000 mar&scaron;rutų ir yra pažymėta  <b>Įtraukti mar&scaron;rutų sluoksnius</b>, įrankis sukurs tik i&scaron;vesties elementų paslaugą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kuriame bus i&scaron;saugotas elementų sluoksnis ir mar&scaron;ruto sluoksnis (jei jie bus sukurti), pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

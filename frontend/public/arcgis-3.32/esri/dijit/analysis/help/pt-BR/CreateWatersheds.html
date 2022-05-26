@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Vertentes</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Criar Vertentes"></h2>
+        <hr/>
+    <p>Esta ferramenta determina a vertente ou montante contribuindo a &aacute;rea, para cada ponto na sua camada de entrada. 
+    </p>
+    <p>Por exemplo, suponha que voc&ecirc; tenha fei&ccedil;&otilde;es de ponto representando locais de contamina&ccedil;&atilde;o transportado pela &aacute;gua e deseja localizar as fontes prov&aacute;veis da contamina&ccedil;&atilde;o. J&aacute; que a fonte da contamina&ccedil;&atilde;o deve estar em algum lugar dentro da montante da vertente do ponto, voc&ecirc; utiliza esta ferramenta para definir as vertentes contendo as fontes de contamina&ccedil;&atilde;o.
+    </p>
+    <p>O local dos seus pontos de entrada &eacute; importante.  Se eles n&atilde;o forem localizados precisamente em uma linha de drenagem, as vertentes resultantes podem ser muito pequenas e n&atilde;o serem &uacute;teis para sua an&aacute;lise. A  <b>Dist&acirc;ncia de pesquisa para drenagem mais pr&oacute;xima</b> pode ser utilizada para ajustar o local dos seus pontos de entrada de forma que caiam justamente em uma linha de drenagem para localizar a vertente que flui no ponto localizado na linha de drenagem.  Os locais ajustados para localizar as vertentes s&atilde;o gravados na camada de sa&iacute;da&mdash;seus pontos de entrada n&atilde;o s&atilde;o modificados.
+    </p>
+    <p>O resultado &eacute; um grupo de camadas contendo duas camadas:  as vertentes e os pontos ajustados utilizados para computar as vertentes.     
+    </p>
+    <p>As vertentes resultantes ter&atilde;o todos os atributos dos seus pontos de entrada, como tamb&eacute;m, estes atributos adicionais:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Cont&eacute;m o valor de ID do ponto de entrada
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Cont&eacute;m a &aacute;rea em quil&ocirc;metros quadrados da vertente da montante
+            </li>
+            <li> <i>Description</i> e <i>DataResolution</i>&mdash;Cont&ecirc;m informa&ccedil;&otilde;es pertencendo aos dados hidrol&oacute;gicos utilizados para calcular o tra&ccedil;ado
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na extens&atilde;o de mapa atual ser&atilde;o utilizadas para computar as vertentes.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Feições de ponto para utilizar no cálculo de vertentes</h2></div>
+        <hr/>
+        <div>
+            <p>Uma vertente (corrente ativa que contribui a &aacute;rea) ser&aacute; calculada para cada ponto.  
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Distância de pesquisa para drenagem mais próxima</h2></div>
+        <hr/>
+        <div>
+            <p>Se os seus pontos de entrada estiverem localizados fora de uma linha de drenagem, as vertentes resultantes provavelmente ser&atilde;o muito pequenas e de pouca utilidade na determina&ccedil;&atilde;o da fonte de contamina&ccedil;&atilde;o da montante.  Na maioria dos casos, voc&ecirc; deseja seu ponto de entrada para ajustar na linha de drenagem mais pr&oacute;xima para encontrar as vertentes que fluem para um ponto localizado na linha de drenagem.  Para localizar a linha de drenagem mais pr&oacute;xima, especifique uma dist&acirc;ncia de pesquisa. Se voc&ecirc; n&atilde;o especificar uma dist&acirc;ncia de pesquisa, a ferramenta ir&aacute; computar e utilizar uma dist&acirc;ncia de pesquisa conservadora.  
+            </p>
+            <p>Para utilizar o local exato do seu ponto de entrada, especifique uma dist&acirc;ncia de pesquisa de zero.  
+            </p>
+            <p>Para prop&oacute;sitos de an&aacute;lise, as linhas de drenagem foram pr&eacute;-computadas pela Esri utilizando modelos hidrol&oacute;gicos padr&atilde;o. Se n&atilde;o tiver nenhuma linha de drenagem dentro da dist&acirc;ncia de pesquisa, o local contendo a acumula&ccedil;&atilde;o de fluxo mais alto dentro da dist&acirc;ncia de pesquisa ser&aacute; utilizado.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+            <p> A execu&ccedil;&atilde;o desta ferramenta n&atilde;o consome cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

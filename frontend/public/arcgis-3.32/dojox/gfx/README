@@ -1,0 +1,109 @@
+-------------------------------------------------------------------------------
+dojox.gfx
+-------------------------------------------------------------------------------
+Version 1.100
+Release date: 08/01/2006
+-------------------------------------------------------------------------------
+Project state:
+SVG renderer: production
+VML renderer: production
+Silverlight renderer: beta
+HTMLCanvas renderer: beta
+SVGWeb integration: experimental
+-------------------------------------------------------------------------------
+Credits
+	Eugene Lazutkin (eugene.lazutkin@gmail.com)
+	Kun Xi (bookstack@gmail.com)
+	Chris Mitchell (ccmitchellusa@gmail.com) HTML Canvas
+	Yang Li () SVGWeb integration
+-------------------------------------------------------------------------------
+Project description
+
+Implementation of simple portable 2D graphics library.
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core
+-------------------------------------------------------------------------------
+Documentation
+
+Currently it can be found here: http://docs.google.com/Doc?id=d764479_1hnb2tn
+
+HTMLCanvas Renderer Status
+
+To use canvas rendering, insert 'canvas' at the beginning of the gfxRenderers list in your
+djConfig, for example:
+<script type="text/javascript" src="../../../dojo/dojo.js"
+	djConfig="parseOnLoad: true, gfxRenderer: 'canvas,svg,silverlight,vml'"></script>
+canvas currently will only render on non-IE browsers (see dojox/gfx.js for where the renderer is loaded);
+although it should be possible to use an IE canvas implementation (like Google's); however, it will be very slow.
+
+The following tests can be made to work with HTML Canvas with minor testcase modification:
+dojox/gfx/tests
+	test_gfx.html-Bugs #1
+	test_arc.html
+	test_bezier.html
+	test_pattern.html
+	test_gradient.html
+	test_linearGradient.html
+	test_image1.html - Limitation #3
+	test_transform.html - Bug #1
+	test_poly.html - Bug #1
+dojox/gfx/demos
+	butterfly.html - Bug #1
+	lion.html - Bug #1
+	tiger.html - Bug #1
+	circles.html - No event processing yet :(
+	creator.html
+dojox/chart
+	test_pie2d.html - Dojo Charts on iPhone anyone? :)
+	test_chart2d.html -
+
+	// To make charts work, the following line needs to be added to the end of the
+	// Chart2D.js render() method (prior to return)
+	if(this.surface.render){this.surface.render()};
+
+Known Limitations:
+1) event handling- plan is to capture all events at canvas, perform intersect/hit
+   tests (not implemented) against scene graph, then propogate event to top-most
+   intersected shape.  HtmlCanvas shape need intersectsStroke and intersectsBounds,
+   and intersects (region).
+2) SVG and VML are "live" scene graphs; eg. any state change to objects in the
+   scene automatically get rendered in next engine render pass. For canvas, it's
+   procedural, and current implementation requires application to call surface.render()
+   whenever scene needs to be updated. Plan is to do dirty region checking based
+   on bounding boxes (currently not properly computed), and track dirty areas anytime
+   state changes (invalidate) separate from render phase.
+   Add the following call where changes to the scene graph are complete and you want to
+   render:
+
+	if (surface.render){surface.render();}
+
+4) Text/Text Paths - Text shape is implemented using DIV overlays.  Many text styles are not
+   applied, and outline/fills are not possible.  This is due to limitations in Canvas spec.
+   Firefox 3.0 has proprietary text functions that we could test for and use once FF3 is out.
+   No luck on Safari.
+3) No Image skewing - Limitation of Canvas
+
+Known Bugs:
+1) Matrix xformations (applied from root to shape leaf nodes) not quite right--but very close.
+   Canvas does not have a built in transformation function that allows skewing.  Need to
+   track skew matrix with Shape, and perform other trans/rot/scale transformations without
+   using canvas transform functions.
+
+SVGWeb Integration Status
+
+See README-svgweb.
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/gfx.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/gfx/*
+
+Install into the following directory structure:
+/dojox/gfx/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

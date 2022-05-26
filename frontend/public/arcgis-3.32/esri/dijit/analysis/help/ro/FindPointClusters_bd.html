@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Găsiți fascicule de puncte</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Găsiți fascicule de puncte"></h2>
+        <hr/>
+    <p>Instrumentul  Găsiți fascicule de puncte găsește obiecte spațiale fascicule de puncte &icirc;n zgomotul &icirc;nconjurător pe baza distribuției lor spațiale.
+    </p>
+    <p>De exemplu, o organizație neguvernamentală studiază o boală transmisă de dăunători. Are un set de date de puncte care reprezintă gospodăriile din zona studiată, dintre care unele sunt infestate iar altele nu sunt. Cu ajutorul instrumentului  Găsiți fascicule de puncte, un analist poate stabili fascicule de gospodării infestate pentru a ajuta la indicarea zonei de &icirc;ncepere a tratamentului și de exterminare a dăunătorilor.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic pentru care vor fi găsite fasciculele</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte &icirc;n care se va regăsi fasciculul.  Straturile tematice trebuie să fie &icirc;ntr-o referinţă spaţială proiectată sau să aibă referința spațială de procesare setată pe un sistem de coordonate proiectate utiliz&acirc;nd  <b>Mediile de analiză</b>.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Alegeți metoda de grupare de utilizat</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda de grupare care va fi utilizată pentru a distinge grupurile de obiecte spațiale de tip punct de zgomotul &icirc;nconjurător. Puteți alege să utilizați un algoritm de grupare care folosește metoda distanței definite sau pe cea de auto-ajustare.
+            </p>
+            <p>Distanța definită (DBSCAN) utilizează un interval de căutare specificat pentru a separa grupurile dense de zgomotul dispersat. Distanța definită (DBSCAN) este metoda mai rapidă, dar este potrivită numai dacă există un interval de căutare foarte clar de utilizat care funcționează bine pentru a defini toate grupurile care pot fi prezente. Distanța definită (DBSCAN) găsește grupuri care au densități similare.
+            </p>
+            <p>Auto-ajustarea (HDBSCAN) nu necesită specificarea unui interval de căutare, dar este o metodă care consumă mai mult timp. Auto-ajustarea (HDBSCAN) găsește grupuri de puncte similar cu distanța definită (DBSCAN), dar utilizează intervale variate de căutare care permit identificarea de grupuri cu densități variate. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Numărul minim de puncte care vor fi considerate un fascicul</h2></div>
+        <hr/>
+        <div>
+            <p>Acest parametru este utilizat diferit &icirc;n funcție de metoda de grupare aleasă:
+            </p>
+            <p>
+                <ul>
+                    <li>Distanța definită (DBSCAN) - specifică numărul de obiecte spațiale care trebuie să se găsească la cel mult o anumită distanță de un punct pentru ca acel punct să &icirc;nceapă să formeze un grup. Distanța este definită utiliz&acirc;nd parameterul  <b>Limitare interval de căutare la</b>.
+                    </li>
+                    <li>Auto-ajustarea (HDBSCAN)&mdash;specifică numărul de obiecte spațiale &icirc;nvecinate fiecărui punct (inclusiv punctul &icirc;n sine) care va fi luat &icirc;n considerare la estimarea densității. Acest număr este, de asemenea, dimensiunea minimă permisă a unui grup atunci c&acirc;nd se extrag grupuri.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitarea intervalului de căutare la</h2></div>
+        <hr/>
+        <div>
+            <p>Atunci c&acirc;nd se utilizează distanța definită (DBSCAN), acest parametru este distanța &icirc;n care  <b>Numărul minim de puncte care vor fi considerate un grup</b> trebuie să se găsească. Acest parametru nu este utilizat atunci c&acirc;nd se alege auto-ajustarea (HDBSCAN) ca metodă de grupare de utilizat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

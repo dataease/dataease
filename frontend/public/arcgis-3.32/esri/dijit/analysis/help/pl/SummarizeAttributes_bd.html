@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sumuj atrybuty</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagram Sumuj atrybuty"></h2>
+        <hr/>
+    <p> To narzędzie sumuje wszystkie pasujące wartości w jednym lub kilku polach i wykonuje dla nich obliczenia statystyczne. Najbardziej podstawowym obliczeniem statystycznym jest zliczanie obiekt&oacute;w, kt&oacute;re zostały zsumowane, ale można także wykonać bardziej skomplikowane obliczenia.
+    </p>
+    <p>Przyjmijmy na przykład, że mamy obiekty punktowe reprezentujące lokalizacje sklep&oacute;w z polem  <i>DISTRICT_MANAGER_NAME</i> (nazwisko kierownika rejonu) i chcemy uzyskać podsumowanie sprzedaży kawy dla poszczeg&oacute;lnych kierownik&oacute;w. Można wybrać pole <i>DISTRICT_MANAGER_NAME</i> jako pole, na podstawie kt&oacute;rego zostanie przeprowadzona agregacja. Wszystkie wiersze danych reprezentujące poszczeg&oacute;lnych kierownik&oacute;w zostaną zsumowane. Oznacza to, że wszystkie lokalizacje sklep&oacute;w zarządzane przez kierownika oznaczonego jako <pre>Manager1</pre> zostaną zsumowane w jednym wierszu i zostaną dla tego wiersza wykonane zbiorcze obliczenia statystyczne. W tej instancji obliczenia statystyczne, takie jak zliczanie sklep&oacute;w i sumowanie wartości w polach <i>TOTAL_SALES</i> (sprzedaż łącznie), będą wykonywane dla wszystkich sklep&oacute;w zarządzanych przez kierownika <pre>Manager1</pre>, jak r&oacute;wnież dla sklep&oacute;w zarządzanych przez innych kierownik&oacute;w znajdujących się na liście w polu <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz dane wejściowe do sumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa zawierająca pola, kt&oacute;re będą sumowane.  
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Wybierz sposób sumowania danych</h2></div>
+        <hr/>
+        <div>
+            <p>Istnieją dwa sposoby sumowania danych:
+                <ul>
+                    <li> <b>Wszystkie obiekty do pojedynczego obiektu</b> &mdash; obliczanie statystyki dla wszystkich obiekt&oacute;w.
+                    </li>
+                    <li> <b>Według p&oacute;l</b> &mdash; grupowanie obiekt&oacute;w według podobnych wartości w podanych polach.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Przyjmijmy na przykład, że istnieje zestaw danych dotyczących drzew, kt&oacute;ry zawiera pole  <i>treetype</i> (gatunek drzewa) z wartościami <code>Maple</code> (klon), <code>Fir</code> (jodła) i <code>Pine</code> (sosna) oraz pole <i>treeheight</i> (wysokość drzewa), a użytkownik chce znać średnią <i>wysokość drzewa</i>. Jeśli wszystkie obiekty zostaną zsumowane do pojedynczego obiektu, obliczona zostanie średnia wysokość wszystkich drzew, czyli wynikiem będzie jedna wartość średnia. W przypadku sumowania według pola <i>treeheight</i> uzyskana zostanie średnia wysokość klon&oacute;w, średnia wysokość jodeł oraz średnia wysokość sosen.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p> Można obliczyć statystyki dla zsumowanych obiekt&oacute;w.W polach liczbowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; zlicza wartości inne niż null.Może być używane w polach liczbowych lub znakowych. Liczba dla wartości [null, 0, 2] wynosi 2.
+                    </li>
+                    <li>Suma &mdash; suma wartości liczbowych w polu. Suma dla wartości [null, null, 3] wynosi 3.
+                    </li>
+                    <li>Średnia &mdash; średnia wartości liczbowych. Średnia dla wartości [0, 2, null] wynosi 1.
+                    </li>
+                    <li>Min &mdash; wartość minimalna w polu liczbowym. Wartość minimalna dla wartości [0, 2, null] wynosi 0. 
+                    </li>
+                    <li>Maks &mdash; wartość maksymalna w polu liczbowym. Wartość maksymalna dla wartości [0, 2, null] wynosi 2.
+                    </li>
+                    <li>Zakres &mdash; zakres pola liczbowego. Zakres jest obliczany przez odjęcie wartości minimalnych od wartości maksymalnej. Zakres dla wartości [0, null, 1] wynosi 1. Zakres dla wartości [null, 4] wynosi 0.
+                    </li>
+                    <li>Wariancja &mdash; wariancja pola liczbowego w ścieżce. Wariancja dla wartości [1] wynosi null. Wariancja dla wartości [null, 1,0,1,1] wynosi 0,25.
+                    </li>
+                    <li>Odchylenie standardowe &mdash; odchylenie standardowe pola liczbowego. Odchylenie standardowe dla wartości [1] wynosi null. Odchylenie standardowe dla wartości [null, 1,0,1,1] wynosi 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W polach znakowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; liczba ciąg&oacute;w znakowych innych niż null.
+                    </li>
+                    <li>Dowolne &mdash; ta statystyka to losowy przykład wartości znakowej w podanym polu.
+                    </li>
+                </ul>
+                Wszystkie statystyki są obliczane na podstawie wartości niepustych. Warstwa wynikowa zawiera nowe pole dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną liczbę statystyk poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz magazyn danych</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

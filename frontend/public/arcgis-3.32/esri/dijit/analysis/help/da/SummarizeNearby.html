@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summér i nærheden</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Summ&eacute;r i n&aelig;rheden"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j finder og summerer objekter, der ligger inden for en bestemt afstand fra objekter i det f&oslash;rste inputlag. Afstanden kan m&aring;les i fugleflugtslinje eller ved at bruge en valgt rejsetilstand. Indstillinger for rejsetilstand er k&oslash;reafstand, k&oslash;retid, afstand i lastbil, k&oslash;retid i lastbil, g&aring;afstand og g&aring;tid. Statistik beregnes derefter for objekterne i n&aelig;rheden. For eksempel
+        <ul>
+            <li>Beregn den samlede befolkning inden for fem minutters k&oslash;retid fra placeringen af en mulig ny forretning.
+            </li>
+            <li>Beregn antallet af motorvejsramper inden for en k&oslash;reafstand p&aring; 1,6 km fra placeringen af en mulig ny forretning, for at m&aring;le butikkens tilg&aelig;ngelighed.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i inputlaget og laget, som skal summeres, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis umarkeret, analyseres alle objekter i b&aring;de inputlaget og laget, der skal summeres, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Vælg det lag, hvorfra afstandene skal måles til objekterne i det lag, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>De punkt-, linje eller omr&aring;delag, der skal bruges som startsteder til at summere objekter i n&aelig;rheden.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 1.000 objekter i dette lag. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Vælg et lag at summere</h2></div>
+        <hr/>
+        <div>
+            <p>Objekter i dette lag, der er inden for den angivne afstand af objekter i laget, der er angivet ovenfor, vil blive opsummeret. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Summér nærmeste objekter ved hjælp af</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan definere, hvilken type afstandsm&aring;ling, du vil benytte: afstanden i fugleflugtslinje eller en valgt rejsetilstand. Rejsetilstande er kun aktiveret, n&aring;r det f&oslash;rste inputlag (det lag, hvorfra afstandene m&aring;les) indeholder punkter. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation. N&aring;r du bruger en af rejsetilstandene, foretages m&aring;lingerne langs med veje eller g&aring;stier, og m&aring;lingerne stemmer overens med g&aelig;ldende regler s&aring;som ensrettede gader, ulovlige vendinger osv. <b>K&oslash;retid</b>, <b>K&oslash;retid i landlige omgivelser</b> og <b>Lastbilsk&oslash;retid</b> tager h&oslash;jde for dine valgte rejsehastigheder, hvad enten de er baseret p&aring; aktuel trafik eller typisk trafik. Live-hastigheder indsamles ved hj&aelig;lp af aktuelle sensordata, og typiske hastigheder beregnes ud fra historiske gennemsnit.
+            </p>
+            <p>Du kan angive flere afstande. Objekter, der er inden for (eller lig med) de afstande, du angiver, vil blive opsummeret.  
+            </p>
+            <p>Hvis afkrydsningsfeltet  <b>Return&eacute;r gr&aelig;nseomr&aring;der</b> er markeret, returneres et resultatlag med omr&aring;der, der er defineret af den angivne afstandsm&aring;ling. Resultatlaget vil omfatte alle de opsummerede oplysninger, der er anmodet om. N&aring;r du f.eks. opsummerer punkter i n&aelig;rheden ved brug af en <b>Linjeafstand</b> p&aring; 5 kilometer, vil dit resultat indeholde omr&aring;der med en radius p&aring; 5 kilometer omkring inputobjekterne og alle de opsummerede oplysninger, s&aring;som antal punkter og eventuel tilf&oslash;jet statistik. Hvis afkrydsningsfeltet ikke er markeret, vil resultatlaget returnere de samme objekter for det f&oslash;rste inputlag med de alle de summeringsoplysninger, der er anmodet om.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Tilføj statistik fra det lag, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan v&aelig;lge at udarbejde statistikker over vilk&aring;rlige numeriske attributter for punkter i n&aelig;rheden. 
+            </p>
+            <p>Afkrydsningsfeltet  <b>Antal punkter</b> vil, hvis det er markeret, beregne det samlede antal punkter i n&aelig;rheden. Desuden kan du beregne statistik via numeriske felter for punkterne i n&aelig;rheden.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Den samlede v&aelig;rdi for det angivne felt
+                </li>
+                <li> <b>Gennemsnit</b> &ndash; Gennemsnittet eller middelv&aelig;rdien for det angivne felt
+                </li>
+                <li> <b>Minimum</b> &ndash; Den mindste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Std. Afvigelse</b> &ndash; Standardafvigelsen for v&aelig;rdier i det angivne felt
+                </li>
+            </ul>
+            
+            <p>Hvis det lag, der skal summeres, ikke har nogen numeriske felter, vil der ikke v&aelig;re adgang til yderligere statistik.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Tilføj statistik fra det lag, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan v&aelig;lge at udarbejde statistikker over vilk&aring;rlige numeriske attributter for linjer i n&aelig;rheden. 
+            </p>
+            <p>Afkrydsningsfeltet  <b>Samlet l&aelig;ngde</b> vil, hvis det er markeret, beregne den samlede l&aelig;ngde af linjer i n&aelig;rheden. Desuden kan du beregne statistik via numeriske felter for linjerne i n&aelig;rheden.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Den samlede v&aelig;rdi for det angivne felt
+                </li>
+                <li> <b>Gennemsnit</b> &ndash; Gennemsnittet eller middelv&aelig;rdien for det angivne felt
+                </li>
+                <li> <b>Minimum</b> &ndash; Den mindste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Std. Afvigelse</b> &ndash; Standardafvigelsen for v&aelig;rdier i det angivne felt
+                </li>
+            </ul>
+            
+            <p>Hvis det lag, der skal summeres, ikke har nogen numeriske felter, vil der ikke v&aelig;re adgang til yderligere statistik.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Tilføj statistik fra det lag, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan v&aelig;lge at udarbejde statistikker over vilk&aring;rlige numeriske attributter for omr&aring;der i n&aelig;rheden. 
+            </p>
+            <p>Afkrydsningsfeltet  <b>Samlet omr&aring;de</b> vil, hvis det er markeret, beregne det samlede areal af objekter i n&aelig;rheden. Desuden kan du beregne statistik via numeriske felter for objekterne i n&aelig;rheden.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Den samlede v&aelig;rdi for det angivne felt
+                </li>
+                <li> <b>Gennemsnit</b> &ndash; Gennemsnittet eller middelv&aelig;rdien for det angivne felt
+                </li>
+                <li> <b>Minimum</b> &ndash; Den mindste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Std. Afvigelse</b> &ndash; Standardafvigelsen for v&aelig;rdier i det angivne felt
+                </li>
+            </ul>
+            
+            <p>Hvis det lag, der skal summeres, ikke har nogen numeriske felter, vil der ikke v&aelig;re adgang til yderligere statistik.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Tilføj statistik fra det lag, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du har valgt et lag, der skal summeres, kan du v&aelig;lge at beregne statistikker for eventuelle numeriske attributter best&aring;ende af punkter, linjer eller omr&aring;der i n&aelig;rheden. 
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Den samlede v&aelig;rdi for det angivne felt
+                </li>
+                <li> <b>Gennemsnit</b> &ndash; Gennemsnittet eller middelv&aelig;rdien for det angivne felt
+                </li>
+                <li> <b>Minimum</b> &ndash; Den mindste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste v&aelig;rdi i det angivne felt
+                </li>
+                <li> <b>Std. Afvigelse</b> &ndash; Standardafvigelsen for v&aelig;rdier i det angivne felt
+                </li>
+            </ul>
+            
+            <p>Afh&aelig;ngigt af de objekttyper, du summerer, kan du beregne det samlede antal punkter i n&aelig;rheden, den samlede l&aelig;ngde af linjer i n&aelig;rheden eller det samlede areal af omr&aring;deobjekter i n&aelig;rheden.
+            </p>
+            <p>Hvis det lag, der skal summeres, ikke har nogen numeriske felter, vil der ikke v&aelig;re adgang til yderligere statistik.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Vælg felt at gruppere efter</h2></div>
+        <hr/>
+        <div>
+            <p> Dette er en attribut for objekter i n&aelig;rheden, som du kan bruge til at beregne separate statistikker for hver entydig attributv&aelig;rdi. Lad os f.eks. antage, at dit f&oslash;rste inputlag (det lag, hvorfra afstandene m&aring;les) indeholder ledige jordparceller, der er til salg, og dine objekter i n&aelig;rheden er &rdquo;aftryk&rdquo; af bygninger. En af attributterne for &rdquo;fodaftryk&rdquo; for bygninger er <i>UseType</i>, som indeholder v&aelig;rdier som f.eks. BUTIK, BEBOELSE, PRODUKTION, OFFENTLIG osv. Hvis du vil karakterisere blandingen af bygningsanvendelser i n&aelig;rheden af hver enkelt ledig parcel, kan du beregne det samlede areal for hver entydig type af bygningsanvendelse inden for to kilometer fra de ledige parceller ved at bruge <i>UseType</i> som grupp&eacute;r efter-attribut. Statistikkerne for de enkelte grupper tillige med antallet af objekter i n&aelig;rheden vises i pop-up'en med resultatlaget.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tilføj minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter. V&aelig;lg   <b>Tilf&oslash;j minoritet/majoritet</b>, hvis du vil vide, hvilke attributv&aelig;rdier i hver gruppe, der er minoriteten (mindst dominante) eller majoriteten (mest dominante), inden for den afstand eller tid, du har defineret. Der f&oslash;jes to nye felter til dit resultatlag, n&aring;r du v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>. Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j procentdele</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+            <ul>
+                <li>Hvis du opsummerer punkter i n&aelig;rheden, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af antal punkter inden for den afstand og tid, du har defineret.
+                </li>
+                <li>Hvis du opsummerer linjer i n&aelig;rheden, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af l&aelig;ngden af linjer inden for den afstand og tid, du har defineret.  
+                </li>
+                <li>Hvis du opsummerer omr&aring;der i n&aelig;rheden, beregnes v&aelig;rdier for minoritet og majoritet p&aring; basis af omr&aring;der inden for den afstand og tid, du har defineret.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Tilføj procentdele</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter. V&aelig;lg  <b>Tilf&oslash;j procentdele</b>, hvis du vil finde procentdelen af hver attributv&aelig;rdi i hver gruppe. Der f&oslash;jes et nyt felt til resultattabellen, der indeholder procentdelen af hver attributv&aelig;rdi inden for hver gruppe. Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

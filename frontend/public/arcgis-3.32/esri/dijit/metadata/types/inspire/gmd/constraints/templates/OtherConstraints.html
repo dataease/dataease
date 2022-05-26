@@ -1,0 +1,50 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'gmd:otherConstraints',minOccurs:1,maxOccurs:'unbounded',
+      label:'${i18nIso.MD_LegalConstraints.otherConstraints}'">
+    <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+      data-dojo-props="target:'gco:CharacterString'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputSelectOne">
+        <div data-dojo-type="esri/dijit/metadata/form/Options">
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'',value:''"></div>
+            
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.noLimitations}',
+              value:'no limitations'"></div>      
+
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.confidentialityOfProceedings}',
+              value:'(a) the confidentiality of the proceedings of public authorities,where such confidentiality is provided for by law;'"></div>      
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.internationalRelations}',
+              value:'(b) international relations, public security or national defence;'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.courseOfJustice}',
+              value:'(c) the course of justice, the ability of any person to receive a fair trial or the ability of a public authority to conduct an enquiry of a criminal or disciplinary nature;'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.confidentialityOfCommercial}',
+              value:'(d) the confidentiality of commercial or industrial information, where such confidentiality is provided for by national or Community   law to protect a legitimate economic interest, including the public interest in maintaining statistical confidentiality and tax secrecy;'"></div>      
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.intellectualProperty}',
+              value:'(e) intellectual property rights;'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.confidentialityOfPersonalData}',
+              value:'(f) the confidentiality of personal data and/or files relating to a natural person where that person has not consented to the disclosure of the information to the public, where such confidentiality is provided for by national or Community law;'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.interestsOrProtection}',
+              value:'(g) the interests or protection of any person who supplied the information requested on a voluntary basis without being under, or capable of being put under, a legal obligation to do so, unless that person has consented to the release of the information concerned;'"></div>      
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.protectionOfEnvironment}',
+              value:'(h) the protection of the environment to which such information relates, such as the location of rare species.'"></div>                                          
+
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nInspire.otherConstraints.freeText}',
+              value:'_other_',isOther:true"></div>                        
+        </div>
+      </div>
+    </div>
+  </div>
+      
+</div>

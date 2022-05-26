@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Déduire l'exposition</h2><p/>
+        <h2><img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" alt="Outil D&eacute;duire l'exposition pour le portail"></h2>
+        <hr/>
+    <p>Cet outil cr&eacute;e une carte d'exposition &agrave; partir d'une source de donn&eacute;es d'altitude. L'exposition identifie la direction de pente descendante du taux de variation maximal des valeurs de chaque cellule par rapport aux cellules voisines. L'exposition peut &ecirc;tre assimil&eacute;e &agrave; la direction de la pente. Les valeurs du raster en sortie sont la direction au compas de l'exposition.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Données en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>La couche d'altitude pour laquelle l'exposition de chaque emplacement de cellule va &ecirc;tre calcul&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Overlay Layers</h2><p/>
+        <h2><img src="./images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Overlay Layers"></h2>
+        <hr/>
+    <p>Overlay Layers combines two or more layers into one layer.  You can think of overlay as peering through a stack of maps and creating a single map containing all the information found in the stack.   
+ Overlay is more than a merging of line
+work; all the attributes of the features in the overlay
+are included in the final product. Overlay is used to answer one of the most basic questions of geography: What is on top of what? 
+    </p>
+    <p>The following are examples:
+        <ul>
+            <li>What parcels are within the 100-year floodplain? (Within is another way of saying on top of.)
+                  
+            </li>
+            <li>What land use is on top of what soil type?
+                 
+            </li>
+            <li>What wells are within abandoned military bases?
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input and overlay layers that are visible within the current map extent will be overlaid.  If it is not checked, all features in both the input layer and the overlay layer will be overlaid, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose input layer</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer that will be overlaid.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Choose overlay layer</h2></div>
+        <hr/>
+        <div>
+            <p>The layer to be overlaid on the input layer.  
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Choose overlay method</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the overlay method that will combine the input layer and the overlay layer .  
+
+
+
+
+
+
+
+                <ul>
+                    <li> <b>Intersect</b>&mdash;Only those features or portions of features in the overlay layer that overlap  with features in the input layer will be combined.
+                    </li>
+                    <li> <b>Erase</b>&mdash;Features or portions of features in the overlay layer that do not overlap with the areas in the input layer will be combined.
+                    </li>
+                    <li> <b>Union</b>&mdash;All features from both layers will be combined, creating  a geometric union of the  input layer and  overlay layer.  All features and their attributes will be
+written to the layer.
+                    </li>
+                    <li> <b>Identity</b>&mdash;Features or portions of features in the input layer and overlay layer will be combined. Features or portions of features that overlap in both the input layer and overlay layer will be written to the output layer.
+                    </li>
+                    <li> <b>Symmetrical Difference</b>&mdash;Features or portions of features of the input layer and the overlay layer that do not overlap will be combined.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map.  It will have the same feature type (areas, lines, or points) as the input and overlay layers.  The default  name is based on the overlay method and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

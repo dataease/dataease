@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>값 재배치(Remap Values)</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="포털용 값 재배치 도구"></h2>
+        <hr/>
+    <p>이 도구를 사용하면 래스터 데이터의 픽셀 값을 변경하거나 재분류할 수 있습니다. 픽셀 값은 결과 픽셀 값에 매핑될 픽셀 값의 범위를 지정함으로써 재배치됩니다. 결과 픽셀 값은 올바른 값 또는 NoData 값(알려진 연관된 값이 없는 픽셀)일 수 있습니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 셀만 재배치됩니다. 선택하지 않으면 현재 맵 범위 외부에 있더라도 래스터의 모든 셀이 처리됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>입력 데이터</h2></div>
+        <hr/>
+        <div>
+            <p>해당 값이 재배치되는 입력 데이터입니다.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>픽셀 값을 새 값으로 재배치</h2></div>
+        <hr/>
+        <div>
+            <p>최소값과 최대값을 지정하여 값의 범위를 입력한 다음 결과 값이나 NoData 값을 지정된 범위에 할당합니다.
+            </p>
+            <p>새 범위의 값을 재배치하려면  <b>추가</b>를 클릭하여 행을 추가합니다. 각 값을 클릭하여 원하는 범위와 재배치된 값으로 테이블을 편집합니다. 값 범위를 지정할 때는 다음과 같은 중요한 규칙 2가지를 적용해야 합니다.
+                <ul>
+                    <li>범위의 최소값은 포함 값이며 최대값은 제외 값입니다.
+                    </li>
+                    <li>테이블의 행은 맨 위부터 맨 아래 순서로 처리됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>최소값은 결과 내에 포함되지만 최대 값은 포함되지 않음이 아래의 테이블에 나와 있습니다.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>테이블에 지정된 범위의 순서도 중요합니다. 테이블의 맨 위 행이 먼저 처리된 후에 아래 행이 처리됩니다. 아래의 두 테이블에서는 동일한 값 범위가 테이블 행의 순서로 인해 어떻게 다른 결과를 생성하는지를 보여줍니다.
+            </p> 
+            <p>아래 테이블은 첫 번째 열이 숫자로 정렬될 때의 결과 값을 나타냅니다.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>아래 테이블은 행의 순서가 다를 때 생성되는 다른 결과 값을 나타냅니다.
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>두 가지 규칙 모두가 값의 순서를 다시 정하는데 적용됩니다. 각 행은 맨 위부터 맨 아래 순서로 처리되므로 동일한 범위가 사용되더라도 결과를 결정할 때 이러한 값이 우선 적용됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

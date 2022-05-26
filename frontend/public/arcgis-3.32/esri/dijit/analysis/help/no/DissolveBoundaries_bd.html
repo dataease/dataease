@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Visk ut grenser</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Visk ut grenser"></h2>
+        <hr/>
+    <p>Polygoner som overlapper eller har en felles grense eller attributtverdi, sl&aring;s sammen til et enkelt omr&aring;de.
+    </p>
+    <p>Du kan kontrollere hvilke grenser som sl&aring;s sammen, ved &aring; angi et felt. Hvis du for eksempel har et lag med fylker, og hvert fylke har et  <pre>State_Name</pre>-attributt, kan du viske ut grensene ved hjelp av <pre>State_Name</pre>-attributtet. Fylker blir sl&aring;tt sammen hvis de har samme <pre>State_Name</pre>-verdi.  Resultatet blir et lag med delstatsgrenser.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg polygonlaget du vil viske ut grenser i</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som inneholder polygongrenser som skal vises ut. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Velg oppløsningsmetode</h2></div>
+        <hr/>
+        <div>
+            <p>Angir metoden som brukes til &aring; viske ut feltene.
+            </p>
+            <p>Du kan sl&aring; sammen polygoner p&aring; to m&aring;ter:
+                <ul>
+                    <li> <b>Polygoner som overlapper eller har felles grense</b> &ndash; To eller flere polygoner som har overlappende grenser, sl&aring;s sammen til ett omr&aring;de. I tillegg blir polygoner som ligger inntil hverandre (det vil si at de har felles grense), sl&aring;tt sammen til ett omr&aring;de.
+                    </li>
+                    <li> <b>Polygoner med samme feltverdi</b> &ndash;&nbsp;To eller flere polygoner sl&aring;s sammen til &eacute;n hvis de har samme feltverdi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Opprett geoobjekter i flere deler</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjekter med flere deler er en visning av et sted eller en ting som har mer enn &eacute;n del, men er definert som ett geoobjekt fordi det henviser til ett sett med attributter. I et lag med delstater kan for eksempel Hawaii betraktes som et geoobjekt med flere deler, fordi dens separate geometriske deler er klassifisert som en enkelt stat.
+            </p>
+            <p> <b>Opprett geoobjekter i flere deler</b> tilbyr to alternativer:
+                <ul>
+                    <li>Sant (avmerket) &ndash;&nbsp;Utdatatjenesten kan inneholde geoobjekter med flere deler.
+                    </li>
+                    <li>Usant (ikke avmerket) &ndash;&nbsp;Utdatatjenesten inneholder kun geoobjekter med &eacute;n del, og det opprettes individuelle geoobjekter for hver del. Dette er standardalternativet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Legg til statistikk (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r polygoner sl&aring;s sammen, kan du summere attributtverdiene deres med relevant statistikk. Hvis du for eksempel visker ut grensen mellom fylker basert p&aring;  <pre>State_Name</pre>, og hvert fylke har et <i>Population</i>-felt, kan du beregne statens totale <pre>Population</pre>.
+            </p>
+            <p> Du kan beregne statistikk p&aring; geoobjekter som er summert. Du kan beregne f&oslash;lgende p&aring; numeriske felt:
+                <ul>
+                    <li>Antall&nbsp;&ndash; Beregner antall verdier som ikke er null. Det kan brukes p&aring; numeriske felt eller strenger. Antallet for [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen av numeriske verdier i et felt. Summen av [null, null, 3] er 3.
+                    </li>
+                    <li>Gjennomsnitt &ndash; Gjennomsnittet for numeriske verdier. Gjennomsnittet av [0, 2, null] er 1.
+                    </li>
+                    <li>Min &ndash; Minimumsverdien for et numerisk felt. Minimum av [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks &ndash; Maksimumsverdien for et numerisk felt. Maksimumsverdien for [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Beregnes som den maksimale verdien minus minimumsverdien. Omr&aring;det av [0, null, 1] er 1. Omr&aring;det av [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen for et numerisk felt i et spor. Variansen for [1] er null. Variansen for [null, 1,0,1,1] er 0,25.
+                    </li>
+                    <li>Standardavvik &ndash; Standardavviket for et numerisk felt. Standardavviket for [1] er null. Standardavviket for [null, 1,0,1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan beregne f&oslash;lgende p&aring; strengfelter:
+                <ul>
+                    <li>Antall &ndash; Antallet strenger som ikke er null.
+                    </li>
+                    <li>Noen &ndash; Denne statistikken er en tilfeldig pr&oslash;ve av en strengverdi i det spesifiserte feltet.
+                    </li>
+                </ul>
+                All statistikk beregnes p&aring; ikke-nullverdier. Resultatlaget inneholder et nytt felt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og statistikk. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

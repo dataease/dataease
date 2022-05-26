@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Combiner les couches</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Combiner les couches"></h2>
+        <hr/>
+    <p>Cet outil combine deux couches d&rsquo;entit&eacute;s pour cr&eacute;er une seule couche en sortie. Les couches &agrave; combiner doivent avoir le m&ecirc;me type de g&eacute;om&eacute;trie et le m&ecirc;me type temporel. Vous pouvez d&eacute;terminer la mani&egrave;re dont les champs des couches en entr&eacute;e sont rassembl&eacute;s et copi&eacute;s. Par exemple&nbsp;:
+        <ul>
+            <li>Vous disposez de trois couches pour l'Angleterre, le pays de Galles et l'Ecosse et vous souhaitez une seule couche pour la Grande-Bretagne. 
+            </li>
+            <li>Vous disposez de 2&nbsp;couches et chacune contient des informations sur les parcelles des cantons contigus. Vous souhaitez les rassembler en une seule couche en ne conservant que les champs qui portent le m&ecirc;me nom et qui ont le m&ecirc;me type sur les 2&nbsp;couches en entr&eacute;e.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir une couche</h2></div>
+        <hr/>
+        <div>
+            <p>Couche contenant des entit&eacute;s tabulaires, ponctuelles, lin&eacute;aires ou surfaciques avec laquelle la deuxi&egrave;me couche d&rsquo;entit&eacute;s sera fusionn&eacute;e. Seuls les champs de cette couche seront inclus dans la couche de r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Choisir la couche à fusionner</h2></div>
+        <hr/>
+        <div>
+            <p>Couche d&rsquo;entit&eacute;s &agrave; fusionner avec la couche en entr&eacute;e. La couche &agrave; fusionner doit poss&eacute;der le m&ecirc;me type de g&eacute;om&eacute;trie et le m&ecirc;me type temporel que la couche en entr&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Modifier les champs en fusion</h2></div>
+        <hr/>
+        <div>
+            <p>Par d&eacute;faut, tous les champs des deux couches en entr&eacute;e seront inclus dans la sortie. Vous pouvez modifier la mani&egrave;re dont les champs issus de la couche &agrave; fusionner seront inclus dans la sortie par le biais des options suivantes&nbsp;:
+                <ul>
+                    <li> <b>Renommer</b>&nbsp;: le champ est renomm&eacute; dans la sortie.
+                    </li>
+                    <li> <b>Supprimer</b>&nbsp;: le champ est supprim&eacute; de la sortie.
+                    </li>
+                    <li> <b>Apparier</b>&nbsp;: les noms de champs sont rendus &eacute;quivalents.  Les valeurs du champ de la couche &agrave; combiner sont alors copi&eacute;es dans le champ en sortie appari&eacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si les deux couches contiennent un champ de nom et de type de donn&eacute;es identiques, leur contenu est fusionn&eacute; en un m&ecirc;me champ de ce nom. Cela ne s&rsquo;applique pas aux champs o&ugrave;  <b>Apparier</b> est utilis&eacute; dans le param&egrave;tre <b>Modifier les champs en fusion</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

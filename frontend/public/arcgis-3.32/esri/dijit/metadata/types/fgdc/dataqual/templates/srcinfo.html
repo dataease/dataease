@@ -1,0 +1,87 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'srcinfo',minOccurs:0,maxOccurs:'unbounded',
+      label:'${i18nFgdc.dataqual.srcinfo.caption}'">
+      
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'srccite',showHeader:false,">
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/citeinfo/citeinfo"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'srcscale',minOccurs:0,
+        label:'${i18nFgdc.dataqual.srcinfo.srcscale}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+        data-dojo-props="integerOnly:true,minValue:1,minValueIsExclusive:true,
+          hint:'${i18nFgdc.hints.integerGreaterThanOne}'"></div>  
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'typesrc',
+        label:'${i18nFgdc.dataqual.srcinfo.typesrc.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputSelectOne">
+        <div data-dojo-type="esri/dijit/metadata/form/Options">
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'',value:''"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'paper',label:'${i18nFgdc.dataqual.srcinfo.typesrc.paper}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'stable-base material',label:'${i18nFgdc.dataqual.srcinfo.typesrc.stableBaseMaterial}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'microfiche',label:'${i18nFgdc.dataqual.srcinfo.typesrc.microfiche}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'microfilm',label:'${i18nFgdc.dataqual.srcinfo.typesrc.microfilm}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'audiocassette',label:'${i18nFgdc.dataqual.srcinfo.typesrc.audiocassette}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'chart',label:'${i18nFgdc.dataqual.srcinfo.typesrc.chart}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'filmstrip',label:'${i18nFgdc.dataqual.srcinfo.typesrc.filmstrip}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'transparency',label:'${i18nFgdc.dataqual.srcinfo.typesrc.transparency}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'videocassette',label:'${i18nFgdc.dataqual.srcinfo.typesrc.videocassette}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'videodisc',label:'${i18nFgdc.dataqual.srcinfo.typesrc.videodisc}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'videotape',label:'${i18nFgdc.dataqual.srcinfo.typesrc.videotape}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'physical model',label:'${i18nFgdc.dataqual.srcinfo.typesrc.physicalModel}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'computer program',label:'${i18nFgdc.dataqual.srcinfo.typesrc.computerProgram}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'disc',label:'${i18nFgdc.dataqual.srcinfo.typesrc.disc}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'cartridge tape',label:'${i18nFgdc.dataqual.srcinfo.typesrc.cartridgeTape}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'magnetic tape',label:'${i18nFgdc.dataqual.srcinfo.typesrc.magneticTape}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'online',label:'${i18nFgdc.dataqual.srcinfo.typesrc.online}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'CD-ROM',label:'${i18nFgdc.dataqual.srcinfo.typesrc.cdrom}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'electronic bulletin board',label:'${i18nFgdc.dataqual.srcinfo.typesrc.electronicBulletinBoard}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option" data-dojo-props="value:'electronic mail system',label:'${i18nFgdc.dataqual.srcinfo.typesrc.electronicMailSystem}'"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.alternates.other}',value:'_other',isOther:true"></div>  
+        </div>            
+      </div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'srctime',label:'${i18nFgdc.dataqual.srcinfo.srctime}'">  
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/timeinfo/timeinfo"></div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'srccurr',
+          label:'${i18nFgdc.dataqual.srcinfo.srccurr}'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputSelectOne">
+          <div data-dojo-type="esri/dijit/metadata/form/Options">
+            <div data-dojo-type="esri/dijit/metadata/form/Option"
+              data-dojo-props="label:'',value:''"></div>
+            <div data-dojo-type="esri/dijit/metadata/form/Option"
+              data-dojo-props="label:'${i18nFgdc.idinfo.timeperd.current.groundCondition}',value:'ground condition'"></div>  
+            <div data-dojo-type="esri/dijit/metadata/form/Option"
+              data-dojo-props="label:'${i18nFgdc.idinfo.timeperd.current.publicationDate}',value:'publication date'"></div>  
+            <div data-dojo-type="esri/dijit/metadata/form/Option"
+              data-dojo-props="label:'${i18nFgdc.alternates.other}',value:'_other',isOther:true"></div>  
+          </div>            
+        </div>
+      </div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'srccitea',
+        label:'${i18nFgdc.dataqual.srcinfo.srccitea}'">
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'srccontr',
+        label:'${i18nFgdc.dataqual.srcinfo.srccontr}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>
+
+  </div>
+  
+</div>

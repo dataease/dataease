@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>合并图层</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="合并图层"></h2>
+        <hr/>
+    <p>此工具可合并两个要素图层以创建一个输出图层。要合并的图层必须具有相同的几何类型和时间类型。您可以控制输入图层中各字段的连接和复制方式。例如：
+        <ul>
+            <li>有三个图层分别对应英格兰、威尔士和苏格兰，我希望使用一个图层来代表大不列颠。
+            </li>
+            <li>我有 2 个图层，每个图层包含相邻镇区的宗地信息。我希望将它们合并成单个图层，只保留这 2 个输入图层中名称和类型相同的字段。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择图层</h2></div>
+        <hr/>
+        <div>
+            <p>具有表格、点、线或区域要素的图层，第二个要素图层将合并到此图层中。此图层中的所有字段都将包含在结果图层中。
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>选择合并图层</h2></div>
+        <hr/>
+        <div>
+            <p>要与输入图层合并的要素图层。要合并的图层必须包含与输入图层相同的几何类型和时间类型。
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>修改合并字段</h2></div>
+        <hr/>
+        <div>
+            <p>默认情况下，两个输入图层的所有字段都将包含在输出中。您可以使用以下选项更改要合并图层中的字段以何种方式包含在输出中：
+                <ul>
+                    <li> <b>重命名</b> - 字段将在输出中重命名。
+                    </li>
+                    <li> <b>移除</b> - 字段将从输出中移除。
+                    </li>
+                    <li> <b>匹配</b> - 字段名保持不变。待合并图层的字段值将复制到匹配的输出字段。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果两个图层包含的名称和数据类型相同，则两个字段的内容将合并为采用该名称的一个字段。但是如果 <b>修改合并字段</b>参数中使用的是 <b>匹配</b>，则不适用于这一点。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

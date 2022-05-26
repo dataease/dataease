@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>テーブルから場所をジオコーディング</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="テーブルにある場所をジオコーディング"></h2>
+        <hr/>
+    <p>ジオコーディングは、住所を座標に変換します。このツールは、ビッグ データ ファイル共有テーブルの住所を、座標を列として追加したフィーチャ レイヤーに変換します。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>入力テーブルの選択</h2></div>
+        <hr/>
+        <div>
+            <p>ジオコーディングされる住所がある入力テーブル。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>ロケーターの選択</h2></div>
+        <hr/>
+        <div>
+            <p>ジオコーディングに使用するロケーター サービスを選択します。使用するロケーター サービスがドロップダウン メニューにない場合は、管理者に連絡してロケーター サービスをバッチ ジオコーディング用に構成してください。
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Country</h2></div>
+        <hr/>
+        <div>
+            <p>すべての住所が 1 つの国の住所である場合、最も正確な結果を得るためにその国を選択します。それ以外の場合は、このパラメーターは空のままにしておきます。
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>データ フィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>ロケーター サービスには、住所、都市、州、郵便番号など、データ内に特定のフィールドが必要です。ドロップダウン ボックスを使用して、入力ファイルまたはテーブル内のデータ フィールドを、ロケーターに必要なフィールドと照合します。マッピングするフィールドが多いほど、結果が正確になります。入力テーブルのすべてのデータが 1 つの列にある場合、 <b>[単一フィールド]</b> を選択し、ドロップダウン メニューからデータ フィールドを選択します。それ以外の場合は、 <b>[複数フィールド]</b> を選択し、適切なロケーター フィールドをテーブル内の複数のフィールド列にマッピングします。
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>各位置に対して</h2></div>
+        <hr/>
+        <div>
+            <p>ロケーター サービスから返された追加のフィールドを含めます。このオプションをオンにすると、ロケーターで作成されたすべてのフィールドが返されます。このオプションをオフにすると、ジオコーディングされた座標を使用して入力データが返されます。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>出力結果名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

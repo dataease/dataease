@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissol els límits</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissol els l&iacute;mits"></h2>
+        <hr/>
+    <p>Les &agrave;rees que se superposen o comparteixen un l&iacute;mit com&uacute; es fusionen per formar una sola &agrave;rea.    
+    </p>
+    <p>Podeu especificar un camp per controlar quins l&iacute;mits es fusionen. Per exemple, si teniu una capa de comtats i cada comtat t&eacute; un atribut  <i>State_Name</i>, podeu dissoldre els l&iacute;mits mitjan&ccedil;ant l'atribut <i>State_Name</i>.  Els comtats adjacents es fusionaran si tenen el mateix valor de <i>State_Name</i>.  El resultat final &eacute;s una capa de l&iacute;mits d'estat.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa d'àrees de la qual es dissoldran els límits</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; les entitats d'&agrave;rees que es dissoldran. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Trieu el mètode de dissolució</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu triar entre dos m&egrave;todes per fusionar les entitats d'&agrave;rees:
+                <ul>
+                    <li> <b>&Agrave;rees superposades o adjacents</b>: quan hi ha dues o m&eacute;s &agrave;rees amb l&iacute;mits que se superposen, es fusionaran en una sola &agrave;rea.  Les &agrave;rees adjacents (&eacute;s a dir, les que comparteixen un l&iacute;mit) tamb&eacute; es fusionaran en una sola &agrave;rea.
+                    </li>
+                    <li> <b>&Agrave;rees amb el mateix valor de camp</b>: les &agrave;rees que se superposen o comparteixen un l&iacute;mit es fusionaran en una sola &agrave;rea si tenen el mateix valor de camp.
+                        <p>Per exemple, si teniu una capa de comtats i cada comtat t&eacute; un camp  <i>State_Name</i>, podeu dissoldre els l&iacute;mits mitjan&ccedil;ant el camp <i>State_Name</i>.  Els comtats adjacents es fusionaran si tenen el mateix valor de <i>State_Name</i>.  El resultat final &eacute;s una capa de l&iacute;mits d'estat.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, les entitats de la capa d'entrada que siguin visibles dins de l'extensi&oacute; del mapa actual seran les &uacute;niques que es dissoldran.  Si l'opci&oacute; est&agrave; desactivada, es dissoldran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Crea entitats multipart</h2></div>
+        <hr/>
+        <div>
+            <p>A l'ArcGIS, representaci&oacute; digital d'un lloc o una cosa que t&eacute; m&eacute;s d'una part, per&ograve; que es defineix com una sola entitat perqu&egrave; fa refer&egrave;ncia a un conjunt d'atributs. En una capa d'estats, per exemple, l'estat de Hawai podria considerar-se una entitat multipart perqu&egrave; les seves parts geom&egrave;triques individuals estan classificades com a un &uacute;nic estat. Aquest par&agrave;metre boole&agrave; ofereix dues opcions:
+                <ul>
+                    <li>Cert (activat): el servei de sortida pot contenir entitats multipart.
+                    </li>
+                    <li>Fals (desactivat): el servei de sortida nom&eacute;s contindr&agrave; entitats d'una part i es crearan entitats individuals per a cada part.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Afegeix una estadística</h2></div>
+        <hr/>
+        <div>
+            <p>Quan es fusionen &agrave;rees, podeu resumir-ne els atributs.  Per exemple, si dissoleu els l&iacute;mits entre comtats en funci&oacute; de l'element  <i>State_Name</i> i cada comtat t&eacute; un camp <i>Population</i>, podeu calcular la suma de <i>Population</i> de l'estat.
+            </p>
+            <p>Els tipus d'estad&iacute;stiques disponibles s&oacute;n:
+            </p>
+            <ul>
+                <li> <b>Suma</b>: afegeix el valor total del camp especificat
+                    
+
+                </li>
+                <li> <b>Mitjana</b>: calcula la mitjana del camp especificat
+                    
+
+                </li>
+                <li> <b>M&iacute;nim</b>: cerca el valor m&eacute;s petit de tots els registres del camp especificat
+                    
+
+                </li>
+                <li> <b>M&agrave;xim</b>: cerca el valor m&eacute;s gran de tots els registres del camp especificat
+                    
+
+                </li>
+                <li> <b>Desviaci&oacute; est&agrave;ndard</b>: cerca la desviaci&oacute; est&agrave;ndard dels valors del camp especificat
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

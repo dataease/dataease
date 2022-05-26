@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Report Player Sample for JS API</title>
+
+    <link href="https://jsdev.arcgis.com/3.29/dijit/themes/claro/claro.css" rel="stylesheet" />
+    <link href="https://jsdev.arcgis.com/3.29/esri/css/esri.css" rel="stylesheet" />
+    <script src="https://jsdev.arcgis.com/3.29/"></script>
+
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            font-size: 13px;
+            font-family: "Avenir Next";
+        }
+
+        .topToolbar {
+            background-color: #EEEEEE;
+            border-bottom: 1px solid #b2b2b2;
+            padding: 10px;
+        }
+
+        .topToolbarLabel {
+            margin-right: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .topToolbarRadiusInput {
+            height: 23px;
+            width: 50px;
+            border: 1px solid #b2b2b2;
+            margin-right: 20px;
+        }
+
+        .topToolbarItem {
+            margin-right: 50px;
+        }
+
+            .topToolbarItem div {
+                vertical-align: top;
+            }
+
+        #mapDiv {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            right: 0px;
+        }
+    </style>
+
+    <script>
+
+        require(["require", "esri/dijit/geoenrichment/nlsFix"],
+            function (relativeRequire, nlsFix) {
+                nlsFix.load(null, relativeRequire);
+
+                require([
+                    "dojo/on",
+
+                    "esri/kernel",
+                    "esri/map",
+                    "esri/graphic",
+                    "esri/layers/GraphicsLayer",
+
+                    "esri/dijit/geoenrichment/OnDemandSelect",
+
+                    "esri/dijit/geoenrichment/ReportPlayer/dataProvider/supportClasses/StandardGraphicReportTemplates",
+                    "esri/dijit/geoenrichment/ReportPlayer/dataProvider/supportClasses/tasks/EnrichAreasTask",
+                    "esri/dijit/geoenrichment/ReportPlayer/dataProvider/supportClasses/GEUtil",
+                    "esri/dijit/geoenrichment/utils/signIn/SignInHelper",
+                    "esri/dijit/geoenrichment/utils/FileUtil",
+                    "esri/dijit/geoenrichment/utils/UrlUtil",
+                    "esri/dijit/geoenrichment/utils/WaitingUtil",
+                    "dojo/domReady!"
+                ],
+               function (
+                   on,
+
+                   esriNS,
+                   Map,
+                   Graphic,
+                   GraphicsLayer,
+
+                   OnDemandSelect,
+
+                   StandardGraphicReportTemplates,
+                   EnrichAreasTask,
+                   GEUtil,
+                   SignInHelper,
+                   FileUtil,
+                   UrlUtil,
+                   WaitingUtil
+                   ) {
+
+                   var DEFAULTS_PROD = {
+                       appId: "busanalystonline_2",
+                       portalUrl: "https://www.arcgis.com",
+                       geoenrichmentUrl: "https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
+                       countryID: "US"
+                   };
+
+                   var DEFAULTS_QA = {
+                       appId: "busanalystonline_2",
+                       portalUrl: "https://qaext.arcgis.com",
+                       geoenrichmentUrl: "https://ec2-52-21-196-36.compute-1.amazonaws.com/arcgis/rest/services/World/GeoEnrichmentServer",
+                       countryID: "US"
+                   };
+
+                   var DEFAULTS_DEV = {
+                       appId: "busanalystonline_2",
+                       portalUrl: "https://devext.arcgis.com",
+                       geoenrichmentUrl: "https://geoenrichdev.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
+                       countryID: "US"
+                   };
+
+                   var DEFAULTS = DEFAULTS_QA;
+
+                   function getUrlVar(name) {
+                       var href = window.location.href;
+                       return UrlUtil.getVariableValue(href, name) || DEFAULTS[name];
+                   };
+
+                   topToolbarHelperText.innerHTML = "Select a template, then click a feature or shift-drag to select multiple features on the map to open an infographic.";
+
+                   SignInHelper.signIn({
+                       portalUrl: getUrlVar("portalUrl"),
+                       appId: getUrlVar("appId"),
+                       callback: function () {
+
+                           //--------------------------------------------------------------------------
+                           //
+                           //  Top Toolbar
+                           //
+                           //--------------------------------------------------------------------------
+
+                           var templateSelector = new OnDemandSelect({
+                               listClass: "esriGEOnDemandSelectUnlimitedTallList esriGEOnDemandSelectSpacedOut",
+                               value: StandardGraphicReportTemplates.aliasToID(getUrlVar("countryID"), "key-facts"),
+                               options: StandardGraphicReportTemplates.getListOptions(getUrlVar("countryID"))
+                           }).placeAt(templateSelectorDiv);
+
+                           var formatSelector = new OnDemandSelect({
+                               listClass: "esriGEOnDemandSelectSpacedOut",
+                               value: "pdf",
+                               options: [
+                                   { value: "pdf", label: "PDF" },
+                                   { value: "html", label: "HTML" }
+                               ]
+                           }).placeAt(formatSelectorDiv);
+
+                           //--------------------------------------------------------------------------
+                           //
+                           //  Map
+                           //
+                           //--------------------------------------------------------------------------
+
+                           mapDiv.style.top = topToolbarDiv.clientHeight + 1 + "px";
+
+                           on(window, "resize", function () {
+                               mapDiv.style.top = topToolbarDiv.clientHeight + 1 + "px";
+                           });
+
+                           var map = new Map("mapDiv", {
+                               basemap: "streets",
+                               center: [-117.15, 32.68], // longitude, latitude
+                               zoom: 12
+                           });
+                           map.on("load", function () {
+                               var graphicsLayer = new GraphicsLayer();
+                               map.addLayer(graphicsLayer);
+
+                               on(map, "click", function (event) {
+                                   graphicsLayer.clear();
+
+                                   var task = new EnrichAreasTask();
+                                   GEUtil.setGeoenrichmentUrl(getUrlVar("geoenrichmentUrl"), esriNS.id.credentials[0].token);
+
+                                   var radii = [];
+                                   radius1Input.value && radii.push(parseFloat(radius1Input.value));
+                                   radius2Input.value && radii.push(parseFloat(radius2Input.value));
+                                   radius3Input.value && radii.push(parseFloat(radius3Input.value));
+
+                                   WaitingUtil.showProgressPromise(document.body, task.createFeaturesForBuffer(
+                                       {
+                                           point: event.mapPoint,
+                                           radii: radii
+                                       }, {})).then(function (graphics) {
+
+                                           // Add feature on the map
+
+                                           function getSymbol() {
+                                               return {
+                                                   "type": "esriSFS",
+                                                   "style": "esriSFSSolid",
+                                                   "color": [255, 0, 0, 100],
+                                                   "outline": {
+                                                       "type": "esriSLS",
+                                                       "style": "esriSLSSolid",
+                                                       "color": [255, 0, 0, 255]
+                                                   }
+                                               }
+                                           };
+
+                                           graphics.forEach(function (g) {
+                                               graphicsLayer.add(new Graphic({
+                                                   geometry: g.geometry.toJson(),
+                                                   symbol: getSymbol()
+                                               }));
+                                           });
+
+                                           // Run Infographic
+
+                                           return runInfographic(graphics);
+                                       });
+                               });
+                           });
+
+                           //--------------------------------------------------------------------------
+                           //
+                           //  Run Infographic
+                           //
+                           //--------------------------------------------------------------------------
+
+                           function runInfographic(graphics) {
+                               var reportID = templateSelector.get("value");
+                               var format = formatSelector.get("value");
+
+                               var task = new EnrichAreasTask();
+
+                               var taskParams = {
+                                   f: "bin",
+                                   format: format,
+                                   reportfields: {},
+                                   useData: {
+                                       sourceCountry: getUrlVar("countryID"),
+                                       hierarchy: "census"
+                                   },
+                                   forStorage: false,
+                                   studyAreas: graphics.map(function (g) {
+                                       return {
+                                           attributes: g.attributes,
+                                           geometry: g.geometry.toJson()
+                                       };
+                                   }),
+                                   report: {
+                                       itemid: reportID,
+                                       url: getUrlVar("portalUrl"),
+                                       token: esriNS.id.credentials[0].token
+                                   }
+                               };
+
+                               return GEUtil.createReport(taskParams).then(function (result) {
+                                   FileUtil.saveAs(result, templateSelector.getSelectedItem().label + "." + format);
+                               });
+                           };
+                       }
+                   });
+               });
+            });
+    </script>
+</head>
+<body class="claro">
+    <div id="topToolbarDiv" class="topToolbar">
+        <div id="topToolbarHelperText" class="topToolbarLabel"></div>
+        <div class="dijitInline" style="white-space:nowrap;">
+            <div class="dijitInline topToolbarLabel">Template:</div>
+            <div id="templateSelectorDiv" class="dijitInline topToolbarItem"></div>
+        </div>
+        <div class="dijitInline" style="white-space:nowrap;">
+            <div class="dijitInline topToolbarLabel">Select format:</div>
+            <div id="formatSelectorDiv" class="dijitInline topToolbarItem"></div>
+        </div>
+        <div class="dijitInline" style="white-space:nowrap;">
+            <div class="dijitInline topToolbarLabel">Radius 1:</div>
+            <input class="dijitInline topToolbarRadiusInput" id="radius1Input" value="1" />
+            <div class="dijitInline topToolbarLabel">Radius 2:</div>
+            <input class="dijitInline topToolbarRadiusInput" id="radius2Input" />
+            <div class="dijitInline topToolbarLabel">Radius 3:</div>
+            <input class="dijitInline topToolbarRadiusInput" id="radius3Input" />
+        </div>
+    </div>
+    <div id="mapDiv"></div>
+</body>
+</html>

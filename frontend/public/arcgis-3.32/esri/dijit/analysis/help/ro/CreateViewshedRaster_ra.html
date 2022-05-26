@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Creare rază vizuală</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Instrument Creare rază vizuală"></h2>
+        <hr/>
+    <p>Acest instrument identifică zonele pe care un observator le poate vedea, compun&acirc;nd topografia suprafeţei. Locaţiile punctului de intrare poate reprezenta fie observatorii (cum ar fi oameni de la nivelul solului sau din puncte de observaţie situate &icirc;n foişoare de foc) fie obiectele observate (cum ar fi turbine eoliene, turnuri de apă, vehicule sau alţi oameni). Rezultatele definesc zonele care pot fi văzute din locaţiile observatorilor.
+    </p>
+    <p>At&acirc;t observatorii, c&acirc;t şi obiectele observate pot avea o oarecare &icirc;nălţime deasupra nivelul solului, iar această &icirc;nălţime este utilizată pentru stabilirea vizibilităţii. De exemplu, o rază vizuală calculată pentru turbine eoliene de 300 ft şi oameni cu &icirc;nălţimea de 6 ft st&acirc;nd &icirc;n picioare la nivelul solului va fi, de regulă, mai mare dec&acirc;t o rază vizuală calculată pentru turbine eoliene de 200 ft şi oameni cu &icirc;nălţimea de 5 ft.
+    </p>
+    <p>Stratul tematic cu rezultate &icirc;nregistrează de c&acirc;te ori poate fi văzută fiecare locaţie de celulă din rasterul suprafeţei de intrare de către punctele de observare de intrare. Celulele care nu sunt vizibile primesc valoarea NoData.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi analizate doar suprafaţa raster şi punctele de observatoare vizibile din extinderea curentă a hărţii. Dacă nu se bifează, toate punctele de observatoare din stratul tematic introdus vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Suprafaţă elevaţie</h2></div>
+        <hr/>
+        <div>
+            <p>Suprafaţa de elevaţie care va fi utilizată pentru calculul razei vizuale.
+            </p>
+            <p>Dacă unitatea verticală a suprafeţei de intrare este diferită de unitatea orizontală, cum ar fi atunci c&acirc;nd valorile de elevaţie sunt reprezentate &icirc;n ft dar sistemul de coordonate este &icirc;n metri, suprafaţa trebuie să aibă definit un sistem de coordonate verticale. Acest lucru se &icirc;nt&acirc;mplă deoarece instrumentul utilizează unităţile verticale (Z) şi orizontale (XY) pentru a calcula un factor Z pentru analiza razei vizuale. Fără un sistem de coordonate verticale, prin urmare fără informaţii disponibile despre unitatea Z, instrumentul va presupune că unitatea Z este aceeaşi cu unitatea XY. Rezultatul acestui lucru este că factorul Z intern de 1.0 va fi utilizat pentru analiză, ceea ce poate oferi rezultate neaşteptate.
+            </p>
+            <p>Suprafaţa de elevaţie poate fi un număr &icirc;ntreg sau un punct mobil.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Obiecte spaţiale punctuale care reprezintă locaţiile observatoarelor</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale de tip punct care reprezintă locaţiile observatorilor la calculul razelor vizuale.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizare pentru</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda de optimizare care va fi utilizată pentru calculul razei vizuale.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Această metodă optimizează viteza de procesare, reduc&acirc;nd o parte din acurateţea rezultatului &icirc;n favoarea performanţelor superioare. Aceasta este setarea implicită.
+
+                </li>
+                <li>Accuracy &mdash; 
+Această metodă este optimizată pentru acurateţea rezultatelor, &icirc;nsă timpul de procesare este mai mare.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distanță maximă de vizualizare</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi o distanţă hotar, unde se va opri calcularea zonelor vizibile. Dincolo de această distanţă, nu se va determina dacă punctele de observatoare şi celelalte obiecte se pot vedea reciproc.
+            </p>
+            <p>Puteţi specifica fie o valoare numerică care reprezintă o distanţă liniară sau puteţi selecta un c&acirc;mp numeric din obiectele spaţiale observatoare de intrare. Dacă este furnizat un c&acirc;mp, valorile conţinute de c&acirc;mp trebuie să fie &icirc;n aceeaşi unitate de măsură precum unitatea xy a suprafeţei de elevaţie de intrare.
+            </p>
+            <p>Reţineţi că valorile mai mari vor creşte timpul de calcul. &Icirc;n afara cazului &icirc;n care se specifică acest lucru, o distanţă maximă implicită va fi calculată &icirc;n baza rezoluţiei şi extinderii suprafeţei de elevaţie de intrare.
+            </p>
+            <p>Acest parametru este util pentru modelarea anumitor fenomene. De exemplu, prin limitarea extinderii de vizibilitate, puteţi modela condiţii meteo, precum ceaţa uşoară. &Icirc;n mod similar, restricţionarea extinderii de vizibilitate vă poate oferi un oarecare control asupra momentului zilei, prin aproximarea efectului &icirc;nserării.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distanță maximă de vizualizare</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distanţă minimă de vizualizare</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi o distanţă unde va &icirc;ncepe calcularea zonelor vizibile. Celulele de pe suprafaţa mai apropiată dec&acirc;t această distanţă nu sunt vizibile &icirc;n rezultat, dar pot bloca &icirc;n continuare vizibilitatea celulelor dintre distanţa de vizualizare minimă şi maximă.
+            </p>
+            <p>Puteţi specifica fie o valoare numerică care reprezintă o distanţă liniară sau puteţi selecta un c&acirc;mp numeric din obiectele spaţiale observatoare de intrare. Dacă este furnizat un c&acirc;mp, valorile conţinute de c&acirc;mp trebuie să fie &icirc;n aceeaşi unitate de măsură precum unitatea xy a suprafeţei de elevaţie de intrare.
+            </p>
+            <p>Acest parametru este util pentru controlul suprafeţei de analiză a razei de vizualizare la o distanţă specifică faţă de observator. De exemplu, dacă evaluaţi vizibilitatea de pe o clădire p&acirc;nă la un parc &icirc;ndepărtat, puteţi seta o distanţă minimă de vizualizare pentru a exclude suprafeţele apropiate care nu prezintă interes, sporind, astfel viteza de procesare.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distanţă minimă de vizualizare</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Distanţa este 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Specificaţi dacă parametrii distanţei de vizualizare minime şi maxime sunt măsuraţi tridimensional sau mai simplu, bidimensional. Atunci c&acirc;nd opţiunea este bifată, distanţele de vizualizare sunt tratate ca distanţe 3D. Atunci c&acirc;nd nu este bifată, sunt tratate ca distanţe 2D.
+            </p> 
+            <p>O distanţă 2D este distanţa liniară simplă măsurată &icirc;ntre un observator şi ţintă utiliz&acirc;nd locaţiile proiectate la nivelul mării. O distanţă 3D oferă o valoare mai realistă lu&acirc;nd &icirc;n considerare &icirc;nălţimile relative.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevaţia locaţiilor observatoarelor</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi elevaţia locaţiilor observatoarelor.
+            </p>
+            <p>Puteţi specifica o valoare numerică care reprezintă elevaţia tuturor observatoarelor sau un c&acirc;mp care reprezintă elevaţia fiecărui observator. Dacă este furnizat un c&acirc;mp, valoarea conţinută de c&acirc;mp trebuie să fie &icirc;n aceeaşi unitate precum unitatea Z a suprafeţei de elevaţie de intrare.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevaţia locaţiilor observatoarelor</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Înălţimea observatoarelor</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi &icirc;nălţimea locaţiilor dvs. de observatoare deasupra nivelului solului.
+            </p> 
+            <p>Puteţi specifica o valoare numerică pentru &icirc;nălţime sau un c&acirc;mp numeric din obiectele spaţiale observatoare de intrare. Dacă este furnizat un c&acirc;mp, valoarea conţinută de c&acirc;mp trebuie să fie &icirc;n aceeaşi unitate de măsură precum unitatea de măsură z a suprafeţei de elevaţie de intrare.
+            </p>
+            <p>Valoarea implicită este 6 ft. Dacă priviţi dintr-o locaţie elevată, precum un turn de observaţie sau o clădire &icirc;naltă, utilizaţi &icirc;n schimb respectiva &icirc;nălţime. &Icirc;n timpul calculului razei vizuale, această valoare este adăugată la elevaţia observatorului, dacă este specificată; altfel, este adăugată la valoarea z a suprafeţei interpolate.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Înălţimea observatoarelor</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Înălţimea ţintei</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi &icirc;nălţimea structurilor sau oamenilor situaţi la nivelul solului, utilizaţi pentru stabilirea vizibilităţii.
+            </p>
+            <p>Puteţi specifica o valoare numerică pentru &icirc;nălţime sau un c&acirc;mp numeric din obiectele spaţiale observatoare de intrare. Dacă este furnizat un c&acirc;mp, valoarea conţinută de c&acirc;mp trebuie să fie &icirc;n aceeaşi unitate de măsură precum unitatea de măsură z a suprafeţei de elevaţie de intrare.
+            </p>
+            <p>Raza vizuală rezultată identifică acele zone &icirc;n cadrul cărora un punct de observator poate vedea aceste obiecte la sol. Viceversa este, de asemenea, valabilă; celelalte obiecte de la sol pot vedea un punct de observator. 
+            </p>
+            <p>&Icirc;n continuare, vă prezentăm c&acirc;teva exemple de setări pentru &icirc;nălţimea ţintei:
+            </p>
+            <ul>
+                <li>Dacă punctele dvs. de intrare reprezintă turbine eoliene şi doriţi să stabiliţi de unde pot vedea turbinele oamenii care stau &icirc;n picioare la nivelul solului, introduceţi &icirc;nălţimea medie a unei persoane (aproximativ 6 ft).
+                    
+
+                </li>
+                <li>Dacă punctele dvs. de intrare reprezintă foişoare de foc av&acirc;nd puncte de observaţie şi doriţi să stabiliţi care turnuri de observaţie pot vedea o d&acirc;ră de fum cu &icirc;nălţimea de 20 ft sau mai mare, introduceţi 20 ft &icirc;n dreptul &icirc;nălţimii ţintei.
+                    
+
+                </li>
+                <li>Dacă punctele dvs. de intrare reprezintă puncte de observare a peisajului situate de-a lungul unor drumuri sau cărări şi doriţi să stabiliţi de unde pot fi observate turbinele eoliene cu &icirc;nălţimea de cel puţin 400 ft, introduceţi 400 ft &icirc;n dreptul &icirc;nălţimii.
+                    
+
+                </li>
+                <li>Dacă punctele dvs. de intrare reprezintă puncte de observare a peisajului şi doriţi să stabiliţi ce suprafaţă situată la nivelul solului pot vedea oamenii ce stau &icirc;n picioare la punctul de observaţie, introduceţi zero pentru &icirc;nălţimea ţintei. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Înălţimea observatoarelor</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Înălţimea de ieşire care va deveni vizibilă</h2></div>
+        <hr/>
+        <div>
+            <p>Numele rezultatului ieşirii deasupra nivelului solului (AGL). Rezultatul AGL este un raster &icirc;n care fiecare valoare de celulă este &icirc;nălţimea minimă care trebuie adăugată unei celule care altfel nu este vizibilă pentru a o face vizibilă pentru cel puţin un observator. Celulele care erau deja vizibile vor primi 0 &icirc;n acest raster de ieşire.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Lên kế hoạch Định tuyến</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="L&ecirc;n kế hoạch Định tuyến"></h2>
+        <hr/>
+    <p>L&ecirc;n kế hoạch Định tuyến gi&uacute;p x&aacute;c định c&aacute;ch ph&acirc;n phối c&aacute;c nhiệm vụ một c&aacute;ch hiệu quả cho một đội ngũ lưu động ngo&agrave;i hiện trường.
+    </p>
+    <p>Bạn cung cấp cho c&ocirc;ng cụ một tập hợp c&aacute;c điểm dừng v&agrave; số phương tiện khả dụng đến c&aacute;c điểm dừng.
+ C&ocirc;ng cụ n&agrave;y sẽ g&aacute;n c&aacute;c điểm dừng với phương tiện v&agrave; trả về c&aacute;c tuyến đường sao cho từng phương tiện c&oacute; thể đi đến điểm dừng được g&aacute;n với số lượng thời gian &iacute;t nhất.
+    </p>
+    <p>Với Lập kế hoạch Định tuyến, c&ocirc;ng nh&acirc;n vi&ecirc;n khi đi đến c&aacute;c địa điểm l&agrave;m việc sẽ mất &iacute;t thời gian hơn, gi&uacute;p tăng năng suất lao động v&agrave; cải thiện chất lượng dịch vụ kh&aacute;ch h&agrave;ng.
+        <ul>
+            <li>Kiểm tra nh&agrave; cửa, nh&agrave; h&agrave;ng, hoặc c&aacute;c c&ocirc;ng trường
+                
+
+            </li>
+            <li>Cung cấp c&aacute;c dịch vụ sửa chữa, lắp đặt, kỹ thuật
+            </li>
+            <li>Cung cấp c&aacute;c mặt h&agrave;ng v&agrave; đ&oacute;ng g&oacute;i nhỏ
+            </li>
+            <li>Thực hiện c&aacute;c cuộc gọi b&aacute;n h&agrave;ng
+            </li>
+            <li>Chuy&ecirc;n chở người từ nh&agrave; của họ đến một sự kiện
+            </li>
+        </ul>
+        
+    </p>
+    <p>Đầu ra từ việc Lập kế hoạch Định tuyến bao gồm một lớp c&aacute;c điểm dừng được m&atilde; h&oacute;a theo c&aacute;c tuyến đường m&agrave; ch&uacute;ng được g&aacute;n, lớp c&aacute;c tuyến đường n&agrave;y cho thấy c&aacute;c con đường ngắn nhất để đi đến c&aacute;c điểm dừng được g&aacute;n, v&agrave; t&ugrave;y thuộc v&agrave;o c&aacute;c điểm dừng kh&ocirc;ng đi đến được, sẽ c&oacute; một lớp kh&ocirc;ng được g&aacute;n điểm dừng. 
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được xem x&eacute;t khi ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o sẽ được xem x&eacute;t, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Chọn lớp điểm biểu diễn các điểm dừng sẽ đến</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn lớp c&aacute;c điểm m&agrave; đường (hoặc phương tiện) sẽ đi qua. C&aacute;c điểm n&agrave;y trở th&agrave;nh c&aacute;c điểm dừng được chỉ định hoặc bỏ chỉ định trong đầu ra. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+            <p>C&ocirc;ng cụ hỗ trợ tối đa 2.000 đối tượng đầu v&agrave;o. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Phương thức đi lại cho các tuyến đường</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn phương thức đi lại của bạn. C&aacute;c tuyến đường đầu ra sẽ đi theo c&aacute;c con đường hoặc lối đi bộ v&agrave; sẽ tu&acirc;n theo c&aacute;c quy tắc hiện h&agrave;nh, v&iacute; dụ như đường một chiều, cấm quay đầu xe đối với người l&aacute;i xe hơi hoặc xe tải. Người quản trị của tổ chức của bạn c&oacute; thể x&aacute;c định c&aacute;c phương thức đi lại khả dụng.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Các tuyến đường bắt đầu tại các điểm dừng</h2></div>
+        <hr/>
+        <div>
+            <p>Chỉ định địa điểm v&agrave; thời gian phương tiện bắt đầu tuyến đường của m&igrave;nh.
+            </p>
+            <p>Với Lập kế hoạch Định tuyến, bạn c&oacute; thể x&aacute;c định một hoặc nhiều vị tr&iacute; bắt đầu cho phương tiện.
+            </p>
+            <p>Khi một vị tr&iacute; điểm được chỉ định, tất cả c&aacute;c xe khởi h&agrave;nh từ điểm đ&oacute; kh&ocirc;ng phụ thuộc v&agrave;o số lượng xe khả dụng.
+ Bạn c&oacute; thể chọn một lớp điểm chỉ với một điểm hoặc th&ecirc;m mới một điểm v&agrave;o bản đồ bằng c&aacute;ch chọn  <b>Th&ecirc;m điểm v&agrave;o bản đồ</b>, bấm v&agrave;o n&uacute;t b&ecirc;n cạnh chỉnh sửa điểm liền kề, v&agrave; bấm v&agrave;o bản đồ. 
+            </p>
+            <p>Khi nhiều địa điểm được chỉ định, mỗi phương tiện cần phải được li&ecirc;n kết với điểm ri&ecirc;ng của m&igrave;nh. Số lượng phương tiện phải ph&ugrave; hợp với số điểm trong lớp. Chọn một lớp với nhiều điểm v&agrave; chỉ định một trường duy nhất để x&aacute;c định c&aacute;c tuyến đường, phương tiện, hoặc người l&aacute;i xe ri&ecirc;ng lẻ trong danh s&aacute;ch xổ xuống  <b>Trường ID Tuyến đường</b>.
+            </p>
+            <p>Thời gian bắt đầu giống nhau cho mọi tuyến đường. M&uacute;i giờ cho thời gian bắt đầu cũng giống như m&uacute;i giờ m&agrave; c&aacute;c điểm hay điểm khởi đầu được thiết lập, như vậy sẽ đảm bảo thời gian bạn nhập v&agrave;o l&agrave; giờ địa phương. V&iacute; dụ, giả sử bạn đang ở trong M&uacute;i giờ Chuẩn Th&aacute;i B&igrave;nh Dương (UTC-8:00) v&agrave; những phương tiện bạn đang định tuyến được thiết lập tại M&uacute;i giờ Chuẩn Miền núi (UTC-7:00). Nếu hiện tại l&agrave; 9:30 s&aacute;ng PST (10:30 s&aacute;ng MST) v&agrave; c&aacute;c phương tiện của bạn cần phải bắt đầu c&aacute;c tuyến đường của m&igrave;nh trong v&ograve;ng 30 ph&uacute;t nữa, bạn n&ecirc;n thiết lập thời gian bắt đầu đến 11:00 s&aacute;ng. 
+            </p>
+            <p>Nếu phương tiện của bạn bắt đầu từ c&aacute;c m&uacute;i giờ kh&aacute;c nhau th&igrave; thời gian bắt đầu sẽ kh&ocirc;ng thể đồng thời; thay v&agrave;o đ&oacute;, ch&uacute;ng b&ugrave; trừ lẫn nhau. V&iacute; dụ, nếu một tuyến đường bắt đầu từ một điểm trong PST v&agrave; một tuyến đường kh&aacute;c bắt đầu từ MST, bạn nhập 11:00 s&aacute;ng l&agrave; thời gian bắt đầu, tuyến đường trong PST sẽ bắt đầu l&uacute;c 11:00 s&aacute;ng PST v&agrave; tuyến đường trong MST sẽ bắt đầu l&uacute;c 11:00 s&aacute;ng MST&mdash;ch&ecirc;nh lệch nhau một giờ
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Các tuyến đường kết thúc tại các điểm dừng</h2></div>
+        <hr/>
+        <div>
+            <p>Chỉ định vị tr&iacute; phương tiện kết th&uacute;c c&aacute;c tuyến đường.
+            </p>
+            <p>Bạn c&oacute; thể cấu h&igrave;nh c&aacute;c tuyến đường kết th&uacute;c tại một trong ba vị tr&iacute;: 
+                <ul>
+                    <li>C&ugrave;ng một vị tr&iacute; nơi c&aacute;c tuyến đường bắt đầu, bất kể ch&uacute;ng xuất ph&aacute;t từ một hoặc nhiều địa điểm
+                    </li>
+                    <li>Một vị tr&iacute;
+                    </li>
+                    <li>Nhiều vị tr&iacute;&mdash;nghĩa l&agrave;, một điểm kết th&uacute;c cho mỗi tuyến đường
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Chọn  <b>Quay lại để bắt đầu</b> nếu phương tiện c&ugrave;ng bắt đầu v&agrave; kết th&uacute;c tuyến đường tại c&aacute;c vị tr&iacute; giống nhau.
+            </p>
+            <p>Để định tuyến tất cả c&aacute;c phương tiện đến một điểm kết th&uacute;c th&ocirc;ng thường kh&ocirc;ng phải l&agrave; điểm bắt đầu, bỏ chọn  <b>Quay lại để bắt đầu</b> v&agrave; th&ecirc;m một điểm mới v&agrave;o bản đồ hoặc chọn một lớp chỉ chứa đ&uacute;ng một điểm.
+            </p>
+            <p>Để c&oacute; c&aacute;c tuyến đường kết th&uacute;c tại c&aacute;c vị tr&iacute; duy nhất, bỏ chọn  <b>Quay lại để bắt đầu</b> v&agrave; chọn một lớp c&oacute; chứa nhiều hơn một điểm. Số lượng phương tiện phải bằng với số điểm trong lớp được chọn. Trong danh s&aacute;ch xổ xuống <b>Trường ID Tuyến đường</b>, chọn một trường duy nhất x&aacute;c định c&aacute;c tuyến đường, phương tiện, hoặc người l&aacute;i xe ri&ecirc;ng lẻ. Nếu phương tiện bắt đầu từ nhiều vị tr&iacute; v&agrave; kết th&uacute;c cũng ở nhiều vị tr&iacute;, c&aacute;c ID tuyến đường được lựa chọn cho lớp bắt đầu v&agrave; kết th&uacute;c cần phải tr&ugrave;ng khớp.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Chọn lớp rào cản</h2></div>
+        <hr/>
+        <div>
+            <p> Một hoặc nhiều đối tượng hoạt động như c&aacute;c vị tr&iacute; hạn chế tạm thời (r&agrave;o cản) khi di chuyển tr&ecirc;n c&aacute;c đường phố b&ecirc;n dưới. Bạn c&oacute; thể chọn r&agrave;o cản dạng điểm, đường hoặc v&ugrave;ng.
+            </p>
+            <p>Một r&agrave;o cản dạng điểm c&oacute; thể m&ocirc; phỏng cho một vị tr&iacute; c&oacute; c&acirc;y đổ, một vụ tai nạn, một đường d&acirc;y điện bị rơi, hoặc bất cứ sự việc n&agrave;o l&agrave;m tr&igrave; ho&atilde;n t&igrave;nh h&igrave;nh giao th&ocirc;ng tại một vị tr&iacute; cụ thể dọc theo đường phố. Di chuyển được cho ph&eacute;p tr&ecirc;n đường nhưng kh&ocirc;ng được đi qua r&agrave;o cản. Bạn c&oacute; thể chỉ định tối đa 250 đối tượng để hoạt động như c&aacute;c r&agrave;o cản dạng điểm.
+            </p>
+            <p>Một r&agrave;o cản dạng đường cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. V&iacute; dụ: một cuộc diễu h&agrave;nh hoặc biểu t&igrave;nh l&agrave;m chặn việc giao th&ocirc;ng tr&ecirc;n một số đoạn đường c&oacute; thể được m&ocirc; h&igrave;nh h&oacute;a bằng một r&agrave;o cản dạng đường. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng đường vượt qu&aacute; 500 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+            <p>Một r&agrave;o cản dạng v&ugrave;ng cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. Một ứng dụng thực tiễn của loại r&agrave;o cản n&agrave;y l&agrave; để m&ocirc; h&igrave;nh h&oacute;a khu vực lũ lụt tr&ecirc;n một mạng lưới đường phố l&agrave;m cho c&aacute;c con đường ở đ&oacute; kh&ocirc;ng thể lưu th&ocirc;ng. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng v&ugrave;ng vượt qu&aacute; 2000 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Số phương tiện định tuyến tối đa</h2></div>
+        <hr/>
+        <div>
+            <p>Chỉ định số phương tiện khả dụng đến c&aacute;c điểm dừng. C&ocirc;ng cụ hỗ trợ tối đa  100 phương tiện. 
+            </p>
+            <p>C&ocirc;ng cụ n&agrave;y c&oacute; thể t&igrave;m ra giải ph&aacute;p sử dụng &iacute;t phương tiện hơn so với số lượng bạn chỉ định, ở đ&acirc;y t&ugrave;y thuộc v&agrave;o tổng số điểm dừng, c&oacute; bao nhi&ecirc;u điểm dừng tr&ecirc;n mỗi phương tiện m&agrave; bạn cho ph&eacute;p, khoảng c&aacute;ch giữa c&aacute;c điểm dừng, thời gian d&agrave;nh cho mỗi điểm dừng, v&agrave; mọi giới hạn bạn đ&atilde; thiết lập tr&ecirc;n tổng số thời gian tuyến đường cho mỗi phương tiện.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Số điểm dừng tối đa trên phương tiện</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; một trong hai tham số c&acirc;n bằng khối lượng c&ocirc;ng việc tổng thể tr&ecirc;n c&aacute;c tuyến đường. Bạn c&oacute; thể chỉ định một gi&aacute; trị từ 1 đến  200. 
+            </p>
+            <p>Bằng c&aacute;ch giảm số lượng tối đa c&aacute;c điểm dừng c&oacute; thể được g&aacute;n cho mỗi phương tiện, phương tiện sẽ c&oacute; một số lượng tương đương c&aacute;c điểm dừng được g&aacute;n v&agrave;o. Điều n&agrave;y gi&uacute;p c&acirc;n bằng khối lượng c&ocirc;ng việc giữa c&aacute;c người l&aacute;i xe. Tuy nhi&ecirc;n, mặt hạn chế l&agrave; n&oacute; c&oacute; thể tạo ra một giải ph&aacute;p k&eacute;m hiệu quả.
+            </p>
+            <p>Bằng c&aacute;ch tăng c&aacute;c điểm dừng tr&ecirc;n mỗi phương tiện, c&ocirc;ng cụ n&agrave;y c&oacute; thể t&igrave;m ra giải ph&aacute;p hiệu quả hơn; tuy nhi&ecirc;n, khối lượng c&ocirc;ng việc c&oacute; thể được ph&acirc;n bố kh&ocirc;ng đều giữa c&aacute;c người l&aacute;i xe v&agrave; c&aacute;c phương tiện. Lưu &yacute; rằng bạn c&oacute; thể c&acirc;n bằng khối lượng c&ocirc;ng việc theo thời gian cũng như số lượng c&aacute;c điểm dừng bằng c&aacute;ch chỉ định một gi&aacute; trị tham số  <b>Giới hạn tổng thời gian tuyến đường tr&ecirc;n mỗi phương tiện</b>.
+            </p>
+            <p>C&aacute;c v&iacute; dụ sau đ&acirc;y minh họa cho ảnh hưởng của việc giới hạn c&aacute;c điểm dừng tối đa tr&ecirc;n mỗi phương tiện hoặc tổng thời gian tr&ecirc;n mỗi phương tiện. Trong tất cả c&aacute;c v&iacute; dụ sẽ c&oacute; s&aacute;u điểm dừng v&agrave; hai tuyến đường, bắt đầu ở c&ugrave;ng một vị tr&iacute;.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="C&acirc;n bằng Thời gian đi lại v&agrave; điểm dừng">
+                </td>
+                <td>
+                    <p>Thời gian đi lại c&acirc;n bằng v&agrave; c&aacute;c điểm dừng tr&ecirc;n mỗi tuyến:
+                    </p>
+                    <p>C&aacute;c điểm dừng &iacute;t nhiều trải đều nhau, do đ&oacute; thiết lập c&aacute;c điểm dừng tối đa cho mỗi phương tiện để ph&acirc;n bố đồng đều c&aacute;c kết quả khối lượng c&ocirc;ng việc tại c&aacute;c tuyến đường c&oacute; khoảng thời gian tương ứng.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Thời gian v&agrave; tuyến đường kh&ocirc;ng c&acirc;n bằng">
+                </td>
+                <td>
+                    <p>C&aacute;c điểm dừng c&acirc;n bằng tr&ecirc;n mỗi tuyến đường, nhưng thời gian đi lại kh&ocirc;ng c&acirc;n bằng:
+                    </p>
+                    <p>Năm trong số s&aacute;u điểm dừng gom lại gần với vị tr&iacute; bắt đầu, nhưng một điểm dừng được đặt ra xa v&agrave; đ&ograve;i hỏi thời gian l&aacute;i xe l&acirc;u hơn để đến đ&oacute;. Ph&acirc;n chia điểm dừng đồng đều giữa hai tuyến đường dẫn đến thời gian đi lại kh&ocirc;ng c&acirc;n bằng.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="C&acirc;n bằng Thời gian đi lại ">
+                </td>
+                <td>
+                    <p>C&aacute;c điểm dừng kh&ocirc;ng c&acirc;n bằng tr&ecirc;n mỗi tuyến đường, nhưng thời gian đi lại c&acirc;n bằng:
+                    </p>
+                    <p>C&aacute;c điểm dừng ở vị tr&iacute; tương tự như v&iacute; dụ trước, nhưng giải quyết bằng c&aacute;ch tăng c&aacute;c điểm dừng tối đa tr&ecirc;n mỗi tuyến đường v&agrave; giới hạn tổng thời gian đi lại cho mỗi phương tiện, thời gian đi lại được c&acirc;n bằng.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Thời gian tại mỗi điểm dừng</h2></div>
+        <hr/>
+        <div>
+            <p>Thiết lập thời gian dịch vụ trung b&igrave;nh dự đo&aacute;n ti&ecirc;u tốn tại mỗi điểm dừng. V&iacute; dụ, nếu bạn đang lập kế hoạch lịch tr&igrave;nh ng&agrave;y l&agrave;m việc cho c&aacute;c nh&acirc;n vi&ecirc;n thanh tra v&agrave; thời gian thanh tra trung b&igrave;nh l&agrave; 45 ph&uacute;t, nhập  <code>45</code>.
+            </p>
+            <p>Thời gian phục vụ ở tất cả c&aacute;c điểm dừng được giả định l&agrave; giống nhau.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Giới hạn tổng thời gian định tuyến mỗi phương tiện</h2></div>
+        <hr/>
+        <div>
+            <p>Chỉ định số lượng thời gian tối đa một tuyến đường cần c&oacute; từ khi bắt đầu đến khi kết th&uacute;c. Điều n&agrave;y bao gồm thời gian đi lại dự kiến v&agrave; thời gian dịch vụ tại c&aacute;c điểm dừng dọc theo tuyến đường. Nếu người l&aacute;i xe kh&ocirc;ng l&agrave;m việc l&acirc;u hơn một thời gian nhất định trong ng&agrave;y, chẳng hạn như t&aacute;m giờ, bạn c&oacute; thể chỉ định giới hạn ở đ&acirc;y.
+            </p>
+            <p>Xem trợ gi&uacute;p về  <b>Số điểm dừng tối đa theo phương tiện</b> để c&acirc;n nhắc khi c&acirc;n bằng khối lượng c&ocirc;ng việc.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp đối tượng sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. Nếu lớp đối tượng đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới. Lớp đối tượng sẽ chứa một lớp cho mỗi mục sau: tuyến đường, điểm dừng được g&aacute;n v&agrave; điểm dừng chưa được g&aacute;n khi một số điểm dừng đầu v&agrave;o chưa được g&aacute;n cho bất kỳ tuyến đường n&agrave;o.
+            </p>
+            <p>Nếu bạn chọn  <b>Bao gồm c&aacute;c lớp tuyến đường</b>, mỗi tuyến đường trong kết quả sẽ đồng thời được lưu th&agrave;nh một lớp tuyến đường. Lớp tuyến đường bao gồm mọi th&ocirc;ng tin d&agrave;nh cho một tuyến đường cụ thể như c&aacute;c điểm dừng được g&aacute;n cho tuyến đường cũng như chiều di chuyển. Việc tạo c&aacute;c lớp tuyến đường sẽ hữu &iacute;ch nếu bạn muốn chia sẻ c&aacute;c tuyến đường ri&ecirc;ng với những th&agrave;nh vi&ecirc;n kh&aacute;c trong tổ chức hoặc chỉnh sửa th&ecirc;m tuyến đường bằng c&aacute;ch d&ugrave;ng n&uacute;t <b>Chỉ đường</b> trong tr&igrave;nh xem bản đồ. Lớp tuyến đường sử dụng t&ecirc;n được cung cấp d&agrave;nh cho lớp đối tượng như một tiền tố v&agrave; t&ecirc;n tuyến đường đ&atilde; tạo như một phần của ph&acirc;n t&iacute;ch, được th&ecirc;m để tạo ra t&ecirc;n duy nhất cho mỗi lớp tuyến đường.
+            </p>
+            <p>Sử dụng menu thả xuống  <b>Lưu kết quả trong</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ lớp đối tượng v&agrave; lớp tuyến đường, nếu được tạo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

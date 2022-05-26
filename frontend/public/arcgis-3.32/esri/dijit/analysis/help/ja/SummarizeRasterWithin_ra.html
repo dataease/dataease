@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>エリア内でのラスターの集約 (Summarize Raster Within)</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="エリア内でのラスターの集約ツール"></h2>
+        <hr/>
+    <p>このツールは、最初の入力レイヤーで定義されたエリア (ゾーン) に基づいてラスターを集約します。
+    </p>
+    <p>適用例のいくつかを次に示します。
+    </p>
+    <p>
+        <ul>
+            <li>集水域境界線のレイヤーと、土地利用タイプ別土地利用境界線のレイヤーを基に、各集水域の土地利用タイプの総面積を計算する。
+                
+
+            </li>
+            <li>郡の土地区画のレイヤーと都市の境界線のレイヤーを基に、各都市の境界線内にある空き地の平均値を求める。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力レイヤーと集計対象レイヤーのフィーチャだけが解析されます。オフにすると、現在のマップ範囲内にない場合でも、入力レイヤーと集計対象レイヤーのすべてのフィーチャが解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>定義された境界内でラスター レイヤーを集計するエリア レイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>集計対象のエリア (ゾーン) の境界を定義するレイヤー。
+            </p>
+            <p>レイヤーは、ラスターでもフィーチャ データでもかまいません。ラスターの場合、ゾーンは、同じセル値が設定された入力内のすべての場所で定義されます。エリアは連続していなくてもかまいません。
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>境界を定義するフィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>エリアの境界の定義に使用されるレイヤーの属性です。
+            </p>
+            <p>たとえば、最初の入力レイヤーで管理単位の境界が定義されており、各単位の地域、地区、およびパーセル ID を定義した属性があるとします。各場所の多様性インデックスを定義したラスター レイヤーもあります。選択したフィールドを使用して、局所、地区、または地域レベルで平均的な多様性を算出することができます。
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>集計するラスター レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>このレイヤー内のラスター セルは、これらのセルが含まれているエリア (ゾーン) 別に集計されます。
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>計算する統計情報の選択</h2></div>
+        <hr/>
+        <div>
+            <p>集計するレイヤーを選択したら、必要に応じて、入力エリア レイヤー内のポイント、ライン、またはエリアの数値属性の統計情報を計算できます。
+            </p>
+            <p>選択したフィールドが整数の場合に使用可能な統計情報のタイプは、[平均]、[最頻値]、[最大]、[中央値]、[最小]、[最少頻値]、[範囲]、[標準偏差]、[合計]、および [種類] です。
+            </p>
+            <p>フィールドが浮動小数点の場合のオプションは、[平均]、[最大]、[最小]、[範囲]、[標準偏差]、および [合計] です。
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>計算時に失われた値を無視する</h2></div>
+        <hr/>
+        <div>
+            <p>失われた値を無視する場合は、集計対象のレイヤー内の値を含むセルだけが、そのエリアの出力値を決定する際に使用されます。無視しない場合は、失われた値がエリア内の任意の場所に存在すると、そのゾーン内のすべてのセルの統計情報を計算するための情報が不足していると見なされるため、出力で NULL (NoData) 値が生成されます。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

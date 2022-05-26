@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Puffer erstellen</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Puffer erstellen"></h2>
+        <hr/>
+    <p>Ein Puffer ist ein Bereich, der eine angegebene Entfernung von einem Punkt, einer Linie oder einem Fl&auml;chen-Feature abdeckt. 
+    </p>
+    <p>Puffer werden in der Regel zum Erstellen von Bereichen verwendet, die anhand anderer Werkzeuge weiter analysiert werden k&ouml;nnen. Beispielsweise kann die Antwort auf die Frage &quot;Welche Geb&auml;ude befinden sich innerhalb einer Entfernung von einem Kilometer von der Schule?&quot; gefunden werden, indem ein Puffer von einem Kilometer um die Schule erstellt und der Puffer mit dem Layer der Geb&auml;udegrundrisse &uuml;berlagert wird.  Das Endergebnis ist ein Layer mit allen Geb&auml;uden, die innerhalb eines Kilometers von der Schule entfernt liegen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen, auf den der Puffer angewendet werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-, Linien- oder Fl&auml;chen-Features, die gepuffert werden sollen. Die Eingabe-Layer m&uuml;ssen sich in einem projizierten Koordinatensystem befinden, oder der Raumbezug f&uuml;r die Verarbeitung muss unter  <b>Analyseumgebungen</b> auf ein projiziertes Koordinatensystem festgelegt werden.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Den anzuwendenden Puffertyp auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Es gibt drei M&ouml;glichkeiten, die Gr&ouml;&szlig;e des Puffers f&uuml;r die Eingabe-Features festzulegen: 
+                <ul>
+                    <li>Legen Sie eine Entfernung fest, die auf alle Features angewendet wird.
+                    </li>
+                    <li>Legen Sie ein Feld f&uuml;r den Eingabe-Layer fest, der den Entfernungswert enth&auml;lt. Sie k&ouml;nnen ein Zeichenfolgen- oder ein numerisches Feld verwenden. Wenn keine lineare Einheit definiert ist, werden die Einheiten des Raumbezugs verwendet. Bei Verwendung eines geographischen Koordinatensystems wird f&uuml;r das Feld ohne Einheit Meter vorausgesetzt. 
+                    </li>
+                    <li>Erstellen Sie einen Ausdruck mit mehreren Feldern und mathematischen Operatoren. Damit zum Beispiel ein Puffer verwendet wird, der dem 10-fachen Wert des Feldes  <i>wind_speed</i> entspricht, f&uuml;gen Sie den Ausdruck <i>$feature[&quot;wind_speed&quot;] x 10</i> hinzu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Die Puffermethode auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen die Methode  <b>Planar</b> oder die Methode <b>Geod&auml;tisch</b> ausw&auml;hlen. Die Methode <b>Planar</b> ist m&ouml;glicherweise schneller und f&uuml;r die lokale Analyse von projizierten Daten geeignet. Die Methode <b>Geod&auml;tisch</b> ist f&uuml;r gro&szlig;e Fl&auml;chen und alle geographischen Koordinatensysteme geeignet.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Den Typ der Zusammenführungsmethode auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Optionen zum Festlegen der Zusammenf&uuml;hrungsmethode.   Wenn die Zusammenf&uuml;hrungsmethode ausgew&auml;hlt wurde, haben Sie die M&ouml;glichkeit, Multipart- oder Singlepart-Fl&auml;chen zu erstellen und Statistiken basierend auf den bereitgestellten Feldern zu berechnen.
+                <ul>
+                    <li> <b>Alle</b>: Alle Features werden zusammengef&uuml;hrt. Wenn Multipart-Features zul&auml;ssig sind, werden alle Features zu einem einzelnen Feature zusammengef&uuml;hrt. Wenn Multipart nicht zul&auml;ssig ist, werden benachbarte oder &uuml;berlappende Features zusammengef&uuml;hrt.
+                    </li>
+                    <li> <b>Felder</b>: Features mit demselben festgelegten Feld bzw. derselben Feldkombination werden zusammengef&uuml;hrt. Wenn Multipart-Features zul&auml;ssig sind, werden alle Features mit demselben Feld zu einem einzelnen Feature zusammengef&uuml;hrt. Wenn Multipart nicht zul&auml;ssig ist, werden benachbarte oder &uuml;berlappende Features mit demselben Feldwert zusammengef&uuml;hrt.
+                    </li>
+                    <li> <b>Keine</b>: Es werden keine Features zusammengef&uuml;hrt.  Dies ist die Standardeinstellung.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Multipart-Features zulassen</h2></div>
+        <hr/>
+        <div>
+            <p>Option, mit der festgelegt wird, ob das Ergebnis aus Einzelpart- oder Multipart-Features bestehen soll. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Aktiviert: Die Ergebnisse der Analyse enthalten Multipart-Features.   
+                    </li>
+                    <li>Deaktiviert: Die Ergebnisse der Analyse enthalten Singlepart-Features. Dies ist die Standardeinstellung.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistiken hinzufügen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen f&uuml;r Features, die zusammengefasst wurden, Statistiken berechnen.F&uuml;r numerische Felder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Berechnet die Anzahl der Nicht-NULL-Werte.Sie kann f&uuml;r numerische Felder oder Zeichenfolgen verwendet werden. Die Anzahl von [NULL, 0, 2] betr&auml;gt 2.
+                    </li>
+                    <li>Summe: Die Summe der numerischen Werte in einem Feld. Die Summe von [NULL, NULL, 3] betr&auml;gt 3.
+                    </li>
+                    <li>Mittelwert: Der Mittelwert der numerischen Werte. Der Mittelwert von [0, 2, NULL] betr&auml;gt 1.
+                    </li>
+                    <li>Min: Der Minimalwert eines numerischen Feldes. Der Minimalwert von [0, 2, NULL] betr&auml;gt 0. 
+                    </li>
+                    <li>Max: Der Maximalwert eines numerischen Feldes. Der Maximalwert von [0, 2, NULL] betr&auml;gt 2.
+                    </li>
+                    <li>Bereich: Der Bereich eines numerischen Feldes. Dieser wird durch die Subtraktion der Minimalwerte vom Maximalwert berechnet. Der Bereich von [0, NULL, 1] lautet 1. Der Bereich von [NULL, 4] lautet 0.
+                    </li>
+                    <li>Varianz: Die Varianz eines numerischen Feldes in einer Spur. Die Varianz von [1] betr&auml;gt Null. Die Varianz von [NULL, 1,0,1,1] betr&auml;gt 0,25.
+                    </li>
+                    <li>Standardabweichung: Die Standardabweichung eines numerischen Feldes. Die Standardabweichung von [1] ist Null. Die Standardabweichung von [NULL, 1,0,1,1] ist 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>F&uuml;r Zeichenfolgenfelder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Die Anzahl der Nicht-NULL-Werte.
+                    </li>
+                    <li>Beliebig: Diese Statistik ist eine auf dem Zufallsprinzip basierende Stichprobe eines Zeichenfolgenwertes im angegebenen Feld.
+                    </li>
+                </ul>
+                Alle Statistiken werden f&uuml;r Nicht-NULL-Werte berechnet. Der resultierende Layer enth&auml;lt ein neues Feld f&uuml;r jede berechnete Statistik. Jede Anzahl von Statistiken kann durch Auswahl eines Attributs und einer Statistik ausgew&auml;hlt werden. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Einen ArcGIS Data Store zum Speichern der Ergebnisse auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz des Data Stores vom Typ &quot;relational&quot; wird nicht empfohlen, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie in diesem Fall die Funktionen des Big Data Store vom Typ &quot;spatiotemporal&quot; zur Verwaltung von gro&szlig;en Datenmengen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

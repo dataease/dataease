@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konvertér objekt til raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Konvert&eacute;r objekt til raster-v&aelig;rkt&oslash;j"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j konverterer objekter til et rasterdatas&aelig;t.
+    </p>
+    <p>Enhver objektklasse, der indeholder punkt-, linje- eller polygonobjekter, kan konverteres til et rasterdatas&aelig;t.
+    </p>
+    <p>Cellens centrum bruges til at bestemme pixelv&aelig;rdien for output-rasterdataene.
+    </p>
+    <p>Input-felttypen bestemmer output-rastertypen. Hvis feltet er et heltal, vil output-rasterdataene v&aelig;re et heltal. Hvis det er et flydende punkt, vil output-rasterdataene v&aelig;re et flydende punkt.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det vektorlag, der skal konverteres</h2></div>
+        <hr/>
+        <div>
+            <p>Det input-vektorlag, der skal konverteres til et rasterdatas&aelig;t.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Vælg felt</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det felt, der skal bruges til at tildele v&aelig;rdier til output-rasterdataene.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Størrelse på outputcelle</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelse og enheder for output-rasterdata.
+            </p>
+            <p>De tilg&aelig;ngelige enheder er miles, feet, kilometer og meter. Standard er feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

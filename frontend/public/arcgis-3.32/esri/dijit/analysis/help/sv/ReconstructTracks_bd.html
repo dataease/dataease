@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Återskapa spår</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="&Aring;terskapa sp&aring;r"></h2>
+        <hr/>
+    <p> Det h&auml;r verktyget fungerar med ett tidsaktiverat lager med antingen punkt- eller omr&aring;desgeoobjekt som representerar en <code>punkt</code> i tiden.  Det avg&ouml;r f&ouml;rst vilka geoobjekt som tillh&ouml;r ett sp&aring;r med en identifierare. Utifr&aring;n tiden vid varje plats ordnas sp&aring;ren i tur och ordning och omvandlas till en linje eller ett omr&aring;de som representerar r&ouml;relsev&auml;gen &ouml;ver tid. Indata kan ocks&aring; buffras av ett f&auml;lt, vilket skapar ett omr&aring;de p&aring; varje plats. De buffrade punkterna eller indataomr&aring;dena f&ouml;renas sedan sekventiellt f&ouml;r att skapa ett sp&aring;r som ett omr&aring;de d&auml;r bredden representerar det intressanta attributet. Resulterande sp&aring;r har en start- och en sluttid, som tidsm&auml;ssigt representerar det f&ouml;rsta och det sista geoobjektet i ett angivet sp&aring;r. N&auml;r sp&aring;ren skapas ber&auml;knas statistik om indatageoobjekten och tilldelas till utdatasp&aring;ret. Den mest grundl&auml;ggande statistiken &auml;r antalet punkter inom omr&aring;det, men du kan &auml;ven ber&auml;kna annan statistik.
+    </p>
+    <p>Geoobjekt i tidsaktiverade lager kan representeras p&aring; ett av tv&aring; s&auml;tt:
+        <ul>
+            <li>Tidpunkt &ndash; Ett enda &ouml;gonblick
+            </li>
+            <li>Intervall &ndash; En start- och sluttid
+            </li>
+        </ul>
+        
+    </p>
+    <p>Anta som exempel att du har GPS-m&auml;tningar av orkaner var 10 minut. Varje GPS-m&auml;tning registrerar orkanens namn, plats, registreringstid och vindhastighet. Med den informationen kan du skapa sp&aring;r f&ouml;r varje orkan med namnet f&ouml;r sp&aring;ridentifiering, och sp&aring;r f&ouml;r varje orkan genereras. Du kan ocks&aring; ber&auml;kna statistik som genomsnittlig, maximal och minimal vindhastighet f&ouml;r varje orkan, samt antalet m&auml;tningar inom varje sp&aring;r.
+    </p>
+    <p>Med samma exempel kan du buffra sp&aring;ren efter vindhastighet. Det buffrar varje m&auml;tning av f&auml;ltet vindhastighet p&aring; den platsen och f&ouml;renar de buffrade omr&aring;dena. D&aring; skapas ett omr&aring;de som representerar sp&aring;rets v&auml;g, samt &auml;ndringarna i vindhastighet allt eftersom orkanerna drog fram.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj geoobjekt att rekonstruera spår från</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt- eller omr&aring;deslager som ska rekonstrueras till sp&aring;r. Indatalagret m&aring;ste vara tidsaktiverat med geoobjekt som motsvarar en tidspunkt. Lagret m&aring;ste finnas i ett projicerat koordinatsystem eller s&aring; m&aring;ste den geografiska referensen f&ouml;r bearbetning st&auml;llas in f&ouml;r ett projicerat koordinatsystem med  <b>Analysmilj&ouml;</b> om en buffert till&auml;mpas.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Välj ett eller flera fält att identifiera spår ifrån</h2></div>
+        <hr/>
+        <div>
+            <p>De f&auml;lt som representerar sp&aring;ridentifieraren. 
+            </p>
+            <p>Om du till exempel rekonstruerar orkansp&aring;r kan du anv&auml;nda orkanens namn som sp&aring;rf&auml;lt.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Välj metod som används för att återskapa spår</h2></div>
+        <hr/>
+        <div>
+            <p>Metod som anv&auml;nds f&ouml;r att f&ouml;rena sp&aring;r och till&auml;mpa buffert (om till&auml;mpligt). Den  <b>Plana</b> metoden kan ber&auml;kna resultaten snabbare men placerar inte sp&aring;r runt den internationella datumlinjen och tar inte h&auml;nsyn till jordens faktiska form vid buffring. Den <b>Geodetiska</b> metoden placerar sp&aring;r runt datumlinjen vid behov och till&auml;mpar en geodetisk buffert f&ouml;r att ta h&auml;nsyn till jordens form.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Skapa ett uttryck för att buffra indatageoobjekt med (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ekvationen som anv&auml;nds f&ouml;r att ber&auml;kna buffertavst&aring;ndet runt indatageoobjekt. Ekvationen kan genereras med buffertkalkylatorn och grundl&auml;ggande &aring;tg&auml;rder som addera, subtrahera, multiplicera och dividera st&ouml;ds. V&auml;rdena ber&auml;knas med analyskoordinatsystemet. Lagret m&aring;ste finnas i ett projicerat koordinatsystem eller s&aring; m&aring;ste den geografiska referensen f&ouml;r bearbetning st&auml;llas in f&ouml;r ett projicerat koordinatsystem med  <b>Analysmilj&ouml;</b> om en buffert till&auml;mpas.
+            </p>
+            <p>En ekvation som  <code>$feature.windspeed * 1000</code> till&auml;mpar en buffert p&aring; 1&nbsp;000 multiplicerad med f&auml;ltet <i>windspeed</i>. Du kan anv&auml;nda fler &auml;n ett f&auml;lt i buffertkalkylatorn.
+            </p>
+            <p> Du kan ocks&aring; ange ett sp&aring;rmedvetet uttryck. Du kan till exempel ber&auml;kna summan av f&auml;ltv&auml;rdet <i>windspeed</i> f&ouml;r det aktuella geoobjektet och tv&aring; tidigare geoobjekt med en ekvation som <code>$track.field(windspeed).history(-3)</code>. P&aring; varje plats skulle summan av aktuell <i>windspeed</i> och tv&aring; tidigare m&auml;tningar ber&auml;knas och buffras.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Välj en tidpunkt att dela spår från (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Tid som anv&auml;nds f&ouml;r att dela sp&aring;r. Om indatapunkterna eller -omr&aring;dena har l&auml;ngre tid mellan sig &auml;n tidsdelningen, delas de i olika sp&aring;r.
+            </p>
+            <p>Om du anger en tidsdelning och en avst&aring;ndsdelning kommer sp&aring;ren att delas n&auml;r det ena eller b&aring;da villkoren &auml;r uppfyllda. 
+            </p>
+            <p>T&auml;nk dig att du har punktgeoobjekt som representerar flygningar, d&auml;r sp&aring;rf&auml;ltet &auml;r flygplanets ID. Flygplanet kan g&ouml;ra flera resor och representeras som ett sp&aring;r.  Om du vet att det finns en paus p&aring; en timme mellan flygningarna, kan du anv&auml;nda  <code>1 timme</code> som sp&aring;rdelning, och varje flygning delas d&aring; till ett eget sp&aring;r.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Dela spår (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan dela sp&aring;r med tre olika metoder. Du kan anv&auml;nda en kombination av ingen, alla eller vissa av delningsmetoderna. 
+            </p>
+            <p>Delningar kan slutf&ouml;ras p&aring; f&ouml;ljande s&auml;tt:
+                <ul>
+                    <li> <b>Baserat p&aring; ett avst&aring;nd mellan indata</b> &ndash; Om indatapunkterna eller -omr&aring;dena har ett l&auml;ngre avst&aring;nd mellan sig &auml;n det angivna avst&aring;ndet, delas de i olika sp&aring;r. Om du t.ex. har angivit avst&aring;ndet 10 kilometer, &auml;r sekventiella punkter st&ouml;rre &auml;n 10 kilometer separata sp&aring;r.
+                    </li>
+                    <li> <b>Baserat p&aring; en tid mellan indata</b> &ndash; Om indatapunkterna eller -omr&aring;dena har l&auml;ngre tid mellan sig &auml;n tidsdelningen, delas de i olika sp&aring;r. T&auml;nk dig att du har punktgeoobjekt som representerar flygningar, d&auml;r sp&aring;rf&auml;ltet &auml;r flygplanets ID. Flygplanet kan g&ouml;ra flera resor och representeras som ett sp&aring;r.  Om du vet att det finns en paus p&aring; en timme mellan flygningarna, kan du anv&auml;nda <code>1 timme</code> som sp&aring;rdelning, och varje flygning delas d&aring; till ett eget sp&aring;r.
+                    </li>
+                    <li> <b>Vid definierade tidsintervall</b> &ndash; Dela med j&auml;mna intervall, specificerat av ett tidsintervall och en referenstid. Om du inte anger en referenstid anv&auml;nds 1 jan 1970. Om du t.ex. angivit 1 &aring;r med referenstiden 2 feb 1990 kl. 10.00, delar du sp&aring;r vid 2 feb 1990 kl. 10.00, 2 feb 1991 kl. 10.00 och forts&auml;tter i ett&aring;rsintervall.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om du anger flera delningsalternativ kommer sp&aring;ren att delas n&auml;r ett eller flera villkor &auml;r uppfyllda. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Välj ett avstånd att dela spår från (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Avst&aring;nd som anv&auml;nds f&ouml;r att dela sp&aring;r. Om indatapunkterna eller -omr&aring;dena har ett l&auml;ngre avst&aring;nd mellan sig &auml;n avst&aring;ndsdelningen, delas de i olika sp&aring;r.
+            </p>
+            <p>Om du anger en tidsdelning och en avst&aring;ndsdelning kommer sp&aring;ren att delas n&auml;r det ena eller b&aring;da villkoren &auml;r uppfyllda. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lägg till statistik (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan ber&auml;kna statistik p&aring; summerade geoobjekt. Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Ber&auml;knar antal v&auml;rden som inte &auml;r null. Kan anv&auml;ndas p&aring; numeriska f&auml;lt eller str&auml;ngar. Antalet f&ouml;r [null, 0, 2] &auml;r 2.
+                    </li>
+                    <li>Summa &ndash; Summan av de numeriska v&auml;rdena i ett f&auml;lt. Summan f&ouml;r [null, null, 3] &auml;r 3.
+                    </li>
+                    <li>Medelv&auml;rde &ndash; Medelv&auml;rdet f&ouml;r numeriska v&auml;rden. Medelv&auml;rde f&ouml;r [0, 2, null] &auml;r 1.
+                    </li>
+                    <li>Min &ndash; Minimiv&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Minimiv&auml;rde f&ouml;r [0, 2, null] &auml;r 0. 
+                    </li>
+                    <li>Max &ndash; Det maximala v&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Det maximala v&auml;rdet f&ouml;r [0, 2, null] &auml;r 2.
+                    </li>
+                    <li>Intervall &ndash; Intervallet f&ouml;r ett numeriskt f&auml;lt. Det ber&auml;knas som det maximala v&auml;rdet minus minimiv&auml;rdena. Intervallet f&ouml;r [0, null, 1] &auml;r 1. Intervallet f&ouml;r [null, 4] &auml;r 0.
+                    </li>
+                    <li>Varians &ndash; Variansen hos ett numeriskt f&auml;lt i ett sp&aring;r. Variansen hos [1] &auml;r null. Variansen hos [null, 1,0,1,1] &auml;r 0,25.
+                    </li>
+                    <li>Standardavvikelse &ndash; Standardavvikelsen hos ett numeriskt f&auml;lt. Standardavvikelsen hos [1] &auml;r null. Standardavvikelsen hos [null, 1,0,1,1] &auml;r 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Antalet str&auml;ngar som inte &auml;r null.
+                    </li>
+                    <li>Alla &ndash; Det statistiska v&auml;rdet &auml;r ett slumpm&auml;ssigt exempel p&aring; ett str&auml;ngv&auml;rde i det angivna f&auml;ltet.
+                    </li>
+                </ul>
+                All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj ett ArcGIS-datalager att spara resultat till</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

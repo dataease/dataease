@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Werte neu zuordnen</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Werkzeug &quot;Werte neu zuordnen&quot; f&uuml;r Portal"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug k&ouml;nnen Sie die Pixelwerte der Raster-Daten &auml;ndern oder reklassifizieren. Pixelwerte werden neu zugeordnet, indem ein Bereich mit Pixelwerten angegeben wird, der einem Ausgabepixelwert zugeordnet werden soll. Der Ausgabepixelwert kann ein g&uuml;ltiger oder ein NoData-Wert sein, bei dem es sich um Pixel handelt, mit denen kein bekannter Wert verkn&uuml;pft ist.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur diese Zellen neu zugeordnet, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden auch dann alle Raster verarbeitet, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Eingabedaten</h2></div>
+        <hr/>
+        <div>
+            <p>Die Eingabedaten, deren Werte neu zugeordnet werden.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Pixelwerte neuen Werten zuordnen</h2></div>
+        <hr/>
+        <div>
+            <p>Sie geben einen Wertebereich ein, indem Sie einen Mindest- und einen H&ouml;chstwert festlegen und dann einem Ausgabewert oder einem NoData-Wert den angegebenen Bereich zuweisen.
+            </p>
+            <p>Um einen neuen Wertebereich neu zuzuordnen, klicken Sie auf  <b>Hinzuf&uuml;gen</b>, wodurch eine Zeile hinzugef&uuml;gt wird. Klicken Sie auf die einzelnen Werte, um die Tabelle in die erforderlichen Bereiche und den neu zugeordneten Wert zu &auml;ndern. Wenn Sie die Wertebereiche angeben, m&uuml;ssen zwei wichtige Regeln beachtet werden:
+                <ul>
+                    <li>Der Minimalwert im Bereich ist inklusiv und der Maximalwert ist exklusiv, wie unten in der Tabelle erkl&auml;rt.
+                    </li>
+                    <li>Die Zeilen in der Tabelle werden von oben nach unten verarbeitet.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Die nachfolgende Tabelle zeigt, dass der Minimalwert in die Ausgabe eingeschlossen ist, der Maximalwert jedoch nicht.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Die Reihenfolge der in der Tabelle angegebenen Bereiche ist ebenfalls wichtig. Die oberste Zeile der Tabelle wird zuerst verarbeitet, danach folgt die darunter liegende Zeile. Die beiden nachfolgenden Tabellen zeigen, wie dieselben Wertebereiche aufgrund der Reihenfolge der Tabellenzeilen verschiedene Ergebnisse erzeugen.
+            </p> 
+            <p>Die folgende Tabelle enth&auml;lt den Ausgabewert, wenn die erste Spalte numerisch sortiert ist:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>In der folgenden Tabelle wird veranschaulicht, wie sich eine andere Reihenfolge der Zeilen auf die Ausgabewerte auswirkt:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Beide Regeln werden angewendet, um die Werte neu anzuordnen. Da jede Zeile von oben nach unten verarbeitet wird, haben diese Werte auch dann bei der Ermittlung der Ausgabe Vorrang, wenn dieselben Bereiche verwendet werden.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

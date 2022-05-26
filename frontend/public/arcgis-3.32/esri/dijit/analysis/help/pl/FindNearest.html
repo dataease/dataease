@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Znajdź najbliższe</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Znajdź najbliższe"></h2>
+        <hr/>
+    <p>To narzędzie wyszukuje najbliższe obiekty oraz raportuje i&nbsp;ocenia odległość do pobliskich obiekt&oacute;w. W&nbsp;celu znalezienia najbliższego obiektu narzędzie może określać odległość, mierząc ją w&nbsp;linii prostej lub używając trybu podr&oacute;żowania. Dostępne są opcje, kt&oacute;re ograniczają liczbę wyszukiwanych najbliższych obiekt&oacute;w lub zakres wyszukiwania obiekt&oacute;w. Wyniki uzyskiwane dzięki temu narzędziu umożliwiają udzielenie odpowiedzi na pytania następującego typu:
+        <ul>
+            <li>Kt&oacute;ry park jest najbliżej stąd?
+            </li>
+            <li>Do kt&oacute;rego szpitala można dotrzeć w najkr&oacute;tszym czasie? Ile czasu potrzeba na przejazd we wtorek o 17:30 w godzinach szczytu?
+            </li>
+            <li>Jakie są odległości drogowe pomiędzy tymi gł&oacute;wnymi miastami?
+            </li>
+            <li>Kt&oacute;rzy z tych pacjent&oacute;w mieszkają w promieniu trzech kilometr&oacute;w od wskazanych fabryk chemicznych?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Narzędzie Znajdź najbliższe dostarcza warstwę zawierającą najbliższe obiekty i&nbsp;warstwę liniową, kt&oacute;ra łączy lokalizacje początkowe z&nbsp;ich najbliższymi lokalizacjami. Warstwa liniowa zawiera informacje na temat lokalizacji początkowych i&nbsp;najbliższych oraz informacje dotyczące odległości pomiędzy nimi.
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, jako obiekty początkowe i&nbsp;potencjalnie najbliższe będą uwzględniane tylko obiekty widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, zostaną uwzględnione wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Podaj lokalizacje początkowe</h2></div>
+        <hr/>
+        <div>
+            <p>Narzędzie Znajdź najbliższe dokonuje pomiaru od obiekt&oacute;w w określonej warstwie (lokalizacja początkowa) do lokalizacji określonych w następnym parametrze. Narzędzie jest w&nbsp;stanie obsłużyć do  5 000 obiekt&oacute;w w&nbsp;każdej warstwie. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Znajdź najbliższe lokalizacje w</h2></div>
+        <hr/>
+        <div>
+            <p>Narzędzie Znajdź najbliższe dokonuje pomiaru od każdego z obiekt&oacute;w w&nbsp;pierwszej warstwie do lokalizacji w&nbsp;tej warstwie. Narzędzie jest w&nbsp;stanie obsłużyć do  5 000 lokalizacji w&nbsp;każdej warstwie. </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Zmierz</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz, czy wyszukać najbliższe lokalizacje w&nbsp;oparciu o&nbsp;odległość w&nbsp;linii prostej czy tryb podr&oacute;żowania. Tryby podr&oacute;żowania są włączone tylko wtedy, gdy warstwa wejściowa zawiera punkty. Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji. Podczas korzystania z&nbsp;jednego z&nbsp;tryb&oacute;w podr&oacute;żowania pomiary wykonywane są wzdłuż dr&oacute;g i&nbsp;pasaży oraz respektują one obowiązujące zasady, takie jak drogi jednokierunkowe, zakazy skręcania i&nbsp;inne.
+            </p>
+            <p>Podczas pomiaru pomiędzy liniami lub obszarami wyznaczana jest odległość od lub do najbliższego punktu wzdłuż linii lub granicy obszaru. 
+            </p> 
+            <p>Po wybraniu narzędzia  <b>Czas przejazdu</b>, <b>Czas przejazdu w obszarach wiejskich</b> lub <b>Czas przejazdu samochodem ciężarowym</b> należy wybrać spos&oacute;b pomiaru czasu przejazdu.
+                <ul>
+                    <li>
+                        <p>Aby znaleźć najbliższe obiekty na podstawie stałych prędkości podr&oacute;ży, takich jak ograniczenia prędkości, a&nbsp;nie prędkości zmiennych, wynikających ze zmieniających się warunk&oacute;w drogowych, usuń zaznaczenie opcji  <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>.
+                        </p>
+                        <p>Opcja ta znajduje zastosowanie wtedy, gdy chcemy dowiedzieć się, kt&oacute;ry obiekt jest og&oacute;lnie najbliżej, jednak niekoniecznie najbliżej w&nbsp;kontekście warunk&oacute;w drogowych danego dnia i&nbsp;konkretnej godziny.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Aby znaleźć najbliższe obiekty na podstawie podanego czasu wyjazdu oraz zmieniających się warunk&oacute;w drogowych, zaznacz opcję  <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>. Jeśli dodatkowo wybierzesz opcję <b>Aktualny ruch drogowy</b>, to w celu dokonania oceny, kt&oacute;re obiekty znajdują najbliżej, czas wyjazdu z lokalizacji początkowych zostanie ustawiony na aktualną godzinę i uwzględniane będą bieżące i przewidywane prędkości ruchu drogowego określone w oparciu o informacje pobrane z czujnik&oacute;w i przekaźnik&oacute;w. Przewidywana prędkość ruchu ulicznego obliczana jest poprzez odniesienie do bieżących i&nbsp;historycznych wartości prędkości ruchu oraz aktualnych zdarzeń i&nbsp;warunk&oacute;w, takich jak pogoda. Prędkość ruchu drogowego jest przewidywana z 12-godzinnym wyprzedzeniem, więc można przesunąć suwak, aby ustawić czas wyjazdu o 12 godzin wcześniej.
+                        </p>
+                        <p>Użyj ustawień aktualnego ruchu drogowego, aby sprawdzić, do kt&oacute;rych obiekt&oacute;w można dotrzeć najszybciej, wyjeżdżając w&nbsp;tej chwili, wyjeżdżając za godzinę itd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Po zaznaczeniu opcji  <b>Uwzględnij dane o natężeniu ruchu drogowego</b> i wybraniu opcji <b>Ruch drogowy w oparciu o typowe warunki dla</b> danego dnia i godziny, narzędzie wyszuka najbliższe obiekty na podstawie historycznych średnich prędkości dla każdego cyklu pięciominutowego w całym tygodniu pracy. W&nbsp;wynikach brany jest pod uwagę ruch drogowy, ale nie jest uwzględniany wpływ aktualnych warunk&oacute;w na drodze i&nbsp;zdarzeń, kt&oacute;re mogą r&oacute;żnić się znacznie od normy.
+                        </p>
+                        <p>Można użyć tych ustawień opartych na historycznych danych o&nbsp;ruchu drogowym, aby odpowiedzieć na następujące pytanie: &bdquo;Do jakich obszar&oacute;w można dotrzeć, wyjeżdżając o&nbsp;godz. 11:30 w&nbsp;środę?&rdquo;. 
+                        </p>
+                        <p>Skonfigurowany czas odnosi się do strefy czasowej, w&nbsp;kt&oacute;rej są zlokalizowane obiekty początkowe. Jeśli zatem czas zostanie skonfigurowany na godz. 8:00 i&nbsp;występują dwa obiekty początkowe (jeden w&nbsp;Nowym Jorku, a&nbsp;drugi w&nbsp;Los Angeles), najbliższe lokalizacje zostaną wyszukane z&nbsp;uwzględnieniem odpowiednio godz. 8:00 czasu wschodniego i&nbsp;godz. 8:00 czasu pacyficznego.
+                        </p>
+                    </li>
+                </ul>
+                Uwaga: w momencie gdy pojazd wyjeżdża z danego punktu, upływa czas i zmieniają się warunki drogowe. Narzędzie uwzględnia te zmienne, jeśli jest zaznaczona opcja <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>, ale należy pamiętać, że nie wszystkie regiony przekazują dane o&nbsp;ruchu drogowym. Aby dowiedzieć się, czy ta usługa jest obsługiwana na badanym obszarze, w oknie narzędzia kliknij łącze <b>Sprawdź dostępność</b>. 
+            </p>
+            <p>Narzędzie  <b>Czas przejazdu samochodem ciężarowym</b> może korzystać z dynamicznych prędkości podr&oacute;ży ustalanych na podstawie danych o ruchu drogowym, przy czym nie będą przekraczane wynikające z przepis&oacute;w ograniczenia prędkości obowiązujące dla samochod&oacute;w ciężarowych. Jeśli na przykład dynamiczna prędkość ustalona dla danej drogi na podstawie danych o aktualnym natężeniu ruchu drogowego wynosi 105 km/h, ale ograniczenie prędkości dla samochod&oacute;w ciężarowych na tej drodze to 90 km/h, w obliczeniach zostanie użyta wartość 90 km/h.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Wybierz warstwy barier</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden lub większa liczba obiekt&oacute;w, kt&oacute;re pełnią rolę ograniczeń tymczasowych (innymi słowy barier) utrudniających podr&oacute;żowanie po ulicach, na kt&oacute;rych się znajdują. Bariery można definiować przy użyciu obiekt&oacute;w punktowych, liniowych lub poligonowych.
+            </p>
+            <p>Bariera punktowa może modelować powalone drzewo, wypadek, zerwaną linię energetyczną lub inny obiekt, kt&oacute;ry całkowicie blokuje ruch drogowy w określonej pozycji wzdłuż ulicy. Na tej ulicy ruch drogowy jest dozwolony, ale jest blokowany przez barierę. Można zdefiniować do 250 obiekt&oacute;w pełniących rolę barier punktowych.
+            </p>
+            <p>Bariery liniowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie przecinają się z ulicą. Przy użyciu bariery liniowej można na przykład modelować paradę lub marsz protestacyjny, kt&oacute;ry blokuje ruch drogowy na kilku odcinkach ulic. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery liniowe przekracza 500, narzędzie zwraca błąd.
+            </p>
+            <p>Bariery poligonowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie poligon przecina się z ulicą. Przy użyciu barier tego typu można na przykład modelować powodzie występujące na obszarach sieci ulicznej, kt&oacute;re uniemożliwią ruch drogowy w danym rejonie. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery poligonowe przekracza 2000, narzędzie zwraca błąd.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Dla każdej lokalizacji w warstwie wejściowej</h2></div>
+        <hr/>
+        <div>
+            <p>Dostępne są dwie opcje ograniczenia wyszukiwania najbliższych lokalizacji. Jedną z&nbsp;nich jest ograniczenie maksymalnej liczby najbliższych lokalizacji, przypadających na lokalizacje początkowe. Można wyszukać najbliższy park, dwa najbliższe parki itd. Drugą opcją jest ustawienie maksymalnej odległości, w&nbsp;kt&oacute;rej wykonywane jest wyszukiwanie lub czasu przejazdu.
+            </p>
+            <p>Usunięcie zaznaczenia tych opcji powoduje, że maksymalna liczba wyszukiwanych najbliższych lokalizacji wynosi 100 (jest to wartość graniczna dla narzędzia), a maksymalny zakres wyszukiwania jest nieograniczony.
+            </p>
+            <p>Czas przetwarzania zależy od liczby lokalizacji początkowych, liczby najbliższych lokalizacji oraz maksymalnego zakresu wyszukiwania. Im więcej lokalizacji oraz im większy zakres wyszukiwania, tym więcej czasu potrzeba na przetwarzanie.
+            </p>
+            <p>Uwaga: jeśli na zakres wyszukiwania zostanie ustawione ograniczenie, może się zdarzyć, że narzędzie nie znajdzie żadnych lokalizacji w tym zakresie lub że znaleziona zostanie mniejsza liczba lokalizacji, od podanej maksymalnej liczby najbliższych lokalizacji.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy obiektowej, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i dodana do mapy. Jeśli warstwa obiektowa już istnieje, wyświetlony zostanie komunikat z&nbsp;prośbą o&nbsp;podanie innej nazwy. Ta warstwa obiektowa będzie zawierała dwie warstwy: jedną z&nbsp;najbliższymi lokalizacjami i&nbsp;drugą z&nbsp;liniami łączącymi lokalizacje początkowe z&nbsp;najbliższymi lokalizacjami.
+            </p>
+            <p>Jeśli zostanie wybrana opcja  <b>Dołącz warstwy trasy</b>, każda trasa z wynik&oacute;w zostanie także zapisana jako warstwa trasy. Warstwa trasy zawiera wszystkie informacje dotyczące określonej trasy, takie jak przystanki przypisane do trasy i wskaz&oacute;wki dojazdu. Tworzenie warstw tras jest przydatne, jeśli chcesz udostępnić poszczeg&oacute;lne trasy innym członkom instytucji lub dodatkowo zmodyfikować trasy przy użyciu przycisku <b>Wskaz&oacute;wki dojazdu</b> w przeglądarce map. Unikalna nazwa każdej warstwy tras jest tworzona poprzez dodanie nazwy trasy wygenerowanej podczas wykonywania analizy do prefiksu będącego nazwą warstwy obiektowej.
+            </p>
+            <p>Maksymalna liczba warstw trasy, kt&oacute;re można utworzyć, wynosi  1 000. Jeśli wynik zawiera więcej niż  1 000 tras i jest zaznaczone pole wyboru  <b>Uwzględnij warstwy trasy</b>, narzędzie utworzy tylko wynikową usługę obiektową.
+            </p>
+            <p>Za pomocą menu rozwijanego  <b>Zapisz wynik w</b> można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisana warstwa obiektowa i warstwy tras (jeśli są tworzone).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

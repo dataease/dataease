@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-br/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Escolher as fei\u00e7\u00f5es de ponto para enriquecer",chooseMVgridLyrLabel:"Escolher a grade de m\u00faltiplas vari\u00e1veis para enriquecer",chooseVariables:"Escolher as vari\u00e1veis para adicionar",outputLayerName:"Enriquecida ${inputFeatures} de ${gridLayer}",itemDescription:"Camada de fei\u00e7\u00e3o gerada da execu\u00e7\u00e3o da solu\u00e7\u00e3o Enriquecer de Grade de M\u00faltiplas Vari\u00e1veis de ${inputFeatures}.",
+itemTags:"Resultado de An\u00e1lise, Enriquecer de Grade de M\u00faltiplas Vari\u00e1veis, ${inputFeatures}, ${gridLayer}",itemSnippet:"Camada de fei\u00e7\u00e3o gerada de Enriquecer de Grade de M\u00faltiplas Vari\u00e1veis."});

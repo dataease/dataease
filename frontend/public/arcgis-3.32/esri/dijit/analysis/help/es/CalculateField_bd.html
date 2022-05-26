@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular campo</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Calcular campo"></h2>
+        <hr/>
+    <p> Esta herramienta funciona con una capa de entrada para calcular los valores de un campo nuevo o existente. Crear una expresi&oacute;n de Arcade para calcular los valores con los que rellenar las entidades.   Si sus datos tienen la funci&oacute;n de tiempo habilitada y es de tipo de tiempo de instante, opcionalmente puede construir expresiones que realicen seguimiento.
+    </p>
+    <p>Por ejemplo, supongamos que desea modificar un campo existente denominado  <i>TotalSales</i>. Quiere que en el campo aparezca la suma del total de ventas de 2016 y 2017. Utilizando esos campos de la expresi&oacute;n, puede calcular el valor de campo como <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Probemos con otro ejemplo: supongamos que tiene mediciones GPS que registran la ubicaci&oacute;n, hora, Id. y velocidad de los autobuses de una ciudad. Quiere crear un campo nuevo denominado  <i>SpeedFrom3</i> que promedie la velocidad de las 3 &uacute;ltimas mediciones GPS registradas para cada entidad. Para este c&aacute;lculo, utilizar&iacute;amos un c&aacute;lculo que realice seguimiento; aqu&iacute; el recorrido ser&iacute;a un autob&uacute;s, reflejado por su Id.    El c&aacute;lculo que determina el promedio de velocidad de los 3 periodos de tiempo anteriores y del periodo de tiempo actual es <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa para calcular valores de campo</h2></div>
+        <hr/>
+        <div>
+            <p>Los puntos, l&iacute;neas, &aacute;reas o tabla que contendr&aacute;n los valores de campo calculados.  
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Calcular valores de campo para el campo</h2></div>
+        <hr/>
+        <div>
+            <p>El campo nuevo o existente para el que se calcular&aacute;n valores y el tipo de datos de ese campo. Si va a calcular valores en un campo ya existente, no tiene que hacer coincidir el tipo de datos. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Crear una expresión para calcular los valores de campo</h2></div>
+        <hr/>
+        <div>
+            <p>Agregar una expresi&oacute;n mediante el constructor de expresiones para calcular valores de campo. 
+            </p>
+            <p>Por ejemplo, supongamos que desea agregar los valores de dos campos, denominados  <i>income</i> y <i>bonus</i>. Para ello, sume la expresi&oacute;n <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>La expresión realiza seguimiento</h2></div>
+        <hr/>
+        <div>
+            <p>Especificar si la expresi&oacute;n realiza seguimiento. Una expresi&oacute;n que realice seguimiento incluir&aacute; formatos tales como  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Las expresiones que realizan seguimiento requieren que los campos identifiquen recorridos individuales. Los recorridos pueden estar formados por puntos, l&iacute;neas, &aacute;reas o tablas, y solo requieren que la entrada tenga un identificador de recorrido y que los datos tengan la funci&oacute;n de tiempo habilitada y que sea de tipo de tiempo de instante.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizar datos con intervalos de tiempo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique si desea calcular valores para sus recorridos con intervalos de tiempo que segmentar&aacute;n las entradas para el an&aacute;lisis. Si utiliza intervalos de tiempo, debe establecer el intervalo de tiempo que desee utilizar y, si lo desea, establecer el tiempo de referencia. Si no establece ning&uacute;n tiempo de referencia, se utilizar&aacute; el 1 de enero de 1970. 
+            </p>
+            <p>Por ejemplo, si establece el l&iacute;mite de tiempo en 1 d&iacute;a, a partir de las 9:00 AM del 1 de enero de 1990, cada recorrido se truncar&aacute; a las 9:00 AM para cada d&iacute;a y se analizar&aacute; dentro de ese segmento. 
+            </p>
+            <p>El uso de intervalos de tiempo es una forma r&aacute;pida de acelerar el tiempo de procesamiento, ya que crea r&aacute;pidamente recorridos m&aacute;s peque&ntilde;os para el an&aacute;lisis. Si a su an&aacute;lisis le conviene dividir por un intervalo de tiempo recurrente, le recomendamos que lo haga para procesar big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

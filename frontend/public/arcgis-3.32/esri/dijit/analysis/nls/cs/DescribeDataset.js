@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/DescribeDataset",{inputLayerLabel:"Vyberte datovou sadu k popisu",describeDataLabel:"Porozum\u011bjte sv\u00fdm dat\u016fm vytvo\u0159en\u00edm (voliteln\u00e9)",sampleLayer:"Vzorov\u00e9 vrstvy",extentLayer:"Vrstvy rozsahu",noOfFeaturesLabel:"Po\u010det prvk\u016f k zahrnut\u00ed",outputLayerName:"N\u00e1zev v\u00fdsledn\u00e9 vrstvy",resultName:"Popsat data ${layerName}",itemDescription:"Vrstva prvk\u016f vygenerovan\u00e1 n\u00e1strojem Popsat datovou sadu v ${layerName}. ",
+itemTags:"V\u00fdsledek anal\u00fdzy, PopsatDatovou sadu, ${layername}",itemSnippet:"Vrstva prvk\u016f vygenerovan\u00e1 n\u00e1strojem Popsat datovou sadu."});

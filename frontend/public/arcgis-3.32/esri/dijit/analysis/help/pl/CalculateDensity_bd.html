@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Oblicz zagęszczenie</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Oblicz zagęszczenie"></h2>
+        <hr/>
+    <p>Narzędzie Oblicz zagęszczenie tworzy mapę zagęszczenia z obiekt&oacute;w punktowych poprzez odpowiednie rozmieszczenie na powierzchni mapy znanych wartości wyrażających dane zjawisko (reprezentowane przez atrybuty punkt&oacute;w). Wynikiem uruchomienia narzędzia jest warstwa z obszarami sklasyfikowanymi według gęstości &mdash; od najmniejszego do największego zagęszczenia.   
+
+    </p>
+    <p>Jeśli dane wejściowe to obiekty punktowe, każdy punkt powinien prezentować lokalizację określonego wydarzenia lub zdarzenia, natomiast warstwa wynikowa przedstawia liczbę zdarzeń na jednostkę powierzchni. Wyższa wartość zagęszczenia w&nbsp;nowej lokalizacji oznacza, że w&nbsp;pobliżu tego miejsca znajduje się więcej punkt&oacute;w. W&nbsp;wielu przypadkach warstwa wynikowa może być traktowana jako powierzchnia zagrożenia dotycząca przyszłych wydarzeń. Na przykład, jeżeli dane punktowe reprezentują miejsca uderzenia pioruna, warstwę wynikową można interpretować jako powierzchnię zagrożenia przyszłymi uderzeniami piorun&oacute;w.
+    </p>
+    <p>Narzędzie to ma r&oacute;wnież następujące zastosowania:
+        <ul>
+            <li>Tworzenie map nasilenia przestępczości pomagających w&nbsp;opracowywaniu odpowiedniego przydziału sił policji do obszar&oacute;w o wysokiej przestępczości.
+            </li>
+            <li>Obliczanie liczby szpitali w określonym powiecie. Warstwa wynikowa będzie przedstawiać obszary o dużej i niskiej dostępności szpitali &mdash; informacja ta może zostać wykorzystana w procesie podejmowania decyzji o budowie nowych szpitali.
+            </li>
+            <li>Identyfikacja obszar&oacute;w wysokiego zagrożenia pożarami las&oacute;w na podstawie lokalizacji wcześniejszych pożar&oacute;w las&oacute;w
+            </li>
+            <li>Lokalizacja społeczności zamieszkujących tereny oddalone od gł&oacute;wnych dr&oacute;g w celu wyznaczenia przebiegu nowych dr&oacute;g
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę punktową, na podstawie której ma zostać obliczone zagęszczenie.</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, na podstawie kt&oacute;rej ma zostać obliczone zagęszczenie.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Wybierz jedno lub więcej pól, na podstawie których zostanie obliczone zagęszczenie (opcjonalne)</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj jedno lub większą liczbę p&oacute;l określających liczbę zdarzeń w poszczeg&oacute;lnych lokalizacjach. Jeżeli na przykład dane punktowe reprezentują miasta, możesz użyć pola określającego liczbę mieszkańc&oacute;w miasta jako pola zliczania. Wtedy w&nbsp;wynikowej warstwie zagęszczenia ludności przedstawione zostaną duże wartości gęstości zaludnienia znajdujące się w&nbsp;pobliżu miast o&nbsp;dużej liczbie mieszkańc&oacute;w.
+            </p>
+            <p>Zagęszczenie jest obliczane zawsze dla liczby punkt&oacute;w. Jeśli nie zostanie wybrane żadne pole, przyjęte zostanie założenie, że każda lokalizacja reprezentuje określoną liczbę.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Wybierz kształt kosza</h2></div>
+        <hr/>
+        <div>
+            <p>Kształt koszy, w kt&oacute;rych agregowane są punkty i kt&oacute;re są używane w obliczeniach zagęszczenia.
+            </p>
+            <p>Analiza wykonywana przy użyciu koszy  <b>kwadratowych</b> lub <b>sześciokątnych</b> wymaga układu wsp&oacute;łrzędnych odwzorowanych. <b>Układ wsp&oacute;łrzędnych przetwarzania</b> można skonfigurować w oknie <b>Środowiska analizy</b>. Jeśli układ wsp&oacute;łrzędnych przetwarzania nie zostanie skonfigurowany jako układ wsp&oacute;łrzędnych odwzorowanych, podczas <b>uruchamiania analizy</b> zostanie wyświetlony monit informujący o konieczności wykonania tej czynności.
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Wybierz wielkość kosza dla agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość wygenerowanych koszy. W przypadku koszy kwadratowych wielkość reprezentuje wysokość kwadratu. W przypadku koszy sześciokątnych wielkość reprezentuje wysokość sześciokąta (na podstawie bok&oacute;w r&oacute;wnoległych).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Wybierz wagi zagęszczenia do zastosowania</h2></div>
+        <hr/>
+        <div>
+            <p>Typ ważenia stosowany przy obliczaniu zagęszczenia. Dostępne są dwie możliwości:
+                <ul>
+                    <li> <b>Jednorodne</b> &mdash; obliczanie wielkości dla każdego obszaru.
+                    </li>
+                    <li> <b>Skupienie</b> &mdash; zastosowanie funkcji skupienia w celu dopasowania gładkiej zwężającej się powierzchni do poszczeg&oacute;lnych punkt&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Wybierz wielkość sąsiedztwa</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość obszaru używanego do obliczania zagęszczenia. Wielkość sąsiedztwa musi być większa niż wielkość kosza.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Wybierz jednostki wynikowe dla zagęszczenia</h2></div>
+        <hr/>
+        <div>
+            <p>Pożądane jednostki wynikowe wartości zagęszczenia. Domyślnie są to kilometry kwadratowe lub mile kwadratowe w zależności od domyślnych jednostek podanych w profilu. Jeśli wartości zagęszczenia są bardzo małe, można zwiększyć jednostki powierzchni (na przykład zmienić metry kwadratowe na kilometry kwadratowe), aby zwracane były większe wartości. Wartości skalują jedynie wynik.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Oblicz zagęszczenie za pomocą etapów czasowych (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli dla wejściowej warstwy punktowej włączono czas (typu Moment), można przeprowadzić analizę przy użyciu etap&oacute;w czasowych. Jeśli używany jest czas, można ustawić trzy parametry:
+                <ul>
+                    <li> <b>Przedział etapu czasowego</b>
+                    </li>
+                    <li> <b>Częstotliwość powtarzania etapu czasowego</b>
+                    </li>
+                    <li> <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na przykład, jeśli masz dane reprezentujące rok, kt&oacute;re chcesz przeanalizować przy użyciu tygodniowych etap&oacute;w czasowych, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 tydzień</code>. 
+            </p>
+            <p>Na przykład, jeśli masz dane reprezentujące rok, kt&oacute;re chcesz przeanalizować przy użyciu pierwszego tygodnia miesiąca, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> wartość <code>1 miesiąc</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>1 stycznia, 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Przedział etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p>Interwał czasu używany do tworzenia etap&oacute;w czasowych. Wartość w polu  <b>Przedział etapu czasowego</b> może być używana sama, z parametrem <b>Częstotliwość powtarzania etapu czasowego</b> lub <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>.
+            </p>
+            <p>Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Częstotliwość powtarzania etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p> Etap używany do obliczania etapu czasowego. Wartość w polu <b>Częstotliwość powtarzania etapu czasowego</b> może być używana sama, z parametrem <b>Przedział etapu czasowego</b> lub parametrem <b>Czas referencyjny</b> albo r&oacute;wnocześnie z parametrami <b>Przedział etapu czasowego</b> i <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>.
+            </p>
+            <p> Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Czas do wyrównania etapów czasowych</h2></div>
+        <hr/>
+        <div>
+            <p>Data i czas używane do wyr&oacute;wnywania okien czasowych. Etap czasowy rozpocznie się od tego czasu  i będzie trwał wstecz. Jeśli nie zostanie wybrany czas referencyjny, etap czasowy zostanie wyr&oacute;wnany względem 1 stycznia 1970 roku. 
+            </p>
+            <p> Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Odniesienie przestrzenne (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to parametr tymczasowy używany w wersji wstępnej do ustawiania odniesienia przestrzennego przetwarzania. Wiele narzędzi do obsługi dużych zbior&oacute;w danych wymaga użycia układu wsp&oacute;łrzędnych odwzorowanych jako odniesienia przestrzennego przetwarzania. Domyślnie narzędzie użyje wejściowego układu wsp&oacute;łrzędnych, ale operacja nie powiedzie się, jeśli będzie to układ wsp&oacute;łrzędnych geograficznych. Aby ustawić układ wsp&oacute;łrzędnych odwzorowanych, wprowadź wartość WKID. Na przykład  <b>Web Mercator</b> zostanie wprowadzony jako <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz magazyn danych</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nie należy używać relacyjnego magazynu danych, jeśli liczba wynik&oacute;w analiz geoprzestrzennych może się zwiększyć i może być konieczne zastosowanie magazynu dużych zbior&oacute;w danych czasowo-przestrzennych w celu obsłużenia dużych ilości danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

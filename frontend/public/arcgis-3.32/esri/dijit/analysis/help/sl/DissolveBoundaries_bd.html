@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Razgradi meje</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Razgradi meje"></h2>
+        <hr/>
+    <p>Poligoni, ki se prekrivajo ali si delijo skupno mejo ali atributivno vrednost, so združeni v enojen poligon.
+    </p>
+    <p>Katere meje se združijo lahko nadzirate tako, da navedete polje. Na primer, če imate sloj okrožij in ima vsako okrožje atribut  <pre>State_Name</pre>, lahko razgradite meje posameznih okrožij s pomočjo atributa <pre>State_Name</pre>. Okrožja bodo združena, če imajo enako vrednost <pre>State_Name</pre>. Rezultat je sloj državnih mej.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi poligonski sloj, katerih meje bodo razgrajene</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje poligonske geoobjekte, ki bodo razgrajeni. 
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Izberi način razgradnje</h2></div>
+        <hr/>
+        <div>
+            <p>Določite metodo, ki se uporablja za razgrajevanje polj.
+            </p>
+            <p>Izberete lahko eno od dveh metod za združevanje poligonskih geoobjektov:
+                <ul>
+                    <li> <b>Poligoni, ki se prekrivajo ali so sosednji</b> &ndash; Dva ali več poligonov, katerih meje se prekrivajo, bo združenih v en poligon. Poleg tega bodo sosednji poligoni (ki si delijo skupno mejo), združeni v en poligon.
+                    </li>
+                    <li> <b>Poligoni z enako vrednostjo polja</b> &ndash; Dva ali več poligonov bo združenih v en poligon, če imajo enako vrednost polja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Ustvari mnogodelne geoobjekte</h2></div>
+        <hr/>
+        <div>
+            <p>Mnogodelni geoobjekt je predstavitev kraja ali elementa, ki ima več kot en del, določen pa je kot en geoobjekt, saj se sklicuje na en niz atributov. Tako se na sloju z državami, na primer, država Havaji lahko &scaron;teje kot mnogodelni geoobjekt, ker so njeni ločeni geometrijski deli klasificirani kot ena država.
+            </p>
+            <p> <b>Ustvari mnogodelne geoobjekte</b> ponuja dve možnosti:
+                <ul>
+                    <li>Resnično (obkljukano) &ndash; izhodna storitev lahko vsebuje mnogodelne geoobjekte.
+                    </li>
+                    <li>Neresnično (odkljukano) &ndash; izhodna storitev bo vsebovala samo enodelne geoobjekte, posamezni geoobjekti pa bodo ustvarjeni za vsak del posebej. To je privzeto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Ko so poligoni združeni, lahko njihove atributivne vrednosti povzamete s smiselno statistiko. Na primer, če razgrajujete mejo med okrožji na podlagi  <pre>State_Name</pre> in ima vsako okrožje polje <i>Population</i>, lahko izračunate vsoto polja <pre>Population</pre> za državo.
+            </p>
+            <p> Statistiko lahko izračunate na povzetih geoobjektih.Na &scaron;tevilskih poljih lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na &scaron;tevilskih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

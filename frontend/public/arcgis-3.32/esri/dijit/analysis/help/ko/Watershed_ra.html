@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>유역(Watershed)</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="유역 작업"></h2>
+        <hr/>
+    <p>이 도구는 래스터의 셀 위에 기여 영역을 결정합니다.
+    </p>
+    <p>유역은 집중된 배수로 일반적으로 물 흐름의 원인이 되는 오르막 경사 영역입니다. 유역은 더 큰 유역의 일부일 수 있으며 하위 유역이라고 불리는 더 작은 유역을 포함할 수도 있습니다.
+    </p>
+    <p>각 유역의 값은 입력 래스터 또는 피처 유출 포인트 레이어의 원본 값에서 가져옵니다. 유출 포인트가 래스터 데이터셋인 경우 기본 설정에 따라 셀 값이 사용됩니다. 유출 포인트가 포인트 피처 데이터셋인 경우 값은 지정된 필드에서 가져옵니다.
+    </p>
+    <p>유역 도구는 D8 입력 흐름 방향 래스터 레이어만 지원합니다.
+    </p>
+    <p>입력 유출 포인트 위치를 피처 데이터로 지정할 때 사용 가능한 첫 번째 유효 필드가 기본 필드로 사용됩니다. 유효 필드가 없으면 객체 ID 필드(예시: OID 또는 FID)가 기본 필드로 사용됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>흐름 방향 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>각 셀의 흐름 방향을 나타내는 입력 래스터입니다.
+            </p>
+            <p>흐름 방향 래스터는 래스터 분석 도구 서비스에서 흐름 방향 작업이나 흐름 방향 도구를 사용하여 생성할 수 있으며, 기본 흐름 방향 유형  <b>D8</b>을 사용하여 실행할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>입력 유출 포인트 위치 지정</h2></div>
+        <hr/>
+        <div>
+            <p>입력 유출 포인트 위치입니다.
+            </p>
+            <p>래스터의 경우 해당 포인트 위치는 기여 영역 또는 집수가 결정된 상위 셀을 나타냅니다. NoData가 아닌 셀은 원본 셀로 사용됩니다. 포인트 입력의 경우 해당 포인트 위치는 기여 영역 또는 집수가 결정된 상위 위치를 나타냅니다.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>유출 포인트 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>유출 포인트 위치에 값을 할당하는 데 사용되는 필드입니다.
+            </p>
+            <p>입력 유출 포인트 레이어가 래스터인 경우 값이 사용됩니다. 해당 포인트 레이어가 피처인 경우 숫자 필드가 사용됩니다. 필드에 부동 소수점 값이 포함되어 있으면 정수로 잘립니다.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

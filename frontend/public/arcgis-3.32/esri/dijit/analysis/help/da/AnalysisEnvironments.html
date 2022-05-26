@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Miljøindstillinger for portalanalyse</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Milj&oslash;indstillinger for analyse i Portal for ArcGIS og  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Overskriv resultatlag</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Angiver, om det eksisterende lag skal overskrives. N&aring;r indstillingen er markeret: Hvis der allerede findes et lag med samme navn i dit indhold, vil det blive overskrevet.
+            </p>
+            <p>
+                <ul>
+                    <li>Markeret &ndash; Hvis der allerede findes et lag med samme navn i dit indhold, vil det blive overskrevet. Outputtet vil have samme koordinatsystem som inputtet.
+                    </li>
+                    <li>Ikke-markeret &ndash; Hvis det angivne navn p&aring; resultatlaget allerede findes, returneres der en fejl, og resultatlaget skal omd&oslash;bes, f&oslash;r v&aelig;rkt&oslash;jet kan k&oslash;res. Dette er standardv&aelig;rdien.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Luk analyse-widget efter kørsel af analyse</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver, om analysedialogboksen skal holdes &aring;ben og aktiveret, mens v&aelig;rkt&oslash;jet k&oslash;rer. Med denne indstilling kan du &aelig;ndre dine analyseparametre, mens det forrige analysejob fortsat k&oslash;rer. Analyser er en tilbagevendende proces og ved at holde v&aelig;rkt&oslash;jets dialogboks &aring;ben, kan du &aelig;ndre parametrene og k&oslash;re din analyse igen.
+            </p>
+            <p>
+                <ul>
+                    <li>Markeret &ndash; Analysev&aelig;rkt&oslash;jets dialogboks lukkes, og fokus returneres til indholdsfortegnelsen. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li>Ikke-markeret &ndash; Analysev&aelig;rkt&oslash;jets dialogboks forbliver &aring;ben og aktiveret.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Gem analyseresultater som "hostede" vektorlag</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Angiver, om det resultatlag, der oprettes ud fra din analyse, skal v&aelig;re en objektsamling eller et &quot;hosted&quot; vektorlag. 
+            </p>
+            <p>
+                <ul>
+                    <li>Markeret &ndash; Resultaterne af din analyse vil oprette et &quot;hosted&quot; vektorlag, og der oprettes et element i dit indhold. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li>Ikke-markeret &ndash; Resultaterne af dine analyser vil oprette en objektsamling.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Koordinatsystem for output</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver koordinatsystem for resultatlaget til rasteranalyse.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Samme som input</b> &ndash; Resultatet af din analyse vil v&aelig;re i det samme koordinatsystem som inputtet. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Resultatet af din analyse vil v&aelig;re i det koordinatsystem, du v&aelig;lger. N&aring;r denne indstilling er valgt, skal du klikke p&aring; globus-ikonet og v&aelig;lge p&aring; en liste med kendte koordinatsystemer eller tilf&oslash;je den spatiale reference WKID i den relevante boks.
+                    </li>
+                    <li> <b>Laget &lt;navn&gt;</b> &ndash; Resultatet af din analyse vil v&aelig;re i det samme koordinatsystem som et eksisterende lag, du v&aelig;lger p&aring; dit webkort.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Behandler koordinatsystem</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver det koordinatsystem, som skal bruges under udf&oslash;relse af GeoAnalytics-analysen.   
+            </p>
+            <p>For GeoAnalytics kr&aelig;ver nogle analyser, at behandlingen skal udf&oslash;res i et projiceret koordinatsystem.   Ethvert v&aelig;rkt&oslash;j, der har implementeret placering af data i beholdere eller line&aelig;re enheder, kr&aelig;ver et projiceret koordinatsystem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Samme som input</b> &ndash; Din analyse vil blive behandlet i det samme koordinatsystem som inputtet. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Din analyse vil v&aelig;re i det koordinatsystem, du v&aelig;lger. N&aring;r denne indstilling er valgt, skal du klikke p&aring; globus-ikonet og v&aelig;lge p&aring; en liste med kendte projicerede koordinatsystemer eller tilf&oslash;je den spatiale reference WKID i den relevante boks.
+                    </li>
+                    <li> <b>Laget &lt;navn&gt;</b> &ndash; Din analyse vil v&aelig;re i det samme koordinatsystem som et eksisterende lag, du v&aelig;lger p&aring; dit webkort.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Udstrækning</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver den udstr&aelig;kning eller gr&aelig;nse, som skal bruges under udf&oslash;relse af analyser. Alle de inputobjekter, der ligger helt inde i eller som gennemsk&aelig;rer den angivne udstr&aelig;kning, vil blive brugt i analysen.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Standard</b> &ndash; Den udstr&aelig;kning, som er angivet af v&aelig;rkt&oslash;jet.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Udstr&aelig;kningen defineres af det koordinatsystem, du v&aelig;lger.
+                    </li>
+                    <li> <b>Laget &lt;navn&gt;</b> &ndash; Den udstr&aelig;kning, der bruges til at behandle din analyse, vil v&aelig;re den samme som den spatiale udstr&aelig;kning p&aring; et eksisterende lag, du v&aelig;lger p&aring; dit webkort. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Snap-raster</h2></div>
+        <hr/>
+        <div>
+            <p>Justerer udstr&aelig;kningen for outputrasterlaget, s&aring; det passer til cellejusteringen for det angivne  <b>Snap-raster</b>-lag i rasteranalyse.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver den cellest&oslash;rrelse eller opl&oslash;sning, som skal bruges til at oprette outputrasterlaget i rasteranalyse. Standardoutputopl&oslash;sningen bestemmes af den st&oslash;rste cellesst&oslash;rrelse for inputrasterlaget.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimalt antal input</b> &ndash; Brug den mindste cellest&oslash;rrelse til alle inputlagene.
+                    </li>
+                    <li> <b>Maksimalt antal input</b> &ndash; Brug den st&oslash;rste cellest&oslash;rrelse til alle inputlagene. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Angiv en numerisk v&aelig;rdi for at indstille cellest&oslash;rrelsen. Hvis denne indstilling v&aelig;lges, er standardv&aelig;rdien 1.
+                    </li>
+                    <li> <b>Lag &lt;navn&gt;</b> &ndash; Indstiller cellest&oslash;rrelse for det valgte rasterlag.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maske</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver et lag, der skal bruges til at definere dit interesseomr&aring;de i rasteranalyse. Kun de celler, der falder inden for analysemasken, vil blive taget i betragtning under analysen.
+            </p>
+            <ul>
+                <li>Masken kan enten v&aelig;re et raster- eller vektorlag.
+                </li>
+                <li>Hvis analysemasken er et rasterlag, vil alle celler, der indeholder en v&aelig;rdi, blive taget i betragtning i forbindelse med definition af masken. Celler i et maskerasterlag, der har en NoData-v&aelig;rdi, betragtes som v&aelig;rende uden for masken og vil blive vist som NoData i analyseresultatlaget. 
+                </li>
+                <li>Hvis analysemasken er et vektorlag, konverteres det det internt til et rasterlag ved udf&oslash;relsen. Af denne &aring;rsag er det vigtigt, at
+ <b>Cellest&oslash;rrelse</b> og <b>Snap-raster</b> er indstillet korrekt til din analyse.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultater lagres i et  ArcGIS Data Store, og vises som et vektorlag i  Portal for ArcGIS, eller de kan lagret i en konfigureret big data-fildeling. 
+            </p>
+            <p>N&aring;r du gemmer et resultat i  ArcGIS Data Store b&oslash;r resultaterne i de fleste tilf&aelig;lde lagres i et spatiotemporalt datalager. Dette er standardv&aelig;rdien. Her er &aring;rsagerne til, at du m&aring;ske &oslash;nsker at lagre resultaterne i et relationsdatalager: 
+                <ul>
+                    <li>Hvis du vil bruge dine resultater i et portal-til-portal-samarbejde
+                    </li>
+                    <li>Hvis du vil aktivere synkroniseringsfunktioner i forbindelse med dine resultater
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r benytte et relationsdatalager, hvis du forventer, at m&aelig;ngden af dine GeoAnalytics-resultater vil blive st&oslash;rre, og du &oslash;nsker at drage fordel af det spatiotemporale big data-lagers muligheder for at h&aring;ndtere store datam&aelig;ngder. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Parallel databehandlingsfaktor</h2></div>
+        <hr/>
+        <div>
+            <p>Distribuerer analyse p&aring; tv&aelig;rs af flere forekomster af rasterbehandlings-tjenester. 
+            </p>
+            <p>V&aelig;rkt&oslash;jer, der f&oslash;lger milj&oslash;et  <b>Parallel behandlingsfaktor</b>, giver dig mulighed for at styre antallet af forekomster af rasterbehandlings-tjenester, der kan bruges til behandling af dine data.
+            </p>
+            <p>Hvis v&aelig;rkt&oslash;jet ikke f&oslash;lger  <b>processortypen</b>, eller hvis <b>processortypemilj&oslash;et</b> er indstillet til <b>CPU</b>, styrer milj&oslash;et <b>Parallel behandlingsfaktor</b> forekomsterne af rasterbehandlings (CPU) -tjenester. Hvis <b>Processortype</b> er indstillet til <b>GPU</b>, styrer milj&oslash;et <b>Parallel behandlingsfaktor</b> antallet af GPU-rasterbehandlingsforekomster.
+            </p> 
+            <p>Ved at angive  <b>Parallel behandlingsfaktor</b> kan du anmode om antallet af parallelle arbejdere, som rasteranalyse-billedserveren bruger til at behandle en rasteranalyseopgave. Hvis det samlede antal parallelle processer overstiger det maksimale antal rasterbehandlings-tjenester (CPU eller GPU), bliver de yderligere parallelle processer sat i k&oslash;.
+            </p>
+            <p>Hvis  <b>Parallel behandlingsfaktor</b> ikke er angivet, hvilket er standard, bruger v&aelig;rkt&oslash;jet 80 procent af det maksimale antal forekomster af rasterbehandlings-tjenester. Der kan angives et helt tal eller en procentdel som parallel behandlingsfaktor.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Processortype</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;rkt&oslash;jer, der f&oslash;lger milj&oslash;et  <b>Processortype</b>, giver dig mulighed for at v&aelig;lge, hvor og hvordan du vil behandle dine data. Du kan behandle dine data ved hj&aelig;lp af servercomputerens CPU eller GPU. Hvis milj&oslash;et <b>Processortype</b> er tomt, bruger v&aelig;rkt&oslash;jet CPU til at behandle dataene. Dette er standardv&aelig;rdien.
+            </p> 
+            <p>CPU-behandling kan paralleliseres p&aring; tv&aelig;rs af flere kerner og forekomster, som h&aring;ndteres af  <b>Parallel behandlingsfaktor</b>.
+            </p>
+            <p>GPU'er er effektive til grafik og billedbehandling, hvor deres meget parallelle struktur g&oslash;r dem effektive til at behandle store datablokke p&aring; en gentagende m&aring;de. Rasteranalysev&aelig;rkt&oslash;jerne, der f&oslash;lger dette milj&oslash;, kan distribuere deres job p&aring; tv&aelig;rs af GPU-forekomster p&aring; flere rasteranalyseservere, som h&aring;ndteres af  <b>Parallel behandlingsfaktor</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> &ndash; Data behandles med computerens grafikbehandlingsenhed.
+                    </li>
+                    <li> <b>CPU</b> &ndash; Data behandles med computerens centrale behandlingsenhed.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

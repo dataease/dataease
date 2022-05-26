@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>데이터 추가</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="데이터 추가 워크플로 다이어그램"></h2>
+        <hr/>
+    <p>이 도구는 기존 호스팅 피처 레이어에 데이터를 추가합니다. 데이터 추가는 기존 입력 레이어를 수정하고 새로운 결과 레이어를 생성하지 않습니다. 필드 이름 및 필드 유형을 기반으로 필드를 일치하거나 고급 일치 방법을 적용할 수 있습니다.
+    </p>
+    <p>예를 들면 다음과 같습니다. 
+        <ul>
+            <li>월간 판매 기록을 생성하는 대형 보험 회사의 직원이라고 가정해 보겠습니다. 연간 보고서의 경우 분석을 위해 월간 데이터를 수집해야 합니다.  판매 분석을 시작하려면 월간 데이터 사용이 가능할 때 데이터 추가를 활용하여 AnnualReport_2018 레이어를 업데이트할 수 있습니다. 매월 기관에서 일관된 스키마를 유지한다는 것을 알고 있으므로, 기본 필드 매핑 방법을 사용하여 필드 이름 및 유형을 기반으로 피처를 효율적으로 추가할 수 있습니다.
+            </li>
+            <li>10개의 환경 단체는 각 관할 구역 내에서 수십만 개의 기후 측정값을 수집합니다.  이러한 기관은 지역 및 글로벌 패턴에 대한 이해를 돕기 위해 데이터를 수집하고자 합니다. 각 기관은 해당 데이터셋의 스키마를 결정합니다. 기관은 온도와 풍속 데이터에 각각 다른 필드 이름을 지정했습니다.  데이터셋 간의 필드 이름에 차이가 있는 경우, 필드 매핑을 활용하여 온도와 풍속 측정값을 개별 필드에 추가하는 방법을 지정할 수 있습니다.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>다음에 추가할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>데이터가 추가될 테이블, 포인트, 라인 또는 폴리곤 피처입니다.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>추가할 레이어는 도구를 실행하는 동안 수정됩니다. 진행하기 전에 이 레이어를 수정할 것인지 확인합니다.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 호스팅 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>추가할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 레이어에 추가할 테이블, 포인트, 라인 또는 폴리곤 피처입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>모든 피처 추가 또는 일부분 정의(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>추가할 피처를 식별합니다. 매개변수는 선택 사항입니다.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>필드 추가 방법 선택(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>추가 레이어 필드를 입력 레이어에 추가하는 방법을 지정합니다. 기본 설정에 따라 일치하는 모든 입력 및 추가 필드가 추가됩니다. 필드 이름이 같고 필드 유형이 동일한 경우 필드는 일치합니다. 필요한 경우 필드가 일치되는 방법을 선택하거나 Arcade 식을 계산하여 필드 값을 채울 수 있습니다.
+            </p>
+            <p>예를 들어, 입력 레이어에  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>및 <i>unused_field</i> 필드가 있고 추가 레이어에 <i>field_string</i>, <i>field_number</i> 및 <i>MY_DATE_FIELD</i> 필드가 있습니다.
+                <ul>
+                    <li>기본 설정에 따라, 도구는 입력 레이어의  <i>field_number</i>를 추가 레이어의 <i>field_number</i>와 일치시키고 입력 레이어의 <i>field_string</i>을 추가 레이어의 <i>field_string</i>와 일치시킵니다.
+                    </li>
+                    <li>기본 설정에 따라, 입력 레이어에는 추가 레이어에 일치하는 필드가 없으므로 입력 레이어  <i>date_field</i> 및 <i>unused_field</i> 필드는 <i>null</i> 값으로 채워집니다.
+                    </li>
+                    <li>선택적으로 기본 설정에 따라 자동으로 일치하지 않는 필드에 값을 추가할 수 있습니다. 예를 들어, 입력 레이어의  <i>date_field</i>는 추가 필드 <i>MY_DATE_FIELD</i>와 일치할 수 없습니다. 그렇게 하려면 첫 번째 열의 <i>date_field</i> 옆에 있는 드롭다운 메뉴를 사용하고 두 번째 열의 드롭다운 메뉴에서 <i>MY_DATE_FIELD</i>를 선택합니다.
+                    </li>
+                </ul>
+                 또 다른 예시로, 입력 레이어에 <i>value_1</i>, <i>value_2</i>, <i>value_3</i> 및 <i>my_Average</i> 숫자 필드가 있고 추가 레이어에 <i>value_1</i>, <i>value_2</i> 및 <i>value_3</i> 숫자 필드가 있습니다.
+                <ul>
+                    <li>기본 설정에 따라,  <i>value_1</i>, <i>value_2</i> 및 <i>value_3</i> 값은 일치하고 추가됩니다.
+                    </li>
+                    <li>기본 동작 외에도  <i>my_Average</i> 필드의 값을 계산할 수 있습니다. <i>my_Average</i> 옆에 있는 열의 <b>식</b> 드롭다운 옵션을 선택하고 <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>와 같은 사용자 정의 Arcade 식을 생성하는 등 다중 필드 및 계산 작업을 사용하여 이 작업을 수행합니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

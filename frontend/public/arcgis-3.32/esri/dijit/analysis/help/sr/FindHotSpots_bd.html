@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pronađite žarišta</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Pronađite vruće tačke"></h2>
+        <hr/>
+    <p>Alatka Pronađite vruće tačke odrediće da li postoje statistički značajni klasteri u prostornom obrascu va&scaron;ih podataka. 
+        <ul>
+            <li>Da li su va&scaron;e tačke (kriminalni incidenti, drveće ili saobraćajne nesreće) stvarno u klasteru?  Kako možete da budete sigurni?
+            </li>
+            <li>Da li ste zaista otkrili statistički značajne vruće tačke ili bi va&scaron;a mapa predstavila drugačiju situaciju ako biste promenili način na koji je simbolizovana?
+            </li>
+        </ul>
+        Alatka Pronađi vruće tačke pomoći će vam da odgovorite na ova pitanja sa sigurno&scaron;ću.
+    </p>
+    <p>Čak i nasumični prostorni obrasci pokazuju izvesni stepen klastera. Pored toga, oči i um prirodno poku&scaron;avaju da pronađu obrasce, čak i kada ne postoje. Zbog toga, ne može se sa sigurno&scaron;ću znati da li su obrasci u va&scaron;im podacima rezultati stvarnih prostornih procesa na delu ili su samo rezultat nasumične slučajnosti. Zbog toga istraživači i analitičari koriste statističke metode kao &scaron;to je Pronađi vruće tačke (Getis-Ord Gi*) za kvantifikovanje prostornih obrazaca. Kada stvarno pronađete statistički značajne klastere u svojim podacima, dobićete vredne informacije. Ako znate gde i kada dolazi do klastera, to će vam dati važne naznake o procesima koji uslovljavaju obrasce koje vidite. Ako znate da su rezidencijalne provale, na primer, konstantno vi&scaron;e u određenim susedstvima, to će vam pružiti ključne informacije ako želite da dizajnirate efektne strategije prevencije, dodelite oskudne policijske resurse, pokrenete programe nadzora susedstva, pokrenete detaljne kriminalne istrage ili identifikujete potencijalne osumnjičene.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Odaberite sloj za koji će biti izračunata žarišta</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj iz kog mogu da se pronađu vruće i hladne tačke.
+            </p>
+            <p>Ova analiza koristi blokove i zahteva projektovani koordinatni sistem.  <b>Koordinatni sistem obrade</b> možete da podesite u <b>Okruženja analize</b>. Ako koordinatni sistem obrade nije pode&scaron;en na projektovani koordinatni sistem, od vas će se tražiti da ga podesite prilikom kori&scaron;ćenja opcije <b>Pokreni analizu</b> .
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Pronađi klastere visoke i niske vrednosti</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Ova analiza odgovara na pitanje: Gde se visoke i niske vrednosti grupi&scaron;u prostorno?
+            </p>
+            <p>Ako su va&scaron;i podaci tačke, a odabrali ste  <b>Broj tačaka</b>, ova alatka će proceniti prostorni raspored tačkastih geoobjekata kako bi odgovorila na pitanje: Gde se tačke neočekivano grupi&scaron;u u klastere ili &scaron;ire?
+            </p>
+            <p>Ako odaberete polje, ova alatka će proceniti prostorni raspored vrednosti povezanih sa svakim geoobjektom da bi odgovorila na pitanje: Gde se visoke i niske vrednosti grupi&scaron;u?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izaberite veličinu blokova za grupisanje</h2></div>
+        <hr/>
+        <div>
+            <p>Rastojanje koje se koristi za generisanje kvadratnih blokova koji će se koristiti za analiziranje va&scaron;ih ulaznih tačaka.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Pronađite žarišta korišćenjem vremenski koraka (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Ako je vreme omogućeno na tačkastom sloju i u pitanju je trenutak, možete da analizirate koristeći vremenske korake.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval vremenskih koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Interval vremena koji se koristi za generisanje vremenskih koraka. Vreme može da se poravna sa vremenom početka ili kraja unosa podataka ili sa navedenim referentnim vremenom.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Interval vremenskih koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Interval vremena koji se koristi za generisanje vremenskih koraka. Vreme može da se poravna sa vremenom početka ili kraja unosa podataka ili sa navedenim referentnim vremenom.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Odaberite kako da poravnate vremenske korake</h2></div>
+        <hr/>
+        <div>
+            <p>Kako se poravnavaju vremenski koraci. Postoje tri načina da se poravnaju vremenski koraci:
+                <ul>
+                    <li> <b>Početno vreme</b>&ndash;vremenski koraci se poravnavaju prema prvom geoobjektu u vremenu.
+                    </li>
+                    <li> <b>Zavr&scaron;no vreme</b>&ndash;vremenski koraci se poravnavaju prema poslednjem geoobjektu u vremenu.
+                    </li>
+                    <li> <b>Vreme reference</b>&ndash;vremenski koraci se poravnavaju prema određenom vremenu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Vreme reference za poravnavanje vremenskih koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Datum i vreme se koriste za poravnavanje vremenskih koraka.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Izaberite veličinu susedstva za izračunavanja žarišta</h2></div>
+        <hr/>
+        <div>
+            <p>Rastojanje se koristi za određivanje susedstva koje se koristi za izračunavanja vrućih tačaka. Susedstvo bi trebalo da bude veće od veličine bloka, kako bi se osiguralo da svaki blok ima barem jednog suseda. Svaki blok se analizira i upoređuje sa susednim blokovima.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Prostorna referenca (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je privremen parametar za preliminarnu verziju da bi se podesila prostorna referenca obrade. Mnoge alatke za velike podatke zahtevaju kori&scaron;ćenje projektovanog koordinatnog sistema kao prostorne reference za obradu. Podrazumevano, alatka će koristiti ulazni koordinatni sistem, ali će otkazati ako je u pitanju geografski koordinatni sistem. Da biste podesili projektovani koordinate sistem, unesite WKID. Na primer,  <b>Web Mercator</b> bi bilo uneto kao <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Odaberite ArcGIS skladište podataka u koje će se čuvati rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalize se skladi&scaron;te u skladi&scaron;tu podataka i izloženi su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva, rezultati bi trebali da budu skladi&scaron;teni u u skladi&scaron;te prostorno-vremenskih podataka i ovo je podrazumevano. U nekim slučajevima, čuvanje rezultata u skladi&scaron;te relacionih podataka je dobar izbor. Slede razlozi zbog kojih ćete želeti da skladi&scaron;tite rezultate u skladi&scaron;tu relacionih podataka: 
+                <ul>
+                    <li>Možete da koristite rezultate u kolaboraciji portal-sa-portalom.
+                    </li>
+                    <li>Možete da omogućite mogućnosti sinhronizacije sa va&scaron;im rezultatima.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne treba da koristite skladi&scaron;te relacionih podataka ako očekujete da se geoanalitički podaci povećaju i treba da iskoristite mogućnosti prostorno-vremenskog skladi&scaron;ta velikih podataka kako biste upravljali velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Ovaj sloj sa rezultatima će vam prikazati statistički značajne klastere visokih i niskih vrednosti ili brojeve tačaka. Ako naziv rezultujućeg sloja već postoji, od vas će se tražiti da ga preimenujete.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

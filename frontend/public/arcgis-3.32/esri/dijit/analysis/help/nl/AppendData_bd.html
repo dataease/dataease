@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Data bijvoegen</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Gegevens bijvoegen workflowdiagram"></h2>
+        <hr/>
+    <p>Deze tool voegt data toe aan een bestaande gehoste objectlaag. Data bijvoegen past de originele invoerlaag aan en genereert geen nieuwe uitvoerlaag. U kunt de velden koppelen op basis van de veldnaam en he veldtype of u kunt geavanceerdere matchingmethodes toepassen.
+    </p>
+    <p>Hier volgen enkele voorbeelden: 
+        <ul>
+            <li>U bent werknemer bij een grote verzekeringsmaatschappij die maandelijks een verkoopverslag genereert. Voor uw jaarverslag moeten de maandelijkse gegevens worden verzameld voor analyse. Om een verkoopanalyse te starten, kunt u gebruik maken van Data bijvoegen om uw AnnualReport_2018 laag bij te werken zodra uw maandelijkse cijfers beschikbaar zijn. Aangezien u weet dat uw organisatie elke maand een consistent schema bijhoudt, kunt u de standaardmethode voor veldmapping gebruiken om effici&euml;nt functies toe te voegen op basis van veldnaam en -type.
+            </li>
+            <li>Tien milieugroeperingen verzamelen elk honderdduizenden klimaatmetingen binnen hun jurisdictie.  Deze organisaties willen hun gegevens verzamelen om regionale en mondiale patronen beter te begrijpen. Elke organisatie bepaalt het schema voor hun dataset. Ze specificeerden elk verschillende veldnamen voor temperatuur- en windsnelheidsdata.  Gezien de verschillen in veldnamen tussen datasets, kan veld mapping worden ingezet om te specificeren hoe temperatuur- en windsnelheidsmetingen aan hun respectievelijke velden kunnen worden bijgevoegd.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag om aan toe te voegen</h2></div>
+        <hr/>
+        <div>
+            <p>De tabel-, punt-, lijn- of polygoonkenmerken waaraan de gegevens worden toegevoegd.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Tijdens het uitvoeren van de tool wordt de laag, waar u aan toegevoegd, gewijzigd. Voordat u verder gaat, moet u controleren of u deze laag wilt wijzigen.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan keuzelijst om in uw inhoud voor een gehoste objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Kies laag om toe te voegen</h2></div>
+        <hr/>
+        <div>
+            <p>De tabel-, punt-, lijn- of polygoonkenmerken om aan de invoerlaag toe te voegen.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Voeg alle objecten toe of definieer een subset (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft aan welke kenmerken moeten worden toegevoegd. Deze parameter is optioneel.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Kies hoe velden toe te voegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert hoe de toevoegingslaagvelden worden toegevoegd aan de invoerlaag. Standaard worden alle overeenstemmende invoervelden en invoervelden toegevoegd. Velden komen overeen als ze dezelfde veldnaam en hetzelfde veldtype hebben. Optioneel kunt u kiezen hoe velden worden gematcht, of Arcade-expressies berekenen om veldwaarden in te vullen.
+            </p>
+            <p>U hebt bijvoorbeeld een invoerlaag met  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> velden en een toevoegingslaag met <i>field_string</i>, <i>field_number</i>, en <i>MY_DATE_FIELD</i> velden.
+                <ul>
+                    <li>Standaard koppelt de tool  <i>field_number</i> in de invoerlaag aan <i>field_number</i> in de toevoegingslaag en <i>field_string</i>  in de invoerlaag naar <i>field_string</i> in de toevoegingslaag.
+                    </li>
+                    <li>De invoerlaag  <i>date_field</i> en <i>unused_field</i> velden worden standaard ingevuld met waarden van <i>null</i> omdat ze geen overeenkomende laag in de toevoegingslaag hebben.
+                    </li>
+                    <li>U kunt optioneel waardes toevoegen aan velden die standaard niet automatisch gekoppeld zijn. Bijvoorbeeld,  <i>date_field</i> in de invoerlaag kan worden gekoppeld aan het toevoegingsveld <i>MY_DATE_FIELD</i>. Gebruik hiervoor het volgkeuzemenu naast <i>date_field</i> in de eerste kolom en selecteer <i>MY_DATE_FIELD</i> uit het volgkeuzemenu in de tweede kolom.
+                    </li>
+                </ul>
+                 Nog een ander voorbeeld, een invoerlaag heeft numerieke velden <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, and <i>my_Average</i> en een toevoegingslaag heeft numerieke velden <i>value_1</i>, <i>value_2</i> en <i>value_3</i>.
+                <ul>
+                    <li>Standaard wordt  <i>value_1</i>, <i>value_2</i>, and <i>value_3</i> gekoppeld en toegevoegd.
+                    </li>
+                    <li>Naast standaardgedrag kunnen waarden worden berekend voor het  <i>my_Average</i> veld. Doe dit met behulp van meerdere velden en wiskundige handelingen door het selecteren van het <b>Expressie</b> volgkeuzemenu in de kolom naast <i>my_Average</i> en het opbouwen van een aangepaste Arcade-expressie, zoals <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

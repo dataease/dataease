@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/grid/coreUtils/GridCellContentSynchronizer",["./GridDataUtil","../../supportClasses/templateJsonUtils/fieldInfo/FieldInfoBuilder"],function(d,e){return{syncParentFieldInfoWithElementState:function(a,c){if(a&&c){var b=d.getFieldInfo(a);b&&(b.isChart?(b.chartJson.visualProperties.width=a.getWidth(),b.chartJson.visualProperties.height=a.getHeight()):b.isMap?d.setFieldInfo(a,e.createFieldInfoFromMap(c.toJson())):b.isImage?d.setFieldInfo(a,e.createFieldInfoFromImage(c.toJson(),
+c.imageTriggerJson)):b.isShape?d.setFieldInfo(a,e.createFieldInfoFromShape(c.toJson())):b.isReportSection?d.setFieldInfo(a,e.createFieldInfoFromSection(c.toJson())):b.isInfographic&&d.setFieldInfo(a,e.createFieldInfoFromInfographic(c.toJson())))}}}});

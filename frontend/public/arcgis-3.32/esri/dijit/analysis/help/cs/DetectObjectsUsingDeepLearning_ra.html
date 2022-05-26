@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Detekovat objekty pomocí deep learningu (Detect Objects Using Deep Learning)</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Detekovat objekty pomoc&iacute; deep learningu"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj spust&iacute; model učen&iacute; deep learningu na vstupn&iacute;m rastru pro vytvořen&iacute; tř&iacute;dy prvků obsahuj&iacute;c&iacute; objekty, kter&eacute; nalezne. Prvky mohou b&yacute;t ohraničuj&iacute;c&iacute; v&yacute;řezy nebo polygony kolem nalezen&yacute;ch objektů, nebo body ve středech objektů.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b> , budou analyzov&aacute;ny pouze rastrov&eacute; oblasti viditeln&eacute; v&nbsp;aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, bude analyzov&aacute;n cel&yacute; rastr, i když se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Vyberte snímek, který bude použit k detekování objektů</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; sn&iacute;mek, kter&yacute; bude použit k detekov&aacute;n&iacute; objektů
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Vyberte model deep learningu, který bude použit k detekování objektů</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupem je položka deep learningov&eacute;ho bal&iacute;čku ( <code>.dlpk</code>) .
+            </p>
+            <p>Deep learningov&yacute; bal&iacute;ček je složen ze souboru JSON s definic&iacute; modelu Esri ( <code>.emd</code>), souboru s bin&aacute;rn&iacute;m modelem deep learningu, a volitelně rastrov&eacute; funkce Python k použit&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Zadejte argumenty modelu deep learningu</h2></div>
+        <hr/>
+        <div>
+            <p>Argumenty funkce jsou definov&aacute;ny ve tř&iacute;dě rastrov&eacute; funkce jazyka Python, na kterou odkazuje vstupn&iacute; model. Zde uvedete dal&scaron;&iacute; parametry deep learningu a argumenty pro experimenty a zlep&scaron;ov&aacute;n&iacute;, např. hranice spolehlivosti pro nastaven&iacute; citlivosti.
+            </p>
+            <p>N&aacute;zvy argumentů jsou dosazeny n&aacute;strojem z Python modulu na serveru rastrov&eacute; anal&yacute;zy.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Odstranit duplicitní prvky z výstupu (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Provede nemaxim&aacute;ln&iacute; potlačen&iacute; tam, kde jsou nalezeny duplicitn&iacute; objekty a je odstraněn duplicitn&iacute; prvek s niž&scaron;&iacute; spolehlivost&iacute;. 
+                <ul>
+                    <li>Neza&scaron;krtnuto &ndash; V&scaron;echny nalezen&eacute; objekty budou ve v&yacute;stupn&iacute; tř&iacute;dě prvků. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                        
+
+                    </li>
+                    <li>Za&scaron;krtnuto&mdash;Odstran&iacute; nalezen&eacute; duplicitn&iacute; objekty.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Pole hodnoty spolehlivosti</h2></div>
+        <hr/>
+        <div>
+            <p>Pole ve feature službě obsahuj&iacute;c&iacute; hodnoty spolehlivosti jako v&yacute;stup metodou detekce objektů.
+            </p>
+            <p>Tento parametr je požadov&aacute;n, když za&scaron;krtnete parametr  <b>Nemaxim&aacute;ln&iacute; potlačen&iacute;</b> .
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Pole hodnoty třídy</h2></div>
+        <hr/>
+        <div>
+            <p>Pole hodnoty tř&iacute;dy ve v&yacute;stupn&iacute; feature službě. Pokud nen&iacute; zad&aacute;no, n&aacute;stroj použije standardn&iacute; pole hodnoty tř&iacute;dy  <i>Classvalue</i> a <i>Value</i>. Pokud tato pole neexistuj&iacute;, se v&scaron;emi prvky bude zach&aacute;zeno jako se stejnou tř&iacute;dou objektů.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maximální poměr překryvu</h2></div>
+        <hr/>
+        <div>
+            <p>Poměr maxim&aacute;ln&iacute;ho překryt&iacute; pro dva překr&yacute;vaj&iacute;c&iacute; se prvky, kter&yacute; je definov&aacute;n jako poměr plochy průniku přes plochu sjednocen&iacute;. V&yacute;choz&iacute; hodnota je 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Punkt-Cluster suchen</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Punkt-Cluster suchen"></h2>
+        <hr/>
+    <p>Dieses Werkzeug findet Cluster aus Punkt-Features im Datenrauschen des Umfelds basierend auf deren r&auml;umlicher Verteilung.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Punkt-Layer analysiert, die sich in der aktuellen Kartenausdehnung befinden. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Punkt-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Wählen Sie den Layer aus, für den nach Clustern gesucht wird.</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, in dem nach Clustern gesucht wird. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimale Anzahl von Punkten, die als Cluster gelten</h2></div>
+        <hr/>
+        <div>
+            <p>Die minimale Anzahl an Features, die als Cluster betrachtet werden sollen. Ein Cluster mit weniger Features als die angegebene Anzahl wird als Rauschen betrachtet. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Suchbereich begrenzen auf (optional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Die maximale Entfernung, bei der Features demselben Cluster angeh&ouml;ren k&ouml;nnen. Wird nichts angegeben, f&uuml;hrt das Werkzeug den Algorithmus &quot;HDBSCAN&quot; aus, wobei Cluster variierender Dichten anhand von unterschiedlichen Entfernungen vom schw&auml;cheren Rauschen getrennt werden. Wird ein Wert angegeben, f&uuml;hrt das Werkzeug den Algorithmus &quot;DBSCAN&quot; aus, wobei dichte Cluster anhand einer angegebenen Entfernung vom schw&auml;cheren Rauschen getrennt werden.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Daten extrahieren</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Daten extrahieren"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug k&ouml;nnen Sie Daten f&uuml;r einen bestimmten Interessenbereich ausw&auml;hlen und herunterladen. Ausgew&auml;hlte Layer werden einer ZIP-, CSV- oder KMZ-Datei hinzugef&uuml;gt.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Zu extrahierende Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Dies sind die Layer im Inhaltsverzeichnis, aus denen Features extrahiert werden k&ouml;nnen. Aktivierte Layer werden extrahiert und in die resultierende ZIP- oder CSV-Datei eingef&uuml;gt.
+            </p>
+            <p>Damit der Layer in der Liste der zu extrahierenden Layer angezeigt wird, m&uuml;ssen Sie entweder der Besitzer der Daten sein oder der Besitzer der Daten muss das Exportieren der Daten aktivieren. So aktivieren Sie den Datenexport f&uuml;r Daten, die Sie besitzen: 
+                <ul>
+                    <li>&Ouml;ffnen Sie die Elementbeschreibung der Daten.
+                    </li>
+                    <li>Klicken Sie auf die Registerkarte  <b>Einstellungen</b>.
+                    </li>
+                    <li>F&uuml;hren Sie einen Bildlauf zum Abschnitt  <b>Daten exportieren</b> durch.
+                    </li>
+                    <li>Aktivieren Sie die Option  <b>Anderen Benutzern erlauben, unterschiedliche Formate zu exportieren</b>.  Klicken Sie anschlie&szlig;end auf <b>Speichern</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn Ihr Analyse-Layer Anh&auml;nge enth&auml;lt, dann werden diese Anh&auml;nge nur dann extrahiert, wenn die Ausgabedaten im Format einer File-Geodatabase ausgegeben werden und die Option  <b>Features ausschneiden</b> deaktiviert ist.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Kartenausschnitt</h2></div>
+        <hr/>
+        <div>
+            <p>Die Fl&auml;che, die definiert, welche Features in die Ausgabe-ZIP- bzw. CSV-Datei eingef&uuml;gt werden. Ihnen steht Folgendes zur Auswahl:
+                <ul>
+                    <li>die aktuell sichtbare Ausdehnung der Karte ( <b>Gleich wie Anzeige</b>)
+                    </li>
+                    <li>einer der Layer in Ihrem Inhaltsverzeichnis Wenn es sich bei dem ausgew&auml;hlten Layer um Punkt- oder Linien-Features handelt, dient die Ausdehnung des Layers als Untersuchungsgebiet.
+                    </li>
+                    <li>Eine Fl&auml;che zum Definieren des Interessenbereichs festlegen
+                    </li>
+                </ul>
+                 Alle Features, die sich vollst&auml;ndig innerhalb der Kartenausdehnung befinden, werden extrahiert. F&uuml;r Features, die die Grenze der Kartenausdehnung kreuzen oder &uuml;berschneiden, sich jedoch nicht vollst&auml;ndig innerhalb der Ausdehnung befinden, sind zwei Optionen verf&uuml;gbar:
+                <ul>
+                    <li> <b>Features ausw&auml;hlen</b>: Ganze Features, die die Grenze des Untersuchungsgebiets kreuzen, werden extrahiert.
+                    </li>
+                    <li> <b>Features ausschneiden</b>: Nur die Teile der Features, die sich innerhalb des Untersuchungsgebietes befinden, werden extrahiert.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format der Ausgabedaten</h2></div>
+        <hr/>
+        <div>
+            <p>Das Format der Daten, die extrahiert werden. Beim Exportieren von Linien- oder Fl&auml;chen-Features in CSV-Dateien werden nur nicht r&auml;umliche Attribute extrahiert. Beim Exportieren von Punkt-Features werden sowohl r&auml;umliche als auch nicht r&auml;umliche Attribute extrahiert.  
+            </p>
+            <p>F&uuml;r extrahierte Daten wird die Projektion &quot;1984 Web Mercator&quot; verwendet. F&uuml;r CSV-Dateien werden an die Daten mit Koordinaten des Typs &quot;1984 Web Mercator&quot; die Felder  <i>Lat</i> und <i>Long</i> angeh&auml;ngt.
+            </p> 
+            <p>Die folgenden Ausgabeformate werden unterst&uuml;tzt:
+                <ul>
+                    <li>Comma Separated Values (CSV):  <code>.csv</code> oder <code>.zip</code>
+                    </li>
+                    <li>File-Geodatabase:  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML):  <code>.kmz</code> oder <code>.zip</code>
+                    </li>
+                    <li>Shapefile:  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name der Ausgabedatei</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Elements, das in  <b>Eigene Inhalte</b> hinzugef&uuml;gt wird. Der Elementname basiert auf dem ausgew&auml;hlten <b>Format der Ausgabedaten</b>.     Wenn das Element bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

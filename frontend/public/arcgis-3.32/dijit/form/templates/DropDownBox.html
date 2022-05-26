@@ -1,0 +1,18 @@
+<div class="dijit dijitReset dijitInline dijitLeft"
+	id="widget_${id}"
+	role="combobox"
+	aria-haspopup="true"
+	data-dojo-attach-point="_popupStateNode"
+	><div class='dijitReset dijitRight dijitButtonNode dijitArrowButton dijitDownArrowButton dijitArrowButtonContainer'
+		data-dojo-attach-point="_buttonNode" role="presentation"
+		><input class="dijitReset dijitInputField dijitArrowButtonInner" value="&#9660; " type="text" tabIndex="-1" readonly="readonly" role="button presentation" aria-hidden="true"
+			${_buttonInputDisabled}
+	/></div
+	><div class='dijitReset dijitValidationContainer'
+		><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner" value="&#935; " type="text" tabIndex="-1" readonly="readonly" role="presentation"
+	/></div
+	><div class="dijitReset dijitInputField dijitInputContainer"
+		><input class='dijitReset dijitInputInner' ${!nameAttrSetting} type="${type}" autocomplete="off"
+			data-dojo-attach-point="textbox,focusNode" role="textbox"
+	/></div
+></div>

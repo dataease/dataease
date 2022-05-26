@@ -1,0 +1,115 @@
+-------------------------------------------------------------------------------
+Dojo Storage
+-------------------------------------------------------------------------------
+Version X.XXX (does not have separate versioning -- versioned by release date)
+Last Release date: January 2010
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Brad Neuberg
+	Alex Russell
+
+LocalStorage, BehaviorStorage, CookieStorage:
+	Jens Arps
+-------------------------------------------------------------------------------
+Project description
+
+dojox.storage provides a JavaScript abstraction for persistent storage
+as well as pluggable implementations which typically use native browser
+extensions (e.g. Flash player, Gears)
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+FlashStorageProvider requires the Flash player
+GearsStorageProvider requires the Gears extension
+LocalStorageProvider does not require any plugins but will run only in certain
+browsers (see below)
+BehaviorStorageProvider does not require any plugins but will run only in IE 5+
+CookieStorageProvider has no requirements
+The various Air*StorageProviders require Adobe's AIR software
+
+The open source mtasc compiler (www.mtasc.org) is needed to build the
+ActionScript into SWF format.  The SWF object is maintained within svn, so
+this step is only necessary if Storage.as is modified.  A sample build script
+is provided (buildFlashStorage.sh)
+
+-------------------------------------------------------------------------------
+Documentation
+
+See http://dojotoolkit.org/reference-guide/dojox/storage.html for Dojo Storage docs.
+
+See dojox/storage/demos/helloworld.html for a simple Hello World example
+you can base your code off of.
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+If you want to use Dojo Storage in a web browser:
+
+These installation instructions are to use Dojo Storage in a web browser; at
+runtime, Dojo Storage will autodetect and use the best available storage
+option. This includes:
+
+  * localStorage: HTML 5 Web Browsers (Firefox 3+, Safari 4+, IE 8+)
+  * Google Gears (Plugin)
+  * globalStorage (Firefox 2+)
+  * userData Behavior (IE 5+)
+  * Hidden Flash (Plugin)
+  * Cookies
+
+To have access to Dojo Storage, require "dojox.storage":
+
+dojo.require("dojox.storage");
+
+
+If you want to use Dojo Storage with Adobe AIR:
+
+[TBD! Why don't you write this and contribute!]
+
+-------------------------------------------------------------------------------
+Additional Notes
+
+
+STORAGE TABLE
+-------------
+
+
+Browser		Used StorageProvider, in order of preference
+
+IE 6 / IE7	GearsStorageProvider
+			FlashStorageProvider
+			BehaviorStorageProvider
+			CookieStorageProvider
+
+IE 8		LocalStorageProvider
+			GearsStorageProvider
+			FlashStorageProvider
+			BehaviorStorageProvider
+			CookieStorageProvider
+
+Safari 3	FlashStorageProvider
+			CookieStorageProvider
+
+Safari 4	LocalStorageProvider
+			FlashStorageProvider
+			CookieStorageProvider
+
+Chromium 4	FlashStorageProvider
+(Mac OS)	CookieStorageProvider
+
+Firefox 2	WhatWGStorageProvider (= globalStorage)
+			GearsStorageProvider
+			FlashStorageProvider
+			CookieStorageProvider
+
+Firefox 3	LocalStorageProvider
+			GearsStorageProvider
+			FlashStorageProvider
+			CookieStorageProvider
+
+Opera 10	LocalStorageProvider
+			FlashStorageProvider
+			CookieStorageProvider

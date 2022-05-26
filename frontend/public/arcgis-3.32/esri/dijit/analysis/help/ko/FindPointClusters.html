@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>포인트 군집 찾기(Find Point Clusters)</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="포인트 군집 찾기(Find Point Clusters)"></h2>
+        <hr/>
+    <p>이 도구는 공간 분포에 따라 주변 노이즈 내 포인트 피처의 군집을 찾습니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 입력 포인트 레이어의 피처만 분석됩니다.  선택하지 않으면 현재 맵 범위 외부에 있는 피처를 포함하여 입력 포인트 레이어에 있는 모든 피처가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>군집을 찾을 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>군집을 찾을 수 있는 포인트 레이어입니다. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>군집으로 간주될 최소 포인트 수</h2></div>
+        <hr/>
+        <div>
+            <p>군집으로 간주될 최소 피처 수  제공된 군집보다 피처가 적은 모든 군집은 노이즈로 간주합니다. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>다음으로 검색 범위 제한(선택)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>피처를 동일한 군집의 일부로 간주할 수 있는 최대 거리입니다.  공백인 경우 해당 도구는 HDBSCAN을 실행하며, 다양한 거리를 사용하여 밀도가 더 희박한 노이즈에서 여러 밀도 군집을 분리합니다. 값이 지정된 경우 해당 도구는 DBSCAN을 실행하며, 지정된 거리를 사용하여 밀도가 더 희박한 노이즈에서 밀도 군집을 분리합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

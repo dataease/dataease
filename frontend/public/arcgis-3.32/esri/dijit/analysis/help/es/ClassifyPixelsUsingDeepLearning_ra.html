@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Clasificar píxeles con aprendizaje profundo</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Clasificar p&iacute;xeles con aprendizaje profundo"></h2>
+        <hr/>
+    <p>Esta herramienta ejecuta un modelo de aprendizaje profundo entrenado en un r&aacute;ster de entrada para generar un r&aacute;ster clasificado, donde cada p&iacute;xel v&aacute;lido tiene asignada una etiqueta de clase.
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute; el &aacute;rea r&aacute;ster visible en la extensi&oacute;n de mapa actual. Si no se ha activado, se analizar&aacute; todo el r&aacute;ster, aunque est&eacute; fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Elegir la imagen utilizada para clasificar píxeles</h2></div>
+        <hr/>
+        <div>
+            <p>La imagen de entrada a clasificar.
+            </p>
+            <p>Puede ser una URL de servicio de im&aacute;genes, una capa r&aacute;ster o un servicio de im&aacute;genes.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Elegir el modelo de aprendizaje profundo utilizado para clasificar píxeles</h2></div>
+        <hr/>
+        <div>
+            <p>El elemento del paquete de aprendizaje profundo de entrada ( <code>.dlpk</code>).
+            </p>
+            <p>El paquete de aprendizaje profundo est&aacute; formado por el archivo JSON de definici&oacute;n de modelo de Esri ( <code>.emd</code>), el archivo de modelo binario de aprendizaje profundo y, opcionalmente, la funci&oacute;n r&aacute;ster de Python que se debe utilizar.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Especificar los argumentos del modelo de aprendizaje profundo</h2></div>
+        <hr/>
+        <div>
+            <p>Los argumentos de funci&oacute;n se definen en la clase de funci&oacute;n r&aacute;ster de Python a la que el modelo de entrada hace referencia. Aqu&iacute; es donde enumera los argumentos y par&aacute;metros de aprendizaje profundo adicionales para experimentos y refinamiento, como un umbral de confianza para ajustar la sensibilidad.
+            </p>
+            <p>La herramienta rellena los nombres de los argumentos a partir de la lectura del m&oacute;dulo de Python del servidor de an&aacute;lisis de r&aacute;ster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

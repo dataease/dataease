@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Stapanje granica</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Svedi granice"></h2>
+        <hr/>
+    <p>Oblasti koje se preklapaju ili dele zajedničku granicu ili vrednost atributa se spajaju da bi formirale jednu oblast.
+    </p>
+    <p>Možete da kontroli&scaron;ete koje se granice spajaju definisanjem polja po kom će se vr&scaron;iti spajanje. Na primer, ako imate sloj sa okruzima, a svaki okrug ima atribut  <pre>State_Name</pre>, možete da svedete granice koristeći atribut <pre>State_Name</pre>. Okruzi će se spojiti ako imaju istu vrednost <pre>State_Name</pre>. Rezultat je sloj sa državnim granicama.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj oblasti čije će granice biti svedene</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži geoobjekte oblasti koji će biti svedeni. 
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Odaberite metod svođenja</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi metod koji se koristi za svođenje polja.
+            </p>
+            <p>Možete da odaberete jedan od dva metoda za spajanje geoobjekata oblasti:
+                <ul>
+                    <li> <b>Oblasti koje se preklapaju ili koje su susedne</b> &ndash; dve ili vi&scaron;e oblasti čije se granice preklapaju biće spojene u jednu oblast. Pored toga, oblasti koje su susedne (to jest, dele zajedničku granicu), biće spojene u jednu oblast.
+                    </li>
+                    <li> <b>Oblasti sa istom vredno&scaron;ću polja</b> &ndash; dve ili vi&scaron;e oblasti će biti spojene u jednu oblast ako imaju istu vrednost polja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Kreiraj višedelne geoobjekte</h2></div>
+        <hr/>
+        <div>
+            <p>Vi&scaron;edelno je reprezentacija mesta ili objekta koji ima vi&scaron;e delova, ali je definisan kao jedan geoobjekat zato &scaron;to referencira jedan skup atributa. Na primer, u sloju država, država Havaji može da se smatra vi&scaron;edelnim geoobjektom zato &scaron;to su njeni odvojeni geometrijski delovi klasifikovani kao jedna država.
+            </p>
+            <p> <b>Kreiranje vi&scaron;edelne geoobjekte</b> nudi dve opcije:
+                <ul>
+                    <li>Tačno (potvrđeno) &ndash; izlazni servis može da sadrži vi&scaron;edelne geoobjekte.
+                    </li>
+                    <li>Netačno (nepotvrđeno) &ndash; izlazni servis sadrži samo jednodelne geoobjekte, a pojedinačni geoobjekti se kreiraju za svaki deo. Ovo je podrazumevano.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiku (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Kada se oblasti spoje, možete da sumirate njihove vrednosti atributa sa smislenom statistikom. Na primer, ako svodite granicu između okruga na osnovu polja  <pre>State_Name</pre>, a svaki okrug ima polje <i>Population</i>, možete da izračunate zbir za polje <pre>Population</pre> za državu.
+            </p>
+            <p> Možete da izračunate statistiku na geoobjektima koji su sumirani. Možete da izračunate sledeće na numeričkim poljima:
+                <ul>
+                    <li>Brojač&mdash;izračunava broj vrednosti koje nisu null. Može da bude kori&scaron;ćen u numeričkim poljima ili niskama. Brojač od [null, 0, 2] je 2.
+                    </li>
+                    <li>Zbir&mdash;zbir numeričkih vrednosti u polju. Zbir od [null, null, 3] je 3.
+                    </li>
+                    <li>Značenje&mdash;značenje numeričkih vrednosti. Značenje od [0, 2, null] je 1.
+                    </li>
+                    <li>Min&mdash;minimalna vrednost numeričkog polja. Minimum od [0, 2, null] je 0. 
+                    </li>
+                    <li>Maks&mdash;maksimalna vrednost numeričkog polja. Maksimalna vrednost od [0, 2, null] je 2.
+                    </li>
+                    <li>Opseg&mdash;opseg numeričkog polja. Ovo se izračunava kada se minimalna vrednost oduzme od maksimalne vrednosti. Opseg od [0, null, 1] je 1. Opseg od [null, 4] je 0.
+                    </li>
+                    <li>Varijansa&mdash;varijansa numeričkog polja u stazi. Varijansa od [1] je null. Varijansa od [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija&mdash;standardna devijacija numeričkog polja. Standardna devijacija od [1] je null. Standardna devijacija od [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete da izračunate sledeće na poljima niski:
+                <ul>
+                    <li>Brojač&mdash;broj vrednosti koje nisu null.
+                    </li>
+                    <li>Bilo koji&mdash;ova statistika je nasumični uzorak vrednosti niske u navedenom polju.
+                    </li>
+                </ul>
+                Sva statistika se izračunava na vrednostima koje nisu null (bez vrednosti). Rezultujući sloj će sadržati novo polje za svaku izračunatu statistiku. Svaki broj statistike može da se doda odabirom atributa i statistike. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

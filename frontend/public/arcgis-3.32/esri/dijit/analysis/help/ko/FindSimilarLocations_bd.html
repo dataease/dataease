@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>유사한 위치 찾기</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="유사한 위치 찾기"></h2>
+        <hr/>
+    <p>유사한 위치 찾기 도구는 지정한 조건에 따라 하나 이상의 참조 위치에 대한 후보 검색 레이어의 위치 유사성을 측정합니다.  이 도구는 다음과 같은 질문에 답을 줄 수 있습니다. 
+        <ul>
+            <li>고객 프로필과 관련하여 최고 매출 매장과 가장 비슷한 실적을 내는 매장은 어디입니까?
+            </li>
+            <li>질병으로 인해 많은 타격을 받은 마을의 특성으로 볼 때, 높은 위험성을 지닌 다른 마을은 어디입니까?
+            </li>
+        </ul>
+        이러한 질문에 답변하려면 참조 위치, 후보 검색 위치 및 일치 조건을 표시하는 필드를 제공합니다.  첫 번째 입력 레이어에는 참조 또는 벤치마크 위치가 포함됩니다.  예를 들어 최고 실적을 내는 매장이나 질병으로 인한 타격을 가장 많이 입은 마을을 포함하는 레이어일 수 있습니다.  그런 다음 후보 검색 위치를 포함하는 레이어를 지정합니다.  이는 모든 매장 또는 모든 다른 마을이 될 수 있습니다.  마지막으로 하나 이상의 필드를 식별하여 유사성을 측정하는 데 사용합니다.  유사한 위치 찾기 도구는 선택한 모든 필드에서 참조 위치와 얼마나 일치하는지에 따라 모든 후보 검색 위치의 순위를 매깁니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>참조 위치가 포함된 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>일치시킬 참조 위치가 포함된 레이어입니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>모든 위치를 사용하거나 원하는 위치를 선택할 수 있습니다.</h2></div>
+        <hr/>
+        <div>
+            <p>필요한 경우 선택 버튼을 사용하여 참조 위치를 식별합니다.  피처가 맵에 그려지는 경우에만(빅 데이터 파일 공유에는 사용할 수 없음) 이 옵션을 사용할 수 있습니다.  예를 들어 입력 레이어에 모든 위치(후보 검색 위치뿐만 아니라 참조 위치)가 포함되어 있으면 선택 도구 중 하나를 사용하여 참조 위치를 식별해야 합니다.  레이어를 하나는 참조 위치, 다른 하나는 모든 후보 검색 위치를 포함하여 두 개 만든 경우 선택할 필요가 없습니다.
+            </p>
+            <p>두 개 이상의 참조 위치가 있는 경우 유사성은 지정한 필드의 평균에 기반을 둡니다.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>다음에서 유사한 위치 검색</h2></div>
+        <hr/>
+        <div>
+            <p>이 레이어에서 후보 검색 피처는 가장 유사한 위치에서 그렇지 않은 피처 순으로 순위가 매겨집니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>유사성 기준</h2></div>
+        <hr/>
+        <div>
+            <p>선택한 필드는 유사성을 평가할 때 사용되는 기준이 됩니다.  예를 들어 인구 및 소득 필드를 선택한 경우 후보 검색 위치에서 순위가 높은 (유사한) 곳이 참조 위치와 비슷한 인구와 소득 값을 가집니다.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>가장 유사한 곳과 가장 덜 유사한 곳을 사용하여 결정</h2></div>
+        <hr/>
+        <div>
+            <p>선택한 방법은 일치 결정 방법을 결정합니다. 
+                <ul>
+                    <li> <b>필드 값</b> 방법은 표준화된 값의 제곱 차이를 사용합니다. 이 옵션이 기본 설정입니다.
+                    </li>
+                    <li> <b>필드 프로필</b> 방법은 코사인 유사성 수학식을 사용하여 표준화된 값의 프로필을 비교합니다. 속성 프로필을 사용하려면 두 개 이상의 분석 필드를 사용해야 합니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>보기</h2></div>
+        <hr/>
+        <div>
+            <p>가장 유사한 곳에서 그렇지 않은 순으로 순위가 매겨진 모든 후보 검색 위치를 보거나 보고자 하는 결과의 수를 지정할 수 있습니다. 
+                <ul>
+                    <li> <b>모든 위치(가장 유사한 위치에서 그렇지 않은 위치순)</b>를 지정하는 경우 후보 검색 레이어의 모든 피처는 결과 레이어의 순위에 포함됩니다. 최대 10,000개의 결과가 반환됩니다.
+                    </li>
+                    <li> <code>가장 유사하거나 가장 덜 유사한 또는 가장 유사하고 가장 덜 유사한</code> <code>위치의</code> <b>수</b>를 지정하는 경우 결과 레이어에 포함해야 하는 가장 유사하거나 가장 덜 유사한 또는 가장 유사하고 가장 덜 유사한 후보 수를 결정합니다. 허용되는 최대값은 10,000입니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>결과에 추가할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>선택적으로 검색 레이어에서 데이터에 필드를 추가합니다. 기본 설정에 따라 모든 필드가 추가됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p>이 결과 레이어는 참조 레이어와 지정한 순위의 후보 검색 피처 수를 포함합니다.   레이어가 이미 있는 경우 결과의 이름을 바꿀지 묻는 메시지가 나타납니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

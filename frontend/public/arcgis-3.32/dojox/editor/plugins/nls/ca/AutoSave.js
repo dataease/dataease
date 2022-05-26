@@ -1,0 +1,3 @@
+//>>built
+define("dojox/editor/plugins/nls/ca/AutoSave",{saveLabel:"Desa",saveSettingLabelOn:"Estableix l'interval per desar autom\u00e0ticament...",saveSettingLabelOff:"Deshabilita el desat autom\u00e0tic",saveSettingdialogTitle:"Desat autom\u00e0tic",saveSettingdialogDescription:"Especifiqueu l'interval de desat autom\u00e0tic",saveSettingdialogParamName:"Interval de desat autom\u00e0tic",saveSettingdialogParamLabel:"min",saveSettingdialogButtonOk:"Estableix l'interval",saveSettingdialogButtonCancel:"Cancel\u00b7la",
+saveMessageSuccess:"Desat a les ${0}",saveMessageFail:"No s'ha pogut desar a les ${0}"});

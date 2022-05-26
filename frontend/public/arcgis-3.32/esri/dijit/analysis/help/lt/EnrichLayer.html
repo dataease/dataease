@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Praturtinti sluoksnį</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Praturtinti sluoksnį"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis praturtina turimus duomenis faktais apie žmones, vietas, verslą, esantį aplink bei leidžia atsakyti į naujus klausimus, kurių negalėjote atsakyti vien žemėlapio pagalba. Pavyzdžiui: Kokie žmonės čia gyvena? Ką žmonės mėgsta veikti &scaron;ioje vietoje? Kokie jų pomėgiai ir gyvenimo būdas? Kokios įmonės įsikūrusios &scaron;ioje teritorijoje?
+    </p>
+    <p>Rezultatas bus naujas sluoksnis, papildytas demografine ir geografine informacija i&scaron; nurodytų duomenų &scaron;altinių. &Scaron;i informacija yra pridedama kaip papildomi atributiniai laukai.
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> yra pažymėta, bus praturtinami tik tie įvesties ta&scaron;kų sluoksniai, kurie patenka į esamo žemėlapio aprėptį.  Jei nepažymėta, bus praturtinti visi įvesties sluoksnio elementai, net jei jie nepatenka į esamo žemėlapio aprėpties ribas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kurį norite praturtinti naujais duomenimis</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų, linijų ar plitų sluoksnis, kuris bus praturtintas naujais atributų duomenimis. 
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Praturtinimo kintamieji</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Paspauskite  <b>Pasirinkti kintamuosius</b> ir atidarykite <b>Duomenų nar&scaron;yklę</b>. <b>Duomenų nar&scaron;yklė</b> padės rasti ir pasirinkti atskirus praturtinimo kintamuosius arba jų rinkinius.
+            </p>
+            <p>Regionas automati&scaron;kai parenkamas, atsižvelgiant į duomenis. Galite pasirinkti kitą regioną, jei duomenys apima daugiau nei vieną &scaron;alį. 
+            </p>
+            <p>Kad būtų galima lengvai pasiekti, praturtinimo kintamieji suskirstyti į duomenų rinkinius. Pasirinkus duomenų rinkinį, nar&scaron;yklė parodo kelis populiariausius &scaron;io rinkinio praturtinimo kintamuosius. Dalyje  <b>Tęsti nar&scaron;ymą</b> taip pat bus rodomos rinkinio kategorijos. Kiekvienoje kategorijoje galima pasirinkti antrines kategorijas arba detalizuoti antrinę kategoriją ir pasirinkti atskirus praturtinimo kintamuosius. Taip pat naudojant paie&scaron;kos lauką galima rasti konkretų kategorijos kintamąjį.
+            </p>
+            <p>Pasirinkus į praturtinimą įtraukiamus kintamuosius jie bus įtraukti į pirkinių krep&scaron;elį, esantį  <b>Duomenų nar&scaron;yklės</b> kampe. Naudodami &scaron;į pirkinių krep&scaron;elį toliau stebėkite pasirinktų kintamųjų skaičių.
+            </p>
+            <p>Kiekvienas kintamasis rezultatų sluoksnyje bus pridėtas kaip laukas.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Nurodykite praturtinimo plotus</h2></div>
+        <hr/>
+        <div>
+            <p>Nustatykite apie įvesties ta&scaron;kus arba linijas esantį plotą, kuris bus praturtintas atstumu, tiesia linija arba pasirinktų kelionės režimu. Jei atstumas yra tiesi linija, įveskite reik&scaron;mę iki 1 000 mylių (1 609 km). Kelionės režimus galima naudoti tik tada, kai įvesties sluoksnyje yra ta&scaron;kų. Galimus kelionės režimus nustato jūsų organizacijos administratorius. Naudojant vieną i&scaron; kelionės režimų, atliekami kelių ir pėsčiųjų takų matavimai, laikomasi taikomų taisyklių, pvz., važiavimo vienpusėmis gatvėmis, neleistino apsisukimo ir kt. Pasirinkę režimą ir matavimą, įveskite trukmę arba atstumą iki 5 val. (300 min.) arba 300 mi. (482,8 km).
+            </p>
+            <p>Jei pažymėta  <b>Grąžinti ribojančius plotus</b>, grąžinamas rezultatas bus plotai, pagal auk&scaron;čiau nurodytas laiko ir atstumo reik&scaron;mes. Jei nepažymėta, bus pateikti erdviniai ta&scaron;kai.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

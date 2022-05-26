@@ -1,0 +1,24 @@
+.#{$theme-name} {
+  .dijitSliderRtl {
+    .dijitSliderLeftBumper {
+      margin-left: 0;
+      margin-right: $slider-bar-spacing;
+    }
+    .dijitSliderRightBumper {
+      margin-left: $slider-bar-spacing;
+      margin-right: 0;
+    }
+    .dijitSliderImageHandleV {
+      right: -9px;
+      &:after {
+        border-right-width: 5px;
+        border-left-width: 0;
+        border-right-color: $slider-thumb-bg;
+        border-left-color: transparent;
+        left: -8px;
+        right: auto;
+      }
+    }
+  }
+}
+

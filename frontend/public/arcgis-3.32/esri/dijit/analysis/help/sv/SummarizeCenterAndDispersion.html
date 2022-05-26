@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summera mitt och spridning</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Summera mitt och spridning"></h2>
+        <hr/>
+    <p>Detta verktyg hittar centrala geoobjekt och riktningsf&ouml;rdelningar.
+Det kan anv&auml;ndas f&ouml;r att besvara fr&aring;gor som:
+        <ul>
+            <li>Var &auml;r centrum?
+            </li>
+            <li>Vilket geoobjekt &auml;r det mest l&auml;tt&aring;tkomliga fr&aring;n alla andra geoobjekt?
+            </li>
+            <li>Hur spridda, kompakta eller integrerade &auml;r geoobjekten?
+            </li>
+            <li>Finns det riktningstrender?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras endast de geoobjekt i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Välj ett lager som ska beskrivas</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;deslager som ska anv&auml;ndas f&ouml;r att hitta centrala geoobjekt och riktningsf&ouml;rdelningar.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Sammanfattningstyper</h2></div>
+        <hr/>
+        <div>
+            <p>Metoden f&ouml;r att summera mitt och spridning. 
+            </p>
+            <ul>
+                <li>Centralt geoobjekt &ndash; Identifierar de mest centralt bel&auml;gna geoobjekten i ett dataset.
+                </li>
+                <li>Medelcentrum - identifierar den geografiska mittpunkten (eller centrum i en koncentration) f&ouml;r en upps&auml;ttning geoobjekt.
+                </li>
+                <li>Mediancentrum &ndash; identifierar platsen som minimerar det totala euklidiska avst&aring;ndet till geoobjekten i en datam&auml;ngd.
+                </li>
+                <li>Ellips &ndash; skapar standardavvikelseellipser f&ouml;r att sammanfatta de spatiala egenskaperna hos geografiska geoobjekt: central tendens, spridning och riktningstrender. Ellipserna kan dimensioneras enligt 1, 2 eller 3 standardavvikelser.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Vikta efter (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Det f&auml;lt som anv&auml;nds f&ouml;r att vikta platser enligt deras relativa vikt. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Gruppera efter (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Det f&auml;lt som anv&auml;nds f&ouml;r att gruppera geoobjekt f&ouml;r separata ber&auml;kningar av centrala geoobjekt eller spridning. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

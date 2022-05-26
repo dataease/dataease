@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Leikkaa karttataso</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="Leikkaa karttataso"></h2>
+        <hr/>
+    <p>Leikkaa karttataso -ty&ouml;kalu poimii l&auml;ht&ouml;aineiston piste-, viiva- tai aluekohteet, jotka ovat p&auml;&auml;llekk&auml;isi&auml; leikkausalueiden kanssa. Tulosaineisto on l&auml;ht&ouml;aineiston osajoukko, joka perustuu kiinnostuskohteisiin. Seuraavassa on esimerkkej&auml; ty&ouml;kalun k&auml;ytt&ouml;kohteista:
+        <ul>
+            <li>Mitk&auml; p&auml;&auml;joet sijaitsevat Nebraskan osavaltiossa?
+                  
+            </li>
+            <li>Mitk&auml; talot sijaitsevat rannikon tulva-alueilla?
+            </li>
+            <li>Mitk&auml; hurrikaanit osuivat mantereelle 2011?
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse leikattavat kohteet</h2></div>
+        <hr/>
+        <div>
+            <p>Leikattavat piste-, viiva- tai aluekohteet. Luot n&auml;iden kohteiden osajoukon.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>Valitse alue, johon leikattava kohde liitetään</h2></div>
+        <hr/>
+        <div>
+            <p>Aluekarttataso, johon leikkaat l&auml;ht&ouml;aineiston karttatason kohteet.  N&auml;m&auml; alueet m&auml;&auml;ritt&auml;v&auml;t osajoukon rajat.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

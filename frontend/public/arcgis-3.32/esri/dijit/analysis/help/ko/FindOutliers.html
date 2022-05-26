@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>이상치 찾기</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="이상치 찾기"></h2>
+        <hr/>
+    <p>이상치 찾기 도구는 데이터의 공간 패턴에 통계적으로 유의한 이상치가 있는지 확인합니다. 
+        <ul>
+            <li>데이터(범죄 사건, 나무, 교통 사고) 패턴에 변칙적 영역이 있습니까?  어떻게 확신할 수 있습니까?
+            </li>
+            <li>통계적으로 유의한 이상치(지출, 영아 사망률, 지속적으로 높은 시험 점수)를 발견했습니까? 아니면 심볼화 방식을 변경한 경우 맵에 다른 정보가 나타납니까?
+            </li>
+        </ul>
+        이상치 찾기 도구를 사용하면 확신을 가지고 이러한 질문에 답변할 수 있습니다.
+    </p>
+    <p>맵을 볼 때 사람의 눈과 뇌는 맵에 아무 것도 없는 경우라도 자연적으로 패턴을 찾으려고 합니다.  따라서 데이터의 패턴이 실제 공간 프로세스의 결과인지 아니면 단순히 우연의 일치인지 구분하기가 어려울 수 있습니다. 이러한 이유로 연구 기관과 분석 기관에서는 이상치 찾기(Anselin Local Moran's I)와 같은 통계 방법을 사용하여 공간 패턴을 정량화합니다.  데이터에서 통계적으로 유의한 이상치 또는 군집점을 찾으면 중요한 정보를 얻게 됩니다.  이상치가 발생한 위치와 시점을 알면 확인한 패턴을 더욱 개선할 수 있는 프로세스에 대한 중요한 단서를 얻을 수 있습니다.  다음 단계에서는 이러한 이상치 영역에서 데이터가 크게 차이 나는 이유를 조사합니다.  예를 들어 특정 거주 지역의 절도 사건 발생 수가 주변 이웃에 비해 훨씬 더 많다는 것을 안다는 것은 효과적인 예방 전략을 수립하거나, 한정된 경찰 인력을 배정하거나, 거주 지역 감시 프로그램을 시작하거나, 강도 높은 수사를 승인하거나, 잠재적 용의자를 파악해야 하는 경우에 매우 중요한 정보입니다.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>이상치가 계산될 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>이상치를 찾게 될 포인트 또는 영역 레이어입니다. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>다음의 이상치 찾기</h2></div>
+        <hr/>
+        <div>
+            <p>이 분석은 &ldquo;데이터에서 공간 이상치가 있는 위치는 어디입니까?&quot;라는 질문에 대한 답을 제공합니다.  
+            </p>
+            <p>데이터가 포인트로 되어 있고  <b>포인트 수</b>를 선택할 경우 이 도구는 포인트 피처의 공간 배열을 평가하여 &quot;포인트가 예기치 않게 군집되거나 분산된 곳은 어디입니까?&quot;라는 질문에 대한 답을 제공합니다.
+            </p>
+            <p>필드를 선택하면 이 도구는 각 피처와 연결된 값의 공간 배열을 평가하여 &quot;높은 값으로 둘러싸여 있는 낮은 값의 위치는 어디입니까?&quot;라는 질문에 대한 답을 제공합니다.  낮은 값으로 둘러싸여 있는 높은 값의 위치는 어디입니까?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>포함된 포인트 수</h2></div>
+        <hr/>
+        <div>
+            <p>기본 설정은 도구가 생성한 그물망 그리드 내의 포인트 개수를 계산하는 것입니다. 그 외에 &quot;각 영역 피처 내의 포인트 수에 미루어 볼 때 이웃에 비해 포인트 수가 통계적으로 유의하게 많거나 적은 위치가 있습니까?&quot;와 같은 질문에 대한 답을 얻고자 할 때 필요한 영역 레이어(일반적으로 인구 조사 표준 지역, 지방 자치 경계 또는 구/군과 같은 행정 구역을 나타냄)를 제공하거나 육각형 그리드 내의 포인트 개수를 계산할 수도 있습니다.   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>포인트 발생 가능 위치 정의</h2></div>
+        <hr/>
+        <div>
+            <p>사건이 발생 가능한 위치를 정의하는 레이어를 제공하거나 그려서 &quot;영역 내에 포인트 집중도가 예기치 않게 높거나 낮은 위치가 있습니까?&quot;라는 질문에 대한 답을 얻습니다.   
+            </p>
+            <p>직접 그린 영역 피처 또는 지정한 영역 레이어 내의 피처는 포인트가 발생할 수 있는 위치를 정의해야 합니다. 이러한 영역을 그리려면  <b>그리기</b> 버튼을 클릭한 다음 영역 쉐이프를 생성할 맵상의 위치를 클릭하세요.  추가 영역을 그리려면 그리기 버튼을 다시 클릭한 다음 맵상의 위치를 클릭하고 작업을 계속합니다.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>다음으로 나누기</h2></div>
+        <hr/>
+        <div>
+            <p>경우에 따라서는 기본적인 분포도를 고려하여 패턴을 분석하는 것이 좋습니다. 예를 들어 포인트가 범죄를 나타낸다면 총인구로 나눌 경우 원래의 범죄 건수가 아닌 1인당 범죄 건수에 대한 분석으로 이어지게 됩니다.  나누기에 사용할 속성을 선택하는 작업을 보통 정규화라 지칭합니다.
+            </p>
+            <p>  <i>Esri Population</i>을 선택하면 인구 값이 포함된 각 영역 피처에 대한 보강이 수행되며, 이 값은 나누기를 위한 속성으로 사용됩니다.  이 옵션에는 크레딧이 사용됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>최적화</h2></div>
+        <hr/>
+        <div>
+            <p>속도 또는 정밀도를 최적화하도록 선택할 수 있습니다.  
+            </p>
+            <p>이 도구에서는 순열을 사용하여 데이터의 공간 패턴이 랜덤 패턴과 얼마나 다른지를 확인합니다.  순열의 수를 늘리면 정확도는 늘어나지만 처리 시간도 증가됩니다.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>옵션 무시</h2></div>
+        <hr/>
+        <div>
+            <p>도구에서는 데이터의 특성에 따라  <b>셀 크기</b> 및 <b>거리 밴드</b> 기본값에 대한 최적 설정을 찾습니다. 하지만 분석에 유용한 특정 <b>셀 크기</b> 또는 <b>거리 밴드</b>가 있다면 <b>옵션 무시</b>를 사용하여 이러한 값을 설정할 수 있습니다.
+            </p>
+            <p>또한 여러 데이터셋에 대해 분석을 실행할 때 각각의 데이터셋 간에  <b>거리 밴드</b> 및 <b>셀 크기</b>를 일관적으로 유지하려는 경우에도 <b>옵션 무시</b>가 유용합니다.  그런 다음 서로 다른 2년 간의 비만율과 당뇨병 발병률 또는 범죄율 등의 결과를 비교할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>셀 크기</h2></div>
+        <hr/>
+        <div>
+            <p>포함되어 있는 포인트의 개수를 계산하는 데 사용되는 그리드 셀의 크기입니다.  
+            </p>
+            <p>포함되어 있는 포인트의 개수를 계산하는 데 육각형 그리드를 사용하는 경우 이 거리는 육각형의 높이로 사용됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>거리 밴드</h2></div>
+        <hr/>
+        <div>
+            <p>지정한 거리 내에 있는 인접 피처의 컨텍스트 내에서 각 피처가 분석됩니다.  도구에서는 기본 거리가 자동으로 계산되지만 이 옵션을 사용하여 분석에 유용한 특정 거리를 설정할 수도 있습니다. 
+            </p>
+            <p>예를 들어 출퇴근 패턴을 조사하는 경우 직장까지의 평균 이동 거리가 약 24km임을 알고 있다면 24km 거리 밴드를 분석에 사용할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름을 제공합니다.  이 결과 레이어는 높은 값과 낮은 값 또는 포인트 수의 통계적으로 유의한 이상치를 보여 줍니다. 레이어가 이미 있는 경우 결과의 이름을 바꿀지 묻는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

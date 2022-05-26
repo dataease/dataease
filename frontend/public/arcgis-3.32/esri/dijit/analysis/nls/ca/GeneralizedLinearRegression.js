@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ca/GeneralizedLinearRegression",{modifiedTitle:"Regressi\u00f3 lineal generalitzada: ${goal}",fit:"Ajusta",fitAndPredict:"Ajusta i prediu",selectGoal:"Qu\u00e8 voleu fer?",fitGoal:"Ajustar un model per avaluar-ne el rendiment",fitAndPredictGoal:"Ajustar un model i predir els valors",inputLayerLabel:"Trieu una capa a partir de la qual generar un model",chooseDependentField:"Trieu el camp que voleu modelar",chooseDataType:"Trieu el tipus de dades que esteu modelant",
+continuousData:"Continu",binaryData:"Binari",countData:"Recompte",chooseExplanatoryField:"Trieu els camps explicatius",chooseFeaturesToPredict:"Trieu una capa per predir-ne els valors",chooseExplainMatch:"Trieu com han de coincidir els camps explicatius",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Capa d'entitats generada en executar les ${goal} solucions de regressi\u00f3 lineal generalitzada.",itemTags:"Resultat de l'an\u00e0lisi, regressi\u00f3 lineal generalitzada, ${inputLayerName}, ${goal}",
+itemSnippet:"Capa d'entitats generada a partir de la regressi\u00f3 lineal generalitzada (${goal})."});

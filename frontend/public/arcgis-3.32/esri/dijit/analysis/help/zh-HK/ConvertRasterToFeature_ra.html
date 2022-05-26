@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>將點陣轉換為圖徵</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="將點陣轉換為圖徵工具"></h2>
+        <hr/>
+    <p>此工具可將點陣轉換為圖徵資料集，以作為點、線或多邊形。
+    </p>
+    <p> <b>選擇欄位</b>參數可讓您選擇輸入點陣資料集的哪些屬性欄位，將成為輸出圖徵類別中的屬性。此參數僅適用於在相關表格中具有其他屬性的整數點陣。
+    </p>
+    <p>輸入點陣可擁有任何儲存格大小。
+    </p>
+    <p>整數點陣可轉換為點、線或多邊形圖徵；但只能將浮點點陣轉換為點圖徵。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則只會轉換目前地圖範圍中可見的點陣儲存格。如果未勾選，則將轉換點陣圖層中的所有儲存格，即使它們超出目前地圖範圍也是如此。若點陣圖層很大或有極高的解析度，則注意此情況。
+    </p>
+    <p>此工具的使用案例包含：
+ 
+        <ul>
+            <li>從陸地使用分類點陣建立多邊形圖徵。
+                
+ 
+            </li>
+            <li>可將 DEM 中識別的串流轉換為線圖徵。
+                
+
+            </li>
+            <li>可將 DEM 轉換成能在非點陣型工作流程中使用的點圖徵。
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要轉換的光柵圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將轉換為圖徵圖層的輸入點陣圖層。
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>選擇欄位</h2></div>
+        <hr/>
+        <div>
+            <p>提供欄位來指定將用於轉換的值。
+            </p>
+            <p>它可為任何整數或文字值。
+            </p>
+            <p>若是針對點資料集輸出，則可使用包含浮點值的欄位。
+            </p>
+            <p>預設選項是使用  <i>Value</i> 欄位，包含每個點陣儲存格中的值。
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>選擇輸出類型</h2></div>
+        <hr/>
+        <div>
+            <p>選擇點、線或多邊形之間的輸出類型。
+            </p>
+            <ul>
+                <li>點 - 點陣將轉換為點資料集。
+                    
+ 
+                </li>
+                <li>線 - 點陣將轉換為線圖徵資料集。
+                    
+ 
+                </li>
+                <li>多邊形 - 點陣將轉換為多邊形圖徵資料集。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>簡化線條或多邊形</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否必須簡化圖徵。
+            </p>
+            <p>如果勾選（預設值），會平滑化多邊形圖徵以產生更尋常的結果。若取消勾選此選項，線性圖徵將依循點陣資料集的儲存格邊界。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

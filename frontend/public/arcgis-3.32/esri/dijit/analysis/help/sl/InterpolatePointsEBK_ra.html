@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolacija točk</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Orodje Interpolacija točk"></h2>
+        <hr/>
+    <p>To orodje vam omogoča, da predvidite vrednosti na novih lokacijah glede na merjene vrednosti zbirk točk. Orodje vzame točkovne podatke z vrednostmi na vsaki točki in vrne raster predvidenih vrednosti.
+    </p>
+    <p>Drugi primeri uporabe tega orodja vključujejo:
+
+        <ul>
+            <li>Okoli&scaron;, v katerem se upravlja s kakovostjo zraka, ima tipala, ki merijo ravni onesnaženja. Interpolacija točk je lahko uporabljena za napoved ravni onesnaženja na lokacijah, ki nimajo tipal, kot so lokacije z ogroženo populacijo &ndash; na primer vrtci in bolni&scaron;nice.
+                
+
+            </li>
+            <li>Napovejte koncentracije težkih kovin v pridelkih na podlagi vzorcev, zbranih s posameznih rastlin.
+                
+
+            </li>
+            <li>Predvidite ravni hranil v tleh (du&scaron;ik, fosfor, kalij, itd.), da preučite njihov vpliv na donosnost pridelka in predpi&scaron;ete natančne količine gnojila za vsako lokacijo na terenu.
+                
+
+            </li>
+            <li>Meteorolo&scaron;ke aplikacije vsebujejo napovedovanje temperatur, padavin in povezanih spremenljivk (npr. kisel dež).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Izberi točkovni sloj, ki vsebuje lokacije z znanimi vrednostmi</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, ki vsebuje točke, v katerih so bile izmerjene vrednosti.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Izberi polje za interpolacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite polje z vrednostmi, ki jih želite interpolirati. Polje mora biti &scaron;tevilčno.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite svoje nastavitve za hitrost glede na natančnost.
+            </p>
+            <p>Za izračun natančnej&scaron;ih napovedi je potrebno več časa. Ta parameter spremeni privzete vrednosti več drugih parametrov Interpolacije točk, da optimizira hitrost izračuna, natančnost rezultatov in ravnovesje obeh. Privzeto bo orodje optimiziralo ravnovesje.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Spremeni podatke na normalno porazdelitev</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, ali želite spremeniti svoje podatke na normalno porazdelitev.
+            </p>
+            <p>Interpolacija je najnatančnej&scaron;a pri podatkih, ki sledijo normalni (zvonasti) porazdelitvi. Če se zdi, da va&scaron;i podatki niso normalno porazdeljeni, morate izvesti postopek spremembe.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Velikost lokalnih modelov</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolacija točk se izvaja z izdelovanjem lokalnih interpolacijskih modelov, ki se medsebojno pome&scaron;ajo, da ustvarijo končno karto z napovedmi. Ta parameter upravlja količino točk, ki bodo vsebovane v posameznem lokalnem modelu. Zaradi manj&scaron;ih vrednosti bodo rezultati bolj lokalni in lahko razkrijejo manj&scaron;e vplive, prav tako lahko povzročijo nestabilno računanje. Večje vrednosti bodo stabilnej&scaron;e, nekaterih lokalnih vplivov pa bodo morda ne bo.
+            </p>
+            <p>Vrednost je lahko v razponu od 30 do 500, medtem ko so lahko značilne vrednosti med 50 in 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Število sosedov</h2></div>
+        <hr/>
+        <div>
+            <p>Napovedi so izračunane na podlagi sosednjih točk. Ta parameter upravlja količino točk, ki bodo uporabljene v izračunu. Večje &scaron;tevilo uporabljenih sosednjih točk bo na splo&scaron;no zagotovilo natančnej&scaron;e podatke, vendar bo za izračun treba več časa.
+            </p>
+            <p>Vrednost je lahko v razponu od 1 do 64, medtem ko so lahko značilne vrednosti med 5 in 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Velikost izhodne celice</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost celice in enote za rezultate rastra.
+            </p>
+            <p>Razpoložljive enote so čevlji, milje, metri in kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Rezultat napake napovedi</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, ali želite ustvariti raster standardnih napak za napovedane vrednosti.
+            </p>
+            <p>Standardne napake so uporabne, ker navajajo informacije o zanesljivosti napovedanih vrednosti. Enostavno pravilo se glasi, da se bo prava vrednost nahajala med dvema standardnima napakama napovedane vrednosti 95 % časa. Na primer, predpostavite, da ima nova lokacija napovedano vrednost 50 s standardno napako 5. To pomeni, da bo orodje ocenilo, da je prava vrednost na tej lokaciji 50, vendar bi lahko bila vrednost tudi med 40 in 60. Za izračun tega razpona primernih vrednosti pomnožite standardno napako z 2, to vrednost dodajte napovedani vrednosti, da dobite zgornjo mejo razpona, in jo odvzemite od napovedane vrednosti, da dobite spodnjo mejo razpona.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

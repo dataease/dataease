@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Hilangkan Batas</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Hilangkan Batas"></h2>
+        <hr/>
+    <p>Area yang tumpang tindih atau saling berbatasan akan digabungkan untuk menghasilkan satu area.    
+    </p>
+    <p>Anda dapat mengatur batas-batas mana yang digabungkan dengan menetapkan suatu kolom. Sebagai contoh, jika Anda mempunyai layer wilayah, dan setiap wilayah memiliki atribut  <i>State_Name</i>, Anda dapat menghilangkan batas wilayah tersebut dengan menggunakan atribut <i>State_Name</i> tersebut.  Daerah-daerah yang berdekatan akan digabungkan jika mereka mempunyai nilai yang sama untuk <i>State_Name</i>.  Hasil akhirnya adalah layer batas wilayah.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer area yang batasnya akan dihilangkan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer tersebut mengandung fitur area yang akan dihilangkan. 
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Pilih metode penghilangan</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memilih satu atau dua metode untuk menggabungkan fitur area:
+                <ul>
+                    <li> <b>Area yang tumpang tindih atau berdekatan</b>&mdash;Dua atau lebih area yang batasnya saling tumpang tindih akan digabungkan menjadi satu area.  Sebagai tambahan, area yang berdekatan (yaitu, memiliki batasan yang sama) akan digabungkan menjadi satu area.
+                    </li>
+                    <li> <b>Area yang memiliki nilai kolom yang sama</b>&mdash;Area yang tumpang tindih atau memiliki batasan yang sama akan digabungkan menjadi satu area jika memiliki nilai kolom yang sama.
+                        <p>Sebagai contoh, jika Anda mempunyai layer wilayah, dan setiap wilayah memiliki kolom  <i>State_Name</i>, Anda dapat melebur batas wilayah tersebut dengan menggunakan kolom <i>State_Name</i> tersebut.  Daerah-daerah yang berdekatan akan digabungkan jika mereka mempunyai nilai yang sama untuk <i>State_Name</i>.  Hasil akhirnya adalah layer batas wilayah.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur di layer input yang terlihat dalam jangkauan peta saat ini yang akan dihilangkan.  Jika tidak dicentang, seluruh fitur pada layer input akan dihilangkan, meskipun berada di luar cakupan peta saat ini.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Buat Fitur Multi-Bagian</h2></div>
+        <hr/>
+        <div>
+            <p>Di ArcGIS, representasi digital dari suatu tempat atau benda yang memiliki lebih dari satu bagian tetapi ditetapkan sebagai sebuah fitur karena mereferensikan serangkaian atribut. Di layer negara bagian, contohnya, negara bagian Hawaii dapat dianggap sebagai fitur multi-bagian karena bagian geometriknya yang tersebar diklasifikasikan sebagai satu negara bagian. Parameter boolean menawarkan dua opsi:
+                <ul>
+                    <li>Benar (dicentang): layanan output dapat berisi fitur multi-bagian.
+                    </li>
+                    <li>Salah (tidak dicentang): layanan output hanya akan berisi fitur satu-bagian, dan fitur individu akan dibuat untuk masing-masing bagian.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Tambahkan statistik</h2></div>
+        <hr/>
+        <div>
+            <p>Jika area-area tersebut digabungkan, maka Anda dapat meringkas atributnya.  Contohnya, jika Anda menghilangkan batas antar wilayah berdasarkan pada  <i>State_Name</i>, dan masing-masing wilayah memiliki kolom <i>Population</i>, maka Anda dapat menghitung jumlah keseluruhan <i>Population</i> untuk negara bagian tersebut.
+            </p>
+            <p>Statistik yang tersedia adalah:
+            </p>
+            <ul>
+                <li> <b>Jumlah</b>&mdash;Menambahkan nilai total untuk kolom tertentu
+                    
+
+                </li>
+                <li> <b>Rata-rata</b>&mdash;Menghitung rata-rata untuk kolom tertentu
+                    
+
+                </li>
+                <li> <b>Minimum</b>&mdash;Mencari nilai terkecil untuk seluruh catatan dari kolom tertentu
+                    
+
+                </li>
+                <li> <b>Maksimum</b>&mdash;Mencari nilai terbesar untuk seluruh catatan dari kolom tertentu
+                    
+
+                </li>
+                <li> <b>Simpangan Baku</b>&mdash;Mencari simpangan baku untuk nilai-nilai pada kolom tertentu
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

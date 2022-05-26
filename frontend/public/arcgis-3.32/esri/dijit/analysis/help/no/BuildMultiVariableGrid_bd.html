@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opprett multivariabelt rutenett</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Arbeidsflytdiagram for Legg til data"></h2>
+        <hr/>
+    <p>Verkt&oslash;yet Opprett multivariabelt rutenett fungerer med ett eller flere lag av punkt-, linje- eller polygongeoobjekter. Verkt&oslash;yet genererer et rutenett av kvadratiske eller sekskantede beholdere og beregner verdier for hver beholder ut fra hvor n&aelig;r hvert inndatalag er. Disse verdiene kan inkludere f&oslash;lgende variabler: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Avstand til n&aelig;rmeste</b>&ndash; Avstanden fra hver beholder til n&aelig;rmeste geoobjekt
+            </li>
+            <li> <b>Attributt for n&aelig;rmeste</b>&ndash; En feltverdi i geoobjektet n&aelig;rmest hver beholder
+            </li>
+            <li> <b>Oversikt over n&aelig;rmeste</b>&ndash; Angitt forekomst av alle geoobjekter innenfor en avstand til hver beholder
+            </li>
+            <li> <b>Oversikt over kryssende</b>&ndash; Angitt forekomst av alle geoobjekter som krysser hver beholder
+            </li>
+        </ul>
+        
+    </p>
+    <p>Resultatlaget viser bare de variablene du angir. Disse variablene kan hjelpe deg &aring; forst&aring; n&aelig;rheten og fordelingen av dataene dine. Resultatene kan hjelpe deg med &aring; begynne &aring; besvare sp&oslash;rsm&aring;l som f&oslash;lgende:
+        <ul>
+            <li>Gitt at byens infrastruktur for kollektivtransport best&aring;r av flere lag, hvilken del av byen er minst tilgjengelig n&aring;r man reiser kollektivt?
+            </li>
+            <li>Gitt at det finnes lag for vannveier som innsj&oslash;er og elver, hva heter vannforekomsten n&aelig;rmest hver lokasjon i USA?
+            </li>
+            <li>Gitt at det finnes et lag for inntekt per husholdning, hvor i USA er inntektsforskjellene st&oslash;rst innenfor en radius p&aring; 80 km?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Velg typen beholdere som skal brukes til å opprette det multivariable rutenettet</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Type beholder og st&oslash;rrelsen p&aring; beholdere som skal brukes til &aring; opprette det multivariable rutenettet. For alternativet  <b>Kvadrat</b> bestemmes kvadratets h&oslash;yde og lengde av antallet og hvilke enheter som er angitt. For alternativet <b>Heksagon</b> bestemmes avstanden mellom de parallelle sidene av antallet og hvilke enheter som er angitt,.
+            </p>
+            <p>Denne analysen bruker beholdere og krever et projisert koordinatsystem. Du kan angi  <b>Behandlende koordinatsystem</b> i <b>Analysemilj&oslash;er</b>. Hvis koordinatsystemet for behandling ikke er angitt som et projisert koordinatsystem, blir du bedt om &aring; angi det n&aring;r du bruker funksjonen <b>Kj&oslash;r analyse</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Velg inndatalagene og variablene du vil inkludere i rutenettet</h2></div>
+        <hr/>
+        <div>
+            <p>Klikk p&aring;  Legg til-knappen ( <b>+</b>) for &aring; &aring;pne vinduet <b>Legg til variabler</b> og legge til et lag i analysen. I vinduet <b>Legg til variabler</b> kan du velge et inndatalag og konfigurere variablene du vil beregne for dette inndatalaget.
+            </p>
+            <p>N&aring;r du har valgt og konfigurert variablene du vil beregne, blir laget oppf&oslash;rt i verkt&oslash;yvinduet sammen med eventuelle andre lag som er valgt. Klikk p&aring; redigeringsknappen for et hvilket som helst lag for &aring; &aring;pne vinduet  <b>Legg til variabler</b> og se alle variablene som er konfigurert for det aktuelle laget. Klikk p&aring; Slett-knappen til et hvilket som helst lag for &aring; fjerne det aktuelle laget og alle tilknyttede variabler fra analysen.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Legg til variabler</h2></div>
+        <hr/>
+        <div>
+            <p>I dette vinduet kan du velge et inndatalag og konfigurere variablene du vil beregne for dette inndatalaget. For &aring; komme i gang bruker du rullegardinmenyen  <b>Velg et inndatalag</b> og velger punkt-, polygon- eller linjelaget du vil legge til i analysen.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+            <p>N&aring;r du har valgt et inndatalag, klikker du p&aring;  <b>Legg til en variabel</b> for &aring; &aring;pne en ny variabel for redigering. Du m&aring; oppgi et unikt navn for hver variabel. Det blir navnet p&aring; feltet som er opprettet i attributtabellen i resultatlaget.
+            </p>
+            <p>Bruk rullegardinmenyen for &aring; velge hvilken type variabel som skal legges til. Hver enkelt type variabel m&aring; konfigureres med et unikt sett av parametere, og alle parametere er obligatoriske.
+            </p>
+            <p>N&aring;r du har lagt til alle &oslash;nskede variabler for det valgte laget, klikker du p&aring;  <b>Legg til</b> for &aring; lagre variablene.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

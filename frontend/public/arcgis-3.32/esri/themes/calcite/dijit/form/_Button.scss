@@ -1,0 +1,217 @@
+// Button | DropDownButton | ComboButton | ToggleButton
+// 
+// Styling Buttons mainly includes:
+//
+// 1. Containers
+//    .dijitButton
+//    .dijitDropDownButton 
+//    .dijitComboButton
+//    .dijitButtonNode - common button/arrow wrapper shared across all three button types 
+//
+// 2. Button text
+//    .dijitButtonText
+// 
+// 3. Arrows - only for DropDownButton and ComboButton
+//       There are total four directions arrows - down, left, right, up:
+//    .dijitArrowButtonInner - down arrow by default
+//      .dijitLeftArrowButton .dijitArrowButtonInner - left arrow
+//      .dijitRightArrowButton .dijitArrowButtonInner - right arrow
+//      .dijitUpArrowButton .dijitArrowButtonInner - up arrow
+//
+// 4. States - Hover, Active, Disabled, e.g.
+//    .dijitButtonHover .dijitButtonNode
+//    .dijitButtonActive .dijitButtonNode
+//    .dijitButtonDisabled .dijitButtonNode
+//
+//      .dijitDisabled .dijitArrowButtonInner  - disabled arrow states
+//
+.#{$theme-name} {
+  // Base styles
+  // --------------------------------------------------
+  .dijitButtonNode {
+    // rules for dijit.form.*Button widgets and arrow nodes on ComboBox, Spinner etc.
+    // Select is an exception, whose styles will be defined separately in form/Select
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    @include user-select(none);
+    @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+    .dijitIcon {
+      margin-right: 6px;
+    }
+  }
+  .dijitButtonContents {
+    padding: $padding-base-vertical $padding-base-horizontal;
+  }
+  .dijitButtonText {
+    padding: 0;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    line-height: $line-height-computed;
+    text-align: center;
+  }
+  // Disabled state
+  .dijitDisabled {
+    outline: none;
+    .dijitButtonNode {
+      cursor: false;
+      pointer-events: none;
+      @include box-shadow(none);
+    }
+  }
+  // Opened state
+  // Used by DropDownButton, ComboButton, ComboBox, TimeTextBox, etc.
+  // Select is an exception, whose styles will be defined separately in form/Select
+  .dijitOpened {
+    .dijitButtonNode {
+      border-color: $input-border-focus;
+    }
+    .dijitArrowButton {
+      @include button-variant-default-active;
+    }
+  }
+  // Arrow styles for down/up/left/right directions
+  .dijitArrowButton,
+  .dijitArrowButtonInner {
+    width: auto;
+    height: 100%;
+    margin: 0 auto;
+    padding: $input-caret-padding-vertical;
+    @include dijit-icons;
+    &:before {
+      @include icon-get-content(esri-icon-down-arrow);
+    }
+  }
+  .dijitTextBox .dijitLeftArrowButton,
+  .dijitLeftArrowButton .dijitArrowButton,
+  .dijitLeftArrowButton .dijitArrowButtonInner {
+    &:before {
+      @include icon-get-content(esri-icon-left-triangle-arrow);
+    }
+  }
+  .dijitTextBox .dijitRightArrowButton,
+  .dijitRightArrowButton .dijitArrowButton,
+  .dijitRightArrowButton .dijitArrowButtonInner {
+    &:before {
+      @include icon-get-content(esri-icon-right-triangle-arrow);
+    }
+  }
+  .dijitTextBox .dijitUpArrowButton,
+  .dijitUpArrowButton .dijitArrowButton,
+  .dijitUpArrowButton .dijitArrowButtonInner {
+    &:before {
+      @include icon-get-content(esri-icon-up-arrow);
+    }
+  }
+  // Dropdown button
+  // --------------------------------------------------
+  .dijitDropDownButton {
+    .dijitButtonContents {
+      padding-right: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+  // Combo button
+  // --------------------------------------------------
+  table.dijitComboButton {
+    border-collapse: separate;
+  }
+  .dijitComboButton {
+    // combobutton's arrow icon is in the "dijitArrowButtonInner" node
+    .dijitArrowButton {
+      width: auto;
+      &:before {
+        content: none;
+      }
+    }
+    .dijitStretch {
+      border-right-width: 0;
+    }
+    .dijitArrowButton {
+      padding: 0;
+    }
+  }
+  // Alternate buttons
+  // --------------------------------------------------
+  // Primary appears as blue
+  .btn-primary {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border, false);
+        &:hover {
+          background-color: $Calcite_Blue_a200;
+          border-color: $Calcite_Blue_a200;
+        }
+      }
+    }
+  }
+  // Success appears as green
+  .btn-success {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-success-color, $btn-success-bg, $btn-success-border, false);
+        &:hover {
+          background-color: $Calcite_Green_250;
+          border-color: $Calcite_Green_250;
+        }
+      }
+    }
+  }
+  // Info appears as light blue
+  .btn-info {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-info-color, $btn-info-bg, $btn-info-border, false);
+        &:hover {
+          background-color: $Calcite_Blue_100;
+          color: $Calcite_Gray_650;
+        }
+      }
+    }
+  }
+  // Warning appears as orange
+  .btn-warning {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-warning-color, $btn-warning-bg, $btn-warning-border, false);
+        &:hover {
+          background-color: $Calcite_Yellow_100;
+          color: $Calcite_Gray_650;
+        }
+      }
+    }
+  }
+  // Danger appears as red
+  .btn-danger {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border, false);
+        &:hover {
+          background-color: $Calcite_Red_a100;
+        }
+      }
+    }
+  }
+  // Link appears as transparent
+  .btn-link {
+    .dijitButtonNode {
+      &,
+      &.dijitArrowButton {
+        @include button-variant($btn-link-color, $btn-link-bg, $btn-link-border, false);
+        &:hover {
+          .dijitButtonText {
+            text-decoration: $link-hover-decoration;
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalizirana linearna regresija</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Dijagram radnog tijeka za generaliziranu linearnu regresiju"></h2>
+        <hr/>
+    <p>Izvr&scaron;ava generaliziranu linearnu regresiju 
+(GLR) za generiranje predviđanja ili za modeliranje zavisne varijable s obzirom na njezin odnos sa skupom varijabli za obja&scaron;njenje. Ovaj se alat može upotrijebiti za prilagođavanje kontinuiranih (Gaussovih), binarnih (logističkih) i modela (Poisson) zbroja.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Vrsta analize</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje način rada alata. Alat se može pokrenuti kako bi se obučio model samo za procjenu izvedbe ili obučio model i za predviđanje za geoobjekte. Vrste predviđanja glase kako slijedi:
+                <ul>
+                    <li> <b>Prilagodite model za procjenu izvedbe modela</b> &ndash; model će se prilagoditi i primijeniti na ulazne podatke. Upotrijebite ovu opciju za procjenu točnosti modela prije generiranja predviđanja na novom skupu podataka ili za razumijevanje odnosa i pokretanja predviđene varijable. Izlazna vrijednost ove opcije bit će usluga geoobjekata va&scaron;ih prilagođenih podataka i dijagnostika modela.
+                    </li>
+                    <li> <b>Prilagodite model i predvidite vrijednosti</b> &ndash; predviđanja ili klasifikacije generirat će se za ulazne geoobjekte i geoobjekte predviđanja. Moraju se navesti varijable za obja&scaron;njenje kako za geoobjekte predviđanja tako i za geoobjekte koji se predviđaju. Izlazna vrijednost ove opcije bit će usluga geoobjekata va&scaron;ih modela prilagođenih ulaznim podacima, usluga geoobjekata predviđenih vrijednosti i dijagnostika modela.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Prilagodite model za procjenu izvedbe modela</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj način ako želite prilagoditi model i istražiti prikladnost.
+            </p>
+            <p>S ovim će se odabirom model obučiti pomoću ulaznog sloja. Upotrijebite ovu opciju za procjenu točnosti modela prije generiranja predviđanja na novom skupu podataka. Ovom će se opcijom izvesti dijagnostike modela i primijeniti model na podatke o obuci.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Prilagodite model i predvidite vrijednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj način ako želite prilagoditi model i primijeniti model na skup podataka za generiranje predviđanja.
+            </p>
+            <p>Predviđanja ili klasifikacije generirat će se za geoobjekte. Izlazna vrijednost ove opcije bit će usluga geoobjekata, dijagnostike modela i opcionalna tablica promjenljive važnosti.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj iz kojeg ćete generirati model</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži točkaste, linijske, poligonalne ili tablične geoobjekte koji sadrže zavisne varijable i varijable za obja&scaron;njenje.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Odaberite polja za izradu modela</h2></div>
+        <hr/>
+        <div>
+            <p>Brojčano polje koje sadrži promatrane vrijednosti koje će se modelirati i vrstu vrijednosti koju modelirate. Postoje tri vrste vrijednosti koje možete modelirati
+                <ul>
+                    <li>Kontinuirana &ndash; predstavlja kontinuirane vrijednosti. Upotrjebljava se Gaussov model, a alat provodi običnu regresiju najmanjih kvadrata.
+                    </li>
+                    <li>Binarna &ndash; predstavlja vrijednosti prisutnosti ili odsutnosti. Moraju biti jedinice ili nule. Upotrebljava se model logističke regresije.
+                    </li>
+                    <li>Zbroj &ndash; predstavlja diskretne vrijednosti i predstavlja događaje, na primjer, broj kaznenih djela, incidenata bolesti ili prometnih nesreća. Upotrebljava se Poissonov model. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Odaberite sloj za koji će se predviđati vrijednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj s geoobjektima koji prikazuje lokacije na kojima se izračunavaju procjene. Svaki geoobjekt u ovom skupu podataka treba sadržavati vrijednosti za sve navedene varijable za obja&scaron;njenje. Zavisna varijabla za ove geoobjekte procjenjuje se pomoću modela kalibriranog za ulazni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Odaberite polja za objašnjenje</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno ili vi&scaron;e polja koja predstavljaju varijable (polja) za obja&scaron;njenje koje pomažu predvidjeti vrijednost. Vidljiva su samo brojčana polja.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Odaberite kako se polja objašnjenja podudaraju</h2></div>
+        <hr/>
+        <div>
+            <p>Kako će se odgovarajuće varijable u ulaznom sloju podudarati s varijablama u sloju predviđanja. U tablici će biti uključene samo varijable upotrijebljene u generiranju modela. Mogu se upotrebljavati samo brojčane vrijednosti. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Dobiveni rezultati ovisit će o vrsti analize. Ako prilagođavate za procjenu prikladnosti modela, rezultati će sadržavati sloj ulaznih podataka koji odgovaraju modelu i podatke o rezultatu ocjenjivanja prikladnosti modela. Ako prilagođavate i predviđate, rezultati će sadržavati sloj ulaznih podataka koji odgovaraju modelu, sloj predviđenih rezultata i podatke o rezultatu ocjenjivanja prikladnosti modela.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Gán lại Giá trị</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="C&ocirc;ng cụ G&aacute;n lại Gi&aacute; trị cho Cổng th&ocirc;ng tin"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y cho ph&eacute;p bạn thay đổi hoặc ph&acirc;n loại lại c&aacute;c gi&aacute; trị điểm ảnh của dữ liệu raster. C&aacute;c gi&aacute; trị điểm ảnh được g&aacute;n lại bằng c&aacute;ch x&aacute;c định một khoảng gi&aacute; trị điểm ảnh để g&aacute;n cho một gi&aacute; trị điểm ảnh đầu ra. Gi&aacute; trị điểm ảnh đầu ra c&oacute; thể l&agrave; gi&aacute; trị hợp lệ hoặc gi&aacute; trị kh&ocirc;ng c&oacute; Dữ liệu, tức l&agrave; c&aacute;c điểm ảnh kh&ocirc;ng c&oacute; gi&aacute; trị đ&atilde; biết li&ecirc;n quan đến ch&uacute;ng.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c &ocirc; nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được lập bản đồ lại. Nếu bỏ chọn, tất cả c&aacute;c &ocirc; trong raster sẽ được xử l&yacute;, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dữ liệu Đầu vào</h2></div>
+        <hr/>
+        <div>
+            <p>Dữ liệu đầu v&agrave;o sẽ c&oacute; gi&aacute; trị được g&aacute;n lại.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Vạch lại giá trị đến giá trị mới</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn nhập một khoảng gi&aacute; trị bằng c&aacute;ch x&aacute;c định gi&aacute; trị lớn nhất v&agrave; nhỏ nhất, sau đ&oacute; g&aacute;n một gi&aacute; trị đầu ra hoặc gi&aacute; trị kh&ocirc;ng c&oacute; Dữ liệu đến khoảng quy định.
+            </p>
+            <p>Để g&aacute;n lại một khoảng gi&aacute; trị mới, h&atilde;y nhấn  <b>Th&ecirc;m</b>, để th&ecirc;m một h&agrave;ng. Nhấn v&agrave;o mỗi gi&aacute; trị để chỉnh sửa bảng đến khoảng đ&oacute; v&agrave; g&aacute;n lại gi&aacute; trị bạn cần. Khi bạn x&aacute;c định c&aacute;c khoảng gi&aacute; trị, cần &aacute;p dụng hai quy tắc quan trọng:
+                <ul>
+                    <li>Khoảng bao gồm gi&aacute; trị nhỏ nhất v&agrave; kh&ocirc;ng bao gồm gi&aacute; trị lớn nhất.
+                    </li>
+                    <li>C&aacute;c h&agrave;ng trong bảng được xử l&yacute; từ tr&ecirc;n xuống.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bảng dưới đ&acirc;y cho thấy gi&aacute; trị nhỏ nhất được bao gồm trong đầu ra, nhưng gi&aacute; trị lớn nhất kh&ocirc;ng được bao gồm trong đầu ra.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tr&igrave;nh tự của khoảng được x&aacute;c định trong bảng cũng rất quan trọng. H&agrave;ng tr&ecirc;n c&ugrave;ng của bảng được xử l&yacute; đầu ti&ecirc;n, sau đ&oacute; xử l&yacute; đến h&agrave;ng b&ecirc;n dưới. Hai bảng dưới đ&acirc;y tr&igrave;nh b&agrave;y c&aacute;ch c&aacute;c khoảng gi&aacute; trị giống nhau tạo ra kết quả kh&aacute;c nhau, do tr&igrave;nh tự của h&agrave;ng trong bảng.
+            </p> 
+            <p>Bảng dưới thể hiện gi&aacute; trị đầu ra khi cột đầu ti&ecirc;n được ph&acirc;n loại theo số:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Bảng dưới tr&igrave;nh b&agrave;y việc sắp xếp c&aacute;c d&ograve;ng kh&aacute;c nhau sẽ cho c&aacute;c gi&aacute; trị đầu ra kh&aacute;c nhau như thế n&agrave;o:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Cả hai quy tắc được &aacute;p dụng để sắp xếp lại c&aacute;c gi&aacute; trị. Do mỗi h&agrave;ng được xử l&yacute; từ tr&ecirc;n xuống, những gi&aacute; trị n&agrave;y được ưu ti&ecirc;n khi x&aacute;c định đầu ra, ngay cả khi sử dụng c&aacute;c khoảng giống nhau.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

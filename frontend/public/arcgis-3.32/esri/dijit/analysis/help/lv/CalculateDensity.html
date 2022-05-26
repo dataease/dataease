@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aprēķināt blīvumu</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Aprēķināt blīvumu"></h2>
+        <hr/>
+    <p>Rīks Aprēķināt blīvumu izveido blīvuma karti no punktu vai līniju elementiem, izklājot kartē kādas parādības zināmo daudzumu (attēlots kā punktu vai līniju atribūti). Rezultāts ir slānis ar laukumiem, kas klasificēti no vismazāk blīvā līdz visblīvākajam.   
+
+    </p>
+    <p>Punktu ievadē katram punktam jāattēlo kāda gadījuma vai incidenta atra&scaron;anās vieta, un rezultātu slānim jāattēlo incidentu skaits katrā teritorijā. Lielāka blīvuma vērtība jaunā izvietojumā nozīmē, ka &scaron;ī izvietojuma tuvumā ir vēl citi punkti. Daudzos gadījumos rezultātu slāni var interpretēt kā riska virsmu turpmākiem gadījumiem. Piemēram, ja ievades punkti attēlo zibens spērienu izvietojumus, rezultātu slāni var interpretēt kā riska virsmu turpmākiem zibens spērieniem.
+    </p>
+    <p>Līniju ievadē līnijas blīvuma virsma attēlo kopējo līniju skaitu, kas atrodas katra izvietojuma tuvumā. Aprēķinātā blīvuma vērtību vienības ir līnijas garums katrā teritorijā. Piemēram, ja līnijas attēlo upes, rezultātu slānis attēlos kopējo upju garumu, kas atrodas meklē&scaron;anas rādiusā. &Scaron;o rezultātu var izmantot, lai identificētu teritorijas, ko var apdzīvot zālēdāji.
+    </p>
+    <p> Citi &scaron;ī rīka lieto&scaron;anas gadījumi ietver:
+        <ul>
+            <li>Noziegumu blīvuma kar&scaron;u izveide, lai palīdzētu policijai precīzi izvietot resursus teritorijās ar augstu noziedzības līmeni.
+            </li>
+            <li>Slimnīcu blīvuma aprēķinā&scaron;ana valstī. Rezultātu slānī būs redzamas teritorijas ar augstu un zemu piekļuves līmeni slimnīcām, un &scaron;o informāciju var izmantot, lai izvēlētos jaunu slimnīcu atra&scaron;anās vietas.
+            </li>
+            <li>Teritoriju ar augstu meža ugunsgrēku riska līmeni noteik&scaron;ana, pamatojoties uz meža ugunsgrēku vēsturiskajām izcel&scaron;anās vietām.
+            </li>
+            <li>Apdzīvotu kopienu, kas atrodas tālu no lielajiem autoceļiem, atra&scaron;ana, lai izplānotu jaunu autoceļu būvniecību.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties punktu vai līnijas slāni, no kura aprēķināt blīvumu</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties punktu vai līnijas slāni, no kura tiks aprēķināts blīvums. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Skaita lauka izmantošana</h2></div>
+        <hr/>
+        <div>
+            <p>Lauks, kurā norādīts incidentu skaits katrā izvietojumā. Piemēram, ja jums ir punkti, kas attēlo pilsētas, varat izmantot lauku, kurā attēlots pilsētas iedzīvotāju skaits, kā skaita lauku, un rezultātā iegūtajā iedzīvotāju skaita blīvuma slānī būs aprēķināts lielāks iedzīvotāju skaita blīvums to pilsētu tuvumā, kurās ir liels iedzīvotāju skaits.
+            </p>
+            <p> Ja tiek izmantota noklusējuma izvēle Nav, tiek pieņemts, ka katrs izvietojums attēlo atsevi&scaron;ķu skaitu.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Meklēšanas distance</h2></div>
+        <hr/>
+        <div>
+            <p>Ievadiet attālumu, lai norādītu, cik tālu meklēt, lai atrastu punktu vai līniju elementus, aprēķinot blīvuma vērtības. Piemēram, ja norādāt meklē&scaron;anas attālumu 10&nbsp;000 metri, jebkura izvietojuma blīvums izvades slānī tiek aprēķināts, pamatojoties uz elementiem, kas atrodas 10&nbsp;000 metru diapazonā no &scaron;ī izvietojuma. Jebkurai atra&scaron;anās vietai, kurā 10&nbsp;000 metru diapazonā nav neviena incidenta, blīvuma vērtība būs nulle.     
+
+            </p>
+            <p>Ja attālums nav norādīts, tiks aprēķināta noklusējuma vērtība, pamatojoties uz ievades elementu izvietojumu un vērtībām skaita laukā (ja skaita lauks ir pieejams).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Izgriezt izvadi uz</h2></div>
+        <hr/>
+        <div>
+            <p>Vai nu uzzīmējiet, vai norādiet slāni, kas apzīmē teritoriju, kur vēlaties aprēķināt blīvumus. Piemēram, lai aprēķinātu zivju blīvumu ezerā, &scaron;ajā parametrā var izmantot ezera robežu, un rezultāts tiks aprēķināts tikai ezera robežās.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasificēt pēc</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, kā blīvuma vērtības tiks klasificētas teritorijās.
+                <ul>
+                    <li>Līdzvērtīgs intervāls&nbsp;&mdash; teritorijas tiek izveidotas tā, lai blīvuma vērtību diapazons būtu līdzvērtīgs katrā teritorijā.
+                    </li>
+                    <li>Ģeometrisks intervāls&nbsp;&mdash; teritorijas tiek izveidotas, pamatojoties uz kla&scaron;u intervāliem, kuros ir ģeometriskas sērijas. &Scaron;ī metode garantē, ka katras klases diapazonā ir aptuveni tāds pats vērtību skaits un ka starpība starp intervāliem ir konstanta.
+                    </li>
+                    <li>Dabiski pārtraukumi&nbsp;&mdash; teritoriju kla&scaron;u intervālu pamatā ir dabiska datu grupē&scaron;ana. Klases robežvērtības tiek identificētas kā labākās grupas līdzīgās vērtības, un tās maksimāli palielina at&scaron;ķirības starp klasēm. 
+                    </li>
+                    <li>Līdzvērtīga teritorija&nbsp;&mdash; teritorijas tiek izveidotas tā, lai katras teritorijas lielums būtu līdzvērtīgs. Piemēram, ja rezultātu slānī ir vairāk augsta blīvuma vērtību nekā zema blīvuma vērtību, ar lielu blīvumu tiks izveidots lielāks teritoriju skaits.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; teritorijas tiek izveidotas, pamatojoties uz prognozēto blīvuma vērtību standarta novirzi. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Klašu skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Norādīts kla&scaron;u skaits (prognozēto vērtību diapazons) rezultāta slānī. Katra klase definē teritoriju robežu. &Scaron;o kla&scaron;u vērtības noteiks iepriek&scaron; norādītais parametrs  <b>Klasificēt pēc</b>.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Izvades apgabala mērvienības</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet izvades teritorijas vienību. Blīvums ir skaits, kas dalīts ar teritoriju, un &scaron;is parametrs norāda teritorijas vienību blīvuma aprēķinā&scaron;anā.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultāta slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

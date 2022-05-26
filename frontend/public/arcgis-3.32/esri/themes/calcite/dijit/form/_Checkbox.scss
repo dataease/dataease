@@ -1,0 +1,67 @@
+// CheckBox
+// 
+// Styling CheckBox mainly includes:
+// 
+// 1. Containers
+//    .dijitCheckBox|.dijitCheckBoxIcon - for border, padding, width|height and background image
+// 
+// 2. CheckBox within ToggleButton
+//    .dijitToggleButton|.dijitToggleButtonChecked .* - for background image
+// 
+// 3. Checked state
+//    .dijitCheckBoxChecked - for checked background-color|image
+//    .dijitToggleButtonChecked - for border, background-color|image, display and width|height
+// 
+// 4. Hover state
+//    .dijitCheckBoxHover|.dijitCheckBoxCheckedHover - for background image
+// 
+// 5. Disabled state
+//    .dijitCheckBoxDisabled|.dijitCheckBoxCheckedDisabled - for background image
+//
+.#{$theme-name} {
+  .dijitCheckBox {
+    background-color: $checkbox-default-bg;
+    border: 1px solid $checkbox-default-border;
+    text-align: center;
+    position: relative;
+    input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $checkbox-width - 2px;
+      height: $checkbox-height - 2px;
+    }
+  }
+  .dijitCheckBox,
+  .dijitCheckBoxIcon {
+    width: $checkbox-width;
+    height: $checkbox-height;
+    position: relative;
+    @include dijit-icons;
+    line-height: ($checkbox-height - 2px) / $icon-size-base;
+    line-height: $checkbox-height - 2px;
+    @include box-sizing(border-box);
+  }
+  .dijitCheckBoxIcon {
+    display: none;
+  }
+  // Checked state
+  .dijitChecked {
+    .dijitCheckBoxIcon {
+      display: inline-block;
+      &:before {
+        @include icon-get-content(esri-icon-check-mark);
+      }
+    }
+  }
+  .dijitCheckBoxChecked,
+  .dijitCheckBoxCheckedDisabled {
+    background-color: $checkbox-active-bg;
+    border-color: $checkbox-active-border;
+    color: $checkbox-active-color;
+    &:before {
+      @include icon-get-content(esri-icon-check-mark);
+    }
+  }
+}
+

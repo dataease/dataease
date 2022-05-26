@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodificar Locais da Tabela</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodificar Locais da Tabela"></h2>
+        <hr/>
+    <p>Geocodifica&ccedil;&atilde;o converte endere&ccedil;os em coordenadas. Esta ferramenta converte endere&ccedil;os de uma tabela de compartilhamento de grandes dados em uma camada de fei&ccedil;&atilde;o com as coordenadas como colunas extras.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Escolher uma tabela de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>A tabela de entrada com os endere&ccedil;os a serem geocodificados. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Escolher um localizador</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha um servi&ccedil;o do localizador para geocodificar. Se o servi&ccedil;o do localizador que voc&ecirc; deseja utilizar n&atilde;o estiver no menu suspenso, entre em contato com seu administrador para ter o servi&ccedil;o do localizador configurado para geocodifica&ccedil;&atilde;o em lote.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>País</h2></div>
+        <hr/>
+        <div>
+            <p>Se todos os seus endere&ccedil;os forem de um pa&iacute;s, selecione este pa&iacute;s para garantir os resultados mais precisos. Caso contr&aacute;rio, deixe este par&acirc;metro vazio.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Selecionar Campos de Dados</h2></div>
+        <hr/>
+        <div>
+            <p>O servi&ccedil;o do localizador espera determinados campos nos dados, como endere&ccedil;o, cidade, estado ou c&oacute;digo postal. Combine os campos de dados no seu arquivo de entrada ou tabela com os campos que o localizador est&aacute; esperando utilizando as caixas suspensas. Quanto mais campos voc&ecirc; mapear, mais precisos ser&atilde;o os resultados. Se a tabela de entrada tiver todos os seus dados em uma coluna, selecione  <b>Campo &Uacute;nico</b>, e escolha um campo de dados no menu suspenso. Caso contr&aacute;rio, selecione <b>M&uacute;ltiplos Campos</b>, e mapeie os campos do localizador apropriados para as colunas de m&uacute;ltiplos campos na sua tabela.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Para cada local</h2></div>
+        <hr/>
+        <div>
+            <p>Inclui campos adicionais retornado pelo servi&ccedil;o de localiza&ccedil;&atilde;o. Se esta op&ccedil;&atilde;o estiver marcada, todos os campos criados pelo localizador ser&atilde;o retornados. Se isto estiver desmarcado, seus dados de entrada ser&atilde;o retornados com as coordenadas geocodificadas. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome do resultado de saída</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

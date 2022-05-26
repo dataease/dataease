@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Créer des zones tampon</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Cr&eacute;er des zones tampon"></h2>
+        <hr/>
+    <p>Une zone tampon est une surface qui couvre une distance donn&eacute;e &agrave; partir d'une entit&eacute; ponctuelle, lin&eacute;aire ou surfacique. 
+    </p>
+    <p>Les zones tampon sont g&eacute;n&eacute;ralement utilis&eacute;es pour cr&eacute;er des surfaces qui peuvent faire l'objet d'analyses plus approfondies &agrave; l'aide d'un outil, tel que Superposer les couches. Par exemple, si vous vous posez la question suivante&nbsp;: &quot;Quels sont les b&acirc;timents qui se trouvent &agrave; moins d'un kilom&egrave;tre de l'&eacute;cole ?&quot;, vous pouvez obtenir la r&eacute;ponse en cr&eacute;ant une zone tampon d'un kilom&egrave;tre autour de l'&eacute;cole et en utilisant l'outil Superposer les couches pour superposer la zone tampon avec la couche contenant les emprises de b&acirc;timents. Le r&eacute;sultat final est une couche des b&acirc;timents qui se trouvent &agrave; moins d'un kilom&egrave;tre de l'&eacute;cole.  
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s qui sont visibles au sein de l'&eacute;tendue courante de la carte seront buff&eacute;ris&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront buff&eacute;ris&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche contenant des entités à buffériser</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques &agrave; buff&eacute;riser. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Entrer la taille de la zone tampon</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez entrer une seule distance ou plusieurs valeurs en s&eacute;parant chaque valeur par un espace. Vous pouvez &eacute;galement sp&eacute;cifier un attribut sur la couche en entr&eacute;e qui contient la distance en cliquant sur  <b>Champ</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>options</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la mani&egrave;re dont les zones tampon superpos&eacute;es doivent &ecirc;tre g&eacute;r&eacute;es. Pour les zones tampon qui se trouvent par dessus une autre, les surfaces en commun peuvent &ecirc;tre conserv&eacute;es (Superposition) ou combin&eacute;es (Fusion). Lorsque vous utilisez l&rsquo;option  <b>Dissolve (Fusion)</b>, toutes les zones tampon sont fusionn&eacute;es en une entit&eacute; multi-parties, ce qui &eacute;limine tout chevauchement.
+            </p>  
+            <p> Si vous utilisez plusieurs distances, vous pouvez choisir le mode de repr&eacute;sentation de la distance &agrave; partir de la derni&egrave;re distance de la zone tampon. Par exemple, si les distances sont de 10 et 14&nbsp;:
+                <ul>
+                    <li>Choisissez  <b>Anneaux</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 10 &agrave; 14.
+                    </li>
+                    <li>Choisissez  <b>Disques</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 0 &agrave; 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>options</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la mani&egrave;re dont les zones tampon superpos&eacute;es doivent &ecirc;tre g&eacute;r&eacute;es. Pour les zones tampon qui se trouvent par dessus une autre, les surfaces en commun peuvent &ecirc;tre conserv&eacute;es (Superposition) ou combin&eacute;es (Fusion). Lorsque vous utilisez l&rsquo;option  <b>Dissolve (Fusion)</b>, toutes les zones tampon sont fusionn&eacute;es en une entit&eacute; multi-parties, ce qui &eacute;limine tout chevauchement.
+            </p>
+            <p>Lorsque vous cr&eacute;ez une seule zone tampon autour d'entit&eacute;s surfaciques (une distance entr&eacute;e), vous pouvez choisir si l'entit&eacute; qui est buff&eacute;ris&eacute;e est incluse ou exclue de la zone tampon obtenue.
+            </p>
+            <p>Si vous utilisez plusieurs distances, vous pouvez choisir le mode de repr&eacute;sentation de la distance &agrave; partir de la derni&egrave;re distance de la zone tampon. Par exemple, si les distances sont de 10 et 14&nbsp;:
+                <ul>
+                    <li>Choisissez  <b>Anneaux</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 10 &agrave; 14.
+                    </li>
+                    <li>Choisissez  <b>Disques</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 0 &agrave; 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>options</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la mani&egrave;re dont les zones tampon superpos&eacute;es doivent &ecirc;tre g&eacute;r&eacute;es. Pour les zones tampon qui se trouvent par dessus une autre, les surfaces en commun peuvent &ecirc;tre conserv&eacute;es (Superposition) ou combin&eacute;es (Fusion). Lorsque vous utilisez l&rsquo;option  <b>Dissolve (Fusion)</b>, toutes les zones tampon sont fusionn&eacute;es en une entit&eacute; multi-parties, ce qui &eacute;limine tout chevauchement.
+            </p>
+            <p>Lorsque vous cr&eacute;ez une seule zone tampon autour de lignes (une distance entr&eacute;e), vous pouvez choisir le c&ocirc;t&eacute; de la ligne &agrave; buff&eacute;riser. En g&eacute;n&eacute;ral, vous choisissez les deux c&ocirc;t&eacute;s. La gauche et la droite sont d&eacute;termin&eacute;es si vous alliez de la premi&egrave;re coordonn&eacute;e x,y de la ligne (la coordonn&eacute;e de d&eacute;part) vers la derni&egrave;re coordonn&eacute;e x,y de la ligne (la coordonn&eacute;e de fin). Vous choisissez g&eacute;n&eacute;ralement la gauche ou la droite lorsque vous savez que les entit&eacute;s lin&eacute;aires ont &eacute;t&eacute; cr&eacute;&eacute;es et stock&eacute;es dans une direction particuli&egrave;re (par exemple, en amont ou en aval dans un r&eacute;seau de rivi&egrave;re). Aux extr&eacute;mit&eacute;s des lignes, la zone tampon peut &ecirc;tre arrondie (Arrondi) ou toute droite (Plate).
+            </p>
+            <p>Si vous cr&eacute;ez plusieurs zones tampon (plusieurs distances), vous pouvez choisir le mode de repr&eacute;sentation de la distance &agrave; partir de la derni&egrave;re distance de la zone tampon. Par exemple, si les distances sont de 10 et 14&nbsp;:
+                <ul>
+                    <li>Choisissez  <b>Anneaux</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 10 &agrave; 14.
+                    </li>
+                    <li>Choisissez  <b>Disques</b> pour obtenir des zones tampon allant de 0 &agrave; 10 et de 0 &agrave; 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>options</h2></div>
+        <hr/>
+        <div>
+            <p>Une fois la couche &agrave; buff&eacute;riser choisie, vous pouvez indiquer le mode de gestion des zones tampon superpos&eacute;es. Pour les zones tampon qui se trouvent par dessus une autre, les surfaces en commun peuvent &ecirc;tre conserv&eacute;es (Superposition) ou combin&eacute;es (Fusion). Lorsque vous utilisez l&rsquo;option  <b>Dissolve (Fusion)</b>, toutes les zones tampon sont fusionn&eacute;es en une entit&eacute; multi-parties, ce qui &eacute;limine tout chevauchement. Vous pouvez en outre sp&eacute;cifier comment repr&eacute;senter plusieurs distances.   Pour les couches qui contiennent des entit&eacute;s lin&eacute;aires, vous pouvez choisir le c&ocirc;t&eacute; de la ligne &agrave; buff&eacute;riser.  Pour les couches qui contiennent des entit&eacute;s surfaciques, vous pouvez choisir si l'entit&eacute; qui est buff&eacute;ris&eacute;e est incluse ou exclue de la zone tampon obtenue.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tablodan Alınan Coğrafi Kod Konumları</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Tablodan Alınan Coğrafi Kod Konumları"></h2>
+        <hr/>
+    <p>Coğrafi kodlama, adresi koordinata d&ouml;n&uuml;şt&uuml;rmenin bir yoludur. Bu ara&ccedil;; bir tablodan, CSV dosyasından veya Excel dosyasından alınan adreslerı bir detay katmanına veya bunları ilave s&uuml;tunda koordinatlar olarak i&ccedil;eren bir &ccedil;ıktı dosyasına d&ouml;n&uuml;şt&uuml;r&uuml;r.&quot;
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Bir girdi tablosu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Coğrafi kodlanacak adresleri i&ccedil;eren girdi tablosu. Girdi; bir tablo, CSV dosyası veya Excel dosyası olmalıdır
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Yer bulucu seç</h2></div>
+        <hr/>
+        <div>
+            <p>Coğrafi kodu kullanmak &uuml;zere bir konumlandırıcı servis se&ccedil;in. Kullanmak istediğiniz konumlandırıcı servis aşağı a&ccedil;ılan men&uuml;de yoksa, y&ouml;neticinize başvurarak konumlandırıcı servisin toplu coğrafi kodlama i&ccedil;in yapılandırılmasını sağlayın.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Ülke</h2></div>
+        <hr/>
+        <div>
+            <p>Adreslerinizin t&uuml;m&uuml; bir tek &uuml;lkedeyse, en doğru sonu&ccedil;ları elde etmek i&ccedil;in s&ouml;z konusu &uuml;lkeyi se&ccedil;in. Aksi takdirde bu parametreyi boş bırakın.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Veri Alanları Seç</h2></div>
+        <hr/>
+        <div>
+            <p>Konumlandırıcı servis veri i&ccedil;inde adres, şehir, eyalet ve posta kodu gibi belirli alanların olmasını bekler. Aşağı a&ccedil;ılan kutuları kullanarak girdi dosyanızdaki veya tablonuzdaki veri alanlarını konumlandırıcının mevcut olmasını beklediği alanlarla eşleştirin. Ne kadar &ccedil;ok alan eşleştirirseniz, elde edeceğiniz sonu&ccedil;lar o kadar doğru olacaktır. Girdi tablosundaki t&uuml;m veriler bir tek s&uuml;tunda bulunuyorsa,  <b>Tekil Alan</b> &ouml;gesini belirleyin ve aşağı a&ccedil;ılan men&uuml;den bir veri alanı se&ccedil;in. Aksi takdirde, <b>Birden &Ccedil;ok Alan</b> &ouml;gesini se&ccedil;in ve uygun konumlandırıcı alanları tablonuzdaki birden &ccedil;ok alan s&uuml;tunuyla eşleştirin.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Bir çıktı biçimi seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı sonu&ccedil;larının bi&ccedil;imi. Bir detay servisi oluşturmayı tercih ederseniz, girdi tablosundan gelen adresler haritaya bir nokta detay katmanı olarak eklenir. CSV ve XLS se&ccedil;enekleri, iş tamamlandığında dosyaları coğrafi kodlama işi sonu&ccedil;larıyla birlikte  <b>İ&ccedil;eriğim</b> b&ouml;l&uuml;m&uuml;ne ekler.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Çıktı sonuç adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

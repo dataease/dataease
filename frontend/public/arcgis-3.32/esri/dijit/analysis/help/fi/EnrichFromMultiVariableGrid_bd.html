@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rikasta useita muuttujia sisältävästä ruudukosta</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta"></h2>
+        <hr/>
+    <p> Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta -ty&ouml;kalu yhdist&auml;&auml; tehokkaasti useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon ominaisuustiedot pistekarttatasoon.
+    </p>
+    <p>Useita muuttujia sis&auml;lt&auml;v&auml; ruudukko on mik&auml; tahansa karttataso, joka on luotu Luo useita muuttujia sis&auml;lt&auml;v&auml; ruudukko -ty&ouml;kalun avulla. Ty&ouml;kalu muuntaa useiden karttatasojen ominaisuustiedot yhdeksi aluekohteiden ruudukoksi.  Kun k&auml;yt&auml;t useita muuttujia sis&auml;lt&auml;v&auml;&auml; ruudukkoa rikastamiseen, voit lis&auml;t&auml; nopeasti suuria ja vaihtelevia tietokokoelmia pisteaineistoon tarkempien paikkatietoanalyysien k&auml;ytt&ouml;&auml; varten.
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; olet hankkinut karttatason, joka sis&auml;lt&auml;&auml; uudet, tietyss&auml; kaupungissa kuluneen vuoden aikana ilmenneet rikostapahtumat. Haluat mallintaa rikosten tiheyden ja eri demografisten, taloudellisten sek&auml; maantieteellisten tekij&ouml;iden v&auml;list&auml; suhdetta. Sinulla on p&auml;&auml;sy aineistoon, joka kuvaa n&auml;m&auml; tekij&auml;t, mutta se on tallennettu viiteen eri karttatasoon, joissa k&auml;ytet&auml;&auml;n erilaisia geometriatyyppej&auml;. Lis&auml;ksi jotkin karttatasot on tallennettuBig Data -tiedostojakoon ja muut on tallennettu kohdepalveluina. Luomalla useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon n&auml;iden tietojen tallennusta varten ja liitt&auml;m&auml;ll&auml; sen j&auml;lkeen ruudukon rikostapahtumiisi  Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta -ty&ouml;kalun avulla, voit  tehokkaasti liitt&auml;&auml; lukuisia erilaisia ominaisuustietoja pistekarttatasoon vain kahdella ty&ouml;kalun suorituskerralla. Voit sen j&auml;lkeen k&auml;ytt&auml;&auml; liitettyj&auml; ominaisuustietoja selitt&auml;vin&auml; muuttujina ja aloittaa rikosten tiheysmallin muodostamisen tuloskarttatasolla.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Valitse rikastettava pistekarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, jotka rikastetaan useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon avulla.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Valitse useita muuttujia sisältävä ruudukko, josta rikastus tapahtuu</h2></div>
+        <hr/>
+        <div>
+            <p>Useita muuttujia sis&auml;lt&auml;v&auml; ruudukkokarttataso, joka sis&auml;lt&auml;&auml; l&auml;ht&ouml;aineiston pistekohteiseen liitett&auml;v&auml;t ominaisuustiedot. Karttatason luonnissa on k&auml;ytett&auml;v&auml; Luo useita muuttujia sis&auml;lt&auml;v&auml; ruudukko -ty&ouml;kalua ja karttatason on oltava is&auml;nn&ouml;ity kohdekarttataso. Big Data -tiedostojakoontallennettuja useita muuttujia sis&auml;lt&auml;vi&auml; ruudukkokarttatasoja ei tueta t&auml;m&auml;n ty&ouml;kalun sy&ouml;tteen&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Valitse lisättävät muuttujat</h2></div>
+        <hr/>
+        <div>
+            <p>Useita muuttujia sis&auml;lt&auml;v&auml;n ruudukkokarttatason ominaisuustiedot, jotka liitet&auml;&auml;n l&auml;ht&ouml;aineiston pistekohteisiin aina, kun pistekohteet leikkaavat ruudukon.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

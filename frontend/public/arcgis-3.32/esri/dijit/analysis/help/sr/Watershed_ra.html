@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vododelnica</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Zadatak vododelnica"></h2>
+        <hr/>
+    <p>Ova alatka određuje drenažno područje iznad skupa ćelija u rasteru.
+    </p>
+    <p>Vododelnica je područje pod nagibom koje doprinosi tok&mdash;obično vodeni&mdash; na zajednički izlaz kao koncentrisanu drenažu. Može da bude deo veće vododelnice i može da sadrži manje vododelnice, koje se nazivaju pod-kotline.
+    </p>
+    <p>Vrednost svake vododelnice će biti uzeta iz vrednosti izvora iz ulaznog rastera ili tačkastog sloja slivanja geoobjekta. Kada su tačke slivanja rasterski skup podataka, vrednosti ćelije se koriste podrazumevano. Kada je tačka slivanja skup podataka tačkastih geoobjekata, vrednosti će doći iz navedenog polja.
+    </p>
+    <p>Alatka &bdquo;Vododelnice&ldquo; samo podržava D8 ulazni sloj rastera smera toka.
+    </p>
+    <p>Kada se navode lokacije ulaznih tačaka slivanja kao podaci geoobjekta, podrazumevano polje će biti prvo dostupno važeće polje. Ako ne postoje validna polja, ObjectID polje (na primer OID ili FID) će biti podrazumevano.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Odaberite sloja smera toka</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazni raster koji pokazuje smer toka ka svakoj ćeliji.
+            </p>
+            <p>Smer toka može da bude kreiran kori&scaron;ćenjem alatke &bdquo;Smer toka&ldquo; ili zadatka &bdquo;Smer toka&ldquo; u servisu alatke &bdquo;Rasterska analiza, uz pokrenut podrazumevani tip smera toka  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Navedite lokacije ulaznih tačaka slivanja</h2></div>
+        <hr/>
+        <div>
+            <p>Lokacije ulaznih tačaka slivanja.
+            </p>
+            <p>Za raster, ovo predstavlja ćelije iznad kojih će drenažno područje, ili sliv, biti utvrđen. Sve ćelije koje nisu NoData će biti kori&scaron;ćene kao izvorne ćelije. Za unos tačaka, ovo predstavlja lokacije iznad kojih će drenažno područje, ili sliv, biti utvrđen.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Odaberite polje slivanja tačaka</h2></div>
+        <hr/>
+        <div>
+            <p>Polje koje se koristi za dodeljivanje vrednosti lokacijama tačaka slivanja.
+            </p>
+            <p>Ako je sloj ulaznih tačaka slivanja raster, Vrednost se koristi. Ako je geoobjekat, numeričko polje se koristi. Ako polje sadrži vrednosti pokretnog zareza, one će biti skraćene na cele brojeve.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

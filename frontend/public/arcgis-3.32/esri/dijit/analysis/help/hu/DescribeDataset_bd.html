@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Adathalmaz leírása</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Adathalmaz munkafolyamat le&iacute;r&aacute;sa diagram"></h2>
+        <hr/>
+    <p>Az Adathalmaz le&iacute;r&aacute;sa eszk&ouml;z r&eacute;szletesebb &aacute;ttekint&eacute;st ad adathalmaz&aacute;r&oacute;l. Mielőtt nagy mennyis&eacute;gű adaton futtatna elemz&eacute;st, haszn&aacute;lja ezt az eszk&ouml;zt annak meghat&aacute;roz&aacute;s&aacute;ra, melyek a bemeneti adatok, &eacute;s hol tal&aacute;lhat&oacute;k. Alap&eacute;rtelmez&eacute;sben az eredm&eacute;ny egy JSON-karakterl&aacute;nc lesz, amely meghat&aacute;rozza bemeneti r&eacute;teg&eacute;nek fő le&iacute;r&oacute;it, valamint egy t&aacute;bl&aacute;zatot, amely r&eacute;szletezi az &ouml;sszefoglal&oacute; statisztik&aacute;kat minden egyes mezőre. 
+    </p>
+    <p>Opcion&aacute;lisan l&eacute;trehozhat kieg&eacute;sz&iacute;tő kimeneti vektoros r&eacute;tegeket adatai tov&aacute;bbi le&iacute;r&aacute;s&aacute;ra. A k&ouml;vetkező opci&oacute;k k&ouml;z&uuml;l v&aacute;laszthat: mintar&eacute;teg vagy kiterjed&eacute;si r&eacute;teg. V&aacute;laszthat egy kimenetet, vagy v&aacute;laszthatja mindk&eacute;t kimenetet.
+    </p>
+    <p>Tegy&uuml;k fel, hogy p&eacute;ld&aacute;ul van egy 15 adathalmazt tartalmaz&oacute; big data-f&aacute;jlmegoszt&oacute;ja. Mindegyik adathalmaz 10 milli&oacute; ter&uuml;leti vektoros elemet tartalmaz, amelyek az orsz&aacute;ga k&uuml;l&ouml;nb&ouml;ző r&eacute;gi&oacute;iban tal&aacute;lhat&oacute; &eacute;p&uuml;leteknek &eacute;s h&aacute;zaknak felelnek meg.  Az C r&eacute;gi&oacute; elemz&eacute;se a feladata, de nem tudja, melyik adathalmaz tartalmazza ezeket a vektoros elemeket. A haszn&aacute;land&oacute; adathalmaz meghat&aacute;roz&aacute;s&aacute;hoz futtassa az Adathalmaz le&iacute;r&aacute;sa eszk&ouml;zt, &eacute;s v&aacute;lassza a kiterjed&eacute;si r&eacute;teg l&eacute;trehoz&aacute;s&aacute;t annak megvizsg&aacute;l&aacute;s&aacute;ra, melyik adathalmaz van a vizsg&aacute;lt r&eacute;gi&oacute;ban.
+    </p>
+    <p>Egy m&aacute;sik p&eacute;lda: k&eacute;pzelje el, hogy elemz&eacute;si munkafolyamatot kell v&eacute;geznie nagy mennyis&eacute;gű adaton. A munkafolyamat azonban &oacute;r&aacute;kat vagy napokat  is ig&eacute;nybe vehet a teljes adathalmazon. Ahelyett, hogy időt &eacute;s forr&aacute;sokat ford&iacute;tana a teljes elemz&eacute;s lefuttat&aacute;s&aacute;ra, hozzon l&eacute;tre mintar&eacute;teget a teljes munkafolyamat hat&eacute;kony tesztel&eacute;s&eacute;re.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki a leírandó adathalmazt</h2></div>
+        <hr/>
+        <div>
+            <p>A pontszerű, vonalas, ter&uuml;leti vagy t&aacute;bl&aacute;zatos vektoros elemeket tartalmaz&oacute;, le&iacute;rand&oacute; &eacute;s &ouml;sszegzendő mintav&eacute;teli r&eacute;teg.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Adathalmaz értelmezése következő létrehozásával:</h2></div>
+        <hr/>
+        <div>
+            <p>Kimeneti kieg&eacute;sz&iacute;tő le&iacute;r&oacute; r&eacute;tegek a big data adatok jobb &eacute;rtelmez&eacute;s&eacute;hez. Kimenetnek v&aacute;laszthat nulla, egy vagy k&eacute;t kimenetet a k&ouml;vetkezők k&ouml;z&uuml;l:
+            </p>
+            <ul>
+                <li> <b>Kiterjed&eacute;si r&eacute;teg</b>&mdash; l&eacute;trehoz egy ter&uuml;leti vektoros elemet a bemeneti vektoros elemek vagy a vizsg&aacute;lati ter&uuml;let kitrejed&eacute;s&eacute;nek megfelelően.
+                </li>
+                <li> <b>Mintar&eacute;teg</b>&mdash; l&eacute;trehoz egy r&eacute;szcsoport-r&eacute;teget, amely meghat&aacute;rozott mennyis&eacute;gű bemeneti vektoros elemet tartalmaz adathalmaz&aacute;b&oacute;l vagy vizsg&aacute;lati ter&uuml;let&eacute;ről.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Mintaréteg</h2></div>
+        <hr/>
+        <div>
+            <p>Kimeneti r&eacute;teget hoz l&eacute;tre, amely bemeneti r&eacute;tege vektoros elemeiből tartalmaz egy r&eacute;szcsoportot. Ha a  <b>Mintar&eacute;teg</b> ki van v&aacute;lasztva, akkor megadhatja azoknak a vektoros elemeknek a sz&aacute;m&aacute;t, amelyeket vissza akar adni a mintar&eacute;tegben.   Alap&eacute;rtelmez&eacute;sben 100 minta vektoros elem lesz visszaadva a kimeneti r&eacute;tegben.
+            </p>
+            <p>Az &eacute;rt&eacute;knek nagyobbnak kell lennie null&aacute;n&aacute;l. Ha a vektoros elemek teljes sz&aacute;m&aacute;n&aacute;l nagyobb sz&aacute;mot ad meg, akkor az &ouml;sszes vektoros elem vissza lesz adva.
+            </p>
+            <p>Ha az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> ki van v&aacute;lasztva, akkor a mintar&eacute;teg a t&eacute;rk&eacute;p kiterjed&eacute;s&eacute;ből fog tartalmazni vektoros elemeket.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Kiterjedési réteg</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Kiterjed&eacute;si r&eacute;teg</b> gomb kiv&aacute;laszt&aacute;s&aacute;val kimeneti vektoros r&eacute;teget hoz l&eacute;tre, amely egyetlen vektoros elemet tartalmaz, &eacute;s ez megfelel a bemeneti vektoros elemek kiterjed&eacute;s&eacute;nek. Ez van kiv&aacute;lasztva alap&eacute;rtelmez&eacute;s szerint.
+            </p>
+            <p>Ha az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> ki van v&aacute;lasztva, akkor a kiterjed&eacute;si r&eacute;teg megfelel a t&eacute;rk&eacute;p l&aacute;that&oacute; kiterjed&eacute;s&eacute;nek.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

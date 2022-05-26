@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pārraudzīt veģetāciju</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Portāla veģetācijas pārraudzības rīks"></h2>
+        <hr/>
+    <p>&Scaron;is rīks veic aritmētisku darbību vairākjoslu rastra slāņa joslās, lai atklātu pētījumu teritorijas veģetācijas seguma informāciju.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties ievades datus</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties vairākjoslu rastra slāni. Pārliecinieties, vai ievades rastram ir pieejamas atbilsto&scaron;as joslas.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Izvēlēties veģetācijas pārraudzības metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties metodi veģetācijas indeksa slāņa izveidei. Dažādie veģetācijas indeksi var palīdzēt izcelt noteiktus elementus vai samazināt dažādus trok&scaron;ņus.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI ir nelineārs veģetācijas indekss globālai vides pārraudzībai, izmantojot satelīta attēlus. Tas ir līdzīgs NDVI, bet to mazāk ietekmē atmosfēras iedarbība. To ietekmē atklāta augsne, tādēļ to nav ieteicams izmantot teritorijās ar retu vai vidēji blīvu veģetāciju.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI tika sākotnēji izstrādāts no Landsat MSS attēliem, bet ir modificēts lieto&scaron;anai ar Landsat TM attēliem. Tas tiek dēvēts arī par Landsat TM Tasseled Cap zaļās veģetācijas indeksu. &Scaron;o pārraudzības indeksu var lietot ar attēliem, kuru joslām ir tādi pa&scaron;i spektrālie parametri.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 ir veģetācijas indekss, kas mēģina samazināt SAVI metodes atklātas augsnes ietekmi.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI ir standartizēts indekss, kas ļauj ģenerēt attēlu, kurā tiek rādīts zaļums vai relatīvā biomasa. &Scaron;is indekss izmanto vairākspektru rastra divu parametru kontrastu: hlorofila pigmenta absorbciju sarkanajā joslā un augu materiālu augsto atstaro&scaron;anu infrasarkanajā (NIR) joslā.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI ir līdzīgs starpības veģetācijas indeksam, taču to ietekmē atmosfēras svārstības. Izmantojot &scaron;o metodi, lai salīdzinātu dažādus attēlus, tā ir izmantojama tikai attēliem, kam veikta atmosfēriskā korekcija. &Scaron;o informāciju var sniegt datu sniedzējs.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI ir veģetācijas indekss, kas mēģina samazināt augsnes spilgtuma ietekmi, izmantojot augsnes spilgtuma korekcijas koeficientu. Tas bieži tiek izmantots sausos reģionos, kuros ir rets veģetatīvais segums.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Process Sultan's Formula se&scaron;u joslu 8 bitu attēliem lieto noteiktu algoritmu, lai izveidotu trīs joslu 8 bitu attēlu. Rezultāta attēls piekrastes zonās izceļ iežu veidojumus, tā dēvētos ofiolītus. &Scaron;ī formula tika izstrādāta, pamatojoties uz Landsat 5 vai 7 scēnas TM un ETM joslām.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Pārveidotais SAVI ir veģetācijas indekss, kas mēģina samazināt augsnes spilgtuma ietekmi, pieņemot, ka augsnes līnijai ir brīvi noteikts slīpums, un pārtvert.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Norādīt NIR joslas un sarkanās joslas indeksus</h2></div>
+        <hr/>
+        <div>
+            <p>Norādīt joslu indeksus NIR un sarkanajai joslai.
+            </p>
+            <p>Katrs satelīta sensors un lidojuma kamera tver informāciju, kas ir sadalīta joslu indeksos. Katrs joslas indekss ietver noteiktas elektromagnētiskā spektra daļas informāciju. &Scaron;ai veģetācijas pārraudzības metodei nepiecie&scaron;ams norādīt joslas indeksu, kas uztvēra NIR un sarkano viļņu garumus.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Augsnes līnijas slīpums</h2></div>
+        <hr/>
+        <div>
+            <p>Augsnes līnijas slīpums. Slīpums ir aptuvenā izkliedes diagrammas NIR un sarkano joslu lineārā attiecība.
+            </p>
+            <p>&Scaron;is parametrs ir derīgs tikai Transformed Soil-Adjusted Vegetation Index metodei.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Pārtveršana</h2></div>
+        <hr/>
+        <div>
+            <p>NIR vērtība, kad noteikto augsnes līniju sarkanās (Red) joslas atstaro&scaron;anas vērtība ir 0.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , ja sarkanā ir 0.
+            </p> 
+            <p>&Scaron;is parametrs ir derīgs tikai pārveidotā, augsnei pielāgotā veģetācijas indeksa metodei.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Zaļās veģetācijas seguma apjoms</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda zaļās veģetācijas seguma apjomu, ko pieprasa SAVI metode.
+            </p>
+            <p>Tālāk ir norādītas derīgās vērtības. 
+
+                <ul>
+                    <li>1 = teritorijas bez zaļās veģetācijas seguma
+                        
+ 
+                    </li>
+                    <li>0,5 = teritorijas ar vidēju zaļās veģetācijas segumu
+                        
+ 
+                    </li>
+                    <li>0 = teritorijas ar augstu zaļās veģetācijas segumu
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Korekcijas koeficients</h2></div>
+        <hr/>
+        <div>
+            <p>Nosaka korekcijas koeficientu, kas nepiecie&scaron;ams pārveidotā, augsnei pielāgotā veģetācijas indeksa metodei, lai palīdzētu samazināt ietekmi uz augsni. Noklusējuma vērtība ir 0.08.
+            </p>
+            <p>Maza vērtība nozīmē, ka tiek ignorēta augsnes ietekme. Liela vērtība nozīmē, ka augsne ietekmēs jūsu rezultātu.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

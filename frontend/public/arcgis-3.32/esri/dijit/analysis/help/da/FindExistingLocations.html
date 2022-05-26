@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Find eksisterende steder</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Find eksisterende steder"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j udv&aelig;lger eksisterende objekter i dit unders&oslash;gelsesomr&aring;de, der opfylder en r&aelig;kke kriterier, som du har angivet. Kriterierne kan v&aelig;re baseret p&aring; attribut-foresp&oslash;rgsler (f.eks. ledige parceller) og rumlige foresp&oslash;rgsler (f.eks. inden for 1 km af en flod). 
+    </p>
+    <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, vil kun de objekter i inputlaget, der er synlige i den aktuelle kortudstr&aelig;kning, blive analyseret. Hvis det ikke er markeret, analyseres alle objekter, selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Vælg lag, der indeholder objekter, som du ønsker at finde ved hjælp af attribut- og spatiale forespørgsler</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;delag, som du &oslash;nsker at finde objekter for baseret p&aring; en kombination af attribut- og spatiale foresp&oslash;rgsler, der er angivet nedenfor.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Opret en forespørgsel for at finde objekter</h2></div>
+        <hr/>
+        <div>
+            <p>Klik p&aring; knappen  <b>Tilf&oslash;j udtryk</b> for at definere et udtryk. Du kan tilf&oslash;je flere udtryk. N&aring;r du har angivet udtrykkene og klikket p&aring; knappen <b>K&oslash;r analyse</b>, filtreres objekterne i dit inputlag gennem hvert udtryk. De objekter, der opfylder alle udtryk, skrives til resultatlaget.
+            </p>
+            <p>Der er to grundl&aelig;ggende typer udtryk, du kan oprette: attribut og rumlig. Attributudtryk er foresp&oslash;rgsler om feltv&aelig;rdier, f.eks.  <code>hvor navn er &quot;San Francisco&quot;</code>. Der findes fire typer rumlige udtryk:
+                <ul>
+                    <li> <b>inden for en afstand af</b>: objektet skal ligge inden for en vis afstand af et objekt i et andet lag. F.eks. find parceller, der ligger inden for 500 meter fra Los Angeles River.
+                    </li>
+                    <li> <b>indeholder alle</b>: objektet skal indeholde alle dele af et objekt i et andet lag. F.eks. find vandskel, der indeholder alle dele af parceller angivet til industriel brug. Ingen del af parcellen m&aring; ligge uden for vandskellet.
+                    </li>
+                    <li> <b>helt omgivet</b>: objektet skal v&aelig;re helt omgivet af et objekt i et andet lag. F.eks. find skoledistrikter, der er helt omgivet af en bygr&aelig;nse. Ingen del af skoledistriktet m&aring; ligge uden for bygr&aelig;nsen.
+                    </li>
+                    <li> <b>gennemsk&aelig;rer</b>: objektet indeholder en del af et objekt i et andet lag. F.eks. find parceller, der gennemsk&aelig;rer floder. Enhver del af floden, der l&oslash;ber igennem parcellen eller rammer parcellens gr&aelig;nse, gennemsk&aelig;rer parcellen.
+                    </li>
+                    <li> <b>t&aelig;ttest p&aring;</b>: objektet skal v&aelig;re t&aelig;ttest p&aring; et objekt i et andet lag. Eksempel: Find den restaurant, der er t&aelig;ttest p&aring; hvert hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvert rumligt udtryk har en tilsvarende negation (n&aelig;gtelse), undtagen  <b>t&aelig;ttest p&aring;</b>; <b>ikke inden for en afstand af</b>, <b>indeholder ikke fuldst&aelig;ndigt</b>, <b>ikke helt inde i</b> og <b>gennemsk&aelig;rer ikke</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

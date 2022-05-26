@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračunaj gustoću</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Izračunaj gustoću"></h2>
+        <hr/>
+    <p>Alat Izračunaj gustoću stvara kartu gustoće od točaka ili linija geoobjekata &scaron;irenjem poznatih količina neke pojave (predstavljeno kao atributi točaka ili linija) na karti. Rezultat je poligonalni sloj klasificiran od najveće do najmanje gustoće.   
+
+    </p>
+    <p>Za unos točaka svaka bi točka trebala predstavljati lokaciju nekog događaja ili incidenta, a sloj rezultata predstavlja zbroj incidenata po jediničnom području. Vrijednost veće gustoće na novoj lokaciji znači da ima jo&scaron; točaka blizu te lokacije.  U mnogo slučajeva, sloj rezultata može se protumačiti kao povr&scaron;ina rizika za buduće događaje. Na primjer, ako unesene točke predstavljaju lokacije udara munje, sloj rezultata može se protumačiti kao povr&scaron;ina rizika za buduće udare munje.
+    </p>
+    <p>Za unos linije povr&scaron;ina gustoće linija predstavlja ukupnu količinu linija koje se nalaze blizu određene lokacije. Jedinice izračunatih vrijednosti gustoće jesu duljine linije po jediničnom području. Na primjer, ako linije predstavljaju rijeke, sloj rezultata predstavljat će ukupnu duljinu rijeka koje se nalaze unutar radijusa pretraživanja.  Rezultat se može upotrijebiti za određivanje područja koja su pristupačna za ispa&scaron;u životinja.
+    </p>
+    <p> Ostali slučajevi upotrebe ovog alata uključuju sljedeće:
+        <ul>
+            <li>Stvaranje karata gustoće zločina kako bi se pomoglo policiji da pravilno raspodijele resurse u područja s visokom stopom zločina.
+            </li>
+            <li>Izračunavanje gustoće bolnica unutar okruga.  Sloj rezultata prikazat će područja s visokom i niskom pristupačno&scaron;ću bolnicama, a ti se podaci mogu iskoristiti za odlučivanje gdje treba sagraditi nove bolnice.
+            </li>
+            <li>Određivanje visoko rizičnih područja za &scaron;umske požare na temelju povijesnih lokacija &scaron;umskih požara.
+            </li>
+            <li>Lociranje zajednica koje se nalaze daleko od velikih prometnica kako bi se planirala izgradnja novih cesta.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite točkasti ili linijski sloj za izračun gustoće</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti ili linijski sloj za izračun gustoće. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Upotrijebi polje brojača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite polje koje određuje broj incidenata na svakoj lokaciji.  Na primjer, ako imate točke koje predstavljaju gradove, možete upotrijebiti polje koje predstavlja stanovni&scaron;tvo grada kao polje brojača, a sloj rezultata gustoće stanovni&scaron;tva izračunat će veće gustoće stanovni&scaron;tva blizu gradova s većim brojem stanovni&scaron;tva.
+            </p>
+            <p> Ako se upotrijebi zadani odabir Nema, za svaku će se lokaciju pretpostaviti da predstavlja jedan broj.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Pretraži Udaljenost</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite udaljenost koja određuje koliko daleko će se pretraživati da bi se prona&scaron;li točke ili linije geoobjekata prilikom izračuna vrijednosti gustoće.  Na primjer, ako unesete udaljenost pretraživanja od 10.000 metara, gustoće svih lokacija u izlaznom sloju izračunavaju se na temelju geoobjekata koji se nalaze unutar 10.000 metara od lokacije.  Sve lokacije koje ne sadrže incidente unutar 10.000 metara dobit će nultu vrijednost gustoće.     
+
+            </p>
+            <p>Ako se ne unese udaljenost, izračunat će se zadana na temelju lokacija unesenih geoobjekata i vrijednosti iz polja brojača (ako je uneseno polje brojača).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Izreži izvoz do</h2></div>
+        <hr/>
+        <div>
+            <p>Nacrtajte ili omogućite sloj koji određuje područje gdje želite izračunati gustoću. Na primjer, ako izračunavate gustoću riba u jezeru, možete upotrijebiti granicu jezera u ovom parametru i rezultat će se nacrtati samo unutar granica jezera.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasificiraj prema</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako će se vrijednosti gustoće razvrstati po poligonima.
+                <ul>
+                    <li>Jednaki interval &ndash; poligoni se stvaraju tako da je raspon vrijednosti gustoće jednak za svaki poligon.
+                    </li>
+                    <li>Geometrijski interval &ndash; poligoni se temelje na intervalima razreda koji imaju geometrijske nizove. Ovim se načinom osigurava da svaki raspon razreda ima otprilike isti broj vrijednosti unutar svakog razreda i da je promjena među intervalima dosljedna.
+                    </li>
+                    <li>Prirodna kategorizacija &ndash; intervali razreda za poligone temelje se na prirodnom grupiranju podataka. Određene su granične vrijednosti razreda koje najbolje grupiraju slične vrijednosti i koje maksimiziraju različitosti među razredima. 
+                    </li>
+                    <li>Jednaki poligoni &ndash; poligoni se stvaraju tako da je veličina svakog poligona jednaka. Na primjer, ako sloj rezultata ima vi&scaron;e vrijednosti visoke gustoće nego niske gustoće, stvorit će se vi&scaron;e poligona za visoke gustoće.
+                    </li>
+                    <li>Standardno odstupanje &ndash; poligoni se stvaraju na temelju standardnog odstupanja predviđenih vrijednosti gustoće. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Broj razreda</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje broj razreda (raspon predviđenih vrijednosti) u sloju rezultata.  Svaki razred definira granice poligona.  Vrijednosti tih razreda odredit će se prema parametru 
+ <b>Klasificiraj prema</b> iznad.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Površinske jedinice izlaza</h2></div>
+        <hr/>
+        <div>
+            <p>Odredi povr&scaron;insku jedinicu izlaza. Gustoća je broj podijeljen povr&scaron;inom, a ovaj parametar određuje jedinicu područja u izračunu gustoće.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopioi aineistosäilöön</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopioi aineistos&auml;il&ouml;&ouml;n"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu kopioi l&auml;ht&ouml;aineiston karttatason aineistos&auml;il&ouml;&ouml;n. Voit kopioida tulokset  ArcGIS Data Storeen (relaatiotietokantaan perustuva tai spatiotemporaalinen Big Data -s&auml;il&ouml;) ja portaaliisi luodaan karttataso tai voit kopioida tulokset Big Data -tiedostojakoon. 
+    </p>
+    <p>Voit esimerkiksi kopioida  <code>Big Data -tiedostoresurssiin</code> tallennettuja kohteita <code>relaatioaineistos&auml;il&ouml;&ouml;n</code> ja m&auml;&auml;ritt&auml;&auml;, ett&auml; vain kohteet nykyisess&auml; kartan laajuudessa kopioidaan. N&auml;in voit luoda is&auml;nn&ouml;idyn kohdepalvelun, joka sis&auml;lt&auml;&auml; vain m&auml;&auml;ritetyss&auml; kartan laajuudessa olleet kohteet.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse kopioitava karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Kopioitava karttataso tai taulukko. 
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Käytä kaikkia kohteita tai valitse kohteet (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Voit vaihtoehtoisesti valita kopioitavat sijainnit valintapainikkeella.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Valitse aineistosäilö, johon kopioidaan</h2></div>
+        <hr/>
+        <div>
+            <p>Aineistos&auml;il&ouml;, johon karttataso kopioidaan. T&auml;m&auml; parametri ohittaa valinnan, joka on tehty kohdassa  <b>Analyysiymp&auml;rist&ouml;t</b>. Vaihtoehdot ovat seuraavat:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Tila-aika</b>: T&auml;m&auml; on oletusarvo.
+                            </li>
+                            <li> <b>Relaatiotietokantaan perustuva</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Big Data -tiedostojaon tulosaineistomallit</b>
+                        <ul>
+                            <li>K&auml;ytett&auml;viss&auml; olevien Big Data -tiedostojakojen luettelo muodossa  <b>bigDataFileShareName-templateName</b>. Big Data -tiedostojakojen mallien on oltava m&auml;&auml;ritettyn&auml; ennen ty&ouml;kalun suoritusta.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>使用深度学习检测对象</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="使用深度学习检测对象"></h2>
+        <hr/>
+    <p>此工具用于运行输入栅格上的训练深度学习模型，以生成包含其找到对象的要素类。这些要素可以是所找到对象周围的边界框或面，也可以是对象中心的点。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅对当前地图范围中可见的栅格区域进行分析。如果未选中，则将分析整个栅格，即使栅格位于当前地图范围之外。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>选择用于检测对象的图像</h2></div>
+        <hr/>
+        <div>
+            <p>用于检测对象的输入图像。
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>选择用于检测对象的深度学习模型</h2></div>
+        <hr/>
+        <div>
+            <p>输入深度学习包 ( <code>.dlpk</code>) 项目。
+            </p>
+            <p>深度学习包由 Esri 模型定义 JSON 文件 ( <code>.emd</code>)、深度学习二进制模型文件以及要使用的 Python 栅格函数（可选）组成。
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>指定深度学习模型参数</h2></div>
+        <hr/>
+        <div>
+            <p>函数参数在输入模型引用的 Python 栅格函数类中定义。您可以在此列出其他深度学习参数和用于试验和优化的参数，例如用于调整灵敏度的置信度阈值。
+            </p>
+            <p>参数名称将由工具通过读取栅格分析服务器上的 Python 模块进行填充。
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>从输出中移除重复的要素（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>执行可用于标识重复对象和移除置信值较低的重复要素的非极大值抑制。
+                <ul>
+                    <li>未选中 - 所有检测到的对象都将位于输出要素类中。这是默认设置。
+                        
+
+                    </li>
+                    <li>选中 - 移除检测到的重复对象。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>置信度得分字段</h2></div>
+        <hr/>
+        <div>
+            <p>要素服务中的字段，该字段包含将由对象检测方法输出的置信度得分。
+            </p>
+            <p>当选中了 <b>非极大值抑制</b>参数时需要用到该参数。
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>类值字段</h2></div>
+        <hr/>
+        <div>
+            <p>输出要素服务中的类值字段。若未指定，则工具将使用标准类值字段  <i>Classvalue</i> 和 <i>Value</i>。若这些字段不存在，则所有要素将被视为相同的对象类。
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>最大重叠比</h2></div>
+        <hr/>
+        <div>
+            <p>两个重叠要素的最大重叠比，其定义为交集区域与并集区域之比。默认值为 0。
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

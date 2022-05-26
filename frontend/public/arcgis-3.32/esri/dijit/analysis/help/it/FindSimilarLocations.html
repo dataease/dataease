@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trova Posizioni Simili</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Trova posizioni simili"></h2>
+        <hr/>
+    <p>In base ai criteri specificati, lo strumento Trova localit&agrave; simili consente di valutare la somiglianza di localit&agrave; presenti nel layer di ricerca candidati con una o pi&ugrave; localit&agrave; di riferimento. Questo strumento consente di rispondere a domande quali:
+        <ul>
+            <li>Quali negozi sono pi&ugrave; simili a quelli con fatturato migliore in relazione ai profili cliente?
+            </li>
+            <li>Sulla base delle caratteristiche dei villaggi colpiti pi&ugrave; duramente da un'infezione, quali altri villaggi sono ad alto rischio?
+            </li>
+        </ul>
+        Per rispondere a simili domande, &egrave; necessario specificare le localit&agrave; di riferimento, le localit&agrave; di ricerca candidate e i campi che rappresentano i criteri da abbinare. Il primo layer di input deve contenere le localit&agrave; di riferimento o da utilizzare per il confronto.  Pu&ograve; ad esempio trattarsi di un layer contenente i negozi con fatturato migliore oppure i villaggi colpiti pi&ugrave; duramente dall'infezione. Si deve quindi specificare il layer contenente le posizioni di ricerca candidate. Pu&ograve; trattarsi di tutti i negozi o di tutti gli altri villaggi. &Egrave; infine necessario identificare uno o pi&ugrave; campi da utilizzare per misurare la somiglianza. Lo strumento Trova localit&agrave; simili classificher&agrave; quindi tutte le localit&agrave; di ricerca candidate in base alla percentuale di somiglianza con le localit&agrave; di riferimento sulla base dei valori specificati in tutti i campi selezionati.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer contenente le posizioni di riferimento</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti, linea o area contenente le posizioni di riferimento da abbinare. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>È possibile utilizzare tutte le località o effettuare una selezione</h2></div>
+        <hr/>
+        <div>
+            <p>Se necessario, utilizzare i pulsanti di selezione per identificare le localit&agrave; di riferimento. Se ad esempio il layer di input contiene tutte le localit&agrave;, ovvero quelle di riferimento e quelle di ricerca candidate, sar&agrave; necessario utilizzare uno degli strumenti di selezione per identificare le localit&agrave; di riferimento. Se si creano due layer distinti, uno con le localit&agrave; di riferimento e l'altro con tutte le localit&agrave; di ricerca candidate, non &egrave; necessario effettuare una selezione. 
+            </p>
+            <p>Se &egrave; presente pi&ugrave; di una localit&agrave; di riferimento, viene creata un'unica localit&agrave; ottenuta calcolando la media dei valori di ciascun campo utilizzato per l'analisi della somiglianza.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Cerca località simili in</h2></div>
+        <hr/>
+        <div>
+            <p>le localit&agrave; di ricerca candidate presenti in questo layer verranno classificate a partire da quella pi&ugrave; simile fino a quella meno simile. La somiglianza &egrave; basata sulla percentuale di corrispondenza tra ciascuna localit&agrave; e la localit&agrave; di riferimento sulla base dei campi specificati. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basa somiglianza su</h2></div>
+        <hr/>
+        <div>
+            <p>i campi selezionati costituiranno i criteri per valutare la somiglianza. Se si seleziona un campo per la popolazione e il reddito, le localit&agrave; di ricerca candidate con punteggio inferiore (migliore) saranno quelle con valori simili alle localit&agrave; di riferimento in relazione alla popolazione e al reddito. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Mostra</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile visualizzare tutte le localit&agrave; di ricerca candidate classificate a partire da quella pi&ugrave; simile a quella meno simile oppure specificare il numero di risultati desiderati. 
+                <ul>
+                    <li> <b>Tutte le localit&agrave; da quella pi&ugrave; simile a quella meno simile</b>: tutte le feature presenti nel layer di ricerca candidati verranno inclusi nel layer dei risultati in ordine di classificazione
+                    </li>
+                    <li> <b>Il numero di posizioni restituite</b>: specificare il numero di candidati pi&ugrave; simili da includere nel layer dei risultati. L&rsquo;input predefinito &egrave; 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare un nome per il layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Questo layer dei risultati conterr&agrave; le localit&agrave; di riferimento e il numero di localit&agrave; di ricerca candidate specificate. Se il nome del layer dei risultati esiste gi&agrave;, verr&agrave; chiesto di rinominarlo.
+            </p>
+            <p>Utilizzare la casella a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

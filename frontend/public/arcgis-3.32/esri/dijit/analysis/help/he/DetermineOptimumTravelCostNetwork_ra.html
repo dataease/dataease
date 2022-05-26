@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>קבע רשת עלויות נסיעה מיטבית</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="איור של הכלי 'קבע רשת עלויות נסיעה מיטבית"></h2>
+        <hr/>
+    <p>כלי זה מחשב את רשת העלות המיטבית מקבוצה של אזורי קלט.
+    </p>
+    <p>דוגמה אחת ליישום של כלי זה היא מציאת הרשת הטובה ביותר לרכבי חירום.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט שנראות בתוך תיחום המפה הנוכחי ינותחו. אם האפשרות לא מסומנת, כל הישויות בשכבת הקלט ינותחו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>בחר שכבת רסטר או שכבת מיקומים של ישויות כדי לקבוע את מסלולי הנסיעה ביניהם</h2></div>
+        <hr/>
+        <div>
+            <p>אזורי הקלט שיחוברו על ידי הרשת עם העלות הנמוכה ביותר.
+            </p>
+            <p>ניתן להגדיר אזורי על ידי שירות תמונה או שירות ישויות.
+            </p>
+            <p>עבור שירות תמונה, האזורים מוגדרים על ידי קבוצה של תאים צמודים בעלי אותו ערך. כל אזור חייב להיות ממוספר באופן ייחודי. התאים שאינם חלק מאזור כלשהו חייבים להיות NoData. סוג הרסטר חייב להיות מספר שלם, והערכים יכולים להיות חיוביים או שליליים.
+            </p>
+            <p>עבור שירות ישויות, הקלט יכול להיות נקודה, קו או פוליגון.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>בחר את שכבת הרסטר של עלות הנסיעה</h2></div>
+        <hr/>
+        <div>
+            <p>רסטר שמגדיר את העכבה או העלות לזוז פלאנימטרית בכל תא.
+            </p>
+            <p>הערך בכל מיקום תא מייצג את מרחק העלות-ליחידה עבור תזוזה בתוך התא. כל ערך מיקום תא מוכפל ברזולוציית התא, תוך פיצוי גם עבור תנועה אלכסונית, לקבלת העלות הכוללת של מעבר על פני התא.
+            </p>
+            <p>הערכים של רסטר העלויות יכולים להיות מספר שלם או נקודה צפה, אבל הם לא יכולים להיות מספר שלילי או אפס (לא יכולה להיות עלות שלילית או אפס).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>הצג בתוצאה שם שכבת קווים של מסלולים מיטביים</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>שם שכבת התוצאה של פולי-קו נתיבים שכנים</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

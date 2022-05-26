@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Genera tessel·lacions</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Genera tessel&middot;lacions"></h2>
+        <hr/>
+    <p>Aquesta eina genera tessel&middot;lacions sobre una &agrave;rea d'estudi en funci&oacute; de la forma i la mida especificades.
+    </p>
+    <p>La casella  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; deshabilitada per a aquesta eina perqu&egrave; l'extensi&oacute; utilitzada per generar les tessel&middot;lacions es controla mitjan&ccedil;ant el par&agrave;metre <b>Defineix l'extensi&oacute;</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Trieu la forma</h2></div>
+        <hr/>
+        <div>
+            <p>Forma o geometria de la tessel&middot;laci&oacute; que voleu crear.  Les formes disponibles s&oacute;n  <code>Quadrat</code>, <code>Hex&agrave;gon</code>, <code>Hex&agrave;gon transversal</code>, <code>Triangle</code> o <code>Diamant</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Defineix l'àrea d'estudi</h2></div>
+        <hr/>
+        <div>
+            <p>Extensi&oacute; o &agrave;rea que cobriran les tessel&middot;lacions.  L'extensi&oacute; es pot determinar mitjan&ccedil;ant l'extensi&oacute; de mapa actual, l'extensi&oacute; d'una capa existent o el dibuix interactiu d'una &agrave;rea per utilitzar-la com a extensi&oacute;.
+            </p>
+            <p>Si s'ha seleccionat una capa d'entitats per determinar l'extensi&oacute;, l'opci&oacute; per mantenir nom&eacute;s les tessel&middot;lacions que s'intersequen estar&agrave; habilitada.  Si est&agrave; activada, nom&eacute;s les tessel&middot;lacions que cobreixin les entitats de la capa d'extensi&oacute; especificada, o que s'hi intersequin, es generaran a la capa de tessel&middot;laci&oacute; resultant. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Desactivada
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Cobertura d'extensi&oacute; completa">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Activada
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Cobertura d'entitat">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Per definir la mida del bin, especifiqueu</h2></div>
+        <hr/>
+        <div>
+            <p>La mida de cada cel&middot;la.  Per determinar la mida de la cel&middot;la es poden especificar unitats quadrades, o b&eacute; una dist&agrave;ncia que es calcula mitjan&ccedil;ant les mesures seg&uuml;ents, on d = dist&agrave;ncia: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Quadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tessel&middot;laci&oacute; de quadrat">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hex&agrave;gon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Tessel&middot;laci&oacute; d'hex&agrave;gon">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hex&agrave;gon transversal
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tessel&middot;laci&oacute; d'hex&agrave;gon transversal">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangle
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Tessel&middot;laci&oacute; de triangle">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Tessel&middot;laci&oacute; de diamant">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  Si la capa ja existeix, se us demanar&agrave; que escriviu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

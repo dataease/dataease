@@ -1,0 +1,56 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'FetCatDesc',minOccurs:0,showHeader:false,label:'${i18nArcGIS.contInfo.FetCatDesc.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <!-- description -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.contInfo.FetCatDesc.section.description}'">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'compCode',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputCheckBox"
+            data-dojo-props="label:'${i18nArcGIS.contInfo.FetCatDesc.compCode}'">
+          </div>  
+        </div>  
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'incWithDS',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputCheckBox"
+            data-dojo-props="serializeIfFalse:false,label:'${i18nArcGIS.contInfo.FetCatDesc.incWithDS}'">
+          </div>    
+        </div>        
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'catLang',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.codelist.LanguageCode}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/LanguageCode"></div>
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/CountryCode"></div>
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/CharSetCd"></div>
+        </div>
+      </div>
+      
+      <!-- feature types -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.contInfo.FetCatDesc.section.featureTypes}'">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'catFetTyps',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.contInfo.FetCatDesc.catFetTyps.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+            data-dojo-props="target:'genericName',minOccurs:0,preferOpen:true,label:'${i18nArcGIS.contInfo.FetCatDesc.catFetTyps.genericName}'">
+            <div data-dojo-type="esri/dijit/metadata/form/InputText"></div>
+            <div style="margin-top: 8px;"></div>
+            <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+              data-dojo-props="target:'codeSpace',noIndent:true,minOccurs:0,preferOpen:true,label:'${i18nArcGIS.contInfo.FetCatDesc.catFetTyps.codeSpace}'">
+            </div>            
+          </div>          
+        </div>
+      </div>
+      
+      <!-- citation -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.contInfo.FetCatDesc.section.citation}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'catCitation',minOccurs:1,maxOccurs:'unbounded',label:'${i18nArcGIS.contInfo.FetCatDesc.catCitation}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

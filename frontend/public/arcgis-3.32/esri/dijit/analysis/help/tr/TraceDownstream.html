@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Akış Yönünde İzle</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Akış Y&ouml;n&uuml; İzle"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; girdi katmanınızdaki noktalardan akış y&ouml;n&uuml;nde izi veya akış yolunu belirler.
+    </p>
+    <p>&Ouml;rneğin, elinizdeki kirlilik kaynağını g&ouml;steren nokta detaylarını kullanarak araştırma yaptığınız alandaki kirliliğin nereye akacağını belirlemek istiyorsunuz. Kirliliğin izleyeceği yolu tanımlamak i&ccedil;in Akış Y&ouml;n&uuml;nde İzleme &ouml;zelliğini kullanabilirsiniz. Bir mesafe değeri ve birimi girerek bu izi bağımsız segmentlere de b&ouml;lebilirsiniz. D&ouml;nd&uuml;r&uuml;len &ccedil;izgi akış yolunun toplam uzunluğu, belirtilen maksimum iz uzunluğu ya da araştırma alanınız gibi alana kırpılan detaylar olabilir. Pek &ccedil;ok durumda, iz yolunun toplam uzunluğu d&ouml;nd&uuml;r&uuml;ld&uuml;ğ&uuml;nde, bu değer kaynaktan okyanusa kadar giden mesafeyi kapsar.
+    </p>
+    <p>Sonu&ccedil;ta ortaya &ccedil;ıkan akış y&ouml;n&uuml; izini g&ouml;steren bir &ccedil;izgidir.  <b>İzi &ccedil;izgi segmentlerine ayır</b> se&ccedil;eneği i&ccedil;in bir mesafe belirtilirse, iz &ccedil;izgisi her biri belirtilen uzunlukta olan birden &ccedil;ok &ccedil;izgiye ayrılır.  &Ouml;rneğin, girdi noktanız bir kirlenme yayılması g&ouml;steriyor ve bunun aktığı nehir de saatte 0,6 ya da g&uuml;nde 15 millik bir hızla hareket ediyorsa, nehri 15 millik segmentlere ayırmak isteyebilirsiniz. İzi 15 millik aralıklara ayırmak, yayılmanın her g&uuml;n yaklaşık olarak ne kadar yol alacağını g&ouml;sterir. &Ccedil;izgi mesafeye bağlı olarak farklı renk tonlarıyla g&ouml;sterilir ve izin başlangıcına olan mesafeyle etiketlenir.
+    </p>
+    <p>Sonu&ccedil; olarak elde edilen iz, ek &ouml;zniteliklerin yanı sıra, girdi noktalarınızın t&uuml;m &ouml;zniteliklerini de i&ccedil;erir. 
+        <ul>
+            <li> <i>PointID</i>&mdash;Girdi noktasının Kimlik değerini kapsar.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Kilometre cinsinden toplam aşağı akış iz uzunluğunu i&ccedil;erir.
+                
+
+            </li>
+            <li> <i>Description</i> ve <i>DataResolution</i>&mdash;İzi hesaplamak i&ccedil;in kullanılan hidrolojik verilerle ilgili bilgileri i&ccedil;erir.
+                
+
+            </li>
+            <li> <i>FromDistance</i> ve <i>ToDistance</i>&mdash;Her bir &ccedil;izgi segmentine gidiş ve buradan geliş mesafesini i&ccedil;erir. <b>İzi &ccedil;izgi segmentlerine ayır</b> se&ccedil;eneği kullanılırsa, bu &ouml;znitelikler yazdırılır.
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita kapsamını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita kapsamında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki nokta detayları analiz edilir.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile kullanılacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Her aşağı akış izi için başlangıç konumu olarak kullanılacak nokta detayları</h2></div>
+        <hr/>
+        <div>
+            <p>Aşağı akış izinin başlangı&ccedil; konumu olarak kullanılacak nokta detayları. &Ccedil;ıktı her girdi noktası i&ccedil;in bir &ccedil;izgi i&ccedil;erir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>İzi çizgi segmentlerine ayır</h2></div>
+        <hr/>
+        <div>
+            <p>İz &ccedil;izgisi, her &ccedil;izginin belirtilen uzunlukta olduğu birden &ccedil;ok &ccedil;izgiye ayrılır. &Ouml;rneğin, girdi noktanız bir kirlenme yayılması g&ouml;steriyor ve bunun aktığı nehir de saatte 0,6 ya da g&uuml;nde 15 millik bir hızla hareket ediyorsa, nehri 15 millik segmentlere ayırmak isteyebilirsiniz. İzi 15 millik aralıklara ayırmak, yayılmanın her g&uuml;n yaklaşık olarak ne kadar yol alacağını g&ouml;sterir. &Ccedil;izgi mesafeye bağlı olarak farklı renk tonlarıyla g&ouml;sterilir ve izin başlangıcına olan mesafeyle etiketlenir. Sonu&ccedil; olarak ortaya &ccedil;ıkan izde, her biri  <i>FromDistance</i> ve <i>ToDistance</i> alanlarına sahip birden &ccedil;ok &ccedil;izgi segmenti elde edilir.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>İzin maksimum mesafesi</h2></div>
+        <hr/>
+        <div>
+            <p>D&ouml;nd&uuml;r&uuml;lecek &ccedil;izginin toplam uzunluğunu belirler. İzin kırpılacağı alan detaylarını sağlarsanız, sonu&ccedil; buraya girdiğiniz mesafe değerinden bağımsız olarak alan detayına kırpılır.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Çıktının kırpılacağı yer</h2></div>
+        <hr/>
+        <div>
+            <p>İzin kırpılmasını istediğiniz alan katmanını &ccedil;izin veya verilerini girin. &Ouml;rneğin, iz sonucunun yalnızca kendi il&ccedil;eniz gibi araştırma alanınız i&ccedil;inde olmasını istediğinizde, girdi olarak il&ccedil;e detayınızı kullanın ve izin il&ccedil;e sınırında durmasını sağlayın.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+            <p> Bu aracın &ccedil;alıştırılması kredi harcamaz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

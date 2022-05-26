@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tạo các lưu vực sông</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Tạo Lưu vực"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y x&aacute;c định lưu vực, hoặc khu vực g&oacute;p v&agrave;o thượng nguồn, cho từng điểm trong lớp đầu v&agrave;o của bạn. 
+    </p>
+    <p>V&iacute; dụ, giả sử bạn c&oacute; c&aacute;c đối tượng điểm thể hiện cho c&aacute;c vị tr&iacute; &ocirc; nhiễm nguồn nước v&agrave; bạn muốn t&igrave;m c&aacute;c nguồn c&oacute; khả năng nhiễm bẩn. Do nguồn nhiễm bẩn phải ở đ&acirc;u đ&oacute; trong phạm vi thượng nguồn lưu vực của điểm, bạn c&oacute; thể sử dụng c&ocirc;ng cụ n&agrave;y để x&aacute;c định c&aacute;c lưu vực c&oacute; chứa nguồn g&acirc;y nhiễm bẩn.
+    </p>
+    <p>Vị tr&iacute; của c&aacute;c điểm đầu v&agrave;o rất quan trọng. Nếu ch&uacute;ng kh&ocirc;ng được định vị ch&iacute;nh x&aacute;c tr&ecirc;n đường ống tho&aacute;t nước, kết quả lưu vực c&oacute; thể rất nhỏ v&agrave; kh&ocirc;ng hữu &iacute;ch cho ph&acirc;n t&iacute;ch của bạn. C&oacute; thể sử dụng c&ocirc;ng cụ  <b>T&igrave;m kiếm khoảng c&aacute;ch hệ thống tho&aacute;t nước gần nhất</b> gi&uacute;p điều chỉnh vị tr&iacute; c&aacute;c điểm đầu v&agrave;o của bạn sao cho ch&uacute;ng ho&agrave;n to&agrave;n nằm trong đường ống tho&aacute;t nước để t&igrave;m ra lưu vực chảy v&agrave;o điểm định vị tr&ecirc;n đường ống tho&aacute;t nước đ&oacute;. C&aacute;c vị tr&iacute; điều chỉnh được sử dụng để t&igrave;m c&aacute;c lưu vực được ghi tr&ecirc;n lớp đầu ra&mdash;kh&ocirc;ng sửa đổi c&aacute;c điểm đầu v&agrave;o của bạn.
+    </p>
+    <p>Kết quả l&agrave; một nh&oacute;m lớp chứa hai lớp: c&aacute;c lưu vực v&agrave; c&aacute;c điểm điều chỉnh được sử dụng để t&iacute;nh to&aacute;n lưu vực.     
+    </p>
+    <p>C&aacute;c kết quả lưu vực sẽ c&oacute; tất cả c&aacute;c thuộc t&iacute;nh của điểm đầu v&agrave;o cũng như c&aacute;c thuộc t&iacute;nh bổ sung:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Chứa gi&aacute; trị ID từ điểm đầu v&agrave;o.
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Chứa khu vực trong phạm vi lưu vực thượng lưu h&agrave;ng kil&ocirc;m&eacute;t vu&ocirc;ng
+            </li>
+            <li> <i>Description</i> v&agrave; <i>DataResolution</i>&mdash;Chứa th&ocirc;ng tin li&ecirc;n quan đến dữ liệu thủy văn được sử dụng để t&iacute;nh to&aacute;n dấu vết
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong phạm vi bản đồ hiện tại sẽ được sử dụng để t&iacute;nh to&aacute;n lưu vực. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Các đối tượng điểm được sử dụng để tính toán các lưu vực.</h2></div>
+        <hr/>
+        <div>
+            <p>Lưu vực (khu vực ph&acirc;n phối thượng nguồn) sẽ được t&iacute;nh to&aacute;n cho từng điểm.  
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Tìm kiếm khoảng cách hệ thống thoát nước gần nhất</h2></div>
+        <hr/>
+        <div>
+            <p>Nếu c&aacute;c điểm đầu v&agrave;o của bạn đặt xa đường ống tho&aacute;t nước, c&aacute;c kết quả lưu vực c&oacute; thể rất nhỏ v&agrave; kh&ocirc;ng c&oacute; t&aacute;c dụng nhiều trong việc ph&acirc;n t&iacute;ch, v&iacute; dụ như x&aacute;c định những nguồn nhiễm bẩn tại thượng nguồn. Trong hầu hết c&aacute;c trường hợp, bạn muốn điểm đầu v&agrave;o gần với đường ống tho&aacute;t nước gần nhất nhằm t&igrave;m ra c&aacute;c lưu vực chảy qua một điểm đặt tr&ecirc;n đường ống tho&aacute;t nước đ&oacute;. Để t&igrave;m đường ống tho&aacute;t nước gần nhất, h&atilde;y ghi r&otilde; khoảng c&aacute;ch t&igrave;m kiếm. Nếu bạn kh&ocirc;ng ghi r&otilde; khoảng c&aacute;ch t&igrave;m kiếm, c&ocirc;ng cụ sẽ t&iacute;nh to&aacute;n v&agrave; sử dụng khoảng c&aacute;ch t&igrave;m kiếm tượng trưng.  
+            </p>
+            <p>Để sử dụng vị tr&iacute; điểm đầu v&agrave;o ch&iacute;nh x&aacute;c, h&atilde;y ghi r&otilde; khoảng c&aacute;ch t&igrave;m kiếm l&agrave; kh&ocirc;ng.  
+            </p>
+            <p>Nhằm mục đ&iacute;ch ph&acirc;n t&iacute;ch, c&aacute;c đường ống tho&aacute;t nước đ&atilde; được Esri t&iacute;nh to&aacute;n trước bằng m&ocirc; h&igrave;nh thủy văn chuẩn. Nếu kh&ocirc;ng c&oacute; đường ống tho&aacute;t nước trong khoảng c&aacute;ch t&igrave;m kiếm, vị tr&iacute; chứa t&iacute;ch tụ d&ograve;ng chảy cao nhất trong khoảng c&aacute;ch t&igrave;m kiếm sẽ được sử dụng.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+            <p> Chạy c&ocirc;ng cụ n&agrave;y kh&ocirc;ng sử dụng credit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

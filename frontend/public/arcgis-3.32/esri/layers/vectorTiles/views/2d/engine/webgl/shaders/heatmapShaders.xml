@@ -1,0 +1,47 @@
+<snippets>
+  <snippet name="heatmapVS">
+  <![CDATA[
+    attribute vec2 a_pos;
+    attribute vec2 a_tex;
+
+    uniform mediump vec2 u_minmax;
+
+    varying mediump vec2 v_uv;
+    varying mediump float v_slope;
+
+    void main(void) {
+      gl_Position = vec4(a_pos, 0.0, 1.0);
+      v_uv = a_tex;
+      v_slope = 1.0 / (u_minmax.y - u_minmax.x);
+    }
+  ]]>
+  </snippet>
+
+  <snippet name="heatmapFS">
+  <![CDATA[
+    	precision mediump float;
+
+      uniform lowp sampler2D u_texture;
+      uniform lowp float u_opacity;
+      uniform mediump vec2 u_minmax;
+      uniform lowp sampler2D u_gradient;
+
+      varying mediump vec2 v_uv;
+      varying mediump float v_slope;
+
+      vec4 getColor(float intensity) {
+        float normalizedIntensity = clamp((intensity - u_minmax.x) * v_slope, 0.0, 1.0);
+
+        return texture2D(u_gradient, vec2(0.5, normalizedIntensity));
+      }
+
+      void main() {
+      // sample the intnsity value
+        lowp vec4 color = texture2D(u_texture, v_uv);
+
+        // interpolate the color from the ramp using the intensity value
+        gl_FragColor = getColor(color.r) *  u_opacity;
+      }
+  ]]>
+  </snippet>
+</snippets>

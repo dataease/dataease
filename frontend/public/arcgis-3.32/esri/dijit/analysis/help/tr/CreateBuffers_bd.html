@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tampon Bölge Oluşturma</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Tampon Oluştur"></h2>
+        <hr/>
+    <p>Tampon noktaya, &ccedil;izgiye ya da alan detayına g&ouml;re verilen mesafeyi kapsayan bir alandır. 
+    </p>
+    <p>Tamponlar genellikle diğer ara&ccedil;lar kullanarak daha fazla analiz edilebilecek alanlar oluşturmak i&ccedil;in kullanılır. &Ouml;rneğin, okula 1 kilometre mesafede hangi binalar vardır? Sorusu sorulduğunda, yanıt okul &ccedil;evresinde 1 kilometrelik tampon oluşturularak ve tamponu bina ayak izlerini i&ccedil;eren katman ile &ouml;rt&uuml;şt&uuml;rerek bulunabilir. Ortaya &ccedil;ıkan sonu&ccedil; okulun 1 kilometre &ccedil;evresinde yer alan binalardan oluşan bir katmandır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tamponun uygulanacağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;n belleğe alınacak nokta, &ccedil;izgi ya da alan detayları. Girdi katmanlarının izd&uuml;ş&uuml;mlenmiş bir koordinat sisteminde olması gerekir veya işlemci mekansal başvuru  <b>Analiz Ortamları</b> kullanılarak izd&uuml;ş&uuml;mlenmiş bir koordinat sistemine ayarlanmalıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Uygulanacak tampon türünü seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi detaylarınızın tampon boyutunu belirtmek i&ccedil;in &uuml;&ccedil; yol izleyebilirsiniz: 
+                <ul>
+                    <li>T&uuml;m detaylara uygulanan bir mesafe belirtebilirsiniz.
+                    </li>
+                    <li>Mesafe değerini i&ccedil;eren girdi katmanında bir alan belirtebilirsiniz. Dize alanı veya sayısal bir alan kullanabilirsiniz. Bir doğrusal değer tanımlı değilse, mekansal başvuru birimleri kullanılır. Coğrafi bir koordinat sistemi kullanıyorsanız, birimi olmayan alan metre olarak kabul edilir. 
+                    </li>
+                    <li>Birden &ccedil;ok alan ve matematiksel işle&ccedil; kullanarak bir ifade oluşturun. &Ouml;rneğin,  <i>r&uuml;zgar_hızı</i> adlı alanın değerinin 10 katı bir tampon uygulamak i&ccedil;in <i>$detay[&quot;r&uuml;zgar_hızı&quot;] x 10</i> ifadesini ekleyin.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Tampon oluşturma yöntemini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Bir  <b>D&uuml;zlemsel</b> y&ouml;ntem veya <b>Jeodezik</b> y&ouml;ntem kullanmayı tercih edebilirsiniz. <b>D&uuml;zlemsel</b> y&ouml;ntem daha hızlı olabilir ve izd&uuml;ş&uuml;mlendirilmiş verilerin yerel analizi i&ccedil;in uygundur. <b>Jeodezik</b> y&ouml;ntem, daha b&uuml;y&uuml;k alanlar ve herhangi bir coğrafi koordinat sistemi i&ccedil;in uygundur.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Çözünme yöntemi türünü seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yayılma y&ouml;ntemini belirtme se&ccedil;enekleri.   Bir yayılma y&ouml;ntemi se&ccedil;ildiğinde, size &ccedil;ok ya da tek par&ccedil;alı alan oluşturma se&ccedil;eneği sunulur ve sağlanan alanlara g&ouml;re istatistikleri hesaplayabilirsiniz.
+                <ul>
+                    <li> <b>T&uuml;m&uuml;</b>; t&uuml;m detaylar yayılır. &Ccedil;ok par&ccedil;alı detaylara izin verilirse, t&uuml;m detaylar bir tek detaya yayılır. &Ccedil;ok par&ccedil;alıya izin verilmezse, bitişik veya &ouml;rt&uuml;şen detaylar yayılır.
+                    </li>
+                    <li> <b>Alanlar</b>; belirtilen aynı alanı veya alan birleşimini paylaşan detaylar yayılır. &Ccedil;ok par&ccedil;alı detaylara izin verilirse, aynı alana sahip t&uuml;m detaylar bir tek detaya yayılır. &Ccedil;ok par&ccedil;alıya izin verilmezse, aynı alan değeriyle bitişik olan veya &ouml;rt&uuml;şen detaylar yayılır.
+                    </li>
+                    <li> <b>Hi&ccedil;biri</b>; hi&ccedil;bir detay yayılmaz.  Varsayılan değerdir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Çok parçalı detaylara izin ver</h2></div>
+        <hr/>
+        <div>
+            <p>Sonucunuzun tek par&ccedil;alı mı yoksa &ccedil;ok par&ccedil;alı mı olacağını belirten se&ccedil;enek. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>İşaretli; analizinizin sonu&ccedil;ları &ccedil;ok par&ccedil;alı detaylar i&ccedil;erir.   
+                    </li>
+                    <li>İşaretli Değil; analizinizin sonu&ccedil;ları tek par&ccedil;alı detaylar i&ccedil;erir, varsayılan ayar budur.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p> &Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Aşağıdakileri sayısal alanlarda hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdakileri dize alanlarında hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Sonuçların kaydedileceği bir ArcGIS Veri Deposu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

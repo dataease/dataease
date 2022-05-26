@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Puffer erstellen</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Puffer erstellen"></h2>
+        <hr/>
+    <p>Ein Puffer ist ein Bereich, der eine angegebene Entfernung von einem Punkt, einer Linie oder einem Fl&auml;chen-Feature abdeckt. 
+    </p>
+    <p>Puffer werden in der Regel zum Erstellen von Fl&auml;chen verwendet, die mit einem Werkzeug wie &quot;Layer &uuml;berlagern&quot; weiter analysiert werden k&ouml;nnen. Beispielsweise kann die Antwort auf die Frage &quot;Welche Geb&auml;ude befinden sich innerhalb einer Entfernung von einem Kilometer von der Schule?&quot; gefunden werden, indem ein Puffer von einem Kilometer um die Schule erstellt und das Werkzeug &quot;Layer &uuml;berlagern&quot; verwendet wird, um den Puffer mit dem Layer der Geb&auml;udegrundrisse zu &uuml;berlagern. Das Endergebnis ist ein Layer mit allen Geb&auml;uden, die innerhalb eines Kilometers von der Schule entfernt liegen.  
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features gepuffert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabe-Layer gepuffert, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen, der zu puffernde Features enthält</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-, Linien- oder Fl&auml;chen-Features, die gepuffert werden sollen. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Puffergröße eingeben</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen einen oder mehrere Entfernungswerte eingeben, die jeweils durch eine Leerstelle getrennt sind. Sie haben au&szlig;erdem die M&ouml;glichkeit, ein Attribut des Eingabe-Layers anzugeben, das den Entfernungswert enth&auml;lt, indem Sie auf  <b>Feld</b> klicken.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Optionen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie &uuml;berlappende Puffer verarbeitet werden sollen. F&uuml;r jeden Puffer, der sich &uuml;ber einem anderen Puffer befindet, k&ouml;nnen die gemeinsamen Fl&auml;chen beibehalten (&Uuml;berlappen) oder kombiniert (Zusammenf&uuml;hren) werden. Bei Verwendung von  <b>Zusammenf&uuml;hren</b> werden alle Puffer zu einem einzigen Multipart-Feature zusammengef&uuml;hrt, und &Uuml;berlappungen werden entfernt.
+            </p>  
+            <p> Bei Verwendung mehrerer Entfernungen k&ouml;nnen Sie festlegen, wie die Entfernung von der letzten Pufferentfernung dargestellt werden soll; beispielsweise, wenn die Entfernungen 10 und 14 betragen:
+                <ul>
+                    <li>Die Auswahl von  <b>Ringe</b> f&uuml;hrt zu Puffern von 0 bis 10 und 10 bis 14.
+                    </li>
+                    <li>Die Auswahl von  <b>Scheiben</b> f&uuml;hrt zu Puffern von 0 bis 10 und 0 bis 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Optionen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie &uuml;berlappende Puffer verarbeitet werden sollen. F&uuml;r jeden Puffer, der sich &uuml;ber einem anderen Puffer befindet, k&ouml;nnen die gemeinsamen Fl&auml;chen beibehalten (&Uuml;berlappen) oder kombiniert (Zusammenf&uuml;hren) werden. Bei Verwendung von  <b>Zusammenf&uuml;hren</b> werden alle Puffer zu einem einzigen Multipart-Feature zusammengef&uuml;hrt, und &Uuml;berlappungen werden entfernt.
+            </p>
+            <p>Beim Erstellen eines einzelnen Puffers um Fl&auml;chen-Features (Eingabe einer Entfernung) k&ouml;nnen Sie festlegen, ob das gepufferte Feature in den Ergebnispuffer einbezogen oder daraus ausgeschlossen werden soll.
+            </p>
+            <p>Bei Verwendung mehrerer Entfernungen k&ouml;nnen Sie festlegen, wie die Entfernung von der letzten Pufferentfernung dargestellt werden soll; beispielsweise, ob die Entfernungen 10 und 14 betragen:
+                <ul>
+                    <li>Die Auswahl von  <b>Ringe</b> f&uuml;hrt zu Puffern von 0 bis 10 und 10 bis 14.
+                    </li>
+                    <li>Die Auswahl von  <b>Scheiben</b> f&uuml;hrt zu Puffern von 0 bis 10 und 0 bis 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Optionen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie &uuml;berlappende Puffer verarbeitet werden sollen. F&uuml;r jeden Puffer, der sich &uuml;ber einem anderen Puffer befindet, k&ouml;nnen die gemeinsamen Fl&auml;chen beibehalten (&Uuml;berlappen) oder kombiniert (Zusammenf&uuml;hren) werden. Bei Verwendung von  <b>Zusammenf&uuml;hren</b> werden alle Puffer zu einem einzigen Multipart-Feature zusammengef&uuml;hrt, und &Uuml;berlappungen werden entfernt.
+            </p>
+            <p>Beim Erstellen eines einzelnen Puffers um Linien (Eingabe einer Entfernung) k&ouml;nnen Sie festlegen, welche Seite der Linie gepuffert werden soll. In der Regel werden beide Seiten ausgew&auml;hlt. Links und rechts wird festgelegt, als gingen Sie von der ersten XY-Koordinate der Linie (Startkoordinate) zur letzten XY-Koordinate der Linie (Endkoordinate). Wenn Sie links oder rechts ausw&auml;hlen, bedeutet dies, dass Ihnen bekannt ist, dass die Linien-Features in einer bestimmten Richtung erstellt und gespeichert wurden (beispielsweise flussaufw&auml;rts bzw. flussabw&auml;rts in einem Flussnetz). An den Linienenden kann der Puffer gerundet (Rund) oder geradlinig (Eben) sein.
+            </p>
+            <p>Beim Erstellen mehrerer Puffer (mehr als eine Entfernung) k&ouml;nnen Sie festlegen, wie die Entfernung von der letzten Pufferentfernung dargestellt werden soll; beispielsweise, ob die Entfernungen 10 und 14 betragen:
+                <ul>
+                    <li>Die Auswahl von  <b>Ringe</b> f&uuml;hrt zu Puffern von 0 bis 10 und 10 bis 14.
+                    </li>
+                    <li>Die Auswahl von  <b>Scheiben</b> f&uuml;hrt zu Puffern von 0 bis 10 und 0 bis 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Optionen</h2></div>
+        <hr/>
+        <div>
+            <p>Nachdem Sie einen zu puffernden Layer ausgew&auml;hlt haben, k&ouml;nnen Sie festlegen, wie die &uuml;berlappenden Puffer verarbeitet werden sollen. F&uuml;r jeden Puffer, der sich &uuml;ber einem anderen Puffer befindet, k&ouml;nnen die gemeinsamen Fl&auml;chen beibehalten (&Uuml;berlappen) oder kombiniert (Zusammenf&uuml;hren) werden. Bei Verwendung von  <b>Zusammenf&uuml;hren</b> werden alle Puffer zu einem einzigen Multipart-Feature zusammengef&uuml;hrt, und &Uuml;berlappungen werden entfernt. Au&szlig;erdem k&ouml;nnen Sie festlegen, wie viele Entfernungen dargestellt werden sollen.   F&uuml;r Layer, die Linien-Features enthalten, k&ouml;nnen Sie festlegen, welche Seite der Linie gepuffert werden soll.  F&uuml;r Layer mit Fl&auml;chen-Features k&ouml;nnen Sie ausw&auml;hlen, ob das gepufferte Feature in den Ergebnis-Puffer eingeschlossen bzw. daraus ausgeschlossen werden soll.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

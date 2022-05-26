@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sichtfelder erstellen</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Sichtfelder erstellen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Sichtfelder erstellen&quot; erstellt Fl&auml;chen, in denen ein Beobachter Objekte auf dem Boden erkennen kann. Die Eingabe-Beobachterpunkte k&ouml;nnen entweder Beobachter (z.&nbsp;B. Personen am Boden oder Beobachter in einem Feuerwachturm) oder beobachtete Objekte (z.&nbsp;B. Windkraftanlagen, Wassert&uuml;rme, Fahrzeuge oder Personen) sein. Die sich ergebenden Fl&auml;chen sind diejenigen, in denen die Beobachter die beobachteten Objekte sehen k&ouml;nnen, bzw. die Bereiche, die von einem Objekt aus zu sehen sind.
+    </p>
+    <p>Sowohl Beobachter als auch beobachtete Objekte k&ouml;nnen sich in einer bestimmten H&ouml;he &uuml;ber dem Boden befinden. Diese H&ouml;hen werden zur Ermittlung der Sichtbarkeit verwendet. So wird beispielsweise ein Sichtfeld, das f&uuml;r 120 Meter hohe Windkraftanlagen und 1,80 Meter gro&szlig;e, am Boden stehende Personen berechnet wird, &uuml;blicherweise gr&ouml;&szlig;er sein als ein Sichtfeld f&uuml;r identisch gro&szlig;e Personen und 60 Meter hohe Windkraftanlagen.
+    </p>
+    <p>Beachten Sie, dass bei der Berechnung des Sichtfeldes keine Hindernisse wie B&auml;ume oder Geb&auml;ude ber&uuml;cksichtigt werden. Man kann sich das Ganze so vorstellen, dass die Berechnung f&uuml;r ein Gebiet durchgef&uuml;hrt wird, in dem sich lediglich der Beobachter und die beobachteten Objekte befinden.
+    </p>
+    <p>Der Ergebnis-Layer enth&auml;lt Fl&auml;chen-Features, die sichtbare Fl&auml;chen darstellen. Das Feld  <i>Frequency</i> enth&auml;lt die Anzahl der Beobachterpunkte, von denen aus jede Fl&auml;che gesehen werden kann. Bei f&uuml;nf Eingabepunkten etwa, die jeweils einen Feuerwachturm darstellen, werden im Feld <i>Frequency</i> Werte zwischen eins und f&uuml;nf angezeigt. Fl&auml;chen mit dem Wert &quot;Eins&quot; sind nur von einem Turm aus sichtbar, Fl&auml;chen mit dem Wert &quot;F&uuml;nf&quot; sind von allen T&uuml;rmen aus sichtbar. Der Ergebnis-Layer enth&auml;lt au&szlig;erdem das Feld <i>DEMResolution</i>, das die Aufl&ouml;sung des digitalen H&ouml;henmodells (DEM) enth&auml;lt, mit dem die Sichtfelder erstellt werden.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Beobachterpunkte analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden auch dann alle Beobachterpunkte im Eingabe-Layer analysiert, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt-Features, die Beobachterpunkte darstellen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die als Beobachterpositionen verwendet werden sollen. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Höhe von Beobachterpositionen</h2></div>
+        <hr/>
+        <div>
+            <p>Hierbei handelt es sich um die H&ouml;he Ihrer Beobachterpositionen &uuml;ber dem Boden.    Der Standardwert betr&auml;gt etwa die Gr&ouml;&szlig;e einer Person.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Höhe anderer Objekte am Boden</h2></div>
+        <hr/>
+        <div>
+            <p>Hierbei handelt es sich um die H&ouml;he von Strukturen oder Personen am Boden, die verwendet werden, um die Sichtbarkeit einzurichten. Das sich hieraus ergebende Sichtfeld umfasst diejenigen Fl&auml;chen, von denen aus ein Beobachterpunkt diese anderen Objekte sehen kann.  Umgekehrt k&ouml;nnen die anderen Objekte auch einen Beobachterpunkt sehen. 
+            </p>
+            <p>
+                <ul>
+                    <li>Wenn Ihre Beobachterpunkte Windkraftanlagen darstellen und Sie ermitteln m&ouml;chten, von wo aus am Boden stehende Personen diese Anlagen sehen k&ouml;nnen, dann geben Sie die Durchschnittsgr&ouml;&szlig;e einer Person (etwa 1,80 Meter) ein.  Als Ergebnis erhalten Sie dann diejenigen Fl&auml;chen, von denen aus eine am Boden stehende Person die Windkraftanlagen sehen kann.
+                    </li>
+                    <li>Wenn Ihre Beobachterpunkte Feuerwacht&uuml;rme darstellen und Sie ermitteln m&ouml;chten, von welchen Wacht&uuml;rmen aus man eine mindestens sechs Meter hohe Rauchs&auml;ule sehen kann, dann geben Sie f&uuml;r die H&ouml;he sechs Meter ein.  Als Ergebnis erhalten Sie dann diejenigen Fl&auml;chen, von denen aus ein Feuerwachturm eine mindestens sechs Meter hohe Rauchs&auml;ule sehen kann.
+                    </li>
+                    <li>Wenn Ihre Beobachterpunkte Aussichtspunkte entlang Stra&szlig;en und Wanderwegen darstellen und Sie ermitteln m&ouml;chten, von wo aus Windkraftanlagen mit einer Mindesth&ouml;he von 120 Metern sichtbar sind, dann geben Sie f&uuml;r die H&ouml;he 120 Meter ein.  Als Ergebnis erhalten Sie dann diejenigen Fl&auml;chen, von denen aus eine Person von einem Aussichtspunkt aus eine mindestens 120 Meter hohe Windkraftanlage sehen kann.
+                    </li>
+                    <li>Wenn Ihre Beobachterpunkte Aussichtspunkte darstellen und Sie ermitteln m&ouml;chten, wieviel Bodenfl&auml;che Personen von dort aus sehen k&ouml;nnen, dann geben Sie Null ein.  Als Ergebnis erhalten Sie diejenigen Fl&auml;chen, die vom Aussichtspunkt aus zu sehen sind.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maximale Betrachtungsentfernung</h2></div>
+        <hr/>
+        <div>
+            <p>Hierbei handelt es sich um einen Entfernungsgrenzwert, bis zu dem sichtbare Fl&auml;chen berechnet werden. Ob sich die Beobachterpunkte und die anderen Objekte jenseits dieser Entfernung gegenseitig sehen k&ouml;nnen, ist nicht bekannt. Gro&szlig;e Werte verl&auml;ngern die Berechnungsdauer. Der gr&ouml;&szlig;te erlaubte Wert ist 50 Kilometer (31 Meilen).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+            <p> F&uuml;r die Ausf&uuml;hrung dieses Werkzeugs werden keine Credits verbraucht.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

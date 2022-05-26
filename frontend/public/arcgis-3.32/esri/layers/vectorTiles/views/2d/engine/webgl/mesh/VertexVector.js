@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/views/2d/engine/webgl/mesh/VertexVector",["require","exports","../Utils","../util/Writer"],function(g,d,l,h){Object.defineProperty(d,"__esModule",{value:!0});var k=function(){function b(a,c){this.data=a;this.stride=c;this.vertexCount=0}b.prototype.transfer=function(a,c){var e=this.data.buffer();a.vertexCount=this.vertexCount;a.data=e;a.stride=this.stride;c.push(e)};return b}();d.default=k;g=function(){function b(a,c,e){this.geometryType=a;this.indexVector=new h.default(Uint32Array,
+e);this.namedVectors={};a=l.getStrides(a,c);for(var b in a){c=a[b];var f=new h.default(Uint32Array,c/4*e);this.namedVectors[b]=new k(f,c)}}b.prototype.get=function(a){return this.namedVectors[a].data};b.prototype.transfer=function(a,c){var b=this.indexVector.buffer(),d={};c.push(b);for(var f in this.namedVectors){var g=this.namedVectors[f];d[f]={};g.transfer(d[f],c)}a.geometryType=this.geometryType;a.indexBuffer=b;a.namedBuffers=d;this.destroy()};b.prototype.destroy=function(){this.namedVectors=this.indexVector=
+null};return b}();d.VertexVectors=g});

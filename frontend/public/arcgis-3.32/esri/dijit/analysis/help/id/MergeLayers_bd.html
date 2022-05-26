@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Gabungkan Layer</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Gabungkan Layer"></h2>
+        <hr/>
+    <p>Alat ini menggabungkan dua feature layer untuk membuat satu layer output.    Layer yang digabungkan harus memiliki jenis geometri dan jenis waktu yang sama.  Anda dapat mengontrol cara menggabung dan menyalin kolom dari layer input.  Contoh:
+        <ul>
+            <li>Saya memiliki tiga layer untuk Inggris, Wales, dan Skotlandia dan saya menginginkan satu layer Britania Raya. 
+            </li>
+            <li>Saya memiliki 2 layer dan setiap layer berisi informasi persil untuk daerah kota yang berdampingan.  Saya ingin menggabungkannya ke dalam satu layer, membiarkan hanya kolom yang memiliki nama dan jenis yang sama pada 2 layer input.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer</h2></div>
+        <hr/>
+        <div>
+            <p>Layer dengan fitur tabular, titik, garis, atau area di mana lapisan fitur kedua akan bergabung. Semua kolom dari layer ini akan disertakan dalam layer hasil.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Pilih layer yang akan digabungkan</h2></div>
+        <hr/>
+        <div>
+            <p>Feature layer yang akan digabungkan dengan layer input. Layer yang akan digabungkan harus memiliki jenis geometri dan jenis waktu yang sama dengan layer input.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Ubah kolom penggabungan</h2></div>
+        <hr/>
+        <div>
+            <p>Secara default, semua kolom dari kedua layer input akan disertakan dalam output.  Anda dapat mengubah bagaimana kolom dari layer yang akan digabungkan akan disertakan dalam output dengan opsi berikut:
+                <ul>
+                    <li> <b>Ganti nama</b>&mdash;Kolom akan diganti nama dalam output.
+                    </li>
+                    <li> <b>Hapus</b>&mdash;Kolom akan dihapus dari output.
+                    </li>
+                    <li> <b>Cocokkan</b>&mdash;Nama kolom akan disamakan. Nilai kolom dari layer yang akan digabungkan akan disalin ke kolom output yang sesuai.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika kedua layer berisi kolom dengan nama dan jenis data yang sama, konten kedua kolom akan digabungkan menjadi satu kolom dengan nama tersebut. Ini tidak diterapkan untuk kolom di mana  <b>Cocokkan</b> digunakan di parameter <b>Modifikasi kolom gabungan</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

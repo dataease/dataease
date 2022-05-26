@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Znajdź centroidy</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Znajdź centroidy"></h2>
+        <hr/>
+    <p>To narzędzie działa z warstwą zawierającą obiekty wielopunktowe, liniowe lub powierzchniowe i służy do ustalania reprezentatywnego środka każdego z obiekt&oacute;w.
+    </p>
+    <p>Jeśli włączono opcję  <b>Użyj bieżącego zasięgu mapy</b>, w&nbsp;analizie będą brane pod uwagę jedynie obiekty w&nbsp;wejściowej warstwie wielopunktowej,&nbsp;liniowej lub powierzchniowej widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, której obiekty będą używane do generowania centroidów</h2></div>
+        <hr/>
+        <div>
+            <p> Warstwa wielopunktowa, liniowa lub powierzchniowa, w kt&oacute;rej będą wyszukiwane centroidy.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Pokaż lokalizacje wynikowe</h2></div>
+        <hr/>
+        <div>
+            <p> Gdy włączona jest opcja <b>W prawdziwym centroidzie</b> (wartość domyślna), jako dane wynikowe zostaną zwr&oacute;cone prawdziwe lokalizacje centroid&oacute;w dla każdego obiektu wejściowego. Centroidy będą lokalizowane w następujący spos&oacute;b:
+                <ul>
+                    <li>Obiekty wielopunktowe &mdash; centroid wynikowy będzie znajdował się w lokalizacji wyznaczonej przez wartości średnie wsp&oacute;łrzędnych x i y obliczone dla wszystkich punkt&oacute;w w obiekcie wielopunktowym.
+                    </li>
+                    <li>Obiekty liniowe &mdash; centroid wynikowy będzie znajdował się w lokalizacji wyznaczonej przez średnią ważoną wsp&oacute;łrzędnych x i y punkt&oacute;w środkowych wszystkich segment&oacute;w linii w obiekcie liniowym. Waga jest wyznaczana na podstawie długości segmentu.
+                    </li>
+                    <li>Obiekty powierzchniowe &mdash; centroid wynikowy będzie znajdował się w środku obszaru.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Gdy włączona jest opcja  <b>Zawarte w obiektach wejściowych</b>, wynikowe obiekty punktowe będą znajdować się na obiektach wejściowych lub wewnątrz nich. Wynikowe obiekty punktowe będą wyświetlane w następujący spos&oacute;b:
+                <ul>
+                    <li>Obiekty wielopunktowe &mdash; centroid wynikowy będzie pokrywał się z jednym z punkt&oacute;w z grupy wielopunktowej.
+                    </li>
+                    <li>Obiekty liniowe &mdash; centroid wynikowy będzie znajdował się na linii.  Jeśli linia jest krzywą, centroid wynikowy będzie znajdował się w punkcie środkowym tej linii. 
+                    </li>
+                    <li>Obiekty powierzchniowe &mdash; punkt wynikowy będzie znajdował się wewnątrz obiektu powierzchniowego.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

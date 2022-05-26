@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trace Downstream</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Trace Downstream"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y sẽ x&aacute;c định dấu vết, hoặc đường dẫn d&ograve;ng chảy, theo hướng hạ lưu từ c&aacute;c điểm trong lớp đầu v&agrave;o của bạn.
+    </p>
+    <p>V&iacute; dụ, giả sử bạn c&oacute; c&aacute;c đối tượng điểm thể hiện cho c&aacute;c nguồn nhiễm bẩn v&agrave; bạn muốn x&aacute;c định xem khu vực nghi&ecirc;n cứu của bạn c&oacute; nguồn nhiễm bẩn chảy qua kh&ocirc;ng. Bạn c&oacute; thể sử dụng c&ocirc;ng cụ Trace Downstream để x&aacute;c định d&ograve;ng chảy đang bị nhiễm bẩn. C&oacute; thể ph&acirc;n chia d&ograve;ng chảy n&agrave;y th&agrave;nh c&aacute;c ph&acirc;n đoạn đường ri&ecirc;ng bằng c&aacute;ch chỉ định gi&aacute; trị khoảng c&aacute;ch v&agrave; đơn vị. Đường được trả về c&oacute; thể l&agrave; tổng độ d&agrave;i của đường dẫn d&ograve;ng chảy, độ d&agrave;i trace tối đa được chỉ định, hoặc chỉ c&oacute; c&aacute;c đối tượng nằm trong khu vực chỉ định chẳng hạn như khu vực nghi&ecirc;n cứu của bạn. Trong nhiều trường hợp, nếu thu được tổng độ d&agrave;i của đường dẫn trace th&igrave; n&oacute; sẽ từ nguồn chảy ra đại dương theo bất kỳ c&aacute;ch n&agrave;o.
+    </p>
+    <p>Kết quả l&agrave; một đường thể hiện cho qu&aacute; tr&igrave;nh trace downstream. Nếu chỉ định một khoảng c&aacute;ch để  <b>Ph&acirc;n chia trace th&agrave;nh c&aacute;c ph&acirc;n đoạn đường</b>, đường trace sẽ được ph&acirc;n chia th&agrave;nh nhiều đoạn, ở đ&oacute; mỗi đường sẽ được chỉ định một độ d&agrave;i nhất định. V&iacute; dụ, nếu điểm đầu v&agrave;o của bạn thể hiện cho một điểm tr&agrave;n nhiễm bẩn v&agrave; n&oacute; chảy v&agrave;o d&ograve;ng s&ocirc;ng với tốc độ 0,6 dặm/giờ, hoặc 15 dặm/ng&agrave;y, bạn c&oacute; thể muốn ph&acirc;n chia d&ograve;ng s&ocirc;ng th&agrave;nh c&aacute;c ph&acirc;n đoạn mỗi ph&acirc;n đoạn d&agrave;i 15 dặm. Ph&acirc;n chia trace th&agrave;nh c&aacute;c khoảng d&agrave;i 15 dặm sẽ cho biết nơi điểm tr&agrave;n sẽ đi qua h&agrave;ng ng&agrave;y. Đường sẽ được k&yacute; hiệu theo thang m&agrave;u sắc dựa tr&ecirc;n th&ocirc;ng tin khoảng c&aacute;ch v&agrave; được hiển thị nh&atilde;n với khoảng c&aacute;ch từ điểm bắt đầu trace.
+    </p>
+    <p>Kết quả trace sẽ c&oacute; tất cả c&aacute;c thuộc t&iacute;nh của điểm đầu v&agrave;o cũng như c&aacute;c thuộc t&iacute;nh bổ sung. 
+        <ul>
+            <li> <i>PointID</i>&mdash;Chứa gi&aacute; trị ID từ điểm đầu v&agrave;o.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Chứa độ d&agrave;i t&iacute;nh bằng kil&ocirc;m&eacute;t đối với to&agrave;n bộ qu&aacute; tr&igrave;nh trace downstream.
+                
+
+            </li>
+            <li> <i>Description</i> v&agrave; <i>DataResolution</i>&mdash;Chứa th&ocirc;ng tin li&ecirc;n quan đến dữ liệu thủy văn để t&iacute;nh to&aacute;n c&ocirc;ng việc trace.
+                
+
+            </li>
+            <li> <i>FromDistance</i> v&agrave; <i>ToDistance</i>&mdash;Chứa khoảng c&aacute;ch từ v&agrave; đến của từng ph&acirc;n đoạn đường. C&aacute;c thuộc t&iacute;nh n&agrave;y được ghi lại nếu sử dụng c&ocirc;ng cụ <b>Ph&acirc;n chia trace th&agrave;nh c&aacute;c ph&acirc;n đoạn đường</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng điểm trong lớp đầu v&agrave;o được nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được sử dụng, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Các đối tượng điểm được sử dụng làm vị trí bắt đầu cho mỗi lần trace downstream.</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng điểm được sử dụng l&agrave;m vị tr&iacute; bắt đầu cho việc trace downstream. Đầu ra sẽ c&oacute; chứa một d&ograve;ng cho từng điểm đầu v&agrave;o.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Phân chia truy tìm thành các phân đoạn đường</h2></div>
+        <hr/>
+        <div>
+            <p>Đường truy t&igrave;m sẽ được ph&acirc;n chia th&agrave;nh nhiều đường ở đ&oacute; mỗi đường c&oacute; độ d&agrave;i chỉ định. V&iacute; dụ, nếu điểm đầu v&agrave;o của bạn thể hiện cho một điểm tr&agrave;n nhiễm bẩn v&agrave; n&oacute; chảy v&agrave;o d&ograve;ng s&ocirc;ng với tốc độ 0,6 dặm/giờ, hoặc 15 dặm/ng&agrave;y, bạn c&oacute; thể muốn ph&acirc;n chia d&ograve;ng s&ocirc;ng th&agrave;nh c&aacute;c ph&acirc;n đoạn mỗi ph&acirc;n đoạn d&agrave;i 15 dặm. Ph&acirc;n chia trace th&agrave;nh c&aacute;c khoảng d&agrave;i 15 dặm sẽ cho biết nơi điểm tr&agrave;n sẽ đi qua h&agrave;ng ng&agrave;y. Đường sẽ được k&yacute; hiệu theo thang m&agrave;u sắc dựa tr&ecirc;n th&ocirc;ng tin khoảng c&aacute;ch v&agrave; được hiển thị nh&atilde;n với khoảng c&aacute;ch từ điểm bắt đầu trace. Kết quả trace sẽ c&oacute; nhiều ph&acirc;n đoạn đường, mỗi ph&acirc;n đoạn c&oacute; c&aacute;c trường  <i>FromDistance</i> v&agrave; <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Khoảng cách trace tối đa</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định tổng độ d&agrave;i của đường sẽ được trả về. Nếu bạn cung cấp c&aacute;c đối tượng v&ugrave;ng để cắt kết quả trace th&igrave; kết quả trả về sẽ l&agrave; c&aacute;c đối tượng nằm trong khu vực cắt, bất kể khoảng c&aacute;ch bạn nhập ở đ&acirc;y.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Cắt đầu vào tới</h2></div>
+        <hr/>
+        <div>
+            <p>Vẽ hoặc cung cấp một lớp v&ugrave;ng nơi bạn muốn cắt kết quả trace. V&iacute; dụ, nếu bạn muốn kết quả trace nằm trong khu vực nghi&ecirc;n cứu của m&igrave;nh, v&iacute; dụ như trong khu vực quận bạn đang ở, h&atilde;y sử dụng đối tượng quận l&agrave;m đầu v&agrave;o để kết quả trace sẽ dừng tại ranh giới quận.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+            <p> Chạy c&ocirc;ng cụ n&agrave;y kh&ocirc;ng sử dụng credit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

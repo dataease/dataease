@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Nearest</h2><p/>
+        <h2><img src="./images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Find Nearest"></h2>
+        <hr/>
+    <p>This tool finds the nearest features and reports and ranks the distance to the nearby features. To find what's nearest, the tool can  measure using either a straight-line distance or a selected travel mode. There are options to limit the number of nearest features to find or the search range in which to find them. The results from this tool can help you answer the following kinds of questions:
+        <ul>
+            <li>What is the nearest park from here?
+            </li>
+            <li>Which hospital can I reach in the shortest drive time? How long would the trip take on a Tuesday at 5:30 p.m. during rush hour?
+            </li>
+            <li>What are the road distances between these major cities?
+            </li>
+            <li>Which of these patients reside within two miles of these chemical plants?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Find Nearest returns a layer containing the nearest features  and a line layer that links the start locations to their nearest locations. The line layer contains information about the start and nearest locations and the distances between.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features that are visible within the current map extent will be considered as start and potentially nearest features.  If unchecked, all features in the input layer will be considered, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Specify the starting locations</h2></div>
+        <hr/>
+        <div>
+            <p>Find Nearest measures from features in the layer you specify here (the start locations) to the locations you specify in the next parameter.  The tool supports up to  5,000 features in each layer. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Find the nearest locations in</h2></div>
+        <hr/>
+        <div>
+            <p>Find Nearest measures from each of the features in the first layer to the locations in this layer. The tool supports up to  5,000 locations in each layer. </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Measure</h2></div>
+        <hr/>
+        <div>
+            <p>Choose whether to find the nearest locations based on straight-line distance or a selected travel mode. Travel modes are only enabled when your input layer contains points. The available travel modes are determined by the administrator of your organization.  When using one of the travel modes, the measurements are made along roads or walkways, and they honor applicable rules, such as one-way streets, illegal turns, and so on.
+            </p>
+            <p>When measuring between lines or areas, the distance from or to the nearest point along the line or the boundary of the area is found. 
+            </p> 
+            <p>When you choose  <b>Driving Time</b>, <b>Rural Driving Time</b>, or <b>Trucking Time</b> you have options on how to measure the drive time.
+                <ul>
+                    <li>
+                        <p>Uncheck  <b>Use Traffic</b> to find the nearest features based on static travel speeds, such as speed limits, rather than on fluctuating speeds caused by changing traffic conditions.
+                        </p>
+                        <p>This is the option to choose if you want to know what is generally nearest, but not necessarily the nearest given traffic conditions for a specific time and day.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Check  <b>Use Traffic</b> to find the nearest features based on a given start time and changing traffic conditions. By also choosing the <b>Live traffic</b> option, the departure time from the start locations is set to the current time, and current and predicted traffic speeds are referenced from sensors and feeds to determine what features are nearest. The predicted traffic speeds are calculated by referencing live traffic speeds, historical speeds, and current events such as weather. Traffic speeds are predicted 12 hours into the future, so you can move the slider to set the departure time ahead by up to 12 hours.
+                        </p>
+                        <p>Use these live-traffic settings to find out what features can be reached in the shortest amount of time when departing now, departing in one hour from now, and so on.
+                        </p>
+                    </li>
+                    <li>
+                        <p>By checking  <b>Use Traffic</b> and choosing <b>Traffic based on typical conditions for</b> a day and time, the tool finds the nearest features based on historical speed averages for every five-minute  interval across a routine week. The results include traffic but remove the influence of current traffic conditions and events, which may vary significantly from the norm.
+                        </p>
+                        <p>You can use these historical traffic settings to ask, for instance, &quot;What features can be reached the quickest when departing the start features at 11:30 a.m. on a Wednesday?&quot; 
+                        </p>
+                        <p>The time you set refers to the time zone in which your start features are located. So if you set the time to 8:00 a.m. and have two start features, one in New York City and another in Los Angeles, the nearest locations will be found by assuming a departure time of 8:00 a.m. Eastern Time and 8:00 a.m. Pacific Time, respectively.
+                        </p>
+                    </li>
+                </ul>
+                Note that as a vehicle drives outward from a point, time elapses and traffic conditions change. This tool accounts for these variations when you check <b>Use traffic</b>; however, not all regions support traffic. Click the <b>See availability</b> link on the tool to find out whether it is offered in  your study area. 
+            </p>
+            <p> <b>Trucking Time</b> can use dynamic travel speeds based on traffic but only up to the legal truck speed limit. For example, if the dynamic speed for a street based on live traffic is 65 miles per hour but the truck speed limit for that street is 55 miles per hour, the calculation will use 55 miles per hour for that street.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Select barrier layers</h2></div>
+        <hr/>
+        <div>
+            <p> One or more features that act as temporary restrictions (barriers) when traveling on the underlying streets. You can specify the barriers using point, line, or polygon features.
+            </p>
+            <p>A point barrier can model a fallen tree, an accident, a downed electrical line, or anything that completely blocks traffic at a specific position along the street. Travel is permitted on the street but not through the barrier. You can specify up to 250 features to act as point barriers.
+            </p>
+            <p>A line barrier prohibits travel anywhere the barrier intersects the streets. For example, a parade or protest that blocks traffic across several street segments can be modeled with a line barrier. If the number of street features intersected by all the line barriers exceeds 500, the tool returns an error.
+            </p>
+            <p>A polygon barrier prohibits travel anywhere the polygon intersects the streets. One use of this type of barrier is to model floods covering areas of the street network and making road travel there impossible. If the number of street features intersected by all the polygon barriers exceeds 2000, the tool returns an error.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>For each location in the input layer</h2></div>
+        <hr/>
+        <div>
+            <p>You have two options for limiting the search for nearest locations. One option is limiting the maximum number of nearest locations to find per start location. You can find the one nearest park, the two nearest, and so on. The other option is setting a maximum search distance or drive time.
+            </p>
+            <p>By unchecking  the options, the maximum number of nearest locations to find is 100 (the tool's limit), and the maximum search range is unlimited.
+            </p>
+            <p>Processing time depends on the number of start locations, the number of nearby locations, and the maximum search range.   It takes more time to process when there are more locations or larger search ranges.
+            </p>
+            <p>Note that when a limit is set on the search range, it's possible that the tool won't find any nearest locations within that range, or that fewer locations are found than the maximum number of nearest locations  you specify.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the feature layer that will be created in  <b>My Content</b> and added to the map. If the feature layer already exists, you will be asked to provide another name. The feature layer will contain two layers: one representing the nearest locations and another representing the lines connecting the input locations to the nearest locations.
+            </p>
+            <p>If you select  <b>Include route layers</b>, each route from the result is also saved as a route layer. A route layer includes all the information for a particular route, such as the stops assigned to the route as well as the travel directions. Creating  route layers is useful if you want to share the individual routes with other members in your organization or to further modify the routes using the <b>Directions</b> button in the map viewer. The route layers use the name provided for the feature layer  as a prefix and the route name generated as part of the analysis, which is added to create a unique name for each route layer.
+            </p>
+            <p>The maximum number of route layers that can be created is  1,000. If the result contains more than  1,000 routes and  <b>Include route layers</b> is checked, the tool will only create the output feature service.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can specify the name of a folder in <b>My Content</b> where the feature layer and the route layers, if created, will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

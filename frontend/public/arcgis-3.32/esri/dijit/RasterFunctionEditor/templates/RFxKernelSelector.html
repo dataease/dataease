@@ -1,0 +1,39 @@
+<div class="esriRFxKernelSelector esriRFxMatrix">
+  <table class="esri-rfx-args-editor__table">
+    <tr class="esri-rfx-args-editor__tr--arg-name">
+      <td data-dojo-attach-point="typeLabel"></td>
+    </tr>
+    <tr class="esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="typeSelect" data-dojo-attach-event="onChange:_onTypeChange"
+          data-dojo-attach-props="labelAttr: 'label'"></div>
+      </td>
+    </tr>
+    <tr class="esri-kernel-selector-user-defined kernel-selector-label esri-rfx-args-editor__tr--arg-name">
+      <td data-dojo-attach-point="rowsLabel"></td>
+    </tr>
+    <tr class="esri-kernel-selector-user-defined esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <input data-dojo-attach-point="rowsSelect" data-dojo-type="dijit/form/NumberSpinner" value="3" data-dojo-props="smallDelta:1, constraints:{min:1,max:100,places:0}"
+          data-dojo-attach-event="onChange:_onRowChange" />
+      </td>
+    </tr>
+    <tr class="esri-kernel-selector-user-defined kernel-selector-label esri-rfx-args-editor__tr--arg-name">
+      <td data-dojo-attach-point="columnsLabel"></td>
+    </tr>
+    <tr class="esri-kernel-selector-user-defined esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <input data-dojo-attach-point="columnsSelect" data-dojo-type="dijit/form/NumberSpinner" value="3"
+          data-dojo-props="smallDelta:1, constraints:{min:1,max:100,places:0}" data-dojo-attach-event="onChange:_onColumnChange" />
+      </td>
+    </tr>
+    <tr class="esri-kernel-selector-none kernel-selector-label esri-rfx-args-editor__tr--arg-name">
+      <td data-dojo-attach-point="kernelLabel"></td>
+    </tr>
+    <tr class="esri-kernel-selector-none esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <div data-dojo-attach-point="gridDiv"></div>
+      </td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izdvoji raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Alat Izdvoji raster za Portal"></h2>
+        <hr/>
+    <p>Ovaj alat može izrezati raster ili na pravokutno područje ili u oblik koji interaktivno odredite na zaslonu. Možete izrezati na obuhvat područja koje je trenutačno prikazano na va&scaron;oj karti ili na radno područje određeno poligonom.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite ulazne podatke za izdvajanje</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazni sloj za rezanje.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Odredite geometriju isječka</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite vrstu obuhvata za kori&scaron;tenje prilikom rezanja geometrije sloja:
+
+                <ul>
+                    <li>Upotrijebi trenutačni obuhvat &ndash; trenutačni obuhvat karte koristit će se za rezanje sloja rezultata. To je zadano.
+                        
+
+                    </li>
+                    <li>Odaberite radno područje &ndash; omogućuje odabir hoće li rezultati prikazati područje unutar obuhvata geometrije ili područje izvan obuhvata geometrije. Ako odaberete opciju  <b>Podaci unutar geometrije</b>, uklonit će se snimke izvan obuhvata. Ako odaberete opciju <b>Podaci izvan geometrije</b>, uklonit će se snimke unutar obuhvata. Također možete odrediti geometriju rezanja s pomoću alata za crtanje.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

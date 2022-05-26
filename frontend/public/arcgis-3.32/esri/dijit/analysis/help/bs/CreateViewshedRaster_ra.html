@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stvori vidljivost</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Alat Stvori vidljivost"></h2>
+        <hr/>
+    <p>Ovaj alat određuje područja koje promatrač može vidjeti, uzev&scaron;i u obzir povr&scaron;insku topografiju. Ulazne lokacije točaka mogu predstavljati ili promatrače (kao &scaron;to su osobe na tlu ili vidikovci za požare) ili promatrane objekte (kao &scaron;to su vjetroturbine, vodeni tornjevi, vozila ili drugi ljudi). Rezultati određuju područja koja se mogu vidjeti s lokacije promatrača.
+    </p>
+    <p>Promatrači i promatrani objekti mogu biti na visini iznad tla, a te se visine upotrebljavaju za određivanje vidljivosti. Na primjer, vidljivost izračunata za vjetrenjače visoke 300 stopa i osobu visoku 6 stopa koja stoji na tlu obično će biti veća od vidljivosti izračunate za vjetrenjače visoke 200 stopa i osobu visoku 5 stopa.
+    </p>
+    <p>Sloj rezultata bilježi broj puta koliko se pojedina lokacija ćelije na ulaznom rasteru povr&scaron;ine može vidjeti od ulaznih točaka promatranja. Nevidljive ćelije dobivaju vrijednosti bez podataka.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo točke promatranja koje su vidljive u trenutačnom obuhvatu karte. Ako opcija nije označena, sve će se točke za promatranje u ulaznom sloju analizirati, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Površina visine terena</h2></div>
+        <hr/>
+        <div>
+            <p>Povr&scaron;ina visine terena koja se koristi za izračun vidljivosti.
+            </p>
+            <p>Ako se vertikalna jedinica ulazne povr&scaron;ine razlikuje od horizontalne jedinice, primjerice kad su vrijednosti visine terena prikazane u stopama, a koordinatni sustav u metrima, povr&scaron;ina mora imati definirani vertikalni koordinatni sustav. To je zato &scaron;to alat upotrebljava vertikalne (Z) i horizontalne (XY) jedinice za izračun faktora Z za analizu vidljivosti. Bez vertikalnog koordinatnog sustava nisu dostupne informacije o jedinici Z pa će alat pretpostaviti da je jedinica Z jednaka kao jedinica XY. Rezultat toga je kori&scaron;tenje unutra&scaron;njeg faktora Z od 1,0 za analizu, &scaron;to može dati neočekivane rezultate.
+            </p>
+            <p>Povr&scaron;ina visine terena može biti cijeli broj ili plutajuća točka.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Točkasti geoobjekti koji prikazuju lokacije promatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti koji predstavljaju lokacije promatrača prilikom izračuna vidljivosti.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiziraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda optimizacije koja se koristi za izračun vidljivosti.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Ova metoda optimizira brzinu obrade, umanjujući određenu preciznosti rezultata za postizanje bolje učinkovitosti. To je zadano.
+
+                </li>
+                <li>Accuracy &mdash; 
+Ova je metoda optimizirana za preciznost rezultata &scaron;to produljuje trajanje obrade.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalna udaljenost gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite graničnu vrijednost gdje će prestati izračun vidljivih područja. Iza te udaljenosti neće se odrediti mogu li se točke promatrača i ostali objekti međusobno vidjeti.
+            </p>
+            <p>Možete navesti brojčanu vrijednost koja predstavlja linearnu udaljenost ili odabrati brojčano polje iz ulaznih geoobjekata promatrača. Ako se pruži polje, vrijednosti koje se nalazi u polju mora imati istu jedinicu kao i jedinica xy unesene povr&scaron;ine visine terena.
+            </p>
+            <p>Uočite da će veće vrijednosti produžiti vrijeme izračuna. Osim ako se drugačije ne odredi, maksimalna udaljenost izračunat će se na temelju razlučivosti i obuhvata ulazne povr&scaron;ine visine terena.
+            </p>
+            <p>Ovaj je parametar koristan za modeliranje određenih fenomena. Na primjer, ograničavanjem obuhvata vidljivosti možete modelirati vremenske uvjete kao &scaron;to je slaba magla. Slično tome, ograničavanje obuhvata vidljivosti može vam dati nadzor nad razdobljem dana približnim određivanjem zasjenjenosti.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimalna udaljenost gledanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalna udaljenost gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite udaljenost na kojoj treba početi izračun vidljivih područja. Ćelije na povr&scaron;ini koje su bliže od te udaljenosti nisu vidljive u rezultatu, ali i dalje mogu blokirati vidljivost ćelija između minimalne i maksimalne udaljenosti gledanja.
+            </p>
+            <p>Možete navesti brojčanu vrijednost koja predstavlja linearnu udaljenost ili odabrati brojčano polje iz ulaznih geoobjekata promatrača. Ako se pruži polje, vrijednosti koje se nalazi u polju mora imati istu jedinicu kao i jedinica xy unesene povr&scaron;ine visine terena.
+            </p>
+            <p>Ovaj je parametar koristan za upravljanje analizom vidljivosti na određenoj udaljenosti od promatrača. Na primjer, ako procjenjujete vidljivost od vrha zgrade do udaljenog parka, možete postaviti minimalnu udaljenost gledanja za isključivanje područja u blizini koja nisu važna i dobiti bolju brzinu obrade.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalna udaljenost gledanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Udaljenost je 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Odredite treba li parametre minimalne i maksimalne udaljenosti gledanja mjeriti trodimenzionalno ili jednostavnije, dvodimenzionalno. Kad se označi opcija, udaljenosti gledanja tretiraju se kao 3D udaljenost. Ako se ne označi, tretiraju se kao 2D udaljenosti.
+            </p> 
+            <p>2D udaljenost jednostavna je linearna udaljenost izmjerena između promatrača i cilja s pomoću njihovih projiciranih lokacija na razini mora. 3D udaljenost daje realističniju vrijednost uzimajući u obzir njihove relativne visine.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Visina lokacija promatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite visinu terena za svoje lokacije promatrača.
+            </p>
+            <p>Možete odrediti brojčanu vrijednost koja predstavlja visinu terena svih promatrača ili polje koje predstavlja visinu terena pojedinih promatrača. Ako se zadaje polje, vrijednost koja se nalazi u polju mora biti izražena u istim jedinicama kao i jedinica Z ulazne povr&scaron;ine visine terena.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Visina lokacija promatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Visina promatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite visinu iznad tla za svoje lokacije promatrača.
+            </p> 
+            <p>Možete navesti brojčanu vrijednost za visinu ili polje iz ulaznih geoobjekata promatrača. Ako se zadaje polje, vrijednost koja se nalazi u polju mora biti izražena u istim jedinicama kao i jedinica z ulazne povr&scaron;ine visine terena.
+            </p>
+            <p>Zadana je vrijednost 6 stopa. Ako gledate s povi&scaron;ene lokacije, primjerice promatračkog tornja ili visoke zgrade, upotrijebite tu visinu. Tijekom izračuna vidljivosti, ova se vrijednost dodaje visini terena promatrača ako je naznačena; u suprotnom, dodaje se interpoliranoj povr&scaron;ini vrijednosti z.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Visina promatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Visina cilja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite visinu objekata ili osoba na tlu za uspostavljanje vidljivosti.
+            </p>
+            <p>Možete navesti brojčanu vrijednost za visinu ili polje iz ulaznih geoobjekata promatrača. Ako se zadaje polje, vrijednost koja se nalazi u polju mora biti izražena u istim jedinicama kao i jedinica z ulazne povr&scaron;ine visine terena.
+            </p>
+            <p>Rezultat vidljivosti određuje područja gdje točka promatrača može vidjeti te objekte na tlu. Suprotno također vrijedi, objekti na tlu mogu vidjeti točku promatrača. 
+            </p>
+            <p>U nastavku su neki primjeri postavki ciljne visine:
+            </p>
+            <ul>
+                <li>Ako va&scaron;e ulazne točke predstavljaju vjetrenjače i želite odrediti odakle ih ljudi koji stoje na tlu mogu vidjeti, unesite prosječnu visinu osobe (otprilike 6 stopa).
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne točke predstavljaju promatračnice za požare i ako želite odrediti s kojih se od njih može vidjeti trag dima koji se diže 20 stopa ili vi&scaron;e, unesite 20 stopa za ciljnu visinu.
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne točke predstavljaju vidikovce uz neke ceste ili putove i želite odrediti odakle se mogu vidjeti vjetrenjače koje su visoke 400 stopa ili vi&scaron;e, unesite 400 stopa za visinu.
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne točke predstavljaju vidikovce i želite odrediti koliko područja na tlu mogu vidjeti osobe s vidikovca, unesite nulu za ciljnu visinu. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Visina promatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Izlazna visina za vidljivost</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv izlaznog rezultata iznad razine tla (AGL). Rezultat AGL je raster gdje su pojedine vrijednosti ćelija minimalna visina koja se treba dodati inače nevidljivim ćelijama kako bi postale vidljive barem jednom promatraču. Ćelijama koje su već vidljive dodijelit će se 0 u ovom izlaznom rasteru.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

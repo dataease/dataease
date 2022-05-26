@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Viewshed maken</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Viewshed maken"></h2>
+        <hr/>
+    <p>De tool Viewshed maken cre&euml;ert gebieden waar een waarnemer objecten kan zien op de grond. De invoer van waarnemerpunten kan bestaan uit waarnemers (zoals mensen op de grond of uitzichtpunten in een brandtoren) of waargenomen objecten (zoals windturbines, watertorens, voertuigen of andere personen). De resultaatgebieden zijn gebieden waar de waarnemers de geobserveerde objecten kunnen zien en vice versa: de geobserveerde objecten kunnen de waarnemers zien.
+    </p>
+    <p>Zowel de waarnemers als de waargenomen objecten kunnen een hoogte boven de grond hebben en deze hoogten worden gebruikt bij het bepalen van de zichtbaarheid. Bijvoorbeeld, een viewshed die is berekend voor windturbines van 120 meter en mensen van 1.80 m. die op de grond staan is meestal groter dan een viewshed die is berekend voor turbines van 60 meter en mensen van 1.80 meter.
+    </p>
+    <p>Merk op dat er voor de berekening van de viewshed geen rekening wordt gehouden met obstakels zoals bomen of gebouwen. U kunt het zo zien dat de berekening plaatsvindt op de kale grond zonder iets anders dan de waarnemer en de waargenomen objecten.
+    </p>
+    <p>De resultaatlaag bevat eigenschappen van het gebied die de zichtbare gebieden weergeven. In het veld  <i>Frequency</i> wordt het aantal waarnemerspunten vastgelegd die elk gebied kunnen zien. Als u bijvoorbeeld vijf invoerpunten heeft die elk een brandtoren vertegenwoordigen, dan heeft het veld <i>Frequency</i> waarden tussen &eacute;&eacute;n en vijf; gebieden met waarde &eacute;&eacute;n kunnen alleen gezien worden door &eacute;&eacute;n toren en gebieden met waarde vijf kunnen gezien worden door alle torens. De resultaatlaag bevat ook het veld <i>DEMResolution</i>, waarin de resolutie wordt vastgelegd van het Digital Elevation Model (DEM) dat gebruikt wordt om de viewsheds te maken.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de waarnemerpunten geanalyseerd die zichtbaar zijn in het huidige kaartextent. Als de optie niet is aangevinkt, worden alle waarnemerpunten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Puntobjecten die waarnemerlocaties vertegenwoordigen</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten om te gebruiken als waarnemerlocaties. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Hoogte van de waarnemerlocaties</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de hoogte boven de grond van uw waarnemerlocaties.  De standaardinstelling is ongeveer de gemiddelde lengte van een persoon.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Hoogte van andere objecten op de grond</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de hoogte van structuren of mensen op de grond gebruikt om de zichtbaarheid vast te stellen. Het resultaat viewshed zijn gebieden waar een waarnemerpunt deze andere objecten kan zien. Het omgekeerde is ook waar; de andere objecten kunnen een waarnemerpunt zien. 
+            </p>
+            <p>
+                <ul>
+                    <li>Als uw waarnemerpunten windturbines vertegenwoordigen u wilt bepalen waar mensen vanaf de grond de turbines kunnen zien, voer dan de gemiddelde lengte van een persoon in (ongeveer 1.80 meter). Het resultaat zijn gebieden waar een persoon op de grond de windturbines kan zien.
+                    </li>
+                    <li>Als uw waarnemerpunten brandtorens zijn en u wilt bepalen welke uitkijktorens een rookpluim kunnen zien van 7 meter of hoger, voer dan 7 meter in voor de hoogte. Het resultaat is gebieden waar vanuit een brandtoren een rookpluim kan worden gezien van ten minste 7 meter hoog.
+                    </li>
+                    <li>Als uw waarnemerpunten uitkijkpunten zijn langs wegen en paden en u wilt bepalen waar windturbines van 120 meter hoog of hoger kunnen worden gezien, voer dan 120 meter in voor de hoogte. Het resultaat is gebieden waar iemand bij een uitkijkpunt een windturbine kan zien van ten minste 120 meter hoog.
+                    </li>
+                    <li>Als uw waarnemerpunten uitkijkpunten zijn en u wilt weten hoe groot het gebied is dat mensen vanaf de grond kunnen zien vanaf het uitkijkpunt, voer dan nul in. Het resultaat is gebieden die te zien zijn vanaf het uitkijkpunt.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maximale kijkafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is een cut-offafstand waar de berekening van de zichtbare gebieden stopt. Verder dan deze afstand is het onbekend of de waarnemerpunten en de andere objecten elkaar kunnen zien. Door grote waarden wordt de berekeningstijd langer. De maximaal toegestane waarde is 50 kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+            <p> Door het uitvoeren van deze tool worden geen credits verbruikt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

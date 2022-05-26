@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Watersheds</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Criar Watersheds"></h2>
+        <hr/>
+    <p>Esta ferramenta determina a bacia hidrogr&aacute;fica, ou &aacute;rea de contribui&ccedil;&atilde;o a montante, para cada ponto na sua camada de entrada. 
+    </p>
+    <p>Por exemplo, suponha que tem pontos de elementos que representam locais de contamina&ccedil;&atilde;o pela &aacute;gua e quer encontrar as prov&aacute;veis fontes de contamina&ccedil;&atilde;o. Uma vez que a fonte da contamina&ccedil;&atilde;o deve estar em algum lugar dentro do montante da bacia hidrogr&aacute;fica do ponto, teria de usar esta ferramenta para definir as Watersheds que cont&ecirc;m as fontes de contaminantes.
+    </p>
+    <p>A localiza&ccedil;&atilde;o dos seus pontos de entrada &eacute; importante.  Se eles n&atilde;o est&atilde;o localizados exactamente numa linha de drenagem, as Watersheds resultantes podem ser muito pequenas e n&atilde;o s&atilde;o &uacute;teis para a sua an&aacute;lise A   <b>Dist&acirc;ncia de pesquisa at&eacute; &agrave; drenagem mais pr&oacute;xima</b> pode ser utilizada para ajustar a localiza&ccedil;&atilde;o dos seus dados de entrada de forma a que estes se localizem numa linha de drenagem e assim encontrar a bacia hidrogr&aacute;fica que flui para o ponto localizado na linha de drenagem.  As localiza&ccedil;&otilde;es ajustadas utilizadas para encontrar as bacias hidrogr&aacute;ficas s&atilde;o escritas na camada de sa&iacute;da - os seus pontos de entrada n&atilde;o s&atilde;o modificados.
+    </p>
+    <p>O resultado &eacute; uma camada de grupo que cont&eacute;m duas camadas: as Watersheds e os pontos ajustados usados para calcular as Watersheds.     
+    </p>
+    <p>As bacias hidrogr&aacute;ficas resultantes ter&atilde;o todos os atributos dos seus pontos de entrada assim como estes atributos adicionais.     
+        <ul>
+            <li> <i>PourPtID</i> &mdash; Cont&eacute;m o valor da ID do ponto de entrada
+            </li>
+            <li> <i>Area Square Kilometers</i> &mdash; Cont&eacute;m a &aacute;rea em quil&oacute;metros quadrados da bacia hidrogr&aacute;fica a montante
+            </li>
+            <li> <i>Description</i> e <i>DataResolution</i> &mdash; Cont&ecirc;m informa&ccedil;&atilde;o pertencente aos dados hidrol&oacute;gicos utilizados para calcular o tra&ccedil;o
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o de mapa actual</b> estiver validada, apenas os elementos que est&atilde;o vis&iacute;veis na actual extens&atilde;o do mapa ser&atilde;o usados para computar watersheds. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os elementos na camada de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elementos pontos a utilizar no cálculo de bacias hidrográficas</h2></div>
+        <hr/>
+        <div>
+            <p>Uma bacia hidrogr&aacute;fica (a &aacute;rea de contribui&ccedil;&atilde;o a montante) ser&aacute; calculada para cada ponto.  
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Pesquisa drenagem mais próxima</h2></div>
+        <hr/>
+        <div>
+            <p>Se os seus dados de entrada estiverem localizados longe de uma linha de drenagem, as bacias hidrogr&aacute;ficas resultantes provavelmente ser&atilde;o muito pequenas e sem grande utilidade para efetuar an&aacute;lises, como por exemplo determinar a fonte de contamina&ccedil;&atilde;o a montante.  Na maioria dos casos, voc&ecirc; pretende que os seus pontos de entrada se ajustem automaticamente  &agrave; linha de drenagem mais pr&oacute;xima por forma a encontrar as bacias hidrogr&aacute;ficas que fluem para um ponto localizado na linha de drenagem.  Para encontrar a linha de drenagem mais pr&oacute;xima, especificar uma dist&acirc;ncia de busca. Se n&atilde;o especificar um raio de busca, a ferramenta ir&aacute; calcular e usar uma dist&acirc;ncia de pesquisa conservadora.  
+            </p>
+            <p>Para usar a localiza&ccedil;&atilde;o exacta de seu ponto de entrada, especifique uma dist&acirc;ncia de busca de zero.  
+            </p>
+            <p>Para fins de an&aacute;lise, as linhas de drenagem foram pr&eacute;-calculados pela Esri utilizando modelos hidrol&oacute;gicos por omiss&atilde;o. Se n&atilde;o houver nenhum tubo de drenagem dentro da dist&acirc;ncia de busca, o local que cont&eacute;m a maior acumula&ccedil;&atilde;o de fluxo dentro da dist&acirc;ncia de busca &eacute; utilizado.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+            <p> Executar esta ferramenta n&atilde;o consome cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

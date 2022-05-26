@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Environment Settings van Portaalanalyse</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Omgevingsinstellingen voor analyse in Portal for ArcGIS en  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Resultaatlaag overschrijven</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Geeft aan of bestaande lagen moeten worden overschreven. Als u deze optie aanvinkt en er bestaat al een laag met dezelfde naam binnen uw inhoud, dan wordt deze overschreven.
+            </p>
+            <p>
+                <ul>
+                    <li>Aangevinkt&mdash;Als een laag met dezelfde naam al bestaat in uw content, dan wordt deze overschreven. De uitvoer heeft hetzelfde co&ouml;rdinaatsysteem als de invoer.
+                    </li>
+                    <li>Uitgevinkt&mdash;Als de opgegeven resultaatlaagnaam al bestaat, zal een fout optreden en moet de resultaatlaag worden hernoemd voordat de tool kan worden uitgevoerd. Dit is de standaardinstelling.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Analysewidget sluiten na uitvoeren analyse</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft aan of het dialoogvenster analyse geopend en ingeschakeld moet blijven terwijl de tool bezig is met verwerken. Met deze instelling kunt u eenvoudig wijzigingen maken in uw analyseparameters, terwijl de eerdere analysetaak blijft draaien. Analyse is een iteratief proces en door het dialoogvenster open te houden, kunt u parameterwijzigingen maken en uw analyse opnieuw uitvoeren.
+            </p>
+            <p>
+                <ul>
+                    <li>Aangevinkt&mdash;Het dialoogvenster analysetool zal sluiten en de focus gaat terug naar de inhoudsopgave. Dit is de standaard
+                    </li>
+                    <li>Uitgevinkt&mdash;Het dialoogvenster analysetool blijft open en ingeschakeld.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Analyseresultaten opslaan als gehoste objectlagen</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Geeft aan of de resultaatlaag van uw analyse zal worden gemaakt als een objectverzameling of als een gehoste objectlaag. 
+            </p>
+            <p>
+                <ul>
+                    <li>Aangevinkt&mdash;De resultaten van uw analyse maken een gehoste objectlaag en een item wordt gemaakt in uw inhoud. Dit is de standaardinstelling.
+                    </li>
+                    <li>Aangevinkt&mdash;De resultaten van uw analyse maken een objectverzameling.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Uitvoercoördinatensysteem</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft het co&ouml;rdinatensysteem van de resultaatlaag voor rasteranalyse aan.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Hetzelfde als invoer</b>&mdash;Het resultaat van uw analyse is in hetzelfde co&ouml;rdinaatsysteem als de invoer. Dit is de standaardinstelling.
+                    </li>
+                    <li> <b>Zoals aangegeven</b>&mdash;Het resultaat van uw analyse is in het co&ouml;rdinaatsysteem dat u kiest Als deze optie is geselecteerd, klikt u op de knop met de wereldbol om uit een lijst met bekende co&ouml;rdinaatsystemen te selecteren of om de ruimtelijke referentie WKID in het daarvoor bestemde vak toe te voegen.
+                    </li>
+                    <li> <b>Laag
+&lt;name&gt;</b>&mdash;Het resultaat van uw analyse bevindt zich in hetzelfde co&ouml;rdinatensysteem als een bestaande laag die u kiest in uw webmap.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Coördinaatsysteem verwerken</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft het co&ouml;rdinaatsysteem aan dat uw analyse zal gebruiken tijdens het uitvoeren van de GeoAnalytics-analyse.   
+            </p>
+            <p>Voor GeoAnalytics vereist sommige analyse dat de verwerking wordt uitgevoerd in een geprojecteerd co&ouml;rdinaatsysteem. Elke tool die binning van gegevens of lineaire eenheden heeft ge&iuml;mplementeerd vereist een geprojecteerd co&ouml;rdinaatsysteem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Hetzelfde als invoer</b>&mdash;Uw analyse wordt verwerkt is in hetzelfde co&ouml;rdinaatsysteem als de invoer. Dit is de standaardinstelling.
+                    </li>
+                    <li> <b>Zoals aangegeven</b>&mdash;Uw analyse is in het co&ouml;rdinaatsysteem dat u kiest. Als deze optie is geselecteerd, klikt u op het knop met de wereldbol om uit een lijst met bekende co&ouml;rdinaatsystemen te selecteren of om de ruimtelijke referentie WKID in het daarvoor bestemde vak toe te voegen.
+                    </li>
+                    <li> <b>Laag
+&lt;name&gt;</b>&mdash;Uw analyse bevindt zich in hetzelfde co&ouml;rdinatensysteem als een bestaande laag die u kiest in uw webmap.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extent</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt de extent of grens die wordt gebruikt tijdens het uitvoeren van de analyse. Alle invoerobjecten die volledig binnen de opgegeven extent vallen of die de opgegeven extent kruisen worden gebruikt in de analyse.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Standaard</b>&mdash;De extent opgegeven door de tool.
+                    </li>
+                    <li> <b>Zoals aangegeven</b>&mdash;De extent wordt bepaald door de co&ouml;rdinaten die u opgeeft.
+                    </li>
+                    <li> <b>Laag
+&lt;name&gt;</b>&mdash;De extent die wordt gebruikt om uw analyse te verwerken, is dezelfde als de ruimtelijke omvang van een bestaande laag die u kiest in uw webmap. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Snapraster</h2></div>
+        <hr/>
+        <div>
+            <p>Hiermee past u de extent van de uitvoerrasterlaag aan zodat deze overeenkomt met de celuitlijning van de opgegeven  <b>Snaprasterlaag</b> in rasteranalyse.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Celgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt de celgrootte of resolutie die wordt gebruikt om de uitvoerrasterlaag te maken in de rasteranalyse. De standaard uitvoerresolutie wordt bepaald door de grootste celgrootte van de invoerrasterlaag.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimale invoer</b>&mdash;Gebruik de kleinste celgrootte van alle invoerlagen.
+                    </li>
+                    <li> <b>Maximale invoer</b>&mdash;Gebruik de grootste celgrootte van alle invoerlagen. Dit is de standaardinstelling.
+                    </li>
+                    <li> <b>Zoals gespecificeerd</b>&mdash;Specificeer een numerieke waarde om de celgrootte in te stellen. Als dit is geselecteerd, is de standaardwaarde 1.
+                    </li>
+                    <li> <b>Laag &lt;name&gt;</b>&mdash;Stelt de celgrootte in op de gekozen rasterlaag.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Masker</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt een laag die zal worden gebruikt om uw interessegebied in rasteranalyse te defini&euml;ren. Alleen die cellen die binnen het analysemasker vallen, worden beschouwd in de analyse.
+            </p>
+            <ul>
+                <li>Het masker kan een raster of een objectlaag zijn.
+                </li>
+                <li>Als het analysemasker een raster is, worden alle cellen die een waarde hebben beschouwd om het masker te defini&euml;ren. Cellen in een maskerraster die NoData zijn worden als buiten het masker beschouwd en zijn NoData in de analyseresultaatlaag. 
+                </li>
+                <li>Als het analysemasker een objectlaag is, wordt het intern omgezet naar een raster tijdens de uitvoering. Om deze reden, moet u erop toezien dat
+ <b>Celgrootte</b> en <b>Snapraster</b> goed worden ingesteld voor uw analyse.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datastore</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultaten kunnen worden opgeslagen in een  ArcGIS Data Store en worden weergegeven als een objectlaag in  Portal for ArcGIS of een geconfigureerde big data file share. 
+            </p>
+            <p>Wanneer u een resultaat opslaat in  ArcGIS Data Store, moeten de resultaten in de meeste gevallen worden opgeslagen in een spatiotemporele datastore. Dit is de standaardinstelling. Hier volgen redenen waarom u resultaten zou willen opslaan in een relationele datastore: 
+                <ul>
+                    <li>Om uw resultaten te gebruiken voor portal-to-portal samenwerking
+                    </li>
+                    <li>Om synchronisatiemogelijkheden met uw resultaten mogelijk te maken
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U moet geen gebruik maken van een relationele data-opslag als u verwacht dat uw GeoAnalytics-resultaten toenemen en u wilt profiteren van de mogelijkheden van de spatiotemporele big data-opslag om grote hoeveelheden gegevens te verwerken. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Parallelle processingsfactor</h2></div>
+        <hr/>
+        <div>
+            <p>Verdeelt de analyse over meerdere Rasterverwerkingsservice-instanties. 
+            </p>
+            <p>Tools die de  <b>Parallelle processingsfactoromgeving </b> respecteren, bieden u de mogelijkheid om het aantal rasterverwerkingsservice-instanties te beheren dat kan worden gebruikt voor het verwerken van uw gegevens.
+            </p>
+            <p>Als de tool het  <b>Processortype</b> niet respecteert, of als de <b>Processortype-omgeving</b> ingesteld is op <b>CPU</b>, bestuurt de <b>Parallelle verwerkingsfactoromgeving</b> rasterverwerkingsservice-instanties (CPU). Als het <b>Processortype</b> ingesteld is op <b>GPU</b>, bestuurt de <b>Parallelle verwerkingsfactoromgeving</b> het aantal GPU-instanties voor rasterverwerking.
+            </p> 
+            <p>Door de  <b>Parallele verwerkingsfactor</b>, in te stellen, kunt u het aantal parallelle werkers aanvragen dat de rasteranalyse-afbeeldingsserver gebruikt om een ​​rasteranalysetaak te verwerken. Als het totale aantal parallelle processen echter het maximumaantal rasterverwerkingsservices (CPU of GPU) overschrijdt, worden de aanvullende parallelle processen in de wachtrij geplaatst.
+            </p>
+            <p>Als de  <b>Parallelle verwerkingsfactor</b> niet is opgegeven, wat de standaardwaarde is, gebruikt de tool 80 procent van het maximale aantal rasterbewerkingsservice-instanties. Er kan een geheel getal of een percentage worden opgegeven als parallelle verwerkingsfactor.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Processortype</h2></div>
+        <hr/>
+        <div>
+            <p>Tools die de  <b>Processortype-omgeving</b> respecteren, stellen u in staat te kiezen waar en hoe u uw gegevens wilt verwerken. U kunt uw gegevens verwerken met behulp van de CPU of GPU van de servercomputer. Als de <b>Processortype-omgeving</b> leeg is, gebruikt het hulpprogramma CPU om de gegevens te verwerken. Dit is de standaardinstelling.
+            </p> 
+            <p>CPU-verwerking kan parallel worden uitgevoerd over meerdere kernen en instanties, zoals behandeld door de  <b>parallelle verwerkingsfactor</b>.
+            </p>
+            <p>GPU's zijn effectief in grafische en beeldverwerking, waar hun zeer parallelle structuur ze effici&euml;nt maakt bij het repetitief verwerken van grote blokken gegevens. De Rasteranalysetools die deze omgeving respecteren, kunnen de taak verspreiden over GPU-instanties op meerdere rasteranalyseservermachines, zoals behandeld door de  <b>Parallelle verwerkingsfactor</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Gegevens worden verwerkt met behulp van de grafische processing unit.
+                    </li>
+                    <li> <b>GPU</b>&mdash;Gegevens worden verwerkt met behulp van de centrale processing unit van de computer.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

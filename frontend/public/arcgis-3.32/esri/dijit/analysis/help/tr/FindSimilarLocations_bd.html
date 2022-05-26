@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Benzer Konumlar Bul</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Benzer Konumları Bul"></h2>
+        <hr/>
+    <p>Benzer Konumlar Bul aracı, belirttiğiniz kriterlere g&ouml;re aday arama katmanınızdaki konumların bir veya birka&ccedil; referans konuma benzerliğini &ouml;l&ccedil;er.  Bu ara&ccedil; şu t&uuml;r sorulara cevap verebilir: 
+        <ul>
+            <li>Mağazalarınızdan hangileri m&uuml;şteri profilleri a&ccedil;ısından en başarılı performansı g&ouml;steriyor?
+            </li>
+            <li>Hastalıktan en &ccedil;ok etkilenen k&ouml;ylerin niteliklerine g&ouml;re başka hangi k&ouml;yler en y&uuml;ksek risk altında?
+            </li>
+        </ul>
+        Bu t&uuml;r soruları cevaplamak i&ccedil;in referans konumları, aday arama konumlarını ve eşlenmesini istediğiniz kriterleri temsil eden alanları girersiniz. İlk girdi katmanı referans veya test &ouml;l&ccedil;&uuml;m konumlarınızı i&ccedil;ermelidir.  Bu, &ouml;rneğin en y&uuml;ksek performansı g&ouml;steren mağazalarınızı veya hastalıktan en &ccedil;ok etkilenen k&ouml;yleri i&ccedil;eren bir katman olabilir. Daha sonra aday arama konumlarınızı i&ccedil;eren katmanı belirtirsiniz. Bu, t&uuml;m mağazalarınız veya diğer t&uuml;m k&ouml;yler olabilir. Son olarak, benzerliği &ouml;l&ccedil;mek i&ccedil;in bir veya birka&ccedil; alan belirlersiniz. Benzer Konumlar Bul aracı daha sonra t&uuml;m aday arama konumlarını, se&ccedil;tiğiniz t&uuml;m alanlar genelinde başvuru konumlarınızla ne kadar yakın olarak eşleştiklerine g&ouml;re sıralar.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Başvuru konumlarını içeren katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Eşleştirilecek başvuru konumlarını i&ccedil;eren katman. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Tüm konumları kullanabilir veya bir seçim yapabilirsiniz</h2></div>
+        <hr/>
+        <div>
+            <p>Gerekirse referans konumları belirlemek i&ccedil;in se&ccedil;im d&uuml;ğmelerini kullanın. Bu se&ccedil;enek, yalnızca detaylar harita &uuml;zerinde &ccedil;izilmişse kullanılabilir (big data dosya paylaşımı i&ccedil;in kullanılamaz).  &Ouml;rneğin, girdi katmanı t&uuml;m konumları; yani aday arama konumlarının yanı sıra başvuru konumları i&ccedil;eriyorsa, başvuru konumları tanımlamak i&ccedil;in se&ccedil;im ara&ccedil;larından birini kullanmanız gerekir.  Referans konumların olduğu bir katman ve t&uuml;m aday arama konumlarının olduğu başka bir katman şeklinde iki ayrı katman oluşturursanız, se&ccedil;im yapmanız gerekmez.
+            </p>
+            <p>Birden fazla referans konum varsa, benzerliği analiz etmek i&ccedil;in kullanılan alanların değerlerinin ortalaması alınarak tek bir konum oluşturulur.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Şuradaki benzer konumları ara</h2></div>
+        <hr/>
+        <div>
+            <p>Bu katmandaki aday arama detayları en &ccedil;ok benzer olandan en az benzer olana doğru sıralanır. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Benzerlikte şunu temel al</h2></div>
+        <hr/>
+        <div>
+            <p>Se&ccedil;tiğiniz alanlar, benzerliği değerlendirmek i&ccedil;in kullanılacak kriterlerdir. &Ouml;rneğin, bir n&uuml;fus ve gelir alanı se&ccedil;erseniz, sıralamada en d&uuml;ş&uuml;k (en iyi) olan aday arama konumları, referans konumlarınıza benzer n&uuml;fus ve gelir değerlerine sahip olan konumlar olacaktır.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Şunu kullanarak en fazla ve en az benzeri belirleyin:</h2></div>
+        <hr/>
+        <div>
+            <p>Se&ccedil;tiğiniz y&ouml;ntem eşleşmenin belirlenme bi&ccedil;imini belirler. 
+                <ul>
+                    <li> <b>Alan değerleri</b> y&ouml;ntemi, standart değerlerin farklarının karelerini kullanır. Varsayılan değerdir.
+                    </li>
+                    <li> <b>Alan profilleri</b> y&ouml;ntemi, standart değerlerin profilini karşılaştırmak i&ccedil;in kosin&uuml;s benzerliği matematiğini kullanır. &Ouml;znitelik profillerinin kullanımı, en az iki analiz alanının kullanılmasını gerektirir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Bana göster</h2></div>
+        <hr/>
+        <div>
+            <p>T&uuml;m aday arama konumlarını en &ccedil;ok benzer olandan en az benzer olana sıralanmış olarak g&ouml;rebilir veya g&ouml;rmek istediğiniz sonu&ccedil; sayısını belirtebilirsiniz. 
+                <ul>
+                    <li> <b>en &ccedil;ok benzer olandan en az benzer olana t&uuml;m konumlar</b> se&ccedil;eneğini belirtirseniz, aday arama katmanındaki t&uuml;m detaylar sonu&ccedil; katmanına sırayla dahil edilir. En fazla 10.000 sonu&ccedil; d&ouml;nd&uuml;r&uuml;l&uuml;r.
+                    </li>
+                    <li> <code></code> <code>En &ccedil;ok, en az, veya en &ccedil;ok ve en az</code> <b>benzer konum</b> sayısını belirtirseniz, sonu&ccedil; katmanına eklenecek en &ccedil;ok, en az veya en &ccedil;ok ve en az benzer aday sayısını da belirlemiş olursunuz. İzin verilen maksimum değer 10.000'dir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Sonuçlara eklenecek alanları seçin</h2></div>
+        <hr/>
+        <div>
+            <p>İsteğe bağlı olarak verilerinize arama katmanından alan ekleyin. Varsayılan olarak t&uuml;m alanlar eklenir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p>Bu sonu&ccedil; katmanı referans konumları ve belirttiğiniz sayıda sıralanmış aday arama detayını i&ccedil;erir.   Sonu&ccedil; katmanı adı zaten mevcutsa, bunu yeniden adlandırmanız istenir.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

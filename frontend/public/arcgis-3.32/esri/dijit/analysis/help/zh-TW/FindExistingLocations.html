@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>尋找現有位置</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="尋找現有位置"></h2>
+        <hr/>
+    <p>此工具用於選擇研究區域內滿足一系列指定條件的現有圖徵。這些條件可以基於屬性查詢（如閒置宗地）和空間查詢（如距離河流 1 英里以內）。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入圖層圖徵。如果未勾選，則對所有圖徵進行分析，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>選擇包含您希望使用屬性與空間查詢進行尋找的圖徵的圖層。</h2></div>
+        <hr/>
+        <div>
+            <p>用於在其中尋找圖徵（根據以下所指定的屬性與空間查詢組合）的點、線或區域圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>建立查詢以尋找圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>按一下 <b>新增表達式</b>按鈕以定義表達式。您可以新增多個表達式。輸入表達式並按一下 <b>執行分析</b>按鈕後，輸入圖層裡的圖徵會按照每個表達式進行篩選。符合所有表達式的圖徵將寫入結果圖層。
+            </p>
+            <p>您可以建立兩種基本類型的表達式：屬性表達式和空間表達式。屬性表達式用於查詢欄位值，例如  <code>where name is 'San Francisco'</code>。空間表達式有四種類型：
+                <ul>
+                    <li> <b>在某一距離範圍內</b>: 該圖徵必須在另一圖層的某圖徵一定距離範圍內。例如，尋找距離洛杉磯河 500 英里以內的宗地。
+                    </li>
+                    <li> <b>完全包含</b>：該圖徵必須包含另一圖層中某個圖徵的所有部分。例如，尋找完全包含工業用宗地的流域。宗地的任何部分都不可以在流域範圍之外。
+                    </li>
+                    <li> <b>完全在其他圖徵範圍內</b>：該圖徵必須完全由另一圖層的某圖徵包圍。例如，尋找完全在城市邊界以內的學區。學區的任何部分都不可以在城市邊界以外。
+                    </li>
+                    <li> <b>相交</b>：該圖徵包含另一圖層中某圖徵的一部分。例如，尋找與河流相交的宗地。流經宗地，或者與宗地的邊界相接的河流的某一部分即與宗地相交。
+                    </li>
+                    <li> <b>最接近</b>：必須與另一圖層的某個圖徵最接近的圖徵。例如，尋找每間旅館最近的餐廳。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>每個空間表達式都有相應的反表達式（ <b>最接近</b>除外）； <b>不在某一距離範圍之內</b>、 <b>不完全包含</b>、 <b>不完全在其他圖徵範圍內</b>，和 <b>不相交</b>。
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

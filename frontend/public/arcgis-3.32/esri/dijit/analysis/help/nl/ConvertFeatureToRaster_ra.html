@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Object converteren naar raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Tool Object converteren naar raster"></h2>
+        <hr/>
+    <p>Deze tool converteert objecten naar een ​​rasterdataset.
+    </p>
+    <p>Elke objectklasse met punt-, lijn- of polygoonobjecten kan worden omgezet in een rasterdataset.
+    </p>
+    <p>Het celcentrum wordt gebruikt om de waarde van de uitvoerrasterpixel te bepalen.
+    </p>
+    <p>Het type invoerveld bepaalt het type van het uitvoerraster. Als het veld integer is, zal het uitvoerraster integer zijn; als het floating-point is, is de uitvoer ook floating-point.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies objectlaag om te converteren</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerobjectlaag om te converteren naar een rasterdataset.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Veld kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>Kies het veld dat zal worden gebruikt om de waarden toe te wijzen aan het uitvoerraster.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output celgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>De celgrootte en de eenheid voor de uitvoerrasters.
+            </p>
+            <p>De beschikbare eenheden zijn mijl, voet, kilometers en meters. De standaard is voet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

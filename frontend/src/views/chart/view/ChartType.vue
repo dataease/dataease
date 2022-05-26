@@ -92,11 +92,10 @@ export default {
         } else {
           renderItem[category][len - 1].push(item)
         }
-        console.log('this.renderMap', this.renderMap)
       })
+      console.log('this.renderMap', this.renderMap)
 
       // 填充占位符
-
       Object.keys(this.renderMap).forEach(key => {
         Object.keys(this.renderMap[key]).forEach(category => {
           this.renderMap[key][category].forEach(container => {

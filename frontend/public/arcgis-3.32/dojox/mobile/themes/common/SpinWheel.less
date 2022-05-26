@@ -1,0 +1,92 @@
+/* dojox.mobile.SpinWheel */
+.mblSpinWheel {
+	position: relative;
+	overflow: hidden;
+  .background-spinwheel();
+	height: 200px;
+	border-left: solid 3px #000000;
+	border-right: solid 3px #000000;
+	color: #000000;
+	border-radius: 3px;
+}
+
+.mblSpinWheelBar {
+	position: absolute;
+	top: 79px;
+  .background-spinwheelbar();
+	border: solid 1px #7b8497;
+	height: 42px;
+	width: 100%;
+	clear: both;
+	opacity: 0.6;
+}
+
+.mblSpinWheelDatePicker {
+	width: 312px;
+}
+
+.mblSpinWheelTimePicker {
+	width: 98px;
+}
+
+.mblSpinWheelSlot {
+	position: relative;
+	top: 0px;
+	float: left;
+	width: 100px;
+	height: 100%;
+	border-left: solid 2px #000000;
+	border-right: solid 2px #000000;
+	.tap-highlight-color(rgba(255,255,255,0));
+}
+
+.mblSpinWheelSlotLabel {
+	padding: 0 8px;
+	height: 44px;
+	overflow: hidden;
+	font: bold 24px/44px Helvetica,sans-serif;
+}
+
+.mblSpinWheelSlotLabel img{
+	vertical-align: middle;
+	opacity: 0.7;
+}
+
+.mblSpinWheelSlotLabelGray {
+	color: #cccccc;
+}
+
+.mblSpinWheelSlotLabelBlue {
+	color: #0959d2;
+}
+
+.mblSpinWheelSlotContainer {
+	position: relative;
+}
+
+.mblSpinWheelSlotPanel {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+}
+
+.mblSpinWheelSlotTouch {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+
+.dj_ie {
+	.mblSpinWheelSlotTouch {
+		background-color: rgba(255, 255, 255, 0.01);
+	}
+}
+
+.dj_ie8 {
+	.mblSpinWheelSlotTouch {
+		background: white;
+		filter: ~"alpha(opacity=0)";
+	}
+}

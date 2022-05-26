@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/hr/DetectObjectsUsingDeepLearning",{toolDefine:"Definirajte objekte upotrebom dubokog u\u010denja",outputLayerName:"${layername}_detected",modelLabel:"Odaberite model dubokog u\u010denja za upotrebu u prepoznavanju objekata",modelArgsLabel:"Odredite argumente za model dubokog u\u010denja",nameLabel:"Naziv",valueLabel:"Vrijednost",removeDuplicatesLable:"Uklonite duplicirane geoobjekte iz sloja (neobavezno)",queryModelArgsMsg:"Ispitivanje argumenata za model...",nonMaxSuppressionLabel:"Ne-maksimalno suzbijanje",
+options:"Opcije",confidenceLabel:"Polje s rezultatima pouzdanosti",classValueLabel:"Polje s vrijednosti klase",maxOverlapLabel:"Maksimalan omjer preklapanja",numberOnlyMsg:"Dopu\u0161tene su samo broj\u010dane vrijednosti.",analysisLayerLabel:"Odaberite sliku za upotrebu u prepoznavanju objekata",itemDescription:"Usluga analize slike generirana alatom Prepoznaj objekte upotrebom dubokog u\u010denja",itemTags:"Rezultat analize rastera, Prepoznaj objekte upotrebom dubokog u\u010denja, ${layername}",
+itemSnippet:"Usluga analize slike generirana alatom Prepoznaj objekte upotrebom dubokog u\u010denja"});

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tìm các Vị trí Hiện tại</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="T&igrave;m kiếm c&aacute;c Vị tr&iacute; Hiện tại"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y lựa chọn c&aacute;c đối tượng hiện tại trong khu vực nghi&ecirc;n cứu v&agrave; đ&aacute;p ứng một loạt c&aacute;c ti&ecirc;u ch&iacute; bạn chỉ định. C&aacute;c ti&ecirc;u ch&iacute; n&agrave;y c&oacute; thể dựa v&agrave;o c&aacute;c truy vấn thuộc t&iacute;nh (v&iacute; dụ, l&ocirc; đất để trống) v&agrave; c&aacute;c truy vấn kh&ocirc;ng gian (v&iacute; dụ, trong phạm vi s&ocirc;ng một dặm). 
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c đối tượng sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Chọn lớp có chứa các đối tượng mà bạn muốn sử dụng để tìm bằng cách sử dụng thuộc tính và truy vấn không gian</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm, đường, hoặc v&ugrave;ng m&agrave; bạn muốn t&igrave;m đối tượng dựa tr&ecirc;n cơ sở kết hợp thuộc t&iacute;nh v&agrave; truy vấn kh&ocirc;ng gian được x&aacute;c định b&ecirc;n dưới.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Tạo truy vấn để tìm đối tượng</h2></div>
+        <hr/>
+        <div>
+            <p>Bấm v&agrave;o n&uacute;t  <b>Th&ecirc;m Biểu thức</b> để x&aacute;c định một biểu thức. Bạn c&oacute; thể th&ecirc;m nhiều biểu thức. Sau khi nhập c&aacute;c biểu thức v&agrave; bấm v&agrave;o n&uacute;t <b>Chạy Ph&acirc;n t&iacute;ch</b>, c&aacute;c đối tượng trong lớp đầu v&agrave;o của bạn được lọc th&ocirc;ng qua từng biểu thức. C&aacute;c đối tượng đ&oacute; đ&aacute;p ứng tất cả c&aacute;c biểu thức được ghi v&agrave;o lớp kết quả.
+            </p>
+            <p>C&oacute; hai loại biểu thức cơ bản bạn c&oacute; thể tạo ra; thuộc t&iacute;nh v&agrave; kh&ocirc;ng gian. C&aacute;c biểu thức thuộc t&iacute;nh l&agrave; c&aacute;c truy vấn tr&ecirc;n c&aacute;c gi&aacute; trị trường, v&iacute; dụ  <code>c&oacute; t&ecirc;n l&agrave; 'San Francisco'</code>. C&oacute; bốn loại biểu thức kh&ocirc;ng gian:
+                <ul>
+                    <li> <b>trong khoảng c&aacute;ch</b>: đối tượng n&agrave;y phải nằm trong khoảng c&aacute;ch với một đối tượng tại một lớp kh&aacute;c. V&iacute; dụ, t&igrave;m c&aacute;c l&ocirc; đất nằm trong phạm vi 500 m&eacute;t của s&ocirc;ng Los Angeles.
+                    </li>
+                    <li> <b>ho&agrave;n to&agrave;n chứa</b>: đối tượng n&agrave;y phải chứa trọn vẹn một đối tượng tại một lớp kh&aacute;c. V&iacute; dụ: t&igrave;m c&aacute;c lưu vực s&ocirc;ng ho&agrave;n to&agrave;n c&oacute; c&aacute;c l&ocirc; đất được quy hoạch để sử dụng trong c&ocirc;ng nghiệp. Kh&ocirc;ng c&oacute; phần n&agrave;o của l&ocirc; đất nằm ngo&agrave;i lưu vực s&ocirc;ng.
+                    </li>
+                    <li> <b>ho&agrave;n to&agrave;n trong phạm vi</b>: đối tượng n&agrave;y phải ho&agrave;n to&agrave;n được bao quanh bởi một đối tượng tại một lớp kh&aacute;c. V&iacute; dụ: t&igrave;m c&aacute;c học khu ho&agrave;n to&agrave;n trong ranh giới của một th&agrave;nh phố. Kh&ocirc;ng c&oacute; phần n&agrave;o của khu vực trường học được nằm ngo&agrave;i ranh giới th&agrave;nh phố.
+                    </li>
+                    <li> <b>giao cắt</b>: đối tượng n&agrave;y phải chứa một phần của một đối tượng tại một lớp kh&aacute;c. V&iacute; dụ, t&igrave;m c&aacute;c l&ocirc; đất giao cắt s&ocirc;ng. Bất kỳ phần n&agrave;o của s&ocirc;ng đi qua l&ocirc; đất, hoặc chạm v&agrave;o ranh giới l&ocirc; đất đều sẽ giao cắt l&ocirc; đất.
+                    </li>
+                    <li> <b>gần nhất với</b>: Đối tượng phải gần nhất với một đối tượng ở một lớp kh&aacute;c. V&iacute; dụ, t&igrave;m nh&agrave; h&agrave;ng gần kh&aacute;ch sạn nhất.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mỗi biểu thức kh&ocirc;ng gian c&oacute; một ph&eacute;p phủ định tương ứng, ngoại trừ  <b>gần nhất</b>; <b>kh&ocirc;ng nằm trong khoảng c&aacute;ch</b>, <b>kh&ocirc;ng ho&agrave;n to&agrave;n chứa</b>, <b>kh&ocirc;ng ho&agrave;n to&agrave;n trong</b> v&agrave; <b>kh&ocirc;ng giao cắt</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

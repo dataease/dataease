@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Juntar Camadas</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Juntar Camadas"></h2>
+        <hr/>
+    <p>Esta ferramenta copia fei&ccedil;&otilde;es de duas camadas em uma nova camada. As camadas a serem juntadas devem todas conter os mesmos tipos de fei&ccedil;&otilde;es (pontos, linhas ou &aacute;reas). Voc&ecirc; pode controlar como os campos das camadas de entrada s&atilde;o juntados e copiados. Por exemplo:
+        <ul>
+            <li>Eu tenho tr&ecirc;s camadas para a Inglaterra, Pa&iacute;s de Gales e Esc&oacute;cia e desejo uma &uacute;nica camada da Gr&atilde;-Bretanha. 
+            </li>
+            <li>Eu tenho 12 camadas e cada uma cont&eacute;m informa&ccedil;&otilde;es de lote para distritos municipais cont&iacute;guos. Eu desejo junt&aacute;-las em uma &uacute;nica camada, mantendo somente os campos que t&ecirc;m o mesmo nome e tipo nas 12 camadas de entrada.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o juntadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es em ambas as camadas ser&atilde;o juntadas, mesmo se estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto, linha ou &aacute;rea para juntar com a camada especificada abaixo. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Escolher Camada para juntar</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha a camada para juntar com a primeira camada.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Modificar campos para juntar</h2></div>
+        <hr/>
+        <div>
+            <p>Por padr&atilde;o, todos os campos de ambas as entradas ser&atilde;o transportados atrav&eacute;s da sa&iacute;da. Voc&ecirc; pode alterar como os campos s&atilde;o transportados para a sa&iacute;da conforme segue:
+                <ul>
+                    <li> <b>Renomear</b>&mdash;O campo ser&aacute; renomeado na sa&iacute;da.
+                    </li>
+                    <li> <b>Remover</b>&mdash;O campo ser&aacute; removido da sa&iacute;da.
+                    </li>
+                    <li> <b>Combinar</b>&mdash;Os nomes dos campos tornam-se equivalentes.  Os valores de campo da camada para juntar ser&atilde;o copiados para o campo de sa&iacute;da correspondente.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se ambas as camadas contiver um campo com um nome id&ecirc;ntico e tipo de dados, o conte&uacute;do de ambos os campos ser&aacute; juntado em um campo deste nome. Isto n&atilde;o se aplica a campos onde  <b>Igualar</b> &eacute; utilizado no par&acirc;metro <b>Modificar campos  de jun&ccedil;&atilde;o</b> .
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

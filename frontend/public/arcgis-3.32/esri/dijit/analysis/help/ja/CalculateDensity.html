@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>密度の計算</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="密度の計算"></h2>
+        <hr/>
+    <p>[密度の計算] ツールは、ある現象の既知の数量 (ポイントまたはラインの属性として表す) をマップ上に分布することによって、ポイント フィーチャまたはライン フィーチャから密度マップを作成します 結果として出力されるのは、低密度から高密度に分類されたエリア ポリゴンのレイヤーです。   
+
+    </p>
+    <p>ポイント入力では、各ポイントは、あるイベントまたはインシデントの場所を表し、結果レイヤーは、単位面積あたりのインシデントの数を表します。 新しい場所の密度の値が高い場合、その場所の近くに多くのポイントがあることを意味します。多くの場合、結果レイヤーは、将来のイベントのリスク指標サーフェスと解釈することができます。 たとえば、入力ポイントが落雷の位置を表す場合、結果レイヤーは、将来の落雷のリスク指標サーフェスとして解釈することができます。
+    </p>
+    <p>ライン入力では、ライン密度サーフェスは、各場所の近くのラインの総数を表します。計算される密度値の単位は、単位面積あたりのラインの長さです。たとえば、ラインが川を表す場合、結果レイヤーは、検索範囲内にある川の総全長を表します。 この結果を使用して、放牧家畜に適したエリアを特定したりすることができます。
+    </p>
+    <p> このツールは、次のような場合にも使用されます。
+        <ul>
+            <li>警察が犯罪発生率の高いエリアに適切に人員を配置できるように犯罪密度マップを作成する場合。
+            </li>
+            <li>ある地域内の病院の密度を計算する場合。結果レイヤーは、病院までのアクセスの良し悪しを示し、この情報を使用して、新しい病院を建設する場所を決定することができます。
+            </li>
+            <li>過去に森林火災があった場所に基づいて、森林火災のリスクの高いエリアを特定する場合。
+            </li>
+            <li>新しい道路を建設する場所を計画するために、主要道路から遠い地域を特定する場合。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>密度の計算に使用するポイント レイヤーまたはライン レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>密度の計算に使用するポイント レイヤーまたはライン レイヤー。
+
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>count フィールドの使用</h2></div>
+        <hr/>
+        <div>
+            <p>各場所のインシデントの数を指定するフィールドを提供します。たとえば、ポイントが都市を表す場合、count フィールドとして都市の人口を表すフィールドを使用できます。作成される人口密度レイヤーでは、より人口の多い都市の近くのより高い人口密度が計算されます。
+            </p>
+            <p> デフォルトの [なし] を使用すると、各場所は 1 カウントを表すと見なされます。
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>検索距離</h2></div>
+        <hr/>
+        <div>
+            <p>密度値を計算する際に、ポイント フィーチャまたはライン フィーチャを検索する範囲を指定する距離を入力します。たとえば、10,000 メートルの検索距離を指定すると、出力レイヤー内の場所の密度は、その場所の 10,000 メートル以内にあるフィーチャに基づいて計算されます。 10,000 メートル以内にインシデントがない場所は、密度値 0 となります。     
+
+            </p>
+            <p>距離を指定しないと、入力フィーチャの位置および count フィールドの値 (count フィールドが指定されている場合) に基づいてデフォルト値が計算されます。
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>出力のクリップ先</h2></div>
+        <hr/>
+        <div>
+            <p>密度の計算をしたいエリアを指定するレイヤーを描画または指定します。 たとえば、湖中の魚の密度を計算する場合は、このパラメーターで湖の境界線を使用できます。これにより、出力で湖の境界線内のみが描画されます。
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>分類方法</h2></div>
+        <hr/>
+        <div>
+            <p>密度値をエリアに分類する方法を選択します。
+                <ul>
+                    <li>[等間隔] - 密度値の範囲が各エリアで均等になるようにエリアが作成されます。
+                    </li>
+                    <li>[等比間隔] - 等比級数を持つクラスの間隔に基づいてエリアが作成されます。この方法により、各クラスの範囲にはクラスごとにほぼ同じ数の値が含まれ、間隔ごとの差が一定に保たれます。
+                    </li>
+                    <li>[自然分類] - エリアのクラス間隔が、データの自然なグループ化に基づいています。クラス閾値は、類似している値を最適にグループ化し、クラス間の差異を最大化するように指定されます。
+
+                    </li>
+                    <li>[等面積] - 各エリアのサイズが等しくなるようにエリアが作成されます。たとえば、結果レイヤーに低密度値よりも高密度値が多くある場合、高密度のエリアが多く作成されます。
+                    </li>
+                    <li>[標準偏差] - 推定密度値の標準偏差に基づいてエリアが作成されます。 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>クラス数</h2></div>
+        <hr/>
+        <div>
+            <p>結果レイヤーのクラスの数 (推定値の範囲) を指定します。 各クラスは、エリアの境界線を定義します。これらのクラスの値は、上記の  <b>[分類方法]</b> パラメーターによって決定します。
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>出力面積の単位</h2></div>
+        <hr/>
+        <div>
+            <p>出力面積の単位を指定します。密度は面積で割って算出しますが、このパラメーターでは、密度の計算におけるこの面積の単位を指定します。  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

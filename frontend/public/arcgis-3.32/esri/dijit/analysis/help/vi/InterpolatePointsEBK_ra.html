@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Nội suy Các điểm</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="C&ocirc;ng cụ Nội suy C&aacute;c điểm"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y cho ph&eacute;p bạn dự đo&aacute;n c&aacute;c gi&aacute; trị tại vị tr&iacute; mới dựa tr&ecirc;n c&aacute;c ph&eacute;p đo từ một bộ sưu tập c&aacute;c điểm. C&ocirc;ng cụ n&agrave;y lấy dữ liệu điểm với c&aacute;c gi&aacute; trị tại từng điểm v&agrave; trả về raster c&aacute;c gi&aacute; trị dự đo&aacute;n.
+    </p>
+    <p>C&ocirc;ng cụ n&agrave;y được d&ugrave;ng trong c&aacute;c t&igrave;nh huống kh&aacute;c như:
+
+        <ul>
+            <li>Đối với một quận quản l&yacute; chất lượng kh&ocirc;ng kh&iacute; c&oacute; bộ cảm biến d&ugrave;ng để đo mức độ &ocirc; nhiễm. Nội suy Điểm c&oacute; thể được sử dụng để dự đo&aacute;n mức độ &ocirc; nhiễm tại c&aacute;c vị tr&iacute; kh&ocirc;ng c&oacute; cảm biến, chẳng hạn như vị tr&iacute; c&oacute; d&acirc;n số chịu rủi ro&mdash;v&iacute; dụ như bệnh viện hoặc trường học.
+                
+
+            </li>
+            <li>Dự đo&aacute;n nồng độ kim loại nặng ở c&acirc;y trồng dựa tr&ecirc;n c&aacute;c mẫu được lấy từ c&aacute;c c&acirc;y ri&ecirc;ng lẻ.
+                
+
+            </li>
+            <li>Dự đo&aacute;n mức độ dinh dưỡng (đạm, l&acirc;n, kali, v.v.) v&agrave; c&aacute;c chỉ số kh&aacute;c (như độ dẫn điện) để nghi&ecirc;n cứu c&aacute;c mối quan hệ về năng suất c&acirc;y trồng v&agrave; quy định số lượng ph&acirc;n b&oacute;n ch&iacute;nh x&aacute;c cho từng vị tr&iacute; trong c&aacute;nh đồng.
+                
+
+            </li>
+            <li>C&aacute;c ứng dụng kh&iacute; tượng bao gồm dự b&aacute;o nhiệt độ, lượng mưa, v&agrave; c&aacute;c biến li&ecirc;n quan (chẳng hạn như mưa axit).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Chọn lớp điểm có chứa các vị trí có giá trị đã biết</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm c&oacute; chứa c&aacute;c điểm đo gi&aacute; trị.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Chọn trường để nội suy</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn trường c&oacute; c&aacute;c gi&aacute; trị m&agrave; bạn muốn nội suy. Trường phải l&agrave; số.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Tối ưu hóa cho</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn sự ưu ti&ecirc;n của bạn về tốc độ so với độ ch&iacute;nh x&aacute;c.
+            </p>
+            <p>Thời gian t&iacute;nh to&aacute;n sẽ l&acirc;u hơn khi tăng độ ch&iacute;nh x&aacute;c. Th&ocirc;ng số n&agrave;y l&agrave;m thay đổi c&aacute;c gi&aacute; trị mặc định của một v&agrave;i th&ocirc;ng số kh&aacute;c của c&aacute;c điểm nội suy để tối ưu h&oacute;a tốc độ t&iacute;nh to&aacute;n, độ ch&iacute;nh x&aacute;c của kết quả, hoặc c&acirc;n bằng cả hai. Theo mặc định, c&ocirc;ng cụ n&agrave;y sẽ tối ưu h&oacute;a theo hướng c&acirc;n bằng.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Chuyển đổi dữ liệu thành phân phối thông thường</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn c&oacute; hay kh&ocirc;ng chuyển đổi dữ liệu của bạn th&agrave;nh ph&acirc;n phối th&ocirc;ng thường.
+            </p>
+            <p>Nội suy l&agrave; ch&iacute;nh x&aacute;c nhất cho dữ liệu thực hiện ph&acirc;n phối th&ocirc;ng thường (c&oacute; h&igrave;nh chu&ocirc;ng). Nếu dữ liệu của bạn kh&ocirc;ng xuất hiện để được ph&acirc;n phối th&ocirc;ng thường, bạn n&ecirc;n thực hiện chuyển đổi.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Kích cỡ của mô hình địa phương</h2></div>
+        <hr/>
+        <div>
+            <p>Nội suy C&aacute;c điểm hoạt động bằng c&aacute;ch x&acirc;y dựng c&aacute;c m&ocirc; h&igrave;nh nội suy cục bộ được kết hợp với nhau để tạo bản đồ dự đo&aacute;n cuối c&ugrave;ng. Th&ocirc;ng số n&agrave;y quản l&yacute; số điểm sẽ c&oacute; trong từng m&ocirc; h&igrave;nh cục bộ. C&aacute;c gi&aacute; trị nhỏ hơn sẽ đem đến kết quả cục bộ hơn v&agrave; c&oacute; thể c&oacute; t&aacute;c động với quy m&ocirc; nhỏ, nhưng c&oacute; thể tạo ra t&igrave;nh trạng kh&ocirc;ng ổn định trong c&aacute;c t&iacute;nh to&aacute;n. C&aacute;c gi&aacute; trị lớn hơn sẽ ổn định hơn, nhưng một số t&aacute;c động cục bộ c&oacute; thể bị thiếu.
+            </p>
+            <p>Gi&aacute; trị c&oacute; thể từ 30 đến 500, nhưng c&aacute;c gi&aacute; trị th&ocirc;ng thường từ 50 đến 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Số lượng vùng lân cận</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c dự đo&aacute;n được t&iacute;nh to&aacute;n dựa tr&ecirc;n c&aacute;c điểm v&ugrave;ng l&acirc;n cận. Th&ocirc;ng số n&agrave;y quản l&yacute; số điểm sẽ được sử dụng trong t&iacute;nh to&aacute;n. Việc sử dụng số v&ugrave;ng l&acirc;n cận lớn hơn thường sẽ cho ra kết quả ch&iacute;nh x&aacute;c hơn, nhưng mất thời gian l&acirc;u hơn để t&iacute;nh kết quả.
+            </p>
+            <p>Gi&aacute; trị n&agrave;y c&oacute; thể từ 1 đến 64, nhưng c&aacute;c gi&aacute; trị th&ocirc;ng thường từ 5 đến 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kích cỡ ô đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch thước cell v&agrave; đơn vị cho c&aacute;c raster đầu ra.
+            </p>
+            <p>Đơn vị diện t&iacute;ch c&oacute; sẵn l&agrave; Feet, Dặm, M&eacute;t v&agrave; Kil&ocirc;m&eacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Sai số dự đoán đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn xem bạn muốn tạo raster c&aacute;c sai số ti&ecirc;u chuẩn cho c&aacute;c gi&aacute; trị dự đo&aacute;n kh&ocirc;ng.
+            </p>
+            <p>Sai số ti&ecirc;u chuẩn rất hữu &iacute;ch v&igrave; ch&uacute;ng cung cấp th&ocirc;ng tin về độ tin cậy của c&aacute;c gi&aacute; trị dự đo&aacute;n. Theo kinh nghiệm đơn giản th&igrave; gi&aacute; trị thực sẽ nằm trong v&ograve;ng hai sai số ti&ecirc;u chuẩn của gi&aacute; trị 95 phần trăm thời gian được dự đo&aacute;n. V&iacute; dụ, giả sử một vị tr&iacute; mới c&oacute; gi&aacute; trị dự đo&aacute;n 50 với sai số ti&ecirc;u chuẩn l&agrave; 5. Điều n&agrave;y c&oacute; nghĩa l&agrave; dự đo&aacute;n tốt nhất của c&ocirc;ng cụ n&agrave;y c&oacute; gi&aacute; trị thực sự tại vị tr&iacute; đ&oacute; l&agrave; 50, nhưng gi&aacute; trị hợp l&yacute; c&oacute; thể chỉ thấp ở mức 40 hoặc cao ở mức 60. Để t&iacute;nh to&aacute;n khoảng gi&aacute; trị hợp l&yacute;, nh&acirc;n sai số ti&ecirc;u chuẩn với 2, cộng gi&aacute; trị n&agrave;y với gi&aacute; trị dự đo&aacute;n để biết được gi&aacute; trị đầu tr&ecirc;n của khoảng n&agrave;y, v&agrave; trừ đi gi&aacute; trị dự đo&aacute;n để c&oacute; được gi&aacute; trị đầu dưới của khoảng n&agrave;y.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

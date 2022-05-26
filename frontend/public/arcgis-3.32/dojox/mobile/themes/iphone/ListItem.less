@@ -1,0 +1,17 @@
+@import url("../common/domButtons/DomButtonGrayArrow.css");
+@import url("../common/domButtons/DomButtonDarkBlueCheck.css");
+
+@import "variables.less";
+@import "../common/ListItem.less";
+/* iOS 6 specific */
+.dj_ios6 {
+	.mblListItemRightText {
+		color: #385487;
+		font-weight: normal;
+	}
+	
+	.mblListItem {
+		/* enables hardware acc. to avoid flickering issues - see #16956 */
+		-webkit-perspective: 1000;
+	}
+}

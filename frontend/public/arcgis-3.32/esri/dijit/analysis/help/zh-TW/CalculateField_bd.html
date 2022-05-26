@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>計算欄位</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="計算欄位"></h2>
+        <hr/>
+    <p> 此工具使用輸入圖層來計算全新或現有欄位的值。建立 Arcade 表達式以計算用來填入圖徵的值。如果資料具有時間功能並屬於「即時」時間類型，您可以選擇性地建立作為軌跡感知的表達式。
+    </p>
+    <p>例如，假設您想要修改名為  <i>TotalSales</i> 的現有欄位。您想要以 2016 和 2017 年的業績總和來表示欄位。您可以在表達式中使用那些欄位，將欄位值計算為 <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>。
+    </p>
+    <p>舉另一個例子，假設您擁有 GPS 測量，其記錄城市中的位置、時間、巴士 ID 和巴士的速度。我們想要建立稱為  <i>SpeedFrom3</i> 的新欄位，其平均每個圖徵的最後 3 筆記錄的 GPS 測量的速度。我們將針對此計算使用軌跡感知計算，其中的軌跡是以巴士 ID 表示的巴士。用來判定前 3 個時間步長和目前時間步長之平均速度的計算是 <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要計算欄位值的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將計算欄位值的點、線、區域或表格。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>計算欄位的欄位值</h2></div>
+        <hr/>
+        <div>
+            <p>將計算值及該欄位之資料類型的全新或現有欄位。若是計算已存在的欄位值，不需要符合資料類型。
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>建立表達式以計算欄位值</h2></div>
+        <hr/>
+        <div>
+            <p>使用表達式建立器新增表達式，以計算欄位值。
+            </p>
+            <p>例如，假設我們要新增名為  <i>income</i> 和 <i>bonus</i> 的欄位值。若要這麼做，請新增表達式 <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>。
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>表達式是追蹤感知</h2></div>
+        <hr/>
+        <div>
+            <p>指定表達式是否為軌跡感知。軌跡感知表達式將包含  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre> 之類的格式。軌跡感知表達式需要欄位來識別個別軌跡。軌跡可包含點、線、區域或表格，並只要求輸入具有軌跡識別碼，及資料具有「即時」時間類型的時間功能。
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>使用時間間隔分析資料</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否要使用時間間隔計算軌跡的值，該時間間隔將分段輸入以進行分析。如果使用時間間隔，必須設定要使用的時間間隔並（選用）設定參考時間。若未設定參考時間，將使用 1970 年 1 月 1 日。
+            </p>
+            <p>例如，若將時間邊界設為 1 天（從 1990 年 1 月 1 日上午 9:00 起算），則會在每天上午 9:00 截斷每一個軌跡，並在該時段內進行分析。
+            </p>
+            <p>使用時間間隔可快速地加快計算時間，因為它會快速建立較小的軌跡以進行分析。如果按重複發生的時間間隔進行分割有利於分析，則建議將其運用於大數據處理。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Rimappa valori</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Strumento Rimappa valori per Portal"></h2>
+        <hr/>
+    <p>Questo strumento consente di modificare o riclassificare i valori di pixel dei dati raster. I valori di pixel vengono rimappati specificando un intervallo di valori di pixel da mappare in un valore di pixel di output. Il valore di pixel di output pu&ograve; essere un valore valido o un valore NoData, ovvero pixel senza un valore noto associato.
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verranno rimappate solo le celle visibili all'interno dell'estensione mappa corrente. Se &egrave; deselezionata, verranno elaborate tutte le celle nel raster, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dati di input</h2></div>
+        <hr/>
+        <div>
+            <p>I dati di input i cui valori verranno rimappati.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Rimappa valori di pixel su nuovi valori</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile immettere un intervallo di valori specificando un valore minimo e massimo, quindi assegnando all'intervallo specificato un valore di output o NoData.
+            </p>
+            <p>Per rimappare un nuovo intervallo di valori, fare clic su  <b>Aggiungi</b> per aggiungere una riga. Fare clic su ciascun valore per modificare la tabella in base agli intervalli e rimappare il valore richiesto. Quando si specificano gli intervalli di valori, ci sono due regole importanti che vengono applicate:
+                <ul>
+                    <li>Il valore minimo dell'intervallo &egrave; incluso, quello massimo &egrave; escluso.
+                    </li>
+                    <li>Le righe della tabella vengono elaborate dall'alto in basso.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>La tabella seguente mostra che il valore minimo &egrave; incluso nell'output, mentre quello massimo &egrave; escluso.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Anche l'ordine degli intervalli specificati nella tabella &egrave; importante. La riga in alto della tabella viene elaborata per prima, quindi viene elaborata la riga successiva. Le tue tabelle seguenti mostrano come gli stessi intervalli di valori produrranno risultati diversi per il diverso ordine delle righe della tabella.
+            </p> 
+            <p>La tabella di seguito mostra il valore di output quando la prima colonna viene ordinata numericamente:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>La tabella di seguito mostra come un diverso ordine delle righe produce un diverso valore di output:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Entrambe le regole vengono applicate per riordinare i valori. Poich&eacute; ogni riga viene elaborata dall'alto in basso, questi valori hanno la precedenza nel determinare l'output, anche quando sono utilizzati gli stessi intervalli.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

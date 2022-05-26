@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/htmlToSvg/supportClasses/text/TextMeasurer",["esri/dijit/geoenrichment/utils/DomUtil","../TransformUtil"],function(d,q){var b;return{getBoxes:function(g,m,n){if(!g.textContent||!g.textContent.trim())return null;n=q.disableTransform(m,n.parentVs);b=b||d.create("span");b.appendChild(g.cloneNode());for(var e=b.innerHTML,h=[],p=/&.+?;/,k=[],f=e.match(p);f;)k.push(e.substr(0,f.index)),k.push(f[0]),e=e.substr(f.index+f[0].length),f=e.match(p);k.push(e);var l="",c=
+"";k.forEach(function(a){p.test(a)?l+="\x3cc\x3e"+a+"\x3c/c\x3e":a.split("").forEach(function(a){"\x3c"!==a||c?"\x3e"===a&&c?(c+=a,l+=c,c=null):c?c+=a:l+="\x3cc\x3e"+a+"\x3c/c\x3e":c=a})});b.innerHTML=l;d.place(b,g,"replace");var r=d.position(m);d.query("c",m).forEach(function(a){var b=d.position(a);a={text:a.innerHTML,box:{x:b.x-r.x,y:b.y-r.y,w:b.w,h:b.h}};0===a.box.w&&0<a.box.x&&a.text.trim()&&h.length&&(b=h[h.length-1],b.box.w/=2,a.box.w=b.box.w,a.box.x-=a.box.w);h.push(a)});d.place(g,b,"replace");
+b.innerHTML="";q.restoreTransform(n);return{boxes:h}},cleanUp:function(){d.destroy(b);b=null}}});

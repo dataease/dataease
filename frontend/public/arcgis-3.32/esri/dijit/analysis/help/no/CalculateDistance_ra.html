@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Beregn avstand</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Beregn avstand"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet beregner euklidsk avstand, retning og tilordning fra en enkelt kilde eller et sett av kilder.
+    </p>
+    <p>Eksempler p&aring; bruksomr&aring;der kan v&aelig;re &aring; finne svar p&aring; sp&oslash;rsm&aring;l av f&oslash;lgende type:
+
+        <ul>
+            <li>Hvor langt er det til n&aelig;rmeste by?
+                
+
+            </li>
+            <li>Hvor langt er det til n&aelig;rmeste vei?
+                
+
+            </li>
+            <li>Hvor langt er det til n&aelig;rmeste vannkilde?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres bare de geoobjektene i inndatalaget som er synlige innenfor gjeldende kartutstrekning. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjektene i inndatalaget, selv om de befinner seg utenfor rekkevidden av gjeldende kartvisning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Velg rasteret for geoobjektslokasjonslaget som du vil beregne avstanden til</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som definerer kildene som avstanden skal beregnes til. Laget kan v&aelig;re fra en bildetjeneste eller geoobjektstjeneste.
+            </p>
+            <p>For en bildetjeneste kan inndataatypen v&aelig;re et heltall eller et flyttall.
+            </p>
+            <p>For en geoobjektstjeneste kan inndata v&aelig;re punkt, linje eller polygon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimal avstand som skal beregnes</h2></div>
+        <hr/>
+        <div>
+            <p>Den maksimale avstanden som skal beregnes. Hvis du for eksempel angir en verdi p&aring; 10&nbsp;000 meter, beregnes den euklidske avstanden fra kildelokasjonen og ut til den verdien (avstanden).
+            </p>
+            <p>Hvis det ikke angis noen verdi, beregnes avstanden ut til den definerte utstrekningen.
+            </p>
+            <p>De tilgjengelige enhetene er kilometer, meter, miles og fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelsen og enheten for utdatarastrene.
+            </p>
+            <p>Enhetene kan v&aelig;re kilometer, meter, miles eller fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Navn på resulterende avstandslag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Navn på resulterende retningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b>. Du m&aring; oppgi et navn som ikke allerede finnes i <b>Mitt innhold</b>.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Navn på resulterende allokeringslag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b>. Du m&aring; oppgi et navn som ikke allerede finnes i <b>Mitt innhold</b>.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Velg allokeringsfelt</h2></div>
+        <hr/>
+        <div>
+            <p>Et felt i inndatakildelaget som inneholder verdiene som definerer hver av kildene. Det kan v&aelig;re et heltall eller et strengfelt i kildedatasettet.
+            </p>
+            <p>Standarden er  <i>Value</i>. Hvis du bruker en geoobjektstjeneste og ingen <i>Value</i>-felt er tilgjengelige, brukes det f&oslash;rste tilgjengelige heltall- eller strengfeltet. Hvis det ikke finnes noen gyldige felt, brukes objekt-ID-feltet (f.eks. OID eller FID, avhengig av typen geoobjekt som er lagt inn).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>데이터셋 설명(Describe Dataset)</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="데이터셋 설명 워크플로 다이어그램"></h2>
+        <hr/>
+    <p>데이터셋 설명 도구는 데이터셋을 더욱 세부적으로 보여줍니다. 대용량 데이터 분석을 실행하기 전에 이 도구를 사용하여 입력 데이터의 정의와 위치를 결정합니다. 기본 설정에 따라 결과는 입력 레이어의 주요 설명자를 요약하는 JSON 문자열과 각 필드의 요약 통계를 설명하는 테이블이 됩니다. 
+    </p>
+    <p>필요한 경우 추가 결과 피처 레이어를 생성하여 데이터를 자세히 설명할 수 있습니다. 이 옵션은 샘플 레이어 또는 범위 레이어입니다. 옵션 선택을 통해 하나 또는 둘 모두의 출력 여부를 결정할 수 있습니다.
+    </p>
+    <p>예를 들어 15개의 데이터셋을 포함하는 빅데이터 파일 공유가 있다고 가정 해 보겠습니다. 각 데이터셋에는 해당 국가의 여러 지역에 걸쳐 건물과 주택을 나타내는 1,000만 개의 영역 피처가 있습니다. C 지역을 분석해야 하지만 이러한 피처가 포함된 데이터셋이 무엇인지 모르는 상황입니다. 사용해야 할 데이터셋이 무엇인지 찾으려면 데이터셋 설명을 실행하여 연구 지역에서 데이터셋을 조사할 범위 레이어를 생성하도록 선택합니다.
+    </p>
+    <p>또 다른 예시로, 대용량 데이터에 대해 분석 워크플로를 완료해야 하는 경우를 가정해 보겠습니다. 워크플로를 사용해보고 싶지만 전체 데이터셋으로는 몇 시간에서 며칠이 걸릴 수 있습니다. 전체 분석을 실행하는 시간과 리소스를 활용하는 대신, 전체 워크플로를 효율적으로 테스트할 수 있는 샘플 레이어를 생성합니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>설명할 데이터셋 선택</h2></div>
+        <hr/>
+        <div>
+            <p>설명되고 요약되고 샘플링될 포인트, 라인, 영역, 테이블 형식 피처를 포함하는 레이어입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>다음을 생성하여 데이터셋 파악(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>추가 데이터를 결과로 도출하면 빅데이터에 대한 이해도를 더욱 높일 수 있습니다. 다음 레이어를 선택하지 않거나 하나 또는 둘 모두를 출력하도록 선택할 수 있습니다.
+            </p>
+            <ul>
+                <li> <b>범위 레이어</b> - 입력 피처 또는 관심 영역의 범위를 나타내는 영역 피처를 생성합니다.
+                </li>
+                <li> <b>샘플 레이어</b> - 데이터셋 또는 관심 영역 내에서 지정된 양의 입력 피처를 포함하는 일부분 레이어를 생성합니다.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>샘플 레이어</h2></div>
+        <hr/>
+        <div>
+            <p>입력 레이어에서 피처의 일부분을 포함하는 레이어를 결과로 도출합니다.  <b>샘플 레이어</b>가 선택되면 샘플 레이어에서 반환할 피처의 수를 지정할 수 있습니다.  기본 설정에 따라 100개의 샘플 피처가 결과 레이어에 반환됩니다.
+            </p>
+            <p>값은 0보다 커야 합니다. 총 피처 수보다 큰 수를 지정하면 모든 피처가 반환됩니다.
+            </p>
+            <p> <b>현재 맵 범위 사용</b>이 선택되면 샘플 레이어에 맵 범위 내의 피처가 포함됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>범위 레이어</h2></div>
+        <hr/>
+        <div>
+            <p> <b>범위 레이어</b> 버튼을 선택하여 입력 피처의 범위를 나타내는 단일 피처를 포함한 피처 레이어를 결과로 도출합니다. 이 옵션은 기본 설정에 따라 선택되어 있습니다.
+            </p>
+            <p> <b>현재 맵 범위 사용</b>이 선택되면 범위 레이어에 맵의 가시적 범위가 나타납니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

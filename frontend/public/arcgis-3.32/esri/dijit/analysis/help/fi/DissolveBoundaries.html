@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sulauta rajaukset</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sulauta rajaukset"></h2>
+        <hr/>
+    <p>P&auml;&auml;llekk&auml;iset tai yhteisen rajan jakavat alueet yhdistet&auml;&auml;n yhdeksi alueeksi.    
+    </p>
+    <p>M&auml;&auml;ritt&auml;m&auml;ll&auml; kent&auml;n voi m&auml;&auml;ritt&auml;&auml;, mitk&auml; rajat yhdistet&auml;&auml;n. Jos taso koostuu esimerkiksi Yhdysvaltain piirikunnista ja jokainen piirikunta sis&auml;lt&auml;&auml;  <i>State_Name</i>-ominaisuuden, voit sulauttaa rajoja k&auml;ytt&auml;m&auml;ll&auml; <i>State_Name</i>-ominaisuutta. Vierekk&auml;iset piirikunnat yhdistyv&auml;t, jos niill&auml; on sama <i>State_Name</i>-ominaisuuden  arvo. Tuloksena on osavaltion rajojen mukainen taso.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse aluekarttataso, jonka rajat sulautetaan</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; sulautettavat aluekohteet. 
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Valitse sulautustapa</h2></div>
+        <hr/>
+        <div>
+            <p>Aluekohteiden yhdist&auml;miseen voi valita kaksi eri tapaa:
+                <ul>
+                    <li> <b>P&auml;&auml;llekk&auml;iset tai vierekk&auml;iset alueet</b>&ndash;V&auml;hint&auml;&auml;n kaksi aluetta, joiden rajat menev&auml;t p&auml;&auml;llekk&auml;in, yhdistyv&auml;t yhdeksi alueeksi. Lis&auml;ksi vierekk&auml;iset (eli yhteisen rajan jakavat) alueet yhdistyv&auml;t yhdeksi alueeksi.
+                    </li>
+                    <li> <b>Alueet, joilla on sama kent&auml;n arvo</b> &ndash; P&auml;&auml;llekk&auml;iset tai yhteisen rajan jakavat alueet yhdistyv&auml;t yhdeksi alueeksi, jos niill&auml; on sama kent&auml;n arvo.
+                        <p>Jos k&auml;yt&ouml;ss&auml; on esimerkiksi Yhdysvaltain piirikuntien karttataso ja kullakin piirikunnalla on  <i>State_Name</i>-kentt&auml;, voit purkaa rajat <i>State_Name</i>-kent&auml;n avulla.  Vierekk&auml;iset piirikunnat yhdistyv&auml;t, jos niill&auml; on sama <i>State_Name</i>-ominaisuuden  arvo. Tuloksena on osavaltion rajojen mukainen taso.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -asetus on valittuna, vain l&auml;ht&ouml;karttatason kohteet, jotka ovat n&auml;kyviss&auml; nykyisess&auml; karttalaajuudessa, puretaan. Jos toimintoa ei ole valittu, kaikki l&auml;ht&ouml;karttatason kohteet sulautetaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Luo moniosaisia kohteita</h2></div>
+        <hr/>
+        <div>
+            <p>ArcGISissa sellaisen paikan tai asian digitaalinen esitystapa, jossa on useita osia mutta joka m&auml;&auml;ritell&auml;&auml;n yhdeksi kohteeksi, koska se viittaa yhteen ominaisuusjoukkoon. Osavaltioiden karttatasossa Hawaijin osavaltiota voidaan esimerkiksi pit&auml;&auml; moniosaisena kohteena, koska sen erilliset geometriset osat luokitellaan yhdeksi osavaltioksi. T&auml;ss&auml; boolean-parametrissa on kaksi vaihtoehtoa:
+                <ul>
+                    <li>True (valittu): tulosaineistopalvelu voi sis&auml;lt&auml;&auml; moniosaisia kohteita.
+                    </li>
+                    <li>False (ei valittu): tulosaineistopalvelu sis&auml;lt&auml;&auml; vain yksiosaisia kohteita, ja kullekin osalle luodaan yksitt&auml;iset kohteet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lisää tilastotieto</h2></div>
+        <hr/>
+        <div>
+            <p>Kun alueet on yhdistetty, voit luoda niiden ominaisuuksien yhteenvedon. Esimerkiksi jos sulautat piirikuntien v&auml;lisen rajan ominaisuuden  <i>State_Name</i> perusteella ja jos jokaisella piirikunnalla on <i>Population</i>-kentt&auml;, voit laskea osavaltiolle ominaisuuden <i>Population</i> summan.
+            </p>
+            <p>K&auml;ytett&auml;viss&auml; ovat seuraavat tilastotyypit:
+            </p>
+            <ul>
+                <li> <b>Summa</b>&ndash; Lis&auml;&auml; m&auml;&auml;ritetyn kent&auml;n kokonaisarvon.
+                    
+
+                </li>
+                <li> <b>Keskiarvo</b>&ndash; Laskee m&auml;&auml;ritetyn kent&auml;n keskiarvon.
+                    
+
+                </li>
+                <li> <b>Minimi</b>&ndash; Etsii pienimm&auml;n arvon kaikista m&auml;&auml;ritettyyn kentt&auml;&auml;n liittyvist&auml; tietueista.
+                    
+
+                </li>
+                <li> <b>Maksimi</b>&ndash; Etsii suurimman arvon m&auml;&auml;ritettyyn kentt&auml;&auml;n liittyvist&auml; tietueista.
+                    
+
+                </li>
+                <li> <b>Keski Keskipoikkeama</b>&ndash; Etsii m&auml;&auml;ritetyn kent&auml;n arvojen keskipoikkeaman.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

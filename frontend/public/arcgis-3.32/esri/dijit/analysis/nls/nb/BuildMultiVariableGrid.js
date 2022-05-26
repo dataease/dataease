@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nb/BuildMultiVariableGrid",{binsLabel:"Velg typen beholdere som skal brukes til \u00e5 opprette det multivariable rutenettet",layersAttrLabel:"Velg inndatalagene og variablene du vil inkludere i rutenettet",itemDescription:"Geoobjektslag generert ved kj\u00f8ring av Opprett multivariabelt rutenett.",itemTags:"Analyseresultat, Opprett multivariabelt rutenett",itemSnippet:"Geoobjektslag generert av Opprett multivariabelt rutenett",addVariables:"Legg til variabler"});

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summera raster inom</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Verktyget Summera raster inom"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget summerar ett raster baserat p&aring; omr&aring;den (zoner) som definieras av det f&ouml;rsta indatalagret.
+    </p>
+    <p>H&auml;r &auml;r n&aring;gra exempel p&aring; anv&auml;ndningar:
+    </p>
+    <p>
+        <ul>
+            <li>Med ett lager f&ouml;r avrinningsgr&auml;nser och ett lager med markanv&auml;ndningsgr&auml;nser enligt markanv&auml;ndningstyp kan du ber&auml;kna den totala arealen f&ouml;r de olika markanv&auml;ndningstyperna f&ouml;r varje avrinningsomr&aring;de.
+                
+
+            </li>
+            <li>Med ett lager f&ouml;r fastigheter i ett l&auml;n och ett lager kommungr&auml;nser kan du summera snittv&auml;rdet f&ouml;r de tomma fastigheterna inom varje kommungr&auml;ns.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatalagret och lagret som ska summeras som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat analyseras alla geoobjekt i b&aring;de indatalagret och lagret som ska summeras, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Välj områdeslager där ett rasterlager ska summeras inom definierade gränser</h2></div>
+        <hr/>
+        <div>
+            <p>Det lagret som definierar gr&auml;nserna f&ouml;r omr&aring;dena, eller zonerna, som ska summeras.
+            </p>
+            <p>Lagret kan vara ett raster eller geoobjektsdata. F&ouml;r raster definieras zonerna av alla platser i indata som har samma cellv&auml;rde. Omr&aring;dena beh&ouml;ver inte vara sammanh&auml;ngande.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Välj ett fält för att definiera gränserna</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r attributet f&ouml;r det lager som ska anv&auml;ndas f&ouml;r att definiera omr&aring;denas gr&auml;nser.
+            </p>
+            <p>Anta till exempel att det f&ouml;rsta indatalagret definierar gr&auml;nserna f&ouml;r administrativa enheter, med attribut som definierar region, distrikt och fastighets-ID f&ouml;r varje enhet. Du har ocks&aring; ett rasterlager som definierar ett index f&ouml;r biologisk m&aring;ngfald f&ouml;r varje plats. Med f&auml;ltet du v&auml;ljer kan du v&auml;lja att ber&auml;kna den genomsnittliga biologiska m&aring;ngfalden p&aring; lokal-, distrikts- eller regionniv&aring;.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Välj ett rasterlager som ska summeras</h2></div>
+        <hr/>
+        <div>
+            <p>Rastercellerna i det h&auml;r lagret summeras efter de omr&aring;den (zoner) som de faller inom.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Välj statistik som ska beräknas</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;r du har valt ett lager som ska summeras kan du ber&auml;kna statistik f&ouml;r valfria numeriska attribut till punkterna, linjerna och omr&aring;dena i indataomr&aring;deslagret.
+            </p>
+            <p>De tillg&auml;ngliga statistiktyperna n&auml;r det valda f&auml;ltet &auml;r heltal &auml;r Genomsnitt, Majoritet, Maximum, Median, Minimum, Minoritet, Omf&aring;ng, Standardavvikelse, Summa och Variation.
+            </p>
+            <p>Om f&auml;ltet &auml;r flyttal &auml;r alternativen Genomsnitt, Maximum, Minimum, Omf&aring;ng, Standardavvikelse och Summa.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorera saknade värden i beräkningen</h2></div>
+        <hr/>
+        <div>
+            <p>Om du v&auml;ljer att ignorera saknade v&auml;rden anv&auml;nds endast celler som har ett v&auml;rde i lagret som ska summeras f&ouml;r att avg&ouml;ra utdatav&auml;rdet f&ouml;r omr&aring;det. Om det finns saknade v&auml;rden n&aring;gonstans i ett omr&aring;de anses det annars finnas otillr&auml;cklig information f&ouml;r att utf&ouml;ra statistiska ber&auml;kningar f&ouml;r alla cellerna i den zonen, och omr&aring;det f&aring;r ett null-v&auml;rde (NoData) i utdata.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>ארגז הכלים 'ניתוח ישויות' מכיל מספר כלים שבהם באפשרותך לבחור להשתמש.  משימות אלה מאורגנות להלן לפי קטגוריות, הקטגוריות הן פשוט הקבצות לוגיות ולא משפיעות בשום דרך על הגישה או השימוש שלך במשימות.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="regularsize">
+        <h2>סיכום נתונים</h2>
+        <hr/>
+        <p>כלי אלה מחשבים סה&quot;כ ספירות, אורכים, אזורים ונתונים סטטיסטיים תיאוריים בסיסיים של משויות והמאפיינים שלהן בתוך אזור או בסמוך לישויות אחרות.
+            <ul>
+                <li> <b>קיבוץ נקודות</b> מחשב נתונים סטטיסטיים אודות נקודות שנמצאות בתוך אזורים שצוינו.
+                </li>
+                <li> <b>צרף ישויות</b> מעביר מאפיינים משכבה או טבלה אחת לאחרת על בסיס קשרים של מרחב ומאפיינים.
+                </li>
+                <li> <b>סיכום פריטים סמוכים</b> מחשב נתונים סטטיסטיים עבור ישויות והמאפיינים שלהן שנמצאים בטווח מרחק שצוין.
+                </li>
+                <li> <b>סיכום בתוך</b> מסכם נתונים סטטיסטיים עבור ישויות אזור והמאפיינים שלהם שחופפים זה את זה.
+                </li>
+                <li> <b>סכם מרכז ופיזור</b> מחשב ישויות מרכז ופיזורים כיווניים.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>קיבוץ נקודות</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="קיבוץ נקודות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה משתמש בשכבה של ישויות נקודה ובשכבה של ישויות אזור כדי לקבוע אילו נקודות נמצאות בתוך כל אזור ומחשב נתונים סטטיסטיים אודות כל הנקודות בתוך כל אזור. לדוגמה:
+                <ul>
+                    <li>בהינתן מיקומי נקודה של אירועי פשיעה, ספור את מספר הפשעים בכל מחוז או יחידה מנהלית אחרת.
+                    </li>
+                    <li>מצא את הרווחים הגבוהים ביותר והנמוכים ביותר עבור מיקומי זיכיון לפי מדינה.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צרף ישויות</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="צרף ישויות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>'צרף ישויות' מעביר מאפיינים משכבה או טבלה אחת לאחרת על בסיס קשרים של מרחב ומאפיינים. לדוגמה:
+                <ul>
+                    <li>צרף גבול משותף או מידע דמוגרפי לנתוני אירועים.
+                    </li>
+                    <li>זהה את המתקנים הקרובים ביותר למיקום ידוע.
+                    </li>
+                    <li>קבע את מספר בתי המגורים שנכללים באזורי הצפה.
+                    </li>
+                    <li>זהה בתי גידול משותפים עבור זני חיות בר.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סיכום פריטים סמוכים</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="סיכום פריטים סמוכים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מוצא ישויות שנמצאות בטווח מרחק ספציפי מישויות בשכבת הקלט.   ניתן למדוד מרחק לאורך קווים ישרים או נתיבים אפשריים של אופן הגעה.  לאחר מכן, מחושבים נתונים סטטיסטיים עבור הישויות הסמוכות. לדוגמה:
+                <ul>
+                    <li>חישוב סך כל האוכלוסייה שנמצאת במרחק חמש דקות ממיקום אפשרי לחנות חדשה.
+                    </li>
+                    <li>חישוב מספר היציאות מכביש ראשי שנמצאות בטווח של חמש דקות ממיקום אפשרי לחנות חדשה, כמדד למידת הנגישות של החנות.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סיכום בתוך</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="סיכום בתוך">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מציאת אזורים (וחלקי אזורים) שחופפים בין שתי שכבות וחישוב נתונים סטטיסטיים אודות החפיפה. לדוגמה:
+                <ul>
+                    <li>בהינתן שכבה של אזורי שטח קו פרשת מים ושכבה של גבולות שימוש בקרקע לפי סוג שימוש בקרקע, חשב את השטח הכולל של סוג שימוש בקרקע עבור כל שטח קו פרשת מים. 
+                    </li>
+                    <li>בהינתן שכבה של חלקות במחוז ושכבה של גבולות עיר, סכם את הערך הממוצע של חלקות פנויות בתוך כל עיר.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סכם מרכז ופיזור</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="סכם מרכז ופיזור">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה משתמש בישויות נקודה לחישוב הישות המרכזית, המרכז הממוצע, המרכז החציוני או האליפסה (התפלגות). לדוגמה:
+                <ul>
+                    <li>בהינתן שכבת צנטרואידים של קבוצת בלוקים, הישויות המרכזית המשוקלל לפי אוכלוסייה יכולה לשמש לזיהוי איזה חלק בעיר הוא הנגיד ביותר עבור מרכז אומנויות במה.
+                    </li>
+                    <li>בהינתן שכבה של תצפיות איילים בפארק לאורך מספר שנים, ניתן להשתמש במרכז הממוצע כדי לראות היכן האיילים מתכנסים בקיץ ובחורף.
+                    </li>
+                    <li>בהינתן שכבה של תקריות שרפה, המרכז החציוני יכול לשמש למדידת הנטייה המרכזית של השרפות ללא השפעה של חריגים שוליים.
+                    </li>
+                    <li>בהינתן שכבה של דגימות בארות מי תהום, ניתן להשתמש באליפסה כדי לקבוע כיצד זיהום מתפשט.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>העשרת מידע</h2>
+        <hr/>
+        <p>כלים אלה עוזרים לגלות את האופי של אזורים. הם מחזירים נתונים דמוגרפיים וסטטיסטיים מפורטים על האזורים שתבחר. 
+            <ul>
+                <li>הכלי  <b>העשרת שכבה</b> מאחזר מידע אודות האנשים, המקומות ובתי העסק באזור ספציפי, או בטווח מרחק או זמן הגעה שנבחרו מהמיקום.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>העשרת שכבה</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="העשרת שכבה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מאחזר מידע אודות האנשים, המקומות ובתי העסק באזור ספציפי, או בטווח מרחק או זמן הגעה שנבחרו מהמיקום. 
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>איתור מיקומים</h2>
+        <hr/>
+        <p>כלים אלה משמשים לזיהוי או ליצירה של זהויות שעונים על קריטריונים שציינת.  סוג הקריטריונים נקבע לפי הכלי שתבחר, לדוגמה, הקריטריונים עשויים להתבסס על שאילתות שקשורות למרחב או למאפיינים, אזורים נראים מגובה שצוין, אזורים במורד הזרם עבור נקודות ניקוז ספציפיות או זמן נסיעה בתנאי תנועה ספציפיים.
+            <ul>
+                <li> <b>בחר את המתקנים הטובים ביותר</b> בוחר את המיקומים הטובים ביותר עבור מתקנים על ידי הקצאת מיקומים שבהם קיים ביקוש למתקנים אלה באופן שמספק יעד נתון.
+                </li>
+                <li> <b>צור שטחים נצפים</b> יוצר אזורים שגלויים לעין על בסיס מיקומים שאתה מציין.
+                </li>
+                <li> <b>צור קווי פרשת מים</b> יוצר מאגר אזורים על בסיס מיקומים שאתה מציין.
+                </li>
+                <li> <b>הפקת מיקומים חדשים</b> יוצר אזורים חדשים ממיקומים באזור המחקר שעונים על סדרה של קריטריונים.
+                </li>
+                <li> <b>איתור צנטרואידים</b> מוצא את המרכז הייצוגי (צנטרואיד) עבור ישויות קלט.
+                </li>
+                <li> <b>מציאת מיקומים קיימים</b> מחפש אזורים קיימים בשכבה שעונים על סדרה על סדרה של קריטריונים.
+                </li>
+                <li> <b>איתור מיקומים דומים</b> מוצא את המיקומים הדומים ביותר לאחד או יותר ממיקומי הייחוס בהתבסס על קריטריונים שציינת.
+                </li>
+                <li class="PortalOnly"> <b>עיגון כתובות מיקומים מטבלה</b> ממיר כתובות מטבלה לקואורדינטות. 
+                </li>
+                <li> <b>עקיבה במורד הזרם</b> קובע את נתיבי הזרימה בכיוון מורד הזרם ממיקומים שציינת.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>בחר את המתקנים הטובים ביותר</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="בחר את המתקנים הטובים ביותר">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>בוחר את המיקומים הטובים ביותר עבור מתקנים על ידי הקצאת מיקומים שבהם קיים ביקוש למתקנים אלה באופן שמספק יעד נתון.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צור שטחים נצפים</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="צור שטחים נצפים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>יוצר אזורים נצפים בהתבסס על מיקומים שתציין.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צור קווי פרשת מים</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="צור קווי פרשת מים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>יוצר אזורי אגני היקוות בהתבסס על מיקומים שתגדיר.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Derive New Locations</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Derive New Locations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>יוצר ישויות חדשות באזור המחקר שעונות על סדרות של קריטריונים שציינת. קריטריונים אלה יכולים להיות מבוססים על שאילתות מאפיינים (לדוגמה, חלקות שהן פנויות) ושאילתות מרחביות (לדוגמה, בטווח של 1.5 ק&quot;מ מנהר). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>איתור צנטרואידים</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="איתור צנטרואידים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>איתור המרכז המייצג (צנטרואיד) של כל ישות מרובת נקודות, קו או אזור שהוזנה.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Existing Locations</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Find Existing Locations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>בוחר ישויות קיימות באזור המחקר שעונות על סדרות של קריטריונים שציינת. קריטריונים אלה יכולים להיות מבוססים על שאילתות מאפיינים (לדוגמה, חלקות שהן פנויות) ושאילתות מרחביות (לדוגמה, בטווח של 1.5 ק&quot;מ מנהר). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>עיגון כתובות מיקומים מטבלה</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="עיגון כתובות מיקומים מטבלה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ממיר כתובות לקואורדינטות. השתמש בכלי זה על כתובות בגיליון עבודה Excel או קובץ CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>איתור מיקומים דומים</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="איתור מיקומים דומים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מאתר את המיקומים הדומים ביותר לאחד או יותר ממיקומי הייחוס בהתבסס על קריטריונים שציינת.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>עקיבה במורד הזרם</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="עקיבה במורד הזרם">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>קובע את נתיבי הזרימה בכיוון מורד הזרם ממיקומים שציינת.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>ניתוח דפוסים</h2>
+        <hr/>
+        <p>כלים אלה עוזרים לזהות, לכמת ולהציג דפוסים מרחביים בנתונים.  
+            <ul>
+                <li> <b>חישוב צפיפות</b> לוקח כמויות ידועות של תופעה מסוימת ומפזר כמויות אלה על פני המפה.
+                </li>
+                <li> <b>מציאת נקודות חמות</b> מזהה קיבוץ באשכולות מובהק סטטיסטית בדפוס המרחבי של הנתונים.
+                </li>
+                <li> <b>אתר חריגים</b> קובע אם קיימים חריגים מובהקים סטטיסטית בדפוס המרחבי של הנתונים.
+                </li>
+                <li> <b>מצא אשכולות של נקודות</b> מוצא אשכולות של ישויות נקודה בתוך רעש סובב בהתבסס על הפיזור המרחבי שלהן.
+                </li>
+                <li> <b>בצע אינטרפולציה לנקודות</b> צופה ערכים במיקומים חדשים בהתבסס על מדידות שנמצאו באוסף של נקודות.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חשב צפיפות</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="חשב צפיפות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ניתוח צפיפות לוקח כמויות ידועות של תופעה מסוימת ומפזר כמויות אלה על פני המפה. באפשרותך להשתמש בכלי זה, לדוגמה, כדי להציג ריכוזים של פגיעות ברק או סופות טורנדו, גישה למתקנים רפואיים וצפיפויות אוכלוסין.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מציאת נקודות חמות</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="מציאת נקודות חמות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה יוצר מפה שמציגה קיבוץ מרחבי באשכולות מובהק סטטיסטי שנמצא בנתונים. השתמש בכלי זה כדי לחשוף נקודות חמות לא צפויות (אדומות) ונקודות קרות (כחולות) של מספרים גבוהים ונמוכים של ערכי בתים, צפיפויות מקרי פשע, הרוגים בתאונות דרכים, אבטלה או גיוון ביולוגי, לדוגמה.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חפש חריגים</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="חפש חריגים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה יוצר מפה שמציגה אשכולות מובהקים סטטיסטית וחריגים מרחביים שנמצאים בנתונים. השתמש בכלי זה כדי לזהות ישויות בעלות ערכים השונים באופן מובהק מהישויות הסמוכות.  ניתן להשתמש בכלי זה, לדוגמה, כדי למצוא דפוסי הוצאות אנומליים, לקבוע היכן הגבולות החדים ביותר בין עושר לעוני באזור מחקר או לקבוע אם יש מחוזות בארה&quot;ב עם תוחלת חיים נמוכה באופן חריג בהשוואה למחוזות הסמוכים.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מצא אשכולות של נקודות</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="מצא אשכולות של נקודות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה מזהה את אזורי הריכוז של נקודות והיכן הן מופרדות על-ידי אזורים ריקים או דלילים. נקודות שאינן חלק מאשכול מתויגות כרעש.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>בצע אינטרפולציה לנקודות</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="בצע אינטרפולציה לנקודות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה מאפשרת לחזות ערכים במיקומים חדשים בהתבסס על מדידות שנמצאו באוסף של נקודות. הכלי נוטל נתוני נקודות עם ערכים בכל נקודה ומחזיר אזורים שמסווגים על ידי ערכים חזויים. ניתן להשתמש בכלי זה, לדוגמה, כדי לחזות מפלסי משקעים על פני קו פרשת מים בהתבסס על מדידות שנלקחו במודדי משקעים בודדים.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>שימוש בסמיכות</h2>
+        <hr/>
+        <p>  כלים אלה עוזרים לענות על אחת מהשאלות הנפוצות ביותר בניתוח מרחבי: &quot;מה נמצא מעל מה?&quot;
+            <ul>
+                <li> <b>קשר מוצא ליעדים</b> מודד את זמן ההגעה או מרחק ההגעה בין זוג נקודות.
+                </li>
+                <li> <b>יצירת אזורי חיץ</b> יוצר אזורים במרחק זהה מישויות.
+                </li>
+                <li> <b>צור אזורי זמן נסיעה</b> מוצא אזורים סביב מיקומים שאליהם ניתן להגיע בטווח זמן נתון.
+                </li>
+                <li> <b>מציאת הסמוכים ביותר</b> מזהה את המקומות הקרובים ביותר למיקומים ידועים.
+                </li>
+                <li> <b>תכנן מסלולים</b> קובע את הדרך הטובה ביותר לנתב צי רכבים לביקור בתחנות רבות.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>קשר מוצא ליעדים</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="קשר מוצא ליעדים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'קשר מוצא ליעדים' מודד את זמן ההגעה או מרחק ההגעה בין זוג נקודות. הכלי יכול לדווח על מרחקים בקו-ישר, מרחקים בכבישים או זמני הגעה. בעזרת כלי זה, תוכל לעשות את הדברים הבאים:
+            </p>
+            <p>
+                <ul>
+                    <li>לחשב את המרחק הכולל או הזמן הכולל שעושים עובדים בנסיעות מהבית לעבודה.
+                    </li>
+                    <li>למדוד מה המרחק שלקוחות עוברים כאשר הם הולכים/נוסעים לחנויות שלך. להשתמש במידע זה כדי להגדיר את היקף השוק שלך, במיוחד בעת מיקוד מסעות פרסום או בחירת מיקום לחנות חדשה.
+                    </li>
+                    <li>לחשב את קילומטרז' הנסיעה הצפוי עבור צי המכוניות בארגונך. לאחר מכן, להפעיל את הכלי 'סיכום בתוך' כדי לדווח על קילומטרז' לפי מחוז או אזור אחר.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>אתה מספק נקודות התחלה ונקודות סיום, והכלי מחזיר שכבה שמכילה קווי מסלול, כולל מדידות, בין הצמדים של נקודות מוצא ונקודות יעד.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>יצירת אזורי חיץ</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="יצירת אזורי חיץ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>חיץ הוא אזור שמכסה מרחק נתון מישות נקודה, קו או שטח. 
+            </p>
+            <p>אזורי חיץ בדרך כלל משמשים ליצירת אזורים שעבורם ניתן לבצע ניתוח נוסף בעזרת כלים אחרים כגון 'כיסוי שכבות'. לדוגמה, אם השאלה היא &quot;אילו בניינים נמצאים בטווח קילומטר אחד מבית הספר?&quot;, ניתן לקבל את התשובה על ידי יצירת חיץ בגודל קילומטר אחד סביב בית הספר וכיסוי אזור החיץ עם השכבה שמכילה עקבות של בניינים.  התוצאה הסופית היא שכבה של הבניינים שנמצאים בטווח של קילומטר אחד מבית הספר.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צור אזורי זמן נסיעה</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="צור אזורי זמן נסיעה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>אזורי זמן נסיעה הוא האזור שניתן להגיע אליו בתוך זמן נסיעה נתון או מרחק נסיעה נתון. אזורי זמן נסיעה יכולים לעזור לך לענות על שאלון כגון:
+                <ul>
+                    <li>לאן אני יכול לנסוע מכאן בנסיעה של 30 דקות?
+                    </li>
+                    <li>לאן אני יכול לנסוע מכאן בנסיעה של 30 דקות בשעה 18:00 בשעות עומס התנועה?
+                    </li>
+                    <li>לאילו חלקים מהעיר יכולים מכבי האש להגיע בתוך חמש דקות? כיצד כיסוי התגובה של מכבי האש ישתפר על ידי בניית תחנת כיבוי אש חדשה במיקום זה?
+                    </li>
+                    <li>אילו אזורים בשוק העסק שלי מכסה? אילו אזורים נמצאים במרחק 15 ק&quot;מ מהחנויות שלי?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מציאת הסמוכים ביותר</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="מציאת הסמוכים ביותר">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מודד את עלות הנסיעה בין אירועים ומתקנים וקובע אילו מהם קרובים לאחרים. התוצאה היא שכבה שמראה את המסלולים הטובים ביותר בין אירועים ומתקנים, לצד עלות הנסיעה (זמן ומרחב) של כל מסלול.  לדוגמה, באפשרותך להשתמש בכלי זה כדי למצוא את בית החולים הקרוב ביותר לאירוע, או את הכספומט הקרוב ביותר למיקומך הנוכחי.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>תכנן מסלולים</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="תכנן מסלולים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>אתה מספק קבוצה של תחנות ואת מספר כלי הרכב שזמינים לבקר בתחנות, הכלי 'תכנן מסלולים' קובע כיצד להקצות ביעילות את התחנות לכלי הרכב ומנתב את כלי הרכב לתחנות.
+            </p>
+            <p>השתמש בכלי זה כדי לתכנן עבודה עבור צוות עובדים נייד של פקחים, שמאים, ספקי שירות עד הבית ואחרים; אספקה ואיסוף של פריטים ממיקומים מרוחקים או אליהם; או מתן שירותי הסעות לאנשים.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>נהל נתונים</h2>
+        <hr/>
+        <p>כלים אלה משמשים הן עבור הניהול היום-יומי של נתונים גאוגרפיים והן עבור שילוב נתונים לפני ניתוח.  
+            <ul>
+                <li> <b>מיזוג גבולות</b> ממזג יחד אזורים שיש להם גבול משותף וערך מאפיין משותף.
+                </li>
+                <li> <b>חלץ נתונים</b> יוצר ערכות נתונים חדשות על ידי חילוץ ישויות מהנתונים הקיימים.
+                </li>
+                <li> <b>צור ריצופים של מישורים</b> יוצר ריצופים של מישורים על בסיס תיחום הנתונים.
+                </li>
+                <li> <b>מיזוג שכבות</b> מעתיק את כל הישויות משתי שכבות קיימות או יותר אל שכבה חדשה.
+                </li>
+                <li> <b>כיסוי שכבות</b> משלב שתי שכבה אחת או יותר ליצירת שכבה יחידה אחת.  ניתן לחשוב על כיסוי כהתבוננות בערימה של מפות ויצירת מפה אחת שמכילה את כל המידע שנמצא בערימה.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dissolve Boundaries</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissolve Boundaries">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>אזורים שחופפים או שיש להם גבול משותף ממוזגים יחד ליצירת אזור אחד.    
+            </p>
+            <p>באפשרותך לקבוע אילו גבולות ימוזגו על ידי ציון שדה. לדוגמה, אם יש לך שכבה של מחוזות, ובכל מחוז יש מאפיין בשם  <i>State_Name</i>, באפשרותך למזג את הגבולות בעזרת המאפיין <i>State_Name</i>.  מחוזות סמוכים ימוזגו יחד אם יש להם את אותו ערך של מאפיין <i>State_Name</i>.  התוצאה הסופית היא שכבה של גבולות מחוזות.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חלץ נתונים</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="חלץ נתונים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>יוצר קובץ ZIP, &rlm;CSV או KMZ של נתונים מהשכבות ותחום עניין שציינת.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צור ריצופים של מישורים</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="צור ריצופים של מישורים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מפיק ריצופים של מישורים על פני אזור מחקר על בסיס צורה וגודל שצוינו.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Merge Layers</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Merge Layers">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מעתיק ישויות משתי שכבות קיימות או יותר אל שכבה חדשה, לדוגמה:
+                <ul>
+                    <li>יש לי שלוש שכבות עבור אנגליה, ווילס וסקוטלנד וברצוני לקבל שכבה אחת של בריטניה. 
+                    </li>
+                    <li>יש לי 12 שכבות וכל אחת מהן מכילה פרטי חלקה עבור שטחים מוניציפליים רציפים.  ברצוני לצרף אותם יחד לשכבה אחת, תוך שמירה רק של אלה שלמאפיינים שלהם יש אותו שם ואותו סוג ב-12 שכבות הקלט.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>כיסוי שכבות</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="כיסוי שכבות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כיסוי משלב שתי שכבות או יותר ליצירת שכבה יחידה אחת.  ניתן לחשוב על כיסוי כהתבוננות בערימה של מפות ויצירת מפה אחת שמכילה את כל המידע שנמצא בערימה, לדוגמה:
+                <ul>
+                    <li>אילו חלקות נמצאות בתוך מישור ההצפה 100-שנה? (&quot;בתוך&quot; זו פשוט דרך אחרת לומר &quot;מעל&quot;.)
+                          
+                    </li>
+                    <li>אילו כבישים נמצאים בתוך אילו ארצות?
+                    </li>
+                    <li>איזה שימוש בקרקע נמצא מעל איזה סוג קרקע?
+                         
+                    </li>
+                    <li>אילו בארות נמצאות בתוך בסיסים צבאיים נטושים?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

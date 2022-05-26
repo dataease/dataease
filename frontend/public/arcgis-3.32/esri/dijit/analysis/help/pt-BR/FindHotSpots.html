@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar Valor Alto de Incidência</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Localizar Pontos de Incid&ecirc;ncia"></h2>
+        <hr/>
+    <p> A ferramenta Localizar Valor Alto de Incid&ecirc;ncia determinar&aacute; se existe qualquer agrupamento estatisticamente significativo no modelo espacial dos seus dados.
+        <ul>
+            <li>Seus pontos est&atilde;o (incidentes de crimes, &aacute;rvores, acidentes de tr&aacute;fego) realmente agrupados? Como voc&ecirc; pode estar certo?
+            </li>
+            <li>Voc&ecirc; realmente descobriu um valor alto de incid&ecirc;ncia estatisticamente significativo (para gastos, mortalidade infantil, pontua&ccedil;&otilde;es de teste constantemente altas) ou seu mapa contar&aacute; uma hist&oacute;ria diferente se voc&ecirc; alterou o modo que foi simbolizado?
+            </li>
+        </ul>
+        A ferramenta Localizar Valor Alto de Incid&ecirc;ncia o ajudar&aacute; a responder estas perguntas com confian&ccedil;a.
+    </p>
+    <p>At&eacute; os modelos espaciais aleat&oacute;rios exibem um grau de agrupamento. Al&eacute;m disso, nossos olhos e c&eacute;rebro naturalmente tentam encontrar modelos mesmo quando n&atilde;o existe nenhum. Consequentemente, pode ser dif&iacute;cil saber se os modelos em seus dados s&atilde;o o resultado dos processos espaciais reais no trabalho ou apenas o resultado da altera&ccedil;&atilde;o aleat&oacute;ria. Isto &eacute; devido ao fato dos pesquisadores e analistas utilizarem m&eacute;todos de estat&iacute;stica como Localizar Valor Alto de Incid&ecirc;ncia (Getis-Ord Gi*) para quantificar modelos espaciais. Quando voc&ecirc; localiza um agrupamento estatisticamente significativo em seus dados, voc&ecirc; tem informa&ccedil;&otilde;es valiosas. Saber onde e quando ocorre um agrupamento pode fornecer pistas importantes sobre os processos promovendo os modelos que voc&ecirc; est&aacute; vendo. Saber que roubos residenciais, por exemplo, s&atilde;o constantemente mais altos em determinados bairros &eacute; uma informa&ccedil;&atilde;o vital se voc&ecirc; precisar projetar estrat&eacute;gias de preven&ccedil;&atilde;o efetivas, alocar recursos de pol&iacute;cia limitados, iniciar programas de cuidados da vizinhan&ccedil;a, autorizar investiga&ccedil;&otilde;es criminais detalhadas ou identificar potenciais suspeitos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolha a camada para a qual os valores altos de incidência serão calculados</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto ou camada de &aacute;rea da qual os pontos altos e baixos de incid&ecirc;ncia ser&atilde;o localizados. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Localizar agrupamentos de valores altos e baixos</h2></div>
+        <hr/>
+        <div>
+            <p>Esta an&aacute;lise responde a pergunta: Onde h&aacute; agrupamento espaciais de valores altos e baixos?
+            </p>
+            <p>Se os seus dados forem de pontos e voc&ecirc; escolher  <b>Contagens de Ponto</b>, esta ferramenta avaliar&aacute; a disposi&ccedil;&atilde;o espacial das fei&ccedil;&otilde;es de ponto para responder a pergunta: Onde os pontos s&atilde;o inesperadamente agrupados ou separados?
+            </p>
+            <p>Se voc&ecirc; escolher um campo, esta ferramenta avaliar&aacute; a disposi&ccedil;&atilde;o espacial dos valores associados com cada fei&ccedil;&atilde;o para responder a pergunta: Onde est&atilde;o os agrupamentos de valores altos e baixos?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Contagem de ponto dentro</h2></div>
+        <hr/>
+        <div>
+            <p>O padr&atilde;o &eacute; contar pontos dentro de uma grade de fishnet criada pela ferramenta baseada em seus dados de pontos. Alternativamente, voc&ecirc; pode optar por fornecer uma camada de &aacute;rea (normalmente estes refletiriam o administrativo reportando distritos como &aacute;reas de censo, limites municipais, ou munic&iacute;pios) para responder a pergunta: Fornecido o n&uacute;mero de pontos contados dentro de cada fei&ccedil;&atilde;o de &aacute;rea, h&aacute; locais com agrupamento espacial estatisticamente significativo de contagens de ponto altas ou baixas?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definir onde os pontos são possíveis</h2></div>
+        <hr/>
+        <div>
+            <p>Desenhe ou forne&ccedil;a uma camada definindo onde os incidentes s&atilde;o poss&iacute;veis para responder a pergunta: Dentro das &aacute;reas, h&aacute; algum local com concentra&ccedil;&otilde;es de ponto inesperadamente altas ou baixas?   
+            </p>
+            <p>As fei&ccedil;&otilde;es de &aacute;rea que voc&ecirc; desenha ou as fei&ccedil;&otilde;es na camada de &aacute;rea que voc&ecirc; especifica devem definir onde possivelmente podem ocorrer os pontos. Para desenhar estas &aacute;reas, clique no bot&atilde;o  <b>Desenhar</b> e ent&atilde;o clique em um local no mapa para criar um formato da &aacute;rea.  Para desenhar &aacute;reas adicionais, clique no bot&atilde;o Desenhar novamente e clique em um local no mapa e continue.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Divido por</h2></div>
+        <hr/>
+        <div>
+            <p>&Agrave;s vezes voc&ecirc; pode desejar analisar padr&otilde;es que levam em conta distribui&ccedil;&otilde;es subjacentes. Por exemplo, se os seus pontos representarem crimes, dividir pelo total da popula&ccedil;&atilde;o resultar&aacute; em uma an&aacute;lise de crimes per capita, ao inv&eacute;s de contagens de crimes brutas.  A escolha de um atributo para dividir &eacute; frequentemente denominada de normaliza&ccedil;&atilde;o.
+            </p>
+            <p>A escolha de  <i>Esri Population</i> ir&aacute; enriquecer cada fei&ccedil;&atilde;o de &aacute;rea com valores de popula&ccedil;&atilde;o que ent&atilde;o ser&atilde;o utilizados como o atributo para dividir.  Esta op&ccedil;&atilde;o utilizar&aacute; cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opções de Substituir</h2></div>
+        <hr/>
+        <div>
+            <p> A ferramenta localizar&aacute; configura&ccedil;&otilde;es favor&aacute;veis para <b>Tamanho de C&eacute;lula</b> e <b>Faixa de Dist&acirc;ncia</b> padroniza baseado nas caracter&iacute;sticas de seus dados. Entretanto, se voc&ecirc; tiver um <b>Tamanho de C&eacute;lula</b> ou <b>Faixa de Dist&acirc;ncia</b> particular que faz sentido para sua an&aacute;lise, as <b>Op&ccedil;&otilde;es de Substitui&ccedil;&atilde;o</b> pode ser utilizadas para configurar estes valores.
+            </p>
+            <p>As  <b>Op&ccedil;&otilde;es de Substitui&ccedil;&atilde;o</b> tamb&eacute;m s&atilde;o &uacute;teis ao executar an&aacute;lise no conjunto de dados diferente, permitindo a voc&ecirc; manter <b>Faixa de Dist&acirc;ncia</b> e <b>Tamanho de C&eacute;lula</b> consistentes atrav&eacute;s de conjuntos de dados m&uacute;ltiplos.  Voc&ecirc; pode ent&atilde;o comparar os resultados apropriadamente, por exemplo, taxas de diabete e obesidade ou at&eacute; taxas de crime de dois anos diferentes.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Tamanho da Célula</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho das c&eacute;lulas da grade utilizadas para contagem de pontos internos.  
+            </p>
+            <p>Ao utilizar uma grade de hex&aacute;gono para contagem de pontos internos, esta dist&acirc;ncia &eacute; utilizada como a altura dos hex&aacute;gonos.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Faixa de Distância</h2></div>
+        <hr/>
+        <div>
+            <p>Cada fei&ccedil;&atilde;o &eacute; analisada dentro do contexto destas fei&ccedil;&otilde;es vizinhas localizadas dentro da dist&acirc;ncia que voc&ecirc; especifica.  A ferramenta ir&aacute; calcular uma dist&acirc;ncia padr&atilde;o para voc&ecirc; ou voc&ecirc; pode utilizar esta op&ccedil;&atilde;o para configurar uma dist&acirc;ncia particular que faz sentido para sua an&aacute;lise. 
+            </p>
+            <p>Por exemplo, se voc&ecirc; estiver estudando padr&otilde;es de comuta&ccedil;&atilde;o e voc&ecirc; sabe que a jornada m&eacute;dia de trabalho &eacute; de 15 milhas, por exemplo, voc&ecirc; pode desejar utilizar uma faixa de dist&acirc;ncia de 15 milhas para sua an&aacute;lise.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Forne&ccedil;a um nome para a camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  Esta camada resultante mostrar&aacute; a voc&ecirc; agrupamentos estatisticamente significativos de valores altos e baixos ou contagens de ponto. Se o nome da camada resultante j&aacute; existir, voc&ecirc; ser&aacute; avisado para renome&aacute;-lo.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

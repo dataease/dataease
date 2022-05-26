@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Convertire raster în obiect spaţial</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Instrument convertire raster &icirc;n obiect spaţial"></h2>
+        <hr/>
+    <p>Acest instrument converteşte un raster &icirc;ntr-un set de date de obiecte spaţiale, precum puncte, linii sau poligoane.
+    </p>
+    <p>Parametrul  <b>Alegere c&acirc;mp</b> vă permite să alegeţi ce c&acirc;mp de atribute din setul de date raster de intrare va deveni un atribut &icirc;n clasa de obiecte spaţiale de ieşire. Acest parametru este disponibil doar pentru rastere cu numere &icirc;ntregi care au atribute suplimentare &icirc;n tabelul asociat.
+    </p>
+    <p>Rasterul de intrare poate avea orice dimensiune pentru celulă.
+    </p>
+    <p>Rasterele cu numere &icirc;ntregi pot fi convertite &icirc;n obiecte spaţiale puncte, linii sau poligoane; totuşi, rasterele cu puncte mobile pot fi convertite doar &icirc;n obiecte spaţiale puncte.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi convertite numai celulele raster vizibile &icirc;n extinderea curentă a hărţii. Dacă nu se bifează, toate celulele din stratul tematic raster vor fi convertite, chiar dacă se află &icirc;n afara extinderii curente a hărţii. Reţineţi dacă stratul tematic raster este mare sau are o rezoluţie foarte &icirc;naltă.
+    </p>
+    <p>Printre situaţiile de utilizare ale acestui instrument se numără:
+ 
+        <ul>
+            <li>Crearea de obiecte spaţiale poligoane dintr-un raster de clasificare a utilizării terenului.
+                
+ 
+            </li>
+            <li>Fluxurile identificate &icirc;ntr-un DEM pot fi convertite &icirc;n obiecte spaţiale linii.
+                
+
+            </li>
+            <li>Un DEM poate fi convertit &icirc;n obiecte spaţiale puncte care pot fi utilizate &icirc;ntr-un flux de lucru nonraster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic raster pentru convertire</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic raster de intrare care va fi convertit &icirc;n straturi tematice de obiecte spaţiale.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Alegere câmp</h2></div>
+        <hr/>
+        <div>
+            <p>Furnizaţi un c&acirc;mp care specifică ce valori vor fi utilizate pentru conversie.
+            </p>
+            <p>Poate să fie un număr &icirc;ntreg sau o valoare text.
+            </p>
+            <p>Un c&acirc;mp care conţine valori de puncte mobile poate fi utilizat doar dacă rezultatul este un set de date punctuale.
+            </p>
+            <p>Alegerea implicită este utilizarea c&acirc;mpului  <i>Value</i>, care conţine valoarea din fiecare celulă raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Alegeţi tipul rezultatului</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi tipul de ieşire dintre punct, linie sau poligon.
+            </p>
+            <ul>
+                <li>Punct - Rasterul va fi convertit &icirc;n set de date de puncte.
+                    
+ 
+                </li>
+                <li>Linie - Rasterul va fi convertit &icirc;n set de date de obiecte spaţiale liniare.
+                    
+ 
+                </li>
+                <li>Poligon - Rasterul va fi convertit &icirc;n set de date de obiecte spaţiale poligonale.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplificare linii sau poligoane</h2></div>
+        <hr/>
+        <div>
+            <p>Specificaţi dacă obiectele spaţiale ar trebui simplificate
+            </p>
+            <p>Dacă opţiunea este bifată (modul implicit), obiectele spaţiale linii sau poligoane vor fi rafinate pentru a produce un rezultat mai generalizat. Dacă opţiunea nu este bifată, obiectele spaţiale liniare vor urma graniţele celulelor setului de date raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

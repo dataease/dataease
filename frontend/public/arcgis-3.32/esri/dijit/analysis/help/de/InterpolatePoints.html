@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punkte interpolieren</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Punkte interpolieren"></h2>
+        <hr/>
+    <p>   Mit dem Werkzeug &quot;Punkte interpolieren&quot; k&ouml;nnen Sie Werte an neuen Positionen basierend auf Messwerten aus einer Sammlung von Punkten vorhersagen. Das Werkzeug verwendet Punktdaten mit Werten an jedem Punkt und gibt Fl&auml;chen zur&uuml;ck, die nach vorhergesagten Werten klassifiziert werden. Beispiel:
+        <ul>
+            <li>In einem Luft-Qualit&auml;tsmanagement-Bezirk befinden sich Sensoren zur Messung des Verschmutzungsgrades. Mit dem Werkzeug &quot;Punkte interpolieren&quot; kann der Verschmutzungsgrad an Standorten vorhergesagt werden, an denen keine Sensoren vorhanden sind, z. B. an Standorten von Risikogruppen, wie Schulen oder Krankenh&auml;user.
+            </li>
+            <li>Treffen Sie Vorhersagen zu Schwermetallkonzentrationen in bestimmten Pflanzenarten basierend auf Proben einzelner Pflanzen.
+            </li>
+            <li>Sagen Sie den N&auml;hrstoffgehalt in B&ouml;den (Stickstoff, Phosphor, Kalium usw.) sowie andere Indikatoren (z. B. elektrische Leitf&auml;higkeit) voraus, um deren Beziehung zum Ernteertrag zu untersuchen und genaue Dosierungen von D&uuml;ngemitteln f&uuml;r jedes Gebiet vor Ort vorzuschreiben. 
+            </li>
+            <li>Meteorologische Anwendungen beinhalten die Vorhersage von Temperaturen, Niederschlag und damit verkn&uuml;pften Variablen (wie saurer Regen). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt-Layer auswählen, der Positionen mit bekannten Werten enthält</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, der als Grundlage der Interpolation verwendet wird.  
+
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Zu interpolierendes Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie das Feld mit den Werten, die interpoliert werden sollen.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimieren für</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie Ihre Pr&auml;ferenz f&uuml;r Geschwindigkeit im Vergleich zu Genauigkeit fest. Die Berechnung pr&auml;ziserer Vorhersagen nimmt mehr Zeit in Anspruch.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Fehler in der Prognose</h2></div>
+        <hr/>
+        <div>
+            <p> Bei Aktivierung dieser Option wird ein Layer mit Standardfehlern f&uuml;r die Interpolierungsvorhersagen erstellt.  Der Name des Ausgabe-Layers ist der Name des Ergebnis-Layers mit angeh&auml;ngtem 'Errors'.
+            </p>
+            <p>Standardfehler sind hilfreich, da sie Informationen zur Zuverl&auml;ssigkeit der vorhergesagten Werte liefern. Eine einfache Faustregel besagt, dass der tats&auml;chliche Wert in 95% der F&auml;lle innerhalb von zwei Standardfehlern um den vorhergesagten Wert liegt. Nehmen Sie beispielsweise an, dass f&uuml;r eine neue Position ein Wert von 50 mit einem Standardfehler von 5 vorhergesagt wird.  Dies bedeutet, dass die bestm&ouml;gliche Vorhersage des Werkzeugs f&uuml;r den wahren Wert an dieser Position 50 ist, er aber durchaus Werte zwischen 40 und 60 aufweisen k&ouml;nnte.  Um diesen Bereich sinnvoller Werte zu berechnen, multiplizieren Sie den Standardfehler mit 2, addieren Sie diesen Wert mit dem vorhergesagten Wert, um den oberen Grenzwert des Bereichs zu erhalten, und subtrahieren Sie ihn vom vorhergesagten Wert, um den unteren Grenzwert zu berechnen.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassifizieren nach</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie vorhergesagte Werte in Fl&auml;chen klassifiziert werden sollen.
+                <ul>
+                    <li>Geometrisches Intervall &ndash; Fl&auml;chen basieren auf Klassenintervallen, die eine geometrische Reihe darstellen. Bei dieser Methode wird sichergestellt, dass in jedem Klassenbereich ungef&auml;hr dieselbe Anzahl von Werten in jede Klasse f&auml;llt und dass die &Auml;nderungen zwischen den einzelnen Intervallen relativ einheitlich sind.
+                    </li>
+                    <li>Gleiches Intervall &ndash; Fl&auml;chen werden so erstellt, dass der Bereich der vorhergesagten Werte f&uuml;r jede Fl&auml;che gleich ist.
+                    </li>
+                    <li>Gleiche Fl&auml;che &ndash; Fl&auml;chen werden so erstellt, dass die Anzahl der Datenwerte in jeder Fl&auml;che gleich ist. Wenn die Datenwerte beispielsweise mehr hohe als niedrige Werte aufweisen, werden mehr Fl&auml;chen f&uuml;r hohe Werte erstellt.
+                    </li>
+                    <li>Manuell &ndash; Diese Option erm&ouml;glicht die Definition eines eigenen Wertebereichs f&uuml;r Fl&auml;chen. Diese Werte werden in den Parameter  <b>Werte der Klassengrenzen</b> unten eingegeben.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Anzahl der Klassen</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt die Anzahl der Klassen (Bereich vorhergesagter Werte) im Ergebnis-Layer an. Jede Klasse definiert die Grenze von Fl&auml;chen. Die Werte dieser Klassen werden durch den oben genannten Parameter 
+ <b>Klassifizieren nach</b> festgelegt.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Werte der Klassengrenzen</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die gew&uuml;nschten Werte der Klassengrenzen durch Leerstellen getrennt ein. Wenn Sie beispielsweise Klassengrenzen mit Werten von 1,5, 3 und 7 w&uuml;nschen, geben Sie  <code>1,5&nbsp;3&nbsp;7</code> ein.  Anhand dieser Werte wird die obere Grenze jeder Klasse definiert, sodass die Anzahl der Klassen gleich der Anzahl der eingegebenen Werte ist. F&uuml;r Positionen mit vorhergesagten Werten, die gr&ouml;&szlig;er als der gr&ouml;&szlig;te eingegebene Unterbrechungswert sind, werden keine Fl&auml;chen erstellt. Sie m&uuml;ssen mindestens zwei, aber nicht mehr als 32 Werte eingeben.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Ausgabe beschränken auf</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen Sie oder stellen Sie einen Layer bereit, indem Sie die Fl&auml;che angeben, auf der das Ergebnis dargestellt werden soll. Wenn Sie beispielsweise Messwerte f&uuml;r die Verschmutzung von Seen interpolieren, k&ouml;nnen Sie die Grenze des Sees in diesem Parameter verwenden, damit die Ausgabe nur innerhalb der Grenze des Sees dargestellt wird.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>An diesen Positionen vorhersagen</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen Sie oder stellen Sie einen Layer bereit, der Punktpositionen angibt, um Vorhersagewerte zu berechnen. Auf diese Weise k&ouml;nnen Sie Vorhersagen an bestimmten Positionen Ihres Interesses machen. Wenn der Eingabe-Layer beispielsweise Messungen des Verschmutzungsgrades darstellt, k&ouml;nnen Sie diesen Parameter verwenden, um den Verschmutzungsgrad von Positionen mit gro&szlig;en Risikogruppen, wie Schulen oder Krankenh&auml;user, vorherzusagen.  Anhand dieser Informationen k&ouml;nnen Sie Gesundheits&auml;mtern an diesen Standorten entsprechende Empfehlungen geben.
+            </p>
+            <p>Das Werkzeug gibt in diesem Fall einen Punkt-Layer mit Vorhersagen an den angegebenen Positionen aus. Der Name des Ausgabe-Layers ist der Name des Ergebnis-Layers mit angeh&auml;ngtem 'Points'.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

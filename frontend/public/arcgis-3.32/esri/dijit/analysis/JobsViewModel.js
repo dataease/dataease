@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/JobsViewModel","dojo/_base/declare dojo/_base/lang dojo/_base/array dojo/has dojo/json dojo/Stateful dojo/topic ./utils ./storageUtils ../../kernel ../../lang".split(" "),function(c,b,e,f,n,g,h,k,l,m,d){c=c([g],{declaredClass:"esri.dijit.analysis.JobsViewModel",constructor:function(a){this.watch("item",b.hitch(this,this.fetchJobs))},_portalUrlSetter:function(a){this.portalUrl=a},_itemSetter:function(a){this.item=a},_jobsSetter:function(a){this.jobs=a},_currentJobSetter:function(a){a&&
+a.jobParams&&k.jobParamsToWidgetProps(a).then(b.hitch(this,function(a){this.currentJob=a;h.publish("analysis/jobs/selectedjob",this.currentJob,this.item)}))},fetchJobs:function(){this.portalUrl&&this.item&&l.getResourcesInfo(this.item,{portalUrl:this.portalUrl}).then(b.hitch(this,function(a){a=e.filter(a,function(a){return d.isDefined(a.toolName)&&d.isDefined(a.jobInfo)&&d.isDefined(a.jobParams)});this.set("jobs",a)}),b.hitch(this,function(a){console.log("Error fetching jobs",a)}))}});f("extend-esri")&&
+b.setObject("dijit.analysis.JobsViewModel",c,m);return c});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/SummarizeCenterAndDispersion",{inputLayerLabel:"Escolher uma camada para descrever",summaryTypes:"Tipos de resumo",centralFeature:"Elemento central",meanCenter:"Centro m\u00e9dio",medianCenter:"Centro mediano",ellipse:"Elipse",weightBy:"Pesar por (opcional)",groupBy:"Agrupar por (opcional)",resultLayerName:"Nome da camada resultante",outputLayerName:"Descrever distribui\u00e7\u00e3o de ${layerName}",none:"Nenhum",itemDescription:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o de Resumir centro e dispers\u00e3o em ${layerName}. ",
+itemTags:"Resultado da An\u00e1lise, Resumir centro e dispers\u00e3o, ${layerName}",itemSnippet:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o de Resumir centro e dispers\u00e3o"});

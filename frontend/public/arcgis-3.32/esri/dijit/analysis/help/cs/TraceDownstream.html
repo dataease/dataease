@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sledovat po proudu (Trace Downstream)</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Sledovat po proudu"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj určuje trasu toku směrem po proudu od bodů ve vstupn&iacute; vrstvě.
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že m&aacute;te bodov&eacute; prvky, kter&eacute; představuj&iacute; zdroje zneči&scaron;těn&iacute;, a chcete určit, kam ve va&scaron;&iacute; z&aacute;jmov&eacute; oblasti zneči&scaron;těn&iacute; poteče. Pomoc&iacute; n&aacute;stroje Sledovat po proudu můžete určit cestu zneči&scaron;těn&iacute;. Tuto sledovanou trasu lze tak&eacute; určen&iacute;m hodnoty vzd&aacute;lenosti a jednotek rozdělit do jednotliv&yacute;ch liniov&yacute;ch segmentů. Vr&aacute;cen&aacute; linie může m&iacute;t celkovou d&eacute;lku trasy toku či určenou maxim&aacute;ln&iacute; d&eacute;lku trasy, př&iacute;padně může b&yacute;t omezena prvky oblasti, např&iacute;klad z&aacute;jmov&yacute;m &uacute;zem&iacute;m. V př&iacute;padě vr&aacute;cen&iacute; celkov&eacute; d&eacute;lky trasy povede trasa v mnoha př&iacute;padech od zdroje až k oce&aacute;nu.
+    </p>
+    <p>V&yacute;sledkem je linie představuj&iacute;c&iacute; sledovanou trasu směrem po proudu. Pokud je určena vzd&aacute;lenost pro pole  <b>Rozdělit trasu do liniov&yacute;ch segmentů</b>, bude linie trasy rozdělena do v&iacute;ce lini&iacute; o určen&eacute; d&eacute;lce.  Pokud např&iacute;klad vstupn&iacute; bod představuje zdroj zneči&scaron;těn&iacute; a řeka, do kter&eacute; se vl&eacute;v&aacute;, se pohybuje rychlost&iacute; 1 km za hodinu nebo 24 km za den, může b&yacute;t vhodn&eacute; řeku rozdělit do 24kilometrov&yacute;ch segmentů. Rozdělen&iacute; trasy na 24kilometrov&eacute; intervaly v&aacute;m zhruba uk&aacute;že, kam zneči&scaron;těn&iacute; každ&yacute; den postoup&iacute;. Linie bude symbolizov&aacute;na pomoc&iacute; stupňovan&yacute;ch barev na z&aacute;kladě vzd&aacute;lenosti a bude na n&iacute; vyznačena vzd&aacute;lenost od zač&aacute;tku trasy.
+    </p>
+    <p>V&yacute;sledn&aacute; trasa bude m&iacute;t atributy v&scaron;ech vstupn&iacute;ch bodů a tak&eacute; dodatečn&eacute; atributy. 
+        <ul>
+            <li> <i>PointID</i>&mdash;Obsahuje hodnotu ID ze vstupn&iacute;ho bodu.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Obsahuje d&eacute;lku v kilometrech pro celkovou trasu sledovanou po proudu.
+                
+
+            </li>
+            <li> <i>Description</i> a <i>DataResolution</i>&mdash;Obsahuj&iacute; informace t&yacute;kaj&iacute;c&iacute; se hydrologick&yacute;ch &uacute;dajů použit&yacute;ch pro v&yacute;počet.
+                
+
+            </li>
+            <li> <i>FromDistance</i> and <i>ToDistance</i>&mdash;Obsahuj&iacute; vzd&aacute;lenost od a do každ&eacute;ho liniov&eacute;ho segmentu. Tyto atributy budou zaps&aacute;ny, pokud použijete možnost <b>Rozdělit trasu do liniov&yacute;ch segmentů</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy,</b> budou analyzov&aacute;ny pouze bodov&eacute; prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou použ&iacute;v&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo oblast aktu&aacute;ln&iacute;ho rozsahu mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bodové prvky, které se použijí k označení umístění počátků pro jednotlivé trasy sledované po proudu.</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky, kter&eacute; se použij&iacute; k označen&iacute; um&iacute;stěn&iacute; poč&aacute;tku trasy sledovan&eacute; po proudu. V&yacute;stup bude obsahovat linii pro každ&yacute; vstupn&iacute; bod.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Rozdělit trasu do liniových segmentů</h2></div>
+        <hr/>
+        <div>
+            <p>Linie trasy bude rozdělena do v&iacute;ce jednotliv&yacute;ch lini&iacute; určen&eacute; d&eacute;lky. Pokud např&iacute;klad vstupn&iacute; bod představuje zdroj zneči&scaron;těn&iacute; a řeka, do kter&eacute; se vl&eacute;v&aacute;, se pohybuje rychlost&iacute; 1 km za hodinu nebo 24 km za den, může b&yacute;t vhodn&eacute; řeku rozdělit do 24kilometrov&yacute;ch segmentů. Rozdělen&iacute; trasy na 24kilometrov&eacute; intervaly v&aacute;m zhruba uk&aacute;že, kam zneči&scaron;těn&iacute; každ&yacute; den postoup&iacute;. Linie bude symbolizov&aacute;na pomoc&iacute; stupňovan&yacute;ch barev na z&aacute;kladě vzd&aacute;lenosti a bude na n&iacute; vyznačena vzd&aacute;lenost od zač&aacute;tku trasy. V&yacute;sledn&aacute; trasa bude m&iacute;t v&iacute;ce liniov&yacute;ch segmentů, každ&yacute; s poli  <i>FromDistance</i> a <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maximální vzdálenost trasy</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje celkovou d&eacute;lku vr&aacute;cen&eacute; linie. Pokud trasu omez&iacute;te pomoc&iacute; prvků oblasti, v&yacute;sledek bude omezen prvkem oblasti bez ohledu na zde zadanou vzd&aacute;lenost.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Oříznout výstup na</h2></div>
+        <hr/>
+        <div>
+            <p>Nakreslete nebo zadejte vrstvu oblasti, v r&aacute;mci kter&eacute; chcete trasu omezit. Pokud např&iacute;klad chcete, aby se v&yacute;sledn&aacute; sledovan&aacute; trasa nach&aacute;zela v z&aacute;jmov&eacute;m &uacute;zem&iacute;, jako je např. kraj, použijte jej jako vstupn&iacute; prvek, aby sledov&aacute;n&iacute; končilo na hranici kraje.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+            <p> Tento n&aacute;stroj nespotřebov&aacute;v&aacute; kredity.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ชั้นข้อมูลที่ตัด</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="ชั้นข้อมูลที่ตัด"></h2>
+        <hr/>
+    <p>เครื่องมือชั้นข้อมูลที่ตัดจะดึงฟีเจอร์จุด เส้น หรือพื้นที่ที่ซ้อนทับกับพื้นที่ที่ตัด ผลลัพธ์คือเซ็ตย่อยของข้อมูลอินพุตของคุณโดยยึดตามพื้นที่ที่สนใจ ต่อไปนี้คือตัวอย่างของยูทิลิตี้เครื่องมือ:
+        <ul>
+            <li>แม่น้ำหลักสายใดที่อยู่ภายในรัฐเนบราสก้า
+                  
+            </li>
+            <li>บ้านหลังใดที่อยู่ภายในเขตพื้นที่น้ำท่วมแถบชายฝั่ง
+            </li>
+            <li>พายุเฮอร์ริเคนลูกใดที่ทำให้เกิดบนฝั่งในปี 2011
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>เลือกฟีเจอร์ที่จะตัด</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลจุด เส้น หรือพื้นที่ที่จะถูกตัด คุณจะสร้างเซ็ตย่อยของฟีเจอร์เหล่านี้
+            </p>
+            <p>นอกเหนือจากการเลือกชั้นข้อมูลจากแผนที่คุณสามารถเลือก <b>เลือกชั้นข้อมูลการวิเคราะห์</b> ที่ด้านล่างของรายการแบบเลื่อนลงเพื่อเรียกดูเนื้อหาของคุณสำหรับชุดข้อมูลขนาดใหญ่หรือชั้นฟีเจอร์
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>เลือกพื้นที่ที่จะตัด</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลพื้นที่ที่คุณจะตัดฟีเจอร์ชั้นข้อมูลอินพุต พื้นที่ต่อไปนี้จะกำหนดขอบเขตของเซ็ตย่อย
+            </p>
+            <p>นอกเหนือจากการเลือกชั้นข้อมูลจากแผนที่คุณสามารถเลือก <b>เลือกชั้นข้อมูลการวิเคราะห์</b> ที่ด้านล่างของรายการแบบเลื่อนลงเพื่อเรียกดูเนื้อหาของคุณสำหรับชุดข้อมูลขนาดใหญ่หรือชั้นฟีเจอร์
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p> ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้น หากคุณกำลังเขียนถึง ArcGIS Data Store, ผลลัพธ์ ของคุณจะถูกบันทึกเก็บใน<b>My Content</b> และเพิ่มเข้าในแผนที่ หากคุณกำลังเขียนไปยังไฟล์แชร์ข้อมูลขนาดใหญ่, ผลลัพธ์ ของคุณจะถูกเก็บในไฟล์แชร์ข้อมูลใหญ่นั้น และเพิ่้มใน ข้อความ ที่แสดง ซึ่งจะ ไม่ถูกเพิ่มเข้าในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลมีอยู่แล้วเครื่องมือจะล้มเหลว
+            </p>
+            <p>เมื่อคุณเขียน  ArcGIS Data Store (แหล่งข้อมูลใหญ่สเปชิโอเทมโพรัลหรือเชิงสัมพันธ์) ที่ใช้เพื่อ  <b>บันทึกผลลัพธ์ในช่องแบบเลื่อนลง </b>, คุณสามารถระบุชื่อของโฟลเดอร์ใน <b>My Content</b> ซึ่งจะถูกบันทึกไว้ในโฟลเดอร์นี้
+            </p>
+        </div>
+    </div>
+</div>
+</html>

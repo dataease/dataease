@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Raster extraheren</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Tool Raster extraheren voor Portal"></h2>
+        <hr/>
+    <p>Deze tool kan een raster maken als grens, hetzij voor een ​​rechthoekig gebied of voor een ​​vorm die u interactief definieert op het scherm. U kunt het gebied dat u momenteel op uw kaart hebt weergegeven knippen of het onderzoeksgebied gedefinieerd door een polygoon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies invoergegevens om te extraheren</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerlaag om te knippen.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Geometrie om te gebruiken bij het afsnijden specificeren</h2></div>
+        <hr/>
+        <div>
+            <p>Kies het extenttype om te gebruiken bij het knippen van de geometrie van de laag:
+
+                <ul>
+                    <li>Huidige extent gebruiken&mdash;De huidige kaartextent wordt gebruikt om de resulterende laag uit te knippen. Dit is de standaardinstelling.
+                        
+
+                    </li>
+                    <li>Het onderzoeksgebied kiezen&mdash;Hiermee kunt u kiezen of het resultaat het gebied toont in de geometrie- extent of het gebied buiten de geometrie-extent. Als u de optie  <b>Gegevens binnen de geometrie</b> kiest, worden de beelden buiten het bereik verwijderd. Als u de optie <b>Gegevens buiten de geometrie</b> kiest, worden de beelden binnen het bereik verwijderd. U kunt ook een knipgeometrie defini&euml;ren met behulp van de tekentool.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,19 @@
+/* dojox.mobile.RoundRectList */
+.mblRoundRectList {
+	margin: 7px 9px 16px;
+	padding: 0;
+	border: 1px solid @mbl-round-rect-border-color;
+	border-radius: @mbl-round-rect-border-radius;
+	background-color: @mbl-round-rect-background-color;
+	.mblListItem:first-child,
+	.mblEdgeToEdgeCategory:first-child {
+		border-top-left-radius: @mbl-round-rect-border-radius;
+		border-top-right-radius: @mbl-round-rect-border-radius;
+	}
+	.mblListItem:last-child,
+	.mblEdgeToEdgeCategory:last-child {
+		border-bottom-width: 0;
+		border-bottom-left-radius: @mbl-round-rect-border-radius;
+		border-bottom-right-radius: @mbl-round-rect-border-radius;
+	}
+}

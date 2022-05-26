@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ģeokodu novietojumi no tabulas</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Ģeokodu novietojumi no tabulas"></h2>
+        <hr/>
+    <p>Ģeokodē&scaron;ana ir veids, kā adreses pārveidot par koordinātām. &Scaron;is rīks adreses no tabulas, CSV faila vai Excel faila pārveido par elementu slāni vai izvades failu ar koordinātām, kas norādītas papildu kolonnā.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Izvēlēties ievades tabulu</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades tabula ar ģeokodējamām adresēm. Ievadei ir jābūt tabulai, CSV failam vai Excel failam.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Izvēlieties meklētāju</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties meklētāja pakalpojumu, ko izmantot ģeokodē&scaron;anai. Ja vajadzīgais meklētāja pakalpojums nav norādīts nolaižamajā izvēlnē, sazinieties ar administratoru, lai tas konfigurētu meklētāja pakalpojumu pake&scaron;veida ģeokodē&scaron;anai.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Valsts</h2></div>
+        <hr/>
+        <div>
+            <p>Ja visas adreses ir no vienas valsts, izvēlieties &scaron;o valsti, lai nodro&scaron;inātu visprecīzākos rezultātus. Pretējā gadījumā &scaron;o parametru atstājiet tuk&scaron;u.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Datu lauku izvēle</h2></div>
+        <hr/>
+        <div>
+            <p>Meklētāja pakalpojumam datos ir nepiecie&scaron;ami noteikti lauki, piemēram, adrese, pilsēta, &scaron;tats/rajons un pasta indekss. Izmantojot nolaižamos lodziņus, saskaņojiet jūsu ievades faila vai tabulas datu laukus ar laukiem, kuri nepiecie&scaron;ami meklētājam. Jo vairāk lauku kartēsiet, jo precīzāki būs rezultāti. Ja ievades tabulā visi dati atrodas vienā kolonnā, izvēlieties  <b>Viens lauks</b> un izvēlieties datu lauku nolaižamajā izvēlnē. Pretējā gadījumā izvēlieties <b>Vairāki lauki</b> un kartējiet atbilsto&scaron;os meklētāja laukus ar daudzajām savas tabulas lauku kolonnām.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Izvēlieties izvades formātu</h2></div>
+        <hr/>
+        <div>
+            <p>Izvades rezultātu formāts. Ja izvēlas izveidot elementu pakalpojumu, ievades tabulas adreses tiek pievienotas kartei kā punktu elementu slānis. Ja izvēlas CSV un XLS, tad pēc ģeokodē&scaron;anas darba pabeig&scaron;anas tā rezultātu faili tiek pievienoti sadaļā  <b>Mans saturs</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Izvades rezultātu nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

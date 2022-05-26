@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Luo näkymäalue</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Luo n&auml;kym&auml;alue"></h2>
+        <hr/>
+    <p>Luo n&auml;kym&auml;alue -ty&ouml;kalu luo alueet, joista tarkkailija n&auml;kee maanpinnalla olevat kohteet. Tarkkailupisteet voivat edustaa joko tarkkailijoita (kuten maanpinnalla olevia ihmisi&auml; tai palotornien t&auml;hystyspaikkoja) tai tarkastelun kohteita (kuten tuulimyllyj&auml;, vesitorneja, kulkuneuvoja tai muita ihmisi&auml;). Tulosalueet ovat alueita, joiden kohteet tarkkailijat n&auml;kev&auml;t, ja p&auml;invastoin: tarkasteltavat kohteet n&auml;kev&auml;t tarkkailijat.
+    </p>
+    <p>Sek&auml; tarkkailijat ett&auml; tarkasteltavat kohteet voivat sijaita tietyll&auml; korkeudella maanpinnan yl&auml;puolella, ja n&auml;it&auml; korkeuksia k&auml;ytet&auml;&auml;n n&auml;kyvyyden m&auml;&auml;rityksess&auml;. Esimerkiksi 400 jalan (122 metrin) mittaisille tuulimyllyille ja kuuden jalan (1,8 metrin) mittaisille maanpinnalla seisoville ihmisille laskettu n&auml;kym&auml;alue on yleens&auml; suurempi kuin 200 jalan (61 metrin) mittaisille tuulimyllyille ja kuuden jalan (1,8 metrin) mittaisille ihmisille laskettu n&auml;kym&auml;alue.
+    </p>
+    <p>Huomaa, ett&auml; n&auml;kym&auml;alueen laskenta ei ota huomioon esteit&auml;, kuten puita tai rakennuksia. Voit ajatella, ett&auml; laskenta tapahtuu paljaalla maanpinnalla, jossa ei ole muuta kuin tarkkailija ja tarkasteltavat kohteet.
+    </p>
+    <p>Tulostaso sis&auml;lt&auml;&auml; n&auml;kyvi&auml; alueita edustavat aluekohteet.  <i>Frequency</i>-kentt&auml;&auml;n tallentuu niiden tarkkailupisteiden m&auml;&auml;r&auml;, jotka n&auml;kev&auml;t kunkin alueen. Jos l&auml;ht&ouml;pisteit&auml; on viisi, joista kukin edustaa palotornia, <i>Frequency</i>-kent&auml;ss&auml; on arvot 0&ndash;5: alueet, joiden arvona on yksi, n&auml;hd&auml;&auml;n vain yhdest&auml; tornista, ja alueet, joiden arvona on viisi, n&auml;hd&auml;&auml;n kaikista torneista. Tulostaso sis&auml;lt&auml;&auml; my&ouml;s <i>DEMResolution</i>-kent&auml;n, johon tallentuu n&auml;kym&auml;alueiden luonnissa k&auml;ytetyn digitaalisen korkeusmallin (DEM) resoluutio.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, toiminto analysoi vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevat tarkkailupisteet. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason tarkkailupisteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pistekohteet, jotka edustavat tarkkailusijainteja</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, joita k&auml;ytet&auml;&auml;n tarkkailupistein&auml;. 
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Tarkkailusijaintien korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on tarkkailusijaintien korkeus maanpinnasta. Oletusarvona on henkil&ouml;n keskim&auml;&auml;r&auml;inen pituus.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Maanpinnan muiden kohteiden korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on rakenteiden tai ihmisten korkeus maanpinnalla, jota k&auml;ytet&auml;&auml;n n&auml;kyvyyden muodostamisessa. Tulosn&auml;kym&auml;alueeseen sis&auml;ltyv&auml;t alueet, joista tarkkailupiste n&auml;kee muut kohteet. T&auml;m&auml; p&auml;tee my&ouml;s k&auml;&auml;nteisesti: muut kohteet n&auml;kev&auml;t tarkkailupisteen. 
+            </p>
+            <p>
+                <ul>
+                    <li>Jos tarkkailupisteet edustavat tuulimyllyj&auml; ja haluat selvitt&auml;&auml;, mist&auml; maanpinnalla seisovat ihmiset n&auml;kev&auml;t tuulimyllyt, kirjoita henkil&ouml;n keskim&auml;&auml;r&auml;inen pituus (noin 1,8 metri&auml;). Tuloksena ovat alueet, joista maanpinnalla seisova ihminen n&auml;kee tuulimyllyt.
+                    </li>
+                    <li>Jos tarkkailupisteet edustavat palotorneja, ja haluat selvitt&auml;&auml;, mist&auml; palotorneista n&auml;kee v&auml;hint&auml;&auml;n 20 jalan (6 metrin) korkeudella olevan savupilven, kirjoita korkeudeksi 20 jalkaa (6 metri&auml;). Tuloksena ovat alueet, joista palotorni n&auml;kee v&auml;hint&auml;&auml;n 20 jalan (kuuden metrin) korkeudella olevan savupilven.
+                    </li>
+                    <li>Jos tarkkailupisteet edustavat teiden ja polkujen varrella olevaa n&auml;k&ouml;alapaikkaa, ja haluat selvitt&auml;&auml;, mist&auml; v&auml;hint&auml;&auml;n 400 jalan (122 metrin) korkuiset tuulimyllyt n&auml;kyv&auml;t, kirjoita korkeudeksi 400 jalkaa (122 metri&auml;). Tuloksena ovat alueet, joista n&auml;k&ouml;alapaikalla seisova ihminen n&auml;kee v&auml;hint&auml;&auml;n 400 jalan (122 metrin) korkuisen tuulimyllyn.
+                    </li>
+                    <li>Jos tarkkailupisteesi edustavat n&auml;k&ouml;alapaikkoja, ja haluat selvitt&auml;&auml;, kuinka suuren alueen maanpinnasta n&auml;k&ouml;alapaikalla seisovat ihmiset n&auml;kev&auml;t, kirjoita arvoksi nolla. Tuloksena ovat alueet, jotka n&auml;kyv&auml;t n&auml;k&ouml;alapaikalta.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Enimmäiskatseluetäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on rajaet&auml;isyys, jossa n&auml;kyvien alueiden laskenta p&auml;&auml;ttyy. Ei ole varmuutta, n&auml;kev&auml;tk&ouml; tarkkailupisteet ja muut kohteet toisensa t&auml;t&auml; et&auml;isyytt&auml; kauempaa. Suuret arvot pident&auml;v&auml;t laskenta-aikaa. Suurin sallittu arvo on 31 mailia (50 kilometri&auml;).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+            <p> T&auml;m&auml;n ty&ouml;kalun suorittaminen ei kuluta krediittej&auml;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

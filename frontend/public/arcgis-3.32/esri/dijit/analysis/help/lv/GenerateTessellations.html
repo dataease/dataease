@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ģenerēt mozaīkas veidojumus</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Ģenerēt mozaīkas veidojumus"></h2>
+        <hr/>
+    <p>&Scaron;is rīks ģenerē mozaīkas veidojumus pētāmajā teritorijā, pamatojoties uz norādīto formu un lielumu.
+    </p>
+    <p>Izvēles rūtiņa   <b>Lietot pa&scaron;reizējo kartes pārklājumu</b> &scaron;im rīkam ir iespējota, jo mozaīkas veidojumu ģenerē&scaron;anai izmantoto pārklājumu kontrolē <b>Noteikt pārklājumu</b> parametrs.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Izvēlēties formu</h2></div>
+        <hr/>
+        <div>
+            <p>Izveidojiet mozaīku veidojumu formu vai ģeometriju. Pieejamās formas ir  <code>Kvadrāts</code>, <code>Se&scaron;stūris</code>, <code>&Scaron;ķērsgriezuma se&scaron;stūris</code>, <code>Trīsstūris</code>, vai <code>Dimants</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definēt pētāmo teritoriju</h2></div>
+        <hr/>
+        <div>
+            <p>Mozaīkas veidojuma aptvertais apjoms vai laukums. Pārklājumu var noteikt, izmantojot pa&scaron;reizējo kartes pārklājumu, eso&scaron;ā slāņa pārklājumu vai interaktīvi izzīmējot apgabalu, kas jāizmanto kā pārklājumu.
+            </p>
+            <p>Ja elementa slānis ir atlasīts, lai noteiktu pārklājumu, tiks iespējota opcija saglabāt tikai krustojo&scaron;os mozaīku veidojumus. Ja izvēles rūtiņa ir atzīmēta, iegūtajā mozaīkas veidojuma slānī tiks ģenerētas tikai tie mozaīkas veidojumi, kas pārklājas vai krustojas ar noteiktā apjoma slāņa iezīmēm. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Neatzīmēts
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Pilns pla&scaron;ais pārklājums">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Atzīmēts
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Elementu pārklājums">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definēt nodalījuma lielumu, norādot</h2></div>
+        <hr/>
+        <div>
+            <p>Katras &scaron;ūnas lielums. &Scaron;ūnas lielumu var noteikt, norādot kvadrāta vienības vai attālumu, ko aprēķina, izmantojot &scaron;ādus mērījumus, kur d = attālums: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kvadrāts
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Kvadrāta mozaīkas veidojums">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Se&scaron;stūris
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Se&scaron;stūra mozaīkas veidojums">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>&Scaron;ķērseniskais se&scaron;stūris
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="&Scaron;ķērseniskā se&scaron;stūra mozaīkas veidojums">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Trijstūris
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Trīsstūra mozaīkas veidojums">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Rombs
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Dimanta mozaīkas veidojums">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Ja slānis jau pastāv, jums tiks lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

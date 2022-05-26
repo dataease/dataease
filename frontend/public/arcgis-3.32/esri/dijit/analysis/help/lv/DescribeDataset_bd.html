@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Datu kopas apraksts</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Datu kopas darbplūsmas shēmas apraksts"></h2>
+        <hr/>
+    <p>Rīks Aprakstīt datu kopu nodro&scaron;ina detalizētāku datu kopas apskatī&scaron;anu. Pirms liela datu apjoma analīzes veik&scaron;anas izmantojiet &scaron;o rīku, lai noteiktu, kādi un kur ir jūsu ievaddati. Pēc noklusējuma rezultāts būs JSON virkne, kas apraksta ievades slāņa galvenos deskriptorus, un tabula, kurā norādīta katra lauka kopsavilkuma statistika. 
+    </p>
+    <p>Pēc izvēles var izveidot papildu izvades funkciju slāņus, lai sīkāk aprakstītu datus. Opcijas ir parauga slānis vai pārklājuma slānis. Var izvēlēties izvadi pa vienam vai abus.
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir pie&scaron;ķirta liela datu failu koplieto&scaron;ana, kurā ir 15 datu kopas. Katrai datu kopai ir 10 miljoni teritoriju, kas pārstāv ēkas un mājas dažādos jūsu valsts reģionos. Jums ir uzdots analizēt reģionu C, bet jūs nezināt, kurā datu kopā ir &scaron;ie elementi. Lai noskaidrotu, kuru datu kopu izmantot, palaidiet Aprakstīt datu kopu un izvēlieties izveidot pārklājuma slāni, lai izpētītu, kura datu kopa ir jūsu pētījuma reģionā.
+    </p>
+    <p>Kā vēl vienu piemēru iedomājieties, ka jums ir uzdevums pabeigt analīzes darbplūsmu ar lielu datu apjomu. Jūs vēlaties izmēģināt darbplūsmu, bet ar pilnu datu kopu var paiet stundas vai dienas. Tā vietā, lai izmantotu laiku un resursus, kas nodro&scaron;ina pilnu analīzi, izveidojiet parauga slāni, lai efektīvi pārbaudītu visu darbplūsmu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties aprakstāmo datu kopu</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kurā ir punkta, līnijas, apgabala vai tabulas iezīmes, kas tiks aprakstītas, apkopotas un ņemtas.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Izprotiet savu datu kopu, izveidojot (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Izvadiet papildu apraksto&scaron;us slāņus, lai uzlabotu izpratni par jūsu lielapjoma datiem. Var izvēlēties izvadīt nulli, viens vai abus &scaron;ādus slāņus:
+            </p>
+            <ul>
+                <li> <b>Pārklājuma slānis</b>&mdash;izveido laukuma elementu, kas atspoguļo ievades elementu vai interesējo&scaron;ās teritorijas pārklājumu.
+                </li>
+                <li> <b>Parauga slānis</b>&mdash;izveido apak&scaron;kopas slāni, kas satur noteiktu ievades elementu daudzumu no datu kopas vai interesējo&scaron;ās teritorijas.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Parauga slānis</h2></div>
+        <hr/>
+        <div>
+            <p>Izvadiet slāni, kurā atrodas ievades slāņa elementu apak&scaron;kopa. Ja ir atlasīts  <b>Parauga slānis,</b> var norādīt to elementu skaitu, kurus vēlaties atgriezt parauga slānī. Pēc noklusējuma izvades slānī tiks atgriezti 100 parauga elementi.
+            </p>
+            <p>Vērtībai ir jābūt lielākai par nulli. Ja norādāt skaitli, kas ir lielāks par kopējo elementu skaitu, tiks atgrieztas visas funkcijas.
+            </p>
+            <p>Ja ir atlasīts  <b>Lietot pa&scaron;reizējo kartes pārklājumu,</b> parauga slānī būs elementi no kartes pārklājuma.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Pārklājuma slānis</h2></div>
+        <hr/>
+        <div>
+            <p>Izvadiet elementa slāni, kurā ir viens elements, kas attēlo ievades elementu apjomu, izvēloties  <b>Pārklājuma slānis</b> pogu. Tas ir atlasīts pēc noklusējuma.
+            </p>
+            <p>Ja ir atlasīts  <b>Lietot pa&scaron;reizējo kartes pārklājumu,</b> tad apjoma slānis norāda kartes redzamo pārklājumu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

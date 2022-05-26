@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summeeri raster piirides</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="T&ouml;&ouml;riist &quot;Summeeri raster piirides&quot;"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist summeerib rastrid vastavalt esimese sisendkihiga m&auml;&auml;ratletud aladele (tsoonidele).
+    </p>
+    <p>M&otilde;ned n&auml;ited kasutusaladest:
+    </p>
+    <p>
+        <ul>
+            <li>&Uuml;leujutusalade ulatuse ja maakasutuse piirkondade v&otilde;rdluse tulemusena on leitav iga &uuml;leujutuspiirkonna alla j&auml;&auml;va konkreetse kasutatava maa-ala kogupindala.
+                
+
+            </li>
+            <li>Omavalitsuse piirides paiknevate katastri&uuml;ksuste keskmine maamaksu suurus asustus&uuml;ksuste kaupa.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui tingimus  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse &uuml;ksnes neid sisendkihi ja summeeritava kihi objekte, mis on kaardil praegu n&auml;htavad.  Kui see ruut on m&auml;rkimata, anal&uuml;&uuml;sitakse k&otilde;iki sisendkihi ja summeeritava kihi objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Vali alakiht, et summeerida rasterkiht määratletud piirides</h2></div>
+        <hr/>
+        <div>
+            <p>Summeeritavate alade v&otilde;i tsoonide piire m&auml;&auml;ratlev kiht.
+            </p>
+            <p>Kiht v&otilde;ib olla raster v&otilde;i vektorandmetena. Rastrite puhul on tsoonid m&auml;&auml;ratletud k&otilde;ikide asukohtadega sisendis, millel on sama piksliv&auml;&auml;rtus. Alad ei pea olema omavahel &uuml;hendatud.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Vali piiride määratlemiseks väli</h2></div>
+        <hr/>
+        <div>
+            <p>See on kihi atribuut, mida kasutatakse alade piiride m&auml;&auml;ratlemiseks.
+            </p>
+            <p>V&otilde;tame n&auml;iteks olukorra, kus esimene sisendkiht m&auml;&auml;ratleb haldus&uuml;ksuse piirid, mille atribuudid m&auml;&auml;ratlevad iga &uuml;ksuse regiooni, rajooni ja katastri&uuml;ksuse ID. Lisaks on teil rasterkiht, mis m&auml;&auml;ratleb iga asukoha jaoks bioloogilise mitmekesisuse indeksi. Valitava v&auml;ljaga saate otsustada, kas soovite arvutada keskmise bioloogilise mitmekesisuse kohalikul, rajooni v&otilde;i regiooni tasemel.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Valige summeerimiseks rasterkiht</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi rasterpikslid summeeritakse vastavalt aladele (tsoonidele), millesse need kuuluvad.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Vali arvutamiseks statistika</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;rast summeritava kihi valimist saate soovi korral arvutada mis tahes punktide, joonte v&otilde;i pindade statistika sisendpindade kihi piires.
+            </p>
+            <p>Kui valitud v&auml;li on t&auml;isarv, saab valida j&auml;rgmised statistiku t&uuml;&uuml;bid: Keskmine, Enamus, Maksimum, Mediaan, Miinimum, V&auml;hemus, Vahemik, Standardh&auml;lve, Summa ja Erinevus.
+            </p>
+            <p>Kui v&auml;lja v&auml;&auml;rtused on ujuva v&auml;&auml;rtusega, saab valida: Keskmine, Maksimaalne, Minimaalne, Vahemik, Standardh&auml;lve ja Summa.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Eira arvutuses puuduvaid väärtusi</h2></div>
+        <hr/>
+        <div>
+            <p>Kui tahate eirata puuduvaid v&auml;&auml;rtusi, kasutatakse selle ala v&auml;ljundv&auml;&auml;rtuse m&auml;&auml;ratlemiseks ainult neid piksleid, millel on summeeritavas kihis v&auml;&auml;rtus. Vastasel juhul j&auml;reldatakse et, kui alal on igal pool puuduvad v&auml;&auml;rtused, pole selles tsoonis k&otilde;ikide pikslite statistiliste arvutuste teostamiseks piisavalt teavet ja sellele alale antakse v&auml;ljundis nullv&auml;&auml;rtus (NoData).
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

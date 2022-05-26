@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Flussabwärts verfolgen</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Verfolgung flussabw&auml;rts"></h2>
+        <hr/>
+    <p>Dieses Werkzeug bestimmt die Spur bzw. den Flie&szlig;pfad in einer Flussabw&auml;rtsrichtung von den Punkten in Ihrem Eingabe-Layer.
+    </p>
+    <p>Nehmen Sie beispielsweise an, Sie verf&uuml;gen &uuml;ber Punkt-Features, die Quellen einer Wasserverschmutzung darstellen und Sie m&ouml;chten ermitteln, wohin sich die Verschmutzung in Ihrem Untersuchungsgebiet ausbreiten wird. Sie k&ouml;nnen die Funktion &quot;Verfolgung flussabw&auml;rts&quot; verwenden, um den Weg der Verschmutzung zu identifizieren. Diese Verfolgung kann auch in einzelne Liniensegmente aufgeteilt werden, indem Sie einen Entfernungswert und Einheiten angeben. Die ausgegebene Linie kann die Gesamtl&auml;nge des Flie&szlig;pfads oder eine festgelegte maximale Verfolgungsl&auml;nge sein, oder sie kann auf Fl&auml;chen-Features wie etwa Ihr Untersuchungsgebiet ausgeschnitten werden. In vielen F&auml;llen reicht die Linie bei Ausgabe der Gesamtl&auml;nge des Verfolgungspfads von der Quelle bis zum Ozean.
+    </p>
+    <p>Das Ergebnis ist eine Linie, die die Verfolgung flussabw&auml;rts darstellt. Wenn f&uuml;r  <b>Verfolgung in Liniensegmente aufteilen</b> eine Entfernung angegeben ist, wird die Linie der Verfolgung in mehrere Linien aufgeteilt, wobei jede einzelne eine festgelegte L&auml;nge hat. Wenn beispielsweise Ihr Eingabepunkt die Einlaufstelle von verschmutztem Wasser in einen Fluss darstellt und selbiger eine Str&ouml;mungsgeschwindigkeit von etwa einem Kilometer pro Stunde bzw. von 24 Kilometern pro Tag hat, dann k&ouml;nnten Sie den Fluss in Segmente mit einer L&auml;nge von je 24 Kilometern aufteilen. Die Aufteilung der Verfolgung in 24-Kilometer-Intervalle zeigt dann in etwa, welche Entfernung die Verschmutzung pro Tag zur&uuml;cklegt. Die Linie wird je nach ihrer Entfernung mit abgestuften Farben symbolisiert und mit der entsprechenden Entfernung vom Startpunkt der Verfolgung beschriftet.
+    </p>
+    <p>Die sich ergebende Verfolgung verf&uuml;gt &uuml;ber alle Attribute Ihrer Eingabepunkte sowie diese zus&auml;tzlichen Attribute: 
+        <ul>
+            <li> <i>PointID</i>: Enth&auml;lt den ID-Wert des Eingabepunktes.
+                
+
+            </li>
+            <li> <i>LengthKm</i>: Enth&auml;lt die L&auml;nge in Kilometern f&uuml;r die gesamte Verfolgung flussabw&auml;rts.
+                
+
+            </li>
+            <li> <i>Description</i> und <i>DataResolution</i>: Enthalten Informationen, die sich auf die zur Berechnung der Verfolgung verwendeten hydrologischen Daten beziehen.
+                
+
+            </li>
+            <li> <i>FromDistance</i> und <i>ToDistance</i>: Enthalten die Entfernung zwischen Anfang und Ende jedes Liniensegments. Diese Attribute werden geschrieben, falls <b>Verfolgung in Liniensegmente aufteilen</b> verwendet wird.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Punkt-Features im Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer verwendet, auch wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt-Features, die als Startpositionen für jede Verfolgung flussabwärts verwendet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die als Startposition der Verfolgung flussabw&auml;rts verwendet werden. Die Ausgabe enth&auml;lt eine Linie f&uuml;r jeden Eingabepunkt.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Verfolgung in Liniensegmente aufteilen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Linie der Verfolgung wird in mehrere Linien aufgeteilt, wobei jede einzelne eine festgelegte L&auml;nge hat. Wenn beispielsweise Ihr Eingabepunkt die Einlaufstelle von verschmutztem Wasser in einen Fluss darstellt und selbiger eine Str&ouml;mungsgeschwindigkeit von etwa einem Kilometer pro Stunde bzw. von 24 Kilometern pro Tag hat, dann k&ouml;nnten Sie den Fluss in Segmente mit einer L&auml;nge von je 24 Kilometern aufteilen. Die Aufteilung der Verfolgung in 24-Kilometer-Intervalle zeigt dann in etwa, welche Entfernung die Verschmutzung pro Tag zur&uuml;cklegt. Die Linie wird je nach ihrer Entfernung mit abgestuften Farben symbolisiert und mit der entsprechenden Entfernung vom Startpunkt der Verfolgung beschriftet. Die sich ergebende Verfolgung hat dann mehrere Liniensegmente, jedes mit den Feldern  <i>FromDistance</i> und <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maximale Entfernung der Verfolgung</h2></div>
+        <hr/>
+        <div>
+            <p>Ermittelt die Gesamtl&auml;nge der Linie, die ausgegeben wird. Wenn Sie Fl&auml;chen-Features angeben, um die Verfolgung auszuschneiden, dann wird das Ergebnis auf das Fl&auml;chen-Feature ausgeschnitten. Die eingegebene Entfernung spielt dabei keine Rolle.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Ausgabe beschränken auf</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen Sie oder stellen Sie einen Layer der Fl&auml;che bereit, auf den die Verfolgung ausgeschnitten werden soll. Wenn beispielsweise das Ergebnis der Verfolgung nur innerhalb Ihres Untersuchungsgebiets &ndash; z. B. Ihr Landkreis &ndash; liegen soll, dann verwenden Sie Ihr Landkreis-Feature als Eingabe, damit die Verfolgung an der Landkreisgrenze gestoppt wird.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+            <p> F&uuml;r die Ausf&uuml;hrung dieses Werkzeugs werden keine Credits verbraucht.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

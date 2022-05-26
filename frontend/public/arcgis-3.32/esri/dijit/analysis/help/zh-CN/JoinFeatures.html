@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>连接要素</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="连接要素"></h2>
+        <hr/>
+    <p>连接要素适用于两个图层，可根据空间和属性关系将一个要素的属性连接到另一个要素。该工具可确定满足指定连接条件的所有输入要素并将连接图层追加到目标图层。
+    </p>
+    <p>&ldquo;连接要素&rdquo;可应用于点、线、面和表。空间连接需要您的数据具有几何。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围内可见的要素。如果未选中，则会对目标图层和连接图层内的所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>选择目标图层</h2></div>
+        <hr/>
+        <div>
+            <p>其属性将由连接图层追加到其表格的目标图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>选择要连接至目标图层的图层</h2></div>
+        <hr/>
+        <div>
+            <p>要将其属性追加到目标图层的连接图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>选择连接类型</h2></div>
+        <hr/>
+        <div>
+            <p>您可以应用空间连接、属性连接或二者的组合。
+                <ul>
+                    <li> <b>空间</b> - 使用指定的空间关系连接要素。两个图层都具有几何时才能使用此类型。
+                    </li>
+                    <li> <b>属性</b> - 基于相等字段连接要素。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>选择空间关系</h2></div>
+        <hr/>
+        <div>
+            <p>将确定要素是否彼此相连的空间关系。可用的关系将取决于要用作输入要素的几何（点、线、面）类型。可用的关系如下：
+                <ul>
+                    <li> <b>相同</b> - 如果目标图层中的要素与连接图层中的要素相同，则会对目标图层中的要素进行匹配。
+                    </li>
+                    <li> <b>相交</b> - 如果目标图层中的要素与连接图层中的要素相交，则会对目标图层中的要素进行匹配。
+                    </li>
+                    <li> <b>完全包含</b> - 如果目标图层中的要素完全包含连接图层中的要素，则会对这些要素进行匹配。
+                    </li>
+                    <li> <b>完全位于</b> - 如果目标图层中的要素完全位于连接图层的要素范围内，则会对这些要素进行匹配。
+                    </li>
+                    <li> <b>某一距离范围内</b> - 如果目标图层中的要素位于连接图层中要素的指定距离范围内，则会对目标图层中的要素进行匹配。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>属性连接</h2></div>
+        <hr/>
+        <div>
+            <p>将确定要素是否彼此相连的属性关系。如果连接图层中的字段值等于目标图层中的字段值，则会对要素进行匹配。
+            </p>
+            <p>例如，假设您拥有涵盖住址的全县地理图层（包括字段  <i>ZIP</i>）和按邮政编码分类的健康人口统计表格数据集（包括名为 <i>HEALTHZIP</i> 的字段）。您可以通过匹配字段 <i>ZIP</i> 与 <i>HEALTHZIP</i>，将健康数据集连接到住宅数据，从而生成含有对应的健康数据的住宅图层。
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>选择连接操作</h2></div>
+        <hr/>
+        <div>
+            <p>如果发现连接图层中存在多个与目标图层关系相同的要素，则请确定目标图层和连接图层之间的连接方式。可供选择的两种连接操作如下：
+                <ul>
+                    <li> <b>一对一连接</b> - 此选项可连接目标图层中的要素和连接图层中的单个要素。要素的连接方式取决于 <b>添加统计数据</b>参数或 <b>定义保留记录</b>参数。如果使用的是 <b>添加统计数据</b>，则所有匹配的连接要素都将被汇总到目标图层中的各个要素。默认情况下，将添加已连接要素的计数。如果使用的是 <b>定义保留记录</b>，则可以选择是保留第一条匹配记录（默认）还是根据某一表达式保留匹配记录。表达式可以使用数值字段
+（最大记录或最小记录选项）或日期字段（最新或最旧选项）。
+                    </li>
+                    <li> <b>一对多连接</b> - 此选项可将连接图层中的所有匹配要素连接到目标图层。此结果图层将包含目标要素的多个记录。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>例如，假设您希望查找农贸市场 5 千米范围内的超市。在此情况下，要连接到的图层具有表示农贸市场的单个要素，而连接要素表示具有年销售总额等属性的本地杂货店。您可使用 <b>连接要素</b>工具找到五个满足该条件的杂货店。如果您将连接操作指定为 <b>一对多连接</b>，则会在结果中得到五个要素，每行表示农贸市场和超市。如果您指定了 <b>一对一连接</b>关系并选择了统计数据，则会得到一个表示农贸市场以及超市汇总信息（例如，计数 (5) 以及年销售额总和等其他可选统计数据）的要素。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>添加统计数据（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>如果选择了 <b>一对一连接</b>选项，则可以针对数值字段计算和汇总连接要素的统计数据。默认情况下，会计算匹配连接要素的计数，并将其添加到结果图层。如果选择不添加附加统计数据，则会将连接图层中的首个匹配要素与目标图层中的首个匹配要素进行连接。可计算以下一项或多项：
+            </p>
+            <ul>
+                <li>总和
+                </li>
+                <li>最小值
+                </li>
+                <li>最大值
+                </li>
+                <li>平均值
+                </li>
+                <li>标准差
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>创建结果作为托管要素图层视图</h2></div>
+        <hr/>
+        <div>
+            <p> 将结果创建为托管要素图层视图可在源数据发生更改的情况下保留最新数据。包含连接的托管要素图层视图将处于只读模式，并且不会消耗分析和存储配额。
+            </p>
+            <p>如果满足以下所有条件，则可以从分析结果中创建托管要素图层视图：
+                <ul>
+                    <li>您是两个图层的所有者。
+                    </li>
+                    <li>两个图层均为托管要素图层。
+                    </li>
+                    <li>您正在执行基于属性的连接。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

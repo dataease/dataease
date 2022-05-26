@@ -1,0 +1,150 @@
+/* NumberSpinner - namespace "dijitSpinner"
+ * 
+ * Styling NumberSpinner mainly includes:
+ * 
+ * 1. Arrows
+ * 		Outer containers: .dijitSpinnerButtonContainer|.dijitSpinnerButtonInner  - for border, padding and position
+ * 		Arrows: .dijitArrowButton|.dijitUpArrowButton.|dijitDownArrowButton
+ * 		Inner container: .dijitArrowButtonInner - for border, padding, width|height and background image
+ * 
+ * 2. Hover state
+ * 		.dijitUpArrowButtonHover|.dijitDownArrowButtonHover .*  - for background color|image
+ * 
+ * 3. Active state
+ * 		.dijitUpArrowButtonActive|.dijitDownArrowButtonActive .*  - for border, padding, margin and background color|image
+ * 
+ * 4. Focused state
+ * 		.dijitSpinnerFocused .* - for background color|image
+ * 
+ * 5. Disabled state
+ * 		.dijitSpinnerDisabled .* - for background color|image
+ */
+
+@import "../variables";
+
+.claro .dijitSpinnerButtonContainer {
+	overflow: hidden;
+	position: relative;
+	width: auto;
+	padding: 0 2px;
+}
+.claro .dijitSpinnerButtonContainer .dijitSpinnerButtonInner {
+	border-width: 1px 0; /* reserve space to match the claro combobox button border with border and not padding to make IE happier */
+	border-style: solid none;
+}
+
+/* button */
+.claro .dijitSpinner .dijitArrowButton {
+	width:auto;
+	background-color: @arrowbutton-background-color;
+	.standard-gradient("../");
+	overflow: hidden;
+}
+.dj_iequirks .claro .dijitSpinner .dijitArrowButton {
+	overflow: visible; /* 0 height w/o this */
+}
+
+.claro .dijitSpinner .dijitSpinnerButtonInner {
+	width: 15px;
+}
+/* up & down button icons */
+.claro .dijitSpinner .dijitArrowButtonInner {
+	border:solid 1px @arrowbutton-inner-border-color;
+	border-bottom-width: 0; /* 2 top borders = 1 top+bottom border in ComboBox */
+	background-image: url("../@{image-form-common-arrows}");
+	background-repeat: no-repeat;
+	height: 100%;
+	width:15px;
+	padding-left: 1px;
+	padding-right: 1px;
+
+	/* for up arrow */
+	background-position:-139px center;
+
+	/* override button.css (TODO: move to Common.css since ComboBox needs this too) */
+	display: block;
+	margin: -1px 0 -1px 0;	/* compensate for inner border */
+}
+
+.dj_iequirks .claro .dijitSpinner .dijitArrowButtonInner,
+.dj_ie6 .claro .dijitSpinner .dijitArrowButtonInner,
+.dj_ie7 .claro .dijitSpinner .dijitArrowButtonInner,
+.dj_ie8 .claro .dijitSpinner .dijitArrowButtonInner {
+	margin-top: 0; /* since its bottom aligned */
+}
+
+.dj_iequirks .claro .dijitSpinner .dijitArrowButtonInner {
+	width: 19px;
+}
+.claro .dijitSpinner .dijitDownArrowButton .dijitArrowButtonInner {
+	background-position:-34px;
+}
+.claro .dijitSpinner .dijitArrowButtonInner .dijitInputField {
+	padding: 0;
+}
+
+/** hover & focused status **/
+
+.claro .dijitUpArrowButtonActive,
+.claro .dijitDownArrowButtonActive {
+	background-color:@arrowbutton-pressed-background-color;
+}
+
+.claro .dijitSpinner .dijitUpArrowButtonHover,
+.claro .dijitSpinner .dijitDownArrowButtonHover,
+.claro .dijitSpinnerFocused .dijitArrowButton {
+	background-color: @arrowbutton-hovered-background-color;
+}
+
+.claro .dijitSpinner .dijitUpArrowButtonHover .dijitArrowButtonInner {
+	background-position:-174px;
+}
+.claro .dijitSpinner .dijitDownArrowButtonHover .dijitArrowButtonInner {
+	background-position:-69px;
+}
+
+.claro .dijitSpinnerFocused {
+	background-color: @textbox-focused-background-color;
+	background-image: none;
+}
+
+/* mouse down status */
+.claro .dijitSpinner .dijitDownArrowButtonActive,
+.claro .dijitSpinner .dijitUpArrowButtonActive {
+	background-color: #7dbefa;		// TODO.  Mailed Jason about inconsistent ComboBox/Spinner behavior.
+	.active-gradient("../");
+}
+.claro .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonInner,
+.claro .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonInner {
+	/* hide inner border while button is depressed */
+	border: 0;
+	padding: 1px;
+	margin-right:2px;
+	margin-bottom:1px;
+}
+.claro .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonInner {
+	background-position:-173px;
+}
+.claro .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonInner {
+	background-position:-68px;
+}
+
+/* disabled */
+
+.claro .dijitSpinnerDisabled .dijitArrowButtonInner {
+	background-color: @disabled-background-color;
+}
+.claro .dijitSpinnerDisabled .dijitUpArrowButton .dijitArrowButtonInner {
+	background-position:-104px;
+}
+.claro .dijitSpinnerDisabled .dijitDownArrowButton .dijitArrowButtonInner {
+	background-position:1px;
+}
+
+/** hacks for browsers **/
+
+/* for IE 7, when div is enlarged, 
+ * should be no empty space between dijitInputLayoutContainer and dijitSpinner*/
+.dj_ie7 .claro .dijitSpinner {
+	overflow:visible;
+} 

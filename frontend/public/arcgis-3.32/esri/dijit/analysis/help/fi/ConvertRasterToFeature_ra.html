@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Muunna rasteri kohteeksi</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Muunna rasteri kohteeksi -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu muuntaa rasterin kohdeaineistoryhm&auml;ksi (pistein&auml;, viivoina tai aluekohteina).
+    </p>
+    <p> <b>Valitse kentt&auml;</b> -parametrin avulla voit valita, mist&auml; l&auml;ht&ouml;aineiston rasteriaineistoryhm&auml;n ominaisuustietokent&auml;st&auml; tulee tulosaineiston kohdeluokan ominaisuustieto. T&auml;m&auml; parametri on k&auml;ytett&auml;viss&auml; vain kokonaislukurastereissa, joilla on lis&auml;ominaisuustietoja liittyv&auml;ss&auml; taulukossa.
+    </p>
+    <p>L&auml;ht&ouml;aineiston rasterilla voi olla mink&auml; tahansa kokoisia soluja.
+    </p>
+    <p>Kokonaislukurasterit voidaan muuntaa piste-, viiva- tai aluekohteiksi. Liukulukurasterit voidaan muuntaa kuitenkin vain pistekohteiksi.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevat rasterisolut muunnetaan. Jos vaihtoehtoa ei ole valittu, kaikki rasterikarttatason solut muunnetaan, vaikka ne olisivat nykyisen karttalaajuuden ulkopuolella. Ota t&auml;m&auml; huomioon, jos rasterikarttataso on suuri tai sill&auml; on eritt&auml;in suuri resoluutio.
+    </p>
+    <p>Ty&ouml;kalua voi k&auml;ytt&auml;&auml; esimerkiksi seuraaviin tarkoituksiin:
+ 
+        <ul>
+            <li>Luo aluekohteita maank&auml;yt&ouml;n luokittelun rasterista.
+                
+ 
+            </li>
+            <li>DEM:ss&auml; tunnistetut virrat voidaan muuntaa viivakohteiksi.
+                
+
+            </li>
+            <li>DEM voidaan muuntaa pistekohteiksi, joita voidaan k&auml;ytt&auml;&auml; muussa kuin rasteripohjaisessa ty&ouml;nkulussa.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse muunnettava rasterikarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston rasterikarttataso, joka muunnetaan kohdekarttatasoiksi.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Valitse kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Anna kentt&auml;, joka m&auml;&auml;ritt&auml;&auml; muunnoksessa k&auml;ytett&auml;v&auml;n arvon.
+            </p>
+            <p>Se voi olla kokonaisluku- tai tekstiarvo.
+            </p>
+            <p>Liukulukuarvoja sis&auml;lt&auml;v&auml;&auml; kentt&auml;&auml; voi k&auml;ytt&auml;&auml; vain, jos tulosaineisto on pisteaineistoryhm&auml;&auml;n.
+            </p>
+            <p>Oletusarvon mukaan k&auml;ytet&auml;&auml;n  <i>Value</i> -kentt&auml;&auml;, joka sis&auml;lt&auml;&auml; arvon jokaisessa rasterisolussa.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Valitse tulostyyppi</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse tulosaineiston tyyppi (piste, viiva tai alue).
+            </p>
+            <ul>
+                <li>Piste: Rasteri muunnetaan pisteaineistoryhm&auml;ksi.
+                    
+ 
+                </li>
+                <li>Viiva: Rasteri muunnetaan viivakohdeaineistoryhm&auml;ksi.
+                    
+ 
+                </li>
+                <li>Alue: Rasteri muunnetaan aluekohdeaineistoryhm&auml;ksi.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Yksinkertaista viiva- tai aluekohteet</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, yksinkertaistetaanko kohteet.
+            </p>
+            <p>Jos vaihtoehto on valittu (oletusarvo), tulos yleistet&auml;&auml;n yksinkertaistamalla viiva- tai aluekohteet. Jos t&auml;t&auml; vaihtoehtoa ei ole valittu, lineaariset kohteet noudattavat rasteriaineistoryhm&auml;n solurajoja.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

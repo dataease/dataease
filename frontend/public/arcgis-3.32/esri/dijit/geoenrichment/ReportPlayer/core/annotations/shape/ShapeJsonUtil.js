@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/annotations/shape/ShapeJsonUtil",["dojo/_base/lang"],function(e){function f(a){h.forEach(function(b){var c=a[b];void 0!==c&&("string"===typeof c&&g.test(c)&&(a[b]=c.replace(g,"")),a[b]=Number(a[b])||0)})}var d={},h="x y left top width height".split(" "),g=/px$/i;d.createShapeJsonFromShapeObj=function(a,b){if(a&&a.viewBox)return a={id:"shape",g:a.g,viewBox:e.mixin({},a.viewBox),preserveAspectRatio:a.preserveAspectRatio,isPlaceholder:a.isPlaceholder,
+style:e.mixin({top:a.x||0,left:a.y||0,width:a.viewBox.width||100,height:a.viewBox.height||100*a.viewBox.height/a.viewBox.width,zoom:void 0},a.style,b),showAsBar:a.showAsBar,showBarBackground:a.showBarBackground,barBackgroundStyle:{}},f(a.viewBox),f(a.style),a};d.isEmptyShapeJson=function(a){return!a||!a.g||!a.g.length};return d});

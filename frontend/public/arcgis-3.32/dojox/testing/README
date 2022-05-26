@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------------
+dojox.testing
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 06/18/08
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Wolfram Kriesing (wolfram@dojotoolkit.org)
+-------------------------------------------------------------------------------
+Project description 
+
+	A port of Python's DocTests module to Dojo and D.O.H. which is also
+	compatible with Dojo's API documentation system
+ 
+-------------------------------------------------------------------------------
+Dependencies:
+
+	dojo.string, DOH
+
+-------------------------------------------------------------------------------
+Documentation
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+
+	http://svn.dojotoolkit.org/dojo/dojox/trunk/testing/*
+
+Install into the following directory structure:
+
+	/dojox/testing/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------
+Additional Notes
+
+	None.

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opprette Viewshed</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Opprett synsfelt-verkt&oslash;y"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet identifisere de omr&aring;dene som en observat&oslash;r kan se n&aring;r det tas hensyn til overflatetopografien. Inndatapunktlokasjonene kan enten representere observat&oslash;rer (for eksempel mennesker p&aring; bakken eller utsiktsposter i et brannt&aring;rn) eller observerte objekter (som vindturbiner, hydranter, kj&oslash;ret&oslash;yer eller andre mennesker). Resultatet definerer de omr&aring;dene som kan ses fra observat&oslash;rlokasjonene.
+    </p>
+    <p>B&aring;de observat&oslash;rene og de observerte objektene kan ha en h&oslash;yde over bakken, og disse h&oslash;ydene brukes til &aring; fastsl&aring; synligheten. Et synsfelt som er beregnet for 120 meter h&oslash;ye vindturbiner og personer p&aring; 1,80 meter som st&aring;r p&aring; bakken, vil for eksempel vanligvis v&aelig;re st&oslash;rre enn et synsfelt beregnet for 60 meter h&oslash;ye vindturbiner og personer p&aring; 1,80 meter.
+    </p>
+    <p>Resultatlaget registrerer antall ganger som hver celleplassering i inng&aring;ende overflateraster kan sees av inngangsobservasjonspunktene. De usynlige cellene gis NoData-verdier.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun rasteromr&aring;det og observat&oslash;rpunktene som vises i gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, analyseres alle observat&oslash;rpunktene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Høydeflate</h2></div>
+        <hr/>
+        <div>
+            <p>H&oslash;ydeoverflaten som brukes til &aring; beregne synsfeltet.
+            </p>
+            <p>Dersom den vertikale enheten for inngangsflaten er forskjellig fra den horisontale enheten, for eksempel n&aring;r h&oslash;ydeverdiene er representert i fot, men koordinatsystemet er i meter, m&aring; overflaten ha et definert vertikalt koordinatsystem. Grunnen til dette er at verkt&oslash;yet bruker de vertikale (Z) og horisontale (XY) enhetene til &aring; beregne en Z-faktor for synsfeltanalysen. Uten et vertikalt koordinatsystem, og dermed ingen Z-enhetsinformasjon tilgjengelig, vil verkt&oslash;yet anta at Z-enheten er den samme som XY-enheten. Resultatet av dette er at en intern Z-faktor p&aring; 1,0 vil bli brukt til analyse, noe som kan gi uventede resultater.
+            </p>
+            <p>H&oslash;ydeflaten kan v&aelig;re et heltall eller et flyttall.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Punktgeoobjekter som representerer observatørlokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene som representerer observat&oslash;rlokasjoner ved beregning av synsfelt.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimaliser for</h2></div>
+        <hr/>
+        <div>
+            <p>Optimaliseringsmetoden som brukes til &aring; beregne synsfeltet.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Denne metoden optimaliserer behandlingshastigheten, men reduserer litt av n&oslash;yaktighen i resultatet for &aring; oppn&aring; h&oslash;yere ytelse. Dette er standardalternativet.
+
+                </li>
+                <li>Accuracy &mdash; 
+Denne metoden er optimalisert for n&oslash;yaktighet i resultatene p&aring; bekostning av lengre behandlingstid.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maks. synsavstand</h2></div>
+        <hr/>
+        <div>
+            <p>Oppgi en avstand der beregningen av synlige omr&aring;der stopper. Utover denne avstanden er det ukjent om observat&oslash;rpunktene og de andre objektene kan se hverandre.
+            </p>
+            <p>Du kan angi enten en numerisk verdi som representerer en line&aelig;r avstand, eller velge et numerisk felt fra inndatageoobjektene. Dersom et felt er angitt, m&aring; verdiene i feltet v&aelig;re i den samme enheten som XY-enheten til den angitte h&oslash;ydeoverflaten.
+            </p>
+            <p>Merk at store verdier &oslash;ker beregningstiden. Med mindre dette er spesifisert, vil en standard maksimal avstand beregnes p&aring; bakgrunn av oppl&oslash;sningen og utstrekningen i den inng&aring;ende h&oslash;ydeflaten.
+            </p>
+            <p>Denne parameteren er nyttig for modellering av visse fenomener. For eksempel kan du, ved &aring; begrense omfanget av synlighet, modellere v&aelig;rforhold som en lett t&aring;ke. P&aring; samme m&aring;te vil det &aring; begrense siktutstrekningen gi deg en viss kontroll over tiden p&aring; dagen med en tiln&aelig;rmet effekt av skumring.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maks. synsavstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimum betraktningsavstand</h2></div>
+        <hr/>
+        <div>
+            <p>Oppgi en avstand der beregningen av synlige omr&aring;der starter. Cellene p&aring; overflaten som er tettere ved enn denne avstanden, er ikke synlig i utdataene, men kan likevel blokkere cellenes synlighet mellom minimum og maksimum avstand.
+            </p>
+            <p>Du kan angi enten en numerisk verdi som representerer en line&aelig;r avstand, eller velge et numerisk felt fra inndatageoobjektene. Dersom et felt er angitt, m&aring; verdiene i feltet v&aelig;re i den samme enheten som XY-enheten til den angitte h&oslash;ydeoverflaten.
+            </p>
+            <p>Denne parameteren er nyttig for &aring; kontrollere synsfeltanalyseomr&aring;det p&aring; en bestemt avstand fra observat&oslash;ren. Hvis du for eksempel vurderer sikten fra toppen av en bygning til en park langt unna, kan du angi et minimum visningsavstand &aring; ekskludere omr&aring;der i n&aelig;rheten som ikke er av interesse og f&aring; en bedre behandlingshastighet.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimum betraktningsavstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Avstand i 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Angi om minimum og maksimum visningsavstand skal m&aring;les p&aring; en tredimensjonal m&aring;te eller en enklere, todimensjonal m&aring;te. N&aring;r alternativet er krysset av, blir visningsavstandene behandlet som en 3D-avstand. N&aring;r alternativet ikke er krysset av, blir de behandlet som 2D-avstander.
+            </p> 
+            <p>En 2D-avstand er den enkle, line&aelig;re avstanden som m&aring;les mellom observat&oslash;ren og m&aring;let ved hjelp av de projiserte lokasjonene p&aring; havniv&aring;. En 3D-avstand gir en mer realistisk verdi ved &aring; ta de relative h&oslash;ydene med i betraktningen.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Høyde for observatørlokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Angi h&oslash;yden p&aring; observat&oslash;rlokasjonene.
+            </p>
+            <p>Du kan angi enten en numerisk verdi som representerer h&oslash;yden av alle observat&oslash;rene eller som et felt som representerer h&oslash;yden til hver observat&oslash;r. Dersom et felt er angitt, m&aring; verdien i feltet v&aelig;re i den samme enheten som Z-enheten til den angitte h&oslash;ydeoverflaten.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Høyde for observatørlokasjoner</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Høyden på observatører</h2></div>
+        <hr/>
+        <div>
+            <p>Angi h&oslash;yden over bakken for observat&oslash;rlokasjonene.
+            </p> 
+            <p>Du kan angi enten en numerisk verdi for h&oslash;yden eller et felt fra inndatageoobjektene. Dersom et felt er angitt, m&aring; verdien i feltet v&aelig;re i den samme enheten som Z-enheten til den angitte h&oslash;ydeoverflaten.
+            </p>
+            <p>Standardverdien er 6 fot. Hvis du ser fra en h&oslash;ydelokasjon, f.eks. et utkikkst&aring;rn eller en h&oslash;y bygning, kan du bruke den h&oslash;yden i stedet. Under synsfeltberegningen blir denne verdien lagt til observat&oslash;rh&oslash;yden dersom dette er spesifisert. Ellers blir det lagt til interpolert overflate-z-verdi.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Høyden på observatører</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Høyde på mål</h2></div>
+        <hr/>
+        <div>
+            <p>Angi h&oslash;yden p&aring; konstruksjoner eller mennesker p&aring; bakken som brukes til &aring; fastsette synlighet.
+            </p>
+            <p>Du kan angi enten en numerisk verdi for h&oslash;yden eller et felt fra inndatageoobjektene. Dersom et felt er angitt, m&aring; verdien i feltet v&aelig;re i den samme enheten som Z-enheten til den angitte h&oslash;ydeoverflaten.
+            </p>
+            <p>Det resulterende synsfeltet identifiserer de omr&aring;dene der et observat&oslash;rpunkt kan se disse objektene p&aring; bakken. Og motsatt &ndash; objektene p&aring; bakken kan se et observat&oslash;rpunkt. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler p&aring; m&aring;lh&oslash;ydeinnstillinger:
+            </p>
+            <ul>
+                <li>Hvis inndatapunktene representerer vindturbiner og du vil finne ut om personer som st&aring;r p&aring; bakken, kan se turbinene, angir du gjennomsnittsh&oslash;yden for en person (omtrent 180&nbsp;cm).
+                    
+
+                </li>
+                <li>Hvis inndatapunktene representerer brannt&aring;rn og du vil finne ut hvilke brannt&aring;rn som kan se en r&oslash;yks&oslash;yle som er 6 meter eller h&oslash;yere, skriver du inn 6 meter for m&aring;lh&oslash;yden.
+                    
+
+                </li>
+                <li>Hvis inndatapunktene representerer utsiktspunkt langs noen veier og stier og du vil finne ut hvor det er mulig &aring; se vindturbiner som er 120 meter eller h&oslash;yere, skriver du inn 120 meter for h&oslash;yden.
+                    
+
+                </li>
+                <li>Hvis inndatapunktene representerer utkikkspunkter og du vil finne ut hvor stort omr&aring;de av bakken det er mulig &aring; se for personer som st&aring;r utkikkspunktet, skriver du inn null for m&aring;lh&oslash;yde. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Høyden på observatører</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Utdatahøyden for å bli synlig</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; utdata over bakkeniv&aring; (AGL)-resultat. AGL-resultatet er et raster hvor hver celleverdi er minimumsh&oslash;yden som m&aring; legges til en ellers usynlig celle for &aring; gj&oslash;re det synlig ved hjelp av minst &eacute;n observat&oslash;r. Celler som allerede var synlige, vil bli tildelt 0 i denne utdatarasteren.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

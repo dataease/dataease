@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Laske kaltevuus</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Portaalin Laske kaltevuus -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu luo pinnan, jolla n&auml;kyy l&auml;ht&ouml;korkeusaineiston kaltevuus. Kaltevuus edustaa jokaisen DEM (Digital Elevation Model) -solun korkeuden arvonmuutosta.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse lähtöaineisto, josta kaltevuus lasketaan</h2></div>
+        <hr/>
+        <div>
+            <p>Korkeuskarttataso, josta kaltevuus lasketaan.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Määritä korkeudelle skaalauskerroin</h2></div>
+        <hr/>
+        <div>
+            <p>Anna z-kerroin.
+            </p>
+            <p>Z-kerroin on skaalauskerroin, jota k&auml;ytet&auml;&auml;n korkeusarvojen muuntamiseen seuraavissa tilanteissa:
+ 
+                <ul>
+                    <li>Korkeusyksik&ouml;t (kuten metrit tai jalat) muunnetaan karttatason vaakakoordinaattiyksik&ouml;iksi, jotka voivat olla jalkoja, metrej&auml; tai asteita.
+                        
+  
+                    </li>
+                    <li>Lis&auml;t&auml;&auml;n pystysuuntainen liioittelu visuaalisena tehosteena.
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Jaloista
+                    </p>
+                </td>
+                <td>
+                    <p>Metreist&auml;
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Jaloista
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Metreist&auml;
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

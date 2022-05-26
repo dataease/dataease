@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Beräkna lutning</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Verktyget Ber&auml;kna lutning f&ouml;r Portal"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget skapar en yta som visar lutningen f&ouml;r h&ouml;jddata som anv&auml;nds som indata. Lutningen representerar &auml;ndringsfrekvensen f&ouml;r h&ouml;jd f&ouml;r varje cell i den digitala h&ouml;jdmodellen (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj indata för att beräkna lutning</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&ouml;jdlager som lutningen ska ber&auml;knas fr&aring;n.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Ange skalningsfaktor för lutning</h2></div>
+        <hr/>
+        <div>
+            <p>Ange en z-faktor.
+            </p>
+            <p>Z-faktorn &auml;r en skalningsfaktor som anv&auml;nds vid konvertering av h&ouml;jdv&auml;rden f&ouml;r tv&aring; &auml;ndam&aring;l:
+ 
+                <ul>
+                    <li>Konvertera h&ouml;jdenheterna (t.ex. meter eller fot) till lagrets horisontella koordinatenheter, som kan vara fot, meter eller grader
+                        
+  
+                    </li>
+                    <li>L&auml;gga till vertikal f&ouml;rstoring f&ouml;r visuell effekt
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Fr&aring;n fot
+                    </p>
+                </td>
+                <td>
+                    <p>Fr&aring;n meter
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fr&aring;n fot
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fr&aring;n meter
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

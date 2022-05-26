@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>تلخيص المركز والتشتت</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="تلخيص المركز والتشتت"></h2>
+        <hr/>
+    <p>تبحث هذه الأداة عن معالم مركزية وتوزيعات اتجاهية. يمكن استخدامها للإجابة على أسئلة مثل:
+        <ul>
+            <li>أين يوجد المركز؟
+            </li>
+            <li>ما هو المعلم الذي يمكن الوصول إليه بسهولة من كل المعالم الأخرى؟
+            </li>
+            <li>إلى أي مدى يتم تفريق أو دمج أو تكامل المعالم؟
+            </li>
+            <li>هل توجد جوانب اتجاهية؟
+            </li>
+        </ul>
+        
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b> يتم تحليل المعالم الموجودة في الطبقة المدخلة المرئية داخل نطاق الخريطة الحالي فقط. إذا لم يتم التأشير عليها، سيتم تحليل المعالم في الطبقة المدخلة مؤقتًا، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>اختر طبقة لوصفها</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم استخدام طبقة النقاط أو الخطوط أو المناطق للبحث عن المعالم المركزية والتوزيعات الاتجاهية.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>أنواع الملخص</h2></div>
+        <hr/>
+        <div>
+            <p>طريقة تلخيص المركز والتشتيت. 
+            </p>
+            <ul>
+                <li>المعلم المركزي - تحديد المعلم الذي يتميز بأكثر موقع مركزي في مجموعة بيانات.
+                </li>
+                <li>مركز المتوسط - تحديد المركز الجغرافي (أو مركز موضع التمركز) لمجموعة معالم.
+                </li>
+                <li>مركز الوسط - تحديد الموقع الذي يقوم بتصغير المسافة الإقليدية الكلية إلى المعالم في مجموعة بيانات.
+                </li>
+                <li>القطع الناقص - إنشاء قطع ناقصة انحرافية معيارية لتلخيص الخصائص المكانية للمعالم المكانية: الميل المركزي والتفريق والجوانب الاتجاهية. يمكن تحديد حجم القطع الناقصة على أنها انحراف معياري واحد أو انحرافين أو 3 انحرافات.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>ترجيح بواسطة (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>الحقل المستخدم لترجيح المواقع وفقًا لأهميتها النسبية. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>تجميع بواسطة (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>الحقل المستخدم لتجميع المعالم لحسابات منفصلة للمعالم المركزية أو التفريق. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم الطبقة الذي سيتم إنشاؤه في  <b>محتوياتي</b> وإضافتها للخريطة.  يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام القائمة المنسدلة  <b>حفظ النتائج في </b> يمكن تحديد اسم المجلد في <b>المحتويات </b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

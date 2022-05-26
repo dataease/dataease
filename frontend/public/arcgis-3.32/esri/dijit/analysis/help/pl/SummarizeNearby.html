@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sumuj W pobliżu</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Sumuj w pobliżu"></h2>
+        <hr/>
+    <p>Narzędzie wyszukuje i&nbsp;sumuje obiekty, kt&oacute;re znajdują się w&nbsp;określonej odległości w&nbsp;pierwszej warstwie wejściowej. Odległość może być mierzona w&nbsp;prostej linii lub poprzez użycie wybranego trybu podr&oacute;żowania. Opcje trybu podr&oacute;żowania to: długość trasy, czas przejazdu, odległość dla samochodu ciężarowego, czas dla samochodu ciężarowego, odległość pieszo i&nbsp;czas pieszo. W&oacute;wczas można obliczyć dane statystyczne dla pobliskich obiekt&oacute;w. Na przykład
+        <ul>
+            <li>Oblicz całkowitą liczbę ludności w zasięgu pięciu minut drogi od zaproponowanej nowej lokalizacji sklepu.
+            </li>
+            <li>Oblicz liczbę zjazd&oacute;w z autostrady w promieniu p&oacute;łtora kilometra odległości od zaproponowanej nowej lokalizacji sklepu, aby dokonać oceny dostępności sklepu.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, przeanalizowane zostaną tylko obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, analizowane będą wszystkie obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania, nawet jeśli znajdują się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Wybierz warstwę, od której mierzone będą odległości do obiektów w warstwie w celu zsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwy punktowe, liniowe lub powierzchniowe, kt&oacute;re zostaną użyte jako lokalizacje początkowe w celu zsumowania pobliskich obiekt&oacute;w.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+            <p>Narzędzie jest w&nbsp;stanie obsłużyć do 1000 obiekt&oacute;w w&nbsp;tej warstwie. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Wybierz warstwę do sumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Zsumowane zostaną obiekty, kt&oacute;re znajdują się w&nbsp;tej warstwie w&nbsp;zasięgu określonej odległości do obiekt&oacute;w w&nbsp;warstwie określonej powyżej. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Zsumuj najbliższe obiekty, używając</h2></div>
+        <hr/>
+        <div>
+            <p> Można zdefiniować, jakiego rodzaju pomiary odległości mają być użyte: odległość w&nbsp;linii prostej czy tryb podr&oacute;żowania. Tryby podr&oacute;żowania można włączyć tylko wtedy, gdy pierwsza warstwa wejściowa (warstwa, od kt&oacute;rej mierzone są odległości) zawiera punkty. Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji. Podczas korzystania z&nbsp;jednego z&nbsp;tryb&oacute;w podr&oacute;żowania pomiary wykonywane są wzdłuż dr&oacute;g i&nbsp;pasaży oraz respektują one obowiązujące zasady, takie jak drogi jednokierunkowe, skręty w&nbsp;niedozwolonych miejscach i&nbsp;inne. Narzędzia <b>Czas przejazdu</b>, <b>Czas przejazdu w obszarach wiejskich</b> i <b>Czas przejazdu samochodem ciężarowym</b> uwzględniają wybraną prędkość podr&oacute;ży, opartą na bieżących lub typowych prędkościach ruchu drogowego. Aktualna prędkość ruchu drogowego jest określana na podstawie bieżących odczyt&oacute;w z czujnik&oacute;w, natomiast wartość typowa jest obliczana z użyciem średnich wartości historycznych.
+            </p>
+            <p>Można wprowadzić wiele odległości. Zsumowane zostaną obiekty, kt&oacute;re znajdują się w&nbsp;zasięgu wprowadzonych odległości (lub są im r&oacute;wne).  
+            </p>
+            <p>Zaznaczenie pola wyboru  <b>Zwr&oacute;ć granice obszar&oacute;w</b> spowoduje wyświetlenie warstwy wynikowej obszar&oacute;w zdefiniowanych według określonego pomiaru odległości. Warstwa wynikowa będzie zawierać wszystkie żądane zsumowane informacje. Na przykład, zsumowanie pobliskich punkt&oacute;w, z użyciem opcji <b>Odległości w linii prostej</b> wynoszącej 8 km spowoduje, że wynik będzie zawierać obszary w promieniu 8 km wok&oacute;ł obiektu wejściowego, a także wszystkie zsumowane informacje, takie jak liczba punkt&oacute;w i wszelkie dodatkowe statystyki. Jeżeli opcja ta nie zostanie zaznaczona, warstwa wynikowa wyświetli te same obiekty pierwszej warstwy wejściowej wraz z&nbsp;zsumowaniem wszystkich żądanych informacji.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Dodaj statystyki z warstwy do podsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Można także obliczyć dane statystyczne dla atrybut&oacute;w numerycznych pobliskich punkt&oacute;w. 
+            </p>
+            <p>Jeśli zaznaczono opcję  <b>Liczba punkt&oacute;w</b>, obliczona zostaje całkowita liczba pobliskich punkt&oacute;w. Ponadto można obliczyć dane statystyczne dla p&oacute;l numerycznych pobliskich punkt&oacute;w.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości dla określonego pola.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Dodaj statystyki z warstwy do podsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Można także obliczyć dane statystyczne dla atrybut&oacute;w numerycznych pobliskich linii. 
+            </p>
+            <p>Jeśli zaznaczono opcję  <b>Długość całkowita</b>, obliczona zostanie całkowita długość pobliskich linii. Ponadto można obliczyć dane statystyczne dla p&oacute;l numerycznych pobliskich linii.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości dla określonego pola.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Dodaj statystyki z warstwy do podsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Można także obliczyć dane statystyczne dla atrybut&oacute;w numerycznych pobliskich obszar&oacute;w. 
+            </p>
+            <p>Jeśli zaznaczono opcję  <b>Powierzchnia całkowita</b>, system obliczy całkowitą powierzchnię pobliskich obiekt&oacute;w. Ponadto można obliczyć dane statystyczne dla p&oacute;l numerycznych pobliskich obiekt&oacute;w.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości dla określonego pola.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Dodaj statystyki z warstwy do podsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Po wybraniu warstwy sumowania można także obliczyć dane statystyczne jakichkolwiek atrybut&oacute;w numerycznych pobliskich punkt&oacute;w, linii lub obszar&oacute;w. 
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości dla określonego pola.
+                </li>
+            </ul>
+            
+            <p>W zależności od rodzaju sumowanych obiekt&oacute;w istnieje możliwość obliczenia całkowitej liczby pobliskich punkt&oacute;w, całkowitej długości pobliskich linii lub całkowitej powierzchni pobliskiego obszaru.
+            </p>
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Wybierz pole, według którego wykonane będzie grupowanie</h2></div>
+        <hr/>
+        <div>
+            <p> Jest to atrybut pobliskich obiekt&oacute;w, kt&oacute;rego można użyć, aby obliczyć dane statystyczne dla każdej unikalnej wartości tego atrybutu. Zał&oacute;żmy na przykład, że pierwsza warstwa wynikowa (warstwa, od kt&oacute;rej są mierzone odległości) zawiera wolne działki na sprzedaż, a&nbsp;pobliskie obiekty to budynki. Jednym z&nbsp;atrybut&oacute;w budynk&oacute;w jest <i>UseType</i>, kt&oacute;ry zawiera takie wartości, jak HANDLOWY (RETAIL), MIESZKALNY (RESIDENTIAL), PRODUKCYJNY (MANUFACTURING), PUBLICZNY (PUBLIC) itd. Aby scharakteryzować r&oacute;żnorodność zastosowań budynk&oacute;w w&nbsp;pobliżu każdej wolnej działki, można obliczyć całkowitą powierzchnię każdego unikalnego typu użytkowania budynku w&nbsp;promieniu dw&oacute;ch kilometr&oacute;w od wolnych działek z&nbsp;zastosowaniem parametru <i>UseType</i> jako parametru grupowania według atrybut&oacute;w. Statystyki dotyczące każdej z&nbsp;grup oraz liczba bliskich obiekt&oacute;w zostaną wyświetlone w&nbsp;oknie podręcznym warstwy wynikowej.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj mniejszość, większość</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Aby dowiedzieć się, kt&oacute;re wartości atrybut&oacute;w w&nbsp;danej grupie stanowią mniejszość (najmniej dominujące) lub większość (najbardziej dominujące) w&nbsp;obrębie określonej odległości lub określonego czasu, wybierz opcję  <b>Dodaj mniejszość, większość</b>. Po wybraniu opcji <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostają dodane dwa nowe pola. Jeżeli wybierzesz także opcję <b>Dodaj wartości procentowe</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+            <ul>
+                <li>Jeżeli przeprowadzasz sumowanie pobliskich punkt&oacute;w, wartości najbardziej i najmniej&nbsp;dominujące są obliczane na podstawie liczby punkt&oacute;w znajdujących się w&nbsp;zakresie określonej odległości lub określonego czasu.
+                </li>
+                <li>Jeżeli przeprowadzasz sumowanie pobliskich linii, wartości najbardziej i najmniej&nbsp;dominujące są obliczane na podstawie długości linii znajdujących się w&nbsp;zakresie określonej odległości lub określonego czasu.  
+                </li>
+                <li>Jeżeli przeprowadzasz sumowanie pobliskich obszar&oacute;w, wartości najbardziej i najmniej&nbsp;dominujące są obliczane na podstawie obszar&oacute;w znajdujących się w&nbsp;zakresie określonej odległości lub określonego czasu.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj wartości procentowe</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Jeżeli chcesz sprawdzić, jaką wartość procentową stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup, zaznacz opcję  <b>Dodaj wartości procentowe</b>. Do tabeli wynik&oacute;w zostanie dodane nowe pole zawierające wartości procentowe, jakie stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z grup. Jeżeli wybierzesz także opcję <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

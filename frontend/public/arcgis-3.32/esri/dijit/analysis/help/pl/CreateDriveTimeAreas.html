@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Narzędzie Utwórz obszary czasu dojazdu</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Utw&oacute;rz obszary czasu dojazdu"></h2>
+        <hr/>
+    <p>Opcja Utw&oacute;rz obszary czasu dojazdu umożliwia tworzenie obszar&oacute;w, do kt&oacute;rych można dotrzeć w określonym czasie przejazdu lub po pokonaniu określonej odległości pojazdem bądź pieszo itd. Polega na wykonywaniu pomiar&oacute;w z jednego lub wielu punkt&oacute;w (do 1000) wzdłuż dr&oacute;g bądź pasaży i tworzeniu warstwy, dzięki kt&oacute;rej można udzielić odpowiedzi na pytania, takie jak:
+        <ul>
+            <li>Gdzie mogę dostać się z tego miejsca w ciągu 30 minut jazdy?
+            </li>
+            <li>Gdzie mogę dostać się z tego miejsca w ciągu 30 minut jazdy o 17:30 w godzinach szczytu?
+            </li>
+            <li>Co znajduje się w&nbsp;odległości dw&oacute;ch kilometr&oacute;w piechotą od mojego hotelu?
+            </li>
+            <li>Do jakich części miasta może dotrzeć straż pożarna w ciągu pięciu minut? 
+            </li>
+            <li>W jaki spos&oacute;b wybudowanie tutaj nowej jednostki straży pożarnej poprawiłoby szybkość reagowania na zgłoszenia pożar&oacute;w?
+            </li>
+            <li>Jakie obszary rynkowe są w zasięgu mojej działalności?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Na te pytania możesz odpowiedzieć wyłącznie dzięki wizualizacji obszar&oacute;w danych wynikowych. Możesz też wykonać dalszą analizę przestrzenną, korzystając z obszar&oacute;w danych wynikowych. Na przykład, uruchomienie narzędzia Agreguj punkty przy użyciu obszar&oacute;w czasu dojazdu wraz z danymi demograficznymi może pom&oacute;c w ocenie potencjalnej lokalizacji sklepu w kontekście zyskania najlepszych klient&oacute;w dla danego rodzaju działalności. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Aby utworzyć obszary poprzez pomiar odległości w&nbsp;linii prostej zamiast pomiaru wzdłuż dr&oacute;g, użyj narzędzia Utw&oacute;rz bufory.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, do utworzenia obszar&oacute;w opartych na parametrach czasu przejazdu lub długości trasy użyte zostaną tylko obiekty widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, zostaną użyte wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę punktową do obliczenia obszarów czasu dojazdu</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe, wok&oacute;ł kt&oacute;rych zostaną wyznaczone obszary. Można wybrać spos&oacute;b obliczania obszar&oacute;w na podstawie trybu podr&oacute;ży (samochodem osobowym, samochodem ciężarowym lub pieszo) i&nbsp;mierzonej wielkości (czas bądź odległość).
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+            <p>Narzędzie jest w&nbsp;stanie obsłużyć do 1000 obiekt&oacute;w w warstwie wejściowej.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Zmierz</h2></div>
+        <hr/>
+        <div>
+            <p>Najpierw należy wybrać typ podr&oacute;ży (samochodem osobowym, samochodem ciężarowym lub pieszo) i&nbsp;mierzoną wielkość (czas bądź odległość). Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji. Po wybraniu typu podr&oacute;ży i&nbsp;mierzonej wielkości należy wpisać maksymalny czas trwania lub odległość  5 godz. (300 min) lub  300 mil (482.80 km). 
+            </p>
+            <p>Kierunek podr&oacute;ży ( <b>Od obiektu</b> lub <b>Do obiektu</b>) może wpłynąć na spos&oacute;b generowania obszar&oacute;w. Narzędzie Utw&oacute;rz obszary czasu dojazdu uwzględnia drogi jednokierunkowe, unika zakaz&oacute;w skrętu oraz stosuje inne reguły zależne od kierunku podr&oacute;ży. Kierunek podr&oacute;ży należy wybrać na podstawie typu lokalizacji wejściowych i kontekstu analizy. Na przykład obszar czasu dojazdu związany z dostarczaniem pizzy należy utworzyć w kierunku podr&oacute;ży od obiektu, natomiast obszar czasu dojazdu do szpitala należy utworzyć w kierunku do obiektu.
+            </p>
+            <p>Po wybraniu narzędzia  <b>Czas przejazdu</b>, <b>Czas przejazdu w obszarach wiejskich</b> lub <b>Czas przejazdu samochodem ciężarowym</b> należy wybrać spos&oacute;b pomiaru czasu przejazdu.
+                <ul>
+                    <li>
+                        <p>Aby utworzyć obszary na podstawie stałych prędkości, usuń zaznaczenie opcji  <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>. Wyboru opcji dokonuje się, aby uzyskać og&oacute;lny obszar czasu dojazdu, a&nbsp;nie obszar obliczony z&nbsp;uwzględnieniem zmieniających się warunk&oacute;w drogowych dla określonego momentu wyjazdu.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Aby utworzyć obszary czasu przejazdu na podstawie podanego czasu wyjazdu oraz zmieniających się warunk&oacute;w drogowych, zaznacz opcję  <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>. Jeśli dodatkowo wybierzesz opcję <b>Aktualne natężenie ruchu drogowego</b>, czas wyjazdu z punkt&oacute;w wyjściowych zostanie ustawiony na aktualną godzinę oraz zostanie dokonane odniesienie do bieżących i przewidywanych prędkości ruchu ulicznego pobranych z czujnik&oacute;w i przekaźnik&oacute;w w celu utworzenia obszar&oacute;w czasu dojazdu. Przewidywana prędkość ruchu ulicznego obliczana jest poprzez odniesienie do bieżących i&nbsp;historycznych wartości prędkości ruchu oraz aktualnych zdarzeń i&nbsp;warunk&oacute;w, takich jak pogoda. Prędkość ruchu drogowego jest przewidywana z 12-godzinnym wyprzedzeniem, więc można przesunąć suwak, aby ustawić czas wyjazdu o 12 godzin wcześniej.
+                        </p>
+                        <p>Użyj ustawień aktualnego ruchu drogowego, aby sprawdzić, do kt&oacute;rych obszar&oacute;w można dotrzeć, wyjeżdżając w&nbsp;tej chwili, wyjeżdżając za godzinę itd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Po zaznaczeniu opcji  <b>Korzystaj z danych o ruchu drogowym</b> i wybraniu opcji <b>Ruch drogowy w oparciu o typowe warunki dla</b> danego dnia i godziny, narzędzie utworzy obszary czasu przejazdu na podstawie historii średnich prędkości dla każdego cyklu pięciominutowego w całym tygodniu pracy. W&nbsp;wynikach brany jest pod uwagę ruch drogowy, ale nie jest uwzględniany wpływ aktualnych warunk&oacute;w na drodze i&nbsp;zdarzeń, kt&oacute;re mogą r&oacute;żnić się znacznie od normy.
+                        </p>
+                        <p>Można skorzystać z&nbsp;historii ustawień ruchu drogowego, aby odpowiedzieć na przykład na następujące pytanie: &rdquo;Do jakich obszar&oacute;w można dotrzeć, wyjeżdżając o godz. 11:30 w środę?&rdquo; 
+                        </p>
+                        <p>Czas, kt&oacute;ry zostanie skonfigurowany odnosi się do strefy czasowej, w&nbsp;kt&oacute;rej zlokalizowane są punkty wejściowe. Jeśli zatem czas zostanie skonfigurowany na godz. 8:00 i&nbsp;występują dwa punkty (jeden w&nbsp;Nowym Jorku, a&nbsp;drugi w&nbsp;Los Angeles), zostaną wygenerowane obszary czasu przejazdu z&nbsp;uwzględnieniem odpowiednio godz.&nbsp;8:00 czasu wschodniego i&nbsp;godz. 8:00 czasu pacyficznego.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Uwaga: w momencie gdy pojazd wyjeżdża z danego punktu, upływa czas i zmieniają się warunki drogowe. Narzędzie do obliczania obszar&oacute;w czasu przejazdu uwzględnia te zmienne, jeśli wybrano opcję  <b>Czas przejazdu</b> i&nbsp;zaznaczono pole wyboru opcji <b>Uwzględnij dane o&nbsp;natężeniu ruchu drogowego</b>, jednak nie wszystkie regiony obsługują dane o&nbsp;ruchu drogowym. Aby dowiedzieć się, czy ta usługa jest obsługiwana na badanym obszarze, w oknie narzędzia kliknij łącze <b>Sprawdź dostępność</b>.
+            </p>
+            <p>Narzędzie  <b>Czas przejazdu samochodem ciężarowym</b> może korzystać z dynamicznych prędkości podr&oacute;ży ustalanych na podstawie danych o ruchu drogowym, przy czym nie będą przekraczane wynikające z przepis&oacute;w ograniczenia prędkości obowiązujące dla samochod&oacute;w ciężarowych. Jeśli na przykład dynamiczna prędkość ustalona dla danej drogi na podstawie danych o aktualnym natężeniu ruchu drogowego wynosi 105 km/h, ale ograniczenie prędkości dla samochod&oacute;w ciężarowych na tej drodze to 90 km/h, w obliczeniach zostanie użyta wartość 90 km/h.
+            </p>
+            <p>Opcje  <b>Czas &mdash; pieszo</b> oraz <b>Odległość &mdash; pieszo</b> używają stałej prędkości wynoszącej 5 kilometr&oacute;w na godzinę (3.1 mil na godzinę) oraz tras przebiegających pasażami dla pieszych oraz wyznaczonymi ulicami (jednocześnie ignorują reguły obowiązujące kierowc&oacute;w, na przykład znaki informujące o&nbsp;drogach jednokierunkowych). </p>
+            <p>Narzędzie  <b>Odległość dla samochodu ciężarowego</b> korzysta ze stałych prędkości i uwzględnia zasady ruchu drogowego obowiązujące kierowc&oacute;w samochod&oacute;w ciężarowych, podczas gdy narzędzia <b>Długość trasy</b> i <b>Długość trasy w obszarach wiejskich</b> używają stałych prędkości i uwzględniają zasady ruchu drogowego obowiązujące kierowc&oacute;w samochod&oacute;w osobowych.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Wybierz warstwy barier</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden lub większa liczba obiekt&oacute;w, kt&oacute;re pełnią rolę ograniczeń tymczasowych (innymi słowy barier) utrudniających podr&oacute;żowanie po ulicach, na kt&oacute;rych się znajdują. Bariery można definiować przy użyciu obiekt&oacute;w punktowych, liniowych lub poligonowych.
+            </p>
+            <p>Bariera punktowa może modelować powalone drzewo, wypadek, zerwaną linię energetyczną lub inny obiekt, kt&oacute;ry całkowicie blokuje ruch drogowy w określonej pozycji wzdłuż ulicy. Na tej ulicy ruch drogowy jest dozwolony, ale jest blokowany przez barierę. Można zdefiniować do 250 obiekt&oacute;w pełniących rolę barier punktowych.
+            </p>
+            <p>Bariery liniowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie przecinają się z ulicą. Przy użyciu bariery liniowej można na przykład modelować paradę lub marsz protestacyjny, kt&oacute;ry blokuje ruch drogowy na kilku odcinkach ulic. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery liniowe przekracza 500, narzędzie zwraca błąd.
+            </p>
+            <p>Bariery poligonowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie poligon przecina się z ulicą. Przy użyciu barier tego typu można na przykład modelować powodzie występujące na obszarach sieci ulicznej, kt&oacute;re uniemożliwią ruch drogowy w danym rejonie. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery poligonowe przekracza 2000, narzędzie zwraca błąd.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Obszary z różnych punktów</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz spos&oacute;b, w&nbsp;jaki są obsługiwane wsp&oacute;łdzielone obszary z&nbsp;r&oacute;żnych punkt&oacute;w wejściowych w&nbsp;momencie, gdy się zetkną. Mogą wystąpić następujące zależności:
+                <ul>
+                    <li> <b>Nał&oacute;ż</b> &mdash; obszary z r&oacute;żnych punkt&oacute;w wyjściowych mogą obejmować tę samą drogę. Jest to przydatna opcja, gdy konieczne jest zidentyfikowanie wszystkich wejściowych danych punktowych , z kt&oacute;rych można dotrzeć do wyznaczonej lokalizacji w określonym czasie lub odległości.
+                    </li>
+                    <li> <b>Agreguj</b> &mdash; wszystkie obszary są połączone w jeden, a daną lokalizację może obejmować maksymalnie jeden obszar. Jest to przydatna opcja, gdy wystarczająca jest informacja, że do obszaru można dotrzeć w ciągu określonego czasu lub w danej odległości, ale nie potrzebna jest wiedza o punktach wejściowych, z kt&oacute;rych należy wyruszyć do tej lokalizacji.
+                    </li>
+                    <li> <b>Rozdziel</b> &mdash; obszary z r&oacute;żnych lokalizacji wejściowych, kt&oacute;re pokrywałyby się ze sobą, są rozdzielane granicą biegnącą przez środek, w wyniku czego graniczą ze sobą. Jest to przydatna opcja, kiedy wymagana jest informacja , kt&oacute;re obszary są w granicach określonego czasu dojazdu lub odległości i jednocześnie ocena, kt&oacute;ry punkt wejściowy znajduje się najbliżej tego obszaru.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Pokaż obszary nieosiągalne jako dziury</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz, czy obszary wynikowe będą zawierać dziury, gdy niekt&oacute;re ulice będą nieosiągalne ze względu na  <b>pomiar</b> czasu lub odległości albo z powodu ograniczeń narzuconych przez tryb podr&oacute;żowania.
+            </p>
+            <p>Obszary czasu dojazdu utworzone z użyciem tego parametru są ograniczone do 15&nbsp;minut lub 15&nbsp;mil (24&nbsp;kilometr&oacute;w).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Dołącz osiągalne ulice</h2></div>
+        <hr/>
+        <div>
+            <p>Dołącz w postaci warstwy wynikowej ulice, kt&oacute;re są uwzględniane podczas tworzenia obszar&oacute;w czasu dojazdu. 
+            </p>
+            <p>Narzędzie Utw&oacute;rz obszary czasu dojazdu określa możliwość dotarcia do obiektu wzdłuż sieci ulic, a następnie tworzy obszary czasu dojazdu na podstawie ulic, kt&oacute;rymi przebiegała podr&oacute;ż. Oznacza to, że obszary te są przybliżeniem przejechanych ulic. Jeśli celem analizy jest ustalenie, kt&oacute;re ulice leżą na obszarze konkretnej odległości lub konkretnego czasu podr&oacute;ży od obiektu, określenie, czy dana ulica jest osiągalna, może być dokładniejsze przez wygenerowanie osiągalnych ulic niż przez użycie obszar&oacute;w czasu dojazdu.
+            </p>
+            <p>Obszary czasu dojazdu utworzone z użyciem tego parametru są ograniczone do 15&nbsp;minut lub 15&nbsp;mil (24&nbsp;kilometr&oacute;w).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

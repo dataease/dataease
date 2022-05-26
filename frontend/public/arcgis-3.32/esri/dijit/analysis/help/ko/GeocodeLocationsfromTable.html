@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>테이블의 지오코드 위치(Geocode Locations from Table)</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="테이블의 지오코드 위치"></h2>
+        <hr/>
+    <p>지오코딩은 주소에서 좌표로 변환하는 방법입니다. 이 도구는 테이블, CSV 파일 또는 Excel 파일의 주소를 추가 열로 좌표가 있는 결과 파일 또는 피처 레이어로 변환합니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>입력 테이블 선택</h2></div>
+        <hr/>
+        <div>
+            <p>지오코딩할 주소가 있는 입력 테이블입니다. 테이블, CSV 파일 또는 Excel 파일에 입력해야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>로케이터 선택</h2></div>
+        <hr/>
+        <div>
+            <p>지오코딩할 로케이터 서비스를 선택합니다. 사용할 로케이터 서비스가 드롭다운 메뉴에 없으며, 관리자에게 연락하여 로케이터 서비스를 일괄 지오코딩에 대해 구성하도록 합니다.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>국가</h2></div>
+        <hr/>
+        <div>
+            <p>모든 주소가 한 국가 내에 있으면 가장 정확한 결과를 위해 해당 국가를 선택합니다. 그렇지 않으면 이 매개변수를 비워 둡니다.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>데이터 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>로케이터 서비스에서는 데이터의 특정 필드(예: 주소, 시/군/구, 시/도 및 우편번호)를 예상합니다. 드롭다운 상자를 사용하여 입력 파일 또는 테이블의 데이터 필드를 로케이터에서 예상하는 필드와 일치하도록 합니다. 매핑하는 필드가 많을수록 결과가 더 정확합니다. 입력 테이블에서 모든 데이터가 열 한 개에 있으면  <b>단일 필드</b>를 선택하고 드롭다운 메뉴에서 데이터 필드를 선택합니다. 그렇지 않으면 <b>여러 필드</b>를 선택하고 적합한 로케이터 필드를 테이블의 여러 필드 열에 매핑합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>결과 형식 선택</h2></div>
+        <hr/>
+        <div>
+            <p>결과 형식입니다. 피처 서비스를 생성하도록 선택했으면 입력 테이블의 주소가 맵에 포인트 피처 레이어로 추가됩니다. CSV 및 XLS 옵션에서는 작업이 완료되면 지오코딩 작업 결과가 포함된 파일을  <b>내 콘텐츠</b>에 추가합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

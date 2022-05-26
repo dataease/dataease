@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Laske tiheys</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Laske tiheys"></h2>
+        <hr/>
+    <p>Laske tiheys -ty&ouml;kalu luo tiheyskartan pistekohteista jakamalla tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t (esitet&auml;&auml;n pisteiden ominaisuustietoina) kartan alueelle. Tuloksena syntyy karttataso, jonka alueet on luokiteltu v&auml;hiten tihe&auml;st&auml; tiheimp&auml;&auml;n.   
+
+    </p>
+    <p>Pistel&auml;ht&ouml;aineiston kunkin pisteen tulee esitt&auml;&auml; jonkin tapahtuman tai tapauksen sijaintia. Tulostaso kuvaa tapausten m&auml;&auml;r&auml;&auml; tietyll&auml; yksik&ouml;n alueella. Korkeampi tiheysarvo uudessa sijainnissa tarkoittaa, ett&auml; kyseisen sijainnin l&auml;hell&auml; on enemm&auml;n pisteit&auml;. Useissa tapauksissa tulostasoa voidaan tulkita tulevien tapahtumien riskimallina. Jos pistel&auml;ht&ouml;aineisto esitt&auml;&auml; esimerkiksi salamaniskujen sijainteja, tulostasoa voidaan tulkita tulevien salamaniskujen riskimallina.
+    </p>
+    <p>Ty&ouml;kalua voi k&auml;ytt&auml;&auml; my&ouml;s esimerkiksi seuraaviin tarkoituksiin:
+        <ul>
+            <li>Rikostiheyden karttojen luominen voi auttaa poliisilaitoksia kohdentamaan resurssejaan alueille, joilla rikollisuustaso on korkea.
+            </li>
+            <li>Maan sairaaloiden tiheyksien laskeminen. Tulostaso n&auml;ytt&auml;&auml; alueet, joilta sairaalaan p&auml;&auml;sy on helppoa tai vaikeaa. N&auml;it&auml; tietoja voidaan k&auml;ytt&auml;&auml; apuna p&auml;&auml;tett&auml;ess&auml; uusien sairaaloiden sijainneista.
+            </li>
+            <li>Mets&auml;paloille alttiiden alueiden tunnistaminen mets&auml;palojen historiallisten sijaintien perusteella.
+            </li>
+            <li>Kaukana valtateist&auml; sijaitsevien asutusten paikantaminen suunniteltaessa uusien teiden rakentamista.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse pistekarttataso, joista tiheys lasketaan</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, jonka perusteella tiheys lasketaan.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Valitse vähintään yksi kenttä, jonka tiheys lasketaan (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; v&auml;hint&auml;&auml;n yksi kentt&auml;, joka osoittaa tapausten m&auml;&auml;r&auml;n kussakin sijainnissa. Jos pisteet esitt&auml;v&auml;t esimerkiksi kaupunkeja, voit k&auml;ytt&auml;&auml; m&auml;&auml;r&auml;kentt&auml;n&auml; kentt&auml;&auml;, joka osoittaa kaupungin asukasluvun. Tuloksena syntyv&auml; v&auml;est&ouml;tiheyden karttataso laskee korkean v&auml;est&ouml;tiheyden asukasluvultaan suurien kaupunkien alueille.
+            </p>
+            <p>Pisteiden m&auml;&auml;r&auml;n tiheys lasketaan aina.   Jos yht&auml;&auml;n kentt&auml;&auml; ei valita, kunkin sijainnin oletetaan esitt&auml;v&auml;n yht&auml; tapausta.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Valitse lohkon muoto</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden lohkojen muoto, joihin pisteet kootaan ja joita k&auml;ytet&auml;&auml;n tiheyden laskennassa.
+            </p>
+            <p>Analysointi  <b>neli&ouml;</b>- tai <b>kuusikolmiolohkojen</b> avulla edellytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. Voit m&auml;&auml;ritt&auml;&auml; <b>k&auml;sittelev&auml;n koordinaattij&auml;rjestelm&auml;n</b> <b>Analyysiymp&auml;rist&ouml;t</b>-kohdassa. Jos k&auml;sittelev&auml;&auml; koordinaattij&auml;rjestelm&auml;&auml; ei ole m&auml;&auml;ritetty projisoiduksi koordinaattij&auml;rjestelm&auml;ksi, sinua pyydet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n se sellaiseksi, kun valitset <b>Suorita Analyysi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Valitse lohkon koko koostamista varten</h2></div>
+        <hr/>
+        <div>
+            <p>Luotujen lohkojen koko. Neli&ouml;lohkoissa koko tarkoittaa neli&ouml;n korkeutta. Kuusikulmioissa koko tarkoittaa kuusikulmion korkeutta (rinnakkaisilta sivuilta).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Valitse käytettävä tiheyden painotus</h2></div>
+        <hr/>
+        <div>
+            <p>Tiheyslaskennassa k&auml;ytetty painotustapa. Vaihtoehtoja on kaksi:
+                <ul>
+                    <li> <b>Yhten&auml;inen</b> &ndash; T&auml;m&auml; laskee aluekohtaisen magnitudin.
+                    </li>
+                    <li> <b>Ydin</b> &ndash; K&auml;ytt&auml;&auml; ydintoimintoa tasaisesti kaventuneen pinnan sovittamiseksi kuhunkin pisteeseen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Valitse naapuruston koko</h2></div>
+        <hr/>
+        <div>
+            <p>Sen alueen koko, jota k&auml;ytet&auml;&auml;n tiheyden laskennassa. Naapuruston koon on oltava suurempi kuin lohkon koko.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Valitse tiheyden tulosyksiköt</h2></div>
+        <hr/>
+        <div>
+            <p>Halutut tiheysarvojen tulosyksik&ouml;t. Oletusarvon mukaan t&auml;m&auml; on m&auml;&auml;ritetty neli&ouml;kilometreiksi tai neli&ouml;maileiksi profiilissasi m&auml;&auml;ritettyjen oletusyksik&ouml;iden mukaan. Jos tiheysarvot ovat hyvin pieni&auml;, voit lis&auml;t&auml; pinta-alayksik&ouml;n kokoa (esimerkiksi neli&ouml;metreist&auml; neli&ouml;kilometreiksi) suurempien arvojen palauttamiseksi. Arvot skaalautuvat vain tuloksen mukaan.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Laske tiheys käyttäen aikavälejä (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Jos aika on otettu k&auml;ytt&ouml;&ouml;n l&auml;ht&ouml;aineiston karttatasossa ja jos ajan tyyppin&auml; on hetki, voit k&auml;ytt&auml;&auml; analysointiin aikav&auml;lej&auml;. Voit m&auml;&auml;ritt&auml;&auml; kolme parametria, kun k&auml;yt&auml;t aikaa:
+                <ul>
+                    <li> <b>Aikav&auml;lijakso</b>
+                    </li>
+                    <li> <b>Miten usein aikav&auml;li&auml; toistetaan</b>
+                    </li>
+                    <li> <b>Aika, johon aikav&auml;lit kohdistetaan</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos sinulla on esimerkiksi vuotta kuvaava aineistoja  haluat k&auml;ytt&auml;&auml; analysointiin viikon  mittaisia aikav&auml;lej&auml;, aseta  <b>Aikav&auml;li</b> 1 <code>viikkoon</code>. 
+            </p>
+            <p>Jos sinulla on esimerkiksi vuotta kuvaava aineisto ja haluat k&auml;ytt&auml;&auml; sen analysointiin kuukauden ensimm&auml;ist&auml; viikkoa, aseta  <b>Aikav&auml;li </b>1 <code>viikkoon</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>kuukauteen</code> ja <b>Aika, johon aikav&auml;lit kohdistetaan p&auml;iv&auml;ykseen</b> 1. <code>tammikuuta kello 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Aikavälijakso</h2></div>
+        <hr/>
+        <div>
+            <p>Aikav&auml;li, jota k&auml;ytet&auml;&auml;n aikav&auml;lien luomiseen.  <b>Aikav&auml;lijakso-parametria</b> voidaan k&auml;ytt&auml;&auml; yksin tai toiminnon <b>Miten usein aikav&auml;li&auml; toistetaan</b> tai <b>Aika, johon aikav&auml;lit kohdistetaan</b> -parametrin kanssa.
+            </p>
+            <p>Jos esimerkiksi haluat luoda aikav&auml;lit, jotka toteutuvat joka maanantai kello 9.00 - 10.00, aseta  <b>Aikav&auml;li</b> 1 <code>tuntiin </code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Miten usein aikaväliä toistetaan</h2></div>
+        <hr/>
+        <div>
+            <p> Aika, jota k&auml;ytet&auml;&auml;n aikav&auml;lin laskemiseen. <b>Miten usein aikav&auml;li&auml; toistetaan -parametri&auml;</b> voidaan k&auml;ytt&auml;&auml; yksin, tai <b>Aikav&auml;lijakso-</b> tai <b>Viiteaika-parametrin</b> tai sek&auml; <b>Aikav&auml;lijakso-</b> ja <b>Aika, johon aikav&auml;lit kohdistetaan -parametrien kanssa</b>.
+            </p>
+            <p> Jos esimerkiksi haluat luoda aikav&auml;lin, joka toteutuu joka maanantai kello 9.00 - 10.00, aseta <b>Aikav&auml;li</b> 1 <code>tuntiin</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Aika, johon aikavälit kohdistetaan</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;iv&auml;m&auml;&auml;r&auml; ja kellonaika, joita k&auml;ytet&auml;&auml;n aikaleikkeiden kohdistamiseen. Aikav&auml;li alkaa kohdasta ja jatkuu t&auml;st&auml; ajasta taaksep&auml;in. Jos viiteaikaa ei valita, aikav&auml;li kohdistetaan aikaan 1.1.1970. 
+            </p>
+            <p> Jos esimerkiksihaluat luoda aikav&auml;lin, joka toteutuu joka maanantai kello 9.00 - 10.00, aseta <b>Aikav&auml;li</b> 1 <code>tuntiin</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinaatistotieto (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on esijulkaisun tilap&auml;inen parametri k&auml;sittelyn koordinaatistotiedon m&auml;&auml;ritt&auml;miseen. Monet Big Data -ty&ouml;kalut edellytt&auml;v&auml;t, ett&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml; k&auml;ytet&auml;&auml;n k&auml;sittelyn koordinaatistotietona. Oletusarvon mukaan ty&ouml;kalu k&auml;ytt&auml;&auml; l&auml;ht&ouml;aineiston koordinaattij&auml;rjestelm&auml;&auml;, mutta ty&ouml;kalua ei voi suorittaa, jos kyseess&auml; on maantieteellinen koordinaattij&auml;rjestelm&auml;. Jos haluat m&auml;&auml;ritt&auml;&auml; projisoidun koordinaattij&auml;rjestelm&auml;n, anna WKID. Jos haluat esimerkiksi m&auml;&auml;ritt&auml;&auml;  <b>Web Mercator</b> -koordinaattij&auml;rjestelm&auml;n, anna <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse aineistosäilö</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portaalin analyysiympäristön asetukset</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Ymp&auml;rist&ouml;asetukset analyysille ohjelmissa Portal for ArcGIS ja  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Korvaa tuloskarttataso</h2></div>
+        <hr/>
+        <div>
+            
+            <p>M&auml;&auml;ritt&auml;&auml;, korvataanko olemassa olevat karttatasot. Kun t&auml;m&auml; on valittu, jos samanniminen karttataso on jo olemassa sis&auml;ll&ouml;ss&auml;si, se korvataan.
+            </p>
+            <p>
+                <ul>
+                    <li>Valittu: samanniminen karttataso on jo olemassa sis&auml;ll&ouml;ss&auml;si, ja se korvataan. Tulosaineistolla on sama koordinaattij&auml;rjestelm&auml; kuin l&auml;ht&ouml;aineistolla.
+                    </li>
+                    <li>Ei valittu &ndash; jos annettu tuloskarttatason nimi on jo olemassa, tapahtuu virhe ja tuloskarttataso pit&auml;&auml; nimet&auml; uudelleen ennen ty&ouml;kalun suorittamista. T&auml;m&auml; on oletusarvo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Sulje analyysipienoisohjelma analyysin suorittamisen jälkeen</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml;, pidet&auml;&auml;nk&ouml; analyysivalintaikkuna auki ja k&auml;yt&ouml;ss&auml; ty&ouml;kalun k&auml;sitelless&auml; tietoja. T&auml;m&auml;n asetuksen avulla voit tehd&auml; muutoksia analyysiparametreihisi niin, ett&auml; edellinen analyysiteht&auml;v&auml; pysyy k&auml;ynniss&auml;. Analyysi on toistoprosessi, ja kun ty&ouml;kalun valintaikkuna pidet&auml;&auml;n auki, sen avulla voit tehd&auml; muutoksia parametreihin ja suorittaa analyysin uudelleen.
+            </p>
+            <p>
+                <ul>
+                    <li>Valittu &ndash; analyysity&ouml;kalun valintaikkuna sulkeutuu, ja kohdistus palaa sis&auml;llysluetteloon. T&auml;m&auml; on oletusarvo
+                    </li>
+                    <li>Ei valittu &ndash; analyysity&ouml;kalun valintaikkuna pysyy auki ja k&auml;yt&ouml;ss&auml;.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Tallenna analyysin tulokset isännöityinä kohdekarttatasoina</h2></div>
+        <hr/>
+        <div>
+            
+            <p>M&auml;&auml;ritt&auml;&auml;, onko analyysista luotu tuloskarttataso kohdekokoelma vai is&auml;nn&ouml;ity kohdekarttataso. 
+            </p>
+            <p>
+                <ul>
+                    <li>Valittu &ndash; analyysisi tulokset luovat kohdekarttatason, ja sis&auml;lt&ouml;&ouml;si luodaan vastaava kohde. T&auml;m&auml; on oletusarvo.
+                    </li>
+                    <li>Valitsematta: Analyysin tulokset luovat kohteiden kokoelman.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Tulosaineiston koordinaattijärjestelmä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; tulostason koordinaattij&auml;rjestelm&auml;n rasterianalyysia varten.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama kuin l&auml;ht&ouml;aineisto</b> &ndash; analyysin tulos k&auml;ytt&auml;&auml; samaa koordinaattij&auml;rjestelm&auml;&auml; kuin l&auml;ht&ouml;aineisto. T&auml;m&auml; on oletusarvo.
+                    </li>
+                    <li> <b>M&auml;&auml;rityksen mukaan</b> &ndash; analyysin tulos k&auml;ytt&auml;&auml; valitsemaasi koordinaattij&auml;rjestelm&auml;&auml;. Kun t&auml;m&auml; valinta on valittu, tee valintasi tunnettujen koordinaattij&auml;rjestelmien luettelosta napsauttamalla maapallopainiketta tai lis&auml;&auml; koordinaatistotieto (WKID) sille tarkoitettuun ruutuun.
+                    </li>
+                    <li> <b>Karttataso
+&lt;nimi&gt;</b> &ndash; analyysin tulos on samassa koordinaattij&auml;rjestelm&auml;ss&auml; kuin aiemmin luotu karttataso, jonka valitset web-kartastasi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Käsittelyn koordinaattijärjestelmä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; koordinaattij&auml;rjestelm&auml;n, jota analyysi k&auml;ytt&auml;&auml; GeoAnalytics-analyysin suorittamisen aikana.   
+            </p>
+            <p>GeoAnalyticsin tapauksessa osa analyysist&auml; edellytt&auml;&auml;, ett&auml; k&auml;sittely suoritetaan projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;. Kaikkien ty&ouml;kalujen, joissa on k&auml;yt&ouml;ss&auml; datan lokerointi tai lineaariset yksik&ouml;t, pit&auml;&auml; k&auml;ytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama kuin l&auml;ht&ouml;aineisto</b>: Analyysisi k&auml;sitell&auml;&auml;n samassa koordinaattij&auml;rjestelm&auml;ss&auml; kuin l&auml;ht&ouml;aineisto. T&auml;m&auml; on oletusarvo.
+                    </li>
+                    <li> <b>M&auml;&auml;rityksen mukaan</b> &ndash; analyysi k&auml;ytt&auml;&auml; valitsemaasi koordinaattij&auml;rjestelm&auml;&auml;. Kun t&auml;m&auml; valinta on valittu, tee valintasi tunnettujen projisoitujen koordinaattij&auml;rjestelmien luettelosta napsauttamalla maapallopainiketta tai lis&auml;&auml; koordinaatistotieto (WKID) sille tarkoitettuun ruutuun.
+                    </li>
+                    <li> <b>Karttataso
+&lt;nimi&gt;</b> &ndash; analyysi on samassa koordinaattij&auml;rjestelm&auml;ss&auml; kuin aiemmin luotu karttataso, jonka valitset web-kartastasi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Laajuus</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; laajuuden tai rajan, jota k&auml;ytet&auml;&auml;n analyysin suorittamisen aikana. Analyysiss&auml; k&auml;ytet&auml;&auml;n kaikkia l&auml;ht&ouml;aineiston kohteita, jotka ovat kokonaan m&auml;&auml;ritetyss&auml; laajuudessa tai leikkaavat sen kanssa.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Oletusarvo</b> &ndash; ty&ouml;kalun sis&auml;lt&auml;m&auml; laajuus.
+                    </li>
+                    <li> <b>M&auml;&auml;rityksen mukaan</b> &ndash; antamasi koordinaattij&auml;rjestelm&auml; m&auml;&auml;ritt&auml;&auml; laajuuden.
+                    </li>
+                    <li> <b>Karttataso
+&lt;nimi&gt;</b> &ndash; analyysin k&auml;sittelyss&auml; k&auml;ytett&auml;v&auml; laajuus on sama kuin web-kartastasi valitsemasi, aiemmin luodun karttatason sijaintilaajuus. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Kohdistusrasteri</h2></div>
+        <hr/>
+        <div>
+            <p>S&auml;&auml;d&auml; tulosaineiston rasteritason laajuutta, jotta se vastaa rasterianalyysissa m&auml;&auml;ritetyn  <b>Kohdistusrasteri</b>-karttatason solujen kohdistusta.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Solukoko</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; solukoon tai tarkkuuden sellaiseksi, jota k&auml;ytet&auml;&auml;n tulosaineiston rasteritason luontiin rasterianalyysissa. L&auml;ht&ouml;aineiston rasteritason suurin solukoko m&auml;&auml;ritt&auml;&auml; tulosaineiston oletustarkkuuden.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>L&auml;ht&ouml;aineistojen v&auml;himm&auml;ism&auml;&auml;r&auml;</b>: k&auml;yt&auml; l&auml;ht&ouml;aineiston karttatasojen pienint&auml; solukokoa.
+                    </li>
+                    <li> <b>L&auml;ht&ouml;aineistojen enimm&auml;ism&auml;&auml;r&auml;</b>: K&auml;yt&auml; kaikkien l&auml;ht&ouml;aineiston karttatasojen suurinta solukokoa. T&auml;m&auml; on oletusarvo.
+                    </li>
+                    <li> <b>Kuten m&auml;&auml;ritetty</b>: M&auml;&auml;rit&auml; numeroarvo, joka m&auml;&auml;ritt&auml;&auml; solukoon. Jos t&auml;m&auml; valitaan, oletusarvo on 1.
+                    </li>
+                    <li> <b>Karttataso &lt;name&gt;</b>: M&auml;&auml;ritt&auml;&auml; valitun rasteritason solukoon.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maski</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; karttatason, jota k&auml;ytet&auml;&auml;n kiinnostuskohteen m&auml;&auml;ritt&auml;miseen rasterianalyysissa.   Vain ne solut, jotka kuuluvat analyysin maskiin, huomioidaan analyysitoimenpiteess&auml;.
+            </p>
+            <ul>
+                <li>Maski voi olla joko rasteri tai kohdekarttataso.
+                </li>
+                <li>Jos analyysimaski on rasteri, kaikki arvon sis&auml;lt&auml;v&auml;t solut m&auml;&auml;ritt&auml;v&auml;t maskin. Maskirasterin solut, joiden arvona on NoData, ovat maskin ulkopuolella, ja niiden arvona on NoData analyysin tuloskarttatasossa. 
+                </li>
+                <li>Jos analyysin maski on kohdekarttataso, se muunnetaan sis&auml;isesti rasteriksi suorituksen aikana. T&auml;st&auml; syyst&auml; on varmistettava, ett&auml;
+ <b>Solukoko</b>- ja <b>Kohdistusrasteri</b> -asetukset m&auml;&auml;ritet&auml;&auml;n oikein analyysi&auml; varten.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Aineistosäilö</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset voidaan tallentaa joko kohteeseen  ArcGIS Data Store ja julkaista kohdekarttatasona  Portal for ArcGIS -portaalissa tai m&auml;&auml;ritettyn&auml; Big Data -tiedostojakona. 
+            </p>
+            <p>Kun tallennat tuloksen kohteeseen  ArcGIS Data Store, useimmissa tapauksissa tulokset tulisi tallentaa spatiotemporaaliseen aineistos&auml;il&ouml;&ouml;n. T&auml;m&auml; on oletusarvo. Tulokset kannattaa tallentaa relaatiotietokantaan seuraavissa tilanteissa: 
+                <ul>
+                    <li>Haluat k&auml;ytt&auml;&auml; portaalissa olevia tuloksia portaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Haluat ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja haluat hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Rinnakkaiskäsittelyn kerroin</h2></div>
+        <hr/>
+        <div>
+            <p>Jakaa analyysin useiden rasterin k&auml;sittelypalvelun esiintymien kesken. 
+            </p>
+            <p>Niiden ty&ouml;kalujen avulla, jotka noudattavat  <b>Rinnakkaisk&auml;sittelyn kerroin</b> -ymp&auml;rist&ouml;&auml;, voit hallita aineistosi k&auml;sittelyss&auml; k&auml;ytett&auml;vien rasterin k&auml;sittelypalvelun esiintymien m&auml;&auml;r&auml;&auml;.
+            </p>
+            <p>Jos ty&ouml;kalu ei noudata  <b>Suorittimen tyyppi</b> -ymp&auml;rist&ouml;&auml; tai jos <b>Suorittimen tyyppi</b> -ymp&auml;rist&ouml;ksi on m&auml;&auml;ritetty <b>Suoritin</b>, <b>Rinnakkaisk&auml;sittelyn kerroin</b> -ymp&auml;rist&ouml; hallitsee rasterin k&auml;sittelypalvelun (suoritin) esiintymi&auml;. Jos <b>suorittimen tyypiksi</b> on m&auml;&auml;ritetty <b>Grafiikkasuoritin</b>, <b>Rinnakkaisk&auml;sittelyn kerroin</b> -ymp&auml;rist&ouml; hallinnoi rasterin k&auml;sittelypalvelun (grafiikkasuoritin) esiintymien m&auml;&auml;r&auml;&auml;.
+            </p> 
+            <p>M&auml;&auml;ritt&auml;m&auml;ll&auml;  <b>rinnakkaisk&auml;sittelyn kertoimen</b> voit pyyt&auml;&auml; niiden rinnakkaisten k&auml;sittelij&ouml;iden m&auml;&auml;r&auml;&auml;, jota rasterianalyysin kuvapalvelin k&auml;ytt&auml;&auml; yhden rasterianalyysiteht&auml;v&auml;n k&auml;sittelyyn. Jos rinnakkaisten prosessien kokonaism&auml;&auml;r&auml; ylitt&auml;&auml; kuitenkin rasterin k&auml;sittelypalvelujen (suoritin tai grafiikkasuoritin) esiintymien enimm&auml;ism&auml;&auml;r&auml;n, rinnakkaisten lis&auml;prosessit lis&auml;t&auml;&auml;n jonoon.
+            </p>
+            <p>Jos  <b>rinnakkaisk&auml;sittelyn kerrointa</b> ei ole m&auml;&auml;ritetty, mik&auml; on oletusarvo, ty&ouml;kalu k&auml;ytt&auml;&auml; 80 prosenttia rasterin k&auml;sittelypalvelun esiintymien enimm&auml;ism&auml;&auml;r&auml;st&auml;. Rinnakkaisk&auml;sittelyn kertoimeksi voidaan m&auml;&auml;ritt&auml;&auml; kokonaisluku tai prosenttiosuus.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Suorittimen tyyppi</h2></div>
+        <hr/>
+        <div>
+            <p>Voit valita niiden ty&ouml;kalujen avulla, jotka noudattavat  <b>Suorittimen tyyppi</b> -ymp&auml;rist&ouml;&auml;, miten ja miss&auml; haluat k&auml;sitell&auml; aineistoasi. Voit k&auml;sitell&auml; aineistoasi k&auml;ytt&auml;m&auml;ll&auml; palvelintietokoneen suoritinta tai grafiikkasuoritinta.  Jos <b>Suorittimen tyyppi</b> -ymp&auml;rist&ouml; on tyhj&auml;, ty&ouml;kalu k&auml;ytt&auml;&auml; suoritinta aineiston k&auml;sittelyyn. T&auml;m&auml; on oletusarvo.
+            </p> 
+            <p>Suorittimen k&auml;yt&ouml;n voi rinnakkaistaa usean ytimen ja esiintym&auml;n kesken, kuten  <b>rinnakkaisk&auml;sittelyn kerroin</b> tekee.
+            </p>
+            <p>Grafiikkasuorittimet ovat tehokkaita grafiikan ja kuvien k&auml;sittelyss&auml;, jossa niiden erityinen rinnakkaisrakenne tekee niist&auml; tehokkaita suurten aineistom&auml;&auml;rien toistuvassa k&auml;sittelyss&auml;. Rasterianalyysity&ouml;kalut, jotka noudattavat t&auml;t&auml; ymp&auml;rist&ouml;&auml;, voivat jakaa ty&ouml;ns&auml; usealle grafiikkasuoritinesiintym&auml;lle useassa rasterianalyysipalvelinkoneessa, kuten  <b>rinnakkaisk&auml;sittelyn kerroin</b> tekee.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Grafiikkasuoritin</b> &ndash; aineisto k&auml;sitell&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; grafiikkasuoritinyksikk&ouml;&auml;.
+                    </li>
+                    <li> <b>Suoritin</b> &ndash; aineisto k&auml;sitell&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; tietokoneen suoritinta.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

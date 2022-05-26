@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Fastställ resekostnadsrutt som polylinje</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Illustration av verktyget Fastst&auml;ll resekostnadsrutt som polylinje"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget ber&auml;knar polylinjev&auml;gen med l&auml;gst kostnad mellan k&auml;llor och k&auml;nda m&aring;l.
+    </p>
+    <p>H&auml;r &auml;r n&aring;gra exempel p&aring; anv&auml;ndningar:
+        <ul>
+            <li>Hitta den b&auml;sta str&auml;ckningen med avseende p&aring; byggkostnader f&ouml;r en ny v&auml;g.
+                
+
+            </li>
+            <li>Identifiera vilken v&auml;g man ska fr&aring;n flera f&ouml;rortsomr&aring;den (k&auml;llor) till n&auml;rmaste k&ouml;pcentrum (destination).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de platser i indatalagren som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla platser i b&aring;da indatalagren, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Välj raster eller geoobjektkällager för att fastställa vägar från</h2></div>
+        <hr/>
+        <div>
+            <p>En bild- eller geoobjekttj&auml;nst som identifierar de celler fr&aring;n vilka den billigaste rutten kan best&auml;mmas till den mest kostnadseffektiva destinationen.
+            </p>
+            <p>Om indata &auml;r en bildtj&auml;nst best&aring;r indata av celler som har giltiga v&auml;rden (noll &auml;r ett giltigt v&auml;rde), och de &aring;terst&aring;ende cellerna m&aring;ste tilldelas NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Välj resekostnadsrasterlager</h2></div>
+        <hr/>
+        <div>
+            <p>Ett raster som definierar impedansen eller kostnaden f&ouml;r att flytta planimetriskt genom varje cell.
+            </p>
+            <p>V&auml;rdet i varje cellposition motsvarar kostnad-per-enhetsavst&aring;ndet f&ouml;r att flytta genom cellen. Varje cellpositions v&auml;rde multipliceras med celluppl&ouml;sningen samtidigt som man ocks&aring; kompenserar f&ouml;r diagonala r&ouml;relse f&ouml;r att f&aring; fram den totala kostnaden f&ouml;r att passera genom cellen.
+            </p>
+            <p>V&auml;rdena i kostnadsrastret kan vara heltal eller flyttal, men de kan inte vara negativa eller noll (du kan inte ha en negativ kostnad eller nollkostnad).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Destinationsraster eller geoobjekt som indata</h2></div>
+        <hr/>
+        <div>
+            <p>Indata som definierar de destinationer som anv&auml;nds f&ouml;r att ber&auml;kna avst&aring;ndet. Lagret kan vara ett raster eller geoobjekt.
+            </p>
+            <p>Om indata &auml;r en bildtj&auml;nst best&aring;r indata av celler som har giltiga v&auml;rden (noll &auml;r ett giltigt v&auml;rde), och de &aring;terst&aring;ende cellerna m&aring;ste tilldelas NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Resultatpolylinjelagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Välj typ av vägar för att fastställa</h2></div>
+        <hr/>
+        <div>
+            <p>Definierar hur v&auml;rden och zoner i inkommande destinationsdata kommer att tolkas i kostnadsber&auml;kningar f&ouml;r rutter.
+            </p>
+            <ul>
+                <li>B&auml;sta enskilda &ndash; F&ouml;r alla celler eller platser i inkommande destinationsdata h&auml;rleds den mest kostnadseffektiva rutten fr&aring;n platsen med l&auml;gsta antal rutter med l&auml;gst kostnad till k&auml;llplatsen. Det h&auml;r &auml;r standardinst&auml;llningen
+                    
+
+                </li>
+                <li>Till varje cell &ndash; F&ouml;r varje cell eller plats med giltiga v&auml;rden i inkommande destinationsdata avg&ouml;rs en billigaste rutt som sedan sparas i utdatageoobjekttj&auml;nsten. Med det h&auml;r alternativet behandlas varje cell i inkommande destinationsdata separat, och en billigaste rutt best&auml;ms f&ouml;r varje fr&aring;n-cell.
+                    
+
+                </li>
+                <li>Till varje zon &ndash; F&ouml;r varje zon i inkommande destinationsdata best&auml;ms en billigaste rutt som sedan sparas i utdatageoobjekttj&auml;nsten. Med det h&auml;r alternativet b&ouml;rjar den billigaste rutten f&ouml;r varje zon vid cellen eller platsen med den l&auml;gsta kostnaden f&ouml;r avst&aring;ndsviktning i zonen.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Hitung Jarak</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Hitung Jarak"></h2>
+        <hr/>
+    <p>Alat ini menghitung jarak, arah, dan alokasi Euclidean dari sumber tunggal atau kumpulan sumber.
+    </p>
+    <p>Contoh aplikasi mencakup menjawab pertanyaan seperti berikut:
+
+        <ul>
+            <li>Berapa jarak ke kota terdekat?
+                
+
+            </li>
+            <li>Berapa jarak ke jalan terdekat?
+                
+
+            </li>
+            <li>Berapa jarak ke sumber air terdekat?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur-fitur di layer input yang terlihat dalam lingkup peta saat ini yang akan dianalisis. Jika tidak dicentang, semua fitur di layer input akan dianalisis, meskipun mereka berada di luar tampilan layar peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Pilih raster atau layer lokasi fitur untuk dihitung jaraknya</h2></div>
+        <hr/>
+        <div>
+            <p>Layer yang mendefinisikan sumber ke mana jarak akan dihitung. Layer dapat berupa layanan gambar atau feature service.
+            </p>
+            <p>Untuk layanan gambar, jenis input bisa berupa bilangan bulat atau bilangan titik mengambang.
+            </p>
+            <p>Untuk feature service, input bisa berupa titik, garis, atau poligon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Jarak maksimum untuk dihitung</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak maksimum yang akan dihitung. Misalnya, jika Anda memberikan nilai 10.000 meter, jarak Euclidian akan dihitung dari lokasi sumber ke nilai itu (jarak).
+            </p>
+            <p>Jika tidak ada nilai yang disediakan, jarak akan dihitung hingga batas yang ditentukan.
+            </p>
+            <p>Unit yang tersedia adalah Kilometer, Meter, Mil, dan Kaki.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ukuran Sel Output</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran dan unit sel untuk raster output.
+            </p>
+            <p>Unit bisa jadi kilometer, meter, mil, atau kaki.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nama layer jarak hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nama layer arah hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat dalam  <b>Konten Saya</b>. Anda harus memberikan nama yang belum ada di <b>Konten Saya</b>.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nama layer Alokasi hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat dalam  <b>Konten Saya</b>. Anda harus memberikan nama yang belum ada di <b>Konten Saya</b>.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Pilih kolom alokasi</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom pada layer sumber input yang menyimpan nilai yang mendefinisikan setiap sumber. Ini bisa berupa bilangan bulat atau kolom string dari set data sumber.
+            </p>
+            <p>Standarnya adalah  <i>Value</i>. Jika menggunakan feature service dan tidak ada kolom <i>Value</i> tersedia, maka tersedia kolom bilangan bulat atau string pertama yang akan digunakan. Jika tidak ada kolom yang valid, kolom ObjectID (misalnya, OID atau FID, tergantung pada jenis input fitur) akan digunakan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

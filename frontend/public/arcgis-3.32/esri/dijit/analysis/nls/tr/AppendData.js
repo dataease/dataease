@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/tr/AppendData",{inputLayerLabel:"\u00dczerine eklenecek katman\u0131 se\u00e7",inputWarningLabel:"Uyar\u0131: Ekledi\u011finiz katman de\u011fi\u015ftirilecek.",inputHostedLayerWarning:"Se\u00e7ili katman bar\u0131nd\u0131r\u0131lan bir detay katman\u0131 de\u011fil. \u00dczerine eklemek i\u00e7in l\u00fctfen bir bar\u0131nd\u0131r\u0131lan detay katman\u0131 se\u00e7in.",appendLayerLabel:"Eklenecek katman\u0131 se\u00e7",filterLabel:"T\u00fcm detaylar\u0131 ekle veya bir alt k\u00fcme tan\u0131mla (iste\u011fe ba\u011fl\u0131)",
+fieldMappingLabel:"Alanlar\u0131 nas\u0131l ekleyece\u011finizi se\u00e7in (iste\u011fe ba\u011fl\u0131)",inputField:"Girdi Alan\u0131",appendValue:"Ekleme De\u011feri",expression:"\u0130fade"});

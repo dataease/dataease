@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Pronađi klastere tačaka</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Pronađi klastere tačaka"></h2>
+        <hr/>
+    <p>Alatka  Pronađi klastere tačaka pronalazi klastere tačkastih geoobjekata sa okružujućom bukom na osnovu njihove prostorne distribucije.
+    </p>
+    <p>Na primer, nevladina organizacija ispituje određenu bolest izazvanu &scaron;tetočinama. Ima tačkasti skup podataka koji predstavlja domaćinstva u proučavanoj oblasti, od kojih su neka napadnuta &scaron;tetočinama a druga nisu. Kori&scaron;ćenjem alatke  Pronađi klastere tačaka analitičar može da odredi klastere napadnutih domaćinstava kako bi pomogao da se istakne oblast na kojoj se počinje sa tretiranjem i uklanjanjem &scaron;tetočina.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj za koji će klasteri da budu pronađeni</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj na kome će biti pronađeni klasteri. Slojevi moraju da budu u projektovanoj prostornoj referenci ili da imaju obradu prostorne reference postavljenu na projektovani koordinatni sistem kori&scaron;ćenjem  <b>Okruženja analize</b>.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Odaberite metod grupisanja koji će se koristiti</h2></div>
+        <hr/>
+        <div>
+            <p>Metod grupisanja koji će se koristiti za razlikovanje klastera tačkastih geoobjekata od okružujućeg &scaron;uma. Možete da odaberete da koristite definisano rastojanje ili algoritam samopode&scaron;avajućeg grupisanja.
+            </p>
+            <p>Definisano rastojanje (DBSCAN) koristi navedeni opseg pretrage za odvajanje gustih klastera od ređeg &scaron;uma. Definisano rastojanje (DBSCAN) je brže, ali je prikladno samo ako postoji veoma jasan opseg pretrage koji može da se koristi i funkcioni&scaron;e dobro za definisanje svih klastera koji mogu da postoje. Definisano rastojanje (DBSCAN) pronalazi klastere koji imaju slične gustine.
+            </p>
+            <p>Samopode&scaron;avanje (HDBSCAN) ne zahteva navođenje opsega pretrage, ali je metod koji zahteva vi&scaron;e vremena. Samopode&scaron;avanje (HDBSCAN) pronalazi klastere tačaka slično definisanom rastojanju (DBSCAN), ali koristi promenljive opsege pretrage omogućavajući klastere sa promenljivim gustinama. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalan broj tačaka koje se smatraju klasterom</h2></div>
+        <hr/>
+        <div>
+            <p>Ovaj parametar se koristi različito u zavisnosti od izabranog metoda grupisanja:
+            </p>
+            <p>
+                <ul>
+                    <li>Definisano rastojanje (DBSCAN) &ndash; navodi broj geoobjekata koji moraju da se pronađu unutar određenog rastojanja od tačke, da bi ta tačka počela da formira klaster. Rastojanje se defini&scaron;e pomoću parametra  <b>Ograniči opseg pretrage na</b>.
+                    </li>
+                    <li>Samopode&scaron;avanje (HDBSCAN) &ndash; navodi broj geoobjekata koji su susedi svakoj tački (uključujući i samu tačku) koji će biti uzeti u obzir pri procenjivanju gustine. Ovaj broj je takođe minimalna dozvoljena veličina klastera prilikom ekstrakcije klastera.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ograniči opseg pretrage na</h2></div>
+        <hr/>
+        <div>
+            <p>Pri kori&scaron;ćenju definisanog rastojanja (DBSCAN), ovaj parametar je rastojanje unutar kog je potrebno pronaći  <b>Minimalan broj tačaka koje se smatraju klasterom</b>. Ovaj parametar se ne koristi kada je izabrano samopode&scaron;avanje (HDBSCAN) za kori&scaron;ćenje kao metod grupisanja.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

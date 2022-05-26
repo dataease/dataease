@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find lignende steder</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Find lignende steder"></h2>
+        <hr/>
+    <p>Baseret p&aring; kriterier, du angiver, m&aring;ler v&aelig;rkt&oslash;jet Find lignende steder ligheden mellem steder i dit kandidats&oslash;gningslag og et eller flere referencesteder. V&aelig;rkt&oslash;jet kan besvare sp&oslash;rgsm&aring;l s&aring;som: 
+        <ul>
+            <li>Hvilke af dine forretninger ligner dine bedste forretninger mest med hensyn til kundeprofiler?
+            </li>
+            <li>P&aring; grundlag af karakteristika for de landsbyer, der blev h&aring;rdest ramt af sygdommen, hvilke andre landsbyer er s&aring; i h&oslash;jrisikozonen?
+            </li>
+        </ul>
+        For at f&aring; svar p&aring; sp&oslash;rgsm&aring;l som disse skal du angive de referencesteder, de kandidats&oslash;gesteder og de felter, der repr&aelig;senterer de kriterier, som du gerne vil matche. Det f&oslash;rste inputlag b&oslash;r indeholde dine referencesteder eller referencepunktsteder.  Det kunne eksempelvis v&aelig;re et lag, som indeholder dine bedste forretninger, eller de landsbyer, som blev h&aring;rdest ramt af sygdommen. Du angiver derefter det lag, som indeholder dine kandidats&oslash;gesteder. Det kunne f.eks. v&aelig;re alle dine forretninger eller alle andre landsbyer. Endelig kan du identificere et eller flere felter til brug for m&aring;ling af lighed. V&aelig;rkt&oslash;jet Find lignende steder vil derefter rangordne alle kandidats&oslash;gestederne efter, i hvor h&oslash;j grad de matcher dine referencesteder p&aring; tv&aelig;rs af alle de felter, du har markeret.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det lag, der indeholder referencestederne</h2></div>
+        <hr/>
+        <div>
+            <p>Det lag, der indeholder de referencesteder, der skal matches. 
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Du kan bruge alle steder eller udvælge</h2></div>
+        <hr/>
+        <div>
+            <p>Brug om n&oslash;dvendigt markeringsknapperne til at identificere referencestederne. Denne indstilling er kun tilg&aelig;ngelig, hvis objekterne tegnes p&aring; kortet (er ikke tilg&aelig;ngelig for en big data-fildeling).  Hvis input-laget f.eks. indeholder alle stederne - b&aring;de referencestederne og kandidats&oslash;gestederne - skal du bruge et af markeringsv&aelig;rkt&oslash;jerne til at identificere referencestederne. Hvis du opretter to s&aelig;rskilte lag, et med referencesteder og et andet med alle kandidats&oslash;gestederne, beh&oslash;ver du ikke foretage en markering.
+            </p>
+            <p>Hvis der er mere end et referencested, oprettes der &eacute;t enkelt sted ved at tage gennemsnittet af v&aelig;rdierne for hver af de felter, der bruges til at analysere ligheden.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Søg efter lignende steder i</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidats&oslash;gestederne i dette lag rangordnes fra mest til mindst lignende. 
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basér ligheden på</h2></div>
+        <hr/>
+        <div>
+            <p>De felter, du v&aelig;lger, vil v&aelig;re de kriterier, som anvendes for at vurdere ligheden. Hvis du eksempelvis v&aelig;lger et befolknings- og indkomstfelt, vil kandidats&oslash;gestederne med de laveste (bedste) rangordninger v&aelig;re dem, der har lignende befolknings- og indkomstv&aelig;rdier i forhold til dine referencesteder.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Bestem mest og mindst ens ved hjælp af</h2></div>
+        <hr/>
+        <div>
+            <p>Den metode, du v&aelig;lger, bestemmer, hvordan matching'en bestemmes. 
+                <ul>
+                    <li> <b>Feltv&aelig;rdi</b>-metoden anvender kvadratiske differenser af standardv&aelig;rdier. Dette er standardv&aelig;rdien.
+                    </li>
+                    <li> <b>Feltprofil</b>-metoden anvender de matematiske regler om cosinus-lighed til at sammenligne profilen i forhold til standardv&aelig;rdier. Hvis du vil benytte attributprofiler, kr&aelig;ves der mindst to analysefelter.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Vis mig</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan enten f&aring; vist alle kandidats&oslash;gestederne rangordnet fra ligner meget til ligner mindst, eller du kan angive det antal resultater, som du vil se. 
+                <ul>
+                    <li>Hvis du angiver  <b>alle steder fra mest til mindst lignende</b>, medtages alle objekterne i kandidats&oslash;gelaget i rangordenen i resultatlaget. Der returneres h&oslash;jst 10.000 resultater.
+                    </li>
+                    <li>Hvis du angiver  <code>antallet af</code> <code>mest, mindst, eller mest og mindst </code> <b>lignende steder</b>, bestemmer du, hvor mange af de mest, mindst eller mest og mindst lignende kandidats&oslash;gesteder, der skal medtages i resultatlaget. Den maksimalt tilladte v&aelig;rdi 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Vælg felter, der skal føjes til resultaterne</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan efter eget valg tilf&oslash;je felter til dine data fra dit s&oslash;gelag. Alle felter tilf&oslash;jes som standard.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>Dette resultatlag vil indeholde referencesteder og det antal rangordnede kandidats&oslash;gesteder, som du angav. Hvis navnet p&aring; resultatlaget allerede eksisterer, vil du blive bedt om at &aelig;ndre det.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

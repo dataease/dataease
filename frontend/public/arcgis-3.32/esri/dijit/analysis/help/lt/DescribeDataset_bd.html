@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aprašyti duomenų rinkinį</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Apra&scaron;yti duomenų rinkinio darbo eigos diagramą"></h2>
+        <hr/>
+    <p>Įrankis Apra&scaron;yti duomenų rinkinį suteikia i&scaron;samesnę įžvalgą į jūsų duomenų rinkinį. Prie&scaron; vykdydami didelių duomenų kiekių analizę, panaudokite &scaron;į įrankį nustatyti, kas ir kur yra jūsų įvesties duomenys. Pagal numatytuosius nustatymus rezultatas bus JSON eilutė, kurioje pary&scaron;kinti pagrindiniai jūsų įvesties sluoksnio deskriptoriai, ir lentelė, kurioje pateikta kiekvieno lauko santraukos statistika. 
+    </p>
+    <p>Pasirinktinai galite sukurti papildomų i&scaron;vesties elementų sluoksnių, kad i&scaron;samiau apra&scaron;ytumėte savo duomenis. Galimi variantai yra pavyzdinis sluoksnis ir aprėpties sluoksnis. Galite pasirinkti i&scaron;vestyje pateikti vieną i&scaron; jų arba abu.
+    </p>
+    <p>Pavyzdžiui, turite didelių duomenų failo bendrinimą, kuriame 15 duomenų rinkinių. Kiekviename duomenų rinkinyje yra 10 milijonų plotinių elementų, reprezentuojančių pastatus ir namus įvairiuose &scaron;alies regionuose. Gavote užduotį analizuoti C regioną, tačiau nežinote, kuriame duomenų rinkinyje yra tie elementai. Norėdami sužinoti, kurį duomenų rinkinį naudoti, vykdykite Apra&scaron;yti duomenų rinkinį ir pasirinkite sukurti aprėpties sluoksnį, kad i&scaron;siai&scaron;kintumėte, kuris duomenų rinkinys yra jūsų tyrimo regionas.
+    </p>
+    <p>Kitas pavyzdys: įsivaizduokite, kad gavote užduotį atlikti analizės darbo eigą su dideliu kiekiu duomenų. Norite i&scaron;bandyti darbo eigą, tačiau su pilnu duomenų rinkiniu tai gali užtrukti valandas ar net dienas. Užuot &scaron;vaistę laiką ir i&scaron;teklius vykdydami pilną analizę, sukurkite pavyzdinį sluoksnį ir efektyviai i&scaron;bandykite darbo eigą su juo.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite, kurį duomenų rinkinį aprašyti</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis, kuriame yra ta&scaron;kinių, linijinių, plotinių ar lentelėse esančių elementų, kurie bus apra&scaron;omi, apibendrinami ir pateikiami pavyzdžiui.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Supraskite savo duomenų rinkinį sukurdami (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Sukurkite papildomus apra&scaron;omuosius sluoksnius, jei norite geriau suprasti turimus didelius duomenis. Galite pasirinkti i&scaron;vestyje pateikti nei vieną, vieną arba abu &scaron;iuos sluoksnius:
+            </p>
+            <ul>
+                <li> <b>Aprėpties sluoksnis</b> &ndash; sukuria plotinį elementą, reprezentuojantį jūsų įvesties elementų arba dominančios srities aprėptį.
+                </li>
+                <li> <b>Pavyzdinis sluoksnis</b> &ndash; sukuria sluoksnio poaibį, kuriame yra nurodytas įvesties elementų kiekis i&scaron; jūsų duomenų rinkinio arba dominančios srities.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Pavyzdinis sluoksnis</h2></div>
+        <hr/>
+        <div>
+            <p>Sukuria i&scaron;vesties sluoksnį, kuriame yra jūsų įvesties sluoksnio elementų poaibis. Jei pasirinkta  <b>Pavyzdinis sluoksnis</b>, galite nurodyti, kiek elementų norite gauti pavyzdiniame sluoksnyje. Pagal numatytuosius nustatymus i&scaron;vesties sluoksnyje pateikiama 100 pavyzdinių elementų.
+            </p>
+            <p>Reik&scaron;mė turi būti didesnė už nulį. Jei nurodysite skaičių, didesnį už visų elementų skaičių, bus pateikiami visi elementai.
+            </p>
+            <p>Jei pasirinkta  <b>Naudoti esamą žemėlapio aprėptį</b>, pavyzdiniame sluoksnyje bus žemėlapio aprėpčiai priklausantys elementai.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Aprėpties sluoksnis</h2></div>
+        <hr/>
+        <div>
+            <p>Sukurkite elementų sluoksnį, kuriame yra vienas elementas, reprezentuojantus įvesties elementų aprėptį, pasirinkdami mygtuką  <b>Aprėpties sluoksnis</b>. Tai pasirinkta pagal numatytuosius nustatymus.
+            </p>
+            <p>Jei pasirinkta  <b>Naudoti esamą žemėlapio aprėptį</b>, aprėpties sluoksnis reprezentuos matomą žemėlapio aprėptį.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

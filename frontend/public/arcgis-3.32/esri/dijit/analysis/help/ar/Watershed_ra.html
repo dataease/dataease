@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>مستجمعات المياه</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="مهمة المستجمع المائي"></h2>
+        <hr/>
+    <p>تقوم هذه الأداة بتحديد المنطقة المساهمة المتواجدة أعلى مجموعة الخلايا في البيانات النقطية.
+    </p>
+    <p>المستجمع المائي هو منطقة منحدر علوي تساهم في التدفق - المياه عمومًا - إلى منفذ مشترك كتصريف متمركز. يمكن أن يكون جزءًا من مستجمع مائي أكبر، كما يمكن أن يحتوي على مستجمعات مائية أصغر تحمل اسم أحواض فرعية.
+    </p>
+    <p>سيتم أخذ قيمة كل مستجمع مائي من قيمة المصدر في البيانات النقطية المدخلة أو طبقة نقطة صب المعلم. عندما تكون نقطة الصب مجموعة بيانات نقطية، يتم استخدام قيم الخلية افتراضيًا. عندما تكون نقطة الصب مجموعة بيانات معالم نقطية، ستأتي القيم من الحقل المحدد.
+    </p>
+    <p>لا تدعم أداة المستجمع المائي إلا طبقة البيانات النقطية لاتجاه تدفق D8 المدخل.
+    </p>
+    <p>عند تحديد مواقع نقطة الصب المدخلة كبيانات معالم، سيكون الحقل الافتراضي الحقل الصحيح المتاح الأول. إذا لم توجد أي حقول صحيحة، سيكون حقل ObjectID (على سبيل المثال، OID أو FID) هو الحقل الافتراضي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>اختر طبقة اتجاه التدفق</h2></div>
+        <hr/>
+        <div>
+            <p>البيانات النقطية المدخلة التي تعرض اتجاه تدفق كل خلية.
+            </p>
+            <p>يمكن إنشاء البيانات النقطية لاتجاه التدفق باستخدام أداة اتجاه التدفق أو مهمة FlowDirection في خدمة RasterAnalysisTools، والتشغيل باستخدام نوع اتجاه التدفق الافتراضي  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>تحديد مواقع نقطة الصب المدخلة</h2></div>
+        <hr/>
+        <div>
+            <p>مواقع نقطة الصب المدخلة.
+            </p>
+            <p>في البيانات النقطية، يمثل ذلك الخلايا التي سيتم تحديد المنطقة المساهمة أو التجميع أعلاها. سيتم استخدام كل الخلايا التي ليست NoData كخلايا مصدر. في مدخلات النقطة، يمثل ذلك المواقع التي سيتم تحديد المنطقة المساهمة أو التجميع أعلاها.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>اختر حقل نقطة الصب</h2></div>
+        <hr/>
+        <div>
+            <p>الحقل المستخدم لتعيين قيم لمواقع نقطة الصب.
+            </p>
+            <p>إذا كانت طبقة نقطة الصب المدخلة بيانات نقطية، يتم استخدام قيمة. إذا كان معلمًا، يتم استخدام حقل رقمي. إذا احتوى الحقل على قيم نقطة عائمة، يتم اقتطاعها إلى أرقام صحيحة.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

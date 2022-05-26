@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Zusammenfassen (innerhalb)</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Zusammenfassen (innerhalb)"></h2>
+        <hr/>
+    <p>Dieses Werkzeug findet Features (und Teile von Features), die sich innerhalb der Grenzen von Fl&auml;chen im ersten Eingabe-Layer befinden.  Beispiel:
+        <ul>
+            <li>Anhand eines Layers mit Grenzen von Abflussgebieten und eines Layers mit Grenzen von Landnutzungsfl&auml;chen nach Landnutzungstyp die Gesamtlandwirtschaftsfl&auml;che des Landnutzungstyps f&uuml;r jedes Abflussgebiet ermitteln. 
+            </li>
+            <li>Fassen Sie anhand eines Flurst&uuml;cks-Layers in einem Landkreis und eines Stadtgrenzen-Layers den durchschnittlichen Grundst&uuml;ckswert unbebauter Flurst&uuml;cke je Stadt zusammen.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer und dem zusammenfassenden Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabe- und im zusammenfassenden Layer analysiert, wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Flächen-Layer auswählen, um andere Features innerhalb dessen Grenzen zusammenzufassen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Fl&auml;chen-Layer, anhand dessen Features zusammengefasst werden, die innerhalb seiner Grenzen liegen. 
+            </p>
+            <p>Sie k&ouml;nnen zwischen einem Fl&auml;chen-Layer, den Sie bereitstellen, oder zwischen Abschnitten ausw&auml;hlen, die beim Ausf&uuml;hren des Werkzeugs erstellt werden. Beim Erstellen von Abschnitten geben die f&uuml;r  <b>Quadrat</b> angegebene Zahl und die Einheiten die H&ouml;he und Breite des Quadrats. Bei <b>Hexagon</b> wird anhand der angegebenen Zahl und der Einheiten die Entfernung zwischen parallelen Seiten festgelegt.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Einen Layer für die Zusammenfassung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Features in diesem Layer, die innerhalb der Grenzen der Features im oben genannten Eingabe-Layer liegen, werden zusammengefasst. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Statistiken aus dem Layer hinzufügen, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen auch die Statistiken f&uuml;r numerische Attribute der Punkte berechnen, die innerhalb der Grenzen von Features liegen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Anzahl der Punkte</b> aktiviert ist, wird die Gesamtzahl der Punkte innerhalb jeder Fl&auml;chengrenze berechnet.  Zudem haben Sie die M&ouml;glichkeit, Statistiken f&uuml;r numerische Attribute der Punkte zu berechnen, die innerhalb der einzelnen Fl&auml;chengrenzen liegen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Statistiken hinzufügen aus</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen optional Statistiken f&uuml;r numerische Attribute der Linien berechnen, die zusammengefasst werden sollen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Gesamtl&auml;nge der Linien in</b> aktiviert ist, wird die Gesamtl&auml;nge der Linien innerhalb jeder Fl&auml;chengrenze berechnet.  Zudem haben Sie die M&ouml;glichkeit, Statistiken f&uuml;r numerische Attribute der Linien zu berechnen, die innerhalb der einzelnen Fl&auml;chengrenzen liegen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Statistiken hinzufügen aus</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen optional Statistiken f&uuml;r numerische Attribute der Fl&auml;chen berechnen, die zusammengefasst werden sollen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Fl&auml;chensumme in</b> aktiviert ist, wird die Gesamtfl&auml;che der Features berechnet, die sich innerhalb der einzelnen Fl&auml;chengrenzen des ersten Eingabe-Layers befinden.  Zudem haben Sie die M&ouml;glichkeit, Statistiken f&uuml;r numerische Attribute der Features innerhalb der einzelnen Fl&auml;chengrenzen zu berechnen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Statistiken hinzufügen aus</h2></div>
+        <hr/>
+        <div>
+            <p>Nachdem Sie einen Layer ausgew&auml;hlt haben, der zusammengefasst werden soll, k&ouml;nnen Sie optional Statistiken aller numerischen Attribute der Punkte, Linien oder Fl&auml;chen innerhalb des Eingabe-Fl&auml;chen-Layers berechnen. 
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Je nach Feature-Typen, die Sie zusammenfassen, k&ouml;nnen Sie die Gesamtzahl der Punkte, die Gesamtl&auml;nge der Linien oder die Gesamtfl&auml;che berechnen.
+            </p>
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Feld für die Gruppierung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist ein Attribut der  <b>Feldstatistik</b>-Features, mit denen Statistiken f&uuml;r jeden eindeutigen Attributwert getrennt berechnet werden k&ouml;nnen. Angenommen der erste Eingabe-Layer enth&auml;lt beispielsweise Stadtgrenzen und die Zusammenfassungs-Features sind Flurst&uuml;cke.  Eines der Attribute der Flurst&uuml;cke lautet <i>Status</i> und enth&auml;lt zwei Werte: &quot;VACANT&quot; und &quot;OCCUPIED&quot;. Um die Gesamtfl&auml;che unbebauter bzw. bebauter Flurst&uuml;cke innerhalb der Grenzen einer Stadt zu berechnen, verwenden Sie <i>Status</i> als Attribut, nach dem gruppiert werden soll. Die Statistik f&uuml;r jede Gruppe und die Anzahl der Features innerhalb jeder Fl&auml;chengrenze werden im Pop-up des Ergebnis-Layers angezeigt.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheit, Mehrheit hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. Wenn Sie ermitteln m&ouml;chten, welche Attributwerte in jeder Gruppe die Minderheit (geringste Dominanz) oder die Mehrheit (h&ouml;chste Dominanz) innerhalb jeder Grenze des ersten Eingabe-Layers ausmachen, w&auml;hlen Sie  <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> aus.   Wenn Sie die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei neue Felder hinzugef&uuml;gt.   Wenn Sie <b>Prozents&auml;tze hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+            <ul>
+                <li>Wenn Sie Punkte zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf der Anzahl der Punkte innerhalb jedes Grenzbereichs im Eingabe-Fl&auml;chen-Layer berechnet.  
+                </li>
+                <li>Wenn Sie Linien zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf der L&auml;nge der Linien innerhalb jedes Grenzbereichs im Eingabe-Fl&auml;chen-Layer berechnet.  
+                </li>
+                <li>Wenn Sie Fl&auml;chen zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf den Fl&auml;chen innerhalb jedes Grenzbereichs im Eingabe-Fl&auml;chen-Layer berechnet.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Prozentsätze hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. W&auml;hlen Sie  <b>Prozents&auml;tze hinzuf&uuml;gen</b> aus, wenn Sie den Prozentsatz jedes Attributwertes innerhalb einer Gruppe ermitteln m&ouml;chten.  Der Ergebnistabelle wird ein neues Feld hinzugef&uuml;gt, das die Prozents&auml;tze jedes Attributwertes innerhalb jeder Gruppe enth&auml;lt. Wenn die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ebenfalls aktiviert ist, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

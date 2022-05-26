@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regresie liniară generalizată</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagramă de flux de lucru RegresieLiniarăGeneralizată"></h2>
+        <hr/>
+    <p>Efectuează regresia liniară generalizată (GLR) pentru a genera predicții sau pentru a modela o variabilă dependentă &icirc;n ceea ce privește relația sa cu un set de variabile explicative. Acest instrument poate fi utilizat pentru a se potrivi modelelor continue (Gaussiene), binare (logistice) și de numărare (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analiză</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică modul de funcționare a instrumentului. Instrumentul poate fi executat pentru a antrena un model doar pentru a evalua performanța sau pentru a antrena un model și a prezice rezultatele altor obiecte spațiale. Tipurile de predicție sunt după cum urmează:
+                <ul>
+                    <li> <b>Stabilirea unui model pentru a evalua performanța modelului</b> - Un model va fi potrivit și aplicat datelor de intrare. Utilizați această opțiune pentru a evalua precizia modelului dvs. &icirc;nainte de a genera predicții pe un nou set de date pentru a &icirc;nțelege relația și factorii determinanți ai variabilei prezise. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale al datelor dvs. potrivite modelului și diagnosticarea modelului.
+                    </li>
+                    <li> <b>Stabilirea unui model și prezicerea de valori</b> - Vor fi generate predicții sau clasificări pentru obiectele spațiale de intrare și obiectele spațiale de predicție. Trebuie furnizate variabile explicative at&acirc;t pentru obiectele spațiale de predicție, c&acirc;t și pentru obiectele spațiale ce vor fi prezise. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale al datelor dvs. potrivite modelului și diagnosticarea modelului.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Potrivirea unui model pentru evaluarea performanței modelului</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest mod dacă doriți să potriviți un model și să investigați potrivirea acestuia.
+            </p>
+            <p>Prin această opțiune modelul vor fi antrenat folosind un strat tematic de intrare. Utilizați această opțiune pentru a evalua precizia modelului dvs. &icirc;nainte de a genera predicții pe un nou set de date. Această opțiune va afișa diagnosticul modelului și va aplica modelul datelor de antrenare.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Potrivirea unui model și prezicerea de valori</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest mod dacă doriți să potriviți un model și să aplicați modelul la setul de date pentru a genera predicții.
+            </p>
+            <p>Se vor genera predicții sau clasificări pentru obiecte spațiale. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale, diagnosticarea modelului și un tabel opțional de importanță variabilă.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Alegeți un strat tematic pentru a genera un model din el</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic care conține obiecte spațiale de tip punct, linie, suprafață sau tabelare care conțin variabile dependente și explicative.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Alegeţi câmpul pe care doriţi să-l modelați</h2></div>
+        <hr/>
+        <div>
+            <p>C&acirc;mpul numeric care conține valorile observate care urmează a fi modelate și tipul de valoare pe care &icirc;l modelați. Există trei tipuri de valoare pe care o puteți modela
+                <ul>
+                    <li>Continuă-Reprezintă valori continue. Modelul utilizat este Gaussian, iar instrumentul efectuează regresia ordinară a celor mai mici pătrate.
+                    </li>
+                    <li>Binară-Reprezintă valori de prezență sau absență. Acestea trebuie să fie 1 sau 0. Modelul folosit este regresia logistică.
+                    </li>
+                    <li>Număr-Reprezinta valori discrete si reprezintă evenimente, de exemplu, număr de infractiuni, incidente de boală, accidente de circulație. Modelul folosit este regresia Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Alegeți un strat tematic pentru care să preziceți valori</h2></div>
+        <hr/>
+        <div>
+            <p>Un strat tematic cu obiecte spațiale care reprezintă locațiile &icirc;n care estimările ar trebui calculate. Fiecare obiect spațial din acest set de date trebuie să conțină valori pentru toate variabilele explicative specificate. Variabila dependentă pentru aceste obiecte spațiale va fi estimată utiliz&acirc;nd modelul calibrat pentru stratul tematic de intrare.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Alegeți câmpurile explicative</h2></div>
+        <hr/>
+        <div>
+            <p>Unul sau mai multe c&acirc;mpuri care reprezintă variabilele explicative (c&acirc;mpuri) care ajută la prezicerea valorii. Numai c&acirc;mpurile numerice vor fi vizibile.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Alegeți cum sunt potrivite câmpurile explicative</h2></div>
+        <hr/>
+        <div>
+            <p>Modul &icirc;n care variabilele corespunzătoare din stratul de intrare se vor potrivi cu variabilele din stratul tematic de predicție. Numai variabilele utilizate &icirc;n generarea modelului vor fi incluse &icirc;n tabel. Pot fi folosite doar valori numerice. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>Rezultatele returnate vor depinde de tipul de analiză. Dacă faceți potrivire pentru a evalua potrivirea modelului, rezultatele vor conține un strat tematic de date de intrare potrivite modelului și informații rezultat ce evaluează potrivirea modelului. Dacă faceți potrivire și predicție, rezultatele vor conține un strat tematic de date de intrare potrivite modelulului, un strat tematic de rezultate prezise, și informații rezultat ce evaluează potrivirea modelului.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

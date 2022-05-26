@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Kies de puntobjecten die u wilt verrijken",chooseMVgridLyrLabel:"Kies de multivariabele grid waaruit verrijkt moet worden",chooseVariables:"Kies de variabelen die u wilt toevoegen",outputLayerName:"Verrijkt(e) ${inputFeatures} vanuit ${gridLayer}",itemDescription:"Feature Layer gegenereerd door de \u2018Verrijken vanuit multivariabele grid\u2019-oplossing voor ${inputFeatures} uit te voeren.",itemTags:"Analyseresultaat, Verrijken vanuit multivariabele grid, ${inputFeatures}, ${gridLayer}",
+itemSnippet:"Feature Layer gegenereerd via Verrijken vanuit multivariabele grid."});

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics verteilt die Analysearbeit auf den gesamten ArcGIS GeoAnalytics Server. Dadurch k&ouml;nnen gr&ouml;&szlig;ere Datenmengen schneller mit mehreren Computern analysiert werden. Die folgenden Werkzeuge sind verf&uuml;gbar: <ul>
+                <li> Punkte aggregieren
+                </li>
+                <li> Gitter mit mehreren Variablen erstellen
+                </li>
+                <li> Dataset beschreiben
+                </li>
+                <li> Features verbinden
+                </li>
+                <li> Spuren rekonstruieren
+                </li>
+                <li> Attribute zusammenfassen
+                </li>
+                <li> Zusammenfassen (innerhalb)
+                </li>
+                <li> Positionen aus Tabelle geokodieren
+                </li>
+                <li> &Uuml;ber Gitter mit mehreren Variablen anreichern
+                </li>
+                <li> Ereignisse ermitteln
+                </li>
+                <li> &Auml;hnliche Positionen suchen
+                </li>
+                <li> Dichte berechnen
+                </li>
+                <li> Punkt-Cluster suchen
+                </li>
+                <li> Hot-Spots suchen
+                </li>
+                <li> Forest-basierte Klassifizierung und Regression
+                </li>
+                <li> Generalisierte lineare Regression
+                </li>
+                <li> Puffer erstellen
+                </li>
+                <li> Daten anh&auml;ngen
+                </li>
+                <li> Feld berechnen
+                </li>
+                <li> In Data Store kopieren
+                </li>
+                <li> Layer &uuml;berlagern
+                </li>
+                <li> Grenzen zusammenf&uuml;hren
+                </li>
+                <li> Layer zusammenf&uuml;hren
+                </li>
+                <li> Layer ausschneiden 
+                </li>
+            </ul>
+            
+        </p>
+        <p>Bei GeoAnalytics geht es in erster Linie um die Analyse gro&szlig;er Datenbest&auml;nde mit Schwerpunkt auf r&auml;umlichen und zeitlichen Mustern. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Punkte aggregieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Punkte aggregieren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dieses Werkzeug ermittelt anhand eines Punkt-Feature-Layers und eines Fl&auml;chen-Feature-Layers oder anhand von Abschnitten, die durch eine festgelegte Entfernung definiert sind, welche Punkte sich innerhalb der einzelnen Bereiche oder Abschnitte befinden, und berechnet Statistiken zu allen Punkten in jedem Bereich. Sie k&ouml;nnen auch Zeitintervalle mit diesem Werkzeug anwenden. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Ermitteln Sie anhand der Punktpositionen von Kriminaldelikten die Anzahl der Delikte pro Landkreis oder Verwaltungsbezirk.
+                    </li>
+                    <li>Ermitteln Sie die h&ouml;chsten und niedrigsten monatlichen Umsatzzahlen f&uuml;r Franchise-Standorte anhand von 100-km-Abschnitten.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gitter mit mehreren Variablen erstellen</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Workflow-Diagramm des Werkzeugs &quot;Daten anh&auml;ngen&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Gitter mit mehreren Variablen erstellen&quot; generiert ein Gitter aus quadratischen oder sechseckigen Abschnitten und berechnet die Variablen f&uuml;r jeden Abschnitt basierend auf der N&auml;he mindestens eines Eingabe-Layers.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Anhand mehrerer Layer f&uuml;r die Infrastruktur des &ouml;ffentlichen Nahverkehrs k&ouml;nnen Sie herausfinden, welcher Teil der Stadt mit dem &ouml;ffentlichen Nahverkehr am schlechtesten zu erreichen ist.
+                    </li>
+                    <li>Mithilfe von Layern f&uuml;r Wasserstra&szlig;en, wie Seen und Fl&uuml;sse, k&ouml;nnen Sie den Namen des n&auml;chstgelegenen Gew&auml;ssers jeder Position in den USA ermitteln.
+                    </li>
+                    <li>Anhand eines Layers f&uuml;r das Haushaltseinkommen l&auml;sst sich herausfinden, wo in den USA die Einkommensschwankungen in einer Umgebung von 50 Meilen am gr&ouml;&szlig;ten sind.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dataset beschreiben</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Diagramm des Workflows &quot;Dataset beschreiben&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Fassen Sie Eingabe-Features mit Statistiken, Beispiel-Layern und Visualisierung zusammen. Sie k&ouml;nnen einen Beispiel- oder einen Ausdehnungs-Layer als Ausgabe erstellen.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Referenzieren Sie die berechnete Summenstatistik, um zu verstehen, welche Werte Ihr Dataset enth&auml;lt.
+                    </li>
+                    <li>Erstellen Sie einen Teilmengen-Layer, um Features und deren Attribute zu visualisieren, wenn Sie einer Karte hinzugef&uuml;gt werden, anstatt das gesamte Dataset darzustellen.
+                    </li>
+                    <li>Sparen Sie Zeit und Ressourcen ein, und f&uuml;hren Sie eine Analyse f&uuml;r einen Beispiel-Layer aus, bevor Sie sie f&uuml;r das gesamte Dataset ausf&uuml;hren.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Features verbinden</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Features verbinden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mithilfe von Feature-Layern oder Tabellendaten k&ouml;nnen Sie Features und Datens&auml;tze basierend auf bestimmten Beziehungen zwischen den Eingabe-Layern oder Tabellen verbinden.  Verbindungen werden durch r&auml;umliche, zeitliche und Attributbeziehungen bestimmt und Summenstatistiken k&ouml;nnen optional berechnet werden.  
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Verbinden Sie die Verbrechensdaten anhand der Punktpositionen von Kriminaldelikten mit einer Zeitangabe, indem Sie eine r&auml;umliche Beziehung von Kriminaldelikten angeben, die einen Kilometer voneinander entfernt und einen zeitlichen Abstand von einer Stunde aufweisen, um zu ermitteln, ob eine Abfolge von Kriminaldelikten vorhanden ist, die im Kontext von Raum und Zeit nah beeinander liegen.
+                    </li>
+                    <li>Verbinden Sie anhand einer Postleitzahlentabelle mit demografischen Informationen und Fl&auml;chen-Features, die Wohnh&auml;user darstellen, die demografischen Informationen zu den Wohnh&auml;usern, sodass jedes Wohnhaus nun &uuml;ber diese Informationen verf&uuml;gt.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Spuren rekonstruieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Spuren rekonstruieren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dieses Werkzeug ermittelt anhand eines Layers mit Punkt- oder Polygon-Features mit aktivierten Zeiteigenschaften, die einen  <code>Zeitpunkt</code> darstellen, welche Eingabe-Features zu einer Spur geh&ouml;ren, und ordnet die Eingaben in einer zeitlichen Abfolge. Statistiken werden optional f&uuml;r die Eingabe-Features in jeder Spur berechnet.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Berechnen Sie anhand von Punktpositionen und der Zeit von Wirbelsturmmessungen den Mittelwert der Windgeschwindigkeit und den maximalen Winddruck des Wirbelsturms.
+                    </li>
+                    <li>Verwenden Sie GPS-Messungen von Schiffen, um die Wege von Schiffen als Linien zu rekonstruieren. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Attribute zusammenfassen</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Diagramm des Werkzeugs &quot;Attribute zusammenfassen&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dieses Werkzeug fasst Statistiken f&uuml;r angegebene Felder mittels Feature- oder Tabellendaten zusammen. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Anhand der Standorte von Lebensmittelgesch&auml;ften werden mit dem Feld  <i>COMPANY_NAME</i> die Gesch&auml;fte nach dem Namen des Unternehmens zusammengefasst, um Statistiken f&uuml;r jedes Unternehmen zu ermitteln.
+                    </li>
+                    <li>Anhand einer Tabelle mit Lebensmittelgesch&auml;ften werden mit den Feldern  <i>COMPANY_NAME</i> und <i>COUNTY</i> die Gesch&auml;fte nach dem Namen und dem Landkreis des Unternehmens zusammengefasst, um Statistiken f&uuml;r jedes Unternehmen in jedem Landkreis zu ermitteln.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Zusammenfassen (innerhalb)</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Zusammenfassen (innerhalb)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Findet Fl&auml;chen (und Teile von Fl&auml;chen), die sich zwischen zwei Layern &uuml;berlappen, und berechnet Statistiken zu der &Uuml;berlappung. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Ermitteln Sie anhand eines Layers mit Abflussgebieten und eines Layers mit Landnutzungsfl&auml;chen nach Landnutzungstyp die Gesamtlandwirtschaftsfl&auml;che des Landnutzungstyps f&uuml;r jedes Abflussgebiet. 
+                    </li>
+                    <li>Fassen Sie den Durchschnittswert unbebauter Flurst&uuml;cke innerhalb jeder Stadt anhand eines Flurst&uuml;cks-Layers in einem Landkreis und eines Stadtgrenzen-Layers zusammen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Positionen suchen</h2>
+        <hr/>
+        <p>Mithilfe dieser Werkzeuge lassen sich Fl&auml;chen identifizieren, die verschiedenen von Ihnen definierten Kriterien entsprechen.   
+            <ul>
+                <li> <b>Ereignisse ermitteln</b> arbeitet mit Layern mit aktivierten Zeiteigenschaften, um zu bestimmen, welche Features eine bestimmte Bedingung erf&uuml;llen.
+                </li>
+                <li> <b>Positionen aus Tabelle geokodieren</b> konvertiert Adressen in Koordinaten.
+                </li>
+                <li>Mit dem neuen Werkzeug  <b>&Auml;hnliche Positionen suchen</b> ermitteln Sie Positionen, die basierend auf den angegebenen Kriterien mindestens einer Referenzposition am &auml;hnlichsten sind.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ereignisse ermitteln</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Ereignisse ermitteln">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dieses Werkzeug arbeitet mit einem Layer aus Punkten, Linien, Fl&auml;chen oder Tabellen, der ein Layer mit aktivierten Zeiteigenschaften ist und einen Zeitpunkt darstellt. Mit sequenziell angeordneten Features, sogenannten Spuren, ermittelt dieses Werkzeug die Features, die die gew&uuml;nschten Ereignisse enthalten. Ereignisse werden durch Bedingungen, die Sie angeben, bestimmt. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Ermitteln Sie in Messungen von Hurrikanen anhand eines Attributs f&uuml;r die Windgeschwindigkeit die Hurrikane der Kategorie 4.
+                    </li>
+                    <li>Mit GPS-Messungen der Schiffsbewegung mit einem Feld f&uuml;r die Windgeschwindigkeit finden Sie Messungen, die gr&ouml;&szlig;er sind als das 1,5-fache des Mittelwerts der vorherigen f&uuml;nf Messungen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Positionen aus Tabelle geokodieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Positionen aus Tabelle geokodieren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Konvertiert Adressen in Koordinaten. Dieses Werkzeug kann f&uuml;r Big-Data-Dateifreigabe-Tabellen verwendet werden.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ähnliche Positionen suchen</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="&Auml;hnliche Positionen suchen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mit &quot;&Auml;hnliche Positionen suchen&quot; wird die &Auml;hnlichkeit von Positionen im Layer f&uuml;r Kandidatensuche mit mindestens einer Bezugsposition auf Grundlage der angegebenen Kriterien gemessen. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele: 
+                <ul>
+                    <li>Suchen Sie die zehn Gesch&auml;fte mit der gr&ouml;&szlig;ten &Auml;hnlichkeit, indem Sie die Anzahl der Mitarbeiter und die Jahresums&auml;tze &uuml;berpr&uuml;fen.
+                    </li>
+                    <li>Suchen Sie die 100 St&auml;dte mit der gr&ouml;&szlig;ten &Auml;hnlichkeit, indem Sie die Beziehung zwischen Bev&ouml;lkerung, j&auml;hrlichem Wachstum und Steuereinnahmen &uuml;berpr&uuml;fen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Muster analysieren</h2>
+        <hr/>
+        <p>  Mit diesen Werkzeugen k&ouml;nnen Sie r&auml;umliche Muster in Daten identifizieren, quantifizieren und visualisieren.
+            <ul>
+                <li>Das Werkzeug  <b>Dichte berechnen</b> stellt die Anzahl der angegebenen Daten auf der Karte dar.
+                </li>
+                <li>Mit  <b>Hot-Spots suchen</b> werden statistisch signifikante Cluster im r&auml;umlichen Muster Ihrer Daten identifiziert.
+                </li>
+                <li>Das Werkzeug  <b>Punkt-Cluster suchen</b> findet Cluster aus Punkt-Features im Datenrauschen des Umfelds basierend auf deren r&auml;umlicher Verteilung.
+                </li>
+                <li> <b>Forest-basierte Klassifizierung und Regression</b> erstellt Modelle und generiert Vorhersagen mithilfe einer Adaption des &quot;Random Forest&quot;-Algorithmus, einer Methode f&uuml;r &uuml;berwachtes maschinelles Lernen von Leo Breiman.
+                </li>
+                <li> <b>Generalisierte lineare Regression</b> generiert Vorhersagen oder modelliert eine abh&auml;ngige Variable in Hinsicht auf ihre Beziehung zu einem Satz erkl&auml;render Variablen.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dichte berechnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Dichte berechnen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Dichte berechnen&quot; erstellt eine Dichtekarte aus Punkt-Features, indem bekannte Mengen einiger Ph&auml;nomene (als Attribute der Punkte dargestellt) auf der Karte verteilt werden. Das Ergebnis ist ein Fl&auml;chen-Layer, der die Dichte darstellt.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Berechnung der Krankenhausdichte in einem Bezirk. Der Ergebnis-Layer zeigt Fl&auml;chen mit hoher und niedriger Erreichbarkeit von Krankenh&auml;usern. Anhand dieser Informationen kann entschieden werden, ob neue Krankenh&auml;user gebaut werden m&uuml;ssen.
+                    </li>
+                    <li>Identifikation von Fl&auml;chen, die aufgrund historischer Waldbrandstandorte ein hohes Waldbrandrisiko aufweisen.
+                    </li>
+                    <li>Ermittlung von Gemeinden, die weit von wichtigen Fernstra&szlig;en entfernt sind, um zu planen, wo neue Stra&szlig;en gebaut werden m&uuml;ssen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Punkt-Cluster suchen</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Punkt-Cluster suchen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Punkt-Cluster suchen&quot;  findet Cluster aus Punkt-Features im Datenrauschen des Umfelds basierend auf deren r&auml;umlicher Verteilung.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Suchen Sie Cluster mit Haushalten, die von krankheits&uuml;bertragenden Erregern betroffen sind, um gezielte Bek&auml;mpfungsma&szlig;nahmen zu unterst&uuml;tzen.  
+                    </li>
+                    <li>Informieren Sie sich mithilfe von verorteten Tweets infolge von Naturgefahren und Terrorangriffen &uuml;ber notwendige Rettungsma&szlig;nahmen und Evakuierungen basierend auf der Gr&ouml;&szlig;e und der Position von Clustern und ergreifen Sie entsprechende Ma&szlig;nahmen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hot-Spots suchen</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Hot-Spots suchen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Hot-Spots suchen&quot; ermittelt, ob die r&auml;umlichen Muster in den Daten eine statistisch signifikante Cluster-Bildung aufweisen. 
+                <ul>
+                    <li>Sind Ihre Punkte (Verbrechensf&auml;lle, B&auml;ume, Verkehrsunf&auml;lle) wirklich geclustert? Wie kann dies sichergestellt werden?
+                    </li>
+                    <li>Haben Sie wirklich einen statistisch signifikanten Hot-Spot (f&uuml;r Ausgaben, Kindersterblichkeit, durchweg hohe Pr&uuml;fungsergebnisse) gefunden oder lie&szlig;en sich andere Erkenntnisse aus der Karte ziehen, wenn die Art der Symbolisierung ge&auml;ndert w&uuml;rde?
+                    </li>
+                </ul>
+                Mithilfe des Werkzeugs &quot;Hot-Spots suchen&quot; k&ouml;nnen Sie diese Fragen mit Sicherheit beantworten.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Forest-basierte Klassifizierung und Regression</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Diagramm des Workflows &quot;Forest-basierte Klassifizierung und Regression&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Forest-basierte Klassifizierung und Regression&quot; modelliert und generiert Vorhersagen mithilfe einer Adaption des &quot;Random Forest&quot;-Algorithmus, einer Methode f&uuml;r &uuml;berwachtes maschinelles Lernen von Leo Breiman.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Als Grundlage dienen vorhandene Daten &uuml;ber das Vorkommen von Seegras sowie eine Reihe von erkl&auml;renden Umgebungsvariablen, die als Attribute dargestellt und &uuml;ber einen Gitter mit mehreren Variablen angereichert werden. Damit k&ouml;nnen neben den Entfernungen zu flussaufw&auml;rts liegenden Fabriken und gro&szlig;en H&auml;fen Vorhersagen &uuml;ber das k&uuml;nftige Vorkommen von Seegras auf der Grundlage von Zukunftsprognosen f&uuml;r die gleichen erkl&auml;renden Umgebungsvariablen erm&ouml;glichen.
+                          
+                    </li>
+                    <li>Angenommen, Sie haben Daten zu Ernteertr&auml;gen in unz&auml;hligen landwirtschaftlichen Betrieben im ganzen Land zusammen mit weiteren Attributen all dieser Betriebe (Anzahl der Mitarbeiter, Anbaufl&auml;chen etc.). Anhand der einzelnen Daten k&ouml;nnen Sie eine Reihe von Features zur Darstellung landwirtschaftlicher Betriebe bereitstellen, bei denen der Ernteertrag (im Gegensatz zu allen anderen Variablen) nicht vorliegt, um eine Vorhersage zum Ernteertrag zu machen.
+                    </li>
+                    <li>Wohnwerte k&ouml;nnen anhand der Preise von H&auml;usern, die im laufenden Jahr verkauft wurden, vorhergesagt werden. Der Verkaufspreis der verkauften H&auml;user kann zusammen mit Informationen &uuml;ber die Anzahl der Schlafzimmer, die Entfernung zu den Schulen, die N&auml;he zu den Hauptverkehrsstra&szlig;en, das Durchschnittseinkommen und die Kriminalit&auml;tsrate verwendet werden, um die Verkaufspreise &auml;hnlicher H&auml;user vorherzusagen.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generalisierte lineare Regression</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Diagramm des Workflows &quot;GeneralizedLinearRegression&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Das Werkzeug &quot;Generalisierte lineare Regression&quot;  generiert Vorhersagen oder modelliert eine abh&auml;ngige Variable in Hinsicht auf ihre Beziehung zu einem Satz erkl&auml;render Variablen. Dieses Werkzeug kann f&uuml;r kontinuierliche (OLS) und bin&auml;re (logistische) Modelle sowie f&uuml;r Anzahlmodelle (Poisson) verwendet werden.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Welche demografischen Eigenschaften tragen zu hohen Nutzungsraten f&uuml;r &ouml;ffentliche Transportmittel bei?
+                    </li>
+                    <li>Besteht eine positive Beziehung zwischen Vandalismus und Einbr&uuml;chen?
+                    </li>
+                    <li>Mit welchen Variablen kann das Anrufvolumen f&uuml;r Notfallnummern effektiv vorhergesagt werden? Wie sieht angesichts der Vorhersagen f&uuml;r die Zukunft die erwartete Nachfrage f&uuml;r Notdienste aus?
+                    </li>
+                    <li>Welche Variablen wirken sich auf niedrige Geburtenraten aus?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Nachbarschaftsanalyse verwenden</h2>
+        <hr/>
+        <p>Mit diesen Werkzeugen k&ouml;nnen Sie eine der am h&auml;ufigsten gestellten Fragen im Zusammenhang mit r&auml;umlichen Analysen beantworten: &quot;Welche Elemente befinden sich in r&auml;umlicher N&auml;he zueinander?&quot;
+            <ul>
+                <li> <b>Puffer erstellen</b> erstellt Gebiete mit gleicher Entfernung von Features.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Puffer erstellen</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Puffer erstellen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ein Puffer ist ein Bereich, der eine angegebene Entfernung von einem Punkt oder Polygon-Feature abdeckt.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Puffern Sie jeden Fluss mithilfe von Fluss-Features um das F&uuml;nfzigfache der Breite des Flusses, um eine geplante Ufergrenze zu bestimmen.
+                    </li>
+                    <li>Erstellen Sie anhand von Fl&auml;chen, die L&auml;nder darstellen, f&uuml;r jedes Land einen Puffer von 200 Seemeilen, um die Seegrenze zu bestimmen.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>In Data Store kopieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="In Data Store kopieren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopiert einen Eingabe-Feature-Layer oder eine Tabelle in einen  ArcGIS Data Store und erstellt einen Layer in Ihrem Inhalt in  ArcGIS Enterprise. </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Kopieren Sie eine Sammlung von  <code>.csv</code>-Dateien einer Big-Data-Dateifreigabe zu Visualisierungszwecken in den Data Store &quot;spatiotemporal&quot;.
+                    </li>
+                    <li>Kopieren Sie die Features der aktuellen Kartenausdehnung, die im Data Store &quot;spatiotemporal&quot; gespeichert sind, in den Data Store vom Typ &quot;relational&quot;.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Feld berechnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Feld berechnen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berechnet Werte f&uuml;r ein neues oder ein vorhandenes Feld und erstellt einen Layer in Ihrem Inhalt in  ArcGIS Enterprise. </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>&Auml;ndern Sie das vorhandene Feld  <i>total</i>, damit es den Gesamterl&ouml;s aus den Feldern <i>total_2016</i>, <i>total_2017</i> und <i>total_2018</i> enth&auml;lt.
+                    </li>
+                    <li>Erstellen Sie ein neues Feld zum Kategorisieren von Gefahrenstufen anhand bestimmter Feldwerte, wie zum Beispiel  <i>windspeed</i> und <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Layer ausschneiden</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Layer ausschneiden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Schneidet Eingabe-Features aus definierten Interessenbereichen aus. Das Ausgabeergebnis ist eine Teilmenge der Eingabe-Features. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele: 
+                <ul>
+                    <li>Erstellen Sie eine Teilmenge von gef&auml;hrdeten Geb&auml;uden, die innerhalb von Hochwassergebieten liegen.
+                    </li>
+                    <li>Ermitteln Sie, welche Hauptstra&szlig;en durch Ihre potenziellen Erschlie&szlig;ungsfl&auml;chen verlaufen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Grenzen zusammenführen</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Grenzen zusammenf&uuml;hren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&uuml;hrt Fl&auml;chen-Features zusammen, die sich &uuml;berschneiden oder einen gemeinsamen Feldwert aufweisen, um zusammenh&auml;ngende oder Multipart-Features zu erstellen.
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Erstellen Sie ein einzelnes Feature, das den Bundesstaat Hawaii darstellt, indem Sie die Grenzen der hawaiianischen Inseln zusammenf&uuml;hren.
+                    </li>
+                    <li>Kombinieren Sie &auml;hnliche Untersuchungsgebiete basierend auf der Bodenart, um ein kontinuierliches Bodenart-Dataset als Ausgabe zu erhalten.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Layer überlagern</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Layer &uuml;berlagern">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bei einer &Uuml;berlagerung werden zwei oder mehr Layer zu einem einzelnen Layer kombiniert.  Die &Uuml;berlagerung gibt eine Antwort auf die grundlegendsten Fragen der Geographie: Welche Elemente &uuml;berlagern einander? 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Welche Flurst&uuml;cke befinden sich in einem 100-Jahres-&Uuml;berschwemmungsgebiet? (&quot;In&quot; ist hier nur ein Synonym f&uuml;r &quot;&uuml;ber&quot; bzw. &quot;&uuml;berlagern&quot;.)
+                          
+                    </li>
+                    <li>Welche Landnutzung liegt &uuml;ber welchem Bodentyp?
+                         
+                    </li>
+                    <li>Welche Quellen befinden sich auf verlassenen Milit&auml;rst&uuml;tzpunkten?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Daten anhängen</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Workflow-Diagramm des Werkzeugs &quot;Daten anh&auml;ngen&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>H&auml;ngt Features an einen vorhandenen gehosteten Layer in Ihren Inhalten in  ArcGIS Enterprise an. </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Aktualisieren Sie den Feature-Layer 2018_Sales jeden Monat, wenn die Berichte zur Verf&uuml;gung stehen.
+                    </li>
+                    <li>H&auml;ngen Sie Hurrikan-Spur-Datasets aus den Jahren 2016 und 2017 an ein Master-Hurrikan-Dataset an.
+                    </li>
+                    <li>Sammeln Sie Datasets aus unterschiedlichen Quellen mit verschiedenen Schemas mithilfe einer benutzerdefinierten Feldzuordnung und h&auml;ngen Sie sie an.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Layer zusammenführen</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Layer zusammenf&uuml;hren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verbindet zwei Feature-Layer zu einem einzelnen Ergebnis-Layer. Standardm&auml;&szlig;ig werden alle Felder aus dem Zusammenf&uuml;hrungs-Layer aufgenommen. Sie k&ouml;nnen aber auch benutzerdefinierte Vereinigungsregeln angeben, um das resultierende Schema zu definieren.  
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>F&uuml;hren Sie drei Layer mit demografische Daten von England, Wales und Schottland zusammen, um einen Layer von Gesamt-Gro&szlig;britannien zu erstellen.
+                    </li>
+                    <li>Kombinieren Sie zwei Layer mit Flurst&uuml;cksinformationen f&uuml;r zusammenh&auml;ngende Stadtgebiete, und behalten Sie nur die Felder bei, die in beiden Layern denselben Namen und Typ aufweisen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Daten anreichern</h2>
+        <hr/>
+        <p>Mit diesen Werkzeugen k&ouml;nnen Sie die Eigenschaften von Gebieten erkunden.
+            <ul>
+                <li> <b>&Uuml;ber Gitter mit mehreren Variablen anreichern</b> verbindet Attribute aus einem Gitter mit mehreren Variablen mit einem Punkt-Layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Über Gitter mit mehreren Variablen anreichern</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="&Uuml;ber Gitter mit mehreren Variablen anreichern">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verbindet Attribute aus einem Gitter mit mehreren Variablen effizient mit einem Punkt-Layer, wodurch Sie Punktdaten um eine Vielzahl von Informationen f&uuml;r weitere r&auml;umliche Analysen schnell erg&auml;nzen k&ouml;nnen. 
+            </p>
+            <p>Nachfolgend finden Sie einige Beispiele:
+                <ul>
+                    <li>Wenn ein Layer beispielsweise Millionen von Stromausfallereignissen enth&auml;lt, reichern Sie die Ereignis-Features mit Informationen zur typischen Nutzung, zu Umweltrisiken und zu Infrastrukturbedingungen an, um die Beziehung zwischen diesen Faktoren und der H&auml;ufigkeit von Stromausf&auml;llen zu untersuchen. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

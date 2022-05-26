@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raster de synthèse à l'intérieur</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Outil Raster de synth&egrave;se &agrave; l'int&eacute;rieur"></h2>
+        <hr/>
+    <p>Cet outil synth&eacute;tise un raster en fonction des surfaces (zones) d&eacute;finies par la premi&egrave;re couche en entr&eacute;e.
+    </p>
+    <p>Voici quelques exemples&nbsp;:
+    </p>
+    <p>
+        <ul>
+            <li>En prenant une couche de limites de bassin versant et une couche de limites d'utilisation du sol par type d'utilisation du sol, calculez la superficie totale du type d'utilisation du sol pour chaque bassin versant.
+                
+
+            </li>
+            <li>En prenant une couche de parcelles dans un comt&eacute; et une couche de limites de ville, synth&eacute;tisez la valeur moyenne des parcelles vacantes au sein de chaque limite de ville.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue actuelle de la carte)</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de la couche &agrave; synth&eacute;tiser qui sont visibles au sein de l&rsquo;&eacute;tendue courante de la carte seront analys&eacute;es. Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche &agrave; synth&eacute;tiser seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Choisir une couche surfacique pour synthétiser une couche raster au sein des limites définies</h2></div>
+        <hr/>
+        <div>
+            <p>La couche qui d&eacute;finit les limites des surfaces, ou zones, qui seront synth&eacute;tis&eacute;es.
+            </p>
+            <p>La couche peut &ecirc;tre un raster ou des donn&eacute;es d'entit&eacute;. Pour les rasters, les zones sont d&eacute;finies par tous les emplacements dans l'entr&eacute;e dont la valeur de cellule est identique. Les surfaces ne sont pas n&eacute;cessairement contigu&euml;s.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Choisir un champ pour définir les limites</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit de l'attribut de la couche qui sera utilis&eacute; pour d&eacute;finir les limites des surfaces.
+            </p>
+            <p>Supposons par exemple que la premi&egrave;re couche en entr&eacute;e d&eacute;finit les limites des unit&eacute;s de gestion, avec des attributs qui d&eacute;finissent la r&eacute;gion, le secteur et l'ID de parcelle de chaque unit&eacute;. Une couche raster d&eacute;finissant l'indice de biodiversit&eacute; pour chaque emplacement est &eacute;galement pr&eacute;sente. Avec le champ que vous s&eacute;lectionnez, vous pouvez calculer la biodiversit&eacute; moyenne au niveau local, du secteur ou r&eacute;gional.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Choisir la couche raster à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Les cellules raster dans cette couche seront synth&eacute;tis&eacute;es en fonction des surfaces (zones) dans lesquelles elles se trouvent.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Choisir les statistiques à calculer</h2></div>
+        <hr/>
+        <div>
+            <p>Une fois la couche &agrave; synth&eacute;tiser choisie, vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des points, lignes ou zones au sein de la couche surfacique en entr&eacute;e.
+            </p>
+            <p>Les types statistiques disponibles lorsque le champ s&eacute;lectionn&eacute; est un entier sont Moyenne, Majorit&eacute;, Maximum, M&eacute;diane, Minimum, Minorit&eacute;, Plage, &Eacute;cart type, Somme et Vari&eacute;t&eacute;.
+            </p>
+            <p>Si le champ est &agrave; virgule flottante, les options sont Moyenne, Maximum, Minimum, Plage, Ecart type et Somme.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorer les valeurs manquantes dans le calcul</h2></div>
+        <hr/>
+        <div>
+            <p>Si vous choisissez d'ignorer les valeurs manquantes, seules les cellules qui ont une valeur dans la couche &agrave; synth&eacute;tiser seront utilis&eacute;es pour d&eacute;terminer la valeur en sortie de cette surface. Sinon, si des valeurs manquent dans une surface, on consid&egrave;re que les informations sont insuffisantes pour ex&eacute;cuter des calculs statistiques pour l'ensemble des cellules de cette zone. Par cons&eacute;quent, cette surface recevra une valeur Null (NoData) en sortie.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

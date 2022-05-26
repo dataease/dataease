@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/storeUtils","dojo/_base/declare dojo/_base/lang dojo/has dstore/Memory dstore/Trackable dstore/Tree ../../kernel".split(" "),function(c,e,g,b,h,k,l){var f=c([b,h]);b={createHierarchicalStore:function(a){a=this.createSyncStore(a,k);a.getRootCollection=function(){return this.root.filter({parent:void 0})};return a.getRootCollection()},createSyncStore:function(a,d){a=a||{};a.data&&(a=e.mixin({},a,{data:e.clone(a.data)}));return new (d?c([f,d]):f)(a)},createStore:function(a){for(var d=
+{identifier:"id",label:"id",items:[]},b=0,c=a.length;b<c;b++)d.items.push(e.mixin({id:b},a[b%c]));return this.createSyncStore({data:d})}};g("extend-esri")&&e.setObject("dijit.analysis.storeUtils",b,l);return b});

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beste voorzieningen kiezen</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Beste voorzieningen kiezen"></h2>
+        <hr/>
+    <p>Met Beste voorzieningen kiezen kunt u de beste locaties voor voorzieningen kiezen. De tool wijst locaties toe met vraag naar de voorzieningen op een manier die voldoet aan het opgegeven doel.
+    </p>
+    <p>Voorzieningen zijn locaties die een soort service leveren zoals de brandweer, scholen, bibliotheken, winkels of distributiecentra. Vraaglocaties zijn locaties die vragen naar de diensten die worden aangeboden door de voorzieningen zoals volkstellingblokken die de bevolking samenvatten in een bepaald gebied.
+    </p>
+    <p>De tool Beste voorzieningen kiezen kan u helpen vragen te beantwoorden zoals
+        <ul>
+            <li>Hoe kunnen in geval van nood huishoudens worden toegewezen aan het juiste noodhulpcentrum als de beddencapaciteit beperkt is en niet mag worden overschreden?
+            </li>
+            <li>Hoe kunt u buurten toewijzen aan de dichtstbijzijnde bibliotheek en het aantal potenti&euml;le leden zoeken dat elk filiaal bedient? 
+            </li>
+            <li>Hoe vindt u de beste locatie voor een winkeldistributiecentrum die de totale reistijd (en dus de kosten) minimaliseert voor levering aan een supermarktketen?
+            </li>
+            <li>Waar kan een nieuw park worden aangelegd zodat het grootste aantal van de stadsbewoners binnen vijf minuten lopen van het park woont?
+            </li>
+            <li>Wat zijn de beste locaties voor verschillende dierenspeciaalzaken in een gemeente zodat 40 procent van de huisdiereigenaren in die gemeente op maximaal tien minuten rijden van &eacute;&eacute;n van de winkels woont?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Doel</h2></div>
+        <hr/>
+        <div>
+            <p>Geef het doel op waaraan moet worden voldaan bij de toewijzijng van vraaglocaties aan voorzieningen.
+            </p>
+            <p>Met Beste voorzieningen kiezen kunt u het soort probleem opgeven dat u moet oplossen&mdash;het doel. De tool is geoptimaliseerd om een oplossing te bieden voor dat specifieke doel. Ongeacht het doel wordt in principe dezelfde onderliggende methode gebruikt om een oplossing te vinden&mdash;de vraag van een bepaalde vraaglocatie wordt toegewezen aan de dichtstbijzijnde voorziening. De doelen vari&euml;ren hoe het samenspel tussen afstand (of tijd) en de vraag wordt afgehandeld. De tool houdt rekening met zowel reisafstand/tijd en de omvang van de vraag en, in sommige gevallen, de capaciteit van de voorzieningen. Als een doel bijvoorbeeld de voorkeur geeft aan het minimaliseren van de reistijd, dan probeert de tool om op de tweede plaats de vraag te maximaliseren die wordt toegewezen. Hetzelfde geldt als het doel is om zoveel mogelijk vraag toe te kennen, dan beperkt de tool ook de reistijd (door vraaglocaties toe te wijzen aan de dichtstbijzijnde voorziening in plaats van een willekeurige voorziening).
+            </p>
+            <p>Afhankelijk van de data en de instellingen die u gebruikt, kunnen verschillende doelen dezelfde of vergelijkbare resultaten opleveren. U moet echter het doel opgeven dat het meest geschikt is voor uw analyse.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Toewijzen aan bestaande voorzieningen</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik dit doel als u geen nieuwe voorzieningen wilt toewijzen en vraag wilt toewijzen aan bestaande voorzieningen met beperkte of onbeperkte capaciteit.    
+            </p>
+            <p>Dit doel wijst vraag toe aan voorzieningen op basis van de capaciteit van de voorziening en de vraag uit de omgeving. De vraag wordt toegewezen aan de dichtstbijzijnde voorziening totdat de beschikbare capaciteit is bereikt. Als u een maximaal reisbereik opgeeft, worden vraaglocaties buiten dit bereik niet toegewezen aan een voorziening ook niet als niet de hele vraag volledig is toegewezen.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Reis minimaliseren</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik dit doel als u voorzieningen wilt zoeken zodat de totale reistijd of reisafstand tussen de vraaglocaties en faciliteiten is geminimaliseerd.
+            </p>
+            <p>Dit doel wordt vaak toegepast wanneer er tussen de voorzieningen en alle vraaglocaties op een regelmatige basis gereisd wordt. U kunt dit doel bijvoorbeeld gebruiken om de totale afstand te beperken die wordt afgelegd voor het verplaatsen van goederen van distributiecentra naar winkels, of om een locatie te kiezen voor een congres die de reistijd voor alle aanwezigen beperkt.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Dekking maximaliseren</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik dit doel als u zo'n groot mogelijke vraag wilt afdekken binnen een bepaalde tijd of afstand van de voorzieningen.    
+            </p>
+            <p>Dit doel zoekt voorzieningen zodat de maximale hoeveelheid vraag wordt toegewezen, met alle vraag van elke vraaglocatie toegewezen aan de faciliteit die het dichtste bij is.
+            </p>
+            <p>Voor dit doel is een eindig maximaal reisbereik nodig. Anders wordt de hele vraag wellicht toegewezen aan &eacute;&eacute;n voorziening. Vraaglocaties die buiten de afstand of tijd van een van de voorzieningen liggen, worden niet toegewezen (dit toont waar niet aan de vraag wordt voldaan en waar aanvullende voorzieningen nodig zijn).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximaliseer de dekking op basis van de capaciteit</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik dit doel als u zo'n groot mogelijke vraag wilt laten afdekken door de voorzieningen maar de voorzieningen beperkte capaciteit hebben.    
+            </p>
+            <p>Dit doel kiest voorzieningen zodat zo'n groot mogelijke vraag wordt toegewezen zonder de capaciteit van een voorziening te overschrijden. De hele vraag van elke vraaglocatie wordt toegewezen aan de dichtstbijzijnde voorziening die beschikbare capaciteit heeft (dat wil zeggen als het toewijzen van een vraaglocatie aan een voorziening groter is dan de beschikbare capaciteit van de voorziening dan wordt de vraaglocatie niet toegewezen, in plaats van dat een deel van de vraag wordt toegewezen).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Dek een percentage van de vraag</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik dit doel als u het minimum aantal voorzieningen wilt weten dat u nodig hebt voor een bepaald percentage van de vraag.
+            </p>
+            <p>Dit doel kiest het minimum aantal voorzieningen nodig om het gespecificeerde percentage van de vraag te bereiken. Voor een vraaglocatie binnen het maximale reisbereik van twee of meer voorzieningen wordt de vraag naar verhouding gedeeld tussen de voorzieningen op basis van de afstand tot elkaar. Dit doel wordt vaak gebruikt als mensen een keuze hebben welke voorziening ze willen bezoeken en over het algemeen wordt aangenomen dat ze dichtstbijzijnde voorziening kiezen (als alles verder hetzelfde is).
+            </p>
+            <p>In tegenstelling tot de andere doelen die voorzieningen kiezen, waar u opgeeft hoeveel voorzieningen er moeten worden gekozen, kiest dit doel het aantal voorzieningen voor u, gebaseerd op het percentage van de vraag waaraan u wilt voldoen. Er wordt van uitgegaan dat de voorzieningen geen beperkte capaciteit hebben.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Meten</h2></div>
+        <hr/>
+        <div>
+            <p>Net als bij andere tools die reizen opnemen in de analyse, kunt u opgeven of reizen wordt gemeten met afstand of tijd, en u kunt kiezen uit verschillende manieren van reizen zoals wandeltijd, reistijd, landelijke rijafstand, enzovoort. De beschikbare manieren van reizen worden bepaald door de beheerder van uw organisatie. Bij gebruik van  <b>Reistijd</b>, <b>Landelijke reistijd</b> of <b>Reistijd per vrachtwagen</b> kunt u eventueel ook verkeer voor een bepaalde dag van de week of tijd van de dag opnemen.
+            </p>
+            <p> Om doelgericht vraaglocaties toe te wijzen aan voorzieningen, moet u opgeven of er gereisd moet worden van de voorzieningen naar de vraaglocaties (van brandweerkazernes naar woningen bijvoorbeeld) of van vraaglocaties naar voorzieningen (zoals leden naar bibliotheken). De beste voorzieningen kiezen houdt rekening met eenrichtingswegen, of u kunt afslaan van de ene straat naar de andere, of u links kunt op kruispunten, enzovoorts, afhankelijk van of de rijrichting van de voorziening naar de vraaglocatie loopt of andersom.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Laag met locaties waar vraag is</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten die locaties vertegenwoordigen met vraag naar de diensten aangeboden door de voorzieningen. De tool wijst deze vraaglocaties toe aan de juiste voorzieningen op basis van het geselecteerde doel.
+            </p>
+            <p>Vraaglocaties hebben een bijbehorende hoeveelheid vraag. Gebruik een constante om de waarde op te geven als alle vraaglocaties dezelfde vraag hebben. Als de hoeveelheid vraag verschilt per vraaglocatie, gebruik dan een Vraaglocatieslaag om de waarde op te geven voor elke vraaglocatie.
+            </p>
+            <p>De vraag wordt toegewezen aan de voorzieningen totdat alle vraag is toegekend, ongeacht hoe ver de vraaglocaties van de voorzieningen liggen. U kunt een maximaal reisbereik toewijzen aan de Vraaglocatieslaag voor het maken van een cut-offafstand of -tijd, vraaglocaties buiten de cut-offwaarde worden niet toegewezen. Gebruik een constante om de waarde op te geven als alle vraaglocaties hetzelfde maximale reisbereik hebben. Als het maximale reisbereik varieert per vraaglocatie, gebruik dan een Vraaglocatieslaag om de waarde op te geven voor elke vraaglocatie.
+            </p>
+            <p>Als het doel is  <b>Dekken van een percentage van de vraag</b>, dan moet u het minimumpercentage opgeven van de vraag die u wilt dat de voorzieningen ondervangen.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+            <p>De tool ondersteunt maximaal 10.000 objecten in de Vraaglocatieslaag.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Laag vereiste voorzieningen</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten vertegenwoordigen locaties die fungeren als voorzieningen door een soort dienstverlening te bieden. Vereiste voorzieningen vertegenwoordigen meestal locaties die al bestaan ten opzichte van de kandidaatvoorzieningen die meestal locaties vertegenwoordigen waar nieuwe voorzieningen worden gebouwd of geplaatst. Bij de toewijzing van vraaglocaties, gebruikt de tool de voorzieningen in de  <b>Laag vereiste voorzieningen</b> voor de voorzieningen uit de <b>Laag kandidaatvoorzieningen</b>.
+            </p>
+            <p>Vereiste voorzieningen kunnen onbeperkte capaciteit hebben (dat wil zeggen dat ze kunnen voldoen aan de hele vraag die is toegewezen) of kunnen beperkte capaciteit hebben. Als alle voorzieningen dezelfde beperkte capaciteit hebben (zoals het aantal huishoudens dat een brandweerkazerne kan bedienen&mdash;bijvoorbeeld 4000), geef dan een constante waarde op. Als de capaciteit varieert tussen voorzieningen (zoals het aantal beschikbare plaatsen voor brugklassers op een middelbare school), geef dan een veld op met de capaciteit voor elke voorziening.
+            </p>
+            <p>De tool ondersteunt maximaal 100 objecten in de  <b>Laag vereiste voorzieningen</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Laag kandidaatvoorzieningen</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten vertegenwoordigen locaties die fungeren als voorzieningen door een soort dienstverlening te bieden. Kandidaatvoorzieningen vertegenwoordigen meestal de locaties waar nieuwe voorzieningen worden gebouwd of geplaatst in tegenstelling tot vereiste voorzieningen die meestal locaties vertegenwoordigen die al bestaan.
+            </p>
+            <p>Afhankelijk van uw analysedoel, moet u het aantal kandidaatfaciliteiten opgeven om te kiezen uit de reeks kandidaten. Als u zowel vereiste voorzieningen als kandidaatvoorzieningen opgeeft, gebruikt de tool de voorzieningen in de  <b>Laag vereiste voorzieningen</b> voor de voorzieningen uit de <b>Laag kandidaatvoorzieningen</b>.
+            </p>
+            <p>Kandidaatvoorzieningen kunnen onbeperkte capaciteit hebben (dat wil zeggen dat ze kunnen voldoen aan de hele vraag die is toegewezen) of kunnen beperkte capaciteit hebben. Als alle voorzieningen dezelfde beperkte capaciteit hebben (zoals het aantal huishoudens dat een brandweerkazerne kan bedienen&mdash;bijvoorbeeld 4000), geef dan een constante waarde op. Als de capaciteit varieert tussen voorzieningen (zoals het aantal beschikbare plaatsen voor brugklassers op een middelbare school), geef dan een veld op met de capaciteit voor elke voorziening.
+            </p>
+            <p>De tool ondersteunt maximaal 1000 objecten in de  <b>Laag kandidaatvoorzieningen</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barrièrelagen selecteren</h2></div>
+        <hr/>
+        <div>
+            <p> E&eacute;n of meerdere objecten die dienen als tijdelijke beperkingen (barri&egrave;res) tijdens het reizen op de onderliggende straten. U kunt de barri&egrave;res specificeren door gebruik van punt-, lijn-, of polygoonobjecten.
+            </p>
+            <p>Een puntbarri&egrave;re kan een weergave zijn van een omgevallen boom, een ongeval, een omgewaaide elektriciteitspaal of iets anders waardoor een bepaald punt op straat volledig ontoegankelijk is voor verkeer. Verkeer heeft toegang tot de straat maar kan de barri&egrave;re niet passeren. U kunt tot 250 objecten aanduiden als puntbarri&egrave;re.
+            </p>
+            <p>Een lijnbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de barri&egrave;re de straat kruist. Een optocht of protestmars bijvoorbeeld waardoor het verkeer geen toegang heeft tot verschillende straatsegmenten kan weergegeven worden met een lijnbarri&egrave;re. Indien het aantal straatobjecten dat wordt doorkruist door alle lijnbarri&egrave;res meer dan 500 is, geeft de tool een foutmelding.
+            </p>
+            <p>Een polygoonbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de polygoon de straat kruist. Een manier waarop deze barri&egrave;re gebruikt wordt is voor het weergeven van een overstroming in een bepaald gebied of van een bepaald netwerk van straten waar geen verkeer mogelijk is. Indien het aantal straatobjecten dat wordt doorkruist door alle polygoonbarri&egrave;res meer dan 2000 is, geeft de tool een foutmelding.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>De resultaatlaag bevat een laag voor elk van het volgende: voorzieningen waaraan een vraag is toegewezen, vraaglocaties die zijn toegewezen aan voorzieningen en toewijzingslijnen die de vraaglocaties koppelen aan de toegewezen voorzieningen. De toewijzingslijnen worden getekend als rechte lijnen maar de reistijd of de reisafstand tussen de voorziening en de vraaglocatie is altijd gebaseerd op de manier van reizen die u opgeeft en niet op afstanden in rechte lijn.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

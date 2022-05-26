@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Konwertuj obiekt na raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Narzędzie Konwertuj obiekt na raster"></h2>
+        <hr/>
+    <p>To narzędzie przekształca obiekty w zestaw danych rastrowych.
+    </p>
+    <p>Dowolna klasa obiekt&oacute;w zawierająca obiekty punktowe, liniowe lub poligonowe może zostać przekształcona w zestaw danych rastrowych.
+    </p>
+    <p>Środek kom&oacute;rki jest używany do określania wartości piksela rastra wynikowego.
+    </p>
+    <p>Typ pola wejściowego decyduje o typie rastra wynikowego. Jeśli pole jest polem typu całkowitego, raster wynikowy także będzie zawierał kom&oacute;rki o wartościach wyrażonych w liczbach całkowitych. W przypadku pola zmiennoprzecinkowego raster wynikowy będzie zmiennoprzecinkowy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę obiektów do konwersji</h2></div>
+        <hr/>
+        <div>
+            <p>Wejściowa warstwa obiekt&oacute;w przekształcana w zestaw danych rastrowych.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Wybierz pole</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz pole, kt&oacute;re będzie używane do przypisywania wartości do rastra wynikowego.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Wielkość komórki danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość kom&oacute;rki i jednostka dla rastr&oacute;w wynikowych.
+            </p>
+            <p>Dostępnymi jednostkami są mile, stopy, kilometry, metry. Jednostką domyślną są stopy.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

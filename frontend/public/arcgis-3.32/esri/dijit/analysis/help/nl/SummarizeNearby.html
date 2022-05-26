@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Samenvatten in de buurt van</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Samenvatten in de buurt van"></h2>
+        <hr/>
+    <p>Met deze tool worden objecten gevonden en samengevat die zich bevinden binnen een bepaalde afstand van objecten in de eerste invoerlaag. De afstand kan worden gemeten in een rechte lijn of met een geselecteerde reismodus. De opties voor reismodi zijn: rijafstand, rijtijd, afstand voor vrachtverkeer, tijd voor vrachtverkeer, loopafstand en looptijd. Vervolgens kunnen statistieken worden berekend voor de objecten in de buurt. Bijvoorbeeld
+        <ul>
+            <li>Bereken de totale populatie binnen vijf minuten van de locatie voor een mogelijke nieuwe winkel.
+            </li>
+            <li>Bereken het aantal opritten voor snelwegen binnen vijf minuten van de locatie voor een mogelijke nieuwe winkel en gebruik deze als maatstaf voor de toegankelijkheid van deze winkel.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd die zichtbaar zijn binnen het huidige kaartextent. Als deze optie niet is aangevinkt, worden alle objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Kies laag waarvan de afstand worden gemeten tot objecten in de samen te vatten kaartlaag</h2></div>
+        <hr/>
+        <div>
+            <p>De punten-, lijnen- of gebiedslaag die gebruikt wordt als de startlocaties om objecten in de buurt samen te vatten.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+            <p>De tool ondersteunt maximaal 1.000 objecten in deze kaartlaag. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Kaartlaag kiezen voor samenvatten</h2></div>
+        <hr/>
+        <div>
+            <p>Objecten in deze laag die binnen de opgegeven afstand vallen tot objecten in de bovenstaand gespecificeerde kaartlaag, worden in de samenvatting opgenomen. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Dichtstbijzijnde objecten samenvatten met een</h2></div>
+        <hr/>
+        <div>
+            <p> U kunt zelf bepalen welke afstandmeting u wilt gebruiken: een rechte lijn of een gekozen reismodus. Reismodi zijn alleen ingeschakeld als de eerste invoerlaag (de laag waarvan afstanden worden gemeten) punten bevat. De beschikbare manieren van reizen worden bepaald door de beheerder van uw organisatie. Bij gebruik van de reismanieren worden de metingen gedaan over wegen of wandelpaden en er wordt rekening gehouden met geldende regels zoals eenrichtingswegen, keerverboden, etcetera. <b>Reistijd</b>, <b>Landelijke reistijd</b> en <b>Reistijd per vrachtwagen</b> houden rekening met uw keuze voor rijsnelheden, gebaseerd op actuele verkeersinformatie of typisch verkeersbeeld. Actuele snelheden worden verzameld via huidige sensorgegevens en typische snelheden worden berekend op basis van historische gemiddelden.
+            </p>
+            <p>U kunt meerdere afstanden invoeren. Objecten binnen (of gelijk aan) de afstanden die u invoert, worden in de samenvatting opgenomen.  
+            </p>
+            <p>Indien het selectievakje  <b>Grensgebieden retourneren</b> is aangevinkt, wordt er een resultaatlaag geretourneerd met gebieden gedefinieerd door de opgegeven afstandsmeting. De resultaatlaag bevat alle gevraagde samengevatte informatie. Bij het samenvatten van bezienswaardigheden in de omgeving, zal bijvoorbeeld bij gebruik van een <b>lijnafstand</b> van 8 kilometer het resultaat gebieden bevatten binnen een straal van 8 kilometer rond het ingevoerde punt en alle samengevatte informatie zoals aantal punten en eventueel toegevoegde statistieken. Indien niet aangevinkt zal de resultaatlaag dezelfde objecten retourneren van de eerste invoerlaag met alle gevraagde samengevatte informatie.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Voeg statistieken toe van de samen te vatten laag</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt statistieken berekenen voor numerieke attributen van de nabijgelegen punten. 
+            </p>
+            <p>Als  <b>Telling van punten</b> is aangevinkt, wordt het totale aantal punten in de buurt berekend. U kunt ook statistieken berekenen voor numerieke velden van de punten in de buurt.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Voeg statistieken toe van de samen te vatten laag</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt statistieken berekenen voor numerieke attributen van de nabijgelegen lijnen. 
+            </p>
+            <p>Als  <b>Totale lengte</b> is aangevinkt, wordt de totale lengte van de lijnen in de buurt berekend. U kunt ook statistieken berekenen voor numerieke velden van de lijnen in de buurt.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Voeg statistieken toe van de samen te vatten laag</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt ook statistieken berekenen voor numerieke attributen van de nabijgelegen gebieden. 
+            </p>
+            <p>Als  <b>Totale gebied</b> is aangevinkt, wordt het totale gebied van objecten in de buurt berekend. U kunt ook statistieken berekenen voor numerieke velden van de objecten in de buurt.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Voeg statistieken toe van de samen te vatten laag</h2></div>
+        <hr/>
+        <div>
+            <p>Zodra u een samen te vatten laag kiest, kunt u optioneel statistieken berekenen van alle numerieke attributen van de punten, lijnen of oppervlakten. 
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Afhankelijk van de objecttypes die u samenvat, kunt u het totale aantal van dichtstbijzijnde punten, totale lengte van lijnen of totale oppervlakte van nabijgelegen objecten berekenen.
+            </p>
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Kies veld om op te groeperen</h2></div>
+        <hr/>
+        <div>
+            <p> Dit is een attribuut van de objecten in de buurt die u kunt gebruiken om statistieken afzonderlijk te berekenen voor elke unieke attribuutwaarde. Stel bijvoorbeeld dat uw eerste invoerlaag (de laag waarvan afstanden worden gemeten) lege landpercelen bevat die te koop zijn, en dat uw objecten in de buurt bedekkingsgebieden van gebouwen zijn. Een van de attributen van de bouwlocaties is <i>UseType</i>, met waarden zoals RETAIL, RESIDENTIAL, MANUFACTURING, PUBLIC, enzovoort. Als u de mengeling van bouwlocatietypen bij elk leeg perceel wilt karakteriseren, kunt u het totale gebied berekenen voor elk afzonderlijk type bouwlocatie binnen twee kilometer van de lege percelen, met <i>UseType</i> als groep per attribuut. De statistieken voor elke groep en het aantal objecten in de buurt worden weergegeven in de pop-up van de resultaatlaag.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheid, meerderheid toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld als u een veld kiest om te groeperen. Als u wilt weten welke attribuutwaarden binnen elke groep in de minderheid zijn (minst dominant) of in de meerderheid (meest dominant) binnen de afstand of tijd die u hebt opgegeven, selecteer dan  <b>Minderheid, meerderheid toevoegen</b>. Als u <b>Minderheid, meerderheid toevoegen</b> selecteert, worden er twee nieuwe velden toegevoegd aan uw resultaatlaag. Als u ook <b>Percentages toevoegen</b> selecteert, worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+            <ul>
+                <li>Als u nabijgelegen punten samenvat, worden waarden in de minderheid en meerderheid berekend op basis van het aantal punten binnen de afstand of tijd die u hebt opgegeven.
+                </li>
+                <li>Als u nabijgelegen lijnen samenvat, worden waarden in de minderheid en meerderheid berekend op basis van de lengtes van de lijnen binnen de afstand of tijd die u hebt opgegeven.  
+                </li>
+                <li>Als u nabijgelegen gebieden samenvat, worden waarden in de minderheid en meerderheid berekend op basis van de gebieden binnen de afstand of tijd die u hebt opgegeven.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Percentages toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld als u een veld kiest om te groeperen. Selecteer  <b>Percentages toevoegen</b> als u het percentage wilt zoeken van elke attribuutwaarde binnen elke groep. Er wordt een nieuw veld toegevoegd aan de resultaattabel met de percentages van elke attribuutwaarde binnen elke groep. Als <b>Minderheid, meerderheid toevoegen</b> ook geselecteerd is, worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

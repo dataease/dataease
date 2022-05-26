@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Obohatit z mřížky s více proměnnými (Enrich From Multi-Variable Grid)</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Obohatit z mř&iacute;žky s v&iacute;ce proměnn&yacute;mi"></h2>
+        <hr/>
+    <p>N&aacute;stroj  Obohatit z mř&iacute;žky s v&iacute;ce proměnn&yacute;mi &uacute;činně spoj&iacute; atributy z mř&iacute;žky s v&iacute;ce proměnn&yacute;mi do bodov&eacute; vrstvy.
+    </p>
+    <p>Mř&iacute;žka s v&iacute;ce proměnn&yacute;mi je jak&aacute;koli vrstva vytvořen&aacute; pomoc&iacute; n&aacute;stroje Vytvořit mř&iacute;žku s v&iacute;ce proměnn&yacute;mi, kter&yacute; zkompiluje atributy z v&iacute;ce vrstev do jedin&eacute; mř&iacute;žky polygonů. Použ&iacute;v&aacute;n&iacute; mř&iacute;žky s v&iacute;ce proměnn&yacute;mi pro obohacen&iacute; v&aacute;m umožňuje rychle přidat velk&eacute; a různ&eacute; sb&iacute;rky informac&iacute; do bodov&yacute;ch dat, což se použ&iacute;v&aacute; v dal&scaron;&iacute; prostorov&eacute; anal&yacute;ze.
+    </p>
+    <p>Předpokl&aacute;d&aacute;me např&iacute;klad, že jste z&iacute;skali vrstvu s nov&yacute;mi trestn&iacute;mu ud&aacute;lostmi, kter&eacute; se loni staly ve městě. Chcete modelovat vztah mezi zločinnost&iacute; a různ&yacute;mi demografick&yacute;mi, ekonomick&yacute;mi a geografick&yacute;mi faktory. M&aacute;te př&iacute;stup k datům, kter&aacute; popisuj&iacute; tyto faktory, ale jsou uložena v pěti různ&yacute;ch vrstv&aacute;ch s různ&yacute;mi typy geometrie. Nav&iacute;c k tomu jsou někter&eacute; vrstvy uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat    , zat&iacute;mco jin&eacute; jsou uloženy jako feature služby. Vytvořen&iacute;m mř&iacute;žky s v&iacute;ce proměnn&yacute;mi pro uložen&iacute; těchto informac&iacute; a potom spojen&iacute;m mř&iacute;žky s va&scaron;imi trestn&iacute;mi ud&aacute;lostmi pomoc&iacute; n&aacute;stroje  Obohatit z mř&iacute;žky s v&iacute;ce proměnn&yacute;mi ,  můžete &uacute;činně spojit &scaron;irokou &scaron;k&aacute;lu atributů s va&scaron;&iacute; bodovou vrstvou pomoc&iacute; pouze dvou spu&scaron;těn&iacute; n&aacute;stroje. Můžete potom použ&iacute;vat spojen&eacute; atributy jako nez&aacute;visl&eacute; proměnn&eacute; a zač&iacute;t vytv&aacute;řet model zločinnosti s v&yacute;slednou vrstvou.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Vybrat bodové prvky k obohacení</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky, kter&eacute; budou obohaceny pomoc&iacute; mř&iacute;žky s v&iacute;ce proměnn&yacute;mi.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Vybrat mřížku s více proměnnými, která bude použita k obohacení</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva mř&iacute;žky s v&iacute;ce proměnn&yacute;mi obsahuj&iacute;c&iacute; atributy, kter&eacute; budou spojeny se vstupn&iacute;mi bodov&yacute;mi prvky. Vrstva měla b&yacute;t vytvořena pomoc&iacute; n&aacute;stroje Vytvořit mř&iacute;žku s v&iacute;ce proměnn&yacute;mi a mus&iacute; to b&yacute;t hostovan&aacute; vrstva prvků. Vrstvy mř&iacute;žky s v&iacute;ce proměnn&yacute;mi uložen&eacute; ve sd&iacute;len&eacute;m souboru velk&yacute;ch datnejsou podporovan&yacute;m vstupem tohoto n&aacute;stroje.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Vyberte proměnné k přidání</h2></div>
+        <hr/>
+        <div>
+            <p>Atributy ve vrstvě mř&iacute;žky s v&iacute;ce proměnn&yacute;mi, kter&eacute; budou spojeny se vstupn&iacute;mi bodov&yacute;mi prvky, když bodov&eacute; prvky prot&iacute;naj&iacute; mř&iacute;žku.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

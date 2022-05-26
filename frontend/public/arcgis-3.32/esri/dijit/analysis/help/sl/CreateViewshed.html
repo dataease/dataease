@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ustvari vidno polje</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Ustvari vidno polje"></h2>
+        <hr/>
+    <p>Orodje Ustvari vidno polje ustvari območja, s katerih lahko opazovalec vidi objekte na tleh. Vhodne opazovalne točke lahko predstavljajo bodisi opazovalce (kot so ljudje na tleh ali izvidniki v požarnih stolpih) ali opazovane objekte (kot so vetrne turbine, vodni stolpi, vozila ali drugi ljudje). Območja z rezultati so tista območja, s katerih lahko opazovalci vidijo opazovane objekte in obratno: s katerih lahko opazovani objekti vidijo opazovalce.
+    </p>
+    <p>Tako opazovalci kot opazovani objekti so lahko dvignjeni nad tlemi, te vi&scaron;ine pa so uporabljene pri določanju vidnosti. Na primer, vidno polje, ki je izračunano za vetrne turbine, visoke 120 metrov, in ljudi, ki stojijo na tleh in so visoki 1,80 metra, bo običajno večje kot vidno polje, izračunano za turbine, visoke 60 metrov, in ljudi, visoke 1,60 metra.
+    </p>
+    <p>Upo&scaron;tevajte, da izračunavanje vidnega polja ne upo&scaron;teva ovir, kot so drevesa ali stavbe. Izračun je izdelan, kot bi &scaron;lo za prazen teren, na katerem se ne nahaja nič razen opazovalcev in opazovanega objekta.
+    </p>
+    <p>Sloj z rezultati vsebuje poligonske geoobjekte, ki predstavljajo vidna območja. Polje  <i>Frequency</i> beleži &scaron;tevilo opazovalnih točk, s katerih se vidijo posamezna območja. Na primer, če imate pet vhodnih točk in vsaka predstavlja požarni stolp, bo polje <i>Frequency</i> imelo vrednost med ena in pet; območje z vrednostjo ena je mogoče videti samo z enega stolpa, območja z vrednostjo pet pa je mogoče videti z vseh stolpov. Sloj z rezultati prav tako vsebuje polje <i>DEMResolution</i>, ki beleži ločljivost digitalnega modela vi&scaron;in (DMV), ki se uporablja za ustvarjanje vidnih polj.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirane samo opazovalne točke, vidne znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirane vse opazovane točke, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Točkovni geoobjekti, ki predstavljajo lokacije opazovalca</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti za uporabo lokacij opazovalca. 
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Višina lokacije opazovalca</h2></div>
+        <hr/>
+        <div>
+            <p>To je vi&scaron;ina nad tlemi va&scaron;ih lokacij opazovalca. Privzeta je približna povprečna vi&scaron;ina človeka.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Višina drugih objektov na tleh</h2></div>
+        <hr/>
+        <div>
+            <p>To je vi&scaron;ina struktur ali ljudi na tleh, uporabljena za vzpostavitev vidnosti. Rezultat vidnega polja so tista območja, od koder opazovalec vidi druge objekte. Velja tudi nasprotno; drugi objekti lahko vidijo opazovalne točke. 
+            </p>
+            <p>
+                <ul>
+                    <li>Če va&scaron;e opazovalne točke predstavljajo vetrne turbine in želite ugotoviti, od kod lahko ljudje, ki stojijo na tleh, vidijo turbine, vnesite povprečno vi&scaron;ino osebe (okrog 1,8 metra). Rezultat so območja, od koder lahko oseba, ki stoji na tleh, vidi vetrne turbine.
+                    </li>
+                    <li>Če va&scaron;e opazovalne točke predstavljajo požarne stolpe in želite ugotoviti, s katerih stolpov je mogoče videti dvigovanje dima 6 metrov visoko ali vi&scaron;je, vnesite 6 metrov za vi&scaron;ino. Rezultat so območja, ki jih je mogoče videti s požarnega stolpa, kjer se dim dviguje vsaj 6 metrov visoko.
+                    </li>
+                    <li>Če va&scaron;e opazovalne točke predstavljajo razgledne točke ob cestah in poteh ter želite ugotoviti, s katerih mest je mogoče videti vetrne turbine, visoke 120 metrov ali več, za vi&scaron;ino vnesite 120 metrov. Rezultat so območja, kjer lahko ljudje z razglednih točk vidijo vetrne turbine, visoke vsaj 120 metrov.
+                    </li>
+                    <li>Če va&scaron;e opazovalne točke predstavljajo razgledne točke in želite ugotoviti, kolik&scaron;no območje na tleh vidijo ljudje z mesta razglednih točk vnesite ničlo. Rezultat so območja, ki jih je mogoče videti z razglednih točk.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimalna razdalja gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>To je mejna vrednost razdalje, pri kateri se zaključi izračun vidnega območja. Zunaj te razdalje ni znano, ali opazovalne točke vidijo druge objekte in obratno. Velike vrednosti povečujejo čas izračunavanja. Največja dovoljena vrednost je 31 milj (50 kilometrov).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+            <p> Uporaba tega orodja ne porablja kreditov.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

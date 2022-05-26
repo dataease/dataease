@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Calculare pantă</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Instrument Calculare pantă pentru portal"></h2>
+        <hr/>
+    <p>Acest instrument creează o suprafaţă care indică panta datelor de elevaţie de intrare. Panta reprezintă rata de modificare a elevaţiei pentru fiecare celulă a modelului digital de elevaţie (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selectare date de intrare pentru calcularea pantei</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de elevaţie din care va fi calculată panta.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Specificare factor de scală pentru elevaţie</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi un factor z.
+            </p>
+            <p>Factorul z este un factor de scalare utilizat pentru a converti valorile de elevaţie &icirc;n două scopuri:
+ 
+                <ul>
+                    <li>Pentru a converti unităţile de elevaţie (cum ar fi metri sau ft) la unităţile coordonatelor orizontale ale stratului tematic, care pot fi ft, metri sau grade
+                        
+  
+                    </li>
+                    <li>Pentru a adăuga exagerare verticală pentru un efect vizual
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Din ft
+                    </p>
+                </td>
+                <td>
+                    <p>Din metri
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Din ft
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Din metri
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

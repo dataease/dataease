@@ -1,0 +1,3 @@
+//>>built
+define("dojox/charting/plot2d/Stacked",["dojo/_base/declare","dojo/_base/lang","./Default","./commonStacked"],function(e,l,n,f){return e("dojox.charting.plot2d.Stacked",n,{getSeriesStats:function(){return f.collectStats(this.series,l.hitch(this,"isNullValue"))},buildSegments:function(g,b){for(var d=this.series[g],a=b?Math.max(0,Math.floor(this._hScaler.bounds.from-1)):0,e=b?Math.min(d.data.length-1,Math.ceil(this._hScaler.bounds.to)):d.data.length-1,c=null,m=[],h=l.hitch(this,"isNullValue");a<=e;a++){var k=
+b?f.getIndexValue(this.series,g,a,h):f.getValue(this.series,g,d.data[a]?d.data[a].x:null,h);if(!h(k[0])&&(b||null!=k[0].y))c||(c=[],m.push({index:a,rseg:c})),c.push(k[0]);else if(!this.opt.interpolate||b)c=null}return m}})});

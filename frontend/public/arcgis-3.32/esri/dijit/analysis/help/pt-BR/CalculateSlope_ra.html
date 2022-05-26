@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Calcular Declividade</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Ferramenta Calcular Declividade para Portal"></h2>
+        <hr/>
+    <p>Esta ferramenta cria uma superf&iacute;cie que mostra a declividade dos dados de eleva&ccedil;&atilde;o de entrada. A declividade representa a taxa de altera&ccedil;&atilde;o da eleva&ccedil;&atilde;o de cada c&eacute;lula do modelo de eleva&ccedil;&atilde;o digital (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolha os dados de entrada para calcular a declividade</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de eleva&ccedil;&atilde;o da qual a declividade ser&aacute; calculada.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Especificar fator de escala para elevação</h2></div>
+        <hr/>
+        <div>
+            <p>Insira um fator Z.
+            </p>
+            <p>O fator Z &eacute; um fator de escala utilizado para converter os valores de eleva&ccedil;&atilde;o para dois prop&oacute;sitos:
+ 
+                <ul>
+                    <li>Para converter as unidades de eleva&ccedil;&atilde;o (como metros ou p&eacute;s) em unidades de coordenadas horizontais da camada, que podem ser p&eacute;s, metros ou graus
+                        
+  
+                    </li>
+                    <li>Para adicionar exagero vertical para efeito visual
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>De P&eacute;
+                    </p>
+                </td>
+                <td>
+                    <p>De Metros
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De P&eacute;
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De Metros
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

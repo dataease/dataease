@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/HomeValue",["../../ChartBuilder"],function(b){var a={};a.homeValue={states:"n,p",defaultState:"p",stateSettings:{n:{yAxisTitle:"Number of owner occupied housing units"},p:{yAxisTitle:"Percent of owner occupied housing units"}},fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Home Value",points:[{label:"$0-49999",fullName:"Wealth.VAL0_CY"},{label:"$50000-99999",fullName:"Wealth.VAL50K_CY"},
+{label:"$100000-149999",fullName:"Wealth.VAL100K_CY"},{label:"$150000-199999",fullName:"Wealth.VAL150K_CY"},{label:"$200000-249999",fullName:"Wealth.VAL200K_CY"},{label:"$250000-299999",fullName:"Wealth.VAL250K_CY"},{label:"$300000-399999",fullName:"Wealth.VAL300K_CY"},{label:"$400000-499999",fullName:"Wealth.VAL400K_CY"},{label:"$500000-749999",fullName:"Wealth.VAL500K_CY"},{label:"$750000-999999",fullName:"Wealth.VAL750K_CY"},{label:"$1000000+",fullName:"Wealth.VAL1M_CY"}]})}};return a});

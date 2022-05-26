@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>要素转栅格</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="要素转栅格工具"></h2>
+        <hr/>
+    <p>该工具用于将要素转换为栅格数据集。
+    </p>
+    <p>任何包含点、线或面要素的要素类都可以转换为栅格数据集。
+    </p>
+    <p>像元中心用于确定输出栅格像素的值。
+    </p>
+    <p>输入字段类型决定输出栅格的类型。如果字段是整型，则输出栅格也是整型；如果字段是浮点型，则输出栅格也是浮点型。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要转换的要素图层</h2></div>
+        <hr/>
+        <div>
+            <p>要转换为栅格数据集的输入要素图层。
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>选择字段</h2></div>
+        <hr/>
+        <div>
+            <p>选择将用于向输出栅格分配值的字段。
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>输出像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>输出栅格的像元大小和单位。
+            </p>
+            <p>可用单位包括英里、英尺、千米和米。默认值为英尺。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

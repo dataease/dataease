@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Yleistetty lineaarinen regressio</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="GeneralizedLinearRegression-ty&ouml;nkulkukaavio"></h2>
+        <hr/>
+    <p>Suorittaa yleistetyn lineaarisen regression 
+(GLR) ennusteiden luontia varten tai riippuvan muuttujan mallinnusta varten. Mallinnus kuvaa riippuvan muuttujan suhdetta selitt&auml;vien muuttujien joukkoon.  T&auml;m&auml;n ty&ouml;kalun avulla voi sovittaa jatkuvia (Gaussin jakauma), binaarisia (logistisia) ja m&auml;&auml;r&auml;&auml;n perustuvia (Poisson) malleja.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analyysityyppi</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; ty&ouml;kalun k&auml;ytt&ouml;tilan. Ty&ouml;kalun avulla voi kouluttaa mallin vain suorituskyvyn arviointia varten tai kouluttaa ensin mallin ja sitten ennustaa kohteisiin. Ennustetyypit ovat seuraavat:
+                <ul>
+                    <li> <b>Arvioi mallin suorituskyky&auml; sovittamalla sit&auml;</b> &ndash; mallia sovitetaan ja k&auml;ytet&auml;&auml;n l&auml;ht&ouml;aineistoon. T&auml;m&auml;n vaihtoehdon avulla voit arvioida mallin tarkkuutta ennen uuden aineistoryhm&auml;n ennusteiden luontia. Sen avulla voit my&ouml;s ymm&auml;rt&auml;&auml; ennustettujen muuttujien suhteita ja niit&auml; ohjaavia tekij&ouml;it&auml;. T&auml;m&auml;n vaihtoehdon tulosaineistona on sovitetun aineiston ja mallin diagnostiikan sis&auml;lt&auml;v&auml; kohdepalvelu.
+                    </li>
+                    <li> <b>Sovita mallia ja ennusta arvoja</b> &ndash; ennusteet tai luokittelut luodaan l&auml;ht&ouml;aineiston kohteille ja ennustekohteille. Selitt&auml;v&auml;t muuttuja on m&auml;&auml;ritett&auml;v&auml; sek&auml; ennustekohteille ett&auml; ennustettaville kohteille. T&auml;m&auml;n vaihtoehdon tulosaineistona on l&auml;ht&ouml;aineistoon sovitetun mallin sis&auml;lt&auml;v&auml; kohdepalvelu, ennustettujen arvojen kohdepalvelu ja mallin diagnostiikka.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Arvioi mallin suorituskykyä sovittamalla sitä</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tilaa, jos haluat sovittaa mallin ja tutkia sopivuutta.
+            </p>
+            <p>T&auml;m&auml;n vaihtoehdon avulla mallia koulutetaan k&auml;ytt&auml;m&auml;ll&auml; l&auml;ht&ouml;aineiston karttatasoa. T&auml;m&auml;n vaihtoehdon avulla voit arvioida mallin tarkkuutta ennen uuden aineistoryhm&auml;n ennusteiden luontia. T&auml;m&auml; vaihtoehto tulostaa mallin diagnostiikan ja k&auml;ytt&auml;&auml; mallia koulutusaineistossa.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Sovita mallia ja ennusta arvoja</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tilaa, jos haluat sovittaa mallin ja k&auml;ytt&auml;&auml; mallia aineistoryhm&auml;ss&auml; ennusteiden luontia varten.
+            </p>
+            <p>Ennusteet ja luokittelut luodaan kohteille. T&auml;m&auml;n vaihtoehdon tulosaineistona on kohdepalvelu, mallin diagnostiikka ja valinnaisen muuttujan t&auml;rkeystaulu.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, josta malli luodaan</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; piste-, viiva-, alue- tai taulukkomuotoiset kohteet, jotka sis&auml;lt&auml;v&auml;t riippuvat ja selitt&auml;v&auml;t muuttujat.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Valitse mallinnettava kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Numerokentt&auml;, joka sis&auml;lt&auml;&auml; mallinettavat havaitut arvot ja mallinnettavan arvon tyypin. Voit mallintaa kolmenlaisia arvoja
+                <ul>
+                    <li>Jatkuva &ndash; edustaa jatkuvia arvoja. K&auml;ytett&auml;v&auml; malli on Gaussin jakauma, ja ty&ouml;kalu suorittaa pienimm&auml;n neli&ouml;summan regression.
+                    </li>
+                    <li>Binaarinen &ndash; edustaa olemassaolon tai puuttumisen arvoja. N&auml;iden on oltava ykk&ouml;si&auml; (1) ja nollia (0). K&auml;ytett&auml;v&auml; malli on logistinen regressio.
+                    </li>
+                    <li>M&auml;&auml;r&auml; &ndash; edustaa diskreettej&auml; arvoja ja edustaa tapahtumia, esimerkiksi rikosten m&auml;&auml;r&auml;&auml;, tautitapauksia tai liikenneonnettomuuksia. K&auml;ytett&auml;v&auml; malli on Poisson-regressio. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Valitse karttataso, jonka arvoja haluat ennustaa</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, jonka kohteet edustavat sijainteja, joissa estimaatit tulisi laskea. Kunkin t&auml;m&auml;n aineistoryhm&auml;n kohteen tulisi sis&auml;lt&auml;&auml; arvot kaikille m&auml;&auml;ritetyille selitt&auml;ville muuttujille. N&auml;iden kohteiden riippuva muuttuja estimoidaan eli arvioidaan k&auml;ytt&auml;m&auml;ll&auml; mallia, joka on kalibroitu l&auml;ht&ouml;aineiston karttatasoa varten.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Valitse selittävät kentät</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;hint&auml;&auml;n yksi selitt&auml;vi&auml; muuttujia (kentti&auml;) edustava kentt&auml;, josta on apua arvon ennustamisessa. Vain numerokent&auml;t ovat n&auml;kyviss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Valitse, miten selittävät kentät täsmäytetään</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml;, miten l&auml;ht&ouml;aineiston karttatason vastaavat muuttujat t&auml;sm&auml;&auml;v&auml;t ennustekarttatason muuttujien kanssa. Vain mallin luonnissa k&auml;ytetyt muuttujat sis&auml;ltyv&auml;t tauluun. Vain numerokentti&auml; voi k&auml;ytt&auml;&auml;. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Palautettavat arvot m&auml;&auml;r&auml;ytyv&auml;t analyysin tyypin perusteella. Jos sovitat mallin sopivuuden arviointia varten, tulokset sis&auml;lt&auml;v&auml;t malliin sopivan l&auml;ht&ouml;aineiston karttatason ja tulostiedot, joissa arvioidaan mallin sopivuutta. Jos sovitat ja ennustat, tulokset sis&auml;lt&auml;v&auml;t malliin sopivan l&auml;ht&ouml;aineiston karttatason, ennustettujen tulosten karttatason ja tulostiedot, joissa arvioidaan mallin sopivuutta.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

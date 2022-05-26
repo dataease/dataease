@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodeer Locaties vanuit Tabel</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodeer Locaties vanuit Tabel"></h2>
+        <hr/>
+    <p>Geocoderen zet adressen om in co&ouml;rdinaten. Deze tool converteert adressen van een deeltabel voor het delen van grote databestanden naar een objectlaag met de co&ouml;rdinaten als extra kolommen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Kies een invoertabel</h2></div>
+        <hr/>
+        <div>
+            <p>De invoertabel met de adressen om te geocoderen. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Kies een locator</h2></div>
+        <hr/>
+        <div>
+            <p>Kies een locatorservice om mee te geocoderen. Als de locatorservice die u wilt gebruiken, niet in het drop-downmenu staat, neem dan contact op met de beheerder om de locatordienst te laten configureren voor batchgeocodering.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Als al uw adressen van &eacute;&eacute;n land zijn, selecteer dat land dan voor de meest nauwkeurige resultaten. Anders laat u deze parameter leeg.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Datavelden selecteren</h2></div>
+        <hr/>
+        <div>
+            <p>De locatorservice verwacht bepaalde velden in de gegevens, zoals adres, stad, provincie of postcode. Koppel de datavelden in uw invoerbestand of tabel aan de velden die de locator verwacht met gebruik van de drop-downboxen. Hoe meer velden u in kaart brengt, des te accurater uw resultaten zullen zijn. Als de invoertabel alle gegevens in &eacute;&eacute;n kolom heeft, selecteert u  <b>E&eacute;n veld</b>en kiest u  vervolgens een dataveld uit het drop-downmenu. Selecteer anders <b>Meerdere velden</b>en breng de juiste locatorvelden in kaart naar de meervoudige veldkolommen in uw tabel.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Voor elke locatie</h2></div>
+        <hr/>
+        <div>
+            <p>Voeg extra velden toe die de locatieservice oplevert. Als deze optie is ingeschakeld, worden alle velden die door de locator zijn gemaakt, teruggegeven. Als dit niet is aangevinkt, worden uw invoergegevens met de gegeocodeerde co&ouml;rdinaten terug gegeven. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Uitvoerresultaatnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

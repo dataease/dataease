@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Consolidar puntos</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Consolidar puntos"></h2>
+        <hr/>
+    <p>Esta herramienta funciona con una capa de entidades de puntos y una capa de entidades de &aacute;rea. Primero, determina los puntos que se encuentran dentro de cada &aacute;rea. Despu&eacute;s de determinar esta relaci&oacute;n espacial de punto en &aacute;rea, se calculan las estad&iacute;sticas sobre los puntos del &aacute;rea y se asignan al &aacute;rea. La estad&iacute;stica m&aacute;s b&aacute;sica es el recuento del n&uacute;mero de puntos dentro del &aacute;rea, pero se pueden obtener tambi&eacute;n otras estad&iacute;sticas. 
+    </p>
+    <p>Por ejemplo, suponga que tiene entidades de puntos de ubicaciones de cafeter&iacute;as y entidades de &aacute;rea de condados, y que desea resumir las ventas de caf&eacute; por condado. Suponiendo que las cafeter&iacute;as tengan un atributo  <i>TOTAL_SALES</i>, puede obtener la suma de todas las <i>TOTAL_SALES</i> dentro de cada condado, los valores m&iacute;nimo o m&aacute;ximo de <i>TOTAL_SALES</i>
+ dentro de cada condado o la desviaci&oacute;n est&aacute;ndar de todas las ventas dentro de cada condado.
+    </p>
+    <p>Si se ha activado  <b>Utilizar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n las entidades de la capa de &aacute;reas y de la capa de puntos de entrada que est&aacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de &aacute;reas y de la capa de puntos de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Elegir la capa que contiene los puntos que se deben agregar a las áreas</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos que se agregar&aacute;n a las &aacute;reas.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Elegir la capa que contiene áreas de agregación</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de &aacute;reas en la que se agregar&aacute;n los puntos. Todos los puntos contenidos en los l&iacute;mites de las &aacute;reas de esta capa se contar&aacute;n y se podr&aacute;n resumir usando las opciones de estad&iacute;sticas que hayas elegido.  
+            </p>
+            <p>Puede elegir entre una capa de &aacute;rea proporcionada por usted o bins generados al ejecutar la herramienta.   Cuando se generan bins, en el caso de  <b>Cuadrado</b>, son la cantidad y las unidades especificadas las que determinan la altura y la longitud del cuadrado. En el caso de <b>Hex&aacute;gono</b>, son la cantidad y las unidades especificadas las que determinan la distancia entre los lados paralelos.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Mantener áreas sin puntos</h2></div>
+        <hr/>
+        <div>
+            <p>Determina si las &aacute;reas que no contienen puntos aparecen en la capa de resultados. Si est&aacute; desactivada, las &aacute;reas sin puntos no aparecer&aacute;n en el resultado. Si est&aacute; activada, las &aacute;reas sin puntos aparecer&aacute;n en el resultado.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Agregar estadísticas</h2></div>
+        <hr/>
+        <div>
+            <p>Puede calcular estad&iacute;sticas sobre los atributos de la capa de puntos de entrada, como suma, valor medio, m&iacute;nimo, m&aacute;ximo y desviaci&oacute;n est&aacute;ndar. La capa de resultados contendr&aacute; un nuevo atributo para cada estad&iacute;stica calculada. Puedes agregar cualquier n&uacute;mero de estad&iacute;sticas eligiendo un atributo y una estad&iacute;stica (aparecer&aacute; un nuevo cuadro desplegable).
+ 
+            </p>
+            <p>Si la capa que se va a resumir no tiene ning&uacute;n campo num&eacute;rico, las estad&iacute;sticas adicionales no estar&aacute;n disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Seleccionar campo para agrupar</h2></div>
+        <hr/>
+        <div>
+            <p> Puede crear grupos estad&iacute;sticos usando un atributo en la capa de puntos de entrada.    Por ejemplo, si ha agregado delitos a l&iacute;mites de vecindad, es posible que tenga un atributo <i>Crime_type</i> con cinco tipos de delitos distintos.  Cada tipo de delito &uacute;nico constituye un grupo y las estad&iacute;sticas que elijas se calcular&aacute;n para cada valor &uacute;nico de <i>Crime_type</i>. Las estad&iacute;sticas de cada grupo, as&iacute; como el recuento de puntos, se mostrar&aacute;n en la ventana emergente de la capa de resultados. Cuando elija un atributo de agrupaci&oacute;n, se crean dos resultados: la capa de resultados y una tabla de resultados que contiene las estad&iacute;sticas de cada grupo &uacute;nico.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Agregar minoría, mayoría</h2></div>
+        <hr/>
+        <div>
+            <p>Esta casilla de verificaci&oacute;n est&aacute; habilitada cuando se selecciona un campo por el que agrupar. Si quiere saber qu&eacute; valores de atributo son minor&iacute;a (menos dominantes) en cada grupo o cu&aacute;les son mayor&iacute;a (m&aacute;s dominantes) en cada l&iacute;mite, active la casilla  <b>Agregar minor&iacute;a, mayor&iacute;a</b>.   Al activar la casilla <b>Agregar minor&iacute;a, mayor&iacute;a</b>, se agregar&aacute;n dos campos nuevos a la capa resultante.   Al activar tambi&eacute;n la casilla <b>Agregar porcentajes</b>, se agregan dos campos adicionales a la capa resultante, que contienen los porcentajes de los valores de atributo de mayor&iacute;a y de minor&iacute;a dentro de cada grupo.
+            </p>
+            <p>Por ejemplo, si es un urbanista y quiere saber qu&eacute; especies de &aacute;rboles son una minor&iacute;a y cu&aacute;les son mayor&iacute;a en los parques de la ciudad, agregue los datos de &aacute;rboles en las &aacute;reas de parques y active casilla.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Agregar porcentajes</h2></div>
+        <hr/>
+        <div>
+            <p>Esta casilla de verificaci&oacute;n est&aacute; habilitada cuando se selecciona un campo por el que agrupar. Seleccione  <b>Agregar porcentajes</b> si desea buscar el porcentaje de cada valor de atributo en cada grupo.  Se agregar&aacute; un nuevo campo a la tabla de resultados, que contiene los porcentajes de cada valor de atributo en cada grupo. Si <b>Agregar minor&iacute;a, mayor&iacute;a</b> tambi&eacute;n est&aacute; activada, se agregan dos campos adicionales a la capa de resultados, que contienen los porcentajes de los valores de atributo de mayor&iacute;a y de minor&iacute;a dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

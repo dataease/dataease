@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular Densidade</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Calcular Densidade"></h2>
+        <hr/>
+    <p>A ferramenta Calcular Densidade cria um mapa de densidade a partir de elementos de ponto espalhando quantidades conhecidas de determinado fen&oacute;meno (representados como atributos dos pontos) pelo mapa. O resultado &eacute; uma camada de &aacute;reas classificadas da menos densa para a mais densa.   
+
+    </p>
+    <p>Para a entrada de ponto, cada ponto deve representar a localiza&ccedil;&atilde;o de algum evento ou incidente, e a camada resultado representa uma contagem do incidente por unidade de &aacute;rea. Um valor de densidade mais elevado numa nova localiza&ccedil;&atilde;o significa que existem mais pontos perto desse local. Em muitos casos, a camada de resultado pode ser interpretada como uma superf&iacute;cie de risco para futuros eventos. Por exemplo, se os pontos de entrada representam locais de queda de rel&acirc;mpagos, a camada resultado pode ser interpretada como uma superf&iacute;cie de risco para quedas de raios futuras.
+    </p>
+    <p>Outros casos de uso desta ferramenta incluem o seguinte:
+        <ul>
+            <li>Cria&ccedil;&atilde;o de mapas de densidade de crime para ajudar os departamentos de pol&iacute;cia a alocar adequadamente os recursos a &aacute;reas de alta criminalidade.
+            </li>
+            <li>Calculando densidades de hospitais dentro de um munic&iacute;pio. A camada resultado mostrar&aacute; as &aacute;reas com acessibilidades alta e baixa para os hospitais, e esta informa&ccedil;&atilde;o pode ser usada para decidir onde o novo deve ser constru&iacute;do.
+            </li>
+            <li>Identificar &aacute;reas que est&atilde;o em risco elevado de inc&ecirc;ndios florestais com base em locais hist&oacute;ricos de inc&ecirc;ndios florestais.
+            </li>
+            <li>Localizar as comunidades que est&atilde;o longe de auto-estradas, a fim de planejar onde as novas estradas devem ser constru&iacute;das.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar uma camada de pontos a partir da qual calcular densidade</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de pontos a partir da qual a densidade ser&aacute; calculada.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Selecionar um ou mais campos nos quais calcular densidade (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Forne&ccedil;a um ou mais campos especificando o n&uacute;mero de incidentes em cada local. Por exemplo, se tem pontos que representam as cidades, pode usar um campo que representa a popula&ccedil;&atilde;o da cidade, como o campo de contagem, e a camada de densidade populacional resultante ir&aacute; calcular as densidades populacionais maiores perto de cidades com popula&ccedil;&otilde;es maiores.
+            </p>
+            <p>A densidade para a contagem de pontos ser&aacute; sempre calculada.   Caso n&atilde;o sejam selecionados quaisquer campos, assumir-se-&aacute; que cada local representa uma &uacute;nica contagem.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Selecionar uma forma de caixa</h2></div>
+        <hr/>
+        <div>
+            <p>O formato de caixas &agrave;s quais os pontos est&atilde;o agregados e utilizado para o c&aacute;lculo da densidade.
+            </p>
+            <p>An&aacute;lise utilizando caixas  <b>Quadrado</b> ou <b>Hex&aacute;gono</b> requerem um ambiente de coordenadas projetadas. Pode definir o <b>Sistema de coordenadas de processamento</b> nos <b>Ambientes de An&aacute;lise</b>. Se o seu sistema de coordenadas de processamento n&atilde;o se encontra definido para um sistema de coordenadas projetado, ser&aacute; instado a defini-lo quando <b>Correr An&aacute;lise</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Selecionar o tamanho da caixa para agregação</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho das caixas geradas. Para uma caixa quadrada, o tamanho representa a altura do quadrado. Para hex&aacute;gono, o tamanho representa a altura do hex&aacute;gono (a partir de lados paralelos).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Selecionar a ponderaçao de densidade a aplicar</h2></div>
+        <hr/>
+        <div>
+            <p>O tipo de pondera&ccedil;&atilde;o aplicado ao c&aacute;lculo da densidade. Existem duas op&ccedil;&otilde;es:
+                <ul>
+                    <li> <b>Uniforme</b>&mdash;Calcula uma magnitude por &aacute;rea.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;Aplica uma fun&ccedil;&atilde;o kernel para fazer corresponder uma superf&iacute;cie homog&eacute;nea c&oacute;nica  a cada ponto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Selecionar o tamanho do bairro</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho da &aacute;rea utilizada para calcular densidade. O tamanho da tem de ser superior ao tamanho da caixa.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Escolher as unidades de saída para densidade</h2></div>
+        <hr/>
+        <div>
+            <p>As unidades de sa&iacute;da pretendidas para os valores de densidade. Por defeito, &eacute; definido para quil&oacute;metros quadrados ou milhas quadradas, com base nas unidades predefinidas especificadas no seu perfil. Caso os valores de densidade sejam muito reduzidos, pode aumentar o tamanho das unidades de &aacute;rea (por exemplo, de metros quadrados para quil&oacute;metros quadrados) para devolver valores mais elevados. Os valores apenas representam o resultado em escala.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Calcular densidade utilizando etapas temporais (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Caso a componente temporal se encontre ativa na camada de pontos de entrada, pode analisar recorrendo a etapas temporais.  Existem tr&ecirc;s par&acirc;metros que pode definir quando utiliza componente temporal:
+                <ul>
+                    <li> <b>Intervalo entre etapas temporais</b>
+                    </li>
+                    <li> <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b>
+                    </li>
+                    <li> <b>Hora &agrave; qual alinhar as etapas temporais</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por exemplo, caso tenha dados que representam um ano no tempo e pretende analis&aacute;- los utilizando etapas semanais, defina  <b>Intervalo de etapa temporal</b> para <code>1 semana</code>. 
+            </p>
+            <p>Por exemplo, caso tenha dados que representam um ano no tempo e pretende analis&aacute;- los utilizando a primeira semana do m&ecirc;s, defina  <b>Intervalo de etapa temporal</b> para <code>1 semana</code>, <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> para <code>1 m&ecirc;s</code>, e <b>Hora &agrave; qual alinhar as etapas temporais</b> para <code>1 de janeiro, &agrave;s 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalo entre etapas temporais</h2></div>
+        <hr/>
+        <div>
+            <p>O intervalo temporal utilizado para gerar etapas temporais.  <b>Intervalo de etapa temporal</b> pode ser utilizado isoladamente ou com o par&acirc;metro <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> ou <b>Hora &agrave; qual alinhar as etapas temporais</b> ..
+            </p>
+            <p>Por exemplo, caso pretenda criar etapas temporais que t&ecirc;m lugar todas as segundas-feiras entre as 9:00 e as 10:00, defina  <b>Intervalo de etapa temporal</b> para <code>1 hora</code>, <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> para <code>1 semana</code>, e <b>Hora &agrave; qual alinhar as etapas temporais</b> para <code>9:00:00 &agrave; segunda</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Frequência de repetição da etapa temporal</h2></div>
+        <hr/>
+        <div>
+            <p> A etapa utilizada para calcular uma etapa temporal. <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> pode ser utilizado isoladamente, com <b>Intervalo de etapa temporal</b>, com <b>Hora de Refer&ecirc;ncia</b>, ou com ambos <b>Intervalo de etapa temporal</b> e <b>Hora &agrave; qual alinhar as etapas temporais</b>.
+            </p>
+            <p> Por exemplo, caso pretenda criar etapas temporais que t&ecirc;m lugar todas as segundas-feiras entre as 9:00 e as 10:00, defina <b>Intervalo de etapa temporal</b> para <code>1 hora</code>, <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> para <code>1 semana</code>, e <b>Hora &agrave; qual alinhar as etapas temporais</b> para <code>9:00:00 a uma segunda-feira</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Hora à qual alinhar as etapas temporais</h2></div>
+        <hr/>
+        <div>
+            <p>A data e hora utilizadas para alinhar a divis&atilde;o temporal. A utiliza&ccedil;&atilde;o de etapas temporais ter&aacute; in&iacute;cio &agrave;s e continuar&aacute; de forma regressiva desde esta hora. Caso n&atilde;o seja selecionada qualquer hora de refer&ecirc;ncia, a etapa temporal ser&aacute; alinhada a 1 de janeiro de 1970. 
+            </p>
+            <p> Por exemplo, caso pretenda criar etapas temporais que t&ecirc;m lugar todas as segundas-feiras entre as 9:00 e as 10:00, defina <b>Intervalo de etapa temporal</b> para <code>1 hora</code>, <b>Frequ&ecirc;ncia de repeti&ccedil;&atilde;o da etapa temporal</b> para <code>1 semana</code>, e <b>Hora &agrave; qual alinhar as etapas temporais</b> para <code>9:00:00 a uma segunda-feira</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um par&acirc;metro tempor&aacute;rio de pr&eacute;-lan&ccedil;amento para definir a refer&ecirc;ncia espacial. Muitas ferramentas de big data requerem que o sistema de coordenadas projetado seja utilizado como refer&ecirc;ncia espacial para processamento. Por predefini&ccedil;&atilde;o, a ferramenta utilizar&aacute; o sistema de coordenadas de entrada, mas ir&aacute; falhar no caso de o mesmo se tratar de um sistema de coordenadas geogr&aacute;ficas. Para definir um sistema de coordenadas projetado, introduza o WKID. Por exemplo,  <b>Web Mercator</b> seria introduzido como <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selecionar armazenamento de dados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados de GeoAnalytics s&atilde;o guardados num armazenamento de dados e expostos como uma camada de elementos em   Portal for ArcGIS. Na maioria dos casos, os resultados dever&atilde;o ser armazenados num armazenamento de dados espaciotemporal, sendo este o comportamento predefinido. Em alguns casos, ser&aacute; uma boa op&ccedil;&atilde;o guardar os resultados no armazenamento de dados relacional. As seguintes s&atilde;o raz&otilde;es que justificam o armazenamento de resultados no armazenamento de dados relacional. 
+                <ul>
+                    <li>Pode utilizar resultados em colabora&ccedil;&atilde;o portal-to-portal.
+                    </li>
+                    <li>Pode ativar funcionalidades de sincroniza&ccedil;&atilde;o com os seus resultados
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&atilde;o dever&aacute; utilizar o armazenamento de dados relacional caso antecipe um aumento dos seus resultados de GeoAnalytics e necessite de tirar partido das funcionalidades de armazenamento de big data espaciotemporais para gerir grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

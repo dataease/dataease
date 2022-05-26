@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Entfernung berechnen</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Entfernung berechnen"></h2>
+        <hr/>
+    <p>Dieses Werkzeug berechnet die euklidische Entfernung, Richtung und Zuordnung von einer einzelnen oder verschiedenen Quellen.
+    </p>
+    <p>Zu den Beispielanwendungen z&auml;hlt die Beantwortung von Fragen wie den folgenden:
+
+        <ul>
+            <li>Wie lautet die Entfernung zur n&auml;chsten Stadt?
+                
+
+            </li>
+            <li>Wie lautet die Entfernung zur n&auml;chsten Stra&szlig;e?
+                
+
+            </li>
+            <li>Wie lautet die Entfernung zur n&auml;chsten Wasserquelle?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Anzeigeausdehnung der Karte befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Raster- oder Feature-Position-Layer auswählen, zu dem die Entfernung berechnet werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer, der die Quellen definiert, zu denen die Entfernung berechnet wird. Der Layer kann ein Image-Service oder ein Feature-Service sein.
+            </p>
+            <p>Bei einem Image-Service kann der Eingabetyp &quot;Ganze Zahl&quot; oder &quot;Gleitkomma&quot; sein.
+            </p>
+            <p>Bei einem Feature-Service kann die Eingabe ein Punkt, eine Linie oder ein Polygon sein.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximale Entfernung für die Berechnung</h2></div>
+        <hr/>
+        <div>
+            <p>Die maximale Entfernung, die berechnet werden soll. Wenn Sie beispielsweise einen Wert von 10.000 Metern eingeben, wird die euklidische Entfernung von den Quellenposition bis zu diesem Wert berechnet (Entfernung).
+            </p>
+            <p>Wird kein Wert angegeben, wird die Entfernung bis zur definierten Ausdehnung berechnet.
+            </p>
+            <p>Die verf&uuml;gbaren Einheiten sind Kilometer, Meter, Meilen und Fu&szlig;.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ausgabe-Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die Zellengr&ouml;&szlig;e und Einheit f&uuml;r die Ausgabe-Raster.
+            </p>
+            <p>Die Einheiten k&ouml;nnen Kilometer, Meter, Meilen oder Fu&szlig; sein.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Name des Ergebnis-Layers für die Entfernung</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Name des Ergebnis-Layers für die Richtung</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt wird. Sie m&uuml;ssen einen Namen angeben, der aktuell nicht in <b>Eigene Inhalte</b> vorhanden ist.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Name des Ergebnis-Layers für die Allokation</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt wird. Sie m&uuml;ssen einen Namen angeben, der aktuell nicht in <b>Eigene Inhalte</b> vorhanden ist.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Zuordnungsfeld auswählen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Ein Feld im Eingabequellen-Layer mit den Werten, die jede Quelle definieren. Es kann sich dabei um ein Ganzzahl- oder ein Zeichenfolgefeld des Quellen-Datasets handeln.
+            </p>
+            <p>Die Standardeinstellung ist  <i>Value</i>. Wenn Sie einen Feature-Service verwenden und kein Feld <i>Value</i> verf&uuml;gbar ist, wird das erste verf&uuml;gbare Ganzzahl- oder Zeichenfolgefeld verwendet. Sind keine g&uuml;ltigen Felder vorhanden, wird das ObjectID-Feld verwendet (z.&nbsp;B. OID oder FID, abh&auml;ngig vom Typ der Feature-Eingabe).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

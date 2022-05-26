@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opiši skup podataka</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Dijagram radnog tijeka alata Opi&scaron;i skup podataka"></h2>
+        <hr/>
+    <p>Alat Opi&scaron;i skup podataka pruža detaljniji uvid u skup podataka. Prije pokretanja analize na velikim količinama podataka, upotrijebite ovaj alat kako biste odredili &scaron;to i gdje su va&scaron;i ulazni podaci. Prema zadanim postavkama, rezultat će biti JSON tekst koji opisuje ključne opisnike va&scaron;eg ulaznog sloja i tablicu s detaljnom zbirnom statistikom za svako polje. 
+    </p>
+    <p>Po želji možete stvoriti dodatne izlazne slojeve geoobjekata za daljnje opisivanje va&scaron;ih podataka. Opcije su ogledni sloj ili sloj obuhvata. Možete odabrati jedan ili oba kao izlazna.
+    </p>
+    <p>Na primjer, recimo da dobijete dijeljenje datoteka velikih podataka koji sadrži 15 skupova podataka. Svaki skup podataka sadrži 10 milijuna poligonalnih geoobjekata koji predstavljaju zgrade i kuće u različitim regijama va&scaron;e zemlje. Vi ste zaduženi za analiziranje regije C, ali ne znate koji skup podataka sadrži te geoobjekte. Da biste saznali koji skup podataka trebate upotrijebiti, pokrenite Opi&scaron;i skup podataka i odaberite stvaranje sloja obuhvata kako biste istražili koji je skup podataka u va&scaron;oj regiji proučavanja.
+    </p>
+    <p>Kao jo&scaron; jedan primjer, zamislite da ste zaduženi za dovr&scaron;avanje radnog tijeka analize na velikoj količini podataka. Želite isprobati radni tijek, ali može potrajati satima ili danima s cijelim skupom podataka. Umjesto upotrebe vremena i resursa koji pokreću punu analizu, napravite ogledni sloja kako biste učinkovito testirali cjelokupni radni tijek.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite skup podataka za opisivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži točkaste, linijske, poligonalne ili tablične geoobjekte koje će se opisati, sažeti i uzorkovati.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Shvatite svoj skup podataka stvaranjem (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Izvedite dodatne opisne slojeve kako biste pobolj&scaron;ali razumijevanje svojih velikih podataka. Možete odabrati izvođenje nula, jedan ili oba sljedeća sloja:
+            </p>
+            <ul>
+                <li> <b>Sloj obuhvata</b> &ndash; stvara poligonalni geoobjekt koji predstavlja obuhvat ulaznih geoobjekata ili područja interesa.
+                </li>
+                <li> <b>Ogledni sloj</b> &ndash; stvara podskupni sloj koji sadrži određenu količinu ulaznih geoobjekata iz va&scaron;eg skupa podataka ili područja od interesa.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Ogledni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Izvedite sloj koji sadrži podskup geoobjekata iz va&scaron;eg ulaznog sloja. Ako je odabran  <b>ogledni sloj,</b> možete odrediti broj geoobjekata koji želite vratiti u ogledni sloj. Prema zadanim postavkama, 100 oglednih geoobjekata bit će vraćeno u izlazni sloj.
+            </p>
+            <p>Vrijednost mora biti veća od nule. Ako navedete broj veći od ukupnog broja geoobjekata, svi će se geoobjekti vratiti.
+            </p>
+            <p>Ako se odabere  <b>Upotrijebi trenutačni obuhvat karte,</b> tada će ogledni sloj sadržavati geoobjekte unutar obuhvata karte.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Sloj obuhvata</h2></div>
+        <hr/>
+        <div>
+            <p>Izvedite sloja geoobjekata koji sadrži jedan geoobjekt koji predstavlja obuhvat ulaznih geoobjekata odabirom gumba <b>Sloj obuhvata</b>. To je odabrano prema zadanim postavkama.
+            </p>
+            <p>Ako se odabere  <b>Upotrijebi trenutačni obuhvat karte,</b> tada će sloj obuhvata predstavljati vidljivi obuhvat karte.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

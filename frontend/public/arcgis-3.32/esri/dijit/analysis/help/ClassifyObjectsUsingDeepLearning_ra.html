@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Classify Objects Using Deep Learning</h2><p/>
+        <h2><img src="./images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Classify Objects Using Deep Learning"></h2>
+        <hr/>
+    <p>This tool runs a trained deep learning model on an input raster and an optional feature class to produce a feature class or table in which each input object has an assigned class label.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the raster area that is visible within the current map extent will be analyzed. If unchecked, the whole raster will be analyzed, even if it is outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choose image used to classify objects</h2></div>
+        <hr/>
+        <div>
+            <p>The input image used to classify objects.
+            </p> 
+        </div>
+    </div>
+    <div id="inputfeatures">
+        <div><h2>Choose feature layer for objects (Optional)</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or polygon input feature layer that identifies the location of each object to be classified and labelled. Each row in the input feature layer represents a single object.
+            </p>
+            <p>If no input feature layer is specified, the tool assumes that each input image contains a single object to be classified. If the input image or images use a spatial reference, the output from the tool is a feature layer, in which the extent of each image is used as the bounding geometry for each labelled feature. If the input image or images are not spatially referenced, the output from the tool is a table containing the image ID values and the class labels for each image.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Choose deep learning model used to classify objects</h2></div>
+        <hr/>
+        <div>
+            <p>The input deep learning package ( <code>.dlpk</code>) item.
+            </p>
+            <p>The deep learning package is composed of the Esri model definition JSON file ( <code>.emd</code>), the deep learning binary model file, and optionally, the Python raster function to be used.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Specify deep learning model arguments</h2></div>
+        <hr/>
+        <div>
+            <p>The function arguments are defined in the Python raster function class referenced by the input model. This is where you list additional deep learning parameters and arguments for experiments and refinement, such as a confidence threshold for adjusting the sensitivity.
+            </p>
+            <p>The names of the arguments are populated by the tool from reading the Python module on the raster analysis server.
+            </p>
+        </div>
+    </div>
+    <div id="classLabelField">
+        <div><h2>Define class label field name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the field that will contain the classification label in the output feature layer.
+            </p>
+            <p>If no field name is specified, a new field called  <i>ClassLabel</i> will be generated in the output feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="processAllRasterItems">
+        <div><h2>Process mode</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies how all raster items in an image service will be processed. 
+                <ul>
+                    <li> <b>Process as mosaicked image</b>&mdash;All raster items in the image service will be mosaicked together and processed. This is the default.
+                    </li>
+                    <li> <b>Process items separately</b>&mdash;All raster items in the image service will be processed as separate images.
+                    </li>
+                </ul>
+                .
+            </p>
+        </div>
+    </div>
+    <div id="outputFeatureClass">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

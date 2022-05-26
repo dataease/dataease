@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Adatkinyerés</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Adatkinyer&eacute;s"></h2>
+        <hr/>
+    <p>Ezzel az eszk&ouml;zzel kiv&aacute;laszthatja &eacute;s let&ouml;ltheti a megadott vizsg&aacute;lati ter&uuml;let adatait. A kiv&aacute;lasztott r&eacute;tegek hozz&aacute;ad&oacute;dnak egy ZIP-, CSV- vagy KMZ-f&aacute;jlhoz.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Kinyerhető rétegek</h2></div>
+        <hr/>
+        <div>
+            <p>Ezek a tartalomjegyz&eacute;kben szereplő r&eacute;tegek, amelyekből vektoros elemek nyerhetők ki.  Az eszk&ouml;z kinyeri a bejel&ouml;lt r&eacute;tegeket, amelyeket a ZIP- vagy CSV-eredm&eacute;nyf&aacute;jl fog tartalmazni.
+            </p>
+            <p>Ahhoz, hogy egy r&eacute;teg megjelenjen a kinyerhető r&eacute;tegek list&aacute;j&aacute;n, az adatok tulajdonos&aacute;nak kell lennie, vagy az adatok tulajdonos&aacute;nak enged&eacute;lyeznie kell az adatok export&aacute;l&aacute;s&aacute;t.    Saj&aacute;t adatok export&aacute;l&aacute;s&aacute;nak enged&eacute;lyez&eacute;se: 
+                <ul>
+                    <li>Nyissa meg az adatok elemle&iacute;r&aacute;s&aacute;t.
+                    </li>
+                    <li>Kattintson a  <b>Be&aacute;ll&iacute;t&aacute;sok</b> f&uuml;lre.
+                    </li>
+                    <li>G&ouml;rgessen le az  <b>Adatok export&aacute;l&aacute;sa</b> szakaszhoz.
+                    </li>
+                    <li>Jel&ouml;lje be a  <b>M&aacute;s form&aacute;tumokba t&ouml;rt&eacute;nő export&aacute;l&aacute;s enged&eacute;lyez&eacute;se m&aacute;soknak</b> lehetős&eacute;get.  Ha k&eacute;sz, kattintson a <b>Ment&eacute;s</b> gombra.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha az elemz&eacute;si r&eacute;teg csatolm&aacute;nyokat tartalmaz, akkor &uuml;gyeljen arra, hogy a csatolm&aacute;ny csak akkor nyerhető ki, ha a kimeneti adatform&aacute;tum f&aacute;jlt alkot&oacute; geoadatb&aacute;zis, &eacute;s a  <b>Vektoros elemek kiv&aacute;g&aacute;sa</b> lehetős&eacute;g nincs bejel&ouml;lve.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Minta terület</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let, amely meghat&aacute;rozza a kimeneti ZIP- vagy CSV-f&aacute;jlban tartalmazott vektoros elemeket. Az al&aacute;bbiak k&ouml;z&uuml;l v&aacute;laszthat:
+                <ul>
+                    <li>A t&eacute;rk&eacute;p pillanatnyilag l&aacute;that&oacute; kiterjed&eacute;se ( <b>Kijelzővel azonos</b>).
+                    </li>
+                    <li>Az egyik r&eacute;teg a tartalomjegyz&eacute;k. Ha a kiv&aacute;lasztott r&eacute;teg pontszerű vagy vonalas vektoros elem, akkor a r&eacute;teg kiterjed&eacute;se lesz a vizsg&aacute;lati ter&uuml;let.
+                    </li>
+                    <li>Rajzoljon egy ter&uuml;letet a minta ter&uuml;let meghat&aacute;roz&aacute;s&aacute;hoz.
+                    </li>
+                </ul>
+                 Az eszk&ouml;z kinyeri az &ouml;sszes vektoros elemet, amely teljes m&eacute;rt&eacute;kben a t&eacute;rk&eacute;p kiterjed&eacute;s&eacute;n bel&uuml;l tal&aacute;lhat&oacute;.  A t&eacute;rk&eacute;p kiterjed&eacute;s hat&aacute;rvonal&aacute;t keresztező vagy metsző, de nem teljes m&eacute;rt&eacute;kben a kiterjed&eacute;sen bel&uuml;l tal&aacute;lhat&oacute; vektoros elemek eset&eacute;n k&eacute;t lehetős&eacute;g k&ouml;z&uuml;l v&aacute;laszthat:
+                <ul>
+                    <li> <b>Vektoros elemek kiv&aacute;laszt&aacute;sa</b> &ndash; az eszk&ouml;z kinyeri a minta ter&uuml;let hat&aacute;rvonal&aacute;t keresztező, teljes vektoros elemeket.
+                    </li>
+                    <li> <b>Vektoros elemek kiv&aacute;g&aacute;sa</b> &ndash; az eszk&ouml;z csak a vektoros elemek minta ter&uuml;leten bel&uuml;li r&eacute;szeit nyeri ki.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Kimeneti adatformátum</h2></div>
+        <hr/>
+        <div>
+            <p>A kinyerhető adatok form&aacute;tuma. Vonal vagy ter&uuml;let vektoros elemek CSV-f&aacute;jlba t&ouml;rt&eacute;nő export&aacute;l&aacute;sakor az eszk&ouml;z csak a nem t&eacute;rbeli attrib&uacute;tumokat nyeri ki.  Pontszerű vektor elemek export&aacute;l&aacute;sakor az eszk&ouml;z a t&eacute;rbeli &eacute;s nem t&eacute;rbeli attrib&uacute;tumokat egyar&aacute;nt kinyeri.  
+            </p>
+            <p>A kinyert adatokban a Web Mercator 1984 vet&uuml;let lesz alkalmazva.  CSV-f&aacute;jlok eset&eacute;n a(z)  <i>Lat</i> &eacute;s <i>Long</i> mezők hozz&aacute; lesznek fűzve az adatokhoz a Web Mercator 1984 koordin&aacute;t&aacute;kkal.
+            </p> 
+            <p>Az al&aacute;bbi kimeneti form&aacute;tumok t&aacute;mogatottak:
+                <ul>
+                    <li>Vesszővel tagolt &eacute;rt&eacute;kek (CSV)&mdash; <code>.csv</code> vagy <code>.zip</code>
+                    </li>
+                    <li>F&aacute;jl-geoadatb&aacute;zis&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> vagy <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Kimeneti fájl neve</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a  <b>Saj&aacute;t tartalomhoz</b> hozz&aacute;adand&oacute; elem neve.  Az elem neve a kiv&aacute;lasztott <b>Kimeneti adatform&aacute;tum</b> &eacute;rt&eacute;k&eacute;n alapul.     Ha az elem m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mezőben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

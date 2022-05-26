@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/es/GenerateTessellations",{chooseShape:"Elegir forma",defineExtent:"Definir extensi\u00f3n",defineBin:"Definir el tama\u00f1o de bin especificando lo siguiente:",area:"\u00c1rea",distance:"Distancia",resultLayerName:"Nombre de capa de resultados",hexagon:"Hex\u00e1gono",transverseHexagon:"Hex\u00e1gono transversal",square:"Cuadrado",triangle:"Tri\u00e1ngulo",diamond:"Diamante",sameAsDisplay:"Igual que visualizaci\u00f3n",emptyBinSize:"El tama\u00f1o de bin no puede estar vac\u00edo",
+currentExtent:"extensi\u00f3n actual",intersectExtent:"Conservar solo las teselaciones intersecantes",outputLayerName:"Generar teselaciones en ${extentLayerName}",itemDescription:"Se utiliz\u00f3 la extensi\u00f3n de ${extentLayerName}.",itemTags:"Resultado de an\u00e1lisis, Generar teselaciones, ${extentLayerName}",itemSnippet:"Capa de entidades generada a partir de Generar teselaciones."});

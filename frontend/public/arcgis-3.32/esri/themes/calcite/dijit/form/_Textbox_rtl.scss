@@ -1,0 +1,9 @@
+.#{$theme-name} {
+  .dijitTextBoxRtl {
+    // Arrows in combobox, filter select, number spinner, etc.
+    .dijitArrowButton {
+      border-width: 0 1px 0 0;
+    }
+  }
+}
+

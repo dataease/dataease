@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Create Viewshed</h2><p/>
+        <h2><img src="./images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Create Viewshed tool for Portal"></h2>
+        <hr/>
+    <p>This tool creates areas where an observer can see objects on the ground. The input observer points can represent either observers (such as people on the ground or lookouts in a fire tower) or observed objects (such as wind turbines, water towers, vehicles, or other people). The result areas are those areas where the observers can see the observed objects and vice versa: the observed objects can see the observers.
+    </p>
+    <p>Both the observers and the observed objects can have a height above ground, and these heights are used in determining visibility. For example, a viewshed computed for 300-foot wind turbines and six-foot tall person standing on the ground will typically be larger than a viewshed computed for 200-foot turbines and a five-foot tall person.
+    </p>
+    <p>The result layer records the number of times that each cell location in the input surface raster can be seen by the input observation points. The non-visible cells are given NoData values.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the raster area and the observer points that are visible within the current map extent will be analyzed. If unchecked, all observer points in the input layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Elevation surface</h2></div>
+        <hr/>
+        <div>
+            <p>The elevation surface to use for calculating the viewshed.
+            </p>
+            <p>If the vertical unit of the input surface is different from the horizontal unit, such as when the elevation values are represented in feet but the coordinate system is in meters, the surface must have a defined vertical coordinate system. The reason for this is that the tool uses the vertical (Z) and horizontal (XY) units to compute a Z factor for the viewshed analysis. Without a vertical coordinate system, and thus having no Z unit information available, the tool will assume that the Z unit is same as the XY unit. The result of this is that an internal Z factor of 1.0 will be used for the analysis, which may give unexpected results.
+            </p>
+            <p>The elevation surface can be integer or floating point.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Point features that represent observer locations</h2></div>
+        <hr/>
+        <div>
+            <p>The point features representing the observer locations to calculate the viewsheds for.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimize for</h2></div>
+        <hr/>
+        <div>
+            <p>The optimization method to use for calculating the viewshed.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+This method optimizes the processing speed, trading some accuracy in the result for higher performance. This is the default selection.
+
+                </li>
+                <li>Accuracy &mdash; 
+This method is optimized for accuracy in the results, at the expense of a longer processing time.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximum viewing distance</h2></div>
+        <hr/>
+        <div>
+            <p>Enter a cutoff distance where the computation of visible areas will stop. Beyond this distance, whether the observer points and the other objects can see each other will not be determined.
+            </p>
+            <p>You can specify either a numerical value representing a linear distance, or select a numerical field from the input observer features. If a field is provided, the values contained in the field must be in the same unit as the XY unit of the input elevation surface.
+            </p>
+            <p>Note that large values will increase computation time. Unless specified, a default maximum distance will be computed based on the resolution and extent of the input elevation surface.
+            </p>
+            <p>This parameter is useful for modeling certain phenomena. For example, by limiting the extent of visibility you can model weather conditions such as a light fog. Similarly, restricting the visibilty extent can give you some control over the time of day by approximating the affect of dusk.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maximum viewing distance</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimum viewing distance</h2></div>
+        <hr/>
+        <div>
+            <p>Enter a distance where the computation of visible areas is to begin. Cells on the surface closer than this distance are not visible in the output, but can still block visibility of the cells between the minimum and the maximum viewing distance.
+            </p>
+            <p>You can specify either a numerical value representing a linear distance, or select a numerical field from the input observer features. If a field is provided, the values contained in the field must be in the same unit as the XY unit of the input elevation surface.
+            </p>
+            <p>This parameter is useful for controlling the viewshed analysis area at a specific distance away from the observer. For example, if you are evaluating the visibility from a building top to a distant park, you can set a minimum viewing distance to exclude the areas close by that are of no interest and gain a better processing speed.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimum viewing distance</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Distance is 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Specify whether the minimum and maximum viewing distance parameters are measured in a three-dimensional way or a simpler, two-dimensional way. When the option is checked, the viewing distances are treated as 3D distance. When unchecked, they are treated as 2D distances. 
+            </p>
+            <p>A 2D distance is the simple linear distance measured between an observer and the target using their projected locations at sea level. A 3D distance gives a more realistic value by taking their relative heights into consideration.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevation of observer locations</h2></div>
+        <hr/>
+        <div>
+            <p>Enter the elevation of your observer locations.
+            </p>
+            <p>You can specify either a numerical value representing the elevation of all observers, or as a field that represents the elevation of each observer. If a field is provided, the value contained in the field should must be in the same unit as the Z unit of the input elevation surface.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevation of observer locations</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Height of observers</h2></div>
+        <hr/>
+        <div>
+            <p>Enter the height above ground of your observer locations.
+            </p>
+            <p>You can specify either a numerical value for the height, or a field from the input observer features. If a field is provided, the value contained in the field must be in the same unit as the Z unit of the input elevation surface.
+            </p>
+            <p>The default is 6 feet . If you are looking from an elevated location, such as an observation tower or a tall building, use that height instead. During the viewshed calculation, this value is added to the observer elevation if it is specified; otherwise, it is added to the interpolated surface z-value.
+            </p> 
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Height of observers</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Height of target</h2></div>
+        <hr/>
+        <div>
+            <p>Enter the height of structures or people on the ground used to establish visibility.
+            </p>
+            <p>You can specify either a numerical value for the height, or a field from the input observer features. If a field is provided, the value contained in the field must be in the same unit as the Z unit of the input elevation surface.
+            </p>
+            <p>The resulting viewshed identifies those areas where an observer point can see these objects on the ground. The converse is also true; the objects on the ground can see an observer point. 
+            </p>
+            <p>Following are some examples of target height settings. If your input points:
+            </p>
+            <ul>
+                <li>represent wind turbines, and you want to determine where people standing on the ground can see the turbines, enter the average height of a person (approximately 6 feet).
+                    
+
+                </li>
+                <li>represent fire lookout towers, and you want to determine which lookout towers can see a smoke plume that rises 20 feet high or higher, enter 20 feet for the target height.
+                    
+
+                </li>
+                <li>represent scenic overlooks along some roads or trails, and you want to determine where wind turbines that are 400 or more feet tall can be seen, enter 400 feet for the height.
+                    
+
+                </li>
+                <li>represent scenic overlooks, and you want to determine how much area on the ground people standing at the overlook can see, enter zero for the target height. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Height of observers</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Output height to become visible</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the output above ground level (AGL) result. The AGL result is a raster where each cell value is the minimum height that must be added to an otherwise nonvisible cell to make it visible by at least one observer. Cells that were already visible will be assigned 0 in this output raster.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be asked to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

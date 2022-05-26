@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>追蹤下游</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="追蹤下游"></h2>
+        <hr/>
+    <p>此工具用於在輸入圖層中各點的下游方向，確定軌跡或水流路徑。
+    </p>
+    <p>例如，假設您有代表污染源的點圖徵，並且您想要確定污染物將流經研究區域的哪些位置。您可以使用&ldquo;追蹤下游&rdquo;標識污染的路徑。還可透過指定距離值和單位將此追蹤劃分成個別的線段。傳回的線可以是水流路徑的總長度或指定的最大追蹤長度，也可以裁剪到區域圖徵（例如，您的研究區域）。在多數情況下，如果傳回追蹤路徑的總長度，則其來源將追溯至海洋。
+    </p>
+    <p>結果為代表下游追蹤的一條線。如果針對 <b>將追蹤分割成線段</b>指定了距離，則追蹤線將分割成多條線，並且每條線都具有指定長度。例如，如果您的輸入點代表污染物洩漏，且以每小時 0.6 英里或每天 15 英里的流速流入河流，那麼您可能希望將該河流分割成長度為 15 英里的區段。以 15 英里的間隔分割追蹤，可顯示污染物每天流經的大致區域。這條線將根據距離使用漸層色彩進行符號化，並標註從軌跡起點開始的距離。
+    </p>
+    <p>產生的追蹤將具有輸入點的所有屬性和一些附加屬性。
+        <ul>
+            <li> <i>PointID</i> - 包含輸入點的 ID 值。
+                
+
+            </li>
+            <li> <i>LengthKm</i> - 包含下游追蹤的總長度（單位為公里）。
+                
+
+            </li>
+            <li> <i>Description</i> 和 <i>DataResolution</i> - 包含用於計算追蹤的水文數據的相關資訊。
+                
+
+            </li>
+            <li> <i>FromDistance</i> 和 <i>ToDistance</i> - 包含各條線段起點到終點的距離。如果使用 <b>將軌跡分割成線段</b>，則將寫入這些屬性。
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入圖層中的點圖徵。如果未勾選，則使用輸入圖層中的所有圖徵，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>作為每個下游軌跡起點的點圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>作為下游軌跡起點的點圖徵。輸出將包含每個輸入點的線。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>將軌跡分割成線段</h2></div>
+        <hr/>
+        <div>
+            <p>追蹤線將分割成多條線，並且每條線都具有指定的長度。例如，如果您的輸入點代表污染物洩漏，且以每小時 0.6 英里或每天 15 英里的流速流入河流，那麼您可能希望將該河流分割成長度為 15 英里的區段。以 15 英里的間隔分割追蹤，可顯示污染物每天流經的大致區域。這條線將根據距離使用漸層色彩進行符號化，並標註從軌跡起點開始的距離。得到的追蹤將具有多條線段，並且每條線段都具有  <i>FromDistance</i> 和 <i>ToDistance</i> 欄位。
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>最大軌跡距離</h2></div>
+        <hr/>
+        <div>
+            <p>確定將傳回的線條總長度。如果您提供用於裁剪軌跡的區域圖徵，則無論在此輸入多大距離，結果都將被裁剪到區域圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>將輸出結果裁剪至</h2></div>
+        <hr/>
+        <div>
+            <p>繪製或提供您希望將追蹤裁剪至的區域圖層。例如，如果您希望追蹤結果只位於研究區域內（例如您的縣），則使用縣圖徵作為輸入，這樣便會在縣邊界處停止追蹤。
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+            <p> 執行此工具不會使用點數。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

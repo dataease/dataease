@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Grenzen oplossen</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Grenzen oplossen"></h2>
+        <hr/>
+    <p>Gebieden die elkaar overlappen of een gemeenschappelijke grens of attribuutwaarde hebben, worden samengevoegd tot &eacute;&eacute;n gebied.
+    </p>
+    <p>U kunt bepalen welke grenzen worden samengevoegd door een veld op te geven. Als u bijvoorbeeld een laag met regio's hebt en elke regio een  <pre>State_Name</pre>-attribuut heeft, kunt u grenzen oplossen op basis van het <pre>State_Name</pre>-attribuut. Provincies worden samengevoegd als ze dezelfde <pre>State_Name</pre>-waarde hebben. Het resultaat is een laag met grenzen van provincies.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies de vlakkenlaag waarvan de grenzen worden opgelost.</h2></div>
+        <hr/>
+        <div>
+            <p>Geef de laag op met gebiedsobjecten die worden opgelost. 
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Oplossingsmethode kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de methode die wordt gebruikt om de velden op te lossen.
+            </p>
+            <p>U kunt een van deze twee methoden kiezen voor het samenvoegen van vlakken:
+                <ul>
+                    <li> <b>Gebieden die elkaar overlappen of aan elkaar grenzen</b>&mdash;Twee of meer gebieden met overlappende grenzen worden samengevoegd tot &eacute;&eacute;n gebied. Daarnaast worden aangrenzende gebieden (dus gebieden met een gemeenschappelijke grens) samengevoegd tot &eacute;&eacute;n gebied.
+                    </li>
+                    <li> <b>Gebieden met dezelfde veldwaarde</b>&mdash;Twee of meer gebieden worden samengevoegd tot &eacute;&eacute;n gebied als ze dezelfde veldwaarde hebben.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Meerdelige objecten maken</h2></div>
+        <hr/>
+        <div>
+            <p>Multipart is een digitale weergave van een plaats of een ding dat meer dan &eacute;&eacute;n deel heeft maar is gedefinieerd als &eacute;&eacute;n object omdat het verwijst naar &eacute;&eacute;n set attributen. In een laag van staten kan Hawa&iuml; bijvoorbeeld worden beschouwd als een meerdelig object, want de afzonderlijke geometrische delen worden geclassificeerd als &eacute;&eacute;n staat.
+            </p>
+            <p> <b>Multipart-objecten maken</b> biedt twee opties:
+                <ul>
+                    <li>Waar (aangevinkt): de uitvoerservice kan meerdelige objecten bevatten.
+                    </li>
+                    <li>Niet waar (niet aangevinkt): de uitvoerservice bevat alleen objecten uit &eacute;&eacute;n deel en individuele objecten worden voor elk deel gemaakt. Dit is de standaardinstelling.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistieken toevoegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Wanneer gebieden worden samengevoegd, kunt u een samenvatting van hun attributen met betekenisvolle statistieken maken. Als u bijvoorbeeld de grens tussen provincies oplost op basis van  <pre>State_Name</pre> en elke provincie een <i>Population</i>-veld heeft, kunt u de som van <pre>Population</pre> voor de staat berekenen.
+            </p>
+            <p> U kunt statistieken berekenen over objecten die zijn samengevat.U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Count&mdash;Berekent het aantal niet-nulwaarden.Kan gebruikt worden op numerieke velden of strings. De telling van [nul, 0, 2] is 2.
+                    </li>
+                    <li>Som&mdash;De som van numerieke waarden in een veld. De som van [nul, nul, 3] is 3.
+                    </li>
+                    <li>Gemiddelde&mdash;Het gemiddelde van numerieke waarden. Het gemiddelde van [0, 2, nul] is 1.
+                    </li>
+                    <li>Min&mdash;De minimumwaarde van een numeriek veld. Het minimum van [0, 2, nul] is 0. 
+                    </li>
+                    <li>Max&mdash;De maximumwaarde van een numeriek veld. De maximumwaarde van [0, 2, nul] is 2.
+                    </li>
+                    <li>Bereik&mdash;Het bereik van een numeriek veld. Dit wordt berekend als de minimumwaarden afgetrokken van de maximumwaarde. Het bereik van [0, nul, 1] is 1. Het bereik van [nul, 4] is 0.
+                    </li>
+                    <li>Variantie&mdash;De variantie van een numeriek veld in een track. De variantie van [1] is nul. De variantie van [null, 1,0,1,1] is 0,25.
+                    </li>
+                    <li>Standaarddeviatie&mdash;De standaarddeviatie van een numeriek veld. De standaarddeviatie van [1] is nul. De standaarddeviatie van [null, 1,0,1,1] is 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Telling&mdash;Het aantal non-nul strings.
+                    </li>
+                    <li>Elke&mdash;Deze statistiek is een willekeurig voorbeeld van een stringwaarde in het gespecificeerde veld.
+                    </li>
+                </ul>
+                Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

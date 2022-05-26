@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------------
+Project Name:  dojox/mobile
+-------------------------------------------------------------------------------
+Version 1.0
+Release date: 03/23/2010
+-------------------------------------------------------------------------------
+Project state:
+dojox/mobile: stable
+dojox/mobile/app: experimental; please use dojox/app instead.
+-------------------------------------------------------------------------------
+[ YES ]	 l18n support?
+[ YES ]	 a11y support?
+-------------------------------------------------------------------------------
+Credits:
+       Jared Jurkiewicz (jared.jurkiewicz@gmail.com)
+       Yoshiroh Kamiyama
+       Shane O'Sullivan (dojox/mobile/app)
+       Soyhy Lim
+       Sebastien Brunot
+       Eric Durocher
+       Sergey Grebnov
+       Christophe Jolif
+       Damien Mandrioli
+       Adrian Vasiliu
+       Sebastien Pereira
+       Patrick Ruzand
+
+-------------------------------------------------------------------------------
+Project description
+
+Dojo Mobile provides widgets that can be used to build web-based applications 
+for mobile devices (iOS, Android, BlackBerry, Windows Phone 8). 
+
+Dojo Mobile is designed to be as lightweight as possible to achieve a better 
+user experience on mobile devices. 
+-------------------------------------------------------------------------------
+Dependencies:
+        dojo
+        dijit
+-------------------------------------------------------------------------------
+Documentation
+        Documentation resides at:
+        http://dojotoolkit.org/reference-guide/dojox/mobile.html
+-------------------------------------------------------------------------------

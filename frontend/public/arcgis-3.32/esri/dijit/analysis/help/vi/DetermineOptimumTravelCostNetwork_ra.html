@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Xác định Mạng lưới Chi phí Đi lại Tối ưu</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="H&igrave;nh minh họa c&ocirc;ng cụ X&aacute;c định Mạng lưới Chi ph&iacute; Đi lại Tối ưu"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y t&iacute;nh to&aacute;n mạng lưới chi ph&iacute; tối ưu từ một tập hợp c&aacute;c khu vực đầu v&agrave;o.
+    </p>
+    <p>Một ứng dụng v&iacute; dụ của c&ocirc;ng cụ n&agrave;y l&agrave; t&igrave;m ra mạng lưới tốt nhất cho c&aacute;c phương tiện cấp cứu.
+    </p>
+    <p>Nếu  <b>Sử dụng phạm vi bản đồ hiện tại</b> được chọn, th&igrave; chỉ c&aacute;c vị tr&iacute; nh&igrave;n thấy được trong lớp đầu v&agrave;o v&agrave; trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả vị tr&iacute; trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Chọn raster hoặc lớp vị trí đối tượng để xác định đường dẫn đi lại ở giữa</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c khu vực đầu v&agrave;o được kết nối bởi mạng lưới &iacute;t tốn chi ph&iacute; nhất.
+            </p>
+            <p>C&oacute; thể x&aacute;c định c&aacute;c khu vực bằng một dịch vụ h&igrave;nh ảnh hoặc một dịch vụ đối tượng.
+            </p>
+            <p>Đối với dịch vụ h&igrave;nh ảnh, c&aacute;c khu vực được x&aacute;c định bởi nh&oacute;m c&aacute;c &ocirc; liền kề c&oacute; c&ugrave;ng gi&aacute; trị. Mỗi khu vực phải được đ&aacute;nh số duy nhất. C&aacute;c &ocirc; kh&ocirc;ng thuộc bất kỳ khu vực n&agrave;o phải l&agrave; NoData. Loại raster phải l&agrave; số nguy&ecirc;n, v&agrave; gi&aacute; trị c&oacute; thể l&agrave; dương hoặc &acirc;m.
+            </p>
+            <p>Đối với dịch vụ đối tượng, đầu v&agrave;o c&oacute; thể l&agrave; điểm, đường hoặc đa gi&aacute;c.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Chọn lớp raster chi phí đi lại</h2></div>
+        <hr/>
+        <div>
+            <p>Một raster x&aacute;c định trở kh&aacute;ng hoặc chi ph&iacute; để di chuyển diện t&iacute;ch qua từng cell.
+            </p>
+            <p>Gi&aacute; trị ở mỗi vị tr&iacute; cell đại diện cho khoảng c&aacute;ch chi ph&iacute; tr&ecirc;n đơn vị để di chuyển qua &ocirc;. Mỗi gi&aacute; trị vị tr&iacute; cell được nh&acirc;n với độ ph&acirc;n giải cell trong khi cũng b&ugrave; trừ cho chuyển động ch&eacute;o để c&oacute; được tổng chi ph&iacute; đi qua cell.
+            </p>
+            <p>Gi&aacute; trị của raster chi ph&iacute; c&oacute; thể l&agrave; số nguy&ecirc;n hoặc điểm nổi, nhưng ch&uacute;ng kh&ocirc;ng được l&agrave; số &acirc;m hoặc bằng kh&ocirc;ng (bạn kh&ocirc;ng thể c&oacute; chi ph&iacute; &acirc;m hoặc bằng kh&ocirc;ng).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Tên lớp đa tuyến của các đường dẫn kết quả tối ưu</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Tên lớp đa tuyến của các đường dẫn kết quả lân cận</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

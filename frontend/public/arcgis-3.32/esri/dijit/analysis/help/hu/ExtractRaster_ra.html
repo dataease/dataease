@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Raszterkinyerés</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Raszterkinyer&eacute;s eszk&ouml;z port&aacute;lhoz"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy raszterből v&aacute;gja ki egy n&eacute;gysz&ouml;g alak&uacute; ter&uuml;let vagy a k&eacute;pernyőn interakt&iacute;v m&oacute;don megadott alakzat hat&aacute;rvonala &aacute;ltal kijel&ouml;lt ter&uuml;letet. Kiv&aacute;ghatja a t&eacute;rk&eacute;pen aktu&aacute;lisan megjelen&iacute;tett ter&uuml;let kiterjed&eacute;s&eacute;nek megfelelő r&eacute;szt, vagy egy polygonnal meghat&aacute;rozott minta ter&uuml;letet.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki a kinyerni kívánt bemenő adatokat</h2></div>
+        <hr/>
+        <div>
+            <p>A kiv&aacute;gni k&iacute;v&aacute;nt bemenő r&eacute;teg.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Adja meg a kivágási geometriát</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a r&eacute;teg geometri&aacute;j&aacute;nak kiv&aacute;g&aacute;sakor haszn&aacute;lni k&iacute;v&aacute;nt kiterjed&eacute;st&iacute;pust:
+
+                <ul>
+                    <li>Aktu&aacute;lis kiterjed&eacute;s haszn&aacute;lata &ndash; az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;st haszn&aacute;lja az eredm&eacute;ny r&eacute;teg kiv&aacute;g&aacute;s&aacute;hoz. Ez az alap&eacute;rtelmez&eacute;s.
+                        
+
+                    </li>
+                    <li>Mintater&uuml;let kiv&aacute;laszt&aacute;sa &ndash; kiv&aacute;laszthatja, hogy az eredm&eacute;ny a geometria kiterjed&eacute;s&eacute;n bel&uuml;l l&eacute;vő ter&uuml;letet vagy a geometria kiterjed&eacute;s&eacute;n k&iacute;v&uuml;l l&eacute;vő ter&uuml;letet mutatja. Ha az  <b>Adatok a geometri&aacute;n bel&uuml;l</b> lehetős&eacute;get v&aacute;lasztja, a kiterjed&eacute;seken k&iacute;v&uuml;l l&eacute;vő t&aacute;v&eacute;rz&eacute;kelt felv&eacute;tel t&ouml;rlődik. Ha az <b>Adatok a geometri&aacute;n k&iacute;v&uuml;l</b> lehetős&eacute;get v&aacute;lasztja, a kiterjed&eacute;seken bel&uuml;l l&eacute;vő t&aacute;v&eacute;rz&eacute;kelt felv&eacute;tel t&ouml;rlődik. A rajzol&oacute;eszk&ouml;z seg&iacute;ts&eacute;g&eacute;vel kiv&aacute;g&aacute;si geometri&aacute;t is meghat&aacute;rozhat.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

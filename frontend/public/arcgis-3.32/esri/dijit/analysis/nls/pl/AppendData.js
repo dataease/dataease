@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/AppendData",{inputLayerLabel:"Wybierz warstw\u0119, do kt\u00f3rej nale\u017cy do\u0142\u0105czy\u0107",inputWarningLabel:"Ostrze\u017cenie: warstwa, do kt\u00f3rej realizowane jest do\u0142\u0105czanie, zostanie zmodyfikowana.",inputHostedLayerWarning:"Wybrana warstwa nie jest hostowan\u0105 warstw\u0105 obiektow\u0105. Wybierz hostowan\u0105 warstw\u0119 obiektow\u0105, do kt\u00f3rej chcesz doda\u0107 element.",appendLayerLabel:"Wybierz warstw\u0119 do do\u0142\u0105czenia",
+filterLabel:"Do\u0142\u0105cz wszystkie obiekty lub zdefiniuj podzbi\u00f3r (opcjonalnie)",fieldMappingLabel:"Wybierz spos\u00f3b do\u0142\u0105czania p\u00f3l (opcjonalnie)",inputField:"Pole wej\u015bciowe",appendValue:"Do\u0142\u0105cz warto\u015b\u0107",expression:"Wyra\u017cenie"});

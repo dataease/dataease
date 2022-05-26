@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn tæthed</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Beregn t&aelig;thed"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet Beregn t&aelig;thed opretter et t&aelig;thedskort ud fra punktobjekter ved at sprede kendte kvantiteter af et f&aelig;nomen (repr&aelig;senteret som punktattributter) p&aring; kortet. Resultatet er et lag af omr&aring;der klassificeret fra mindste til st&oslash;rste t&aelig;thed.   
+
+    </p>
+    <p>Ved angivelse af punkter skal hvert punkt repr&aelig;sentere placeringen af en begivenhed eller h&aelig;ndelse, og resultatlaget skal repr&aelig;sentere antallet af h&aelig;ndelser pr. enhed omr&aring;de. En h&oslash;j v&aelig;rdi for t&aelig;thed p&aring; en ny placering betyder, at der er flere punkter n&aelig;r placeringen. I mange tilf&aelig;lde kan resultatlaget fortolkes som en risikoflade for fremtidige begivenheder. Hvis de angivne punkter f.eks. repr&aelig;senterer placeringer af lynnedslag, kan resultatlaget fortolkes som en risikoflade for fremtidige lynnedslag.
+    </p>
+    <p>Andre situationer, hvor dette v&aelig;rkt&oslash;j kan anvendes, er:
+        <ul>
+            <li>Oprettelse af t&aelig;thedskort for kriminalitet, som kan hj&aelig;lpe politikredsene med at allokere ressourcer til omr&aring;der med h&oslash;j kriminalitet.
+            </li>
+            <li>Beregning af t&aelig;theder af hospitaler inden for en landsdel. Resultatlaget vil vise omr&aring;der med stor eller lille tilg&aelig;ngelighed til hospitaler, og disse oplysninger kan anvendes til at beslutte, hvor der skal bygges nye hospitaler.
+            </li>
+            <li>Identifikation af omr&aring;der med h&oslash;j risiko for skovbrande baseret p&aring; steder, hvor der historisk set har v&aelig;ret skovbrande.
+            </li>
+            <li>Lokalisering af samfund, der ligger langt fra hovedveje, for at planl&aelig;gge, hvor der skal anl&aelig;gges nye veje.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg et punktag, som tætheden skal beregnes ud fra</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlag, som t&aelig;theden beregnes ud fra.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Vælg ét eller flere felter, som du vil beregne tætheden for (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Opret et eller flere felter, der angiver antallet h&aelig;ndelser pr. position. Hvis du f.eks. har punkter, der repr&aelig;senterer byer, kan du bruge et felt, der repr&aelig;senterer byens befolkning, som et t&aelig;llerfelt, og befolkningst&aelig;thedslaget, som er resultatet, vil beregne store befolkningst&aelig;theder n&aelig;r byer med h&oslash;je befolkningstal.
+            </p>
+            <p>T&aelig;theden for antallet af punkter vil altid blive beregnet.   Hvis der ikke er valgt nogen felter, antages det, at hver position repr&aelig;senterer et enkelt antal.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Vælg en beholderform</h2></div>
+        <hr/>
+        <div>
+            <p>Formen p&aring; de beholdere, som punkterne aggregeres til, og som benyttes til at beregne t&aelig;theden.
+            </p>
+            <p>Analyse ved hj&aelig;lp af  <b>kvadratiske</b> eller <b>sekskantede</b> beholdere kr&aelig;ver et projiceret koordinatsystem. Du kan indstille <b>koordinatsystem til behandling</b> i <b>Analysemilj&oslash;erne</b>. Hvis dit koordinatsystem til behandling ikke er indstillet til et projiceret koordinatsystem, vil du blive bedt om at indstille det, n&aring;r du benytter funktionen <b>K&oslash;r analyse</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Vælg beholderstørrelse for aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; de genererede beholdere. For en kvadratisk beholder repr&aelig;senterer st&oslash;rrelsen h&oslash;jden p&aring; kvadraten. For en sekskantet beholder repr&aelig;senterer st&oslash;rrelsen h&oslash;jden p&aring; sekskanten (fra de parallelle sider).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Vælg den tæthedsvægtning, der skal anvendes</h2></div>
+        <hr/>
+        <div>
+            <p>Den type v&aelig;gtning, der anvendes til t&aelig;thedsberegningen. Der er to muligheder:
+                <ul>
+                    <li> <b>Ensartet</b>&mdash;Beregner en st&oslash;rrelse pr. omr&aring;de.
+                    </li>
+                    <li> <b>Kerne</b>&mdash;Anvender en kernefunktion, der tilpasser en j&aelig;vn overflade til hvert punkt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Vælg størrelse på lokalområde</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; det omr&aring;de, der benyttes til at beregne t&aelig;theden. St&oslash;rrelsen p&aring; omgivelserne skal v&aelig;re st&oslash;rre end beholderst&oslash;rrelsen.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Vælg outputenheder for tæthed</h2></div>
+        <hr/>
+        <div>
+            <p>De &oslash;nskede output-enheder for t&aelig;thedsv&aelig;rdierne. Dette indstilles som standard til kvadratkilometer eller kvadrat-miles baseret p&aring; de standardenheder, der er angivet i din profil. Hvis t&aelig;thedsv&aelig;rdierne er meget sm&aring;, kan du &oslash;ge st&oslash;rrelsen af omr&aring;deenhederne (f.eks. &aelig;ndre kvadratmeter til kvadratkilometer), s&aring; der returneres st&oslash;rre v&aelig;rdier. V&aelig;rdierne skalerer kun resultatet.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Beregn tæthed ved hjælp af tidstrin (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis der er aktiveret tid for inputpunktlaget, og det tilh&oslash;rer &oslash;jeblikstypen, kan du analysere ved hj&aelig;lp af tidstrin. Du kan indstille tre parametre, n&aring;r du bruger tiden:
+                <ul>
+                    <li> <b>Tidstrin-interval</b>
+                    </li>
+                    <li> <b>Hvor ofte skal tidstrinet gentages</b>
+                    </li>
+                    <li> <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis du f.eks.  har data, der repr&aelig;sentereret &aring;r, og du vil  analyseredemved hj&aelig;lp af ugentlige trin, kan du indstille  <b>Tidstrin-interval</b> til <code>1 uge</code>. 
+            </p>
+            <p>Hvis du f.eks. har data, der repr&aelig;senterer et &aring;r, og du vil analysere det ved hj&aelig;lp af f&oslash;rste uge i m&aring;neden, kan du indstille  <b>Tidstrin-interval</b> til <code>1 uge</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 m&aring;ned</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>1. januar kl. 0:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidstrin-interval</h2></div>
+        <hr/>
+        <div>
+            <p>Det tidsinterval, der benyttes til generere tidstrin.  <b>Tidstrin-interval</b> kan benyttes alene eller sammen med parametrene <b>Hvor ofte skal tidstrinet gentages</b> eller <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>.
+            </p>
+            <p>Hvis du f.eks. viloprette tidsintervaller, somfinder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille  <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Hvor ofte skal tidstrinet gentages</h2></div>
+        <hr/>
+        <div>
+            <p> Det trin, der benyttes til at beregne et tidstrin. <b>Hvor ofte skal tidstrinet gentages</b> kan benyttes alene , sammen med <b>Tidstrin-interval</b>, med <b>Referencetid</b> eller med b&aring;de <b>Tidstrin-interval</b> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b>.
+            </p>
+            <p> Hvis du f.eks. vil oprette tidsintervaller som finder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Klokkeslæt, som tidstrin skal justeres i forhold til</h2></div>
+        <hr/>
+        <div>
+            <p>Den dato og det klokkesl&aelig;t, der benyttes til at justere tidsintervallerne. Tidstrin starter fra og forts&aelig;tter bagud fra dette klokkesl&aelig;t. Hvis der ikke er valgt nogen referencetid, justeres tidstrin til 1. januar 1970. 
+            </p>
+            <p> Hvis du f.eks. vil oprette tidsintervaller  som  finder sted hver mandag fra kl. 9:00 til kl. 10:00, skal du indstille <b>Tidstrin-interval</b> til <code>1 time</code>, <b>Hvor ofte skal tidstrinet gentages</b> til <code>1 uge</code> og <b>Klokkesl&aelig;t, som tidstrinene skal justeres i forhold til</b> til <code>9:00:00 om mandagen</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en midlertidig parameter til prerelease med henblik p&aring; angivelse af den spatiale reference til behandling. Mange big data-v&aelig;rkt&oslash;jer kr&aelig;ver, at et projiceret koordinatsystem benyttes som spatial reference med henblik p&aring; behandling. V&aelig;rkt&oslash;jet vil som standard benytte inputkoordinatsystemet, men dette vil ikke fungere, hvis et geografisk koordinatsystem benyttes. Angiv WKID, hvis et projiceret koordinatsystem skal indstilles. For eksempel ville  <b>Web Mercator</b> blive angivet som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vælg datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultater lagres i et datalager og vises som et vektorlag i  Portal for ArcGIS. I de fleste tilf&aelig;lde b&oslash;r resultaterne blive lagret i et spatiotemporalt datalager, hvilket ogs&aring; er standarden. I nogle tilf&aelig;lde er det at lagre resultaterne i et relationsdatalager en god mulighed. Her er &aring;rsagerne til, at du m&aring;ske &oslash;nsker at lagre resultaterne i et relationsdatalager: 
+                <ul>
+                    <li>Du kan  bruge resultaterne i portalen-til-portalsamarbejde.
+                    </li>
+                    <li>Du kan  aktivere synkroniseringsfunktioner i forbindelse med dine resultater
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r benytte et relationsdatalager, hvis du forventer, at m&aelig;ngden af dine GeoAnalytics-resultater vil blive st&oslash;rre, og du &oslash;nsker at drage fordel af det spatiotemporale big data-lagers muligheder for at h&aring;ndtere store datam&aelig;ngder.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

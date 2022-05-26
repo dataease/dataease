@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruēt maršrutus</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstruēt mar&scaron;rutus"></h2>
+        <hr/>
+    <p> &Scaron;is rīks darbojas ar laikā iespējotu punktu vai laukumu elementu, kas apzīmē <code>laika</code> momentu. Tas vispirms nosaka, kuri elementi pieder mar&scaron;rutam, izmantojot identifikatoru. Izmantojot laiku katrā novietojumā, mar&scaron;ruti tiek secīgi sakārtoti un pārveidoti par līniju vai laukumu, kas apzīmē kustības ceļu laika gaitā. Pēc izvēles ievades laukam var tikt izveidota buferzona, kas katrā novietojumā izveidos laukumu. &Scaron;ie buferzonu punkti vai laukumu ievades tiek secīgi savienoti, lai izveidotu mar&scaron;rutu kā laukumu, kura platums pārstāv interesējo&scaron;o atribūtu. Rezultātu mar&scaron;rutiem ir sākuma un beigu laiks, kas temporāli apzīmē pirmo un pēdējo noteikta mar&scaron;ruta elementu. Kad mar&scaron;ruti tiek izveidoti, tiek aprēķināta ievades elementu statistika un pie&scaron;ķirta izvades mar&scaron;rutam. Visvienkār&scaron;ākā statistika ir punktu skaits laukumā, bet iespējams aprēķināt arī citu statistiku.
+    </p>
+    <p>Laika iespējotu slāņu elementus var apzīmēt vienā no diviem veidiem:
+        <ul>
+            <li>Tūlītējs. Atsevi&scaron;ķs laika moments.
+            </li>
+            <li>Intervāls. Sākuma un beigu laiks.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir ik pēc 10&nbsp;minūtēm veikti GPS mērījumi par viesuļvētru. Katrs GPS mērījums reģistrē viesuļvētras nosaukumu, atra&scaron;anās vietu, ieraksta laiku un vēja ātrumu. Ar &scaron;o informāciju varat izveidot katras viesuļvētras mar&scaron;rutus, izmantojot nosaukumu mar&scaron;ruta identifikācijai, un katrai viesuļvētrai tiek ģenerēti mar&scaron;ruti. Turklāt, varat aprēķināt statistiku, piemēram, katras viesuļvētras vidējo, maksimālo un minimālo vēja ātrumu, kā arī katra mar&scaron;ruta mērījumu skaitu.
+    </p>
+    <p>Izmantojot &scaron;o pa&scaron;u piemēru, jūs varat izveidot mar&scaron;rutu buferzonas pēc vēja ātruma. Tādējādi katra mērījuma buferzona tiek izveidota pēc vēja ātruma lauka &scaron;ajā novietojumā, un tās tiek savienotas, izveidojot laukumu, kas apzīmē mar&scaron;ruta ceļu, kā arī vēja ātruma izmaiņas viesuļvētras gaitā.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties elementus, no kuriem rekonstruēt maršrutus</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu vai laukumu slānis, kas tiks rekonstruēts mar&scaron;rutos. Ievades slānim ir jābūt aktivizētam laikam ar elementiem, kas apzīmē laika momentu. Slānim ir jābūt plānotajā koordinātu sistēmā, vai, ja tiek lietota buferzona, apstrādes telpiskā atskaite ir jāiestata uz plānoto koordinātu sistēmu, izmantojot  <b>Analīzes darba vidi</b>.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Izvēlieties vienu vai vairākus laukus, lai noteiktu maršrutus</h2></div>
+        <hr/>
+        <div>
+            <p>Lauki, kas apzīmē mar&scaron;rutu identifikatoru. 
+            </p>
+            <p>Piemēram, ja rekonstruējat viesuļvētru mar&scaron;rutus, varat izmantot viesuļvētras nosaukumu kā mar&scaron;ruta lauku.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Izvēlēties metodi, kas tiek izmantota maršrutu rekonstruēšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Metode, kas tiek izmantota, lai savienotu mar&scaron;rutus un izveidotu buferzonu (ja pieejama).  <b>Plaknes</b> metode aprēķina rezultātus ātrāk, bet neaplieks mar&scaron;rutus ap starptautisko datuma maiņas līniju, kā arī neierēķinās zemes faktisko Zemes formu, veidojot buferzonu. <b>Ģeodēziskā</b> metode, ja nepiecie&scaron;ams, aplieks mar&scaron;rutus ap datuma maiņas līniju un izveidos ģeodēzisko buferzonu, lai ierēķinātu zemes formu.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Izvēlēties izteiksmi, pēc kuras izveidot ievades elementu buferzonu (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Vienādojums, kas tiek izmantots, lai aprēķinātu buferzonas attālumu ap ievades elementiem. &Scaron;o vienādojumu var ģenerēt, izmantojot buferzonas kalkulatoru. Ir pieejamas pamata darbības, piemēram, saskaitī&scaron;ana, atņem&scaron;ana, reizinā&scaron;ana un dalī&scaron;ana. Vērtības tiek aprēķinātas, izmantojot analīzes koordinātu sistēmu. Slānim ir jābūt plānotajā koordinātu sistēmā, vai, ja tiek lietota buferzona, apstrādes telpiskā atskaite ir jāiestata uz plānoto koordinātu sistēmu, izmantojot  <b>Analīzes darba vidi</b>.
+            </p>
+            <p>Vienādojums  <code>$feature.windspeed * 1000</code> izveidos buferzonu 1000, kas reizināta ar lauka <i>windspeed</i> vērtību. Buferzonas kalkulatorā var izmantot vairāk nekā vienu lauku.
+            </p>
+            <p> Jūs varat arī norādīt ar mar&scaron;rutu saistītu izteiksmi. Piemēram, jūs varat aprēķināt lauku vērtību <i>windspeed</i> summu pa&scaron;reizējam un diviem iepriek&scaron;ējiem elementiem, izmantojot vienādojumu <code>$track.field(windspeed).history(-3)</code>. Tiktu aprēķināta katrā novietojumā eso&scaron;o <i>windspeed</i> un divu iepriek&scaron;ējo mērījumu summa, kā arī tiktu izveidota buferzona.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Izvēlēties laiku, pēc kura sadalīt maršrutus (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Mar&scaron;rutu sadalei izmantotais laiks. Ja ilgums starp ievades punktiem vai laukumiem ir lielāks par laika dalījumu, tie tiks sadalīti atsevi&scaron;ķos mar&scaron;rutos.
+            </p>
+            <p>Ja norādāt laika sadalījumu un attāluma sadalījumu, mar&scaron;ruti tiks sadalīti, kad tiks panākta atbilstība vienam vai abiem stāvokļiem. 
+            </p>
+            <p>Iedomājieties, ka ir pieejami punktu elementi, kas apzīmē lidma&scaron;īnu reisus, kuru mar&scaron;ruta lauks ir lidma&scaron;īnas ID. &Scaron;ī lidma&scaron;īna var veikt vairākus lidojumus, kas tiks apzīmēti kā viens mar&scaron;ruts. Ja zināt, ka starp lidojumiem ir 1&nbsp;stundas pārtraukums, varat izmantot  <code>1&nbsp;stundu</code> kā mar&scaron;rutu dalījumu, un katrs lidojums tiek sadalīts atsevi&scaron;ķā mar&scaron;rutā.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Sašķelti maršruti (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Ierakstus var sa&scaron;ķelt, izmantojot trīs dažādas metodes. Var neizmantot nevienu, visas vai kādu no sa&scaron;ķel&scaron;anas metodēm. 
+            </p>
+            <p>Sa&scaron;ķel&scaron;anu var veikt &scaron;ādi:
+                <ul>
+                    <li> <b>Pamatojoties uz attālumu starp ievadēm</b>&mdash;Ja ievades punktiem vai laukumiem starp tiem ir pla&scaron;āks attālums nekā noteiktais attālums, tie tiks sadalīti dažādos mar&scaron;rutos. Piemēram, ja ir norādīts 10 kilometru attālums, secīgie punkti, kas lielāki par 10 kilometriem, būtu atsevi&scaron;ķi mar&scaron;ruti.
+                    </li>
+                    <li> <b>Pamatojoties uz attālumu starp ievadēm</b>&mdash;Ja ievades punkti vai laukumi ir garāki nekā laika sadalījums, tie tiek sadalīti dažādos mar&scaron;rutos. Piemēram, ja ir punkta elementi, kas raksturo gaisa kuģu lidojumus, kur mar&scaron;ruta lauks ir lidma&scaron;īnas ID. &Scaron;ī lidma&scaron;īna var veikt vairākus lidojumus, kas tiks apzīmēti kā viens mar&scaron;ruts. Ja zināt, ka starp lidojumiem ir 1&nbsp;stundas pārtraukums, varat izmantot <code>1&nbsp;stundu</code> kā mar&scaron;rutu dalījumu, un katrs lidojums tiek sadalīts atsevi&scaron;ķā mar&scaron;rutā.
+                    </li>
+                    <li> <b>Noteiktos laika intervālos</b>&mdash;Sa&scaron;ķelt, izmantojot regulārus intervālus, ko nosaka laika intervāls un atsauces laiks. Ja nenorādāt atsauces laiku, tiks izmantots 1970. gada 1. janvāris. Piemēram, ja norādījāt 1 gadu ar atsauces laiku, kas ir 1990. gada 2. februāris plkst. 10:00, tad mar&scaron;rutus sadalītu kā 1990. gada 2. februāris plkst. 10:00, 1991. gada 2. februāris un turpinātos pa viena gada intervāliem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ja norādāt vairākas sa&scaron;ķel&scaron;anas opcijas, tad, izpildot vienu vai vairākus nosacījumus, mar&scaron;ruti tiks sa&scaron;ķelti. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Izvēlēties attālumu, pēc kura sadalīt maršrutus (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Mar&scaron;rutu sa&scaron;ķel&scaron;anai izmantotais attālums. Ja attālums starp ievades punktiem vai laukumiem ir platāks par attāluma dalījumu, tie tiks sadalīti atsevi&scaron;ķos mar&scaron;rutos.
+            </p>
+            <p>Ja norādāt laika sadalījumu un attāluma sadalījumu, mar&scaron;ruti tiks sadalīti, kad tiks panākta atbilstība vienam vai abiem stāvokļiem. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p> Varat aprēķināt apkopoto elementu statistikuJūs varat aprēķināt tālāk norādītās vērtības ciparu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jūs varat aprēķināt tālāk norādītās vērtības virkņu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlieties ArcGIS Data Store, lai saglabātu rezultātus</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot tad, ja ir sagaidām GeoAnalytics rezultātu apjoma palielinā&scaron;anās, kā arī tad, ja ir nepiecie&scaron;ams izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-168" y="-488" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-200" y="-520" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-168" y="-488" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-200" y="-520" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-168" y="-488" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-168" y="-488" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<rect x="2.0000014" y="2.0000014" fill="#6D6E71" width="11.9999971" height="11.9999971"/>
+	<rect x="3.000001" y="3.000001" fill="#F8F8F8" width="9.9999981" height="9.9999981"/>
+	<rect fill="none" width="16" height="16"/>
+	<rect x="5.9999981" y="6" fill="#6D6E71" width="4.0000038" height="4.0000005"/>
+</g>
+</svg>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>派生新位置</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="派生新位置"></h2>
+        <hr/>
+    <p>此工具可在研究区域中获取可满足一系列指定条件的新要素。这些条件可基于属性查询（如闲置宗地）和空间查询（如位于洪水区内的宗地）。
+
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅对当前地图范围中可见的要素进行分析。如果未选中，则将对所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>派生符合以下表达式的新位置</h2></div>
+        <hr/>
+        <div>
+            <p>单击 <b>添加表达式</b>按钮定义表达式。您可以添加多个表达式。输入表达式以后，单击 <b>运行分析</b>按钮，分析图层里的要素会按照每个表达式进行过滤。符合所有表达式的部分要素将写入结果图层。
+            </p>
+            <p>您可以创建两种基本类型的表达式：属性表达式和空间表达式。属性表达式用于查询字段值，例如  <code>where name is 'San Francisco'</code>。共有四种类型的空间表达式：
+                <ul>
+                    <li> <b>在某一距离范围内</b>：部分要素在另一图层中的要素的一定距离范围内。例如，查找距离洛杉矶河 500 英里以内的宗地部分。
+                    </li>
+                    <li> <b>完全包含</b>：某要素必须包含另一图层的所有要素。例如，查找完全包含工业用宗地的流域。宗地不可以在流域之外。
+                    </li>
+                    <li> <b>完全包含于</b>：某要素必须完全被另一图层的要素包围。例如，查找完全在城市边界以内的学区。学区不可以在城市边界以外。
+                    </li>
+                    <li> <b>相交</b>：要素或要素的部分必须与另一图层中的某一要素叠置或相交。例如，查找国家公园中遭受多次火灾烧毁的植被覆盖区域。公园边界以外的烧毁区域将不会包括在内。
+                    </li>
+                    <li> <b>最接近</b>：要素必须最接近另一图层中的要素。例如，查找距离各个学校最接近的绿地。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>每个空间表达式都有相应的反表达式，但以下内容例外： <b>最接近</b>、 <b>不在某一距离范围之内</b>、 <b>不完全包含</b>、 <b>不完全在其他要素范围内</b>，和 <b>不相交</b>。
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

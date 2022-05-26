@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Najdi vroče točke</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Najdi vroče točke"></h2>
+        <hr/>
+    <p>Orodje Najdi vroče točke bo določilo, ali obstaja statistično značilno gručenje v prostorskem vzorcu va&scaron;ih podatkov. 
+        <ul>
+            <li>So va&scaron;e točke (kriminalni incidenti, drevesa ali prometne nesreče) resnično gručene? Kako ste lahko prepričani?
+            </li>
+            <li>Ste res odkrili statistično značilno vročo točko ali pa bi va&scaron;a karta pripovedovala drugačno zgodbo, če bi spremenili simbologijo?
+            </li>
+        </ul>
+        Orodje Najdi vročo točko vam bo pomagalo z gotovostjo odgovoriti na ta vpra&scaron;anja.
+    </p>
+    <p>Celo naključni prostorski vzorci prikazujejo določeno stopnjo gručenja. Poleg tega sku&scaron;ajo na&scaron;e oči in možgani naravno poiskati vzorce tudi tam, kjer ne obstajajo. Posledično je težko vedeti, ali so vzorci v va&scaron;ih podatkih rezultat resničnih prostorskih procesov ali so zgolj naključni. Zato raziskovalci in analitiki uporabljajo statistične metode, kot je Najdi vroče točke (Getis-Ord Gi*), za količinsko opredelitev prostorskih vzorcev. Ko v svojih podatkih najdete statistično značilno gručenje, imate dragocene informacije. Vedeti kje in kdaj pride do gručenja, lahko zagotavlja pomembne informacije o procesih, ki povzročajo vzorce, ki jih vidite. Če je znano, na primer, da se vlomi v stanovanja značilno pogosteje dogajajo v določenih četrtih, je to ključna informacija, če želite oblikovati učinkovite strategije preprečevanja, dodeliti omejene policijske vire, zagnati program četrtnih straž, odobriti poglobljene kriminalistične preiskave ali prepoznati morebitne osumljence.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izberi sloj, za katerega bodo izračunane vroče točke</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, v katerem bodo iskane vroče in hladne točke.
+            </p>
+            <p>Analiza uporablja celice in zahteva projiciran koordinatni sistem.  <b>Procesni koordinatni sistem</b> lahko nastavite v <b>okoljih analize</b>. Če va&scaron; delovni koordinatni sistem ni nastavljen na projiciran koordinatni sistem, bo to od vas zahtevano, ko boste <b>Zagnali analizo</b> .
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Najdi visoke in nizke gruče</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Ta analiza poda odgovar na vpra&scaron;anje: Kje poteka prostorsko gručenje visokih in nizkih vrednosti?
+            </p>
+            <p>Če so va&scaron;i podatki točke in izberete  <b>&Scaron;tetje točk</b>, bo to orodje ocenilo prostorsko razporeditev točkovnih geoobjektov za odgovor na vpra&scaron;anje: Kje so točke nepričakovano gručene ali razpr&scaron;ene?
+            </p>
+            <p>Če izberete polje, bo to orodje ocenilo prostorsko razporeditev vrednosti, povezanih s posameznim geoobjektom za odgovor na vpra&scaron;anje: Kje se gručijo visoke in nizke vrednosti?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izberi velikost celice za agregacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Razdalja, ki se uporablja za ustvarjanje &scaron;tirikotnih celic, ki se bodo uporabljale za analizo vhodnih točk.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Najdi vroče točke s pomočjo časovnih korakov (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Če je čas na točkovnem sloju omogočen in predstavlja trenutek v času, lahko analizirate s časovnimi koraki.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval časovnih korakov</h2></div>
+        <hr/>
+        <div>
+            <p>Interval časa, ki se uporablja za ustvarjanje časovnih korakov. Čas je mogoče uskladiti z začetnim ali končnim časom vhodnih podatkov ali z določenim referenčnim časom.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Interval časovnih korakov</h2></div>
+        <hr/>
+        <div>
+            <p>Interval časa, ki se uporablja za ustvarjanje časovnih korakov. Čas je mogoče uskladiti z začetnim ali končnim časom vhodnih podatkov ali z določenim referenčnim časom.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Izberite, kako bo časovni korak poravnan z</h2></div>
+        <hr/>
+        <div>
+            <p>Kako so poravnani časovni koraki. Na voljo so trije načini za poravnavo časovnih korakov:
+                <ul>
+                    <li> <b>Začetni čas</b> &ndash; časovni koraki so poravnani s prvim geoobjektom v času.
+                    </li>
+                    <li> <b>Končni čas</b> &ndash; časovni koraki so poravnani z zadnjim geoobjektom v času.
+                    </li>
+                    <li> <b>Referenčni čas</b> &ndash; časovni koraki so poravnani z določenim časom.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referenčni čas za poravnavo časovnih korakov z</h2></div>
+        <hr/>
+        <div>
+            <p>Datum in čas, ki se uporabljata za poravnavo časovnih korakov.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Izberi velikost soseske za izračune vroče točke</h2></div>
+        <hr/>
+        <div>
+            <p>Razdalja, ki se uporablja za določanje soseske, ki se uporablja za izračun vročih točk. Soseska mora biti večja od velikosti celice, saj je treba zagotoviti, da ima vsaka celica vsaj eno sosesko. Vsaka celica se analizira in primerja s sosednjimi.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinatni sistem (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Gre za začasni parameter za predizdajno različico za nastavljanje procesnega koordinatnega sistema. Veliko orodij velikih podatkov zahteva, da se projiciran koordinatni sistem uporablja kot koordinatni sistem za procesiranje. Privzeto bo orodje uporabljalo vhodni koordinatni sistem, vendar pa uporaba ne bo uspe&scaron;na v primeru geografskega koordinatnega sistema. Za nastavitev projiciranega koordinatnega sistema vnesite WKID. Na primer,  <b>Web Mercator</b> je treba vnesti kot <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite ArcGIS Data Store za shranjevanje rezultatov v</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ta sloj z rezultati vam bo pokazal statistično značilne gruče visokih in nizkih vrednosti ali &scaron;tevilo točk. Če ime sloja z rezultati že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

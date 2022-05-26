@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Bestem rute for reiseutgifter som polylinje</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Illustrasjon av vekt&oslash;yet Bestem rute for reiseutgifter som polylinje"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet beregner den beste polylinjeruten mellom kilder og kjente m&aring;l.
+    </p>
+    <p>Eksempler p&aring; bruksomr&aring;der er blant annet f&oslash;lgende:
+        <ul>
+            <li>Finne den beste traseen for en ny vei ut fra anleggskostnader.
+                
+
+            </li>
+            <li>Identifisere ruten som b&oslash;r tas fra flere forstadslokasjoner (startpunkt) til n&aelig;rmeste kj&oslash;pesenter (destinasjon).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres bare de lokasjonene i inndatalagene som er synlige innenfor gjeldende kartutstrekning. Hvis det ikke er merket av for dette alternativet, analyseres alle lokasjoner i begge inndatalag, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Velg raster- eller geoobjektskildelaget det skal beregnes reiseruter fra</h2></div>
+        <hr/>
+        <div>
+            <p>En bildetjeneste eller geoobjektstjeneste som identifiserer cellene der den rimeligste ruten til det rimeligste m&aring;let  fastsettes.
+            </p>
+            <p>Hvis inndataene er en bildetjeneste, best&aring;r inndataene av celler med gyldige verdier (null er en gyldig verdi), og de gjenv&aelig;rende cellene m&aring; tilordnes NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Velg rasterlag for reiseutgifter</h2></div>
+        <hr/>
+        <div>
+            <p>Et raster som definerer impedans eller kostnad ved planimetrisk bevegelse gjennom hver celle.
+            </p>
+            <p>Verdien ved hver celleplassering representerer kostnad-per-enhet-avstanden for bevegelse gjennom cellen. Hver celleplasseringsverdi multipliseres med celleoppl&oslash;sningen og kompenserer samtidig for diagonal bevegelse for &aring; finne de totale kostnadene ved &aring; passere gjennom cellen.
+            </p>
+            <p>Kostnadsrasterets verdier kan v&aelig;re heltall eller flyttall, men de kan ikke v&aelig;re negative tall eller null (du kan ikke ha en negativ eller nullkostnad).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Rastere eller geoobjekter for inndatadestinasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Inndata som definerer destinasjonene som brukes til &aring; beregne avstanden. Laget kan v&aelig;re et raster eller et geoobjekt.
+            </p>
+            <p>Hvis inndataene er en bildetjeneste, best&aring;r inndataene av celler med gyldige verdier (null er en gyldig verdi), og de gjenv&aelig;rende cellene m&aring; tilordnes NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Navn på resulterende polylinjelag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Velg type rute som skal bestemmes</h2></div>
+        <hr/>
+        <div>
+            <p>Definerer hvordan verdier og soner i inndataene for destinasjonen skal tolkes i beregningene av ruteutgiftene.
+            </p>
+            <ul>
+                <li>Beste enkeltreise&nbsp;&ndash; For alle celler eller lokasjoner i destinasjonsinndataene utledes den rimeligste ruten fra lokasjonen med minimumet av ruter til kildelokasjonen med lavest utgifter. Dette er standardalternativet.
+                    
+
+                </li>
+                <li>Til hver celle&nbsp;&ndash; For hver celle eller lokasjon med gyldige verdier i destinasjonsinndataene, bestemmes og lagres rimeligste rute p&aring; utdatageoobjektstjenesten. Med dette alternativet behandles hver celle med destinasjonsinndata separat, og en rimeligste rute bestemmes for hver celle.
+                    
+
+                </li>
+                <li>Til hver sone&nbsp;&ndash; For hver sone i destinasjonsinndataene bestemmes og lagres rimeligste rute p&aring; utdatageoobjektstjenesten. Med dette alternativet begynner den rimeligste ruten for hver sone ved cellen eller lokasjonen med sonens rimeligste utgift&ndash;avstandsvekting.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

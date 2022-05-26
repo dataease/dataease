@@ -1,0 +1,14 @@
+<div>
+  <div class="${css.borderContainer}" data-dojo-attach-point= "_gridBorderContainerNode" data-dojo-type="dijit/layout/BorderContainer" gutters="false">
+    <div class="${css.contentPane} ${css.menu}" data-dojo-attach-point= "_gridHeaderNode" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top'">
+      <div class="${css.menuItem} ${css.loadingIndicator} ${css.hidden}" data-dojo-attach-point= "_gridLoadingIndicatorNode"></div>
+      <div class="${css.menuItem} ${css.menuOptions}" data-dojo-attach-point= "_menuNode" >
+        <div data-dojo-attach-point= "_gridMenuNode"></div>
+      </div>
+      <div class="${css.menuItem} ${css.title}" data-dojo-attach-point= "_gridTitleNode"></div>
+    </div>
+    <div class="${css.contentPane}" data-dojo-attach-point= "_gridContentPaneNode" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center'">
+      <div class="${css.grid}" data-dojo-attach-point="_gridNode"></div>
+    </div>
+  </div>
+</div>

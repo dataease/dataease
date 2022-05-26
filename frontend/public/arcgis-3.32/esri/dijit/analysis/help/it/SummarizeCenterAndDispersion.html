@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Riepiloga centro e dispersione</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Riepiloga centro e dispersione"></h2>
+        <hr/>
+    <p>Questo strumento trova feature centrali e distribuzioni direzionali. Pu&ograve; essere utilizzato per rispondere a domande quali:
+        <ul>
+            <li>Dove &egrave; il centro?
+            </li>
+            <li>Quale feature &egrave; pi&ugrave; accessibile da parte di tutte le altre feature?
+            </li>
+            <li>Como sono disperse, compatte o integrate le feature?
+            </li>
+            <li>Vi sono tendenze direzionali?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l&rsquo;opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzati solo dati alle feature nel layer di input visibili all&rsquo;interno dell&rsquo;estensione mappa corrente.  Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Scegli un layer da descrivere</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale, lineare o areale verr&agrave; utilizzato per trovare feature centrali o distribuzioni direzionali.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Tipi riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Il metodo per riepilogare centro e dispersione. 
+            </p>
+            <ul>
+                <li>Feature centrale: identifica la feature localizzata pi&ugrave; centralmente in un dataset.
+                </li>
+                <li>Centro medio: identifica il centro geografico (o il centro della concentrazione) per un set di feature.
+                </li>
+                <li>Centro mediano: identifica la posizione che riduce al minimo la distanza euclidea complessiva per le feature in un set di dati.
+                </li>
+                <li>Ellisse: crea ellissi standard di deviazione per riepilogare le caratteristiche spaziali delle feature geografiche: tendenza centrale, dispersione e tendenze direzionali. Le ellissi possono assumere il formato di 1, 2 o 3 deviazioni standard.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Peso per (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo utilizzato per ponderare le posizioni in base alla loro importanza relativa. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Raggruppa per (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo utilizzato per raggruppare feature per calcoli separati di feature centrali o dispersione. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

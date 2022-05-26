@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pilih Fasilitas Terbaik</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Pilih Fasilitas Terbaik"></h2>
+        <hr/>
+    <p>Pilih Fasilitas Terbaik memungkinkan Anda memilih lokasi terbaik untuk fasilitas. Alat tersebut mengalokasikan lokasi dengan permintaan untuk fasilitas dengan cara yang mencapai tujuan yang ditentukan.
+    </p>
+    <p>Fasilitas mewakili lokasi yang menawarkan beberapa jenis layanan seperti pemadam kebakaran, sekolah, perpustakaan, toko, atau pusat distribusi. Lokasi permintaan mewakili lokasi yang memiliki permintaan atas layanan yang ditawarkan oleh fasilitas, seperti misalnya titik blok sensus yang meringkas populasi di area yang diberikan.
+    </p>
+    <p>Alat Pilih Fasilitas Terbaik dapat membantu Anda menjawab pertanyaan seperti
+        <ul>
+            <li>Dalam kasus darurat, bagaimana rumah tangga dapat ditetapkan ke pusat pemulihan bencana yang benar, ketika kapasitas tempat tidur terbatas dan seharusnya tidak dilebihkan?
+            </li>
+            <li>Bagaimana Anda dapat menetapkan lingkungan Anda ke cabang perpustakaan terdekat dan menemukan jumlah calon pengguna perpustakaan yang dilayani oleh setiap cabang? 
+            </li>
+            <li>Bagaimana Anda dapat menemukan lokasi terbaik untuk pusat distribusi toko kelontong yang meminimalkan keseluruhan waktu perjalanan (dan juga biaya) untuk pengiriman ke rantai toko kelontong?
+            </li>
+            <li>Di mana taman baru akan berlokasi untuk memastikan jumlah terbesar warga kota tinggal hanya berjarak lima menit jalan kaki dari taman?
+            </li>
+            <li>Apakah lokasi terbaik bagi beberapa toko hewan peliharaan di daerah sehingga 40 persen dari pemilik hewan peliharaan wilayah tersebut hanya berjarak tidak lebih dari sepuluh menit mengemudi dari salah satu toko?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Tujuan</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan tujuan yang harus dicapai ketika mengalokasikan lokasi permintaan ke fasilitas.
+            </p>
+            <p>Dengan Pilih Fasilitas Terbaik Anda dapat menentukan tipe masalah yang sedang Anda pecahkan&mdash;Tujuan. Alat dioptimalkan untuk menyediakan solusi bagi tujuan khusus. Tanpa memandang tujuan, pada dasarnya metode landasan yang sama digunakan untuk mencapai sebuah solusi&mdash;jumlah permintaan dari lokasi permintaan yang diberikan dialokasikan ke fasilitas terdekat. Tujuan beragam terkait seberapa saling mempengaruhi antar jarak (atau waktu) serta permintaan ditangani. Alat mempertimbangkan baik jarak/waktu perjalanan dan jumlah permintaan, serta&mdash;dalam beberapa kasus&mdash;kapasitas dari fasilitas. Jika sebuah tujuan lebih menyukai untuk meminimalkan waktu perjalanan, misalnya, alat akan tetap merupakan upaya sekunder guna memaksimalkan permintaan yang dialokasikan. Serupa dengan hal tersebut, jika tujuan adalah memaksimalkan permintaan yang dialokasikan, maka alat akan melakukan hal tersebut dengan meminimalkan waktu perjalanan (dengan menetapkan lokasi permintaan ke fasilitas terdekat dan bukannya sekedar fasilitas mana saja).
+            </p>
+            <p>Tergantung pada data Anda dan pengaturan yang Anda gunakan, tujuan berbeda mungkin menimbulkan hasil yang sama atau serupa. Namun, Anda harus menentukan tujuan yang paling memadai untuk analisis Anda.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Alokasikan ke fasilitas yang ada</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tujuan ini jika Anda tidak ingin menemukan fasilitas baru dan ingin menetapkan permintaan ke fasilitas yang ada yang dapat memiliki kapasitas terbatas atau tidak terbatas.    
+            </p>
+            <p>Tujuan ini menetapkan permintaan ke fasilitas berdasarkan kapasitas pada fasilitas dan jumlah permintaan dari area di sekitarnya. Permintaan dialokasikan ke fasilitas terdekat hingga kapasitas yang tersedia terpenuhi. Jika Anda menentukan rentang perjalanan maksimal, lokasi permintaan mana saja di luar rentang tersebut tidak akan ditetapkan ke fasilitas, meskipun semua permintaan belum dialokasikan seutuhnya.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimalkan perjalanan</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tujuan ini jika Anda ingin menemukan fasilitas sedemikian rupa sehingga keseluruhan waktu perjalanan, atau jarak perjalanan, antara lokasi permintaan dan fasilitas diminimalkan.
+            </p>
+            <p>Tujuan ini seringkali berlaku ketika ada perjalanan antara fasilitas dan semua lokasi permintaan secara teratur. Anda akan menggunakan tujuan ini, misalnya, untuk meminimalkan jarak tempuh keseluruhan guna memindahkan barang dari pusat distribusi ke toko, atau untuk memilih tempat guna konferensi dengan cara yang meminimalkan waktu perjalanan bagi semua peserta.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksimalkan cakupan</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tujuan ini jika Anda ingin memaksimalkan jumlah permintaan yang dicakup dalam waktu atau jarak spesifik dari fasilitas.    
+            </p>
+            <p>Tujuan ini memilih fasilitas sedemikian rupa sehingga jumlah maksimal permintaan dialokasikan, dengan semua permintaan dari setiap lokasi permintaan dialokasikan ke fasilitas tunggal yang terdekat dengannya.
+            </p>
+            <p>Rentang perjalanan maksimal yang jelas diperlukan untuk tujuan ini; jika tidak, semua permintaan mungkin ditetapkan ke sebuah fasilitas tunggal. Lokasi permintaan yang berada di luar jarak atau waktu dari fasilitas mana saja tidak akan dialokasikan (ini akan menampilkan kepada Anda tempat permintaan yang tidak terpenuhi dan tempat fasilitas tambahan yang mungkin diperlukan).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksimalkan cakupan dengan kapasitas</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tujuan ini jika Anda ingin memaksimalkan jumlah permintaan yang dicakup oleh fasilitas, tapi fasilitas memiliki kapasitas terbatas.    
+            </p>
+            <p>Tujuan ini memilih fasilitas sedemikian rupa sehingga jumlah maksimal permintaan dialokasikan tanpa melebihi kapasitas dari fasilitas mana pun. Semua permintaan dari setiap lokasi permintaan dialokasikan ke fasilitas tunggal terdekat dengannya yang memiliki kapasitas tersedia (yaitu, jika menetapkan lokasi permintaan ke fasilitas akan melebihi kapasitas dari fasilitas yang tersedia, lokasi permintaan tidak akan ditetapkan, dan bukannya menetapkan bagian dari permintaan).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Cakup persentase permintaan</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tujuan ini jika Anda ingin tahu jumlah minimal fasilitas yang Anda perlukan untuk mencakup persentase permintaan yang diberikan.
+            </p>
+            <p>Tujuan ini memilih jumlah minimal fasilitas yang diperlukan untuk menjangkau persentase permintaan yang ditentukan. Lokasi permintaan yang berada dalam rentang perjalanan maksimal dari dua fasilitas atau lebih akan menjadikan permintaannya terbagi secara proporsional antara fasilitas yang berdasarkan jaraknya dari masing-masing. Tujuan ini sering digunakan ketika orang memiliki pilihan terkait fasilitas mana yang harus dikunjungi dan ini diasumsikan bahwa, secara umum, mereka akan mengunjungi fasilitas terdekat (hal lainnya akan setara).
+            </p>
+            <p>Tidak seperti dengan tujuan lain yang memilih fasilitas, yang mana Anda perlu menentukan berapa banyak fasilitas yang dipilih, tujuan ini memilih jumlah fasilitas bagi Anda, berdasarkan persentase permintaan yang ingin Anda penuhi. Ini mengasumsikan bahwa fasilitas tidak memiliki kapasitas terbatas.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Ukur</h2></div>
+        <hr/>
+        <div>
+            <p>Sebagaimana juga dengan alat lain yang melibatkan perjalanan dalam analisis, Anda dapat menentukan apakah perjalanan diukur menggunakan jarak atau waktu, dan dapat memilih dari berbagai mode perjalanan seperti waktu berjalan kaki, waktu mengemudi, jarak mengemudi pedesaan, dan sebagainya. Mode perjalanan yang tersedia ditentukan oleh administrator organisasi Anda. Ketika menggunakan  <b>Waktu Mengemudi</b>, <b>Waktu Mengemudi Pedesaan</b>, atau <b>Waktu Mengemudi Truk</b> Anda dapat secara opsional menyertakan lalu lintas untuk hari pada minggu tertentu dan waktu hari itu.
+            </p>
+            <p> Untuk secara akurat mengalokasikan lokasi permintaan ke fasilitas, Anda menentukan apakah perjalanan adalah dari fasilitas ke lokasi permintaan (misalnya dari stasiun pemadam kebakaran) atau dari lokasi permintaan ke fasilitas (sebagaimana dengan pengguna perpustakaan ke perpustakaan). Pilih Fasilitas Terbaik akan memperhitungkan arah perjalanan dalam jalan satu arah, baik Anda dapat membelok dari satu jalan ke jalan lainnya, baik persimpangan tidak memiliki belokan ke kiri, dan sebagainya, tergantung apakah perjalanan ke luar dari fasilitas ke lokasi permintaan, atau ke dalam dari lokasi permintaan ke fasilitas.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Layer Lokasi Permintaan</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik mewakili lokasi yang memiliki permintaan untuk layanan yang ditawarkan oleh fasilitas. Alat tersebut menetapkan lokasi permintaan ini ke fasilitas yang memadai berdasarkan tujuan yang dipilih.
+            </p>
+            <p>Lokasi permintaan memiliki jumlah permintaan terkait. Gunakan konstanta untuk menentukan nilai jika semua lokasi permintaan memiliki permintaan yang sama. Jika jumlah permintaan beragam menurut lokasi permintaan, gunakan kolom Layer Lokasi Permintaan untuk menentukan nilai bagi setiap lokasi permintaan.
+            </p>
+            <p>Permintaan akan dialokasikan ke fasilitas hingga semua permintaan sudah dialokasikan, tanpa memandang seberapa jauh lokasi permintaan dari fasilitas. Anda dapat menetapkan rentang perjalanan maksimal ke Layer Lokasi Permintaan untuk membuat pemotongan jarak atau waktu&mdash;lokasi mana saja di luar nilai pemotongan tidak akan dialokasikan. Gunakan konstanta untuk menentukan nilai jika semua lokasi permintaan memiliki rentang perjalanan maksimal yang sama. Jika rentang perjalanan maksimal beragam menurut lokasi permintaan, gunakan kolom Layer Lokasi Permintaan untuk menentukan nilai bagi setiap lokasi permintaan.
+            </p>
+            <p>Jika tipe tujuan adalah  <b>Cakup persentase permintaan</b>, Anda perlu menentukan persentase minimal permintaan yang Anda inginkan agar ditangkap oleh fasilitas.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+            <p>Alat mendukung hingga 10.000 fitur dalam Layer Lokasi Permintaan.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Layer Fasilitas yang Diperlukan</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik mewakili lokasi yang bertindak sebagai fasilitas dengan menyediakan semacam layanan. Fasilitas diperlukan biasanya mewakili lokasi yang sudah ada sebagaimana dibandingkan ke fasilitas calon yang biasanya mewakili lokasi tempat fasilitas baru akan dibangun atau ditempatkan. Ketika mengalokasikan lokasi permintaan, alat menggunakan fasilitas di  <b>Layer Fasilitas yang Diperlukan</b> sebelum fasilitas mana pun dari <b>Layer Fasilitas Kandidat</b>.
+            </p>
+            <p>Fasilitas yang diperlukan boleh memiliki fasilitas tanpa batas (yang mana, dapat memenuhi semua permintaan yang ditetapkan kepadanya) atau dapat memiliki kapasitas terbatas. Jika semua fasilitas memiliki kapasitas terbatas yang sama (seperti misalnya jumlah rumah tangga yang dapat dilayani oleh sebuah stasiun pemadam kebakaran&mdash;misalnya, 4.000), tentukan nilai konstanta. Jika kapasitas beragam antar fasilitas (misalnya jumlah slot yang tersedia bagi siswa baru di setiap SMA), tentukan kolom yang berisi nilai kapasitas untuk setiap fasilitas.
+            </p>
+            <p>Alat mendukung hingga 100 fitur dalam  <b>Layer Fasilitas yang Diperlukan</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Layer Fasilitas Kandidat</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik mewakili lokasi yang bertindak sebagai fasilitas dengan menyediakan semacam layanan. Fasilitas Kandidat biasanya mewakili lokasi tempat fasilitas baru akan dibangun atau ditempatkan berlawanan dengan fasilitas diperlukan yang biasanya mewakili lokasi yang sudah ada.
+            </p>
+            <p>Tergantung pada tujuan analisis Anda, maka Anda perlu menentukan jumlah fasilitas kandidat untuk memilih dari seperangkat kandidat. Jika Anda menentukan baik fasilitas yang diperlukan maupun fasilitas kandidat, alat yang menggunakan fasilitas dalam  <b>Layer Fasilitas yang Diperlukan</b> sebelum fasilitas mana pun dari <b>Layer Fasilitas Kandidat</b>.
+            </p>
+            <p>Fasilitas kandidat boleh memiliki fasilitas tanpa batas (yang mana, dapat memenuhi semua permintaan yang ditetapkan kepadanya) atau dapat memiliki kapasitas terbatas. Jika semua fasilitas memiliki kapasitas terbatas yang sama (seperti misalnya jumlah rumah tangga yang dapat dilayani oleh sebuah stasiun pemadam kebakaran&mdash;misalnya, 4.000), tentukan nilai konstanta. Jika kapasitas beragam antar fasilitas (misalnya jumlah slot yang tersedia bagi siswa baru di setiap SMA), tentukan kolom yang berisi nilai kapasitas untuk setiap fasilitas.
+            </p>
+            <p>Alat mendukung hingga 1.000 fitur dalam  <b>Layer Fasilitas Kandidat</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pilih layer penghalang</h2></div>
+        <hr/>
+        <div>
+            <p> Satu atau lebih fitur yang bertindak sebagai pembatas sementara (penghalang) saat melakukan perjalanan di jalan mendasar. Anda dapat menentukan penghalang menggunakan fitur titik, garis, atau poligon.
+            </p>
+            <p>Penghalang titik dapat merepresentasikan pohon tumbang, kecelakaan, tiang listrik tumbang, atau apa pun yang memblokir lalu lintas secara menyeluruh pada posisi tertentu di sepanjang jalan. Perjalanan diperbolehkan di jalan tetapi tidak melewati penghalang. Anda dapat menemukan hingga 250 fitur untuk bertindak sebagai penghalang titik.
+            </p>
+            <p>Penghalang garis melarang perjalanan ke mana pun penghalang berpotongan dengan jalan. Misalnya, parade atau demonstrasi yang memblokir lalu lintas di beberapa segmen jalan dapat direpresentasikan dengan penghalang garis. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang garis melebihi 500, alat mengembalikan suatu kesalahan.
+            </p>
+            <p>Penghalang poligon melarang perjalanan ke mana pun poligon berpotongan dengan jalan. Salah satu kegunaan penghalang tipe ini adalah untuk merepresentasikan area dari jaringan jalan yang tertutup banjir dan menyebabkan perjalanan ke sana tidak memungkinkan. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang poligon melebihi 2000, alat mengembalikan suatu kesalahan.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Layer hasil akan berisi sebuah layer untuk masing-masing berikut: fasilitas yang memiliki permintaan ditetapkan kepadanya, lokasi permintaan yang dialokasikan ke fasilitas, dan garis alokasi yang menghubungkan lokasi permintaan ke fasilitas yang ditetapkannya. Garis alokasi digambarkan sebagai garis lurus; namun, waktu perjalanan atau jarak perjalanan antara fasilitas dan lokasi permintaan selalu berdasarkan mode perjalanan yang Anda tentukan dan tidak menggunakan jarak garis lurus.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

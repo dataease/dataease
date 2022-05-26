@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Apskaičiuoti nuolydį</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Nuolydžio apskaičiavimo įrankis portalui"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis sukuria pavir&scaron;ių, kuriame rodomas nuolydis pagal įvestus auk&scaron;čių duomenis. Nuolydis apskaičiuojamas kaip kiekvieno skaitmeninio auk&scaron;čių modelio (DEM) ta&scaron;ko auk&scaron;čio pokytis.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Nurodykite įvesties duomenis nuolydžiui apskaičiuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Auk&scaron;čių sluoksnis, pagal kurį bus skaičiuojamas nuolydis.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Nurodykite aukščio proporcingumo koeficientą</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite z faktorių.
+            </p>
+            <p>Z faktorius &ndash; tai proporcingumo koeficientas, naudojamas konvertuojant auk&scaron;čių reik&scaron;mes &scaron;iais dviem tikslais:
+ 
+                <ul>
+                    <li>Konvertuoti auk&scaron;čio vienetus (pvz., metrus ar pėdas) į sluoksnio horizontaliosios a&scaron;ies vienetus &ndash; pėdas, metrus ar laipsnius
+                        
+  
+                    </li>
+                    <li>Pridėti vertikalią a&scaron;į geresniam vizualiniam efektui
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>I&scaron; pėdų
+                    </p>
+                </td>
+                <td>
+                    <p>I&scaron; metrų
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>I&scaron; pėdų
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>I&scaron; metrų
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

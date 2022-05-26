@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Copiar para Armazenamento de Dados</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Copiar para Armazenamento de Dados"></h2>
+        <hr/>
+    <p>Esta ferramenta ir&aacute; copiar uma camada de entrada para um armazenamento de dados. Pode copiar resultados para  ArcGIS Data Store (armazenamento relacional ou espaciotemporal de big data) e ser&aacute; criada uma camada no seu portal ou pode copiar resultados para uma partilha de ficheiros de big data. 
+    </p>
+    <p>Por exemplo, poderia copiar elementos que se encontram armazenados numa  <code>partilha de dados big data</code> para um <code>armazenamento de dados relaciona</code> e especificar que penas elementos inclu&iacute;dos na atual extens&atilde;o de mapa ser&atilde;o copiados. Isto criaria um servi&ccedil;o de elementos alojados apenas com os elementos que se encontravam no interior da extens&atilde;o de mapa definida.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada a copiar</h2></div>
+        <hr/>
+        <div>
+            <p>A camada ou tabela que ser&aacute; copiada. 
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Pode utilizar todos os elementos ou efetuar uma seleção (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalmente, utilize o bot&atilde;o de sele&ccedil;&atilde;o para identificar as localiza&ccedil;&otilde;es a copiar.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Escolher o armazenamento de dados para o qual copiar</h2></div>
+        <hr/>
+        <div>
+            <p>O armazenamento de dados para o qual a camada ser&aacute; copiada. Este par&acirc;metro substituir&aacute; a sele&ccedil;&atilde;o nos  <b>Ambientes de An&aacute;lise</b>. As op&ccedil;&otilde;es s&atilde;o as seguintes:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Espaciotemporal</b>&mdash;Esta &eacute; a predefini&ccedil;&atilde;o.
+                            </li>
+                            <li> <b>Relacional</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Modelos de Produ&ccedil;&atilde;o de Partilha de Ficheiros de Big Data</b>
+                        <ul>
+                            <li>Uma lista de modelos de partilha de ficheiros de big data dispon&iacute;veis no formato  <b>bigDataFileShareName-templateName</b>. Os modelos de partilha de ficheiros de big data t&ecirc;m de ser configurados antes da execu&ccedil;&atilde;o da ferramenta.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

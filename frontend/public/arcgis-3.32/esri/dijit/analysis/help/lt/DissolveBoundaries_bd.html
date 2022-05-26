@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sulieti ribas</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sulieti ribas"></h2>
+        <hr/>
+    <p>Persidengiančios, bendrą ribą turinčios arba bendrą atributo reik&scaron;mę turinčios teritorijos apjungiamos į vieną plotą.
+    </p>
+    <p>Galite pasirinkti, kurie elementai bus apjungiami, nurodydami lauką. Pavyzdžiui, jei turite apygardų sluoksnį, kuriame kiekvienas administracinis vienetas turi pavadinimą  <pre>State_Name</pre> atributiniame lauke, galite apjungti naudodami <pre>State_Name</pre> atributą. Apygardos sujungiamos, jei jos turi tokią pačią <pre>State_Name</pre> reik&scaron;mę.  Rezultatas bus valstijų ribų sluoksnis.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite plotų sluoksnį, kurio ribos bus sulietos</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis su ploto elementais, kurie bus sulieti. 
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Pasirinkite suliejimo būdą</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo laukų suliejimui naudojamą metodą.
+            </p>
+            <p>Galite pasirinkti vieną i&scaron; dviejų apjungimo metodų:
+                <ul>
+                    <li> <b>Besikertantys ar besiribojantys plotai</b> &ndash; du ar daugiau plotų, kurių ribos kertasi, bus apjungti į vieną plotą. Papildomai teritorijos, kurių geometrijos turi bendrą ribą, bus apjungtos į vieną elementą.
+                    </li>
+                    <li> <b>Plotai su ta pačia atributo reik&scaron;me</b> &ndash; du ar daugiau plotų, kurie bus apjungti į vieną objektą, jei turi tą pačią lauko reik&scaron;mę.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Kurti kelių dalių elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Kelių dalių elementas yra vietos ar objekto, sudaryto i&scaron; daugiau nei vienos dalies, bet apibrėžiamo kaip vienas elementas, nes nurodo vieną atributų rinkinį, skaitmeninis vaizdavimas. Pavyzdžiui, valstijų sluoksnyje Havajai gali būti laikomi kelių dalių elementu, nes jos atskiros geometrinės dalys klasifikuojamos kaip viena valstija.
+            </p>
+            <p> <b>Kurti kelių dalių elementus</b> turi dvi parinktis:
+                <ul>
+                    <li>Tiesa (pažymėta): i&scaron;vesties paslaugoje gali būti kelių dalių elementų.
+                    </li>
+                    <li>Klaidinga (nepažymėta): i&scaron;vesties paslaugoje bus tik vienos dalies elementai, o kiekvienai daliai bus sukurti atskiri elementai. Tai numatytasis nustatymas.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pridėti statistiką (pasirinktinis nustatymas)</h2></div>
+        <hr/>
+        <div>
+            <p>Apjungę teritorijas galite perskaičiuoti atributų reik&scaron;mes su prasminga statistika. Pavyzdžiui, jei norite apjungti apygardas pagal  <pre>State_Name</pre>, ir kiekviena apygarda turi lauką <i>Population</i>, galite apskaičiuoti valstijos <pre>Population</pre> sumą.
+            </p>
+            <p> Galite apskaičiuoti susumuotų elementų statistiką. Galite skaičiuoti &scaron;iuos skaitinius laukus:
+                <ul>
+                    <li>Skaičius &ndash; apskaičiuojamas nenulinių reik&scaron;mių skaičius.Galima naudoti skaitiniams laukams arba eilutėms. [nulinis, 0, 2] skaičius yra 2.
+                    </li>
+                    <li>Suma &ndash; lauke nurodytų skaitinių reik&scaron;mių suma. [nulinis, 0, 3] suma yra 3.
+                    </li>
+                    <li>Vidurkis &ndash; skaitinių reik&scaron;mių vidurkis. [0, 2, nulinis] vidurkis yra 1.
+                    </li>
+                    <li>Minimumas &ndash; skaitinio lauko reik&scaron;mės minimumas. [0, 2, nulinis] minimumas yra 0. 
+                    </li>
+                    <li>Maksimumas &ndash; skaitinio lauko reik&scaron;mės maksimumas. [0, 2, nulinis] maksimumas yra 2.
+                    </li>
+                    <li>Intervalas  &ndash; skaitinio lauko intervalas. Apskaičiuojamas i&scaron; maksimalios reik&scaron;mės atėmus minimalią reik&scaron;mę. [0, nulinis, 1] intervalas yra 1. [nulinis, 4] intervalas yra 0.
+                    </li>
+                    <li>Nuokrypis &ndash; skaitinio laiko nuokrypis trajektorijoje. [1] nuokrypis yra nulinis. [nulinis, 1,0,1,1] nuokrypis yra 0,25.
+                    </li>
+                    <li>Standartinis nuokrypis &ndash; skaitinio laiko standartinė deviacija. [1] standartinis nuokrypis yra nulinis. [nulinis, 1,0,1,1] standartinis nuokrypis yra 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Galite skaičiuoti &scaron;iuos tekstinius laukus:
+                <ul>
+                    <li>Skaičius &ndash; nenulinių eilučių skaičius.
+                    </li>
+                    <li>Bet kokį rodiklį &ndash; &scaron;is statistinis rodiklis yra atsitiktinės eilutės reik&scaron;mės i&scaron; nurodyto lauko pavyzdys.
+                    </li>
+                </ul>
+                Visi statistiniai rodikliai apskaičiuojami tik su nenulinėmis reik&scaron;mėmis. Gautame sluoksnyje bus kiekvieno apskaičiuoto statistinio rodiklio naujas laukas. Pasirenkant atributą ir statistinį rodiklį, gali būti pridėtas neribotas statistinių rodiklių kiekis. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

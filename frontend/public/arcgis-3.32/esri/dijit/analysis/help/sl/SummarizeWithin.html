@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Povzemi znotraj</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Povzemi znotraj"></h2>
+        <hr/>
+    <p>To orodje najde geoobjekte (in dele geoobjektov), ki so znotraj meja poligonov v prvem vhodnem sloju. Na primer:
+        <ul>
+            <li>Podana sta sloja razvodnic in rabe tal. Izračunajte skupno kmetijsko povr&scaron;ino po tipu rabe tal za vsako razvodje. 
+            </li>
+            <li>Podana sta sloj parcel v okrožju in sloj mej mesta. Povzemite povprečno vrednost nepozidanih parcel znotraj vsake meje mesta.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo tisti geoobjekti vhodnega sloja in sloja, ki ga je treba povzeti, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti tako na vhodnem sloju kot na sloju, ki ga je treba povzeti, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Izberite poligonski sloj za povzemanje drugih geoobjektov znotraj njegovih meja</h2></div>
+        <hr/>
+        <div>
+            <p>Poligonski sloj, ki bo uporabljen za povzetek geoobjektov, ki padejo znotraj njegovih meja. 
+            </p>
+            <p>Izbirate lahko med poligonskim slojem, ki ga zagotovite sami, ali celicami, ki se ustvarijo ob zagonu orodja. Ko se ustvarijo celice za  <b>Kvadrat</b>, navedena &scaron;tevila in enote določajo vi&scaron;ino in dolžino kvadrata. Za <b>&Scaron;estkotnik</b> navedeno &scaron;tevilo in enote določajo razdaljo med vzporednimi stranicami.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Izberi sloj za povzemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjekti v tem sloju, ki padejo znotraj meja geoobjektov v zgornjem vhodnem sloju, bodo povzeti. 
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Dodaj statistiko iz sloja za povzemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Če želite, lahko izračunate statistiko za &scaron;tevilske atribute točk, ki padejo znotraj meja geoobjektov. 
+            </p>
+            <p>Če je obkljukano izbirno polje  <b>&Scaron;tetje točk</b>, bo izračunalo skupno &scaron;tevilo točk znotraj meje vsakega poligona. Poleg tega lahko izračunate statistiko za &scaron;tevilske atribute točk, ki so znotraj meje vsakega poligona.
+            </p>
+            <ul>
+                <li> <b>Vsota</b> &ndash; Skupna vrednost določenega polja.
+                </li>
+                <li> <b>Povprečje</b> &ndash; Povprečje ali srednja vrednost za določeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; Najmanj&scaron;a vrednost v določenem polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Največja vrednost v določenem polju.
+                </li>
+                <li> <b>St. odklon</b> &ndash; Standardni odklon vrednosti v določenem polju.
+                </li>
+            </ul>
+            
+            <p>Če sloj za povzetek nima nobenega &scaron;tevila polj, dodatna statistika ne bo na voljo.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Dodaj statistiko iz</h2></div>
+        <hr/>
+        <div>
+            <p>Če želite, lahko izračunate statistiko za &scaron;tevilske atribute linij, ki jih je treba povzeti. 
+            </p>
+            <p>Če je izbirno polje  <b>Skupna dolžina linij v</b>, obkljukano, bo izračunalo skupno dolžino linij znotraj meje vsakega poligona. Poleg tega lahko izračunate statistiko za &scaron;tevilske atribute linij, ki so znotraj meje vsakega poligona.
+            </p>
+            <ul>
+                <li> <b>Vsota</b> &ndash; Skupna vrednost določenega polja.
+                </li>
+                <li> <b>Povprečje</b> &ndash; Povprečje ali srednja vrednost za določeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; Najmanj&scaron;a vrednost v določenem polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Največja vrednost v določenem polju.
+                </li>
+                <li> <b>St. odklon</b> &ndash; Standardni odklon vrednosti v določenem polju.
+                </li>
+            </ul>
+            
+            <p>Če sloj za povzetek nima nobenega &scaron;tevila polj, dodatna statistika ne bo na voljo.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Dodaj statistiko iz</h2></div>
+        <hr/>
+        <div>
+            <p>Če želite, lahko izračunate statistiko za &scaron;tevilske atribute poligonov, ki morajo biti povzeti. 
+            </p>
+            <p>Če je izbirno polje  <b>Vsota povr&scaron;in s pomočjo</b> obkljukano, bo izračunalo skupno povr&scaron;ino geoobjektov, ki so znotraj meje vsakega poligona prvega vhodnega sloja. Poleg tega lahko izračunate statistike za &scaron;tevilske atribute geoobjektov, ki so znotraj meje vsakega poligona.
+            </p>
+            <ul>
+                <li> <b>Vsota</b> &ndash; Skupna vrednost določenega polja.
+                </li>
+                <li> <b>Povprečje</b> &ndash; Povprečje ali srednja vrednost za določeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; Najmanj&scaron;a vrednost v določenem polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Največja vrednost v določenem polju.
+                </li>
+                <li> <b>St. odklon</b> &ndash; Standardni odklon vrednosti v določenem polju.
+                </li>
+            </ul>
+            
+            <p>Če sloj za povzetek nima nobenega &scaron;tevila polj, dodatna statistika ne bo na voljo.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Dodaj statistiko iz</h2></div>
+        <hr/>
+        <div>
+            <p>Ko izberete sloj za povzetek, lahko po želji izračunate statistiko katerih koli &scaron;tevilskih atributov točk, linij ali poligonov znotraj sloja vhodnega poligonskega sloja. 
+            </p>
+            <ul>
+                <li> <b>Vsota</b> &ndash; Skupna vrednost določenega polja
+                </li>
+                <li> <b>Povprečje</b> &ndash; Povprečje ali srednja vrednost za določeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; Najmanj&scaron;a vrednost v določenem polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; Največja vrednost v določenem polju
+                </li>
+                <li> <b>St. odklon</b> &ndash; Standardni odklon vrednosti v določenem polju
+                </li>
+            </ul>
+            
+            <p>Odvisno od tipov geoobjektov, ki jih povzemate, lahko izračunate skupno &scaron;tevilo točk, skupno dolžino linij ali skupno povr&scaron;ino.
+            </p>
+            <p>Če sloj za povzetek nima nobenega &scaron;tevila polj, dodatna statistika ne bo na voljo.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Izberi polje za skupinjenje po</h2></div>
+        <hr/>
+        <div>
+            <p>To je atribut geoobjektov  <b>Povzemi</b>, ki jih lahko uporabljate za izračun statistike posebej za vsako enolično atributno vrednost. Na primer, predpostavite, da prvi vhodni sloj vsebuje meje mesta in geoobjekti povzetka so parcele. Eden izmed atributov parcel je <i>Status</i>, ki vsebuje dve vrednosti: NEPOZIDANA in POZIDANA. Za izračun skupne povr&scaron;ine nepozidanih in pozidanih parcel znotraj meja mesta uporabite <i>Status</i> za skupinjenje po atributu. Statistika za vsako skupino ter &scaron;tevilo geoobjektov znotraj meje vsakega poligona bosta prikazana v pojavnem oknu sloja z rezultati.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjšino, večino</h2></div>
+        <hr/>
+        <div>
+            <p>To izbirno polje je omogočeno, ko izberete polje skupinjenja po. Če želite izvedeti, katere vrednosti atributov so manj&scaron;ina znotraj vsake skupine (najmanj prevladujejo) ali večina (najbolj prevladujejo) znotraj vsake meje prvega vhodnega sloja, izberite  <b>Dodaj manj&scaron;ino, večino</b>. Ko izberete <b>Dodaj manj&scaron;ino, večino</b>, sta sloju z rezultati dodani dve novi polji. Če izberete tudi <b>Dodaj odstotke</b>, sta sloju z rezultati dodani &scaron;e dve polji, ki vsebujeta odstotke vrednosti atributov manj&scaron;ine in večine v vsaki skupini.
+            </p>
+            <ul>
+                <li>Če povzemate točke, so manj&scaron;inske in večinske vrednosti izračunane na podlagi &scaron;tevila točk znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+                <li>Če povzemate linije, so manj&scaron;inske in večinske vrednosti izračunane na podlagi dolžine linij znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+                <li>Če povzemate poligone, so manj&scaron;inske in večinske vrednosti izračunane na podlagi poligonov znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj odstotke</h2></div>
+        <hr/>
+        <div>
+            <p>To izbirno polje je omogočeno, ko izberete polje za skupinjenje. Izberite  <b>Dodaj odstotke</b>, če želite najti odstotek vsake atributne vrednosti znotraj vsake skupine. V tabelo rezultatov je dodano novo polje, ki vsebuje odstotke vsake atributne vrednosti znotraj vsake skupine. Če je prav tako obkljukano <b>Dodaj manj&scaron;ino, večino</b>, sta sloju rezultatov dodani &scaron;e dve polji, ki vsebujeta odstotke manj&scaron;inskih in večinskih vrednosti atributov v vsaki skupini.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

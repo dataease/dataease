@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoleringspunkter</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Verktyget Interpoleringspunkter"></h2>
+        <hr/>
+    <p>Med det h&auml;r verktyget kan du f&ouml;ruts&auml;ga v&auml;rden p&aring; nya platser baserat p&aring; m&auml;tningar fr&aring;n en samling punkter. Verktyget samlar punktdata med v&auml;rden vid varje punkt och returnerar ett raster med predicerade v&auml;rden.
+    </p>
+    <p>Andra exempel p&aring; anv&auml;ndningsomr&aring;den f&ouml;r det h&auml;r verktyget &auml;r bland annat:
+
+        <ul>
+            <li>Ett ledningscentrum f&ouml;r luftkontroll har sensorer som m&auml;ter utsl&auml;ppsniv&aring;er. Interpoleringspunkter kan anv&auml;ndas f&ouml;r att f&ouml;ruts&auml;ga utsl&auml;ppsniv&aring;er p&aring; platser som saknar sensorer, till exempel skolor, sjukhus och andra platser med k&auml;nsliga populationer.
+                
+
+            </li>
+            <li>F&ouml;ruts&auml;g koncentrationen av tungmetaller i gr&ouml;dor baserat p&aring; prover tagna fr&aring;n enskilda v&auml;xter.
+                
+
+            </li>
+            <li>F&ouml;ruts&auml;g niv&aring;erna av n&auml;rings&auml;mnen i marken (kv&auml;ve, fosfor, kalium osv.) och andra indikatorer (till exempel elektrisk ledningsf&ouml;rm&aring;ga) f&ouml;r att studera deras samband med gr&ouml;dornas avkastning och f&ouml;reskriva exakta m&auml;ngder g&ouml;dningsmedel f&ouml;r varje del av &aring;kern.
+                
+
+            </li>
+            <li>Bland de metrologiska anv&auml;ndningsomr&aring;dena m&auml;rks att f&ouml;ruts&auml;ga temperaturer, regnm&auml;ngder och tillh&ouml;rande variabler (till exempel surt regn).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Välj punktlager som innehåller platser med kända värden</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager som inneh&aring;ller de punkter d&auml;r v&auml;rdena har uppm&auml;tts.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Välj fält för interpolering</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj det f&auml;lt vars v&auml;rden du vill interpolera. F&auml;ltet m&aring;ste vara numeriskt.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimera för</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj om du f&ouml;redrar snabbhet eller noggrannhet.
+            </p>
+            <p>Mer noggranna f&ouml;ruts&auml;gelser tar l&auml;ngre tid att ber&auml;kna. Den h&auml;r parametern &auml;ndrar standardv&auml;rdena f&ouml;r flera andra parametrar f&ouml;r verktyget Interpoleringspunkter i syfte att att optimera ber&auml;kningshastigheten, optimera resultatens noggrannhet eller uppn&aring; balans mellan b&aring;da dessa. Som standard optimerar verktyget efter balans.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformera data till normalfördelning</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj om du vill omvandla dina data till normalf&ouml;rdelningen.
+            </p>
+            <p>Interpolering &auml;r mest noggrant f&ouml;r data som f&ouml;ljer en normal f&ouml;rdelningskurva. Om dina data inte verkar vara normalt f&ouml;rdelade b&ouml;r du genomf&ouml;ra en omvandling.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Storlek på lokala modeller</h2></div>
+        <hr/>
+        <div>
+            <p>Interpoleringspunkter fungerar genom att skapa lokala interpoleringsmodeller som blandas f&ouml;r att skapa den slutliga f&ouml;ruts&auml;gelsekartan. Den h&auml;r parametern styr hur m&aring;nga punkter som ska finnas i varje lokal modell. Mindre v&auml;rden g&ouml;r resultaten mer lokala och kan avsl&ouml;ja sm&aring;skaliga effekter, men de kan ocks&aring; tillf&ouml;ra en del instabilitet i ber&auml;kningarna. St&ouml;rre v&auml;rden kan vara mer stabila, men en del lokala effekter kan missas.
+            </p>
+            <p>V&auml;rdet kan str&auml;cka sig fr&aring;n 30 till 500, men typiska v&auml;rden ligger mellan 50 och 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Antal grannar</h2></div>
+        <hr/>
+        <div>
+            <p>F&ouml;ruts&auml;gelser ber&auml;knas baserat p&aring; n&auml;rliggande punkter. Den h&auml;r parametern styr hur m&aring;nga punkter som ska anv&auml;ndas i ber&auml;kningen. Om du anv&auml;nder ett st&ouml;rre antal grannar kommer det i allm&auml;nhet att ge mer noggranna resultat, men resultaten kan ta l&auml;ngre tid att ber&auml;kna.
+            </p>
+            <p>V&auml;rdet kan str&auml;cka sig fr&aring;n 1 till 64, men typiska v&auml;rden ligger mellan 5 och 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellstorlek</h2></div>
+        <hr/>
+        <div>
+            <p>Cellstorleken och enheten f&ouml;r utdatarastren.
+            </p>
+            <p>De tillg&auml;ngliga enheterna &auml;r fot, miles, meter och kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Mata ut förutsägelsefel</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj om du vill skapa ett raster med standardfel f&ouml;r f&ouml;rutsagda v&auml;rden.
+            </p>
+            <p>Standardfel &auml;r anv&auml;ndbara eftersom de ger information om p&aring;litligheten hos de f&ouml;rutsagda v&auml;rdena. En enkel tumregel &auml;r att det verkliga v&auml;rdet hamnar mellan tv&aring; standardv&auml;rden f&ouml;r det f&ouml;rutsagda v&auml;rdet 95 procent av g&aring;ngerna. Anta att en ny plats ger ett f&ouml;rutsagt v&auml;rde p&aring; 50 med ett standardfel p&aring; 5. Detta inneb&auml;r att verktygets b&auml;sta gissning &auml;r att det verkliga v&auml;rdet f&ouml;r platsen &auml;r 50, men att det &auml;r rimligt att anta att det kan vara s&aring; l&aring;gt som 40 eller s&aring; h&ouml;gt som 60. F&ouml;r att ber&auml;kna intervallet f&ouml;r de rimliga v&auml;rdena multiplicerar du standardfelet med 2, l&auml;gger till det h&auml;r v&auml;rdet till det f&ouml;rutsagda v&auml;rdet f&ouml;r att f&aring; den &ouml;vre delen av intervallet, och drar bort det fr&aring;n det f&ouml;rutsagda v&auml;rdet f&ouml;r att f&aring; den l&auml;gre delen av intervallet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

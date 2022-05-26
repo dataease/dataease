@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rétegek összeillesztése</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="R&eacute;tegek &ouml;sszeilleszt&eacute;se"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z k&eacute;t r&eacute;teg vektoros elemeit egy &uacute;j r&eacute;tegbe m&aacute;solja.    Az &ouml;sszes egyes&iacute;teni k&iacute;v&aacute;nt r&eacute;tegnek ugyanolyan t&iacute;pus&uacute; vektoros elemeket kell tartalmaznia (pontok, vonalak vagy ter&uuml;letek).  Lehetős&eacute;g van annak szab&aacute;lyoz&aacute;s&aacute;ra, mik&eacute;nt t&ouml;rt&eacute;njen a bemenő r&eacute;tegek mezőinek &ouml;sszekapcsol&aacute;sa &eacute;s m&aacute;sol&aacute;sa.  P&eacute;ld&aacute;ul:
+        <ul>
+            <li>Van h&aacute;rom r&eacute;tegem: Anglia, Wales &eacute;s Sk&oacute;cia, &eacute;s szeretn&eacute;k egyetlen r&eacute;teget k&eacute;sz&iacute;teni Nagy-Britanni&aacute;r&oacute;l. 
+            </li>
+            <li>Van 12 r&eacute;tegem, &eacute;s mindegyik tartalmazza a szomsz&eacute;dos telep&uuml;l&eacute;sek csomaginform&aacute;ci&oacute;j&aacute;t.  Szeretn&eacute;m &ouml;sszekapcsolni őket egyetlen r&eacute;tegg&eacute;, csak azokat a mezőket megtartva, amelyek neve &eacute;s t&iacute;pusa azonos a 12 bemenő r&eacute;tegen.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket egyes&iacute;ti.  Ha nincs bejel&ouml;lve, az elemz&eacute;s mindk&eacute;t r&eacute;teget egyes&iacute;ti, akkor is, ha k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az al&aacute;bb megadott r&eacute;teggel egyes&iacute;tendő pont, vonal vagy ter&uuml;let vektoros elem. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Egyesíteni kívánt réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az első r&eacute;teggel egyes&iacute;teni k&iacute;v&aacute;nt r&eacute;teget.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Mezők összeillesztésének módosítása</h2></div>
+        <hr/>
+        <div>
+            <p>Alap&eacute;rtelmez&eacute;s szerint mindk&eacute;t bemenetből az &ouml;sszes mező beker&uuml;l a kimenetbe.  Itt m&oacute;dos&iacute;thatja, hogyan ker&uuml;ljenek be a mezők a kimenetbe, az al&aacute;bbiak szerint:
+                <ul>
+                    <li> <b>&Aacute;tnevez&eacute;s</b> &ndash; a program &aacute;tnevezi a mezőt a kimenetben.
+                    </li>
+                    <li> <b>Elt&aacute;vol&iacute;t&aacute;s</b> &ndash; a program elt&aacute;vol&iacute;tja a mezőt a kimenetből.
+                    </li>
+                    <li> <b>Egyeztet&eacute;s</b> &ndash; a program ugyanazokat a mezőneveket haszn&aacute;lja.  A program az &ouml;sszeilleszteni k&iacute;v&aacute;nt r&eacute;teg mezőinek &eacute;rt&eacute;keit is &aacute;tm&aacute;solja az egyeztetett kimeneti mezőbe.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha mindk&eacute;t mező azonos n&eacute;vvel &eacute;s adatt&iacute;pussal tartalmaz egy mezőt, akkor a rendszer mindk&eacute;t mező tartalm&aacute;t egyetlen, az adott nevű mezőben egyes&iacute;ti. Ez nem vonatkozik azokra a mezőkre, amelyek eset&eacute;ben a rendszer az  <b>Egyez&eacute;s</b> felt&eacute;telt haszn&aacute;lja az <b>Egyes&uuml;lő mezők m&oacute;dos&iacute;t&aacute;sa</b> param&eacute;terben.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

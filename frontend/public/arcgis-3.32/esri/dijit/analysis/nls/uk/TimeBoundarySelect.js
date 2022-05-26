@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/uk/TimeBoundarySelect",{timeInterval:"\u0427\u0430\u0441\u043e\u0432\u0438\u0439 \u0456\u043d\u0442\u0435\u0440\u0432\u0430\u043b",timeAlign:"\u0427\u0430\u0441, \u0432\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u043d\u043e \u0434\u043e \u044f\u043a\u043e\u0433\u043e \u0443\u0437\u0433\u043e\u0434\u0436\u0443\u0432\u0430\u0442\u0438\u043c\u0435\u0442\u044c\u0441\u044f \u0447\u0430\u0441\u043e\u0432\u0438\u0439 \u0456\u043d\u0442\u0435\u0440\u0432\u0430\u043b"});

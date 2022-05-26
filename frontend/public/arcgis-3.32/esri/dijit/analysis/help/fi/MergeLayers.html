@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Yhdistä karttatasot</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Yhdist&auml; karttatasot"></h2>
+        <hr/>
+    <p>Toiminto kopioi kahden eri tason kohteet uuteen tasoon. Yhdistett&auml;vien tasojen on sis&auml;llett&auml;v&auml; samat kohdetyypit (pisteet, viivat tai alueet). Voit m&auml;&auml;ritt&auml;&auml;, miten l&auml;ht&ouml;tason kent&auml;t yhdistet&auml;&auml;n ja kopioidaan. Esimerkki:
+        <ul>
+            <li>Haluan yhdist&auml;&auml; tasot Englanti, Wales ja Skotlanti yhdeksi Iso-Britannia-nimiseksi tasoksi. 
+            </li>
+            <li>Minulla on 12 tasoa, ja jokainen sis&auml;lt&auml;&auml; kaupunkien katkeamattomat kiinteist&ouml;tiedot. Haluan yhdist&auml;&auml; ne yhdeksi tasoksi ja s&auml;ilytt&auml;&auml; vain sellaiset tasot, joilla on sama nimi ja tyyppi 12 l&auml;ht&ouml;tasossa.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, toiminto yhdist&auml;&auml; vain nykyisess&auml; kartassa n&auml;kyviss&auml; olevat kohteet. Jos vaihtoehto ei ole valittuna, kummankin tason kaikki kohteet yhdistet&auml;&auml;n, vaikka ne eiv&auml;t kuuluisi karttalaajuuteen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Alla m&auml;&auml;ritettyyn karttatasoon yhdistett&auml;v&auml;t piste-, viiva- tai aluekohteet. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Valitse yhdistettävä karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse karttataso, joka yhdistet&auml;&auml;n ensimm&auml;iseen karttatasoon.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Muokkaa yhdistämiskenttiä</h2></div>
+        <hr/>
+        <div>
+            <p>Oletusasetuksen mukaan tulosaineistoon siirtyv&auml;t kummankin l&auml;ht&ouml;tason kaikki kent&auml;t. Kenttien siirtymist&auml; tulosaineistoon voi muuttaa seuraavasti:
+                <ul>
+                    <li> <b>Nime&auml; uudelleen</b>&mdash;Nime&auml;&auml; kent&auml;n uudelleen tulosaineistossa.
+                    </li>
+                    <li> <b>Poista</b>&mdash;Poistaa kent&auml;n tulosaineistosta.
+                    </li>
+                    <li> <b>T&auml;sm&auml;&auml;</b>&mdash;Muuttaa kenttien nimet samoiksi. Yhdistett&auml;v&auml;n tason kent&auml;n arvot kopioidaan t&auml;sm&auml;ytettyyn tuloskentt&auml;&auml;n.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos molemmat karttatasot sis&auml;lt&auml;v&auml;t kent&auml;n, jonka nimi ja tietotyyppi on sama, kummankin kent&auml;n sis&auml;ll&ouml;t yhdistet&auml;&auml;n yhteen, samannimiseen kentt&auml;&auml;n. T&auml;m&auml; ei p&auml;de kentille, joissa  <b>Vastaava</b>-vaihtoehtoa k&auml;ytet&auml;&auml;n <b>Muokkaa yhdist&auml;miskentti&auml;</b> -parametrissa.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

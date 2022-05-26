@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>フィーチャをラスターに変換</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="フィーチャをラスターに変換ツール"></h2>
+        <hr/>
+    <p>このツールは、フィーチャをラスター データセットに変換します。
+    </p>
+    <p>ポイント、ライン、またはポリゴン フィーチャを含むフィーチャクラスをラスター データセットに変換できます。
+    </p>
+    <p>出力ラスター ピクセル値の決定には、セルの中心が使用されます。
+    </p>
+    <p>入力フィールドのタイプによって、出力ラスターのタイプが決まります。フィールドが整数の場合、出力ラスターは整数になり、フィールドが浮動小数点の場合、出力は浮動小数点になります。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>変換するフィーチャ レイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>ラスター データセットに変換する入力フィーチャ レイヤー。
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>フィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>出力ラスターへの値の割り当てに使用するフィールドを選択します。
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>出力セル サイズ</h2></div>
+        <hr/>
+        <div>
+            <p>出力ラスターのセル サイズと単位。
+            </p>
+            <p>使用できる単位は、「マイル」、「フィート」、「キロメートル」、および「メートル」です。デフォルトは「フィート」です。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

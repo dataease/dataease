@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Iš naujo susieti reikšmes</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Portalo įrankis reik&scaron;mėms i&scaron; naujo susieti"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis leidžia keisti arba perklasifikuoti rastrinių duomenų pikselių reik&scaron;mes. Pikselių reik&scaron;mės susiejamos i&scaron; naujo nurodant pikselių reik&scaron;mių, kurias norite susieti su i&scaron;vesties pikselio reik&scaron;me, intervalą. I&scaron;vesties pikselio reik&scaron;mė gali būti galiojanti reik&scaron;mė arba NoData reik&scaron;mė, kuri rei&scaron;kia, kad pikseliai nėra susieti su jokia žinoma reik&scaron;me.
+    </p>
+    <p>Jei parinktis  <b>Naudoti dabartinę žemėlapio aprėptį</b> pažymėta, bus i&scaron; naujo sujungtos tik dabartinėje žemėlapio aprėptyje matomos gardelės. Jei nepažymėta, bus analizuojamos visos rastro gardelės, net jei jos nepatenka į dabartinę žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Įvesties duomenys</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties duomenys, kurių reik&scaron;mės bus susietos i&scaron; naujo.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Iš naujo susieti pikselių reikšmes su naujomis reikšmėmis</h2></div>
+        <hr/>
+        <div>
+            <p>Jūs įvedate reik&scaron;mių intervalą, nurodydami mažiausią ir didžiausią reik&scaron;mę, ir nurodytam intervalui priskiriate i&scaron;vesties reik&scaron;mę arba NoData reik&scaron;mę.
+            </p>
+            <p>Norėdami i&scaron; naujo susieti naują reik&scaron;mių intervalą, pridėkite eilutę spustelėdami  <b>Pridėti</b>. Spustelėkite kiekvieną reik&scaron;mę, jei norite redaguoti intervalų lentelę ir i&scaron; naujo susietą reik&scaron;mę. Nurodžius reik&scaron;mių intervalus, taikomos dvi svarbios taisyklės:
+                <ul>
+                    <li>Mažiausia reik&scaron;mė yra įtraukiama į intervalą, o didžiausia &ndash; ne.
+                    </li>
+                    <li>Eilutės lentelėje apdorojamos i&scaron; vir&scaron;aus į apačią.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Toliau pateiktoje lentelėje rodoma, kad mažiausia reik&scaron;mė patenka į i&scaron;vestį, o didžiausia &ndash; ne.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Taip pat svarbi tvarka, kuria intervalai pateikiami lentelėje. Pirmiausia apdorojama lentelės pirmoji eilutė, tada &ndash; po jos einanti eilutė. Dviejose lentelėse žemiau parodyta, kaip naudojant tuos pačius reik&scaron;mių intervalus gaunami skirtingi rezultatai dėl skirtingos lentelės eilučių tvarkos.
+            </p> 
+            <p>Žemiau pateiktoje lentelėje rodomos i&scaron;vesties reik&scaron;mės, kai pirmas stulpelis surikiuotas pagal skaitinę vertę:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Žemiau pateiktoje lentelėje parodyta, kaip kitoks eilučių rikiavimas pateiks kitokias i&scaron;vesties reik&scaron;mes:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Abi taisyklės taikomos reik&scaron;mių eili&scaron;kumui pertvarkyti. Kadangi eilutės apdorojamos i&scaron; vir&scaron;aus į apačią, pirmosios reik&scaron;mės yra svarbesnės nustatant i&scaron;vestį, net jei naudojami tokie patys intervalai.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

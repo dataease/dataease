@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ko/SummarizeCenterAndDispersion",{inputLayerLabel:"\uc124\uba85\ud560 \ub808\uc774\uc5b4 \uc120\ud0dd",summaryTypes:"\uc694\uc57d \uc720\ud615",centralFeature:"\uc911\uc2ec \ud53c\ucc98",meanCenter:"\ud3c9\uade0 \uc911\uc2ec",medianCenter:"\uc911\uc559\uac12 \uc911\uc2ec",ellipse:"\ud0c0\uc6d0",weightBy:"\uac00\uc911\uce58 \uae30\uc900(\uc120\ud0dd)",groupBy:"\uadf8\ub8f9\ud654 \uae30\uc900(\uc635\uc158)",resultLayerName:"\uacb0\uacfc \ub808\uc774\uc5b4 \uc774\ub984",
+outputLayerName:"${layerName}\uc758 \ubc30\ud3ec \uc124\uba85",none:"\uc5c6\uc74c",itemDescription:"${layerName}\uc5d0 \ub300\ud574 \uc911\uc2ec \ubc0f \ubd84\uc0b0 \uc694\uc57d\uc744 \uc2e4\ud589\ud558\uc5ec \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4. ",itemTags:"\ubd84\uc11d \uacb0\uacfc, \uc911\uc2ec \ubc0f \ubd84\uc0b0 \uc694\uc57d, ${layerName}",itemSnippet:"\uc911\uc2ec \ubc0f \ubd84\uc0b0 \uc694\uc57d\uc5d0\uc11c \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4"});

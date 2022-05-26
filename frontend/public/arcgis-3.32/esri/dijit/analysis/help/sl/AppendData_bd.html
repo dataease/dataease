@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pridruži podatke</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Pridruži podatkovni graf delovnega postopka"></h2>
+        <hr/>
+    <p>To orodje pridruži podatke obstoječemu gostujočemu geoobjektnemu sloju. Pridruži podatke spremeni izvirni vhodni sloj in ne ustvari novega izhodnega sloja. Polja lahko povežete glede na ime in tip polja ali pa uporabite naprednej&scaron;e metode povezovanja.
+    </p>
+    <p>Primeri: 
+        <ul>
+            <li>Zaposleni ste pri veliki zavarovalnici, ki mesečno ustvarja prodajne rekorde. Za letno poročilo morate za analizo zbrati mesečne podatke. Za začetek prodajne analize lahko, ko so mesečna poročila enkrat na voljo, za posodobitev letnega poročila 2018 uporabite sloj Pridruži podatke. Ker veste, da va&scaron;a organizacija vsak mesec skrbi za konsistentno shemo, lahko uporabite privzeto metodo preslikave polj, da učinkovito pridružite geoobjekte na podlagi imena in tipa polja.
+            </li>
+            <li>Vsaka od desetih okoljskih skupin zbere na tisoče podnebnih meritev znotraj svoje pristojnosti. Te organizacije želijo zbrati podatke, da bi bolje razumele regionalne in globalne vzorce. Vsaka organizacija določi shemo za svoj sklop podatkov. Organizacije so za podatke o temperaturi in hitrosti vetra navedle različna imena. Upo&scaron;tevaje razliko v imenu polja med sklopi podatkov, lahko preslikavo polj uporabite za določitev, kako pridružiti meritve temperature in hitrosti vetra ustreznim poljem.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberite sloj, ki mu želite pridružiti</h2></div>
+        <hr/>
+        <div>
+            <p>Tabelarični, točkovni, linijski ali poligonski geoobjekti, h katerim bodo pridruženi podatki.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Sloj, ki mu pridružite podatke, bo spremenjen med izvajanjem orodja. Pred nadaljevanjem se prepričajte, da želite spremeniti ta sloj.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete gostujoči geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Izberite sloj, ki ga želite pridružiti</h2></div>
+        <hr/>
+        <div>
+            <p>Tabelarični, točkovni, linijski ali poligonski geoobjekti, ki bodo pridruženi vhodnemu sloju.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Pridružite vse geoobjekte ali določite podmnožico (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Identificira geoobjekte, ki bodo pridruženi. Ta parameter je izbiren.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Izberite, kako želite pridružiti polja (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite, kako so pridružena polja sloja pridružena vhodnemu sloju. Privzeto bodo pridružena vsa ujemajoča se vhodna in pridružena polja. Polja se ujemajo, če imajo enako ime in tip polja. Po želji lahko izberete, kako se polja ujemajo, ali izračunate izraze Arcade, da izpolnite vrednosti polja.
+            </p>
+            <p>Na primer, imate vhodni sloj s polji  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> in pridruženi sloj s polji <i>field_string</i>, <i>field_number</i>, and <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Privzeto bo orodje povezalo  <i>field_number</i> iz vhodnega sloja s <i>field_number</i> iz pridruženega sloja in <i>field_string</i> iz vhodnega sloja s <i>field_string</i> iz pridruženega sloja.
+                    </li>
+                    <li>Privzeto bosta polji  <i>date_field</i> in <i>unused_field</i> iz vhodnega sloja izpolnjeni z vrednostmi <i>null</i>, ker se ne ujemata z nobenim poljem v pridruženem sloju.
+                    </li>
+                    <li>Po želji lahko poljem, ki niso bila privzeto samodejno povezana, pridružite vrednosti. Na primer,  <i>date_field</i> iz vhodnega sloja je mogoče povezati s pridruženim poljem <i>MY_DATE_FIELD</i>. To naredite tako, da uporabite spustni meni ob <i>date_field</i> v prvem stolpcu in izberete <i>MY_DATE_FIELD</i> iz spustnega menija v drugem stolpcu.
+                    </li>
+                </ul>
+                 Drugi primer, vhodni sloj ima &scaron;tevilska polja <i>value_1</i>, <i>value_2</i>, <i>value_3</i> in <i>my_Average</i> in pridruženi sloj ima &scaron;tevilska polja <i>value_1</i>, <i>value_2</i> in <i>value_3</i>.
+                <ul>
+                    <li>Privzeto bodo vrednosti  <i>value_1</i>, <i>value_2</i> in <i>value_3</i> povezane in pridružene.
+                    </li>
+                    <li>Poleg privzetega vedenja je vrednosti mogoče izračunati za polje  <i>my_Average</i>. To naredite z uporabo več polj in matematičnih operacij tako, da izberete možnost <b>Izraz</b> iz spustnega menija v stolpcu pri <i>my_Average</i> in izdelate izraz Arcade po meri, kot je <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

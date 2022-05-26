@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cerca el més proper</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Cerca el m&eacute;s proper"></h2>
+        <hr/>
+    <p>Aquesta eina cerca les entitats m&eacute;s properes, genera un informe i classifica la dist&agrave;ncia fins a les entitats properes. Per trobar qu&egrave; hi ha m&eacute;s a prop, l'eina pot fer la mesura mitjan&ccedil;ant una dist&agrave;ncia en l&iacute;nia recta o un mode de viatge seleccionat. Hi ha opcions per limitar el nombre d'entitats properes que es cercaran o l'interval dins del qual es far&agrave; la cerca. Els resultats d'aquesta eina us poden ajudar a respondre els seg&uuml;ents tipus de preguntes:
+        <ul>
+            <li>Quin &eacute;s el parc m&eacute;s proper des d'aqu&iacute;?
+            </li>
+            <li>A quin hospital puc arribar en el temps de recorregut m&eacute;s breu? Quant duraria el trajecte un dimarts a les 17.30 en hora punta?
+            </li>
+            <li>Quines s&oacute;n les dist&agrave;ncies per carretera entre aquestes dues grans ciutats?
+            </li>
+            <li>Quins d'aquests pacients resideixen en un radi de dos quil&ograve;metres d'aquestes plantes qu&iacute;miques?
+            </li>
+        </ul>
+        
+    </p>
+    <p>L'opci&oacute; Cerca el m&eacute;s proper retorna una capa que cont&eacute; les entitats m&eacute;s properes i una capa de l&iacute;nies que enlla&ccedil;a les ubicacions d'inici amb les seves ubicacions m&eacute;s properes. La capa de l&iacute;nies cont&eacute; informaci&oacute; sobre les ubicacions de partida i properes, aix&iacute; com les dist&agrave;ncies entre si.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s es tindran en compte com a entitats de partida i potencialment properes les entitats que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, es tindran en compte totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Especifiqueu les ubicacions d'inici</h2></div>
+        <hr/>
+        <div>
+            <p>L'opci&oacute; Cerca el m&eacute;s proper mesura des de les entitats de la capa que especifiqueu aqu&iacute; (les ubicacions d'inici) fins a les ubicacions que especifiqueu al par&agrave;metre seg&uuml;ent.  L'eina admet fins a  5.000 entitats en cada capa. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Cerca les ubicacions més properes a</h2></div>
+        <hr/>
+        <div>
+            <p>L'opci&oacute; Cerca el m&eacute;s proper mesura des de cadascuna de les entitats de la primera capa fins a les ubicacions d'aquesta capa. L'eina admet fins a  5.000 ubicacions en cada capa. </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mesura</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu si voleu cercar les ubicacions m&eacute;s properes en funci&oacute; d'una dist&agrave;ncia en l&iacute;nia recta o un mode de viatge seleccionat. Els modes de viatge nom&eacute;s s'habiliten si la capa d'entrada cont&eacute; punts. L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles.  Quan s'utilitza un dels modes de viatge, les mesures es fan al llarg de carreteres o camins i respecten les regles aplicables, com ara les vies de sentit &uacute;nic, els girs prohibits, etc.
+            </p>
+            <p>Quan es mesura entre l&iacute;nies o &agrave;rees, es troba la dist&agrave;ncia des del o fins al punt m&eacute;s proper a la l&iacute;nia, o b&eacute; el l&iacute;mit de l'&agrave;rea. 
+            </p> 
+            <p>Si trieu  <b>Temps de conducci&oacute;</b>, <b>Temps de conducci&oacute; rural</b> o <b>Temps en cami&oacute;</b>, disposeu d'opcions per mesurar el temps de recorregut.
+                <ul>
+                    <li>
+                        <p>Desactiveu  <b>Utilitza el tr&agrave;nsit</b> per trobar les entitats m&eacute;s properes en funci&oacute; de velocitats de viatge est&agrave;tiques, com ara els l&iacute;mits de velocitat, en lloc de fer-ho en funci&oacute; de velocitats variables que provoquen les variacions en les condicions del tr&agrave;nsit.
+                        </p>
+                        <p>Aquesta &eacute;s l'opci&oacute; que heu de triar si voleu saber quina &eacute;s la ubicaci&oacute; m&eacute;s propera en termes generals, tot i que no ho sigui necess&agrave;riament per a les condicions de tr&agrave;nsit especificades per a una hora i un dia espec&iacute;fics.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Activeu  <b>Utilitza el tr&agrave;nsit</b> per trobar les entitats m&eacute;s properes basades en una hora d'inici determinada i unes condicions de tr&agrave;nsit variables. Si tamb&eacute; trieu l'opci&oacute; <b>Tr&agrave;nsit en temps real</b>, l'hora de sortida de les ubicacions d'inici es defineix a l'hora actual i es prenen com a refer&egrave;ncia les velocitats de tr&agrave;nsit actuals i previstes dels sensors i les fonts de dades per determinar quines entitats estan m&eacute;s a prop. Les velocitats de tr&agrave;nsit previstes es calculen prenent com a refer&egrave;ncia les velocitats del tr&agrave;nsit en temps real, les velocitats hist&ograve;riques i els esdeveniments actuals, com ara les condicions meteorol&ograve;giques. Les velocitats del tr&agrave;nsit es prediuen amb 12 hores d'antelaci&oacute;, aix&iacute; que podeu moure el control lliscant per definir l'hora de sortida m&eacute;s endavant, fins al cap de 12 hores.
+                        </p>
+                        <p>Utilitzeu aquestes opcions del tr&agrave;nsit en temps real per saber a quines entitats es pot arribar m&eacute;s r&agrave;pidament si sortiu ara, d'aqu&iacute; a una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Si activeu  <b>Utilitza el tr&agrave;nsit</b> i trieu <b>Tr&agrave;nsit en funci&oacute; de les condicions t&iacute;piques per a</b> un dia i una hora, l'eina cerca les entitats m&eacute;s properes en funci&oacute; de les velocitats mitjanes hist&ograve;riques per a cada interval de cinc minuts d'una setmana normal. Els resultats inclouen el tr&agrave;nsit per&ograve; eliminen la influ&egrave;ncia de les condicions de tr&agrave;nsit i els esdeveniments actuals, que poden variar considerablement del que &eacute;s habitual.
+                        </p>
+                        <p>Podeu utilitzar aquesta configuraci&oacute; de tr&agrave;nsit hist&ograve;rica per preguntar, per exemple: &quot;A quines entitats puc arribar m&eacute;s r&agrave;pidament si surto des de les entitats d'inici a les 11.30 hores d'un dimecres?&quot;. 
+                        </p>
+                        <p>L'hora que definiu far&agrave; servir de refer&egrave;ncia la zona hor&agrave;ria on es troben les entitats d'inici. &Eacute;s a dir, si definiu l'hora a les 8.00 del mat&iacute; i teniu dues entitats d'inici, una a la ciutat de Nova York i una altra a Los Angeles, les ubicacions m&eacute;s properes es trobaran per a una hora de sortida definida a les 8.00 hora de l'Est i les 8.00 hora del Pac&iacute;fic, respectivament.
+                        </p>
+                    </li>
+                </ul>
+                Teniu en compte que, quan un vehicle s'allunya d'un punt, el temps passa i les condicions de tr&agrave;nsit canvien. Aquesta eina t&eacute; en compte aquestes variacions quan activeu <b>Utilitza el tr&agrave;nsit</b>. Aix&ograve; no obstant, no totes les regions s&oacute;n compatibles amb el tr&agrave;nsit. Feu clic a l'enlla&ccedil; <b>Mostra la disponibilitat</b> a l'eina per saber si est&agrave; disponible a la vostra &agrave;rea d'estudi. 
+            </p>
+            <p> <b>Temps en cami&oacute;</b> pot utilitzar velocitats de viatge din&agrave;miques en funci&oacute; del tr&agrave;nsit, per&ograve; nom&eacute;s fins al l&iacute;mit de velocitat legal del cami&oacute;. Per exemple, si la velocitat din&agrave;mica per a una via en funci&oacute; del tr&agrave;nsit en temps real &eacute;s de 65 milles per hora, per&ograve; el l&iacute;mit de velocitat del cami&oacute; per a la via &eacute;s de 55 milles per hora, el c&agrave;lcul utilitzar&agrave; les 55 milles per hora per a la via.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccioneu capes de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o diverses entitats poden actuar com a restriccions temporals (barreres) quan viatgeu per carrers subjacents. Podeu especificar les barreres amb entitats de punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <p>Una barrera de punt pot mostrar un arbre caigut, un accident, una l&iacute;nia el&egrave;ctrica fora de servei o qualsevol element que bloquegi completament el tr&agrave;nsit en un punt espec&iacute;fic del carrer. Es pot viatjar pel carrer, per&ograve; no creuar la barrera. Podeu especificar fins a 250 entitats perqu&egrave; actu&iuml;n com a barreres de punt.
+            </p>
+            <p>Una barrera de l&iacute;nia prohibeix viatjar per qualsevol lloc on la barrera s'intersequi amb els carrers. Per exemple, una desfilada o manifestaci&oacute; que bloquegi el tr&agrave;nsit en diversos segments del carrer es pot mostrar amb una barrera de l&iacute;nia. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de l&iacute;nia &eacute;s superior a 500, l'eina retornar&agrave; un error.
+            </p>
+            <p>Una barrera de pol&iacute;gon prohibeix viatjar per qualsevol lloc on el pol&iacute;gon s'intersequi amb els carrers. Un dels usos d'aquest tipus de barrera &eacute;s mostrar les inundacions que cobreixen &agrave;rees de la xarxa de carrers i que impedeixen el viatge per carretera. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de pol&iacute;gon &eacute;s superior a 2.000, l'eina retornar&agrave; un error.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Per a cada ubicació de la capa d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Teniu dues opcions per limitar la cerca de les ubicacions m&eacute;s properes. Una opci&oacute; &eacute;s limitar la cerca a un nombre m&agrave;xim d'ubicacions properes per ubicaci&oacute; d'inici. Podeu cercar el parc m&eacute;s proper, els dos m&eacute;s propers, etc. L'altra opci&oacute; &eacute;s definir un temps o una dist&agrave;ncia de cerca m&agrave;xims.
+            </p>
+            <p>Si desactiveu les opcions, el nombre m&agrave;xim d'ubicacions properes quan es faci la cerca ser&agrave; 100 (el l&iacute;mit de l'eina) i l'interval de cerca m&agrave;xim no tindr&agrave; cap l&iacute;mit.
+            </p>
+            <p>El temps de processament dep&egrave;n del nombre d'ubicacions d'inici, del nombre d'ubicacions properes i de l'interval de cerca m&agrave;xim.   Quan hi ha m&eacute;s ubicacions o intervals de cerca m&eacute;s grans, el temps de processament augmenta.
+            </p>
+            <p>Teniu en compte que, quan es defineix un l&iacute;mit per a l'interval de cerca, &eacute;s possible que l'eina no trobi cap ubicaci&oacute; propera dins de l'interval, o b&eacute; que es trobin menys ubicacions que el nombre m&agrave;xim d'ubicacions que especifiqueu.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa d'entitats que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. Si la capa d'entitats ja existeix, se us demanar&agrave; que escriviu un altre nom. La capa d'entitats contindr&agrave; dues capes: una que representar&agrave; les ubicacions m&eacute;s properes i una altra que representar&agrave; les l&iacute;nies que connecten les ubicacions d'entrada amb les ubicacions m&eacute;s properes.
+            </p>
+            <p>Si seleccioneu  <b>Inclou les capes de ruta</b>, cada ruta del resultat tamb&eacute; es desar&agrave; com a capa de ruta. Una capa de ruta inclou tota la informaci&oacute; d'una ruta determinada, com ara les parades assignades a la ruta i les indicacions del viatge. La creaci&oacute; de capes de ruta &eacute;s &uacute;til si voleu compartir les rutes individuals amb altres membres de l'organitzaci&oacute; o modificar encara m&eacute;s les rutes mitjan&ccedil;ant el bot&oacute; <b>Indicacions</b> del visor de mapes. Les capes de ruta utilitzen el nom que es proporciona per a la capa d'entitats com a prefix i el nom de la ruta que es genera com a part de l'an&agrave;lisi, que s'afegeix a fi de crear un nom &uacute;nic per a cada capa de ruta.
+            </p>
+            <p>El nombre m&agrave;xim de capes de ruta que es poden crear &eacute;s  1.000. Si el resultat cont&eacute; m&eacute;s de  1.000 rutes i l'opci&oacute;  <b>Inclou les capes de ruta</b> est&agrave; activada, l'eina nom&eacute;s crear&agrave; el servei d'entitats de sortida.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desaran la capa d'entitats i les capes de rutes (si se n'han creat).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

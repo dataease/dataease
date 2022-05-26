@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Conca hidrogràfica</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Tasca de conca hidrogr&agrave;fica"></h2>
+        <hr/>
+    <p>Aquesta eina determina l'&agrave;rea de contribuci&oacute; sobre un conjunt de cel&middot;les d'un r&agrave;ster.
+    </p>
+    <p>Una conca hidrogr&agrave;fica &eacute;s l'&agrave;rea de pendent ascendent que porta el flux (generalment aigua) a una sortida comuna com a drenatge concentrat. Pot formar part d'una conca hidrogr&agrave;fica m&eacute;s gran, aix&iacute; com contenir conques hidrogr&agrave;fiques m&eacute;s petites, anomenades subconques.
+    </p>
+    <p>El valor de cada conca hidrogr&agrave;fica s'extraur&agrave; del valor de l'origen de la capa de punts de flu&iuml;desa de l'entitat o el r&agrave;ster d'entrada. Si el punt de flu&iuml;desa &eacute;s un dataset r&agrave;ster, s'utilitzaran els valors de cel&middot;la per defecte. Si el punt de flu&iuml;desa &eacute;s un dataset d'entitats de punts, els valors provindran del camp especificat.
+    </p>
+    <p>L'eina Conca hidrogr&agrave;fica nom&eacute;s admet una capa r&agrave;ster de direcci&oacute; del flux d'entrada D8.
+    </p>
+    <p>Quan s'especifiquen les ubicacions de punts de flu&iuml;desa d'entrada com a dades d'entitats, el camp per defecte ser&agrave; el primer camp v&agrave;lid disponible. Si no existeix cap camp v&agrave;lid, s'utilitzar&agrave; per defecte el camp ObjectID (per exemple, OID o FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Trieu la capa de direcció del flux</h2></div>
+        <hr/>
+        <div>
+            <p>R&agrave;ster d'entrada que mostra la direcci&oacute; de sortida del flux de cada cel&middot;la.
+            </p>
+            <p>El r&agrave;ster de direcci&oacute; del flux es pot crear mitjan&ccedil;ant l'eina Direcci&oacute; del flux o la tasca FlowDirection del servei RasterAnalysisTools, que s'executa mitjan&ccedil;ant el tipus de direcci&oacute; del flux per defecte  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Especifiqueu les ubicacions dels punts de fluïdesa d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Ubicacions dels punts de flu&iuml;desa d'entrada.
+            </p>
+            <p>Per a un r&agrave;ster, aix&ograve; representa les cel&middot;les sobre les quals es determinar&agrave; l'&agrave;rea de contribuci&oacute; (o captaci&oacute;). Totes les cel&middot;les que siguin NoData s'utilitzaran com a cel&middot;les d'origen. Per a una entrada de punts, aix&ograve; representa les ubicacions sobre les quals es determinar&agrave; l'&agrave;rea de contribuci&oacute; (o captaci&oacute;).
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Trieu el camp de punt de fluïdesa</h2></div>
+        <hr/>
+        <div>
+            <p>Camp utilitzat per assignar valors a les ubicacions de punts de flu&iuml;desa.
+            </p>
+            <p>Si la capa de punts de flu&iuml;desa d'entrada &eacute;s un r&agrave;ster, s'utilitza Valor. Si &eacute;s una entitat, s'utilitza un camp num&egrave;ric. Si el camp cont&eacute; valors de punt flotant, es truncaran en enters.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izvilkt datus</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Izvilkt datus"></h2>
+        <hr/>
+    <p>Ar &scaron;o rīku jūs varat izvēlēties un lejupielādēt datus par noteiktu intere&scaron;u jomu. Slāņi, kurus jūs izvēlējāties, tiks pievienoti ZIP, CSV vai KMZ failā.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Slāņi, ko izvilkt</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ie ir slāņi jūsu satura tabulā, no kuriem jūs varat izvilkt elementus. Slāņi, kas tiek pārbaudīti tiek iegūti un iekļauti ZIP vai CSV faila rezultātā.
+            </p>
+            <p>Lai slānis parādītos izvelkamo slāņu sarakstā, jums ir jābūt datu īpa&scaron;niekam vai arī datu īpa&scaron;niekam ir jāaktivizē datu eksportē&scaron;ana.    Lai aktivizētu jūsu īpa&scaron;umā eso&scaron;o datu eksportē&scaron;anu: 
+                <ul>
+                    <li>Atveriet datu vienības aprakstu.
+                    </li>
+                    <li>Noklik&scaron;ķiniet uz cilnes  <b>Iestatījumi</b>.
+                    </li>
+                    <li>Ritiniet uz leju līdz sadaļai  <b>Datu eksportē&scaron;ana</b>.
+                    </li>
+                    <li>Atzīmējiet izvēles rūtiņu  <b>Atļaut citiem eksportēt uz dažādiem formātiem</b>.  Kad esat pabeidzis, noklik&scaron;ķiniet uz <b>Saglabāt</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ja jūsu analīzes slānis satur pielikumus, ņemiet vērā, ka pielikumi tiks izvilkti tikai tad, ja izvades datu formāts ir faila ģeodatubāze un opcija  <b>Izgriezt elementus</b> nav atzīmēta.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Pētāmā teritorija</h2></div>
+        <hr/>
+        <div>
+            <p>Joma, kas nosaka, kuri elementi tiks iekļauti izvades ZIP vai CSV failā. Jūs varat izvēlēties no sekojo&scaron;ā:
+                <ul>
+                    <li>Jūsu kartes pa&scaron;reiz redzamais pārklājums ( <b>Tāds pats kā displejs</b>).
+                    </li>
+                    <li>Viens no slāņiem jūsu satura rādītājā. Ja izvēlētajam slānim ir punkta vai līnijas iezīmes, slāņa pārklājums tiks izmantots kā izpētes apgabals.
+                    </li>
+                    <li>Zīmējiet laukumu, lai definētu pētāmo teritoriju.
+                    </li>
+                </ul>
+                 Pilnīgi visi elementi kartes pārklājumā tiks izvilkti. Elementiem, kas krusto vai &scaron;ķērso kartes pārklājuma robežu, bet neatrodas parklājumā pilnībā, jums ir divas izvēlnes:
+                <ul>
+                    <li> <b>Izvēlēties elementus</b>&mdash; tiks izvilkti visi elementi, kas krusto pētījumās teritorijas robežu.
+                    </li>
+                    <li> <b>Izgriezt elementus</b>&mdash; tiks izvilktas tikai tās elementu daļas, kas atrodas pētāmajā teritorijā.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Izvades datu formāts</h2></div>
+        <hr/>
+        <div>
+            <p>Datu, kur tiks izvilkti, formāts. Eksportējot līnijas vai apgabala elementus CSV failā, tiks iegūti tikai ne-telpiskie atribūti. Eksportējot punktu elementus, tiks iegūti gan telpiskie atribūti, gan atribūti, kas nav telpiski.  
+            </p>
+            <p>Izvilktajos datos tiks izmantota Web Mercator&nbsp;1984 projekcija.  CSV failos lauki  <i>Lat</i> un <i>Long</i> tiks pievienoti datiem ar koordinātēm Web Mercator&nbsp;1984 projekcijā.
+            </p> 
+            <p>Tiek atbalstīti &scaron;ādi izvades formāti:
+                <ul>
+                    <li>Ar komatu atdalītas vērtības (Comma separated value, CSV)&nbsp;&mdash;  <code>.csv</code> vai <code>.zip</code>
+                    </li>
+                    <li>Faila ģeodatubāze&nbsp;&mdash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&nbsp;&mdash;  <code>.kmz</code> vai <code>.zip</code>
+                    </li>
+                    <li>Shape fails&nbsp;&mdash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Izvades faila nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is ir tās vienības nosaukums, kas tiks pievienota sadaļā  <b>Mans saturs</b>.  Vienības nosaukuma pamatā ir izvēlētais <b>Izvades datu formāts</b>.     Ja vienība jau pastāv, jums tiks lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta lodziņā, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

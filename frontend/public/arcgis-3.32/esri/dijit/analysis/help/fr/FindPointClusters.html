@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Rechercher des agrégats de points</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Rechercher des agr&eacute;gats de points"></h2>
+        <hr/>
+    <p>Cet outil d&eacute;tecte les agr&eacute;gats d&rsquo;entit&eacute;s ponctuelles dans le bruit environnant en se basant sur leur distribution spatiale.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche de points en entr&eacute;e au sein de l&rsquo;&eacute;tendue actuelle de la carte sont analys&eacute;es. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s de la couche de points en entr&eacute;e sont analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l&rsquo;&eacute;tendue actuelle de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choisir la couche pour laquelle les agrégats seront identifiés</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de points dans laquelle se trouvent les agr&eacute;gats. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Nombre minimal de points à considérer comme agrégat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nombre minimum d&rsquo;entit&eacute;s pour former un agr&eacute;gat. Tout agr&eacute;gat comportant moins d&rsquo;entit&eacute;s que l&rsquo;agr&eacute;gat fourni sera consid&eacute;ra comme du bruit. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limiter la plage de recherche à (facultatif)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Distance maximale &agrave; prendre en compte pour consid&eacute;rer que les entit&eacute;s appartiennent &agrave; un m&ecirc;me agr&eacute;gat. Si le champ est laiss&eacute; vide, l&rsquo;outil ex&eacute;cute HDBSCAN qui utilise des distances variables pour s&eacute;parer les agr&eacute;gats de diverses densit&eacute;s du bruit plus clairsem&eacute;. Si une valeur est donn&eacute;e, l&rsquo;outil ex&eacute;cute DBSCAN qui utilise la distance sp&eacute;cifi&eacute;e pour s&eacute;parer les agr&eacute;gats denses du bruit plus clairsem&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

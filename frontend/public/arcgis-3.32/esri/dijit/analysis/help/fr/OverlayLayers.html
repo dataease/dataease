@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Superposer les couches</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Superposer les couches"></h2>
+        <hr/>
+    <p>La superposition permet de regrouper deux ou plusieurs couches en une seule couche. Vous pouvez comparer la superposition au fait de scruter une pile de cartes et de cr&eacute;er une seule carte contenant toutes les informations trouv&eacute;es dans la pile. La superposition est beaucoup plus qu'une simple fusion de dessin au trait DAO. Tous les attributs des entit&eacute;s composant la superposition sont conserv&eacute;s dans le produit final. La superposition est utilis&eacute;e pour r&eacute;pondre &agrave; l'une des questions fondamentales de la g&eacute;ographie : &quot;Qu'est-ce qui se trouve sur quoi ?&quot;Par exemple&nbsp;:
+        <ul>
+            <li>Quelles parcelles se trouvent dans la plaine inondable vieille de 100 ans ?(Le terme &quot;dans&quot; est une autre mani&egrave;re de dire &quot;sur&quot;.)
+                  
+            </li>
+            <li>Quelles routes se trouvent dans quels d&eacute;partements ?
+            </li>
+            <li>Quelle utilisation du sol se trouve sur quel type de sol ?
+                 
+            </li>
+            <li>Quels puits se trouvent dans des bases militaires abandonn&eacute;es ?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de superposition qui sont visibles au sein de l'&eacute;tendue courante de la carte seront superpos&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche de superposition seront superpos&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir une couche en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique &agrave; superposer.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Choisir la couche de superposition</h2></div>
+        <hr/>
+        <div>
+            <p>La couche &agrave; superposer sur la couche en entr&eacute;e.  
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Choisir la méthode de superposition</h2></div>
+        <hr/>
+        <div>
+            <p>La m&eacute;thode de superposition d&eacute;finit la mani&egrave;re dont la couche en entr&eacute;e et la couche de superposition sont fusionn&eacute;es.  
+
+                <ul>
+                    <li> <b>Intersecter</b>&nbsp;: le r&eacute;sultat contient uniquement les entit&eacute;s ou parties d'entit&eacute;s dans la couche de superposition qui sont superpos&eacute;es aux entit&eacute;s de la couche en entr&eacute;e. Lorsque vous intersectez des entit&eacute;s lin&eacute;aires ou surfaciques, vous avez la possibilit&eacute; de sp&eacute;cifier le type des entit&eacute;s que vous souhaitez g&eacute;n&eacute;rer.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Points avec points
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Points et points en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Points et points avec point en sortie">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Points avec lignes
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Points et lignes en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Points et lignes avec point en sortie">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Points avec surfaces
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="points et surfaces en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="points et surfaces avec point en sortie">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Lignes avec lignes 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Lignes et lignes en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Lignes et lignes avec point en sortie">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Lignes et lignes avec ligne en sortie">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Lignes avec surfaces
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Lignes et surfaces en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Lignes et surfaces avec point en sortie">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Lignes et surfaces avec ligne en sortie">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Surfaces avec surfaces
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Surfaces et surfaces en entr&eacute;e">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Surfaces et surfaces avec point en sortie">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Surfaces et surfaces avec ligne en sortie">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Surfaces et surfaces avec surface en sortie">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Agr&eacute;ger</b>&nbsp;: le r&eacute;sultat contient des entit&eacute;s issues &agrave; la fois de la couche en entr&eacute;e et de la couche de superposition. L'option Agr&eacute;ger est disponible uniquement si la couche en entr&eacute;e et la couche de superposition contiennent toutes les deux des entit&eacute;s surfaciques.
+                    </li>
+                    <li> <b>Effacer</b>&nbsp;: le r&eacute;sultat contient les entit&eacute;s ou parties d'entit&eacute;s dans la couche de superposition qui ne sont pas superpos&eacute;es aux surfaces de la couche en entr&eacute;e.  La couche de superposition peut contenir des entit&eacute;s surfaciques, lin&eacute;aires ou ponctuelles.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de superposition qui sont visibles au sein de l'&eacute;tendue courante de la carte seront superpos&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche de superposition seront superpos&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans votre page <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Elle contiendra le m&ecirc;me type d'entit&eacute; (surfaces, lignes ou points) que la couche de superposition. Le nom par d&eacute;faut repose sur la m&eacute;thode de superposition et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous devez fournir un autre nom.
+            </p>
+            <p>La zone de liste d&eacute;roulante  <b>Enregistrer le r&eacute;sultat dans</b> vous permet de sp&eacute;cifier le nom d'un dossier dans <b>Mon contenu</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

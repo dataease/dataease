@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Clip laag</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="Clip laag"></h2>
+        <hr/>
+    <p>De tool Clip laag haalt de objecten van het invoerpunt, de lijn of het gebied die over de clipgebieden heen liggen. De uitvoer is een subset van uw invoergegevens op basis van de interessegebieden. Hier volgen enkele voorbeelden van de tool:
+        <ul>
+            <li>Welke grote rivieren bevinden zich in de staat Nebraska?
+                  
+            </li>
+            <li>Welke huizen bevinden zich in een kustoverstromingsgebied?
+            </li>
+            <li>Welke orkanen kwamen in 2011 aan land?
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies objecten om te clippen</h2></div>
+        <hr/>
+        <div>
+            <p>De punt-, lijn- of vlakkenlaag die geclipt moet worden. U maakt een subset van deze objecten.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>Kies een gebied om naar te clippen</h2></div>
+        <hr/>
+        <div>
+            <p>De gebiedslaag waaraan u invoerlaagobjecten wilt clippen. Deze gebieden bepalen subsetgrenzen.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

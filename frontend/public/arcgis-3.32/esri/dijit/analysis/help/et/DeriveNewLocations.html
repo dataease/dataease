@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tuleta uued asukohad</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Tuleta uued asukohad"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist tuletab uued asukohad huvipakkuvast piirkonnast, mis vastavad seatavatele kriteeriumitele. Need kriteeriumid v&otilde;ivad baseeruda atribuutide p&auml;ringutel (n&auml;iteks vabad maat&uuml;kid) ja ruumilistel p&auml;ringutel (n&auml;iteks k&otilde;ik maat&uuml;kid &uuml;leujutustsoonis).
+
+    </p>
+    <p>Kui  <b>Kasuta hetke kaardi kuvaulatust</b> on valitud, anal&uuml;&uuml;sitakse ainult objekte, mis on hetke kaardi kuvaulatuses n&auml;htavad.  Kui ei ole m&auml;rgistatud, anal&uuml;&uuml;sitakse k&otilde;iki objekte, sh neid, mis asuvad kaardi kuvaulatusest v&auml;ljaspool.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Tuleta uued asukohad, mis vastavad järgneva(te)le avaldis(t)ele</h2></div>
+        <hr/>
+        <div>
+            <p>Avaldise defineerimiseks kl&otilde;psake nuppu  <b>Lisa avaldis</b>.  V&otilde;ite lisada mitu avaldist. P&auml;rast avaldise sisestamist ja nupu <b>K&auml;ivita anal&uuml;&uuml;s</b> kl&otilde;psamist filtreeritakse anal&uuml;&uuml;sitava kihi objektid vastavalt igale avaldisele.  Objektide osad, mis vastavad k&otilde;ikidele avaldistele, kirjutatakse tulemuste kihti.
+            </p>
+            <p>V&otilde;ite luua kaht t&uuml;&uuml;pi avaldisi: atribuutide ja ruumip&otilde;hiseid. Atribuutide avaldised on p&auml;ringud v&auml;lja v&auml;&auml;rtustest, n&auml;iteks  <code>kus nimi on 'Tallinn'</code>.  Esineb nelja t&uuml;&uuml;pi ruumilisi avaldisi
+                <ul>
+                    <li> <b></b> kaugusel: objektid kindlas kauguses teise kihi objektidest.  N&auml;iteks leia maade osad, mis on maksimaalselt Pirita j&otilde;est 500 meetri raadiuses.
+                    </li>
+                    <li> <b>sisaldab t&auml;ielikult</b>: objekt peab h&otilde;lmama terve objekti teisest kihist.  N&auml;iteks leia valgalad, mis t&auml;ielikult sisaldavad t&ouml;&ouml;stusalasid. &Uuml;kski maa-ala osa ei tohi olla veelahkmest v&auml;ljaspool.
+                    </li>
+                    <li> <b>t&auml;ielikult</b> sees: teise kihi objekt peab seda objekti t&auml;ielikult &uuml;mbritsema.  N&auml;iteks leia koolide piirkonnad, mis on terviklikult linna piirides. &Uuml;kski kooli piirkonna osa ei tohi olla linna piiridest v&auml;ljaspool.
+                    </li>
+                    <li> <b>l&otilde;ikumine</b>: objekt v&otilde;i osa objektist peab kattuma v&otilde;i l&otilde;ikuma objektiga teisest kihist.  N&auml;iteks p&otilde;lenud rohealade leidmine rahvuspargi sees. P&otilde;lenud alasid v&auml;ljaspool rahvusparki ei kaasata.
+                    </li>
+                    <li> <b>l&auml;him</b>: objekt peab teise kihi objektile asuma k&otilde;ige l&auml;hemal. N&auml;iteks saate otsida igale koolile l&auml;hima roheala.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Igal ruumilisel avaldisel (v.a avaldis  <b>l&auml;him</b>) on ka talle vastav eitus: <b>ei ole raadiuses</b>, <b>ei sisalda t&auml;ielikult</b>, <b>ei asu t&auml;ielikult</b> ja <b>ei l&otilde;iku</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

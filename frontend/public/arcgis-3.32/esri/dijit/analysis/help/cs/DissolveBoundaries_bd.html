@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sloučit hranice (Dissolve Boundaries)</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sloučit hranice"></h2>
+        <hr/>
+    <p>Oblasti, kter&eacute; se překr&yacute;vaj&iacute; nebo maj&iacute; společnou hranici nebo hodnotu atributu, se slouč&iacute; a vytvoř&iacute; jedinou oblast.
+    </p>
+    <p>Zvolen&iacute;m pole stanov&iacute;te, kter&eacute; hranice se maj&iacute; sloučit. Pokud m&aacute;te např. vrstvu krajů a každ&yacute; kraj m&aacute; atribut  <pre>State_Name</pre>, můžete hranice sloučit na z&aacute;kladě atributu <pre>State_Name</pre>. Kraje se slouč&iacute;, pokud maj&iacute; shodnou hodnotu <pre>State_Name</pre> .  V&yacute;sledkem je vrstva hranic st&aacute;tů.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu ploch, jejichž hranice budou sloučeny</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva obsahuj&iacute;c&iacute; polygonov&eacute; prvky, kter&eacute; chcete sloučit. 
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Vybrat metodu sloučení</h2></div>
+        <hr/>
+        <div>
+            <p>Specifikuje metodu použitou ke sloučen&iacute; pol&iacute;.
+            </p>
+            <p>Ke spojen&iacute; prvků v oblasti můžete použ&iacute;t jednu ze dvou metod:
+                <ul>
+                    <li> <b>Překr&yacute;vaj&iacute;c&iacute; nebo přilehl&eacute; oblasti</b> &ndash; Dvě nebo v&iacute;ce oblast&iacute;, jejichž hranice se překr&yacute;vaj&iacute;, se spoj&iacute; v jedinou oblast. Vedle toho se spoj&iacute; oblasti, kter&eacute; soused&iacute; (tj. sd&iacute;l&iacute; společnou hranici).
+                    </li>
+                    <li> <b>Oblasti se stejnou hodnotou pole</b> &ndash; Dvě nebo v&iacute;ce oblast&iacute; se spoj&iacute; do jedn&eacute; oblasti, pokud maj&iacute; shodnou hodnotu pole.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Vytvořit vícenásobné prvky</h2></div>
+        <hr/>
+        <div>
+            <p>V&iacute;cen&aacute;sobn&yacute; prvek představuje zn&aacute;zorněn&iacute; m&iacute;sta nebo věci, kter&aacute; m&aacute; v&iacute;ce než jednu č&aacute;st, ale je definov&aacute;na jako jeden prvek, protože se odkazuje na jednu sadu atributů. Např&iacute;klad ve vrstvě st&aacute;tů by se Havaj dala považovat za v&iacute;cen&aacute;sobn&yacute; prvek, protože jeho jednotliv&eacute; geometrick&eacute; č&aacute;sti jsou klasifikov&aacute;ny jako jeden st&aacute;t.
+            </p>
+            <p> <b>Vytvořit v&iacute;cen&aacute;sobn&eacute; prvky</b> nab&iacute;z&iacute; dvě možnosti:
+                <ul>
+                    <li>Pravda (za&scaron;krtnuto)&mdash; v&yacute;stupn&iacute; služba může obsahovat v&iacute;cen&aacute;sobn&eacute; prvky.
+                    </li>
+                    <li>Nepravda (neza&scaron;krtnuto)&mdash; v&yacute;stupn&iacute; služba bude obsahovat pouze jednoduch&eacute; prvky a pro každou č&aacute;st budou vytvořeny jednotliv&eacute; prvky. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Přidat statistiku (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Po spojen&iacute; oblast&iacute; můžete sumarizovat jejich hodnoty atributu pomoc&iacute; smyslupln&yacute;ch statistik. Pokud např&iacute;klad slučujete hranici mezi kraji na z&aacute;kladě  <pre>State_Name</pre>, a každ&yacute; z krajů m&aacute; pole <i>Population</i> ,  můžete pro dan&yacute; st&aacute;t vypoč&iacute;tat součet <pre>Population</pre> .
+            </p>
+            <p> Můžete vypoč&iacute;tat statistiku sumarizovan&yacute;ch prvků.Můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute; v č&iacute;seln&yacute;ch pol&iacute;ch:
+                <ul>
+                    <li>Počet &ndash; Spoč&iacute;t&aacute; počet nenulov&yacute;ch hodnot. Lze jej použ&iacute;t na č&iacute;seln&yacute;ch pol&iacute;ch nebo řetězc&iacute;ch. Počet pro [null, 0, 2] je 2.
+                    </li>
+                    <li>Součet &ndash; Součet č&iacute;seln&yacute;ch hodnot v poli. Součet pro [null, null, 3] je 3.
+                    </li>
+                    <li>Průměr &ndash; Průměr č&iacute;seln&yacute;ch hodnot. Průměr pro [0, 2, null] je 1.
+                    </li>
+                    <li>Min &ndash; Minim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Minimum pro [0, 2, null] je 0. 
+                    </li>
+                    <li>Max &ndash; Maxim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Maximum pro [0, 2, null] je 2.
+                    </li>
+                    <li>Rozsah &ndash; Rozsah č&iacute;seln&eacute;ho pole. Vypočtou se jako minim&aacute;ln&iacute; hodnoty odečten&eacute; od maxim&aacute;ln&iacute; hodnoty. Rozsah pro [0, null, 1] je 1. Rozsah pro [null, 4] je 0.
+                    </li>
+                    <li>Odchylka &ndash; Odchylka č&iacute;seln&eacute;ho pole ve stopě. Odchylka pro [1]  je null. Odchylka pro [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardn&iacute; odchylka &ndash; Standardn&iacute; odchylka č&iacute;seln&eacute;ho pole. Standardn&iacute; odchylka pro [1] je null. Standardn&iacute; odchylka pro [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aacute;sleduj&iacute;c&iacute; můžete vypoč&iacute;tat  v pol&iacute;ch řetězců:
+                <ul>
+                    <li>Počet &ndash; Počet nenulov&yacute;ch řetězců.
+                    </li>
+                    <li>Libovoln&eacute; &ndash; Tato statistika je n&aacute;hodn&yacute;m vzorkem hodnoty řetězce v&nbsp;určen&eacute;m poli.
+                    </li>
+                </ul>
+                V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

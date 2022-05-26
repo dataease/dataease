@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vytvořit viditelný povrch (Create Viewshed)</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Vytvořit viditeln&yacute; povrch"></h2>
+        <hr/>
+    <p>N&aacute;stroj Vytvořit viditeln&yacute; povrch vytv&aacute;ř&iacute; oblasti, ve kter&yacute;ch může pozorovatel vidět objekty na zemi. Vstupn&iacute; body pozorovatele mohou představovat buď pozorovatele (např. lid&eacute; na zemi nebo hl&iacute;dky v&nbsp;pož&aacute;rn&iacute; věži) nebo pozorovan&eacute; objekty (např. větrn&eacute; turb&iacute;ny, vodojemy, vozidla nebo lid&eacute;). V&yacute;sledn&eacute; oblasti jsou oblasti, kde mohou pozorovatel&eacute; vidět pozorovan&eacute; objekty, a obr&aacute;ceně: pozorovan&eacute; objekty mohou vidět pozorovatele.
+    </p>
+    <p>Pozorovatel&eacute; i pozorovan&eacute; objekty se mohou nach&aacute;zet v určit&eacute; v&yacute;&scaron;ce nad zem&iacute;. Tyto v&yacute;&scaron;ky ovlivňuj&iacute; určen&iacute; viditelnosti. Např&iacute;klad viditelnost vypoč&iacute;tan&aacute; pro 100 m vysok&eacute; větrn&eacute; turb&iacute;ny a 180 cm vysok&eacute; lidi stoj&iacute;c&iacute; na zemi bude vět&scaron;&iacute; než viditelnost vypoč&iacute;tan&aacute; pro 50 m vysok&eacute; turb&iacute;ny a 180 cm vysok&eacute; lidi.
+    </p>
+    <p>V&yacute;počet viditeln&eacute;ho povrchu nebere v potaz přek&aacute;žky, jako jsou stromy nebo budovy. V&yacute;počet předpokl&aacute;d&aacute; holou zem, na kter&eacute; se nach&aacute;z&iacute; pouze pozorovatel a pozorovan&eacute; objekty.
+    </p>
+    <p>V&yacute;sledn&aacute; vrstva obsahuje plo&scaron;n&eacute; prvky představuj&iacute;c&iacute; viditeln&eacute; oblasti. Pole  <i>Frequency</i> zaznamen&aacute;v&aacute; počet bodů pozorovatele, kter&eacute; mohou vidět jednotliv&eacute; oblasti. Pokud např&iacute;klad m&aacute;te pět vstupn&iacute;ch bodů, kter&eacute; představuj&iacute; jednotliv&eacute; pož&aacute;rn&iacute; věže, pole <i>Frequency</i> bude m&iacute;t hodnoty mezi 1 a 5; oblasti s hodnotou 1 vid&iacute; pouze jedna věž a oblasti s hodnotou 5 vid&iacute; v&scaron;echny věže. V&yacute;sledn&aacute; vrstva obsahuje tak&eacute; pole <i>DEMResolution</i>, kter&eacute; zaznamen&aacute;v&aacute; rozli&scaron;en&iacute; digit&aacute;ln&iacute;ho v&yacute;&scaron;kov&eacute;ho modelu (DEM) použit&eacute;ho k tvorbě viditelnosti.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou analyzov&aacute;ny pouze body pozorovatele viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny body pozorovatele ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bodové prvky, které budou představovat umístění pozorovatele.</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky, kter&eacute; budou představovat um&iacute;stěn&iacute; pozorovatele. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Výška umístění pozorovatele</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je nadzemn&iacute; v&yacute;&scaron;ka um&iacute;stěn&iacute; va&scaron;ich pozorovatelů.    V&yacute;choz&iacute; hodnota je přibližně průměrn&aacute; v&yacute;&scaron;ka člověka.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Výška ostatních objektů na zemi</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je v&yacute;&scaron;ka staveb nebo lid&iacute; na zemi, kter&aacute; se použ&iacute;v&aacute; k&nbsp;určen&iacute; viditelnosti. V&yacute;sledn&yacute; viditeln&yacute; povrch zahrnuje plochy, ve kter&yacute;ch může bod pozorovatele vidět tyto jin&eacute; objekty.  Plat&iacute; to i obr&aacute;ceně &ndash; jin&eacute; objekty mohou vidět bod pozorovatele. 
+            </p>
+            <p>
+                <ul>
+                    <li>Pokud body pozorovatele představuj&iacute; větrn&eacute; turb&iacute;ny a va&scaron;&iacute;m c&iacute;lem je určit, kde mohou lid&eacute; na zemi tyto turb&iacute;ny vidět, zadejte průměrnou v&yacute;&scaron;ku člověka (přibližně 180 cm).  V&yacute;sledkem jsou oblasti, ve kter&yacute;ch může člověk stoj&iacute;c&iacute; na zemi vidět turb&iacute;ny.
+                    </li>
+                    <li>Pokud body pozorovatele představuj&iacute; pož&aacute;rn&iacute; věže a va&scaron;&iacute;m c&iacute;lem je určit, kter&eacute; věže mohou vidět sloup kouře vysok&yacute; 6 nebo v&iacute;ce metrů, zadejte jako v&yacute;&scaron;ku 6 metrů.  V&yacute;sledkem budou oblasti, kde může pož&aacute;rn&iacute; věž vidět sloup kouře vysok&yacute; alespoň 6 metrů.
+                    </li>
+                    <li>Pokud body pozorovatele představuj&iacute; př&iacute;rodn&iacute; vyhl&iacute;dky pod&eacute;l cest a stezek a va&scaron;&iacute;m c&iacute;lem je určit, odkud mohou lid&eacute; vidět větrn&eacute; turb&iacute;ny vysok&eacute; 100 a v&iacute;ce metrů, zadejte jako v&yacute;&scaron;ku 100 metrů.  V&yacute;sledkem budou oblasti, kde může člověk stoj&iacute;c&iacute; na vyhl&iacute;dce vidět větrnou turb&iacute;nu vysokou aspoň 100 metrů.
+                    </li>
+                    <li>Pokud body pozorovatele představuj&iacute; př&iacute;rodn&iacute; vyhl&iacute;dky a va&scaron;&iacute;m c&iacute;lem je určit, jak velkou &uacute;zemn&iacute; plochu mohou lid&eacute; stoj&iacute;c&iacute; na vyhl&iacute;dce vidět, zadejte hodnotu nula.  V&yacute;sledkem jsou oblasti viditeln&eacute; z vyhl&iacute;dky.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maximální sledovací vzdálenost</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je vzd&aacute;lenost, za kterou konč&iacute; v&yacute;počet viditeln&yacute;ch oblast&iacute;. Za touto vzd&aacute;lenost&iacute; se již nevypoč&iacute;t&aacute;v&aacute;, zda na sebe body pozorovatele a jin&eacute; objekty vid&iacute;. Vysok&eacute; hodnoty zvy&scaron;uj&iacute; dobu v&yacute;počtu. Maxim&aacute;ln&iacute; povolen&aacute; hodnota je 50 km (31 mil).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+            <p> Tento n&aacute;stroj nespotřebov&aacute;v&aacute; kredity.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

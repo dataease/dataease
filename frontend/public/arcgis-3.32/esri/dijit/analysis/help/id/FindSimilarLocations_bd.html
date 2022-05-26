@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cari Lokasi Serupa</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Cari Lokasi Serupa"></h2>
+        <hr/>
+    <p>Berdasarkan pada kriteria yang Anda tentukan, alat Temukan Lokasi Serupa akan mengukur kesamaan lokasi pada layer pencarian dengan satu atau lebih lokasi rujukan.  Alat ini dapat menjawab pertanyaan seperti 
+        <ul>
+            <li>Toko Anda yang mana yang paling mirip dengan daftar terbaik Anda terkait dengan profil pelanggan?
+            </li>
+            <li>Berdasarkan pada karakteristik desa yang paling parah diserang penyakit, desa mana yang juga berisiko tinggi?
+            </li>
+        </ul>
+        Untuk menjawab pertanyaan-pertanyaan tersebut, Anda harus menyediakan lokasi rujukan, calon lokasi pencarian, dan kolom yang mewakili kriteria yang ingin Anda cocokkan.  Layer input pertama harus berisi lokasi rujukan atau lokasi pembanding Anda.  Contohnya, layer ini mungkin berupa layer yang berisi toko terbaik Anda atau desa yang paling parah terserang penyakit.  Kemudian Anda menentukan layer yang berisi calon lokasi pencarian.  Layer ini mungkin merupakan semua toko Anda atau semua desa lainnya.  Terakhir, Anda mengidentifikasi satu atau beberapa kolom yang akan digunakan untuk mengukur kesamaan.  Alat Temukan Lokasi Serupa akan memeringkatkan semua calon lokasi pencarian menurut kecocokan dengan lokasi rujukan dari semua kolom yang Anda pilih.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer yang berisi lokasi rujukan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer berisi lokasi rujukan untuk dicocokkan. 
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Anda boleh menggunakan semua lokasi atau membuat pilihan</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan tombol pemilih untuk mengidentifikasi lokasi rujukan, jika perlu. Opsi ini hanya tersedia jika fitur ditarik ke peta (tidak tersedia untuk berbagi file big data). Contohnya, jika layer input berisi semua lokasi&mdash;lokasi rujukan dan calon lokasi pencarian&mdash;Anda harus menggunakan salah satu alat pemilih untuk mengidentifikasi lokasi rujukan.  Jika Anda membuat dua layer terpisah, satu berisi lokasi rujukan dan satu berisi semua calon lokasi pencarian, maka Anda tidak perlu menentukan pilihan.
+            </p>
+            <p>Jika terdapat lebih dari satu lokasi rujukan, satu lokasi tunggal dibuat dengan merata-ratakan nilai setiap kolom yang digunakan untuk menganalisis kesamaan.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Cari lokasi serupa di</h2></div>
+        <hr/>
+        <div>
+            <p>Calon fitur pencarian di layer ini akan diperingkatkan dari yang paling serupa ke yang paling tidak serupa. 
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Tentukan kesamaan berdasarkan</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom yang Anda pilih akan menjadi kriteria yang digunakan untuk mengevaluasi kesamaan.  Jika Anda memilih kolom populasi dan pendapatan, misalnya, calon lokasi pencarian dengan nilai peringkat terkecil (terbaik) akan berupa lokasi yang memiliki nilai populasi dan pendapatan serupa dengan lokasi rujukan Anda.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Tentukan hal yang paling serupa dan paling tidak serupa menggunakan</h2></div>
+        <hr/>
+        <div>
+            <p>Metode yang Anda pilih akan menentukan bagaimana proses pencocokan ditentukan. 
+                <ul>
+                    <li>Metode  <b>nilai kolom</b> menggunakan perbedaan akar nilai yang distandarisasi. Ini adalah default.
+                    </li>
+                    <li>Metode  <b>profil kolom</b> menggunakan matematik kemiripan kosinus untuk membandingkan profil nilai yang distandardisasi. Penggunaan profil atribut memerlukan penggunaan paling sedikit dua kolom analisis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Tunjukkan saya</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat melihat semua calon lokasi pencarian yang diperingkatkan dari yang paling serupa hingga yang paling tidak serupa atau Anda dapat menentukan jumlah hasil yang ingin Anda lihat. 
+                <ul>
+                    <li>Jika Anda menentukan  <b>semua lokasi dari yang paling serupa hingga yang paling tidak serupa</b>, semua fitur pada calon layer pencarian akan dicantumkan dalam urutan peringkat di layer hasil. Maksimal 10.000 hasil akan dikembalikan.
+                    </li>
+                    <li>Jika Anda menentukan  <code>jumlah</code> <code>lokasi</code> <b>yang paling serupa, paling tidak serupa, atau paling serupa dan paling tidak serupa</b>, Anda menentukan berapa banyak calon yang paling serupa, paling tidak serupa atau paling serupa, dan paling tidak serupa yang akan ditampilkan di layer hasil. Nilai maksimal yang diperbolehkan adalah 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Pilih kolom untuk ditambahkan ke hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Atau tambahkan kolom ke data Anda dari layer pencarian Anda. Secara default, semua kolom akan ditambahkan.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Layer hasil ini akan berisi lokasi rujukan dan jumlah calon fitur pencarian yang diperingkatkan yang sudah Anda tentukan.   Jika nama layer hasil sudah ada, Anda akan diminta untuk memberi nama baru.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

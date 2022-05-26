@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Samenvatten centrum en spreiding</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Samenvatten centrum en spreiding"></h2>
+        <hr/>
+    <p>Deze tool zoekt centrale objecten en directionale distributies.
+Het kan gebruikt worden om vragen te beantwoorden als:
+        <ul>
+            <li>Waar is het centrum?
+            </li>
+            <li>Welk object is het meest toegankelijk van alle andere functies?
+            </li>
+            <li>Hoe verspreid, compact of ge&iuml;ntegreerd zijn de objecten?
+            </li>
+            <li>Zijn er richtingstrends?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten geanalyseerd in de invoerlaag die zichtbaar zijn binnen het huidige kaartextent. Als de optie niet is aangevinkt, worden alle objecten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Kies een laag om te beschrijven</h2></div>
+        <hr/>
+        <div>
+            <p>De punt-, de lijn- of gebiedslaag die zal worden gebruikt om de centrale objecten en directionele verdelingen te vinden.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Samenvattingstypes</h2></div>
+        <hr/>
+        <div>
+            <p>De methode voor het samenvatten van centrum en spreiding. 
+            </p>
+            <ul>
+                <li>Centraal object - Identificeert de meest centraal gelegen object in een dataset.
+                </li>
+                <li>Gemiddeld centrum - Geeft het geografische centrum (of het concentratiecentrum) voor een reeks objecten aan.
+                </li>
+                <li>Mediaan centrum - Geeft de locatie aan die de totale Euclidaanse afstand tot de objecten in een dataset minimaliseert.
+                </li>
+                <li>Ellips - Cre&euml;ert standaarddeviatie ellipsen om de ruimtelijke kenmerken van geografische objecten samen te vatten: centrale tendens, dispersie en directionele trends. De ellipsen kunnen worden gedimensioneerd als 1, 2 of 3 standaarddeviaties.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Gewicht per (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld gebruikt om locaties te wegen volgens hun relatieve belang. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Groeperen per (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld dat wordt gebruikt om objecten te groeperen voor afzonderlijke berekeningen van centrale objecten of dispersie. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

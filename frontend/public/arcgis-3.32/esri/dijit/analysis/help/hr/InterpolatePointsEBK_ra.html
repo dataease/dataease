@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoliraj točke</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Alat Interpoliraj točke"></h2>
+        <hr/>
+    <p>Ovaj vam alat omogućuje predviđanje vrijednosti na novim lokacijama na temelju mjera iz kolekcije točaka. Alat uzima točkaste podatke s vrijednostima za svaku točku i vraća raster predviđenih vrijednosti.
+    </p>
+    <p>Ostali slučajevi upotrebe za ovaj alat uključuju sljedeće:
+
+        <ul>
+            <li>Okrug u kojem se upravlja kvalitetom zraka ima senzore koji mjere razine zagađenja.    Opcija Interpolacija točaka može se upotrijebiti za predviđanje razina zagađenja na lokacijama koje nemaju senzore, kao &scaron;to su lokacije s ugroženim populacijama &ndash; primjerice &scaron;kole ili bolnice.
+                
+
+            </li>
+            <li>Predvidite koncentracije te&scaron;kih metala u usjevima koje se temelje na uzorcima prikupljenim s pojedinih biljaka.
+                
+
+            </li>
+            <li>Predvidite razine hranjivih tvari u tlu (du&scaron;ik, fosfor, kalij itd.) i ostale pokazatelje (poput električne provodljivosti) kako biste ispitali njihovu povezanost s prinosom usjeva i propisali precizne količine gnojiva za svaku lokaciju na terenu.
+                
+
+            </li>
+            <li>Meteorolo&scaron;ke primjene uključuju predviđanje temperatura, oborina i povezanih varijabli (kao &scaron;to je kisela ki&scaron;a).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Izaberite točkasti sloj koji sadrži lokacije s poznatim vrijednostima</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti sloj koji sadrži točke gdje su vrijednosti izmjerene.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Odaberite polje za interpolaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite polje čije vrijednosti želite interpolirati. Polje mora biti brojčano.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiziraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite osobne postavke za brzinu u odnosu na točnost.
+            </p>
+            <p>Točnija predviđanja duže se računaju. Ovaj parametar mijenja zadane vrijednosti za nekoliko ostalih parametara alata Interpoliraj točke kako bi se optimizirala brzina izračuna, preciznost rezultata ili ravnoteža između njih. Prema zadanim postavkama, alat će optimizirati za ravnotežu.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformirajte podatke u normalnu distribuciju</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite želite li transformirati svoje podatke u normalnu distribuciju.
+            </p>
+            <p>Interpolacija je najpreciznija za podatke koji prate normalnu distribuciju (u obliku zvona). Ako se čini da va&scaron;i podaci nisu normalno raspoređeni, trebali biste izvr&scaron;iti transformaciju.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Veličina lokalnih modela</h2></div>
+        <hr/>
+        <div>
+            <p>Interpoliraj točke radi tako da gradi lokalne modele interpolacije koji su međusobno pomije&scaron;ani kako bi se stvorila zavr&scaron;na karta s predviđanjima. Ovaj parametar upravlja količinom točaka koje će biti sadržane u pojedinom modelu. Manje vrijednosti učinit će rezultate lokalnijima i mogu otkriti neke učinke na manjoj razini, ali mogu i uvesti nestabilnosti u izračunima. Veće vrijednosti bit će stabilnije, ali neki lokalni učinci mogu se propustiti.
+            </p>
+            <p>Vrijednost može biti u rasponu od 30 do 500, ali tipične su vrijednosti između 50 i 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Broj susjeda</h2></div>
+        <hr/>
+        <div>
+            <p>Predviđanja se računaju na temelju susjednih točaka. Ovaj parametar upravlja količinom točaka koje će se koristiti u izračunu. Uporabom većeg broja susjednih točaka općenito će nastati precizniji rezultati, ali izračun će potrajati duže.
+            </p>
+            <p>Ova vrijednost može biti u rasponu od 1 do 64, ali tipične su vrijednosti između 5 i 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za rezultate rastera.
+            </p>
+            <p>Dostupne jedinice su stope, milje, metri i kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Rezultat predviđanja pogreške</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite želite li stvoriti raster standardnih pogre&scaron;aka za predviđene vrijednosti.
+            </p>
+            <p>Standardne su pogre&scaron;ke korisne jer pružaju informacije o pouzdanosti predviđenih vrijednosti.  Jednostavno pravilo glasi da će se prava vrijednost nalaziti između dvije standardne pogre&scaron;ke predviđene vrijednosti 95 % vremena.  Primjerice, pretpostavite da nova lokacija ima predviđenu vrijednost 50 sa standardnom pogre&scaron;kom 5.  To znači da će procjena alata biti da je prava vrijednost na toj lokaciji 50, no može biti bilo koja vrijednost između 40 i 60.  Da biste izračunali ovaj raspon prihvatljivih vrijednosti, pomnožite standardnu pogre&scaron;ku s 2, dodajte ovu vrijednost predviđenoj vrijednosti kako biste dobili gornju granicu raspona i oduzmite je od predviđene vrijednosti da biste dobili donju granicu raspona.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

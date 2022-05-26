@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vorhandene Positionen suchen</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Vorhandene Positionen suchen"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden vorhandene Features im Untersuchungsgebiet ausgew&auml;hlt, die den angegebenen Kriterien entsprechen. Diese Kriterien k&ouml;nnen auf Attributabfragen (beispielsweise unbebaute Flurst&uuml;cke) und r&auml;umlichen Abfragen (beispielsweise innerhalb einer Entfernung von einem Kilometer von einem Fluss) basieren. 
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden alle Features analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Layer auswählen, der Features enthält, die Sie anhand von Attribut- und räumlichen Abfragen suchen möchten</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-, Linien- oder Fl&auml;chen-Layer, f&uuml;r den Sie Features basierend auf einer Kombination aus den unten angegebenen Attribut- und r&auml;umlichen Abfragen suchen m&ouml;chten.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Eine Abfrage zum Suchen von Features erstellen</h2></div>
+        <hr/>
+        <div>
+            <p>Klicken Sie auf die Schaltfl&auml;che  <b>Ausdruck hinzuf&uuml;gen</b>, um einen Ausdruck zu definieren.  Sie k&ouml;nnen mehrere Ausdr&uuml;cke hinzuf&uuml;gen. Nachdem Sie die Ausdr&uuml;cke eingegeben und auf die Schaltfl&auml;che <b>Analyse ausf&uuml;hren</b> geklickt haben, werden die Features im Eingabe-Layer anhand der einzelnen Ausdr&uuml;cke gefiltert.  Diese Features, die allen Ausdr&uuml;cken entsprechen, werden in den Ergebnis-Layer geschrieben.
+            </p>
+            <p>Es gibt zwei grundlegende Arten von Ausdr&uuml;cken, die erstellt werden k&ouml;nnen; &quot;Attribut&quot; und &quot;r&auml;umlich&quot;. Attributausdr&uuml;cke sind Abfragen von Feldwerten, z.&nbsp;B.  <code>mit dem Namen 'San Francisco'</code>.  Es gibt vier Arten von r&auml;umlichen Ausdr&uuml;cken:
+                <ul>
+                    <li> <b>innerhalb einer Entfernung von</b>: das Feature muss sich innerhalb einer Entfernung von einem Feature eines anderen Layers befinden.  Suchen Sie beispielsweise Flurst&uuml;cke, die sich innerhalb einer Entfernung von 500 Metern vom Los Angeles River befinden.
+                    </li>
+                    <li> <b>enth&auml;lt vollst&auml;ndig</b>: das Feature muss ein Feature eines anderen Layers vollst&auml;ndig enthalten.  Suchen Sie beispielsweise Wassereinzugsgebiete, die Flurst&uuml;cke f&uuml;r industrielle Fl&auml;chennutzung vollst&auml;ndig enthalten. Kein Teil des Flurst&uuml;cks darf sich au&szlig;erhalb des Wassereinzugsgebiets befinden.
+                    </li>
+                    <li> <b>vollst&auml;ndig innerhalb von</b>: das Feature muss vollst&auml;ndig von einem Feature eines anderen Layers umgeben sein.  Suchen Sie beispielsweise Schulbezirke, die sich vollst&auml;ndig innerhalb einer Stadtgrenze befinden. Kein Teil des Schulbezirks darf au&szlig;erhalb der Stadtgrenze liegen.
+                    </li>
+                    <li> <b>schneidet</b>: das Feature enth&auml;lt einen Teil eines Features eines anderen Layers.  Suchen Sie beispielsweise Flurst&uuml;cke, die Fl&uuml;sse schneiden. Jeder Teil eines Flusses, der durch das Flurst&uuml;ck verl&auml;uft oder die Grenze des Flurst&uuml;cks ber&uuml;hrt, schneidet das Flurst&uuml;ck.
+                    </li>
+                    <li> <b>in der N&auml;he von</b>: das Feature muss einem Feature eines anderen Layers am n&auml;chsten liegen. Bestimmen Sie beispielsweise das Restaurant, das verschiedenen Hotels am n&auml;chsten liegt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mit Ausnahme von  <b>in der N&auml;he von</b> verf&uuml;gt jeder r&auml;umliche Ausdruck &uuml;ber eine entsprechende Negation: <b>nicht in einer Entfernung von</b>, <b>enth&auml;lt nicht vollst&auml;ndig</b>, <b>nicht vollst&auml;ndig innerhalb von</b> und <b>schneidet nicht</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

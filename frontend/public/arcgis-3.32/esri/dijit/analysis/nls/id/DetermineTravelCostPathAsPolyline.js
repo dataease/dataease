@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/id/DetermineTravelCostPathAsPolyline",{inputSourceLayerLabel:"Pilih raster atau layer sumber fitur untuk menentukan dari mana jalur dimulai",inputCostRasterLabel:"Pilih layer raster biaya perjalanan",inputDestinationLayerLabel:"Pilih raster atau feature layer tujuan untuk menentukan jalur ke",pathTypeLabel:"Pilih jenis jalur yang akan ditentukan (opsional)",bestSingle:"Tunggal Terbaik",eachCell:"Untuk Setiap Sel",eachZone:"Untuk Setiap Zona",destinationField:"Pilih kolom guna mendapatkan nilai untuk tujuan",
+outputPolylineName:"Nama polyline hasil",outputLayerName:"Biaya perjalanan optimal sebagai polyline ${layername}",drawDestinationPointLayerName:"Titik tujuan",drawSourcePointLayerName:"Titik sumber",itemDescription:"Feature layer yang dihasilkan dari menjalankan Tentukan Jalur Biaya Perjalanan sebagai Polyline pada ${layername}. ",itemTags:"Hasil Analisis, Tentukan Jalur Biaya Perjalanan sebagai Polyline, ${layername} ${fieldname}",itemSnippet:"Feature layer yang dihasilkan dari Tentukan Jalur Biaya Perjalanan sebagai Polyline.",
+missingMessage:"Layer tujuan harus berbeda dari layer sumber",noValueMessage:"Nilai ini diperlukan",placeHolder:"--Pilih sebuah layer--"});

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>分水嶺</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="流域任務"></h2>
+        <hr/>
+    <p>此工具可決定一個點陣中一組儲存格上方的貢獻區域。
+    </p>
+    <p>流域是上流區域，它將流量（通常是水）排至共同的排水口以作為集中出口。它可能是較大流域的一部分，也可以包含較小的流域，稱為子流域。
+    </p>
+    <p>會從輸入點陣或圖徵傾點圖層中的來源值擷取每個流域的值。當傾點是點陣資料集時，預設會使用儲存格值。當傾點是點圖徵資料集時，這些值將來自指定的欄位。
+    </p>
+    <p>流域工具僅支援 D8 輸入流動方向點陣圖層。
+    </p>
+    <p>將輸入傾點位置指定為圖徵資料時，預設欄位將是第一個可用的有效欄位。如果不存在有效欄位，ObjectID 欄位（例如，OID 或 FID）將是預設值。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>選擇流動方向圖層</h2></div>
+        <hr/>
+        <div>
+            <p>顯示每個儲存格之流出方向的輸入點陣。
+            </p>
+            <p>可以使用「流動方向」工具，或 RasterAnalysisTools 服務中的 FlowDirection 任務來建立流動方向點陣，使用預設的流動方向類型  <b>D8</b> 執行。
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>指定輸入傾點位置</h2></div>
+        <hr/>
+        <div>
+            <p>輸入傾點位置。
+            </p>
+            <p>對於點陣，這表示儲存格，將在儲存格上方決定貢獻區域或集水區。會將非 NoData 的所有儲存格作為來源儲存格。對於點輸入，這表示位置，將在位置上方決定貢獻區域或集水區。
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>選擇傾點欄位</h2></div>
+        <hr/>
+        <div>
+            <p>用來將值指派給傾點位置的欄位。
+            </p>
+            <p>如果輸入傾點圖層是點陣，則使用值。若是圖徵則使用數值欄位。如果欄位包含浮點值，則會將它們截斷為整數。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

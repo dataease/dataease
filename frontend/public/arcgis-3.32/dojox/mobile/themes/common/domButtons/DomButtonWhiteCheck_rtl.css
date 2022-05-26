@@ -1,0 +1,1 @@
+.mblListItemRtl .mblDomButtonWhiteCheck > div,.mblListItemRtl .mblDomButtonCheck > div {right: 0px; -webkit-transform: scaleX(-0.7) rotate(-135deg); transform: scaleX(-0.7) rotate(-135deg); border-width: 3px 0px 0px 4px;}

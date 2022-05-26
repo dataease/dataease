@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Izveidot buferzonu</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Izveidot buferzonu"></h2>
+        <hr/>
+    <p>Buferis ir zona, kas aptver noteiktu attālumu no kāda punkta, līnijas vai laukuma elementa. 
+    </p>
+    <p>Buferzonas parasti izmanto, lai radītu teritorijas, ko var vēl vairāk analizēt, izmantojot rīku, piemēram, Pārklājuma slāņus. Piemēram, ja jautājums ir &ldquo;Kuras ēkas atrodas viena kilometra attālumā no skolas?&rdquo;, atbildi var atrast, izveidojot viena km buferi ap skolu un pārklājot ar buferi slāni, kas satur ēkas. Gala rezultāts ir &scaron;o ēku slānis viena kilometra attālumā no skolas.  
+    </p>
+    <p>Ja atzīmēsiet izvēles rūtiņu  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, buferzona tiks veidota tikai pa&scaron;reizējā kartes pārklājumā redzamajiem elementiem.  Ja noņemsiet atzīmi no izvēles rūtiņas, tiks veidota visu ievades slānī ietverto elementu buferzona, pat ja tie atradīsies ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, kas satur buferējamos elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Var buferēt punktu, līniju vai apgabala elementus. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Ievadiet bufera izmēru</h2></div>
+        <hr/>
+        <div>
+            <p>Jūs varat ievadīt vienu vai daudzas distances vērtības, atdalot vērtības ar atstarpi. Varat arī norādīt atribūtu ievades slānī, kas satur distances vērtību, noklik&scaron;ķinot uz  <b>Lauks</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Varianti</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, kā jūs vēlaties buferu pārklā&scaron;anos. Attiecībā uz jebkuru buferi, kas ir uz cita bufera, kopīgos laukumus var saglabāt (pārklājas), vai apvienot (iz&scaron;ķīdina). Izmantojot iespēju  <b>Iz&scaron;ķīdināt</b>, visi buferi tiek iz&scaron;ķīdināti, veidojot vienu vairākdaļu elementu un noņemot jebkādu pārklājumu.
+            </p>  
+            <p> Kad izmantojat vairākus attālumus, varat izvēlēties, kā attēlot attālumu no pēdējā bufera attāluma; piemēram, ja attālumi ir 10 un 14:
+                <ul>
+                    <li>Izvēloties rezultātus  <b>Gredzeni</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                    <li>Izvēloties rezultātus  <b>Diski</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Varianti</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, kā jūs vēlaties buferu pārklā&scaron;anos. Attiecībā uz jebkuru buferi, kas atrodas uz cita bufera, kopīgos laukumus var saglabāt (pārklājas), vai apvienot (iz&scaron;ķīdina). Izmantojot iespēju  <b>Iz&scaron;ķīdināt</b>, visi buferi tiek iz&scaron;ķīdināti, veidojot vienu vairākdaļu elementu un noņemot jebkādu pārklājumu.
+            </p>
+            <p>Kad veidojat vienu buferi apkārt laukuma elementiem (ievadīta viena distance), jūs varat izvēlēties vai elementi, kuriem veido buferus, ir iekļauti vai izslēgti no rezultātu bufera.
+            </p>
+            <p>Kad izmantojat dažādas distances, jūs varat izvēlēties kā reprezentēt distanci no pēdējā bufera distances; piemēram, ja distances ir 10 un 14:
+                <ul>
+                    <li>Izvēloties rezultātus  <b>Gredzeni</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                    <li>Izvēloties rezultātus  <b>Diski</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Varianti</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, kā jūs vēlaties buferu pārklā&scaron;anos. Attiecībā uz jebkuru buferi, kas ir uz cita bufera, kopīgos laukumus var saglabāt (pārklājas), vai apvienot (iz&scaron;ķīdina). Izmantojot iespēju  <b>Iz&scaron;ķīdināt</b>, visi buferi tiek iz&scaron;ķīdināti, veidojot vienu vairākdaļu elementu un noņemot jebkādu pārklājumu.
+            </p>
+            <p>Kad izveido vienu buferi ap līniju (ievadīta viena distance), varat izvēlēties, kuru līnijas pusi buferēt. Parasti jūs izvēlaties abas puses. Labā un kreisā tiek noteiktas, it kā jūs ietu no pirmās x, y koordinātas uz līnijas (starta) uz pēdējo x, y koordināti (beigām). Izvēloties labo vai kreiso pusi parasti nozīmē, ka jūs zināt, kā līnijas veidotas virzienos (piem., upju tīkla aug&scaron;tece un lejtece). Līniju beigās buferi var būt noapaļoti (Apaļ&scaron;) vai taisni (Līdzens).
+            </p>
+            <p>Kad izmantojat dažādas distances, jūs varat izvēlēties kā reprezentēt distanci no pēdējā bufera distances; piemēram, ja distances ir 10 un 14:
+                <ul>
+                    <li>Izvēloties rezultātus  <b>Gredzeni</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                    <li>Izvēloties rezultātus  <b>Diski</b> buferos (diapazonā 0&ndash;10 un 10&ndash;14).
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Varianti</h2></div>
+        <hr/>
+        <div>
+            <p>Kad esat izvēlējis buferējamo slāni, varat izvēlēties, kā rīkoties ar buferiem, kas pārklājas. Attiecībā uz jebkuru buferi, kas atrodas uz cita bufera, kopīgos laukumus var saglabāt (pārklājas), vai apvienot (iz&scaron;ķīdina). Izmantojot iespēju  <b>Iz&scaron;ķīdināt</b>, visi buferi tiek iz&scaron;ķīdināti, veidojot vienu vairākdaļu elementu un noņemot jebkādu pārklā&scaron;anos. Turklāt varat norādīt, kā jāparāda vairāki attālumi.   Slāņiem, kuros ir līniju elementi, varat izvēlēties,kuru līnijas pusi buferēt.  Slāņiem, kuros ir apgabalu elementi, varat izvēlēties, vai buferētais elements ir vai nav jāiekļauj rezultātu buferī.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

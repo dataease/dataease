@@ -855,6 +855,7 @@ export default {
     chart_line_stack: '堆叠折线图',
     chart_pie: '饼图',
     chart_3Dpie: '3D饼图',
+    chart_arcgis_map: '地图',
     chart_pie_rose: '南丁格尔玫瑰图',
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
@@ -931,6 +932,9 @@ export default {
     drag_block_radar_length: '分支长度',
     drag_block_radar_label: '分支标签',
     map_range: '地图范围',
+    arc_map_update:  '地图图层',
+    arc_map_url: '地图serve',
+    arc_map_url_place: '请输入地图地址',
     select_map_range: '请选择地图范围',
     area: '地区',
     stack_item: '堆叠项',
@@ -1972,7 +1976,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用DataIns',
+    welcome_title: '欢迎使用可视化配置平台',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

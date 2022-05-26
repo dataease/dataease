@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>유사한 위치 찾기(Find Similar Locations)</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="유사한 위치 찾기"></h2>
+        <hr/>
+    <p>유사한 위치 찾기 도구는 지정한 조건에 따라 하나 이상의 참조 위치에 대한 후보 검색 레이어의 위치 유사성을 측정합니다.  이 도구는 다음과 같은 질문에 답을 줄 수 있습니다.
+        <ul>
+            <li>고객 프로필과 관련하여 최고 매출 매장과 가장 유사한 실적을 내는 매장은 어디입니까?
+            </li>
+            <li>질병으로 인해 많은 타격을 받은 마을의 특성으로 볼 때, 높은 위험성을 지닌 다른 마을은 어디입니까?
+            </li>
+        </ul>
+        이러한 질문에 답변하려면 참조 위치, 후보 검색 위치 및 일치 조건을 표시하는 필드를 제공합니다.  첫 번째 입력 레이어에는 참조 또는 벤치마크 위치가 포함됩니다.  예를 들어 최고 실적을 내는 매장이나 질병으로 인한 타격을 가장 많이 입은 마을을 포함하는 레이어일 수 있습니다.  그런 다음 후보 검색 위치를 포함하는 레이어를 지정합니다.  이는 모든 매장 또는 모든 다른 마을이 될 수 있습니다.  마지막으로 하나 이상의 필드를 식별하여 유사성을 측정하는 데 사용합니다.  유사한 위치 찾기 도구는 선택한 모든 필드에서 참조 위치와 얼마나 일치하는지에 따라 모든 후보 검색 위치의 순위를 매깁니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>참조 위치가 포함된 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>일치시킬 참조 위치가 포함된 포인트, 라인 또는 영역 레이어입니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>모든 위치를 사용하거나 원하는 위치를 선택할 수 있습니다.</h2></div>
+        <hr/>
+        <div>
+            <p>필요한 경우 선택 버튼을 사용하여 참조 위치를 식별합니다.  예를 들어 입력 데이터에 모든 위치(후보 검색 위치뿐만 아니라 참조 위치)가 포함되어 있으면 선택 도구 중 하나를 사용하여 참조 위치를 식별해야 합니다.  레이어를 하나는 참조 위치, 다른 하나는 모든 후보 검색 위치를 포함하여 두 개 만든 경우 선택할 필요가 없습니다. 
+            </p>
+            <p>두 개 이상의 참조 위치가 있는 경우 유사성은 지정한 필드의 평균에 기반을 둡니다.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>다음에서 유사한 위치 검색</h2></div>
+        <hr/>
+        <div>
+            <p>이 레이어에서 후보 검색 위치는 가장 유사한 위치에서 그렇지 않은 위치 순으로 순위가 매겨집니다.  유사성은 지정한 필드에서 각 후보 검색 위치와 참조 위치의 일치 정도에 기반을 둡니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>유사성 기준</h2></div>
+        <hr/>
+        <div>
+            <p>선택한 필드는 유사성을 평가할 때 사용되는 기준이 됩니다.  예를 들어 인구 및 소득 필드를 선택한 경우 후보 검색 위치에서 순위가 높은 (유사한) 곳이 참조 위치와 비슷한 인구와 소득 값을 가집니다. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>보기</h2></div>
+        <hr/>
+        <div>
+            <p>가장 비슷한 곳에서 그렇지 않은 순으로 순위가 매겨진 모든 후보 검색 위치를 보거나 보고자 하는 결과의 수를 지정할 수 있습니다. 
+                <ul>
+                    <li> <b>모든 위치(가장 유사한 위치순)</b> - 후보 검색 레이어의 모든 피처는 결과 레이어 순위에 포함됩니다.
+                    </li>
+                    <li> <b>반환되는 위치 수</b> - 결과 레이어에 포함되어야 하는 가장 유사한 상위 후보 수를 결정합니다. 기본 입력은 1입니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름을 제공합니다.  이 결과 레이어는 참조 레이어와 지정한 순위의 후보 검색 위치 수를 포함합니다.   레이어가 이미 있는 경우 결과의 이름을 바꿀지 묻는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

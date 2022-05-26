@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ro/ClassifyPixelsUsingDeepLearning",{toolDefine:"Clasificare pixeli utiliz\u00e2nd \u00eenv\u0103\u021barea profund\u0103 (Deep Learning)",outputLayerName:"${layername}_classified",modelLabel:"Alege\u021bi modelul de \u00eenv\u0103\u021bare profund\u0103 folosit pentru a clasifica pixeli",modelArgsLabel:"Specifica\u021bi argumentele modelului de \u00eenv\u0103\u021bare profund\u0103",nameLabel:"Nume",valueLabel:"Valoare",queryModelArgsMsg:"Se analizeaz\u0103 argumentele modelului...",
+analysisLayerLabel:"Alege\u021bi imaginea utilizat\u0103 pentru a clasifica pixeli",itemDescription:"Serviciu de analiz\u0103 a imaginilor generat de Clasificare pixeli utiliz\u00e2nd \u00eenv\u0103\u021barea profund\u0103",itemTags:"Rezultat analiz\u0103 raster, Clasificare pixeli utiliz\u00e2nd \u00eenv\u0103\u021barea profund\u0103, ${layername}",itemSnippet:"Serviciu de analiz\u0103 a imaginilor generat de Clasificare pixeli utiliz\u00e2nd \u00eenv\u0103\u021barea profund\u0103"});

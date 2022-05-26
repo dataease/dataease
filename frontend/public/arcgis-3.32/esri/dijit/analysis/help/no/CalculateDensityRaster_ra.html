@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn tetthet</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Beregn tetthet-Portal-verkt&oslash;y"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet lager et tetthetskart fra punkter eller linjegeoobjekter ved &aring; spre kjente mengder av et fenomen (vises som attributter for punktene eller linjene) over kartet. Resultatet er et lag som best&aring;r av omr&aring;der klassifisert fra minst til h&oslash;yest tetthet.
+    </p>
+    <p>For punktinndata b&oslash;r hvert punkt representere plasseringen av en hendelse, og resultatlaget representere en telling av hendelsen per arealenhet. En h&oslash;yere tetthetsverdi p&aring; en ny lokasjon betyr at det er flere punkter n&aelig;r den lokasjonen. I mange tilfeller kan resultatlaget tolkes som en risikoflate for fremtidige hendelser. Hvis inndatapunktene representerer lokasjoner for lynnedslag, kan resultatlaget tolkes som en risikoflate for fremtidige lynnedslag.
+    </p>
+    <p>For linjeinndataene representerer linjetetthetsflaten det totale antallet linjer som ligger i n&aelig;rheten av hver lokasjon. Enhetene for de beregnede tetthetsverdiene er linjelengden per arealenhet. Hvis linjene f.eks. representerer elver, vil resultatlaget representere den totale lengden p&aring; elvene som er innenfor s&oslash;keradien. Dette resultatet kan brukes til &aring; identifisere omr&aring;der som er egnet til beitedyr.
+    </p>
+    <p>Andre bruksm&aring;ter av dette verkt&oslash;yet omfatter f&oslash;lgende:
+
+        <ul>
+            <li>Opprette kriminalitetstetthetskart for &aring; hjelpe politiet med &aring; fordele ressurser til omr&aring;der med mye kriminalitet.
+                
+ 
+            </li>
+            <li>Beregne tettheten av sykehus innenfor et fylke. Resultatlaget vil vise omr&aring;der med h&oslash;y og lav tilgjengelighet til sykehus, og denne informasjonen kan brukes til &aring; bestemme hvor nye sykehus skal bygges.
+                
+ 
+            </li>
+            <li>Identifisere omr&aring;der som har h&oslash;y risiko for skogbrann p&aring; bakgrunn av lokasjon for tidligere skogbranner.
+                
+ 
+            </li>
+            <li>Finne lokalsamfunn som er langt fra de store motorveiene for &aring; planlegge hvor nye veier skal bygges.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Velg inndatapunkt- eller linjelaget som beregningen av tetthet skal baseres på</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatapunktet eller linjelaget som skal brukes til &aring; beregne tetthetslaget.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Bruke et antallfelt</h2></div>
+        <hr/>
+        <div>
+            <p>Ta med et felt som angir antall hendelser p&aring; hvert sted. Hvis du f.eks. har punkter som representerer byer, kan du bruke et felt som representerer befolkningen i byen som antallfelt, og det resulterende befolkningstetthetslaget vil beregne st&oslash;rre befolkningstetthet n&aelig;r byer med st&oslash;rre populasjon.
+            </p>
+            <p>Hvis standardvalget  <b>Ingen</b> blir brukt, vil hver lokasjon antas &aring; representere ett enkelt antall.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Søkeavstand</h2></div>
+        <hr/>
+        <div>
+            <p>Skriv inn en avstand som angir hvor langt du vil s&oslash;ke &aring; finne punkt- eller linjegeoobjekter ved beregning av tetthetsverdier. Hvis du f.eks. oppgir en s&oslash;keavstand p&aring; 10&nbsp;000 meter, blir tettheten av hvilket som helst sted i utgangslaget beregnet p&aring; bakgrunn av geoobjekter som er innenfor 10&nbsp;000 meter fra lokasjonen. Lokasjoner som ikke har noen hendelser innenfor 10&nbsp;000 meter, vil f&aring; en tetthetsverdi p&aring; null.
+            </p>
+            <p>Hvis ingen avstand blir oppgitt, blir det beregnet en standardverdi som er basert p&aring; plasseringene av inndatageoobjektene og verdiene i antallfeltet (hvis det er lagt inn noe antallfelt).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Resulterende arealenheter</h2></div>
+        <hr/>
+        <div>
+            <p>Spesifiser de resulterende arealenhetene. Tetthet er antall delt p&aring; areal, og denne parameteren angir m&aring;leenheten for arealet i beregningen av tetthet.
+            </p>
+            <p>De tilgjengelige arealenhetene er kvadratmiles, kvadratfot, kvadratmeter og kvadratkilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelsen og enheten for utdatarastrene.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

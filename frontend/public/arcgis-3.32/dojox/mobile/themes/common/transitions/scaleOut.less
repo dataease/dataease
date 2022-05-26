@@ -1,0 +1,21 @@
+@import "../css3.less";
+.mblScaleOut.mblOut {
+	.animation-duration(.5s);
+	.animation-name(mblScaleOutOut);
+	.animation-timing-function(ease-in);
+}
+.dj_android .mblScaleOut.mblOut {
+	.animation-name(mblScaleOutOutAndroid);
+}
+.mblScaleOut.mblIn {
+	z-index: -100;
+	.animation-duration(.5s);
+	.animation-name(mblScaleOutIn);
+	.animation-timing-function(ease-in);
+}
+@-webkit-keyframes mblScaleOutOut { .keyframes-transform-opacity-from-to-webkit(scale(1.0), 1, scale(0.0), 0); }
+@keyframes         mblScaleOutOut { .keyframes-transform-opacity-from-to       (scale(1.0), 1, scale(0.0), 0); }
+@-webkit-keyframes mblScaleOutOutAndroid { .keyframes-transform-from-to-webkit(scale(1.0), scale(0.0)); }
+@keyframes         mblScaleOutOutAndroid { .keyframes-transform-from-to       (scale(1.0), scale(0.0)); }
+@-webkit-keyframes mblScaleOutIn { .keyframes-transform-from-to-webkit(scale(1.0), scale(1.0)); }
+@keyframes         mblScaleOutIn { .keyframes-transform-from-to       (scale(1.0), scale(1.0)); }

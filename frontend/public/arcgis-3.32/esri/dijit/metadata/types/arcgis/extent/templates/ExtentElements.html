@@ -1,0 +1,141 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+    <!-- geographic -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.extent.section.geographic}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'geoEle',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.extent.geoEle.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/form/ElementChoice" data-dojo-props="isGeoEleChoice:true">
+        
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'GeoBndBox',minOccurs:0,showHeader:false,label:'${i18nArcGIS.extent.geoEle.GeoBndBox.caption}'">
+            <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+              data-dojo-props="target:'esriExtentType',minOccurs:0,showHeader:false">
+              <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputExtentTypeCheckBox"
+                data-dojo-props="falseValue:'',trueValue:'search',label:'${i18nArcGIS.extent.geoEle.GeoBndBox.esriExtentType}'">
+              </div>
+            </div>
+            <div class="single" data-dojo-type="esri/dijit/metadata/form/OpenElement" 
+              data-dojo-props="target:'exTypeCode',minOccurs:0,showHeader:false">
+              <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputCheckBox"
+                data-dojo-props="falseValue:'0',trueValue:'1',label:'${i18nArcGIS.extent.geoEle.GeoBndBox.exTypeCode}'">
+              </div>
+            </div>
+            <div class="gxeGeoExtentSection">  
+              <div class="gxeGeoExtentCoordinates">        
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'westBL',value:-180,label:'${i18nArcGIS.extent.geoEle.GeoBndBox.westBL}'">
+                  <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                    data-dojo-props="hint:'${i18nBase.hints.longitude}'">
+                    <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/GeoExtentTool"
+                      data-dojo-props="label:'${i18nBase.geoExtent.button}'"></div>
+                  </div>
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'eastBL',value:180,label:'${i18nArcGIS.extent.geoEle.GeoBndBox.eastBL}'">
+                  <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                    data-dojo-props="hint:'${i18nBase.hints.longitude}'"></div>
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'southBL',value:-90,label:'${i18nArcGIS.extent.geoEle.GeoBndBox.southBL}'">
+                  <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                    data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'northBL',value:90,label:'${i18nArcGIS.extent.geoEle.GeoBndBox.northBL}'">
+                  <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                    data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+                </div>
+              </div>
+              <div class="gxeGeoExtentViewSection gxeViewOnly"></div>
+              <div class="gxeGeoExtentBottom"></div>
+            </div>
+          </div>
+        
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'GeoDesc',minOccurs:0,showHeader:false,label:'${i18nArcGIS.extent.geoEle.GeoDesc.caption}'">
+            <div class="single" data-dojo-type="esri/dijit/metadata/form/OpenElement"
+              data-dojo-props="target:'exTypeCode',minOccurs:0,showHeader:false">
+              <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputCheckBox"
+                data-dojo-props="falseValue:'0',trueValue:'1',label:'${i18nArcGIS.extent.geoEle.GeoDesc.exTypeCode}'">
+              </div>              
+            </div>
+            <div data-dojo-type="esri/dijit/metadata/form/Element"
+              data-dojo-props="target:'geoId',minOccurs:0,showHeader:false">
+              <div data-dojo-type="esri/dijit/metadata/form/Element"
+                data-dojo-props="target:'identCode',minOccurs:1,label:'${i18nArcGIS.extent.geoEle.GeoDesc.identCode}'">
+              </div>
+              <div data-dojo-type="esri/dijit/metadata/form/Element"
+                data-dojo-props="target:'identAuth',minOccurs:0,label:'${i18nArcGIS.codeRef.identAuth}'">
+                <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>    
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- temporal -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.extent.section.temporal}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'tempEle',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.extent.tempEle.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element" data-dojo-props="target:'TempExtent',minOccurs:1,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/form/Element" data-dojo-props="target:'exTemp',minOccurs:1,showHeader:false">
+            <div data-dojo-type="esri/dijit/metadata/form/ElementChoice" data-dojo-props="isExTempElementChoice:true">
+            
+              <div data-dojo-type="esri/dijit/metadata/form/Element"
+                data-dojo-props="target:'TM_Period',minOccurs:1,showHeader:false,label:'${i18nArcGIS.extent.tempEle.TM_Period}'">
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'tmBegin',minOccurs:1,label:'${i18nArcGIS.extent.tempEle.tmBegin}'">
+                  <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true,forceTime:true"></div>
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'tmEnd',minOccurs:1,label:'${i18nArcGIS.extent.tempEle.tmEnd}'">
+                  <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true,forceTime:true"></div>
+                </div>
+              </div>
+              
+              <div data-dojo-type="esri/dijit/metadata/form/Element"
+                data-dojo-props="target:'TM_Instant',minOccurs:1,showHeader:false,label:'${i18nArcGIS.extent.tempEle.TM_Instant}'">
+                <div data-dojo-type="esri/dijit/metadata/form/Element"
+                  data-dojo-props="target:'tmPosition',minOccurs:1,label:'${i18nArcGIS.extent.tempEle.tmPosition}'">
+                  <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true,forceTime:true"></div>
+                </div>
+              </div>
+              
+            </div>
+          </div>  
+        </div>    
+      </div>
+    </div>
+    
+    <!-- vertical -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.extent.section.vertical}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'vertEle',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.extent.vertEle.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/MinNumberElement"
+          data-dojo-props="target:'vertMinVal',minOccurs:1,label:'${i18nArcGIS.extent.vertEle.vertMinVal}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+        </div>  
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'vertMaxVal',minOccurs:1,label:'${i18nArcGIS.extent.vertEle.vertMaxVal}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputMaxNumber"></div>
+        </div>  
+      </div>  
+    </div>
+    
+    <!-- description -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.extent.section.description}'">
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'exDesc',minOccurs:0,label:'${i18nArcGIS.extent.exDesc}'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+      </div>  
+    </div>
+  
+  </div>
+</div>

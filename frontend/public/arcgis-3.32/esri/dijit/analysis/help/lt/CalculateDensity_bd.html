@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skaičiuoti tankį</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Apskaičiuoti tankį"></h2>
+        <hr/>
+    <p>Tankio skaičiavimo įrankis sukuria tankio žemėlapį i&scaron; ta&scaron;kinių elementų i&scaron;skleidžiant žemėlapyje tam tikrų rei&scaron;kinių (pateikiamų kaip ta&scaron;kų atributai) žinomus kiekius. Rezultatas yra sluoksnis, kuriame plotai klasifikuojami nuo rečiausių iki tankiausių.   
+
+    </p>
+    <p>Ta&scaron;kų įvestyje kiekvienas ta&scaron;kas turėtų atvaizduoti tam tikro įvykio arba incidento vietą, o rezultatų sluoksnis atspindi įvykių ploto vienete skaičių. Didesnė tankio reik&scaron;mė naujoje vietoje rei&scaron;kia, kad &scaron;alia &scaron;ios vietos yra daugiau ta&scaron;kų. Daugeliu atvejų rezultato sluoksnį galima interpretuoti kaip įvykių tikimybę. Pavyzdžiui, jei įvesties ta&scaron;kai rodo žaibavimo vietas, rezultato sluoksnį galima interpretuoti kaip būsimų žaibo smūgių tikimybes.
+    </p>
+    <p>Kiti &scaron;io įrankio naudojimo atvejai:
+        <ul>
+            <li>Nusikaltimų tankio žemėlapių kūrimas, siekiant policijos padaliniams padėti tinkamai paskirstyti resursus didelio nusikalstamumo vietose.
+            </li>
+            <li>Ligoninių tankio apygardoje skaičiavimas. Rezultatų sluoksnyje bus rodomi plotai su gero ir prasto pasiekiamumo ligoninėmis, o &scaron;ią informaciją galima naudoti nusprendžiant, kur statyti naujas ligonines.
+            </li>
+            <li>Didelio mi&scaron;kų gaisringumo plotų nustatymas, atsižvelgiant į istorinius duomenis apie vietas, kuriose degė mi&scaron;kai.
+            </li>
+            <li>Bendruomenių, esančių toli nuo didžiųjų greitkelių, vietų nustatymas, planuojant, kur turėtų būti tiesiami nauji keliai.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite taškinį sluoksnį, kurio tankis bus skaičiuojamas</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kinis sluoksnis, pagal kurį bus skaičiuojamas tankis.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Pasirinkite vieną arba kelis laukus, kurių tankį norite apskaičiuoti (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Pateikite vieną arba kelis laukus, nurodančius kiekvienoje vietoje įvykusių įvykių skaičių. Pavyzdžiui, jei turite ta&scaron;kus, vaizduojančius miestus, kaip skaičiaus lauką galite naudoti lauką, rodantį miesto gyventojų skaičių, o gyventojų tankio rezultato sluoksnyje bus apskaičiuojamas didesnis gyventojų tankis netoli miestų, kurių gyventojų skaičius yra didesnis.
+            </p>
+            <p>Ta&scaron;kų skaičiaus tankis bus skaičiuojamas visada.   Jei laukų nepasirinkta, kiekviena vieta bus vertinama kaip vienetas.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Pasirinkite daugiakampio formą</h2></div>
+        <hr/>
+        <div>
+            <p>Daugiakampių, kurių ta&scaron;kai yra agreguojami ir naudojami tankiui apskaičiuoti, forma.
+            </p>
+            <p>Analizė naudojant  <b>kvadrato</b> arba <b>&scaron;e&scaron;iakampio</b> formos daugiakampius reikalauja projekcinės koordinačių sistemos. Galite nustatyti <b>Apdorojamą koordinačių sistemą</b> <b>analizės aplinkose</b>. Jei jūsų apdorojama koordinačių sistema nenustatyta kaip projekcinė koordinačių sistema, būsite paraginti nustatyti ją, kai <b>vykdysite analizę</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Pasirinkti daugiakampio dydį agregavimui</h2></div>
+        <hr/>
+        <div>
+            <p>Sugeneruojamas daugiakampių dydis. Pasirinkus kvadrato formos daugiakampius, dydis nurodo kvadrato ilgį. Pasirinkus &scaron;e&scaron;iakampį, dydis nurodo jo lygiagrečių kra&scaron;tinių ilgį.
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Pasirinkite taikytiną tankio svorį</h2></div>
+        <hr/>
+        <div>
+            <p>Svorio tipas, taikomas skaičiuojant tankį. Yra dvi parinktys:
+                <ul>
+                    <li> <b>Vienodas</b> &ndash; apskaičiuojamas dydis plote.
+                    </li>
+                    <li> <b>Branduolio</b> &ndash; pritaikoma branduolio funkcija, kad kiekvienam ta&scaron;kui būtų pritaikytas vienalytis kūginis pavir&scaron;ius.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Pasirinkite teritorijos dydį</h2></div>
+        <hr/>
+        <div>
+            <p>Ploto dydis, naudojamas tankiui apskaičiuoti. Teritorijos&nbsp;dydis turi būti didesnis nei daugiakampio dydis.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Pasirinkite tankio išvesties vienetus</h2></div>
+        <hr/>
+        <div>
+            <p>Pageidaujami tankio reik&scaron;mių i&scaron;vesties vienetai. Pagal numatytuosius nustatymus, atsižvelgiant į jūsų profilyje nurodytus numatytuosius vienetus, nustatomi kvadratiniai kilometrai arba kvadratinės mylios. Jei tankio reik&scaron;mės yra labai mažos, galite padidinti ploto vienetų dydį (pavyzdžiui, kvadratinius metrus pakeisti į kvadratinius kilometrus), kad būtų grąžintos didesnės reik&scaron;mės. Reik&scaron;mės keičia tik rezultatų mastelį.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Apskaičiuoti tankį naudojant laiko etapus (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Jei įvesties ta&scaron;kų sluoksnis yra susietas su laiku ir jo tipas yra &bdquo;I&scaron;kart&ldquo;, galite analizuoti naudodami laiko žingsnius. Naudodami laiko žymas, galite nustatyti tris parametrus:
+                <ul>
+                    <li> <b>Laiko žingsnio intervalas</b>
+                    </li>
+                    <li> <b>Kaip dažnai norite kartoti laiko žingsnį</b>
+                    </li>
+                    <li> <b>Laikas, su kuriuo sujungti laiko žingsnius</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pavyzdžiui, jei turite metų trukmės duomenis ir norite juos&nbsp;analizuodami naudodami savaitės trukmės žingsnius, nustatykite  <b>Laiko žingsnio intervalą</b> kaip <code>1 savaitę</code>. 
+            </p>
+            <p>Pavyzdžiui, jei turite metų trukmės duomenis ir norite juos analizuoti naudodami pirmąsias mėnesių savaites, nustatykite  <b>Laiko žingsnio intervalą</b> kaip <code>1 savaitę</code>, <b>Kaip dažnai norite kartoti laiko žingsnį</b> kaip <code>1 mėnesį</code>, o <b>Laikas, su kuriuo sujungti laiko žingsnius</b> kaip <code>sausio 1 d., 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Laiko etapo intervalas</h2></div>
+        <hr/>
+        <div>
+            <p>Laiko intervalas, naudojamas generuojant laiko žingsnius.  <b>Laiko žingsnio intervalas</b> gali būti naudojamas vienas arba su parametru <b>Kaip dažnai norite kartoti laiko žingsnį</b> arba <b>Laikas, su kuriuo sujungti laiko žingsnius</b>.
+            </p>
+            <p>Pavyzdžiui, jei norite sukurti laiko žingsnius, kurie įvyksta kiekvieną pirmadienį nuo 9:00 iki 10:00, nustatykite  <b>Laiko žingsnio intervalą</b> kaip <code>1 valandą</code>, <b>Kaip dažnai norite kartoti laiko žingsnį</b> kaip <code>1 savaitę</code>, o <b>Laikas, su kuriuo sujungti laiko žingsnius</b> kaip <code>9:00:00 pirmadienį</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Kaip dažnai kartoti laiko etapą</h2></div>
+        <hr/>
+        <div>
+            <p> Žingsnis, naudojamas apskaičiuojant laiko žingsnį. Parinktis <b>Kaip dažnai norite kartoti laiko žingsnį</b> gali būti naudojama viena arba  su parinktimis <b>Laiko žingsnio intervalas</b>, <b>Atskaitinis laikas</b>, arba abiem <b>Laiko žingsnio intervalas</b> ir <b>Laikas, su kuriuo sujungti laiko žingsnius</b>.
+            </p>
+            <p> Pavyzdžiui, jei norite  sukurti laiko žingsnį, kuris įvyksta kiekvieną pirmadienį nuo 9:00 iki 10:00, nustatykite <b>Laiko žingsnio intervalą</b> kaip <code>1 valandą</code>, <b>Kaip dažnai norite kartoti laiko žingsnį</b> kaip <code>1 savaitę</code> ir <b>Laikas, su kuriuo sujungti laiko žingsnius</b> kaip <code>9:00:00 pirmadienį</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Laikas, skirtas pritaikyti laiko etapus</h2></div>
+        <hr/>
+        <div>
+            <p>Data ir laikas, naudojami jungiant laiko skiltis. Laiko žingsniai prasidės ir tęsis atbuline eiga nuo &scaron;io laiko. Jei nepasirinktas joks atskaitinis laikas, laiko žingsniai bus jungiami nuo 1970 m. sausio 1 d. 
+            </p>
+            <p> Pavyzdžiui, jei norite sukurti laiko žingsnį, kuris įvyksta kiekvieną pirmadienį nuo 9:00 iki 10:00, nustatykite <b>Laiko žingsnio intervalą</b> kaip <code>1 valandą</code>, <b>Kaip dažnai norite kartoti laiko žingsnį</b> kaip <code>1 savaitę</code> ir <b>Laikas, su kuriuo sujungti laiko žingsnius</b> kaip <code>9:00:00 pirmadienį</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Erdvinė nuoroda (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Tai yra laikinas parametras, naudojamas iki i&scaron;leidimo, kad būtų galima nustatyti apdorojimo erdvinę informaciją. Daugeliui didelių duomenų įrankių reikia naudoti projekcinę koordinačių sistemą kaip apdorojimo erdvinę informaciją. Pagal numatytuosius nustatymus įrankis naudos įvesties koordinačių sistemą, tačiau neveiks, jei tai bus geodrafinė koordinačių sistema. Norėdami nustatyti projekcinę koordinačių sistemą, įveskite WKID. Pavyzdžiui,  <b>Web Mercator</b> reik&scaron;mė būtų nurodyta <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pasirinkite duomenų saugyklą</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultatai yra saugomi ArcGIS duomenų saugykloje ir rodomi  Portal for ArcGIS kaip elementų sluoksnis. Daugeliu atvejų rezultatai turi būti saugomi erdvinių-laiko duomenų saugykloje, ir tai yra numatytasis nustatymas. Kai kuriais atvejais, galima rezultatus įra&scaron;yti į releacinę duomenų saugyklą. Toliau pateikiame priežastis, kodėl reikėtų rezultatus įra&scaron;yti į releacinių duomenų saugyklą: 
+                <ul>
+                    <li>Galite rezultatus naudoti dviejų portalų bendradarbiavime.
+                    </li>
+                    <li>Galite įjungti savo rezultatų sinchronizavimą.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nenaudokite releacinių duomenų saugyklos, jei jūsų GeoAnalytics rezultatų turėtų padaugėti, ir apdorojant didelius duomenų kiekius reikės pasinaudoti erdvės ir laiko didelių duomenų saugyklos galimybėmis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

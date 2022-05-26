@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Bitki Örtüsünü İzle</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Portal i&ccedil;in Bitki &Ouml;rt&uuml;s&uuml;n&uuml; izleme aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; &ccedil;ok bantlı bir raster katmanının bantları &uuml;zerinde bir aritmetik işlem ger&ccedil;ekleştirerek &ccedil;alışma alanındaki bitki &ouml;rt&uuml;s&uuml; bilgilerini g&ouml;sterir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Girdi verilerini seç</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ok bantlı raster katmanı se&ccedil;in. Girdi rasterının kullanılabilir uygun bantlara sahip olduğundan emin olun.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Bitki örtüsünü izleme yöntemini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Bitki &ouml;rt&uuml;s&uuml; indeks katmanını oluşturmak i&ccedil;in kullanılacak y&ouml;ntemi se&ccedil;in. Farklı bitki &ouml;rt&uuml;s&uuml; indeksleri &ouml;zel detayların vurgulanmasını sağlayabilir veya &ccedil;eşitli g&uuml;r&uuml;lt&uuml;leri azaltabilir.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI, uydu g&ouml;r&uuml;nt&uuml;lerinden global &ccedil;evre izleme i&ccedil;in kullanılan doğrusal olmayan bir bitki &ouml;rt&uuml;s&uuml; indeksidir. NDVI &ouml;ğesine benzer, ancak atmosfer etkilerine karşı duyarlılığı daha d&uuml;ş&uuml;kt&uuml;r. &Ccedil;ıplak toprak tarafından etkilenir; bu nedenle &ccedil;ok seyrek ya da &ccedil;ok yoğun bitki &ouml;rt&uuml;s&uuml; bulunana alanlarda kullanılması &ouml;nerilmez.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI, orijinal olarak Landsat MSS g&ouml;r&uuml;nt&uuml;lerinden tasarlanmıştı, ancak Landsat TM g&ouml;r&uuml;nt&uuml;leriyle kullanılabilecek şekilde değiştirildi. Bu indeks aynı zamanda Landsat TM Tasseled Cap (P&uuml;sk&uuml;ll&uuml; Başlık) yeşil bitki &ouml;rt&uuml;s&uuml; indeksi olarak bilinir. Bu izleme indeksi, aynı spektral &ouml;zellikleri paylaşan bantlara sahip g&ouml;r&uuml;nt&uuml;lerle de kullanılabilir.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2, SAVI y&ouml;ntemi &uuml;zerinde &ccedil;ıplak toprak etkisini minimize etmeye &ccedil;alışan bir bitki &ouml;rt&uuml;s&uuml; indeksidir.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI, standartlaştırılmış bir indekstir ve yeşilliği veya relatif biyok&uuml;tleyi g&ouml;steren bir g&ouml;r&uuml;nt&uuml; oluşturmanıza olanak tanır. Bu indeks, &ccedil;oklu spektral raster veri k&uuml;mesinden gelen iki bandın şu kontrast &ouml;zelliklerinin avantajını kullanır; kırmızı banttaki klorofil pigmenti emilimleri ve kızıl&ouml;tesine yakın (NIR) bandındaki bitki malzemelerinin y&uuml;ksek yansıma &ouml;zelliği.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI, bitki &ouml;rt&uuml;s&uuml; farkı indeksine benzer, ancak atmosferik değişimlere karşı duyarlıdır. Farklı g&ouml;r&uuml;nt&uuml;leri karşılaştırmak i&ccedil;in bu y&ouml;ntem kullanılırken, yalnızca atmosferik değişimler a&ccedil;ısından d&uuml;zeltilmiş g&ouml;r&uuml;nt&uuml;ler &uuml;zerinde &ccedil;alışılmalıdır. Bu bilgiler veri sağlayıcınız tarafından temin edilebilir.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI, bir toprak parlaklığı d&uuml;zeltme fakt&ouml;r&uuml; kullanarak toprak parlaklığı etkisini minimize etmeye &ccedil;alışan bir bitki &ouml;rt&uuml;s&uuml; indeksidir. Bu genellikle, bitki &ouml;rt&uuml;s&uuml;n&uuml;n seyrek olduğu &ccedil;orak b&ouml;lgelerde kullanılır.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultan Form&uuml;l&uuml; işlemi, 6 bantlı 8 bitlik bir g&ouml;r&uuml;nt&uuml;y&uuml; alır ve 3 bantlı 8 bitlik bir g&ouml;r&uuml;nt&uuml; elde etmek i&ccedil;in g&ouml;r&uuml;nt&uuml; &uuml;zerinde &ouml;zel bir algoritma uygular. Ortaya &ccedil;ıkan g&ouml;r&uuml;nt&uuml;, sahil şeritlerinde ofiyolit adı verilen kaya oluşumlarını vurgular. Bu form&uuml;l, bir Landsat 5 veya 7 g&ouml;r&uuml;n&uuml;m&uuml;n&uuml;n TM ve ETM bantlarına g&ouml;re tasarlanmıştır.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+D&ouml;n&uuml;şt&uuml;r&uuml;len SAVI, toprak hattının rastgele bir eğimi ve sınırı olduğunu varsayarak toprak parlaklığı etkilerini minimize etmeye &ccedil;alışan bir bitki &ouml;rt&uuml;s&uuml; indeksidir.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>NIR bandı ve Kırmızı band indekslerini belirtin</h2></div>
+        <hr/>
+        <div>
+            <p>Yakın kızıl&ouml;tesi (NIR) ve kızıl bantlar i&ccedil;in bant indekslerini belirtin.
+            </p>
+            <p>Her uydu sens&ouml;r&uuml; ve hava kamerası, bant indekslerine ayrıştırılan bilgiler yakalar. Her bant indeksinde elektromanyetik spektrumun &ouml;zel bir b&ouml;l&uuml;m&uuml; i&ccedil;in bilgiler bulunur. Bu bitki &ouml;rt&uuml;s&uuml; izleme y&ouml;ntemi, NIR ve kızıl dalga boylarını yakalayan bant indeksinin belirtilmesini gerektirir.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Toprak hattının eğimi</h2></div>
+        <hr/>
+        <div>
+            <p>Toprak hattının eğimi. Eğim, bir dağılım d&uuml;zenindeki NIR ve kızıl bantlar arasındaki yaklaşık doğrusal ilişkiyi temsil eder.
+            </p>
+            <p>Bu parametre yalnızca D&ouml;n&uuml;şt&uuml;r&uuml;lm&uuml;ş Toprağa G&ouml;re Ayarlı Bitki &Ouml;rt&uuml;s&uuml; İndeksi y&ouml;ntemi i&ccedil;in ge&ccedil;erlidir.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Kesme Noktası</h2></div>
+        <hr/>
+        <div>
+            <p>Belirli toprak &ccedil;izgileri i&ccedil;in kızıl (Kızıl) bant yansıma değeri 0 iken yakın kızıl&ouml;tesinin (NIR) değeridir.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , kırmızı 0 iken.
+            </p> 
+            <p>Bu parametre yalnızca D&ouml;n&uuml;şt&uuml;r&uuml;lm&uuml;ş Toprağa G&ouml;re Ayarlı Bitki &Ouml;rt&uuml;s&uuml; İndeksi y&ouml;ntemi i&ccedil;in ge&ccedil;erlidir.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Yeşil bitki örtüsü miktarı</h2></div>
+        <hr/>
+        <div>
+            <p>SAVI y&ouml;nteminin gerektirdiği yeşil bitki &ouml;rt&uuml;s&uuml; miktarını belirtir.
+            </p>
+            <p>Ge&ccedil;erli değerler aşağıdaki gibidir: 
+
+                <ul>
+                    <li>1 = Yeşil bitki &ouml;rt&uuml;s&uuml; bulunmayan alanlar
+                        
+ 
+                    </li>
+                    <li>0,5 = Orta d&uuml;zeyde yeşil bitki &ouml;rt&uuml;s&uuml; bulunan alanlar
+                        
+ 
+                    </li>
+                    <li>0 = Yoğun yeşil bitki &ouml;rt&uuml;s&uuml; bulunan alanlar
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Ayarlama faktörü</h2></div>
+        <hr/>
+        <div>
+            <p>Toprağa G&ouml;re Ayarlanan Bitki &Ouml;rt&uuml;s&uuml; İndeksi y&ouml;nteminde gerekli olan, toprak etkisini minimize etmeye yardımcı ayarlama fakt&ouml;r&uuml;n&uuml; belirtir. Varsayılan değer 0.08'dır.
+            </p>
+            <p>D&uuml;ş&uuml;k bir değer toprak etkisinin dikkate alınmadığı anlamına gelir. Y&uuml;ksek bir değer, toprağın sonucunuzu etkileyebileceği anlamına gelir.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Aggregate Multidimensional Raster</h2><p/>
+        <h2><img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" alt="Aggregate Multidimensional Raster"></h2>
+        <hr/>
+    <p>Generates a multidimensional raster dataset by combining existing multidimensional raster variables along a dimension.
+    </p>
+    <p>If you have 30 years of sea surface temperature data, collected monthly and at every 5 meters depth up to 100 meters, some example applications are the following:
+        <ul>
+            <li>Aggregate monthly temperature data into yearly data.
+            </li>
+            <li>Aggregate monthly temperature data into 4-month intervals.
+            </li>
+            <li>Aggregate temperature data from 0 to 25 meters, then from 25 to 50 meters, then from 50 to 100 meters.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, variables of the layer that are  visible within the current map extent will be analyzed. If unchecked, variables of the full layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputMultidimensionalRaster">
+        <div><h2>Choose multidimensional imagery layer to aggregate</h2></div>
+        <hr/>
+        <div>
+            <p>The input imagery layer of a multidimensional raster that will be aggregated.
+            </p>
+        </div>
+    </div>
+    <div id="dimension">
+        <div><h2>Choose dimension along which to aggregate</h2></div>
+        <hr/>
+        <div>
+            <p>The aggregation dimension. This is the dimension along which the variables will be aggregated.
+            </p>
+        </div>
+    </div>
+    <div id="variables">
+        <div><h2>Choose variable(s) to aggregate</h2></div>
+        <hr/>
+        <div>
+            <p>The variable or variables that will be aggregated along the given dimension. If no variable is specified, all variables with the selected dimension will be aggregated.
+            </p>
+            <p>For example, to aggregate your daily temperature data into monthly average values, specify temperature as the variable to be aggregated. If you do not specify any variables and you have both daily temperature and daily precipitation variables, both variables will be aggregated into monthly averages and the output multidimensional raster will include both variables.
+            </p>
+        </div>
+    </div>
+    <div id="aggregationMethod">
+        <div><h2>Choose aggregation method</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the mathematical method that will be used to combine the aggregated slices in an interval. 
+                <ul>
+                    <li> <b>Mean</b>&mdash;Calculates the mean of a pixel's values across all slices in the interval. This is the default.
+                    </li>
+                    <li> <b>Maximum</b>&mdash;Calculates the maximum value of a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Majority</b>&mdash;Calculates the value that occurred most frequently for a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Minimum</b>&mdash;Calculates the minimum value of a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Minority</b>&mdash;Calculates the value that occurred least frequently for a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Median</b>&mdash;Calculates the median value of a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Range</b>&mdash;Calculates the range of values for a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Standard Deviation</b>&mdash;Calculates the standard deviation of a pixel's values across all slices in the interval.
+                    </li>
+                    <li> <b>Sum</b>&mdash;Calculates the sum of a pixel's values across all slices in the interval.
+                    </li>
+                    <li> <b>Variety</b>&mdash;Calculates the number of unique values of a pixel across all slices in the interval.
+                    </li>
+                    <li> <b>Custom</b>&mdash;Calculates the value of a pixel based on a custom raster function.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="aggregationFunction">
+        <div><h2>Choose raster function template</h2></div>
+        <hr/>
+        <div>
+            <p>A custom raster function that will be used to compute the pixel values of the aggregated rasters. The input is a raster function template item in portal. This input is required when  <b>Aggregation Method</b> is set to <b>Custom</b>.
+            </p>
+        </div>
+    </div>
+    <div id="aggregationDefinition">
+        <div><h2>Choose aggregation definition</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the dimension interval for which the data will be aggregated. 
+                <ul>
+                    <li> <b>All</b>&mdash;The data values will be aggregated across all slices. This is the default.
+                    </li>
+                    <li> <b>Interval Keyword</b>&mdash;The variable data will be aggregated using a commonly known interval.
+                    </li>
+                    <li> <b>Interval Value</b>&mdash;The variable data will be aggregated using a user-specified interval and unit.
+                    </li>
+                    <li> <b>Interval Ranges</b>&mdash;The variable data will be aggregated between specified pairs of values or dates.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="intervalKeyword">
+        <div><h2>Choose keyword interval</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the keyword interval that will be used when aggregating along the dimension. This input is required when  <b>Aggregation Definition</b> is set to <b>Interval Keyword</b>, and the aggregation must be across time.
+                <ul>
+                    <li> <b>Hourly</b>&mdash;The data values will be aggregated into hourly time steps, and the result will include every hour in the time series.
+                    </li>
+                    <li> <b>Daily</b>&mdash;The data values will be aggregated into daily time steps, and the result will include every day in the time series.
+                    </li>
+                    <li> <b>Weekly</b>&mdash;The data values will be aggregated into weekly time steps, and the result will include every week in the time series.
+                    </li>
+                    <li> <b>Monthly</b>&mdash;The data values will be aggregated into monthly time steps, and the result will include every month in the time series.
+                    </li>
+                    <li> <b>Quarterly</b>&mdash;The data values will be aggregated into quarterly time steps, and the result will include every quarter in the time series.
+                    </li>
+                    <li> <b>Yearly</b>&mdash;The data values will be aggregated into yearly time steps, and the result will include every year in the time series.
+                    </li>
+                    <li> <b>Recurring Daily</b>&mdash;The data values will be aggregated into daily time steps, and the result will include one aggregated value per Julian day. The output will include, at most, 366 daily time slices.
+                    </li>
+                    <li> <b>Recurring Weekly</b>&mdash;The data values will be aggregated into weekly time steps, and the result will include one aggregated value per week. The output will include, at most, 53 weekly time slices.
+                    </li>
+                    <li> <b>Recurring Monthly</b>&mdash;The data values will be aggregated into weekly time steps, and the result will include one aggregated value per month. The output will include, at most, 12 monthly time slices.
+                    </li>
+                    <li> <b>Recurring Quarterly</b>&mdash;The data values will be aggregated into weekly time steps, and the result will include one aggregated value per quarter. The output will include, at most, 4 quarterly time slices.
+                    </li>
+                    <li> <b>Dekadly</b>&mdash; The data values will be aggregated into 3 periods of 10 days each. The last period might contain more or fewer than 10 days. The output will include 3 slices for each month.
+                    </li>
+                    <li> <b>Pentadly</b>&mdash;The data values will be aggregated into 6 periods of 5 days each. The last period might contain more or fewer than 5 days. The output will include 6 slices for each month.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="intervalValue">
+        <div><h2>Value Interval</h2></div>
+        <hr/>
+        <div>
+            <p>The size of the interval that will be used for the aggregation. This parameter is required when the  <b>Aggregation Definition</b> parameter is set to <b>Interval Value</b>.
+            </p>
+            <p>For example, to aggregate 30 years of monthly temperature data into 5-year increments, enter 5 as the  <b>Value Interval</b>, and specify <b>Unit</b> as <b>Years</b>.
+            </p>
+        </div>
+    </div>
+    <div id="intervalUnit">
+        <div><h2>Unit</h2></div>
+        <hr/>
+        <div>
+            <p>The unit that will be used for the interval value. This input is required when the  <b>Dimension</b> is a time field and <b>Aggregation Definition</b> is set to <b>Interval Value</b>.
+            </p>
+            <p>If you are aggregating over anything other than time, this option will not be available and the unit for the interval value will match the variable unit of the input multidimensional raster data. 
+                <ul>
+                    <li> <b>Hours</b>&mdash;The data values will be aggregated into hourly time slices at the interval provided.
+                    </li>
+                    <li> <b>Days</b>&mdash;The data values will be aggregated into daily time slices at the interval provided.
+                    </li>
+                    <li> <b>Weeks</b>&mdash;The data values will be aggregated into weekly time slices at the interval provided.
+                    </li>
+                    <li> <b>Months</b>&mdash;The data values will be aggregated into monthly time slices at the interval provided.
+                    </li>
+                    <li> <b>Years</b>&mdash;The data values will be aggregated into yearly time slices at the interval provided.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="intervalRanges">
+        <div><h2>Define ranges</h2></div>
+        <hr/>
+        <div>
+            <p>Interval ranges will be used to aggregate groups of values. They consist of pairs of minimum and maximum range values, with data type Double or Date. This input is required when  <b>Aggregation Definition</b> is set to <b>Interval Ranges</b>.
+            </p>
+        </div>
+    </div>
+    <div id="ignoreNodata">
+        <div><h2>Ignore missing values in calculation</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies whether missing values are ignored in the analysis. 
+                <ul>
+                    <li>Checked&mdash;The analysis will include all valid pixels along a given dimension and ignore any NoData pixels. This is the default.
+                    </li>
+                    <li>Unchecked&mdash;The analysis will result in NoData if there are any NoData values for the pixel along the given dimension.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

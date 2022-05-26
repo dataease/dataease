@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Buat Buffer</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Buat Buffer"></h2>
+        <hr/>
+    <p>Buffer adalah sebuah area yang mencakup jarak dari fitur titik, garis, atau area yang diberikan. 
+    </p>
+    <p>Buffer secara khusus digunakan untuk membuat area yang dapat dianalisis lebih lanjut menggunakan alat seperti Overlay Layer. Misalnya, jika pertanyaan adalah &quot;Gedung apakah yang berada dalam jangkauan satu mil dari sekolah?&quot;, jawaban dapat ditemukan dengan membuat sebuah buffer satu mil di sekitar sekolah dan menggunakan Overlay Layer untuk melapisi buffer dengan layer yang berisi cetak bangunan.  Hasil akhirnya adalah sebuah layer dari bangunan-bangunan yang berada dalam jarak satu mil dari sekolah.  
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, maka hanya fitur yang terlihat dalam jangkauan peta saat ini yang akan dijadikan buffer.  Jika centang dihapus, semua fitur dalam layer input akan dijadikan buffer, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer yang berisi fitur untuk buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik, garis, atau area akan dijadikan buffer. 
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Masukkan ukuran buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memasukkan nilai jarak tunggal atau beberapa nilai, memisahkan setiap nilai dengan spasi.  Anda juga dapat menentukan atribut dari layer input yang berisi nilai jarak dengan mengklik  <b>Kolom</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opsi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih bagaimana Anda ingin menimpa buffer untuk ditangani. Untuk buffer mana saja yang berada di atas buffer lainnya, area secara umum dapat disimpan (Tindih) atau digabungkan (Satukan). Ketika menggunakan  <b>Satukan</b>, semua buffer disatukan menjadi fitur multi-bagian tunggal, sehingga menghapus setiap tumpang tindih.
+            </p>  
+            <p> Ketika menggunakan beberapa jarak, Anda dapat memilih cara untuk mewakili jarak dari jarak buffer terakhir; misalnya, jika jarak adalah 10 dan 14:
+                <ul>
+                    <li>Memilih hasil  <b>Cincin</b> di buffer yang dimulai dari 0 hingga 10 dan 10 hingga 14.
+                    </li>
+                    <li>Memilih hasil  <b>Disk</b> di buffer yang dimulai dari 0 hingga 10 dan 0 hingga 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opsi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih bagaimana Anda ingin menimpa buffer untuk ditangani. Untuk buffer mana saja yang berada di atas buffer lainnya, area secara umum dapat disimpan (Tindih) atau digabungkan (Satukan).  Ketika menggunakan  <b>Satukan</b>, semua buffer disatukan menjadi fitur multi-bagian tunggal, sehingga menghapus setiap tumpang tindih.
+            </p>
+            <p>Ketika membuat buffer tunggal di sekitar fitur area (satu jarak dimasukkan), Anda dapat memilih apakah fitur yang sedang dijadikan buffer disertakan atau dikecualikan dalam buffer hasil.
+            </p>
+            <p>Ketika menggunakan beberapa jarak, Anda dapat memilih cara untuk mewakili jarak dari jarak buffer terakhir; misalnya, jika jarak adalah 10 dan 14:
+                <ul>
+                    <li>Memilih hasil  <b>Cincin</b> di buffer yang dimulai dari 0 hingga 10 dan 10 hingga 14.
+                    </li>
+                    <li>Memilih hasil  <b>Disk</b> di buffer yang dimulai dari 0 hingga 10 dan 0 hingga 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opsi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih bagaimana Anda ingin menimpa buffer untuk ditangani. Untuk buffer mana saja yang berada di atas buffer lainnya, area secara umum dapat disimpan (Tindih) atau digabungkan (Satukan). Ketika menggunakan  <b>Satukan</b>, semua buffer disatukan menjadi fitur multi-bagian tunggal, sehingga menghapus setiap tumpang tindih.
+            </p>
+            <p>Ketika membuat buffer tunggal di sekitar garis (satu jarak dimasukkan), Anda dapat memilih sisi mana dari garis yang dijadikan buffer.  Secara khusus, Anda memilih kedua sisi.  Kiri dan kanan ditentukan seakan Anda berjalan dari kordinat x,y pertama dari garis (kordinat mulai) hingga kordinat x,y terakhir dari garis (kordinat akhir).  Memilih kiri atau kanan biasanya berarti Anda mengetahui bahwa fitur garis dibuat dan disimpan dalam arahan khusus (misalnya, ke hulu atau ke hilir dalam jaringan sungai).   Pada ujung garis, buffer dapat melingkar (Bundar) atau lurus melintas (Datar).
+            </p>
+            <p>Ketika menggunakan beberapa buffer (lebih dari satu jarak), Anda dapat memilih cara mewakili jarak dari jarak buffer terakhir; misalnya, jika jarak adalah 10 dan 14:
+                <ul>
+                    <li>Memilih hasil  <b>Cincin</b> di buffer yang dimulai dari 0 hingga 10 dan 10 hingga 14.
+                    </li>
+                    <li>Memilih hasil  <b>Disk</b> di buffer yang dimulai dari 0 hingga 10 dan 0 hingga 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opsi</h2></div>
+        <hr/>
+        <div>
+            <p>Sekali Anda memilih layer untuk buffer, Anda dapat memilih bagaimana Anda ingin menimpa buffer untuk ditangani. Untuk buffer mana saja yang berada di atas buffer lainnya, area secara umum dapat disimpan (Tindih) atau digabungkan (Satukan). Ketika menggunakan  <b>Satukan</b>, semua buffer disatukan menjadi fitur multi-bagian tunggal, sehingga menghapus setiap tumpang tindih.  Selain itu, Anda dapat menentukan bagaimana beberapa jarak diwakili.   Untuk layer yang berisi fitur garis, Anda dapat memilih sisi garis mana untuk dijadikan buffer.  Untuk layer yang berisi fitur area, Anda dapat memilih apakah fitur dijadikan buffer disertakan atau dikecualikan dalam buffer hasil.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

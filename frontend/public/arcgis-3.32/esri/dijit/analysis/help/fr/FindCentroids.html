@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Find Centroids (Rechercher des centroïdes)</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Find Centroids (Rechercher des centro&iuml;des)"></h2>
+        <hr/>
+    <p>Cet outil fonctionne avec une couche d&rsquo;entit&eacute;s multi-points, lin&eacute;aires ou surfaciques pour d&eacute;terminer le centre repr&eacute;sentatif de chaque entit&eacute;.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche multi-points, lin&eacute;aire ou surfacique en entr&eacute;e visibles au sein de l&rsquo;&eacute;tendue courante de la carte seront analys&eacute;es. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e sont analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche dont les entités seront utilisées pour générer des centroïdes</h2></div>
+        <hr/>
+        <div>
+            <p> La couche multi-points, lin&eacute;aire ou surfacique qui sera utilis&eacute;e pour rechercher des centro&iuml;des.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Show me output locations (Afficher les emplacements en sortie)</h2></div>
+        <hr/>
+        <div>
+            <p> Lorsque l&rsquo;option <b>At the true centroid (Au centro&iuml;de vrai)</b> est s&eacute;lectionn&eacute;e (par d&eacute;faut), la sortie renvoie l&rsquo;emplacement vrai du centro&iuml;de pour chaque entit&eacute; en entr&eacute;e. Les centro&iuml;des sont situ&eacute;s comme suit&nbsp;:
+                <ul>
+                    <li>Entit&eacute;s multi-points&mdash;Le centro&iuml;de en sortie est situ&eacute; aux coordonn&eacute;es&nbsp;x et y moyennes de tous les points dans l&rsquo;entit&eacute; multi-points.
+                    </li>
+                    <li>Entit&eacute;s lin&eacute;aires&mdash;Le centro&iuml;de en sortie est situ&eacute; aux coordonn&eacute;es&nbsp;x et y moyennes pond&eacute;r&eacute;es des centres de tous les segments de ligne dans l&rsquo;entit&eacute; lin&eacute;aire. La pond&eacute;ration est bas&eacute;e sur la longueur du segment.
+                    </li>
+                    <li>Entit&eacute;s surfaciques&mdash;Le centro&iuml;de en sortie est situ&eacute; au centre de la surface.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Lorsque l&rsquo;option  <b>Contained by input features (Contenu par entit&eacute;s en entr&eacute;e)</b> est s&eacute;lectionn&eacute;, les entit&eacute;s ponctuelles en sortie sont contenues par ou dans chaque entit&eacute; en entr&eacute;e. Les entit&eacute;s ponctuelles r&eacute;sultantes apparaissent comme suit&nbsp;:
+                <ul>
+                    <li>Entit&eacute;s multi-points&mdash;Le centro&iuml;de en sortie co&iuml;ncide avec l&rsquo;un des points dans le groupe multi-points.
+                    </li>
+                    <li>Entit&eacute;s lin&eacute;aires&mdash;Le centro&iuml;de en sortie se trouve sur la ligne.  Si la ligne est courbe, la sortie se situe au centre de la ligne. 
+                    </li>
+                    <li>Entit&eacute;s surfaciques&mdash;Le point en sortie se situe dans l&rsquo;entit&eacute; surfacique.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

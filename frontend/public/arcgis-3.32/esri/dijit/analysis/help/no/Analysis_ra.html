@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Rasteranalyse lar deg analysere store rasterdatasett ved hjelp av  ArcGIS Image Server. Dette gj&oslash;r det mulig &aring; analysere mer data raskere ved &aring; utnytte kraften i serveren. Verkt&oslash;ysettene som for tiden er tilgjengelige gjennom  Portal for ArcGIS p&aring; nettet, er  <b>Summer data</b>, <b>Analyser m&oslash;nstre</b>, <b>Bruk n&aelig;rhet</b>, <b>Analyser bilde</b>, <b>Analyser terreng</b>, <b>Administrer data</b> og <b>Dyp l&aelig;ring</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Summer data</h2>
+        <hr/>
+        <p>Dette verkt&oslash;ysettet har et verkt&oslash;y for &aring; beregne statistikk for et rasterlag innenfor omr&aring;degrensene du definerer. 
+            <ul>
+                <li> <b>Summer raster innenfor</b> beregner statistikk for rasterceller som faller innenfor definerte omr&aring;degrenser.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summer raster innenfor</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Summer raster innenfor-verkt&oslash;yet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner summeringsstatistikk for rasterceller innenfor definerte omr&aring;der.
+            </p>
+            <p>Noen eksempler p&aring; bruksomr&aring;der er f&oslash;lgende: 
+
+                <ul>
+                    <li>Gitt et lag med vannskilleomr&aring;der og et h&oslash;yderasterlag, beregner du rekkevidden av h&oslash;yder innenfor hvert vannskille for &aring; finne ut hvilke som vil ha den h&oslash;yeste vannf&oslash;ringen.
+                        
+
+                    </li>
+                    <li>Gitt et lag av forvaltningsenheter og et rasterlag av arealbrukskategorier, beregner du ulik arealbruk innenfor hvert forvaltningsomr&aring;de for &aring; identifisere hvilke som krever mest arbeid for &aring; vedta en forvaltningsplan.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analyser mønstre</h2>
+        <hr/>
+        <p>Med disse verkt&oslash;yene kan du identifisere, kvantifisere og visualisere geografiske m&oslash;nstre i dataene dine. 
+
+            <ul>
+                <li> <b>Beregn tetthet</b> tar kjente mengder av et fenomen lager et tetthetskart ved &aring; spre disse mengdene utover et kart.
+                    
+
+                </li>
+                <li> <b>Interpoler punkter</b>-verkt&oslash;yet forutsier verdier p&aring; nye lokasjoner basert p&aring; m&aring;linger fra en samling punkter.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn tetthet</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Beregn tetthet-Portal-verkt&oslash;y">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tetthetsanalysen tar kjente mengder av et fenomen lager et tetthetskart ved &aring; spre disse mengdene utover et kart. Du kan for eksempel bruke dette verkt&oslash;yet til &aring; vise konsentrasjoner av lynnedslag eller tornadoer, tilgang til helsetjenester og befolkningstetthet.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoler punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Interpoler punkter-verkt&oslash;yet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette verkt&oslash;yet forutsier verdier p&aring; nye lokasjoner basert p&aring; m&aring;linger fra en samling punkter. Verkt&oslash;yet bruker punktdata med verdier p&aring; hvert punkt og returnerer omr&aring;der klassifisert etter predikerte verdier. Du kan bruke dette verkt&oslash;yet til f.eks. &aring; forutsi regnniv&aring;et over et vannskille basert p&aring; m&aring;linger i enkelte regnm&aring;lere.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Bruk nærhet</h2>
+        <hr/>
+        <p>Disse verkt&oslash;yene hjelper deg med finne svaret p&aring; et av det vanligste sp&oslash;rsm&aring;lene i geografiske analyser: &quot;Hva ligger i n&aelig;rheten av hva?&quot;
+
+            <ul>
+                <li> <b>Beregn avstand</b> beregner euklidsk avstand, retning og tilordning fra en enkelt kilde eller et sett av kilder.
+                    
+
+                </li>
+                <li> <b>Bestem optimalt nettverk for reiseutgifter</b> beregner det optimale utgiftsnettverket fra et sett av inndataregioner.
+                    
+
+                </li>
+                <li> <b>Bestem rute for reiseutgifter som polylinje</b> beregner den beste polylinjeruten mellom kilder og kjente destinasjoner.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn avstand</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Beregn avstand">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner euklidsk avstand, retning og tilordning fra en enkelt kilde eller et sett av kilder. Du kan bruke dette verkt&oslash;yet til &aring; bestemme hvor langt en lokasjon ligger fra en vei, en bygning eller en park. Du kan ogs&aring; bestemme retningen du m&aring; reise i for &aring; komme tilbake til en kilde p&aring; mest mulig direkte m&aring;te. For hver lokasjon i studieomr&aring;det kan du se hvilken kilde som er den n&aelig;rmeste.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Nettverk for å bestemme optimale reiseutgifter</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Illustrasjon av verkt&oslash;yet Nettverk for &aring; bestemme optimale reiseutgifter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner det optimale utgiftsnettverket fra et sett av inndataregioner.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Bestem rute for reiseutgifter som polylinje</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Illustrasjon av vekt&oslash;yet Bestem rute for reiseutgifter som polylinje">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner den beste polylinjeruten mellom kilder og kjente m&aring;l.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analyser bilde</h2>
+        <hr/>
+        <p>F&oslash;lgende verkt&oslash;y hjelper deg med &aring; analysere bilder. 
+            <ul>
+                <li> <b>Bruk rasterfunksjonsmal</b> behandler bildene med geoobjektene som er spesifisert av rasterfunksjonsmalen.
+                </li>
+                <li> <b>Overv&aring;k vegetasjon</b> oppdager vegetasjon i et bilde p&aring; bakgrunn av aritmetiske operasjoner p&aring; b&aring;ndene.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Bruk rasterfunksjonsmal</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Bruk rasterfunksjonsmal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Behandler bildene med funksjonene, som er spesifisert av rasterfunksjonsmalen.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overvåk vegetasjon</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Portalverkt&oslash;y for &aring; overv&aring;ke vegetasjon">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Utf&oslash;rer en aritmetisk operasjon p&aring; b&aring;ndene i et flerb&aring;nds rasterlag for &aring; vise informasjon om vegetasjonsdekningen i studieomr&aring;det.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analyser terreng</h2>
+        <hr/>
+        <p>Med disse verkt&oslash;yene kan du analysere rasteroverflater. 
+            <ul>
+                <li> <b>Beregn helning</b> beregninger helningen i terrenget.
+                    
+
+                </li>
+                <li> <b>Utled aspekt</b> beregner retningen av den bratteste helningen for hver lokasjon.
+                    
+
+                </li>
+                <li> <b>Opprett synsfelt</b> identifiserer hva som kan ses fra et hvilket som helst punkt i landskapet.
+                    
+
+                </li>
+                <li> <b>Vannskille</b> beregner tilf&oslash;rselsomr&aring;det over identifisert(e) lokasjon(er) p&aring; en flate.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn helling</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Beregn hellingsverkt&oslash;y for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifiserer en overflate som viser helningen p&aring; inngangsh&oslash;ydedataene. Hellingen representerer endringstakten for h&oslash;yden for hver celle i den digitale h&oslash;ydemodellen (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Utled aspekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Portalverkt&oslash;y for &aring; utlede aspekt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifiserer skr&aring;ningens retning av maksimal endringsverdi fra hver celle i forhold til naboene. Aspekt kan regnes som skr&aring;ningens retning.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opprette Viewshed</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Opprett synsfelt-verkt&oslash;y">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestemmer lokasjonene p&aring; en rasterflate som er synlige for et sett av observat&oslash;rer.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vannskille</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Oppgave om vannskille">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestemmer tilf&oslash;rselsomr&aring;det over et sett med celler i et raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Administrer data</h2>
+        <hr/>
+        <p>Disse verkt&oslash;yene brukes b&aring;de til daglig administrasjon av geografiske data og til &aring; kombinere data f&oslash;r det utf&oslash;res analyser. 
+            <ul>
+                <li> <b>Trekk ut raster</b> klipper ut deler fra et rasterdatasett for ytterligere analyse.
+                    
+
+                </li>
+                <li> <b>Tilordne verdier p&aring; nytt</b> tilordner andre verdier til rastercellene.
+                    
+
+                </li>
+                <li> <b>Konverter geoobjekt til raster</b> lager raster av vektordata.
+                    
+
+                </li>
+                <li> <b>Konverter raster til geoobjekt</b> lager vektorer av rasterdata.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trekk ut raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Portalverkt&oslash;y for &aring; trekke ut raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Trekk ut celler fra en raster som er basert p&aring; verdi, form eller omfanget av et annet datasett.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tilordne verdier på nytt</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Portalverkt&oslash;y for &aring; tilordne verdier p&aring; nytt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Endre den enkelte celleverdien eller en serie celleverdier til nye verdier.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konverter geoobjekt til raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Konverter geoobjekt til rasterverkt&oslash;y">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opprett et nytt rasterdatasett fra et eksisterende geoobjektdatasett.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konverter raster til geoobjekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Verkt&oslash;y for &aring; konvertere raster til geoobjekt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opprett et nytt geoobjektdatasett fra et eksisterende rasterdatasett.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Verktøysettet Dyp læring</h2>
+        <hr/>
+        <p>Disse verkt&oslash;yene brukes til &aring; p&aring;vise bestemte elementer i et bilde eller til &aring; klassifisere piksler i et rasterdatasett. Dyp l&aelig;ring er en form for kunstig intelligens-basert maskinl&aelig;ringsmetode som p&aring;viser karakteristiske elementer i bildemateriale ved hjelp av flere lag i nevrale nettverk der hvert enkelt lag er i stand til &aring; trekke ut ett eller flere unike elementer i bildet. Disse verkt&oslash;yene bruker modeller som er blitt trent opp til &aring; p&aring;vise bestemte elementer i tredjeparts rammeverk for dyp l&aelig;ring &ndash;&nbsp;eksempelvis TensorFlow, CNTK og Keras&nbsp;&ndash; og resultere i geoobjekter eller kart over klasser som utdata.
+            <ul>
+                <li> <b>Klassifiser piksler ved hjelp av dyp l&aelig;ring</b> produserer et klassifisert raster ved hjelp av en opptrent modell for dyp l&aelig;ring.
+                </li>
+                <li> <b>P&aring;vis objekter ved hjelp av dyp l&aelig;ring</b> produserer en geoobjektklasse den finner i et inndataraster ved hjelp av en opptrent modell for dyp l&aelig;ring.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klassifiser piksler ved hjelp av dyp læring</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klassifiser piksler ved hjelp av dyp l&aelig;ring">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kj&oslash;rer en opptrent modell for dyp l&aelig;ring p&aring; et inndataraster for &aring; produsere et klassifisert raster, og hver gyldige piksel har en tilordnet klassemerking.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Påvis objekter ved hjelp av dyp læring</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="P&aring;vis objekter ved hjelp av dyp l&aelig;ring">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kj&oslash;rer en opptrent modell for dyp l&aelig;ring p&aring; et inndataraster for &aring; produsere en geoobjektklasse som inneholder objektene det finner. Geoobjektene kan v&aelig;re avgrensende rammer eller polygoner rundt objektene som er funnet, eller punkter i objektenes sentrum.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

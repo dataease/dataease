@@ -1,0 +1,6 @@
+This folder contains the stores and utilities implementing the Dojo Object Store API,
+a successor and unifier to Dojo Data, Dojo Storage, and potentially Dojo Model. These
+stores are designed to provide simple lightweight implementations 
+providing core functionality for typical applications.  
+
+See http://dojotoolkit.org/features/1.6/object-store for more information

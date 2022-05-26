@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summér raster inden for</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Summ&eacute;r raster inden for-v&aelig;rkt&oslash;j"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j summerer rasterdata baseret p&aring; omr&aring;der (zoner), der er defineret af det f&oslash;rste inputlag.
+    </p>
+    <p>Her er nogle eksempelanvendelser:
+    </p>
+    <p>
+        <ul>
+            <li>Ved angivelse af et lag med afvandingsomr&aring;der og et lag med gr&aelig;nser for arealanvendelse efter arealanvendelsestype beregnes f.eks. det samlede areal for anvendelsestype pr. afvandingsomr&aring;de.
+                
+
+            </li>
+            <li>Ved angivelse af et lag med parceller i et amt og et lag med bygr&aelig;nser opsummeres gennemsnitsv&aelig;rdien af ledige parceller inden for hver bygr&aelig;nse.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i inputlaget og laget, som skal summeres, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis umarkeret, analyseres alle objekter i b&aring;de inputlaget og laget, der skal summeres, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Vælg områdelag for at summere et rasterlag inden for definerede grænser</h2></div>
+        <hr/>
+        <div>
+            <p>Det lag, der definerer gr&aelig;nser for de omr&aring;der, eller zoner, som skal summeres.
+            </p>
+            <p>Laget kan v&aelig;re et raster- eller vektorlag. For rasterlag defineres zonerne af alle de positioner i inputtet, som har samme cellev&aelig;rdi. Omr&aring;derne beh&oslash;ver ikke at st&oslash;de op til hinanden.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Vælg felt for at definere grænser</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er den attribut i laget, der vil blive brugt til at definere gr&aelig;nserne for omr&aring;derne.
+            </p>
+            <p>Forestil dig f.eks., at det f&oslash;rste inputlag definerer gr&aelig;nserne for administrationsenheden ved hj&aelig;lp af attributter, der definerer regionen, distriktet samt parcel-ID for hver enhed. Du kan ogs&aring; have et rasterlag, der definerer et biodiversitetsindeks for hver position. N&aring;r dette felt er valgt, kan du beslutte at beregne den gennemsnitlige biodiversitet p&aring; lokalt-, distrikts- og regionalt niveau.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Vælg rasterlag at summere</h2></div>
+        <hr/>
+        <div>
+            <p>Rastercellerne i dette lag vil blive summeret efter de omr&aring;der (zoner), som de falder inden for.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Vælg statistik, der skal beregnes:</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du har valgt et lag, der skal summeres, kan du v&aelig;lge at beregne statistik for eventuelle numeriske attributter best&aring;ende af punkter, linjer eller omr&aring;der inden for inputomr&aring;delaget.
+            </p>
+            <p>N&aring;r det valgte felt udg&oslash;res af et heltal, er de tilg&aelig;ngelige statistikttyper Gennemsnit, Majoritet, Maksimum, Median, Minimum, Minoritet, Omr&aring;de, Standardafvigelse, Sum og Variation.
+            </p>
+            <p>Hvis feltet er et flydende punkt, er valgmulighederne Gennemsnit, Maksimum, Minimum, Omr&aring;de, Standardafvigelse og Sum.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorér manglende værdier i beregning</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis du v&aelig;lger at ignorere manglende v&aelig;rdier, er det kun de celler, der har en v&aelig;rdi i det lag, der skal summeres, der benyttes til at bestemme outputv&aelig;rdien for det p&aring;g&aelig;ldende omr&aring;de. Hvis der i &oslash;vrigt mangler v&aelig;rdier noget sted i et omr&aring;de, vurderes det, at der er utilstr&aelig;kkelige oplysninger til at udf&oslash;re statistiske beregninger for alle cellerne i den p&aring;g&aelig;ldende zone, og omr&aring;det vil modtage en nul-v&aelig;rdi (NoData) i outputtet.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

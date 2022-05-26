@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>A Vektoros elemek elemz&eacute;se eszk&ouml;zt&aacute;r sz&aacute;mos, a felhaszn&aacute;l&oacute; sz&aacute;m&aacute;ra el&eacute;rhető &eacute;s haszn&aacute;lhat&oacute; eszk&ouml;zt tartalmaz.  Ezek a feladatok az al&aacute;bbiakban kateg&oacute;ri&aacute;kba vannak rendezve; a kateg&oacute;ri&aacute;k egyszerű logikai csoportos&iacute;t&aacute;sok, &eacute;s semmilyen m&oacute;don nincsenek hat&aacute;ssal a feladatok el&eacute;r&eacute;s&eacute;re vagy haszn&aacute;lat&aacute;ra.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Adatok összegzése</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k kisz&aacute;m&iacute;tj&aacute;k a ter&uuml;leten bel&uuml;l vagy m&aacute;s vektoros elemek k&ouml;zel&eacute;ben tal&aacute;lhat&oacute; vektoros elemek &ouml;sszes&iacute;tett darabsz&aacute;m&aacute;t, hossz&aacute;t, ter&uuml;let&eacute;t &eacute;s alapvető le&iacute;r&oacute; statisztikai adataikat, valamint attrib&uacute;tumaikat.
+            <ul>
+                <li>A  <b>Pontok &ouml;sszevon&aacute;sa</b> kisz&aacute;m&iacute;tja a megadott ter&uuml;leten bel&uuml;l eső pontok statisztikai adatait.
+                </li>
+                <li>A  <b>Vektoros elemek &ouml;sszekapcsol&aacute;sa</b> t&eacute;rbeli vagy attrib&uacute;tumok k&ouml;z&ouml;tti &ouml;sszef&uuml;gg&eacute;sek alapj&aacute;n &aacute;tviszi egy r&eacute;teg vagy t&aacute;bl&aacute;zat attrib&uacute;tumait egy m&aacute;sikba.
+                </li>
+                <li>A  <b>K&ouml;zeli ter&uuml;letek &ouml;sszegz&eacute;se</b> kisz&aacute;m&iacute;tja a megadott t&aacute;vols&aacute;gon bel&uuml;li vektoros elemek statisztikai adatait &eacute;s attrib&uacute;tumait.
+                </li>
+                <li>A  <b>Ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;s</b> kisz&aacute;m&iacute;tja a ter&uuml;let egym&aacute;st &aacute;tfedő ter&uuml;let vektoros elemeinek &eacute;s attrib&uacute;tumainak statisztikai adatait.
+                </li>
+                <li>A  <b>K&ouml;z&eacute;ppont &eacute;s sz&oacute;r&oacute;d&aacute;s &ouml;sszefoglal&aacute;sa</b> k&ouml;zponti vektoros elemek &eacute;s ir&aacute;nyf&uuml;ggő eloszl&aacute;sok kisz&aacute;m&iacute;t&aacute;s&aacute;ra haszn&aacute;lhat&oacute;.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pontok összevonása</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Pontok &ouml;sszevon&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ez az eszk&ouml;z egy pontszerű vektor elemeket tartalmaz&oacute; r&eacute;teg &eacute;s egy ter&uuml;let vektoros elemeket tartalmaz&oacute; r&eacute;teg haszn&aacute;lat&aacute;val meghat&aacute;rozza, hogy mely pontok esnek az egyes ter&uuml;leteken bel&uuml;l, &eacute;s kisz&aacute;m&iacute;tja az &ouml;sszes pont statisztikai adatait az egyes ter&uuml;leteken. P&eacute;ld&aacute;ul:
+                <ul>
+                    <li>A bűnt&eacute;nyek pontszerűen megadott hely&eacute;t alapul v&eacute;ve kisz&aacute;m&iacute;thatja a megy&eacute;nk&eacute;nt vagy m&aacute;s k&ouml;zigazgat&aacute;si k&ouml;rzetenk&eacute;nt előfordult bűnt&eacute;nyek sz&aacute;m&aacute;t.
+                    </li>
+                    <li>&Aacute;llamonk&eacute;nt megkeresheti a franchise &uuml;zletek &aacute;ltal el&eacute;rt legnagyobb &eacute;s legkisebb bev&eacute;telt.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vektoros elemek összekapcsolása</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Vektoros elemek &ouml;sszekapcsol&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vektoros elemek &ouml;sszekapcsol&aacute;sa t&eacute;rbeli vagy attrib&uacute;tumok k&ouml;z&ouml;tti &ouml;sszef&uuml;gg&eacute;sek alapj&aacute;n &aacute;tviszi egy r&eacute;teg vagy t&aacute;bl&aacute;zat attrib&uacute;tumait egy m&aacute;sikba. P&eacute;ld&aacute;ul:
+                <ul>
+                    <li>K&ouml;z&ouml;s hat&aacute;rvonalat vagy demogr&aacute;fiai adatokat adhat hozz&aacute; incidensadatokhoz.
+                    </li>
+                    <li>Azonos&iacute;thatja az egy ismert helyhez legk&ouml;zelebb eső l&eacute;tes&iacute;tm&eacute;nyeket.
+                    </li>
+                    <li>Meghat&aacute;rozhatja az &aacute;rt&eacute;rre eső lak&oacute;h&aacute;zak sz&aacute;m&aacute;t.
+                    </li>
+                    <li>Azonos&iacute;thatja k&uuml;l&ouml;nb&ouml;ző vadon &eacute;lő fajok k&ouml;z&ouml;s &eacute;lőhelyeit.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Közeli területek statisztikája</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="K&ouml;zeli ter&uuml;letek &ouml;sszegz&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Megkeresi a bemenő r&eacute;tegen a vektoros elemektől megadott t&aacute;vols&aacute;gban tal&aacute;lhat&oacute; vektoros elemeket.   A t&aacute;vols&aacute;g m&eacute;rhető l&eacute;gvonalban, vagy egy utaz&aacute;si m&oacute;d lehets&eacute;ges &uacute;tvonala ment&eacute;n.  Az eszk&ouml;z elv&eacute;gzi a statisztikai sz&aacute;m&iacute;t&aacute;sokat a k&ouml;zeli vektoros elemekre.  P&eacute;ld&aacute;ul:
+                <ul>
+                    <li>Sz&aacute;m&iacute;tsa ki az &uacute;j &uuml;zlet javasolt hely&eacute;től &ouml;t percen bel&uuml;l el&eacute;rhető teljes n&eacute;pess&eacute;get.
+                    </li>
+                    <li>Sz&aacute;m&iacute;tsa ki az &uacute;j &uuml;zlet javasolt hely&eacute;től &ouml;t percen bel&uuml;li aut&oacute;p&aacute;lya-felhajt&oacute;kat, amit az &uuml;zlet megk&ouml;zel&iacute;thetős&eacute;g&eacute;nek mutat&oacute;sz&aacute;mak&eacute;nt k&iacute;v&aacute;n haszn&aacute;lni.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Területen belüli statisztika</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;s">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Megkeresi azokat a ter&uuml;leteket (&eacute;s ter&uuml;letr&eacute;szeket), ahol k&eacute;t r&eacute;teg &aacute;tfedi egym&aacute;st, &eacute;s kisz&aacute;m&iacute;tja a fedv&eacute;ny statisztikai adatait. P&eacute;ld&aacute;ul:
+                <ul>
+                    <li>V&iacute;zgyűjtő ter&uuml;leteket &eacute;s egy felsz&iacute;nhaszn&aacute;lati r&eacute;teg eset&eacute;n kisz&aacute;m&iacute;thatja a f&ouml;ldter&uuml;letek nagys&aacute;g&aacute;t felsz&iacute;nhaszn&aacute;lati t&iacute;pusonk&eacute;nt mindegyik v&iacute;zgyűjtő ter&uuml;letre. 
+                    </li>
+                    <li>Egy megye parcell&aacute;it &eacute;s telep&uuml;l&eacute;shat&aacute;rait tartalmaz&oacute; r&eacute;teg eset&eacute;n &ouml;sszes&iacute;theti a telep&uuml;l&eacute;seken bel&uuml;li szabad parcell&aacute;k &aacute;tlagos &eacute;rt&eacute;keit.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Középpont és szóródás összefoglalása</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="K&ouml;z&eacute;ppont &eacute;s sz&oacute;r&oacute;d&aacute;s &ouml;sszefoglal&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ez az eszk&ouml;z pontszerű vektoros elemek seg&iacute;ts&eacute;g&eacute;vel sz&aacute;m&iacute;tja ki a k&ouml;zponti vektoros elemet, az &aacute;tlagos k&ouml;z&eacute;ppontot, a medi&aacute;n k&ouml;z&eacute;ppontot vagy az ellipszist (eloszl&aacute;s). P&eacute;ld&aacute;ul:
+                <ul>
+                    <li>Adott blokkcsoportcentroid-r&eacute;tegből a n&eacute;pess&eacute;ggel s&uacute;lyozott k&ouml;zponti vektoros elem seg&iacute;ts&eacute;g&eacute;vel meghat&aacute;rozhat&oacute;, hogy a v&aacute;ros melyik r&eacute;sze a legjobban el&eacute;rhető egy előad&oacute;műv&eacute;szeti k&ouml;zpont sz&aacute;m&aacute;ra.
+                    </li>
+                    <li>Ha adva van egy r&eacute;teg, amely egy parkban &eacute;lő j&aacute;vorszarvasokkal kapcsolatos megfigyel&eacute;seket tartalmaz t&ouml;bb &eacute;vre vonatkoz&oacute;an, az &aacute;tlagos k&ouml;z&eacute;ppont seg&iacute;ts&eacute;g&eacute;vel meghat&aacute;rozhat&oacute;, hogy hol gyűlnek &ouml;ssze a j&aacute;vorszarvasok ny&aacute;ron &eacute;s t&eacute;len.
+                    </li>
+                    <li>Tűzesetek adott r&eacute;teg&eacute;ből a medi&aacute;n k&ouml;z&eacute;ppont seg&iacute;ts&eacute;g&eacute;vel an&eacute;lk&uuml;l hat&aacute;rozhat&oacute; meg a t&uuml;zek centr&aacute;lis tendenci&aacute;ja, hogy arra hat&aacute;ssal lenn&eacute;nek a kiugr&oacute; &eacute;rt&eacute;kek.
+                    </li>
+                    <li>Egy talajv&iacute;zk&uacute;tmint&aacute;kat tartalmaz&oacute; r&eacute;tegből ellipszis seg&iacute;ts&eacute;g&eacute;vel meghat&aacute;rozhat&oacute; egy szennyező anyag terjed&eacute;se.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="regularsize">
+        <h2>Adatbővítés</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k seg&iacute;tenek megismerni a ter&uuml;letek jelleg&eacute;t. A kiv&aacute;lasztott ter&uuml;letek r&eacute;szletes demogr&aacute;fiai &eacute;s statisztikai adatait adja eredm&eacute;ny&uuml;l. 
+            <ul>
+                <li>A  <b>R&eacute;tegbőv&iacute;t&eacute;s</b> lek&eacute;ri az adott ter&uuml;leten, vagy egy adott helytől a kiv&aacute;lasztott utaz&aacute;si időn vagy t&aacute;vols&aacute;gon bel&uuml;l l&eacute;vő emberekre, helyekre &eacute;s &uuml;zleti v&aacute;llalkoz&aacute;sokra vonatkoz&oacute; inform&aacute;ci&oacute;t.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rétegbővítés</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="R&eacute;tegbőv&iacute;t&eacute;s">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Lek&eacute;ri az adott ter&uuml;leten, vagy egy adott helytől a kiv&aacute;lasztott utaz&aacute;si időn vagy t&aacute;vols&aacute;gon bel&uuml;l l&eacute;vő emberekre, helyekre &eacute;s &uuml;zleti v&aacute;llalkoz&aacute;sokra vonatkoz&oacute; inform&aacute;ci&oacute;t. 
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Helyek keresése</h2>
+        <hr/>
+        <p>Ezekkel az eszk&ouml;z&ouml;kkel a megadott krit&eacute;riumokat kiel&eacute;g&iacute;tő vektoros elemeket azonos&iacute;that vagy hozhat l&eacute;tre.  A krit&eacute;riumok t&iacute;pusa att&oacute;l f&uuml;gg, melyik eszk&ouml;zt haszn&aacute;lja; a krit&eacute;rium alapulhat p&eacute;ld&aacute;ul t&eacute;rbeli vagy attrib&uacute;tumlek&eacute;rdez&eacute;sen, a megadott magass&aacute;gb&oacute;l l&aacute;that&oacute; ter&uuml;leteken, megadott v&iacute;zelvezet&eacute;si pontokn&aacute;l lejjebb tal&aacute;lhat&oacute; ter&uuml;leteken vagy az utaz&aacute;si időn a megadott k&ouml;zleked&eacute;si helyzetekben.
+            <ul>
+                <li>A  <b>Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa</b> kiv&aacute;lasztja a l&eacute;tes&iacute;tm&eacute;nyek legjobb helysz&iacute;n&eacute;t a l&eacute;tes&iacute;tm&eacute;nyek ir&aacute;nt keresletet mutat&oacute; helysz&iacute;nek egy adott c&eacute;lt kiel&eacute;g&iacute;tő m&oacute;don t&ouml;rt&eacute;nő hozz&aacute;rendel&eacute;s&eacute;vel.
+                </li>
+                <li>A  <b>Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa</b> l&eacute;trehozza a megadott helyekről l&aacute;that&oacute; ter&uuml;leteket.
+                </li>
+                <li>A  <b>V&iacute;zgyűjtő ter&uuml;letek l&eacute;trehoz&aacute;sa</b> l&eacute;trehozza a v&iacute;zgyűjtő ter&uuml;leteket a megadott helyek alapj&aacute;n.
+                </li>
+                <li>Az  <b>&Uacute;j helyek sz&aacute;rmaztat&aacute;sa</b> &uacute;j ter&uuml;leteket hoz l&eacute;tre a minta ter&uuml;leten bel&uuml;li, &eacute;s a krit&eacute;riumok sorozat&aacute;t kiel&eacute;g&iacute;tő helyekből.
+                </li>
+                <li>A  <b>Centroidok keres&eacute;se</b> megkeresi a bemeneti vektoros elemek reprezentat&iacute;v k&ouml;z&eacute;ppontj&aacute;t (centroid).
+                </li>
+                <li>A  <b>Megl&eacute;vő helyek keres&eacute;se</b> megl&eacute;vő ter&uuml;leteket keres a krit&eacute;riumok sorozat&aacute;t kiel&eacute;g&iacute;tő r&eacute;tegen.
+                </li>
+                <li>A  <b>Hasonl&oacute; helyek keres&eacute;se</b> a megadott krit&eacute;riumokon alapul&oacute; egy vagy t&ouml;bb vonatkoztat&aacute;si helyhez hasonl&oacute; helyeket keres.
+                </li>
+                <li class="PortalOnly">A  <b>Geok&oacute;dol&aacute;si helysz&iacute;nek t&aacute;bl&aacute;zatb&oacute;l</b> a t&aacute;bl&aacute;zat c&iacute;meit koordin&aacute;t&aacute;kk&aacute; alak&iacute;tja. 
+                </li>
+                <li>A  <b>Foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s/kijel&ouml;l&eacute;s</b> meghat&aacute;rozza a foly&aacute;sir&aacute;ny&uacute; &aacute;raml&aacute;si &uacute;tvonalakat a megadott helyről.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Legjobb létesítmények kiválasztása</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kiv&aacute;lasztja a l&eacute;tes&iacute;tm&eacute;nyek legjobb helysz&iacute;n&eacute;t a l&eacute;tes&iacute;tm&eacute;nyek ir&aacute;nt keresletet mutat&oacute; helysz&iacute;nek egy adott c&eacute;lt kiel&eacute;g&iacute;tő m&oacute;don t&ouml;rt&eacute;nő hozz&aacute;rendel&eacute;s&eacute;vel.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Belátható terület létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L&eacute;trehozza a megadott helyekről l&aacute;that&oacute; ter&uuml;leteket.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vízgyűjtő területek létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="V&iacute;zgyűjtő ter&uuml;letek l&eacute;trehoz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L&eacute;trehozza a v&iacute;zgyűjtő ter&uuml;leteket a megadott helyek alapj&aacute;n.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Új helyek származtatása</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="&Uacute;j helyek sz&aacute;rmaztat&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uacute;j vektoros elemeket hoz l&eacute;tre a minta ter&uuml;leten bel&uuml;li, &eacute;s a krit&eacute;riumok sorozat&aacute;t kiel&eacute;g&iacute;tő helyekből. Ezek a krit&eacute;riumok alapulhatnak attrib&uacute;tumlek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul &uuml;res parcell&aacute;kon) &eacute;s t&eacute;rbeli lek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul egy foly&oacute;t&oacute;l 1 m&eacute;rf&ouml;ld&ouml;n bel&uuml;l). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Centroidok keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Centroidok keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Megkeresi az egyes bemeneti multipoint, vonal vagy ter&uuml;let vektoros elem reprezentat&iacute;v k&ouml;z&eacute;ppontj&aacute;t (centroid).
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Meglévő helyek keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Megl&eacute;vő helyek keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Megl&eacute;vő vektoros elemeket v&aacute;laszt ki a minta ter&uuml;leten bel&uuml;li, &eacute;s a krit&eacute;riumok sorozat&aacute;t kiel&eacute;g&iacute;tő helyekből. Ezek a krit&eacute;riumok alapulhatnak attrib&uacute;tumlek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul &uuml;res parcell&aacute;kon) &eacute;s t&eacute;rbeli lek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul egy foly&oacute;t&oacute;l 1 m&eacute;rf&ouml;ld&ouml;n bel&uuml;l). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokódolási helyszínek táblázatból</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geok&oacute;dol&aacute;si helysz&iacute;nek t&aacute;bl&aacute;zatb&oacute;l">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A c&iacute;meket koordin&aacute;t&aacute;kk&aacute; alak&iacute;tja &aacute;t. Ezt az eszk&ouml;zt Excel-t&aacute;bl&aacute;zatban vagy csv-f&aacute;jlban tal&aacute;lhat&oacute; c&iacute;meken haszn&aacute;lhatja.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hasonló helyek keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Hasonl&oacute; helyek keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A megadott krit&eacute;riumok alapj&aacute;n egy vagy t&ouml;bb vonatkoztat&aacute;si helyhez hasonl&oacute; helyeket keres.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Folyásirányú követés</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s/kijel&ouml;l&eacute;s">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Meghat&aacute;rozza a foly&aacute;sir&aacute;ny&uacute; &aacute;raml&aacute;si &uacute;tvonalakat a megadott helyről.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Mintázatok elemzése</h2>
+        <hr/>
+        <p>Az al&aacute;bbi eszk&ouml;z&ouml;k seg&iacute;tenek azonos&iacute;tani, mennyis&eacute;gileg meghat&aacute;rozni &eacute;s megjelen&iacute;teni az adatok t&eacute;rbeli mint&aacute;zatait.  
+            <ul>
+                <li>A  <b>Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa</b> bizonyos jelens&eacute;gek ismert mennyis&eacute;geit ter&iacute;ti sz&eacute;t a t&eacute;rk&eacute;pen.
+                </li>
+                <li>A  <b>Hotspotok keres&eacute;se</b> meghat&aacute;rozza a statisztikailag szignifik&aacute;ns klaszterez&eacute;st az adatok t&eacute;rbeli mint&aacute;zat&aacute;ban.
+                </li>
+                <li>A  <b>Kiugr&oacute; &eacute;rt&eacute;kek keres&eacute;se</b> meghat&aacute;rozza, hogy tal&aacute;lhat&oacute;k-e statisztikailag szignifik&aacute;ns kiugr&oacute; &eacute;rt&eacute;kek az adatok t&eacute;rbeli mint&aacute;zat&aacute;ban.
+                </li>
+                <li>A  <b>Pontklaszterek keres&eacute;se</b> pontszerű vektoros elemek klasztereit keresi a k&ouml;rnyező zajon bel&uuml;l a t&eacute;rbeli eloszl&aacute;suk alapj&aacute;n.
+                </li>
+                <li>A  <b>Pontok interpol&aacute;l&aacute;sa</b> pontgyűjtem&eacute;nyekben tal&aacute;lt m&eacute;rt &eacute;rt&eacute;kek alapj&aacute;n előre jelzi az &eacute;rt&eacute;keket az &uacute;j helyeken.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sűrűség számítása</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A sűrűs&eacute;gvizsg&aacute;lat bizonyos jelens&eacute;gek ismert mennyis&eacute;geit osztja sz&eacute;t a t&eacute;rk&eacute;pen. Az eszk&ouml;z haszn&aacute;lat&aacute;val kimutathatja p&eacute;ld&aacute;ul vill&aacute;mcsap&aacute;sok vagy torn&aacute;d&oacute;k koncentr&aacute;ci&oacute;j&aacute;t, eg&eacute;szs&eacute;g&uuml;gyi int&eacute;zm&eacute;nyek el&eacute;rhetős&eacute;g&eacute;t &eacute;s a n&eacute;pess&eacute;g sűrűs&eacute;g&eacute;t.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hot spotok keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Hot spotok keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ez az eszk&ouml;z egy t&eacute;rk&eacute;pet hoz l&eacute;tre, amely megjelen&iacute;ti az adatokban tal&aacute;lhat&oacute;, statisztikailag szignifik&aacute;ns t&eacute;rbeli klasztereket.   Az eszk&ouml;z haszn&aacute;lat&aacute;val felfedhet v&aacute;ratlan hot spot-okat (piros) &eacute;s cold spot-okat (k&eacute;k), mint p&eacute;ld&aacute;ul magas &eacute;s alacsony &eacute;rt&eacute;kű lak&oacute;h&aacute;zak, bűncselekm&eacute;nyek sűrűs&eacute;ge, hal&aacute;los k&ouml;zleked&eacute;si balesetek, munkan&eacute;lk&uuml;lis&eacute;g vagy biodiverzit&aacute;s.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kiugró értékek keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Kiugr&oacute; &eacute;rt&eacute;kek keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ez az eszk&ouml;z egy t&eacute;rk&eacute;pet hoz l&eacute;tre, amely megjelen&iacute;ti az adatokban tal&aacute;lhat&oacute;, statisztikailag szignifik&aacute;ns klasztereket &eacute;s kiugr&oacute; &eacute;rt&eacute;keket. Az eszk&ouml;z haszn&aacute;lat&aacute;val azonos&iacute;thatja azokat a vektoros elemeket, amelyek &eacute;rt&eacute;kei szignifik&aacute;nsan elt&eacute;rnek a szomsz&eacute;dos vektoros elemek &eacute;rt&eacute;keitől.  Az eszk&ouml;z haszn&aacute;lat&aacute;val kereshet p&eacute;ld&aacute;ul szokatlan p&eacute;nzk&ouml;lt&eacute;si mint&aacute;zatokat, meghat&aacute;rozhatja, hol a leg&eacute;lesebbek a hat&aacute;rvonalak a j&oacute;m&oacute;d &eacute;s a szeg&eacute;nys&eacute;g k&ouml;z&ouml;tt a minta ter&uuml;leten, vagy meghat&aacute;rozhatja, hogy vannak-e az Egyes&uuml;lt &Aacute;llamokban olyan megy&eacute;k, amelyekben szokatlanul alacsony a v&aacute;rhat&oacute; &eacute;lettartam a szomsz&eacute;d megy&eacute;kkel &ouml;sszehasonl&iacute;tva.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pontklaszterek keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Pontklaszterek keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ez az eszk&ouml;z azokat a ter&uuml;leteket &eacute;szleli, ahol a pontok koncentr&aacute;ltan helyezkednek el, &eacute;s ahol &uuml;res vagy ritka ter&uuml;letek v&aacute;lasztj&aacute;k el őket. A klaszter r&eacute;sz&eacute;t nem k&eacute;pező pontokat zajnak minős&iacute;ti.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pontok interpolálása</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Pontok interpol&aacute;l&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ezzel az eszk&ouml;zzel pontgyűjtem&eacute;nyekben tal&aacute;lt mutat&oacute;k alapj&aacute;n &eacute;rt&eacute;keket jelezhet előre &uacute;j helyeken. Az eszk&ouml;z egyes &eacute;rt&eacute;kkel rendelkező pont adatok alapj&aacute;n előre jelzett &eacute;rt&eacute;kek szerint kategoriz&aacute;lt ter&uuml;leteket ad eredm&eacute;ny&uuml;l. Az eszk&ouml;z haszn&aacute;lat&aacute;val p&eacute;ld&aacute;ul csapad&eacute;km&eacute;rők adatai alapj&aacute;n előre jelezheti a csapad&eacute;k mennyis&eacute;g&eacute;t egy v&iacute;zgyűjtő ter&uuml;leten.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Közelség használata</h2>
+        <hr/>
+        <p>  Ezek az eszk&ouml;z&ouml;k seg&iacute;tenek v&aacute;laszt adni a t&eacute;rbeli elemz&eacute;sn&eacute;l leggyakrabban feltett k&eacute;rd&eacute;sek egyik&eacute;re: &bdquo;Mi mihez van k&ouml;zel?&rdquo;
+            <ul>
+                <li>A  <b>Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal</b> eszk&ouml;z pontp&aacute;rok k&ouml;z&ouml;tti utaz&aacute;si idő vagy t&aacute;vols&aacute;g m&eacute;r&eacute;s&eacute;re haszn&aacute;lhat&oacute;.
+                </li>
+                <li>A  <b>Bufferek l&eacute;trehoz&aacute;sa</b> eszk&ouml;zzel vektoros elemektől egyenlő t&aacute;vols&aacute;gra l&eacute;vő ter&uuml;letek hozhat&oacute;k l&eacute;tre.
+                </li>
+                <li>Az  <b>El&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek l&eacute;trehoz&aacute;sa</b> eszk&ouml;z megkeresi a helyek k&ouml;r&uuml;l adott időtartamon bel&uuml;l el&eacute;rhető ter&uuml;leteket.
+                </li>
+                <li>A  <b>Legk&ouml;zelebbi keres&eacute;se</b> eszk&ouml;z azonos&iacute;tja az ismert helyekhez legk&ouml;zelebb eső helyeket.
+                </li>
+                <li>Az  <b>&Uacute;tvonalak tervez&eacute;se</b> eszk&ouml;zzel meghat&aacute;rozhat&oacute; a legjobb &uacute;t a sok meg&aacute;ll&oacute;helyet felkereső j&aacute;rműflott&aacute;k &uacute;tvonaltervez&eacute;s&eacute;hez.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kiindulópontok összekapcsolása a célokkal</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal eszk&ouml;z pontp&aacute;rok k&ouml;z&ouml;tti utaz&aacute;si idő vagy t&aacute;vols&aacute;g m&eacute;r&eacute;s&eacute;re haszn&aacute;lhat&oacute;. Az eszk&ouml;z k&eacute;pes l&eacute;gvonalbeli t&aacute;vols&aacute;gokat, k&ouml;z&uacute;ti t&aacute;vols&aacute;gokat vagy utaz&aacute;si időket jelenteni. Az eszk&ouml;z haszn&aacute;lat&aacute;val:
+            </p>
+            <p>
+                <ul>
+                    <li>Kisz&aacute;m&iacute;thatja az ing&aacute;z&oacute;k &aacute;ltal a munk&aacute;ba j&aacute;r&aacute;s sor&aacute;n megtett teljes t&aacute;vols&aacute;got vagy utaz&aacute;si időt.
+                    </li>
+                    <li>Megm&eacute;rheti, hogy mekkora t&aacute;vols&aacute;got tesznek meg a v&aacute;s&aacute;rl&oacute;k, hogy az &uuml;zlet&eacute;ben v&aacute;s&aacute;roljanak. Az inform&aacute;ci&oacute; felhaszn&aacute;l&aacute;s&aacute;val meghat&aacute;rozhatja piaci hat&oacute;k&ouml;r&eacute;t, k&uuml;l&ouml;n&ouml;sen hirdet&eacute;si kamp&aacute;nyok c&eacute;lz&aacute;s&aacute;hoz vagy &uacute;j &uuml;zletek hely&eacute;nek kiv&aacute;laszt&aacute;s&aacute;hoz.
+                    </li>
+                    <li>Kisz&aacute;m&iacute;thatja j&aacute;rműflott&aacute;ja v&aacute;rhat&oacute; menetteljes&iacute;tm&eacute;ny&eacute;t. Ezut&aacute;n a Ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;s eszk&ouml;z futtat&aacute;s&aacute;val jelent&eacute;st k&eacute;sz&iacute;thet a fut&aacute;steljes&iacute;tm&eacute;nyről &aacute;llamok vagy m&aacute;s r&eacute;gi&oacute;k szerint.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Adja meg a kezdő- &eacute;s a v&eacute;gpontot, &eacute;s az eszk&ouml;z eredm&eacute;ny&uuml;l ad egy r&eacute;teget, amely tartalmazza az &uacute;tvonalak vonalait, bele&eacute;rtve a p&aacute;rt alkot&oacute; kezdőpontok &eacute;s a c&eacute;lhelyek k&ouml;z&ouml;tti m&eacute;r&eacute;seket.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buffer létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Buffer l&eacute;trehoz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A buffer egy pont, vonal vagy ter&uuml;let vektoros elemtől egy meghat&aacute;rozott t&aacute;vols&aacute;got lefedő ter&uuml;let. 
+            </p>
+            <p>A bufferekkel &aacute;ltal&aacute;ban egy&eacute;b eszk&ouml;z&ouml;kkel, p&eacute;ld&aacute;ul a Fedv&eacute;nyműveletek eszk&ouml;zzel tov&aacute;bb elemezhető ter&uuml;letek hozhat&oacute;k l&eacute;tre. A &bdquo;Milyen &eacute;p&uuml;letek tal&aacute;lhat&oacute;k az iskol&aacute;t&oacute;l egy m&eacute;rf&ouml;ld&ouml;n bel&uuml;l?&rdquo; k&eacute;rd&eacute;s megv&aacute;laszol&aacute;s&aacute;hoz p&eacute;ld&aacute;ul l&eacute;trehozhatunk egy egym&eacute;rf&ouml;ldes buffert az iskola k&ouml;r&uuml;l, &eacute;s a bufferre fedv&eacute;nyk&eacute;nt r&aacute;helyezhetj&uuml;k az &eacute;p&uuml;letek alaprajzait tartalmaz&oacute; r&eacute;teget.  A v&eacute;geredm&eacute;ny az iskol&aacute;t&oacute;l egy m&eacute;rf&ouml;ld&ouml;n bel&uuml;l tal&aacute;lhat&oacute; &eacute;p&uuml;leteket tartalmaz&oacute; r&eacute;teg  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Elérési-idő térkép létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="El&eacute;r&eacute;siidő-t&eacute;rk&eacute;p l&eacute;trehoz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Az el&eacute;r&eacute;siidő-t&eacute;rk&eacute;p a megadott utaz&aacute;si időn vagy utaz&aacute;si t&aacute;vols&aacute;gon bel&uuml;l el&eacute;rhető ter&uuml;let. Az el&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek seg&iacute;tenek v&aacute;laszt tal&aacute;lni p&eacute;ld&aacute;ul az al&aacute;bbi k&eacute;rd&eacute;sekre:
+                <ul>
+                    <li>Hov&aacute; juthatok el 30 perces vezet&eacute;ssel a jelenlegi tart&oacute;zkod&aacute;si helyemről?
+                    </li>
+                    <li>Hov&aacute; juthatok el 30 perces vezet&eacute;ssel a jelenlegi tart&oacute;zkod&aacute;si helyemről, ha d.u. 18:00 &oacute;rakor, cs&uacute;csforgalomban indulok?
+                    </li>
+                    <li>A v&aacute;ros mely ter&uuml;leteit &eacute;rhetik el a tűzolt&oacute;k &ouml;t percen bel&uuml;l? Hogyan javulna a tűzolt&aacute;si lefedetts&eacute;g, ha egy &uacute;j tűzolt&oacute;&aacute;llom&aacute;s &eacute;p&uuml;lne a megadott helyen?
+                    </li>
+                    <li>Milyen piaci ter&uuml;leteket fed le az &uuml;zleti tev&eacute;kenys&eacute;gem? Milyen ter&uuml;letek tal&aacute;lhat&oacute;k 10 m&eacute;rf&ouml;ld&ouml;n bel&uuml;l az &uuml;zleteimtől?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Legközelebbi keresése</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Legk&ouml;zelebbi keres&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A balesetek &eacute;s a l&eacute;tes&iacute;tm&eacute;nyek k&ouml;z&ouml;tti utaz&aacute;si k&ouml;lts&eacute;g m&eacute;r&eacute;s&eacute;vel meghat&aacute;rozza, hogy melyek tal&aacute;lhat&oacute;k k&ouml;zelebb egym&aacute;shoz. Az eredm&eacute;ny r&eacute;teg megjelen&iacute;ti a legjobb &uacute;tvonalakat a balesetek &eacute;s a l&eacute;tes&iacute;tm&eacute;nyek k&ouml;z&ouml;tt az egyes &uacute;tvonalak utaz&aacute;si k&ouml;lts&eacute;g&eacute;vel (idej&eacute;vel &eacute;s t&aacute;vols&aacute;g&aacute;val) egy&uuml;tt.  Az eszk&ouml;z haszn&aacute;lat&aacute;val megkeresheti p&eacute;ld&aacute;ul egy baleset helysz&iacute;n&eacute;hez legk&ouml;zelebbi k&oacute;rh&aacute;zat, vagy az aktu&aacute;lis tart&oacute;zkod&aacute;si helyhez legk&ouml;zelebbi p&eacute;nzkiad&oacute; automat&aacute;t.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Útvonalak tervezése</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="&Uacute;tvonalak tervez&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Adja meg a meg&aacute;ll&oacute;helyeket &eacute;s a meg&aacute;ll&oacute;helyek felkeres&eacute;s&eacute;hez el&eacute;rhető j&aacute;rművek sz&aacute;m&aacute;t, &eacute;s az &Uacute;tvonalak tervez&eacute;se meghat&aacute;rozza, hogyan rendelheti hozz&aacute; hat&eacute;konyan a meg&aacute;ll&oacute;helyeket a j&aacute;rművekhez, &eacute;s ir&aacute;ny&iacute;thatja a j&aacute;rműveket a meg&aacute;ll&oacute;helyekhez.
+            </p>
+            <p>Ezt az eszk&ouml;zt haszn&aacute;lhatja ellenőr, &eacute;rt&eacute;kbecslő, helysz&iacute;ni szervizszolg&aacute;ltat&oacute; &eacute;s egy&eacute;b mobil munkacsoportok munk&aacute;j&aacute;nak tervez&eacute;s&eacute;re; t&aacute;rgyak t&aacute;voli helyekre t&ouml;rt&eacute;nő lesz&aacute;ll&iacute;t&aacute;s&aacute;ra vagy felv&eacute;tel&eacute;re; vagy szem&eacute;lysz&aacute;ll&iacute;t&aacute;si szolg&aacute;ltat&aacute;sok felk&iacute;n&aacute;l&aacute;s&aacute;ra.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Adatok kezelése</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k f&ouml;ldrajzi adatok napi kezel&eacute;s&eacute;re &eacute;s az adatok elemz&eacute;s előtti egyes&iacute;t&eacute;s&eacute;re egyar&aacute;nt haszn&aacute;lhat&oacute;k.  
+            <ul>
+                <li>A  <b>Hat&aacute;rok &ouml;sszeolvaszt&aacute;sa</b> eszk&ouml;zzel k&ouml;z&ouml;s hat&aacute;rvonal&uacute; &eacute;s k&ouml;z&ouml;s attrib&uacute;tum&eacute;rt&eacute;kű ter&uuml;letek egyes&iacute;thetők.
+                </li>
+                <li>Az  <b>Adatkinyer&eacute;s</b> eszk&ouml;zzel &uacute;j adathalmazok hozhat&oacute;k l&eacute;tre vektoros elemek megl&eacute;vő adatokb&oacute;l t&ouml;rt&eacute;nő kinyer&eacute;s&eacute;vel.
+                </li>
+                <li>A  <b>Tesszell&aacute;ci&oacute;k l&eacute;trehoz&aacute;sa</b> adatai kiterjed&eacute;se alapj&aacute;n hoz l&eacute;tre tesszell&aacute;ci&oacute;kat.
+                </li>
+                <li>A  <b>R&eacute;tegek &ouml;sszeilleszt&eacute;se</b> eszk&ouml;z k&eacute;t vagy t&ouml;bb l&eacute;tező r&eacute;teg &ouml;sszes vektoros elem&eacute;t egy &uacute;j r&eacute;tegre m&aacute;solja.
+                </li>
+                <li>A  <b>Fedv&eacute;nyműveletek</b> k&eacute;t vagy t&ouml;bb r&eacute;teget egyes&iacute;t egy r&eacute;tegg&eacute;.  A fedv&eacute;ny &uacute;gy hat&aacute;rozhat&oacute; meg, mintha egy t&eacute;rk&eacute;phalmaz minden elem&eacute;t l&aacute;tn&aacute;nk &uacute;gy, hogy egym&aacute;s felett, egy k&ouml;tegben helyezkednek el &eacute;s a k&ouml;tegben tal&aacute;lt &ouml;sszes inform&aacute;ci&oacute;b&oacute;l egyetlen t&eacute;rk&eacute;pet hozunk l&eacute;tre.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Határok összeolvasztása</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Hat&aacute;rok &ouml;sszeolvaszt&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Az egym&aacute;st &aacute;tfedő vagy k&ouml;z&ouml;s hat&aacute;rvonalon osztoz&oacute; ter&uuml;letek &ouml;sszeolvasztva egyetlen ter&uuml;letet alkotnak.    
+            </p>
+            <p>Az &ouml;sszeolvasztani k&iacute;v&aacute;nt hat&aacute;rvonalakat egy mező meghat&aacute;roz&aacute;s&aacute;val szab&aacute;lyozhatja. Ha p&eacute;ld&aacute;ul van egy megy&eacute;ket tartalmaz&oacute; r&eacute;tege, &eacute;s mindegyik megy&eacute;nek van  <i>State_Name</i> attrib&uacute;tuma, akkor a <i>State_Name</i> attrib&uacute;tum haszn&aacute;lat&aacute;val &ouml;sszeolvaszthatja a hat&aacute;rokat.  A szomsz&eacute;dos megy&eacute;k azonos <i>State_Name</i> &eacute;rt&eacute;k eset&eacute;n egyes&iacute;thetők.  A v&eacute;geredm&eacute;ny egy &aacute;llamhat&aacute;rokat tartalmaz&oacute; r&eacute;teg.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Adatkinyerés</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Adatkinyer&eacute;s">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zipf&aacute;jlt, CSV vagy KMZ f&aacute;jlt hoz l&eacute;tre a r&eacute;tegekből &eacute;s a megadott vizsg&aacute;lati ter&uuml;letről.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tesszellációk létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Tesszell&aacute;ci&oacute;k l&eacute;trehoz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Meghat&aacute;rozott alakzatok &eacute;s m&eacute;retek alapj&aacute;n tesszell&aacute;ci&oacute;kat hoz l&eacute;tre egy vizsg&aacute;lt ter&uuml;letre.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rétegek összeillesztése</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="R&eacute;tegek &ouml;sszeilleszt&eacute;se">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>K&eacute;t vagy t&ouml;bb l&eacute;tező r&eacute;teg vektoros elemeit egy &uacute;j r&eacute;tegre m&aacute;solja,    p&eacute;ld&aacute;ul:
+                <ul>
+                    <li>Van h&aacute;rom r&eacute;tegem: Anglia, Wales &eacute;s Sk&oacute;cia, &eacute;s szeretn&eacute;k egyetlen r&eacute;teget k&eacute;sz&iacute;teni Nagy-Britanni&aacute;r&oacute;l. 
+                    </li>
+                    <li>Van 12 r&eacute;tegem, &eacute;s mindegyik tartalmazza a szomsz&eacute;dos telep&uuml;l&eacute;sek csomaginform&aacute;ci&oacute;j&aacute;t.  Szeretn&eacute;m &ouml;sszekapcsolni őket egyetlen r&eacute;tegg&eacute;, csak azokat az attrib&uacute;tumokat megtartva, amelyek neve &eacute;s t&iacute;pusa azonos a 12 bemenő r&eacute;tegen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Fedvényműveletek</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Fedv&eacute;nyműveletek">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A fedv&eacute;ny k&eacute;t vagy t&ouml;bb r&eacute;teget egyes&iacute;t egyetlen r&eacute;tegben.  A fedv&eacute;ny &uacute;gy hat&aacute;rozhat&oacute; meg, mint egy t&eacute;rk&eacute;phalmaz &aacute;ttekint&eacute;se &eacute;s egyetlen, a k&ouml;tegben tal&aacute;lt &ouml;sszes inform&aacute;ci&oacute;t tartalmaz&oacute; t&eacute;rk&eacute;p l&eacute;trehoz&aacute;sa,    p&eacute;ld&aacute;ul:
+                <ul>
+                    <li>Milyen parcell&aacute;k tal&aacute;lhat&oacute;k a 100 &eacute;ves &aacute;rt&eacute;ren bel&uuml;l? (Bel&uuml;l, vagy m&aacute;sk&eacute;pp fogalmazva rajta.)
+                          
+                    </li>
+                    <li>Melyik megy&eacute;kben milyen k&ouml;zutak tal&aacute;lhat&oacute;k?
+                    </li>
+                    <li>Milyen talajt&iacute;pust milyen mezőgazdas&aacute;gi c&eacute;lra haszn&aacute;lnak:
+                         
+                    </li>
+                    <li>Milyen kutak tal&aacute;lhat&oacute;k elhagyott katonai b&aacute;zisokon?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear zonas de influencia</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Crear zonas de influencia"></h2>
+        <hr/>
+    <p>Una zona de influencia es un &aacute;rea que cubre una distancia dada desde una entidad de puntos, de l&iacute;nea o de &aacute;rea. 
+    </p>
+    <p>Las zonas de influencia se suelen utilizar para crear &aacute;reas que se pueden analizar m&aacute;s a fondo usando una herramienta como Superponer capas. Por ejemplo, si la pregunta es &quot;&iquest;Qu&eacute; edificios est&aacute;n a un kil&oacute;metro del colegio?&quot;, la respuesta se puede encontrar creando una zona de influencia de un kil&oacute;metro en torno al colegio y utilizando la herramienta Superponer capas para superponer la zona de influencia con la capa que contiene las superficies de los edificios. El resultado final es una capa con los edificios que se encuentran a menos de un kil&oacute;metro del colegio.  
+    </p>
+    <p>Si  <b>Utilizar la extensi&oacute;n de mapa actual al buscar ubicaciones</b> se ha activado, solo se crear&aacute;n zonas de influencia para las entidades que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si no se ha activado, se crear&aacute;n zonas de influencia para todas las entidades de la capa de an&aacute;lisis, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir una capa que contenga entidades que se puedan incluir encon las que crear zonas de influencia</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos, l&iacute;neas o &aacute;reas que se deben incluir en lacon las que crear las zonas de influencia. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Introducir tamaño de zona de influencia</h2></div>
+        <hr/>
+        <div>
+            <p>Puede introducir uno o varios valores de distancia separ&aacute;ndolos entre s&iacute; con un espacio. Tambi&eacute;n puede especificar en la capa de entrada un atributo que contenga el valor de la distancia haciendo clic en  <b>Campo</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opciones</h2></div>
+        <hr/>
+        <div>
+            <p>Elija c&oacute;mo desea tratar las zonas de influencia que se superponen. Si una zona de influencia se encuentra encima de otra, las &aacute;reas en com&uacute;n se pueden conservar (superponer) o combinar (disolver). Al usar  <b>Disolver</b>, todos los b&uacute;feres se disuelven juntos en una sola entidad multiparte, eliminando cualquier superposici&oacute;n.
+            </p>  
+            <p> Cuando use varias distancias, puede optar por representar la distancia con respecto a la &uacute;ltima distancia de zona de influencia; por ejemplo, si las distancias son 10 y 14:
+                <ul>
+                    <li>Al elegir  <b>Anillos</b> se generan zonas de influencia que van de 0 a 10 y de 10 a 14.
+                    </li>
+                    <li>Al elegir  <b>Discos</b> se generan zonas de influencia que van de 0 a 10 y de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opciones</h2></div>
+        <hr/>
+        <div>
+            <p>Elija c&oacute;mo desea tratar las zonas de influencia que se superponen. Si una zona de influencia se encuentra encima de otra, las &aacute;reas en com&uacute;n se pueden conservar (superponer) o combinar (disolver). Al usar  <b>Disolver</b>, todos los b&uacute;feres se disuelven juntos en una sola entidad multiparte, eliminando cualquier superposici&oacute;n.
+            </p>
+            <p>Cuando cree una sola zona de influencia en torno a las entidades de &aacute;rea (una distancia introducida), puede elegir si la entidad para la que se est&aacute; creando la zona de influencia se incluye en la zona de influencia resultante o se excluye de ella.
+            </p>
+            <p>Cuando use varias distancias, puede optar por representar la distancia con respecto a la &uacute;ltima distancia de zona de influencia; por ejemplo, si las distancias son 10 y 14:
+                <ul>
+                    <li>Al elegir  <b>Anillos</b> se generan zonas de influencia que van de 0 a 10 y de 10 a 14.
+                    </li>
+                    <li>Al elegir  <b>Discos</b> se generan zonas de influencia que van de 0 a 10 y de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opciones</h2></div>
+        <hr/>
+        <div>
+            <p>Elija c&oacute;mo desea tratar las zonas de influencia que se superponen. Si una zona de influencia se encuentra encima de otra, las &aacute;reas en com&uacute;n se pueden conservar (superponer) o combinar (disolver). Al usar  <b>Disolver</b>, todos los b&uacute;feres se disuelven juntos en una sola entidad multiparte, eliminando cualquier superposici&oacute;n.
+            </p>
+            <p>Cuando cree una sola zona de influencia (una distancia introducida) en torno a l&iacute;neas, puede elegir para qu&eacute; lado de la l&iacute;nea se va a crear la zona de influencia. Normalmente, se eligen los dos lados. La izquierda y la derecha se determinan como si estuvieras caminando desde la primera coordenada x,y de la l&iacute;nea (la coordenada inicial) hasta la &uacute;ltima coordenada x,y de la l&iacute;nea (la coordenada final). Normalmente eliges izquierda o derecha cuando sabes que las entidades de l&iacute;nea se han creado y almacenado en una direcci&oacute;n concreta (por ejemplo, aguas arriba o aguas abajo en una red fluvial). En los extremos de las l&iacute;neas, la zona de influencia puede ser redondeada (Redondo) o recta (Plano).
+            </p>
+            <p>Cuando cree varias zonas de influencia (m&aacute;s de una distancia), puede optar por representar la distancia con respecto a la &uacute;ltima distancia de zona de influencia; por ejemplo, si las distancias son 10 y 14:
+                <ul>
+                    <li>Al elegir  <b>Anillos</b> se generan zonas de influencia que van de 0 a 10 y de 10 a 14.
+                    </li>
+                    <li>Al elegir  <b>Discos</b> se generan zonas de influencia que van de 0 a 10 y de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opciones</h2></div>
+        <hr/>
+        <div>
+            <p>Una vez que elija una capa para la zona de influencia, puede decidir c&oacute;mo va a manejar las zonas de influencia que se superponen. Si una zona de influencia se encuentra encima de otra, las &aacute;reas en com&uacute;n se pueden conservar (superponer) o combinar (disolver). Al usar  <b>Disolver</b>, todos los b&uacute;feres se disuelven juntos en una sola entidad multiparte, eliminando cualquier superposici&oacute;n.  Tambi&eacute;n puede especificar c&oacute;mo representar varias distancias.   Para las capas que contienen entidades de l&iacute;nea, puede elegir para qu&eacute; lado de la l&iacute;nea se va a crear la zona de influencia.  Para las capas que contienen entidades de &aacute;rea, puede elegir si la entidad para la que se est&aacute; creando la zona de influencia se incluye en la zona de influencia resultante o se excluye de ella.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

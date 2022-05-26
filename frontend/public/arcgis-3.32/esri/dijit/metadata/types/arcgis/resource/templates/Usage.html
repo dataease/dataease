@@ -1,0 +1,30 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- usage -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'idSpecUse',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.resource.idSpecUse.caption}'">
+    
+    <!-- specific -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'specUsage',minOccurs:1,label:'${i18nArcGIS.resource.idSpecUse.specUsage}'">
+    </div>
+    
+    <!-- date -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'usageDate',minOccurs:0,label:'${i18nArcGIS.resource.idSpecUse.usageDate}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+    </div>
+    
+    <!-- limitations -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'usrDetLim',minOccurs:0,label:'${i18nArcGIS.resource.idSpecUse.usrDetLim}'">
+    </div>
+    
+    <!-- contact -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'usrCntInfo',minOccurs:1,maxOccurs:'unbounded',label:'${i18nArcGIS.contact.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/ContactElements"></div>
+    </div>
+    
+  </div>
+</div>

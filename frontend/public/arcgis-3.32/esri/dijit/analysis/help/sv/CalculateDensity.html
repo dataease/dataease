@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beräkna densitet</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Ber&auml;kna densitet"></h2>
+        <hr/>
+    <p>Med verktyget Ber&auml;kna densitet kan du skapa en densitetskarta av punkt- eller linjegeoobjekt genom att sprida ut k&auml;nda antal av n&aring;got fenomen (som representeras som attribut f&ouml;r punkterna eller linjerna) &ouml;ver kartan. Resultatet blir ett lager med omr&aring;den klassificerade fr&aring;n l&auml;gsta till h&ouml;gsta densitet.   
+
+    </p>
+    <p>F&ouml;r punktdata b&ouml;r varje punkt representera platsen f&ouml;r en h&auml;ndelse eller incident, medan resultatlagret representerar antalet incidenter per enhetsomr&aring;de. Ett h&ouml;gre densitetsv&auml;rde p&aring; en ny plats inneb&auml;r att det finns fler punkter n&auml;ra den platsen. I m&aring;nga fall kan resultatlagret tolkas som ett riskomr&aring;de f&ouml;r framtida h&auml;ndelser. Om indatapunkterna till exempel representerar platser f&ouml;r blixtnedslag, kan resultatlagret tolkas som ett riskomr&aring;de f&ouml;r framtida blixtnedslag.
+    </p>
+    <p>F&ouml;r linjedata representerar linjet&auml;thetsomr&aring;det det totala antal linjer som finns n&auml;ra varje plats. Enheterna f&ouml;r de ber&auml;knade densitetsv&auml;rdena &auml;r l&auml;ngden p&aring; linjerna per enhetsomr&aring;de. Om linjerna till exempel representerar floder, representerar resultatlagret den totala l&auml;ngden f&ouml;r de floder som ligger inom s&ouml;kradien. Det h&auml;r resultatet kan anv&auml;ndas f&ouml;r att identifiera omr&aring;den som &auml;r gynnsamma f&ouml;r betesdjur.
+    </p>
+    <p> Andra exempel p&aring; anv&auml;ndningsomr&aring;den f&ouml;r det h&auml;r verktyget &auml;r bland annat:
+        <ul>
+            <li>Skapa kartor &ouml;ver brottslighet som hj&auml;lper polisen att f&ouml;rdela sina resurser till omr&aring;den med h&ouml;g brottslighet.
+            </li>
+            <li>Ber&auml;kna densitet f&ouml;r sjukhus inom en kommun. Resultatlagret visar omr&aring;den med h&ouml;g och l&aring;g tillg&aring;ng till sjukhus, och den h&auml;r informationen kan anv&auml;ndas f&ouml;r att avg&ouml;ra var nya sjukhus b&ouml;r byggas.
+            </li>
+            <li>Identifiera omr&aring;den d&auml;r risken f&ouml;r skogsbr&auml;nder &auml;r stor baserat p&aring; platsen f&ouml;r tidigare skogsbr&auml;nder.
+            </li>
+            <li>Hitta orter som ligger l&aring;ngt fr&aring;n st&ouml;rre motorv&auml;gar f&ouml;r att kunna planera var nya v&auml;gar b&ouml;r byggas.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj de punkt- eller linjelager som densiteten ska beräknas från</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt- eller linjelager som densiteten ska ber&auml;knas fr&aring;n.
+
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Använd ett antalsfält</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett f&auml;lt som visar antalet incidenter p&aring; respektive plats. Om du till exempel har punkter som representerar st&auml;der, kan du anv&auml;nda ett f&auml;lt som representerar befolkningen i staden som ett antalsf&auml;lt. D&aring; r&auml;knar det resulterande befolkningst&auml;thetslagret med st&ouml;rre befolkningst&auml;thet n&auml;ra st&auml;der med st&ouml;rre befolkning.
+            </p>
+            <p> Om standardalternativet Inget anv&auml;nds, anses varje plats representera ett enda antal.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Sök avstånd</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett avst&aring;nd som visar hur l&aring;ngt du vill s&ouml;ka f&ouml;r att hitta punkt- eller linjegeoobjekt n&auml;r du ber&auml;knar densitetsv&auml;rden. Om du till exempel anger ett s&ouml;kavst&aring;nd p&aring; 10&nbsp;000 meter, ber&auml;knas densiteten f&ouml;r alla platser i utdatalagret baserat p&aring; geoobjekt som ligger inom 10&nbsp;000 meter fr&aring;n platsen. Alla platser som inte har n&aring;gra incidenter inom 10&nbsp;000 meter f&aring;r densitetsv&auml;rdet noll.     
+
+            </p>
+            <p>Om inget avst&aring;nd anges kommer att standardv&auml;rde att ber&auml;knas som bygger p&aring; platserna f&ouml;r indatageoobjekten och v&auml;rdena i antalsf&auml;ltet (om ett antalsf&auml;lt anges).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Klipp ut utdata till</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan antingen rita eller ange ett lager f&ouml;r det omr&aring;de d&auml;r du vill att densiteten ska ber&auml;knas. Om du till exempel ber&auml;knar densiteten f&ouml;r fiskar i en sj&ouml; kan du anv&auml;nda sj&ouml;ns gr&auml;nser i den h&auml;r parametern. D&aring; ritas resultaten endast inom sj&ouml;ns gr&auml;nser.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassificera efter</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj hur densitetsv&auml;rden ska klassificeras i omr&aring;den.
+                <ul>
+                    <li>Lika intervall &ndash; Omr&aring;dena skapas s&aring; att intervallet f&ouml;r densitetsv&auml;rdena &auml;r lika stort f&ouml;r varje omr&aring;de.
+                    </li>
+                    <li>Geometriskt intervall &ndash; Omr&aring;dena baseras p&aring; klassintervall med en geometrisk serie. Den h&auml;r metoden s&auml;kerst&auml;ller att varje klassintervall har ungef&auml;r samma antal v&auml;rden inom varje klass och att f&ouml;r&auml;ndringen mellan intervallen &auml;r konsekvent.
+                    </li>
+                    <li>Naturliga brytpunkter &ndash; Klassintervallen f&ouml;r omr&aring;dena bygger p&aring; en naturlig gruppering av data. De klassbrytpunktsv&auml;rden som b&auml;st grupperar liknande v&auml;rden och som maximerar skillnaderna mellan klasserna identifieras.
+
+                    </li>
+                    <li>Lika omr&aring;de &ndash; Omr&aring;dena skapas s&aring; att storleken p&aring; varje omr&aring;de &auml;r lika stort. Om informationen till exempel inneh&aring;ller fler h&ouml;ga densitetsv&auml;rden &auml;n l&aring;ga densitetsv&auml;rden, skapas fler omr&aring;den f&ouml;r h&ouml;ga densiteter.
+                    </li>
+                    <li>Standardavvikelse &ndash; Omr&aring;den skapas baserat p&aring; standardavvikelsen f&ouml;r de f&ouml;rutsagda densitetsv&auml;rdena. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Antal klasser</h2></div>
+        <hr/>
+        <div>
+            <p>Anger antalet klasser (intervall f&ouml;r f&ouml;rutsagda v&auml;rden) i resultatlagret. Varje klass definierar gr&auml;nsen f&ouml;r ett omr&aring;de. Klassernas v&auml;rden avg&ouml;rs av parametern 
+ <b>Klassificera efter</b> ovan.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Areaenheter för utdata</h2></div>
+        <hr/>
+        <div>
+            <p>Ange areaenheten f&ouml;r utdata. Densiteten &auml;r antalet delat med omr&aring;det, och den h&auml;r parametern anger areaenheten i densitetsber&auml;kningen.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

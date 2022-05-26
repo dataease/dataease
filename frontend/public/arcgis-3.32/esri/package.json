@@ -1,0 +1,13 @@
+{
+  "name":    "esri",
+  "version": "3.32",
+  "author":  "Esri Inc",
+  "directories": {
+    "lib": "."
+  },
+  "main":        "main",
+  "description": "The ArcGIS API for JavaScript (JavaScript API) is a browser based API for developing high performance, easy to use mapping applications. The API allows you to easily embed maps in your web pages. The JavaScript API is hosted by ESRI on ArcGIS Online and is available for free use, subject to the terms and conditions.",
+  "keywords":    [ "Esri", "ArcGIS", "JavaScript", "Map" ],
+  "homepage":    "http://js.arcgis.com",
+  "dojoBuild":   "esri.profile.js"
+}

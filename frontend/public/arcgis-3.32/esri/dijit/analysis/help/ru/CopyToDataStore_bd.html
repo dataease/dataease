@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Копировать в хранилище данных</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Копировать в хранилище данных"></h2>
+        <hr/>
+    <p>Инструмент копирует входной слой в хранилище данных. Вы можете копировать результаты в  ArcGIS Data Store (реляционное хранилище или хранилище больших пространственно-временных данных) с созданием слоя на портале, или копировать результаты в файловое хранилище больших данных. 
+    </p>
+    <p>Например, вы можете скопировать объекты, хранящиеся в  <code>файловом хранилище больших данных</code> в <code>реляционное хранилище</code>, при этом скопировав только объекты в пределах текущего экстента карты. При этом будет создан размещенный сервис объектов, содержащий объекты, которые находились в пределах текущего экстента карты.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Выбрать слой для копирования</h2></div>
+        <hr/>
+        <div>
+            <p>Копируемый слой или таблица. 
+            </p>
+            <p>Кроме выбора слоя из вашей карты, можно щелкнуть  <b>Выбрать слой анализа</b> в нижней части ниспадающего списка, чтобы найти свои ресурсы для набора данных или векторного слоя файлового хранилища больших данных.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Для выборки можно использовать все объекты (дополнительно)</h2></div>
+        <hr/>
+        <div>
+            <p>Дополнительно, используйте кнопку выборки для идентификации копируемых местоположений.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Выберите целевое хранилище данных</h2></div>
+        <hr/>
+        <div>
+            <p>Хранилище данных, в которое будет скопирован слой. Этот параметр имеет приоритет над заданным в  <b>Параметрах среды анализа</b>. Используются следующие опции:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Пространственно-временное</b> &ndash; используется по умолчанию.
+                            </li>
+                            <li> <b>Реляционное</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Шаблоны выходного файлового хранилища больших данных</b>
+                        <ul>
+                            <li>Список доступных шаблонов файлового хранилища больших данных в формате  <b>bigDataFileShareName-templateName</b>. Шаблоны файлового хранилища больших данных должны быть настроены перед запуском инструмента.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p> Имя создаваемого слоя. Если вы записываете в ArcGIS Data Store, ваши результаты будут сохранены в  <b>Моих ресурсах</b> и добавлены на карту. Если вы записываете в файловое хранилище больших данных, ваши результаты будут сохранятся в файловом хранилище больших данных и добавляться в его файл манифеста. Они не будут добавлены на карту. Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если слой уже существует, произойдет сбой.
+            </p>
+            <p>При записи в  ArcGIS Data Store (реляционное или пространственно-временное хранилище больших данных) с помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

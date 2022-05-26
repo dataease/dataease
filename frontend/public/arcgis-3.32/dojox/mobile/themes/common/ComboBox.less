@@ -1,0 +1,62 @@
+/* dojox.mobile.ComboBox */
+.dijitPopup {
+	&.mblComboBoxMenuPopup {
+		// Popup items have a wrapper div (dijitPopup)
+		// with the real popup inside, and maybe an iframe too
+		margin: 0;
+		padding: 0;
+		position: absolute;
+		border: 0;
+		background-color: transparent;
+		.box-shadow(@mbl-combo-box-popup-box-shadow);
+		.dijitPopup-styles;
+	}
+}
+.dijitPopup.mblComboBoxMenuPopup .dijitBackgroundIframe {
+	// Style of the iframe descendant of the wrapper div of the popup.
+	// (similar to dijit's style for it). 
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+.mblReset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	line-height: normal;
+	font: inherit;
+	color: inherit;
+}
+.mblComboBoxMenu {
+	position: relative;
+	overflow-y: hidden !important;
+	overflow: hidden;
+	border: 1px solid black;
+	.mblComboBoxMenu-styles;
+}
+.mblComboBoxMenuItem {
+	padding: .1em .2em;
+	border-width: 1px 0 1px 0;
+	border-style: solid;
+	text-align: left;
+	white-space: nowrap;
+	.mblComboBoxMenuItem-styles;
+}
+.mblComboBoxMenuItemSelected {
+	// dijitMenuItemHover refers to actual mouse over
+	// dijitMenuItemSelected is used after a menu has been "activated" by
+	// clicking it, tabbing into it, or being opened from a parent menu,
+	// and denotes that the menu item has focus or that focus is on a child menu
+	.mblComboBoxMenuItemSelected-styles;
+}
+.mblComboBoxMenuPreviousButton,
+.mblComboBoxMenuNextButton {
+	font-style: italic;
+	overflow: hidden;
+}

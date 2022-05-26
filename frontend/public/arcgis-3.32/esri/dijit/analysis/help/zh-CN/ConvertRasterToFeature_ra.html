@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>栅格转要素</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="栅格转要素工具"></h2>
+        <hr/>
+    <p>该工具用于将栅格转换为点、线或面的要素数据集。
+    </p>
+    <p> <b>选择字段</b>参数允许您选择将输入栅格数据集的哪一属性字段作为输出要素类中的属性。该参数仅可用于在关联表中具有附加属性的整型栅格。
+    </p>
+    <p>输入栅格可具有任意像元大小。
+    </p>
+    <p>整型栅格可以转换为点、线或面要素；但是，浮点型栅格仅可以转换为点要素。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则将仅转换在当前地图范围内可见的栅格像元。如果未选中，则将转换栅格图层中的所有像元，包括超出当前地图范围的像元。栅格图层较大或具有非常高的分辨率时，请注意此问题。
+    </p>
+    <p>此工具的使用案例如下：
+ 
+        <ul>
+            <li>通过土地利用分类栅格创建面要素。
+                
+ 
+            </li>
+            <li>DEM 中标识的河流可转换为线要素。
+                
+
+            </li>
+            <li>DEM 可转换为可在基于非栅格工作流中使用的点要素。
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要转换的栅格图层</h2></div>
+        <hr/>
+        <div>
+            <p>将转换为要素图层的输入栅格图层。
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>选择字段</h2></div>
+        <hr/>
+        <div>
+            <p>提供一个字段以指定要用于转换的值。
+            </p>
+            <p>该值可以是整数值或文本值。
+            </p>
+            <p>包含浮点值的字段仅限向点数据集输出时使用。
+            </p>
+            <p>默认选项为使用  <i>Value</i> 字段，其中包含每个栅格像元中的值。
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>选择输出类型</h2></div>
+        <hr/>
+        <div>
+            <p>在点、线或面之间选择输出类型。
+            </p>
+            <ul>
+                <li>点 - 栅格将转换为点数据集。
+                    
+ 
+                </li>
+                <li>线 - 栅格将转换为线要素数据集。
+                    
+ 
+                </li>
+                <li>面 - 栅格将转换为面要素数据集。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>简化线或面</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否简化要素。
+            </p>
+            <p>如果选中（默认设置），则将对线或面要素进行平滑处理，以生成更为概化的结果。如果未选中此选项，则线要素将遵循栅格数据集的像元边界。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

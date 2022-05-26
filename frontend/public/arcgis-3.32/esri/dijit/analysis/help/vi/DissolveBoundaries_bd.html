@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Phân rã các Ranh giới</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Ph&acirc;n r&atilde; c&aacute;c Ranh giới"></h2>
+        <hr/>
+    <p>C&aacute;c v&ugrave;ng chồng lấp hoặc chung một ranh giới hoặc gi&aacute; trị thuộc t&iacute;nh được gộp lại để tạo th&agrave;nh một v&ugrave;ng duy nhất.
+    </p>
+    <p>Bạn c&oacute; thể khống chế c&aacute;c ranh giới bằng c&aacute;ch gộp ch&uacute;ng lại dựa tr&ecirc;n 1 trường cụ thể. V&iacute; dụ: nếu bạn c&oacute; một lớp quận, v&agrave; mỗi quận c&oacute; một thuộc t&iacute;nh  <pre>State_Name</pre>, bạn c&oacute; thể x&oacute;a bỏ c&aacute;c ranh giới bằng thuộc t&iacute;nh <pre>State_Name</pre>.  C&aacute;c quận sẽ hợp nhất với nhau nếu ch&uacute;ng c&oacute; gi&aacute; trị <pre>State_Name</pre> giống nhau.  Kết quả sẽ l&agrave; một lớp ranh giới tiểu bang.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp khu vực mà các ranh giới sẽ bị phân rã.</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp chứa đối tượng khu vực sẽ bị ph&acirc;n r&atilde;. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Chọn phương pháp xóa bỏ</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định phương thức được sử dụng để x&oacute;a bỏ c&aacute;c trường.
+            </p>
+            <p>Bạn c&oacute; thể chọn một trong hai phương ph&aacute;p để gộp c&aacute;c đối tượng v&ugrave;ng:
+                <ul>
+                    <li> <b>C&aacute;c khu vực chồng lắp l&ecirc;n nhau hoặc liền kề</b>&mdash;Hai hoặc nhiều v&ugrave;ng c&oacute; ranh giới chồng lấp sẽ được gộp v&agrave;o th&agrave;nh một khu vực.  Ngo&agrave;i ra, c&aacute;c khu vực liền kề (c&oacute; nghĩa l&agrave;, ch&uacute;ng c&oacute; c&ugrave;ng ranh giới chung) sẽ được gộp v&agrave;o th&agrave;nh một khu vực.
+                    </li>
+                    <li> <b>C&aacute;c khu vực c&oacute; gi&aacute; trị trường giống nhau</b>&mdash;Hai hoặc nhiều khu vực c&oacute; gi&aacute; trị trường giống nhau sẽ được hợp nhất th&agrave;nh một khu vực.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Tạo các đối tượng đa phần</h2></div>
+        <hr/>
+        <div>
+            <p>Multipart l&agrave; một dạng hiển thị của địa điểm hoặc vật thể c&oacute; hơn một phần nhưng được x&aacute;c định l&agrave; một đối tượng bởi v&igrave; n&oacute; c&oacute; c&ugrave;ng tập hợp c&aacute;c thuộc t&iacute;nh. Trong một lớp tiểu bang, Hawaii c&oacute; thể được coi l&agrave; một đối tượng đa phần bởi c&aacute;c phần h&igrave;nh học ri&ecirc;ng biệt của n&oacute; được ph&acirc;n loại l&agrave; một tiểu bang.
+            </p>
+            <p> <b>Tạo c&aacute;c đối tượng đa phần</b> c&oacute; hai t&ugrave;y chọn:
+                <ul>
+                    <li>Đ&uacute;ng (được chọn)&mdash; Dịch vụ đầu ra c&oacute; thể chứa c&aacute;c đối tượng đa phần.
+                    </li>
+                    <li>Sai (kh&ocirc;ng được chọn)&mdash; Dịch vụ đầu ra sẽ chỉ chứa c&aacute;c đối tượng đơn phần, v&agrave; c&aacute;c đối tượng đơn lẻ sẽ được tạo ra cho từng phần. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Thêm số liệu thống kê (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Khi c&aacute;c khu vực được hợp nhất, bạn c&oacute; thể tổng hợp c&aacute;c gi&aacute; trị thuộc t&iacute;nh của ch&uacute;ng bằng c&aacute;c số liệu thống k&ecirc; c&oacute; &yacute; nghĩa.  V&iacute; dụ, nếu bạn đang x&oacute;a bỏ ranh giới giữa c&aacute;c quận dựa tr&ecirc;n  <pre>State_Name</pre>, v&agrave; mỗi quận c&oacute; một trường <i>Population</i>, bạn c&oacute; thể t&iacute;nh to&aacute;n tổng số <pre>Population</pre> cho tiểu bang.
+            </p>
+            <p> Bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; về c&aacute;c đối tượng được tổng kết. Bạn c&oacute; thể t&iacute;nh to&aacute;n như sau tr&ecirc;n c&aacute;c trường số:
+                <ul>
+                    <li>Đếm&mdash;T&iacute;nh to&aacute;n số lượng gi&aacute; trị kh&ocirc;ng rỗng. N&oacute; c&oacute; thể được sử dụng tr&ecirc;n c&aacute;c trường số hoặc chuỗi. Số lượng của [rỗng 0, 2] l&agrave; 2.
+                    </li>
+                    <li>Tổng cộng&mdash;Tổng gi&aacute; trị số trong một trường Tổng cộng của [rỗng, krỗng, 3] l&agrave; 3.
+                    </li>
+                    <li>Trung b&igrave;nh&mdash;Trung b&igrave;nh của c&aacute;c gi&aacute; trị số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 1.
+                    </li>
+                    <li>Tối thiểu&mdash;Gi&aacute; trị tối thiểu của trường số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 0. 
+                    </li>
+                    <li>Tối đa&mdash;Gi&aacute; trị tối đa của trường số. Gi&aacute; trị tối đa của [0, 2, rỗng] l&agrave; 2.
+                    </li>
+                    <li>Phạm vi&mdash;Phạm vi của trường số Phạm vi n&agrave;y được t&iacute;nh to&aacute;n l&agrave; gi&aacute; trị tối đa trừ đi gi&aacute; trị tối thiểu. Phạm vi của [0, rỗng, 1] l&agrave; 1. Phạm vi của [rỗng, 4] l&agrave; 0.
+                    </li>
+                    <li>Biến số&mdash;Biến số của trường số trong đường đi. Biến số của [1] l&agrave; rỗng. Biến số của [null, 1,0,1,1] l&agrave; 0,25.
+                    </li>
+                    <li>Độ lệch chuẩn&mdash;Độ lệch chuẩn của một trường số. Độ lệch chuẩn của [1] l&agrave; rỗng. Độ lệch chuẩn của [null, 1,0,1,1] l&agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bạn c&oacute; thể t&iacute;nh to&aacute;n như sau tr&ecirc;n c&aacute;c trường chuỗi:
+                <ul>
+                    <li>Đếm&mdash;Số chuỗi kh&ocirc;ng rỗng.
+                    </li>
+                    <li>Bất kỳ&mdash;Số liệu thống k&ecirc; n&agrave;y l&agrave; mẫu ngẫu nhi&ecirc;n của một gi&aacute; trị chuỗi trong trường x&aacute;c định.
+                    </li>
+                </ul>
+                Tất cả số liệu thống k&ecirc; được t&iacute;nh to&aacute;n tr&ecirc;n c&aacute;c gi&aacute; trị kh&ocirc;ng rỗng. Lớp kết quả sẽ chứa một trường mới cho mỗi số liệu thống k&ecirc; được t&iacute;nh to&aacute;n. C&oacute; thể th&ecirc;m bất kỳ số liệu thống k&ecirc; n&agrave;o bằng c&aacute;ch chọn một thuộc t&iacute;nh v&agrave; số liệu thống k&ecirc;. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

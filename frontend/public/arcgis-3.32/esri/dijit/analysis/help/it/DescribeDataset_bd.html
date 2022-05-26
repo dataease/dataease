@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Descrivi dataset</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagramma del flusso di lavoro di Descrivi dataset"></h2>
+        <hr/>
+    <p>Lo strumento Descrivi dataset fornisce uno sguardo pi&ugrave; dettagliato sul dataset. Prima di eseguire un'analisi su grandi quantit&agrave; di dati, usare questo strumento per stabilire quali sono i propri dati di input e dove sono. Per impostazione predefinita, il risultato sar&agrave; una stringa JSON che delineer&agrave; i descrittori chiave del layer di input e una tabella che riporter&agrave; i dettagli delle statistiche di riepilogo per ciascun campo. 
+    </p>
+    <p>Facoltativamente, &egrave; possibile creare feature layer di output aggiuntivi per descrivere ulteriormente i dati. Le opzioni sono un layer di esempio o un layer di estensione. &Egrave; possibile scegliere di emetterne uno solo o entrambi.
+    </p>
+    <p>Ad esempio, immaginiamo che si &egrave; ricevuta una condivisione file Big Data contenente 15 dataset. Ogni dataset presenta 10 milioni di feature areali che rappresentano edifici e case in varie regioni del paese. Si deve analizzare la regione C, ma non si sa quale dataset contenga tali feature. Per scoprire quale dataset usare, eseguire Descrivi dataset e scegliere di creare un layer di estensione per scoprire quale dataset si trova nella regione di studio.
+    </p>
+    <p>Come altro esempio, immaginiamo di dover completare il flusso di lavoro di un'analisi su un grande volume di dati. Si vuole provare il flusso di lavoro, ma potrebbe richiedere ore o giorni con il dataset completo. Al posto di utilizzare tempo e risorse eseguendo l'analisi completa, creare un layer di esempio su cui testare efficacemente il flusso di lavoro completo.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il dataset da descrivere</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer contenente feature puntuali, lineari, areali o tabulari che sar&agrave; descritto, riassunto o campionato.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Comprendi il dataset creando un (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Emettere layer descrittivi aggiuntivi per migliorare la comprensione dei Big Data. &Egrave; possibile scegliere di emettere zero, uno solo o entrambi i layer seguenti:
+            </p>
+            <ul>
+                <li> <b>Layer di estensione</b>: crea una feature areale che rappresenta l'estensione delle feature di input o dell'area di interesse.
+                </li>
+                <li> <b>Layer di esempio</b>: crea un layer di sottoinsieme contenente una quantit&agrave; specificata di feature di input dall'interno del dataset o di area di interesse.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Layer di esempio</h2></div>
+        <hr/>
+        <div>
+            <p>Emettere un layer contenente un sottoinsieme di feature dal layer di input. Se si seleziona  <b>Layer di esempio</b>, &egrave; possibile specificare il numero di feature che si desiderano restituire nel layer di esempio.  Per impostazione predefinita, nel layer di output saranno restituite 100 feature di esempio.
+            </p>
+            <p>Il valore deve essere maggiore di zero. Se si specifica un numero maggiore del numero totale di feature, saranno restituite tutte le feature.
+            </p>
+            <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, il layer di esempio conterr&agrave; feature dall'interno dell'estensione della mappa.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Layer di estensione</h2></div>
+        <hr/>
+        <div>
+            <p>Emettere un feature layer contenente una singola feature che rappresenta l'estensione delle feature di input selezionando il pulsante  <b>Layer di estensione</b>. Per impostazione predefinita, questa opzione &egrave; selezionata.
+            </p>
+            <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, il layer di estensione rappresenter&agrave; l'estensione visibile della mappa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

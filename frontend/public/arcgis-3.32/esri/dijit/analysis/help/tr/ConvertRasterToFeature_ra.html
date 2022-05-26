@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raster'ı Detaya Dönüştür</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Rasterı Detaya D&ouml;n&uuml;şt&uuml;rme aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, bir rasterı nokta, &ccedil;izgi veya alan olarak bir detay veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;r.
+    </p>
+    <p> <b>Alan se&ccedil;</b> parametresi, girdi rasterı veri k&uuml;mesinin hangi &ouml;znitelik alanının &ccedil;ıktı detay sınıfında bir &ouml;znitelik olacağını se&ccedil;menize olanak tanır. Bu parametre, yalnızca ilişkili tabloda ilave &ouml;zniteliklere sahip olan tamsayı rasterlar i&ccedil;in kullanılabilir.
+    </p>
+    <p>Girdi rasterı herhangi bir h&uuml;cre boyutuna sahip olabilir.
+    </p>
+    <p>Tamsayı rasterlar nokta, &ccedil;izgi veya alan detaylarına d&ouml;n&uuml;şt&uuml;r&uuml;lebilir, ancak kayan noktalı rasterlar yalnızca nokta detaylarına d&ouml;n&uuml;şt&uuml;r&uuml;lebilir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita kapsamını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan raster h&uuml;creleri d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r. İşaretli değilse, raster katmanındaki t&uuml;m h&uuml;creler ge&ccedil;erli harita yayılımının dışında bile olsa d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r. Buna, &ouml;zellikle raster katmanı b&uuml;y&uuml;kse veya &ccedil;ok y&uuml;ksek &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğe sahipse dikkat edin.
+    </p>
+    <p>Bu aracın kullanıldığı durumlar şunlardır:
+ 
+        <ul>
+            <li>Arazi kullanımı sınıflandırma rasterından alan detayları oluşturma.
+                
+ 
+            </li>
+            <li>DEM i&ccedil;inde tanımlanan akışlar &ccedil;izgi detaylarına d&ouml;n&uuml;şt&uuml;r&uuml;lebilir.
+                
+
+            </li>
+            <li>DEM nokta detaylarına d&ouml;n&uuml;şt&uuml;r&uuml;lerek, raster tabanlı olmayan bir iş akışında kullanılabilir.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dönüştürülecek raster katmanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Detay katmanlarına d&ouml;n&uuml;şt&uuml;r&uuml;lecek girdi rasterı katmanı.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Alan seçin</h2></div>
+        <hr/>
+        <div>
+            <p>D&ouml;n&uuml;şt&uuml;rme i&ccedil;in kullanılacak değeri belirten bir alan girin.
+            </p>
+            <p>Herhangi bir tamsayı veya metin değeri olabilir.
+            </p>
+            <p>Kayan noktalı değer i&ccedil;eren bir alan, yalnızca &ccedil;ıktı bir nokta veri k&uuml;mesine gidiyorsa kullanılabilir.
+            </p>
+            <p>Varsayılan tercih, her raster h&uuml;cresinde değer i&ccedil;eren  <i>Value</i> alanını kullanmaktır.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Çıktı türünü seç</h2></div>
+        <hr/>
+        <div>
+            <p>Nokta, &ccedil;izgi veya alan arasından &ccedil;ıktı t&uuml;r&uuml;n&uuml; belirleyin.
+            </p>
+            <ul>
+                <li>Nokta; raster bir nokta veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r.
+                    
+ 
+                </li>
+                <li>&Ccedil;izgi; raster bir &ccedil;izgi detayı veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r.
+                    
+ 
+                </li>
+                <li>Alan; raster bir alan detayı veri k&uuml;mesine d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Çizgileri veya alanları basitleştir</h2></div>
+        <hr/>
+        <div>
+            <p>Detayların sadeleştirilmesi gerekip gerekmediğini belirtin.
+            </p>
+            <p>İşaretli ise (varsayılan ayar), &ccedil;izgi veya alan detayları daha genel bir sonu&ccedil; oluşturmak &uuml;zere d&uuml;zeltilerek sadeleştirilir. Bu se&ccedil;enek işaretli değilse, doğrusal detaylar raster veri k&uuml;mesinin h&uuml;cre sınırlarını takip eder.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

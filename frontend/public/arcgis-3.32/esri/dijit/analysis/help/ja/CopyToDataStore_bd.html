@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>データ ストアにコピー</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="データ ストアにコピー"></h2>
+        <hr/>
+    <p>このツールは、入力レイヤーを取得してデータ ストアにコピーします。結果は、 ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) にコピーするか (この場合、ポータルにレイヤーが作成されます)、ビッグ データ ファイル共有にコピーできます。 </p>
+    <p>たとえば、 <code>ビッグ データ ファイル共有</code>に格納されているフィーチャを <code>リレーショナル データ ストア</code>にコピーし、現在のマップ範囲内にあるフィーチャだけがコピーされるように設定することができます。この結果、指定のマップ範囲内にあるフィーチャだけが含まれるホスト フィーチャ サービスが作成されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>コピーするレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>コピーするレイヤーまたはテーブル。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>すべてのフィーチャを使用するか一部を選択 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>必要に応じて、選択ボタンを使用してコピーする位置を特定します。
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>コピー先のデータ ストアの選択</h2></div>
+        <hr/>
+        <div>
+            <p>レイヤーのコピー先のデータ ストア。 このパラメーターは、 <b>[分析環境]</b> での選択をオーバーライドします。次のオプションがあります。
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatiotemporal</b> -これがデフォルトです。
+                            </li>
+                            <li> <b>リレーショナル</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>ビッグ データ ファイル共有出力テンプレート</b>
+                        <ul>
+                            <li>使用可能なビッグ データ ファイル共有テンプレート ( <b>bigDataFileShareName-templateName</b> 形式) のリスト。このツールを実行する前に、ビッグ データ ファイル共有テンプレートを構成する必要があります。
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

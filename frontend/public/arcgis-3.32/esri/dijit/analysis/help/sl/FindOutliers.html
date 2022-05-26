@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Najdi osamelce</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Najdi osamelce"></h2>
+        <hr/>
+    <p>Orodje Najdi osamelce izračuna ali obstajajo statistično značilni osamelci v prostorskem vzorcu va&scaron;ih podatkov. 
+        <ul>
+            <li>Obstajajo v vzorcu va&scaron;ih podatkov območja z anomalijami (storjeni zločini, drevesa, prometne nesreče)? Kako ste lahko prepričani?
+            </li>
+            <li>Ste res odkrili statistično značilen osamelec (v potro&scaron;nji, smrtnosti novorojenčkov, stalno visokih rezultatih preizkusov) ali pa bi va&scaron;a karta pripovedovala drugačno zgodbo, če bi spremenili simbologijo?
+            </li>
+        </ul>
+        Orodje Najdi osamelce vam bo pomagalo z gotovostjo odgovoriti na ta vpra&scaron;anja.
+    </p>
+    <p>Vsakič, ko pogledamo karto, je naravno, da se na&scaron;e oči in možgani trudijo najti vzorce, tudi če ti ne obstajajo. Posledično je težko vedeti, ali so vzorci v va&scaron;ih podatkih rezultat resničnih prostorskih procesov ali so zgolj naključni. Zato raziskovalci in analitiki uporabljajo statistične metode, kot je Najdi osamelce (Anselin Local Moran's I), za količinsko opredelitev prostorskih vzorcev. Ko v svojih podatkih najdete statistično značilne osamelce ali gručenje, imate dragocene informacije. Vedeti kje in kdaj pride do osamelcev lahko zagotavlja pomembne informacije o procesih, ki povzročajo vzorce, ki jih vidite. Naslednji korak bi bil raziskati, zakaj so stvari na teh območjih osamelcev značilno drugačne. Če je znano, na primer, da se vlomi v stanovanja značilno pogosteje pojavljajo v določenih četrtih, kljub temu da so obkrožene s četrtmi z nizko stopnjo vlomov, je to ključna informacija, če želite oblikovati učinkovite strategije preprečevanja, dodeliti omejene policijske enote, zagnati program četrtnih straž, odobriti poglobljene kriminalistične preiskave ali identificirati morebitne osumljence.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izberi sloj, za katerega bodo izračunani osamelci</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni ali poligonski sloj iz katerega bodo poiskani osamelci. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Najdi osamelce</h2></div>
+        <hr/>
+        <div>
+            <p>Ta analiza odgovarja na vpra&scaron;anje: Kje v mojih podatkih so prostorski osamelci?  
+            </p>
+            <p>Če so va&scaron;i podatki točke in izberete orodje  <b>&Scaron;tetje točk</b>, bo to orodje ocenilo prostorsko razporeditev točkovnih geoobjektov za odgovor na vpra&scaron;anje: Kje so točke nepričakovano gručene ali razpr&scaron;ene?
+            </p>
+            <p>Če izberete polje, bo to orodje ocenilo prostorsko razporeditev vrednosti, povezanih s posameznim geoobjektom za odgovor na vpra&scaron;anje: Kje so nizke vrednosti obdane z visokimi vrednostmi? Kje so visoke vrednosti obdane z nizkimi vrednostmi?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Štetje točk znotraj</h2></div>
+        <hr/>
+        <div>
+            <p>Privzeto je &scaron;tetje točk znotraj ribje mreže, ki jo je ustvarilo orodje na podlagi va&scaron;ih točkovnih podatkov. Druga možnost je, da izberete &scaron;tetje točk znotraj &scaron;esterokotne mreže ali navedete poligonski sloj (običajno bi to bile administrativne enote poročanja, kot so popisne enote, občinske meje ali dežele) za odgovor na vpra&scaron;anje: Glede na &scaron;tevilo pre&scaron;tetih točk znotraj posameznega poligonskega geoobjekta, ali obstajajo lokacije s statistično značilnim visokim ali nizkim se&scaron;tevkom točk v primerjavi s sosedami?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Določi, kje so možne točke</h2></div>
+        <hr/>
+        <div>
+            <p>Nari&scaron;ite ali navedite sloj, ki določa, kje bodo incidenti verjetno odgovorili na vpra&scaron;anje: Ali obstajajo lokacije znotraj območij z nepričakovano visoko ali nizko koncentracijo točk?   
+            </p>
+            <p>Poligonski geoobjekti, ki jih nari&scaron;ete, ali geoobjekti v poligonskem sloju, ki ga navedete, morajo določati, kjer bi se točke lahko pojavile. Za risanje teh območij kliknite gumb  <b>Nari&scaron;i</b> in kliknite lokacijo na karti, da ustvarite obliko poligona. Za risanje dodatnih poligonov kliknite gumb Nari&scaron;i in kliknite lokacijo na karti za nadaljevanje.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Deljeno z</h2></div>
+        <hr/>
+        <div>
+            <p>Včasih boste morda želeli analizirati vzorce, ki upo&scaron;tevajo osnovne porazdelitve. Na primer, če va&scaron;e točke predstavljajo zločine, bi deljenje s celotnim prebivalstvom prikazalo analizo zločinov na prebivalca namesto zgolj &scaron;tevilo storjenih zločinov. Izbira atributa za deljenje z nečim se pogosto imenuje normalizacija.
+            </p>
+            <p> Izbira možnosti <i>Esri Prebivalstvo</i> bo obogatilo posamezen poligonski geoobjekt z vrednostmi prebivalstva, kar bo nato uporabljeno kot atribut za deljenje z nečim. Ta možnost bo porabljala kredite.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimiraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Izberete lahko optimizacijo hitrosti ali natančnosti.  
+            </p>
+            <p>To orodje uporablja permutacije za določanje, kako različni so va&scaron;i podatki od naključnih prostorskih vzorcev. Povečanje &scaron;tevila permutacij povečuje natančnost pa tudi čas obdelave.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Možnosti preglasitve</h2></div>
+        <hr/>
+        <div>
+            <p>Orodje bo poiskalo optimalne nastavitve privzetih vrednosti za  <b>Velikost celice</b> in <b>Razdalje pasu</b> na podlagi značilnosti va&scaron;ih podatkov. Če imate posebno <b>Velikost celice</b> ali <b>Razdaljo pasu</b>, ki je smiselna za va&scaron;o analizo, lahko za nastavitev teh vrednosti uporabite <b>Možnosti preglasitve</b>.
+            </p>
+            <p> <b>Možnosti preglasitve</b> so uporabne tudi pri opravljanju analize različnih sklopov podatkov, saj vam omogočijo ohranitev enake <b>Razdalje pasu</b> in <b>Velikosti celice</b> po več sklopih podatkov. Nato lahko primerjate rezultate, na primer debelosti in stopenj diabetesa ali celo ravni zločinov za dve različni leti.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Velikost celice</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost mrežnih celic, uporabljenih za &scaron;tetje točk znotraj.  
+            </p>
+            <p>Ko uporabljate &scaron;esterokotno mrežo za &scaron;tetje točk znotraj, se ta razdalja uporablja kot vi&scaron;ina &scaron;esterokotnika.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Razdalja pasu</h2></div>
+        <hr/>
+        <div>
+            <p>Vsak geoobjekt je analiziran znotraj konteksta tistih sosednjih geoobjektov, ki se nahajajo znotraj navedene razdalje.Orodje vam bo izračunalo privzeto razdaljo ali pa boste to možnost lahko uporabili za določitev določene razdalje, ki je za va&scaron;o analizo smiselna. 
+            </p>
+            <p>Na primer, če preučujete vzorce voženj dnevnih migrantov in veste, da je povprečna razdalja poti v službo 24 kilometrov, boste morda želeli uporabiti pas razdalje 24 kilometrov.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Ta sloj z rezultati vam bo pokazal statistično značilne osamelce visokih in nizkih vrednosti ali se&scaron;tevka točk. Če ime sloja z rezultati že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

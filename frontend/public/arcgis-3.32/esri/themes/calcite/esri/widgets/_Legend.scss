@@ -1,0 +1,78 @@
+.#{$theme-name} {
+  .esriLegendServiceLabel,
+  .esriLegendLayerLabel {
+    color: $legend-service-layer-color;
+  }
+  .esriLegendService {
+    padding-bottom: $legend-service-spacing;
+    margin-bottom: $legend-service-spacing;
+    > div {
+      padding-left: $legend-service-indent;
+    }
+  }
+  .esriLegendServiceLabel {
+    font-weight: bold;
+  }
+  .esriLegendLayer {
+    padding-bottom: $legend-layer-spacing;
+  }
+  .esriLegendGroupLayer {
+    padding-bottom: $legend-layer-spacing;
+  }
+  .esriLegendLeft {
+    padding-left: $legend-layer-indent;
+  }
+  .esriLegendRight {
+    padding-right: $legend-layer-indent;
+  }
+  .esriLegendColorRamp {
+    width: $legend-color-ramp-width;
+    height: $legend-color-ramp-height;
+  }
+  .esriLegendColorRampTick {
+    position: absolute;
+    width: 3px;
+    border-top: 1px solid $legend-color-ramp-tick-color;
+    line-height: 0;
+    right: 2px;
+    left: auto;
+  }
+  .esriLegendColorRampLabels {
+    position: relative;
+    height: $legend-color-ramp-labels-height;
+  }
+  .esriLegendColorRampLabel {
+    position: relative;
+    line-height: $legend-color-ramp-label-line-height-computed;
+    padding-left: $legend-color-ramp-label-padding;
+    padding-right: 0;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .esriLegendSizeRampLabel {
+    white-space: nowrap;
+  }
+}
+
+// RTL
+// --------------------------------------------------
+.dj_rtl {
+  .#{$theme-name} {
+    .esriLegendService {
+      > div {
+        padding-left: inherit;
+        padding-right: $legend-service-indent;
+      }
+    }
+    .esriLegendColorRampTick {
+      left: 2px;
+      right: auto;
+    }
+    .esriLegendColorRampLabel {
+      padding-left: inherit;
+      padding-right: $legend-color-ramp-label-padding;
+      text-align: right;
+    }
+  }
+}
+

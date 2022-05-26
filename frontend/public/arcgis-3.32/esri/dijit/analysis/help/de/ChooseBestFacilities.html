@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Optimale Einrichtungen auswählen</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Optimale Einrichtungen ausw&auml;hlen"></h2>
+        <hr/>
+    <p>Mit &quot;Optimale Einrichtungen ausw&auml;hlen&quot; k&ouml;nnen Sie die besten Standorte f&uuml;r Einrichtungen ausw&auml;hlen. Das Werkzeug weist Standorte mit Bedarf an Einrichtungen entsprechend dem angegebenen Ziel zu.
+    </p>
+    <p>Einrichtungen stellen Standorte dar, die eine Art von Dienstleistung anbieten, z.&nbsp;B. Feuerwachen, Schulen, Bibliotheken, Gesch&auml;fte oder Vertriebszentren. Bedarfsstandorte sind Standorte, die einen Bedarf an den Dienstleistungen aufweisen, die von den Einrichtungen angeboten werden, z.&nbsp;B. Z&auml;hlblockpunkte, die die Bev&ouml;lkerungszahlen in einem angegebenen Gebiet ermitteln.
+    </p>
+    <p>Mit dem Werkzeug &quot;Optimale Einrichtungen ausw&auml;hlen&quot; k&ouml;nnen Sie beispielsweise die folgenden Fragen beantworten:
+        <ul>
+            <li>Wie k&ouml;nnen Haushalte bei einem Notfall dem richtigen Katastrophenschutzzentrum zugewiesen werden, wenn die Bettenkapazit&auml;t begrenzt ist und nicht &uuml;berschritten werden darf?
+            </li>
+            <li>Wie k&ouml;nnen Nachbarschaften ihrer n&auml;chstgelegenen Zweigbibliothek zugewiesen und wie kann die Anzahl der potenziellen Benutzer jeder Zweigstelle ermittelt werden? 
+            </li>
+            <li>Wie kann der beste Standort f&uuml;r ein Lebensmittelvertriebszentrum ermittelt werden, um die Gesamtreisezeit (und somit auch die Kosten) f&uuml;r die Belieferung einer Kette von Lebensmittelgesch&auml;ften zu minimieren?
+            </li>
+            <li>Wo k&ouml;nnte ein neuer Park angelegt werden, den m&ouml;glichst viele Stadtbewohner innerhalb von f&uuml;nf Minuten zu Fu&szlig; erreichen k&ouml;nnen?
+            </li>
+            <li>Welche Standorte in einem Landkreis w&auml;ren optimal f&uuml;r Zoogesch&auml;fte, damit 40 Prozent der Tierhalter in einem Umkreis von 10 Minuten Fahrzeit von einem der Gesch&auml;fte wohnen w&uuml;rden?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Ziel</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie das Ziel an, das beim Zuweisen von Bedarfsstandorten zu Einrichtungen verfolgt werden muss.
+            </p>
+            <p>F&uuml;r &quot;Optimale Einrichtungen ausw&auml;hlen&quot; k&ouml;nnen Sie genau festlegen, welche Art von Problem gel&ouml;st werden soll. Das Werkzeug wurde spezifisch konzipiert, f&uuml;r das jeweilige Ziel die optimale L&ouml;sung zu bieten. Unabh&auml;ngig vom jeweiligen Ziel wird im Wesentlichen dieselbe zugrunde liegende Methode verwendet, um zu einer L&ouml;sung zu gelangen: die Bedarfsmenge eines Bedarfsstandortes wird der n&auml;chstgelegenen Einrichtung zugeordnet. Die Ziele sind unterschiedlich, je nachdem, wie die Wechselwirkung zwischen Entfernung (oder Zeit) und Bedarf gewichtet wird. Das Werkzeug ber&uuml;cksichtigt die Reisestrecke/-zeit und die Bedarfsmenge sowie in einigen F&auml;llen die Kapazit&auml;t der Einrichtungen. Wenn ein Ziel beispielsweise die Minimierung der Reisezeit favorisiert, versucht das Werkzeug dennoch, sekund&auml;r den zugewiesenen Bedarf zu maximieren. Entsprechend minimiert das Werkzeug die Reisezeit (durch Zuweisung von Bedarfsstandorten zur n&auml;chstgelegenen statt zu einer beliebigen Einrichtung), wenn das Ziel darin besteht, den zugewiesenen Bedarf zu maximieren.
+            </p>
+            <p>Je nach verwendeten Daten und Einstellungen, k&ouml;nnen verschiedene Ziele zu identischen oder &auml;hnlichen Ergebnissen f&uuml;hren. Sie sollten jedoch das Ziel festlegen, das f&uuml;r Ihre Analyse am ehesten zutrifft.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Vorhandenen Einrichtungen zuweisen</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie dieses Ziel, wenn Sie keine neuen Einrichtungen suchen, sondern vorhandenen Einrichtungen einen Bedarf zuweisen m&ouml;chten.    
+            </p>
+            <p>Anhand dieses Ziels wird Einrichtungen Bedarf basierend auf der Kapazit&auml;t der jeweiligen Einrichtung und der Bedarfsmenge des umliegenden Gebiets zugewiesen. Der n&auml;chstgelegenen Einrichtung wird Bedarf zugewiesen, bis die verf&uuml;gbare Kapazit&auml;t erreicht ist. Wenn Sie einen maximalen Reisebereich angeben, wird jeder Bedarfsstandort au&szlig;erhalb dieses Bereichs auch dann keiner Einrichtung zugewiesen, wenn der gesamte Bedarf nicht vollst&auml;ndig zugewiesen wurde.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Reisestrecke minimieren</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie dieses Ziel, wenn Sie Einrichtungen so verorten m&ouml;chten, dass die Gesamtreisezeit oder -reisestrecke zwischen den Bedarfsstandorten und den Einrichtungen minimiert wird.
+            </p>
+            <p>Diese Option ist h&auml;ufig geeignet, wenn Reiseverkehr zwischen der Einrichtung und allen Bedarfsstandorten stattfindet. Dieses Ziel wird beispielsweise verwendet, um die zur&uuml;ckgelegte Gesamtentfernung f&uuml;r den Warentransport von Vertriebszentren zu den Gesch&auml;ften zu minimieren oder um einen Veranstaltungsort f&uuml;r eine Konferenz so auszuw&auml;hlen, dass die Reisezeit f&uuml;r alle Teilnehmer minimiert wird.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Flächendeckung maximieren</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie dieses Ziel, wenn Sie die innerhalb einer bestimmten Zeit oder Entfernung der Einrichtungen abgedeckte Bedarfsmenge maximieren m&ouml;chten.    
+            </p>
+            <p>Mit diesem Ziel werden Einrichtungen so ausgew&auml;hlt, dass die maximale Bedarfsmenge zugewiesen wird, wobei der gesamte Bedarf jedes Bedarfsstandortes einer einzigen, am n&auml;chsten gelegenen Einrichtung zugewiesen wird.
+            </p>
+            <p>F&uuml;r dieses Ziel ist ein begrenzter Reisebereich erforderlich; andernfalls kann der gesamte Bedarf einer einzigen Einrichtung zugewiesen werden. Bedarfsstandorte, die die Entfernung einer der Einrichtungen &uuml;berschreiten, werden nicht zugewiesen (dadurch wird angezeigt, wo der Bedarf nicht erf&uuml;llt wird und wo zus&auml;tzliche Einrichtungen ben&ouml;tigt werden).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Abdeckung mit Kapazität maximieren</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie dieses Ziel, wenn Sie die von den Einrichtungen abgedeckte Bedarfsmenge maximieren m&ouml;chten, die Kapazit&auml;t der Einrichtungen jedoch begrenzt ist.    
+            </p>
+            <p>Anhand dieses Ziels werden Einrichtungen so ausgew&auml;hlt, dass die maximale Bedarfsmenge zugewiesen wird, ohne dass die Kapazit&auml;t der einzelnen Einrichtungen &uuml;berschritten wird. Der gesamte Bedarf jedes Bedarfsstandortes wird einer einzigen Einrichtung zugewiesen, die ihm am n&auml;chsten liegt und &uuml;ber freie Kapazit&auml;ten verf&uuml;gt (d. h., wenn durch die Zuweisung die verf&uuml;gbare Kapazit&auml;t der Einrichtung &uuml;berschritten w&uuml;rde, wird der Bedarfsstandort nicht zugewiesen, statt nur einen Teil des Bedarfs zuzuweisen).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Einen Bedarfsprozentsatz abdecken</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie dieses Ziel, wenn Sie die Mindestanzahl der Einrichtungen ermitteln m&ouml;chten, die einen angegebenen Bedarfsprozentsatz abdecken.
+            </p>
+            <p>Mit diesem Ziel wird die Mindestanzahl der Einrichtungen ausgew&auml;hlt, die erforderlich sind, um den angegebenen Bedarfsprozentsatz zu erreichen. Der Bedarf eines Bedarfsstandortes, der sich im maximalen Reisebereich von mindestens zwei Einrichtungen befindet, wird basierend auf seiner Entfernung zu den jeweiligen Einrichtungen proportional zwischen den Einrichtungen aufgeteilt. Dieses Ziel wird h&auml;ufig verwendet, wenn Personen ausw&auml;hlen k&ouml;nnen, welche Einrichtung sie aufsuchen, und wenn davon ausgegangen wird, dass sie sich im Allgemeinen f&uuml;r die n&auml;chst gelegene Einrichtung entscheiden.
+            </p>
+            <p>Im Gegensatz zu den anderen Zielen, bei denen Einrichtungen ausgew&auml;hlt und Sie die Anzahl der auszuw&auml;hlenden Einrichtungen festlegen, wird bei diesem Ziel die Anzahl der Einrichtungen basierend auf dem Bedarfsprozentsatz ausgew&auml;hlt, der erf&uuml;llt werden soll. Es wird vorausgesetzt, dass die Kapazit&auml;t der Einrichtungen nicht begrenzt ist.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Messen</h2></div>
+        <hr/>
+        <div>
+            <p>Wie bei anderen Werkzeugen, deren Analyse die Reise einbezieht, k&ouml;nnen Sie festlegen, ob die Reise anhand der Entfernung oder der Zeit gemessen werden soll. Zudem k&ouml;nnen Sie verschiedene Reisemodi wie Gehzeit, Fahrzeit, Fahrstrecke auf Landstra&szlig;en usw. ausw&auml;hlen. Die verf&uuml;gbaren Reisemodi werden vom Administrator Ihrer Organisation bestimmt. Bei Verwendung von  <b>Fahrzeit</b>, <b>Fahrzeit auf Landstra&szlig;en</b> oder <b>Lkw-Fahrzeit</b> k&ouml;nnen Sie optional die Verkehrslage f&uuml;r einen bestimmten Wochentag oder eine bestimmte Tageszeit einbeziehen.
+            </p>
+            <p> Um Bedarfsstandorte Einrichtungen pr&auml;zise zuzuweisen, geben Sie an, ob die Reise von den Einrichtungen zu den Bedarfsstandorten (z.&nbsp;B. von Feuerwachen zu H&auml;usern) oder in umgekehrter Richtung (wie bei Bibliotheksbenutzern) erfolgen soll. &quot;Optimale Einrichtungen ausw&auml;hlen&quot; ber&uuml;cksichtigt die Reiserichtung in Einbahnstra&szlig;en, ob Sie von einer Stra&szlig;e in die andere einbiegen k&ouml;nnen, ob an Kreuzungen nicht nach links abgebogen werden darf usw., je nachdem, ob die Reise ausw&auml;rts, von der Einrichtung zu den Bedarfsstandorten, oder einw&auml;rts, von den Bedarfsstandorten zu den Einrichtungen, erfolgt.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Bedarfspositions-Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die Standorte mit Bedarf an den Dienstleistungen darstellen, die von den Einrichtungen angeboten werden. Das Werkzeug weist diese Bedarfsstandorte den entsprechenden Einrichtungen basierend auf dem ausgew&auml;hlten Ziel zu.
+            </p>
+            <p>Bedarfsstandorte sind mit einer Bedarfsmenge verkn&uuml;pft. Verwenden Sie eine Konstante, um den Wert anzugeben, wenn alle Bedarfsstandorte denselben Bedarf haben. Wenn die Bedarfsmenge je nach Bedarfsstandort variiert, verwenden Sie ein Feld im Layer f&uuml;r Bedarfsstandorte, um den Wert f&uuml;r jeden Bedarfsstandort anzugeben.
+            </p>
+            <p>Der Bedarf wird Einrichtungen zugewiesen, bis der gesamte Bedarf zugewiesen wurde, und zwar unabh&auml;ngig von der Entfernung zwischen Bedarfsstandorten und Einrichtungen. Sie k&ouml;nnen dem Layer f&uuml;r Bedarfsstandorte einen maximalen Reisebereich zuweisen, um einen Entfernungs- oder Zeitgrenzwert zu erstellen. Alle Bedarfsstandorte, die diesen Grenzwert &uuml;berschreiten, werden nicht zugewiesen. Verwenden Sie eine Konstante, um den Wert anzugeben, wenn alle Bedarfsstandorte denselben maximalen Reisebereich aufweisen. Wenn der maximale Reisebereich nach Bedarfsstandort variiert, verwenden Sie ein Feld im Layer f&uuml;r Bedarfsstandorte, um den Wert f&uuml;r jeden Bedarfsstandort anzugeben.
+            </p>
+            <p>Wenn der Zieltyp  <b>Einen Bedarfsprozentsatz abdecken</b> lautet, m&uuml;ssen Sie den minimalen Bedarfsprozentsatz festlegen, den die Einrichtungen aufweisen sollen.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 10.000&nbsp;Features im Layer f&uuml;r Bedarfsstandorte.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Layer für erforderliche Einrichtungen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die Standorte darstellen, die durch die Bereitstellung einer Art von Dienstleistung als Einrichtungen fungieren. Im Vergleich zu geeigneten Einrichtungen, die in der Regel die Standorte darstellen, an denen neue Einrichtungen erstellt oder platziert werden, handelt es sich bei erforderlichen Einrichtungen in der Regel um Standorte, die bereits vorhanden sind. Beim Zuweisen von Bedarfsstandorten zieht das Werkzeug die Einrichtungen im  <b>Layer f&uuml;r erforderliche Einrichtungen</b> den Einrichtungen aus dem <b>Layer f&uuml;r geeignete Einrichtungen</b> vor.
+            </p>
+            <p>Erforderliche Einrichtungen k&ouml;nnen eine unbegrenzte Kapazit&auml;t (d.&nbsp;h. sie k&ouml;nnen den gesamten ihnen zugewiesenen Bedarf abdecken) oder eine begrenzte Kapazit&auml;t aufweisen. Wenn alle Einrichtungen dieselbe begrenzte Kapazit&auml;t (wie etwa die Anzahl der Haushalte, f&uuml;r die eine Feuerwache zust&auml;ndig ist, z.&nbsp;B. 4.000) aufweisen, geben Sie einen konstanten Wert an. Wenn die Kapazit&auml;t zwischen den Einrichtungen variiert (z.&nbsp;B. die Anzahl der freien Schulpl&auml;tze an jeder Schule), legen Sie ein Feld fest, das den Kapazit&auml;tswert f&uuml;r jede Einrichtung enth&auml;lt.
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 100&nbsp;Features im  <b>Layer f&uuml;r erforderliche Einrichtungen</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Layer für geeignete Einrichtungen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die Standorte darstellen, die durch die Bereitstellung einer Art von Dienstleistung als Einrichtungen fungieren. Im Gegensatz zu erforderlichen Einrichtungen, die in der Regel bereits vorhandene Standorte darstellen, stellen geeignete Einrichtungen in der Regel die Standorte dar, an denen neue Einrichtungen erstellt oder platziert werden.
+            </p>
+            <p>Je nach Ziel der Analyse m&uuml;ssen Sie die Anzahl der geeigneten Einrichtungen angeben, die aus der Gruppe der Kandidaten ausgew&auml;hlt werden sollen. Wenn Sie sowohl erforderliche als auch geeignete Einrichtungen angeben, zieht das Werkzeug die Einrichtungen im  <b>Layer f&uuml;r erforderliche Einrichtungen</b> den Einrichtungen aus dem <b>Layer f&uuml;r geeignete Einrichtungen</b> vor.
+            </p>
+            <p>Geeignete Einrichtungen k&ouml;nnen eine unbegrenzte Kapazit&auml;t (d.&nbsp;h. sie k&ouml;nnen den gesamten ihnen zugewiesenen Bedarf abdecken) oder eine begrenzte Kapazit&auml;t aufweisen. Wenn alle Einrichtungen dieselbe begrenzte Kapazit&auml;t (wie etwa die Anzahl der Haushalte, f&uuml;r die eine Feuerwache zust&auml;ndig ist, z.&nbsp;B. 4.000) aufweisen, geben Sie einen konstanten Wert an. Wenn die Kapazit&auml;t zwischen den Einrichtungen variiert (z.&nbsp;B. die Anzahl der freien Schulpl&auml;tze an jeder Schule), legen Sie ein Feld fest, das den Kapazit&auml;tswert f&uuml;r jede Einrichtung enth&auml;lt.
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 1.000&nbsp;Features im  <b>Layer f&uuml;r geeignete Einrichtungen</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barriere-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Mindestens ein Feature, das als vor&uuml;bergehende Einschr&auml;nkung (also Barriere) bei der Fahrt auf den zugrunde liegenden Stra&szlig;en fungiert Sie k&ouml;nnen die Barrieren anhand von Punkt-, Linien- oder Polygon-Features angeben.
+            </p>
+            <p>Eine Punkt-Barriere kann zum Modellieren eines umgefallenen Baumes, eines Unfalls, einer herabh&auml;ngenden Stromleitung oder eines beliebigen anderen Objekts, das den Verkehr an einer bestimmten Position auf der Stra&szlig;e blockiert, verwendet werden. Die Fahrt auf der Stra&szlig;e ist zul&auml;ssig, jedoch nicht die Fahrt durch die Barriere. Sie k&ouml;nnen bis zu 250&nbsp;Features, die als Punkt-Barrieren fungieren, hinzuf&uuml;gen.
+            </p>
+            <p>Eine Linien-Barriere unterbindet den Verkehr an allen Punkten, an denen die Barriere Stra&szlig;en schneidet. Mit einer Linien-Barriere kann beispielsweise eine Parade oder Demonstration modelliert werden, die den Verkehr &uuml;ber mehrere Stra&szlig;enz&uuml;ge hinweg blockiert. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Linien-Barrieren schneiden, 500 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+            <p>Eine Polygon-Barriere unterbindet den Verkehr an allen Punkten, an denen das Polygon Stra&szlig;en schneidet. Dieser Barrierentyp wird beispielsweise verwendet, um &uuml;berflutete Bereiche des Stra&szlig;ennetzes zu modellieren und den Stra&szlig;enverkehr in diesen Bereichen zu sperren. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Polygon-Barrieren schneiden, 2000 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Der Ergebnis-Layer enth&auml;lt einen Layer f&uuml;r jedes der folgenden Elemente: Einrichtungen, denen Bedarf zugewiesen ist, Bedarfsstandorte, die Einrichtungen zugewiesen sind, sowie Zuweisungslinien, die Bedarfsstandorte mit ihren zugewiesenen Einrichtungen verbinden. Die Zuweisungslinien werden als gerade Linien dargestellt, die Reisezeit oder Reisestrecke zwischen der Einrichtung und dem Bedarfsstandort basiert jedoch immer auf dem angegebenen Reisemodus und nicht auf der Verwendung von geradlinigen Entfernungen.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

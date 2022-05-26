@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>En Yakındakini Bul</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="En Yakındakini Bul"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; en yakındaki detayları bulur ve yakındaki detaylara olan mesafeyi raporlar ve sıralar. En yakın olanı bulmak i&ccedil;in ara&ccedil; bir d&uuml;z hat mesafesini ya da se&ccedil;ilen bir seyahat modunu kullanarak &ouml;l&ccedil;&uuml;m yapabilir. Bulunacak en yakın detayların sayısını ya da bunların bulunacağı arama aralığını sınırlandırmak i&ccedil;in se&ccedil;enekler vardır. Bu aracın sonu&ccedil;ları aşağıdaki t&uuml;rde sorulara yanıt vermenize yardımcı olabilir:
+        <ul>
+            <li>Buraya en yakın park nerede?
+            </li>
+            <li>Hangi hastaneye en kısa s&uuml;r&uuml;ş s&uuml;resiyle ulaşabilirim? Salı saat 17:30'da yoğun saatlerde yolculuk ne kadar s&uuml;rebilir?
+            </li>
+            <li>Bu ana şehirler arasındaki yol mesafeleri nelerdir?
+            </li>
+            <li>Bu hastaların hangisi bu kimyasal tesislere iki kilometre mesafede yaşıyor?
+            </li>
+        </ul>
+        
+    </p>
+    <p>En Yakın Bul, en yakın detayları i&ccedil;eren bir katman ve başlangı&ccedil; konumlarını kendi en yakın konumlarına bağlayan bir &ccedil;izgi katmanı d&ouml;nd&uuml;r&uuml;r. &Ccedil;izgi katmanı başlangı&ccedil; ve en yakın konumlar, ve bunlar arasındaki mesafeler hakkında bilgiler i&ccedil;erir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretliyse, yalnızca ge&ccedil;erli harita kapsamı dahilinde g&ouml;r&uuml;n&uuml;r olan detaylar, başlangı&ccedil; ve potansiyel olarak en yakın detaylar olarak d&uuml;ş&uuml;n&uuml;l&uuml;r.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita kapsamının dışında olsa bile ele alınacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Başlangıç konumlarını belirt</h2></div>
+        <hr/>
+        <div>
+            <p>En Yakındakini Bul, burada belirttiğiniz katmandan (başlangı&ccedil; konumları) bir sonraki parametrede belirttiğiniz konumlara kadar &ouml;l&ccedil;&uuml;m yapar.  Ara&ccedil;, her katmanda  5,000'e kadar detayı destekler. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>En yakın konumları bul</h2></div>
+        <hr/>
+        <div>
+            <p>En Yakın Bul, ilk katmanındaki detayların her birinden bu katmandaki konumlara &ouml;l&ccedil;&uuml;m yapar. Ara&ccedil;, her katmanda  5,000'e kadar konumu destekler. </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Ölçü</h2></div>
+        <hr/>
+        <div>
+            <p>En yakın konumları bulmak i&ccedil;in d&uuml;z hat mesafesi ya da se&ccedil;ilen bir seyahat modundan hangisinin kullanılacağını belirleyin. Seyahat modları, yalnızca girdi katmanınızda nokta varsa etkinleştirilir. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir.  Bu seyahat modlarından biri kullanılırken, yol veya kaldırım boyunca &ouml;l&ccedil;&uuml;m yapılır ve tek y&ouml;nl&uuml; trafik, d&ouml;n&uuml;ş yasağı ve benzeri ge&ccedil;erli kurallar dikkate alınır.
+            </p>
+            <p>&Ccedil;izgiler ya da alanlar arasında &ouml;l&ccedil;&uuml;m yapılırken, &ccedil;izgi ya da alan sınırı boyunca en yakın noktadan/noktaya olan mesafe bulunur. 
+            </p> 
+            <p> <b>S&uuml;r&uuml;ş S&uuml;resi</b>, <b>Arazide S&uuml;r&uuml;ş S&uuml;resi</b> ya da <b>Kamyonla Taşıma S&uuml;resi</b>'ni se&ccedil;tiğinizde, s&uuml;r&uuml;ş s&uuml;resinin &ouml;l&ccedil;&uuml;lmesine ilişkin se&ccedil;enekleriniz olur.
+                <ul>
+                    <li>
+                        <p>En yakın detayları, değişen trafik koşullarından kaynaklanan değişken hızlar yerine hız sınırları gibi statik seyahat hızlarına g&ouml;re bulmak i&ccedil;in  <b>Trafiği Kullan</b> işaretini kaldırın.
+                        </p>
+                        <p>Genelde en yakın olanı &ouml;ğrenmek istiyorsanız, ancak belirli bir g&uuml;n ve saatteki trafik koşullarına g&ouml;re en yakın gerekli değilse bunu se&ccedil;in.
+                        </p>
+                    </li>
+                    <li>
+                        <p>En yakın detayları, belirli bir başlangı&ccedil; saati ve değişen trafik koşullarına g&ouml;re bulmak i&ccedil;in  <b>Trafiği Kullan</b>'ı işaretleyin. Ayrıca <b>Canlı trafik</b> se&ccedil;eneği belirlenerek başlangı&ccedil; konumlarından &ccedil;ıkış saati ge&ccedil;erli saate ayarlanır ve hangi detayların en yakın olduğunu belirlemek i&ccedil;in ge&ccedil;erli ve tahmin edilen trafik hızları sens&ouml;rlerden ve beslemelerden alınır. Tahmini trafik hızları, canlı trafik hızları, ge&ccedil;miş hızlar ve hava durumu gibi ge&ccedil;erli olaylar referans alınarak hesaplanır. Trafik hızları şu andan 12 saate kadar tahmin edilir, bu sayede &ccedil;ıkış saatini ayarlamak i&ccedil;in kaydırıcıyı ge&ccedil;erli saatten 12 saat sonrasına kadar ayarlayabilirsiniz.
+                        </p>
+                        <p>Şu anda, bir saat sonra vb. &ccedil;ıkış yapıldığında hangi detaylara en kısa s&uuml;rede ulaşılacağını &ouml;ğrenmek i&ccedil;in bu canlı trafik ayarlarını kullanın.
+                        </p>
+                    </li>
+                    <li>
+                        <p> <b>Trafiği Kullan</b> işaretlendiğinde; g&uuml;n&uuml;n ve saatin <b>Tipik koşullarına bağlı trafik</b> se&ccedil;ildiğinde, ara&ccedil; en yakın detayı rutin bir haftanın her beş dakikalık aralıklarla kaydedilen ge&ccedil;miş hız ortalamalarına g&ouml;re bulur. Sonu&ccedil;lar trafiği i&ccedil;erir ancak ge&ccedil;erli trafik koşullarının ve olaylarının etkisini &ccedil;ıkarır, bunlar normdan b&uuml;y&uuml;k oranda sapma g&ouml;sterebilir.
+                        </p>
+                        <p>Bu ge&ccedil;miş trafik ayarlarını, &ouml;rneğin &quot;&Ccedil;arşamba saat 11:30'da başlangı&ccedil; detayından &ccedil;ıkış yaparken hangi &ouml;zelliklere en &ccedil;abuk ulaşılabilir?&quot; gibi bir soruyu sormak i&ccedil;in kullanabilirsiniz. 
+                        </p>
+                        <p>Belirlediğiniz saat, başlangı&ccedil; detayınızın yer aldığı saat dilimini referans alır. Yani saati 08:00'a ayarlarsanız ve biri New York City ve diğeri Los Angeles'ta iki başlangı&ccedil; detayınız varsa, en yakın konumlar 08:00 başlangı&ccedil; saati varsayılarak bulunacaktır. Doğu Saati ve 08:00. Pasifik Saati, sırasıyla.
+                        </p>
+                    </li>
+                </ul>
+                Bir ara&ccedil; bir noktadan dışa doğru s&uuml;r&uuml;l&uuml;rken, saatin ge&ccedil;eceğine ve trafik koşullarının değişeceğine dikkat edin. Bu ara&ccedil;, <b>Trafiği kullan</b>'ı işaretlediğinizde bu değişkenleri hesaba katar; ancak t&uuml;m b&ouml;lgeler trafiği desteklemez. &Ccedil;alışma alanınızda sunulup sunulmadığını &ouml;ğrenmek i&ccedil;in ara&ccedil;taki <b>Kullanılabilirliği g&ouml;r</b> bağlantısına tıklayın. 
+            </p>
+            <p> <b>Kamyonla Taşıma S&uuml;resi</b>'nde-dinamik seyahat hızları trafiğe dayalı olarak, ancak yalnızca yasal kamyon hız sınırına kadar kullanılabilir. &Ouml;rneğin, canlı trafiğe dayalı olarak bir cadde i&ccedil;in dinamik hız saatte 65 mil, ancak o cadde i&ccedil;in kamyon hız limiti saatte 55 mil ise, hesaplamada o cadde i&ccedil;in saatte 55 mil kullanılır.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Engel katmanlarını seç</h2></div>
+        <hr/>
+        <div>
+            <p> Aşağıdaki sokaklarda seyahat ederken ge&ccedil;ici kısıtlamalar (engeller) işlevi g&ouml;recek bir ya da daha fazla &ouml;zellik. Nokta, &ccedil;izgi ve poligon &ouml;zelliklerini kullanarak engel belirleyebilirsiniz.
+            </p>
+            <p>Nokta engel devrilmiş bir ağacı, kazayı, kopmuş bir elektrik hattını veya sokağın belirli bir noktasında trafiği tamamen engelleyen herhangi bir şeyi ifade edebilir. Sokakta harekete izin verilir ancak engel ge&ccedil;ilemez. Nokta engel olarak işlev g&ouml;recek 250'ye kadar &ouml;zellik belirleyebilirsiniz.
+            </p>
+            <p>Hat engel, sokakları kestiği her yerde hareketi engeller. &Ouml;rneğin, birka&ccedil; sokak boyunca trafiği engelleyen bir ge&ccedil;it t&ouml;reni ya da protesto bir &ccedil;izgi bariyeri ile modellenebilir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 500'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+            <p>&Ccedil;okgen engel, sokakları kestiği her yerde hareketi engeller. Bu engel tipinin kullanımlarından biri sokak ağının alanlarını kaplayan taşkınları modellemektir ve sokakta hareket imkansız hale gelir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 2000'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Girdi katmanındaki her konum için</h2></div>
+        <hr/>
+        <div>
+            <p>En yakın konumları aramayı sınırlandırmak i&ccedil;in iki se&ccedil;eneğiniz vardır. Bir se&ccedil;enek başlangı&ccedil; konumu başına bulabileceğiniz en yakın konumların en y&uuml;ksek sayısını sınırlandırmaktadır. Bir en yakın park, iki en yakın ve bu şekilde devam eden şekilde bulabilirsiniz. Diğer se&ccedil;enek en y&uuml;ksek arama mesafesini ya da s&uuml;r&uuml;ş s&uuml;resini ayarlamaktır.
+            </p>
+            <p>Se&ccedil;eneklerin işaretleri kaldırıldığında, bulunacak maksimum en yakın konum sayısı 100 (aracın sınırı) ve maksimum arama mesafesi sınırsız olur.
+            </p>
+            <p>İşlem s&uuml;resi başlangı&ccedil; konumlarının sayısına, yakın konumların sayısına ve en y&uuml;ksek arama menziline bağlıdır. Birden fazla konum ya da daha b&uuml;y&uuml;k arama menzilleri olduğunda işlem s&uuml;resi artar.
+            </p>
+            <p>Arama menzilinde bir sınır ayarlandığında, aracın menzil i&ccedil;inde bir en yakın konum bulamaması ya da belirlediğiniz en y&uuml;ksek en yakın konum sayısından daha az konum bulması ihtimali vardır.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek detay katmanının adıdır. Detay katmanı zaten varsa, başka bir ad girmeniz istenir. Detay katmanı iki katman i&ccedil;erir: biri en yakın konumları g&ouml;steren katman, diğeri de girdi konumlarını en yakın konumlara bağlayan &ccedil;izgileri g&ouml;steren katmandır.
+            </p>
+            <p> <b>Rota katmanlarını ekle</b> &ouml;gesini se&ccedil;tiğinizde, sonu&ccedil;taki her rota ayrıca bir rota katmanı olarak da kaydedilir. Bir rota katmanı, seyahat yol tarifinin yanı sıra rotaya atanan duraklar gibi belirli bir rotaya ait bilgilerin t&uuml;m&uuml;n&uuml; i&ccedil;erir. Rota katmanı oluşturma, kuruluşunuzdaki diğer &uuml;yelerle bağımsız rotaları paylaşmak veya rotaları harita g&ouml;r&uuml;nt&uuml;leyici i&ccedil;indeki <b>Yol Tarifleri</b> d&uuml;ğmesini kullanarak daha fazla değiştirmek istediğinizde yararlıdır. Rota katmanları, &ouml;n ek olarak detay katmanı i&ccedil;in girilen adı kullanır, analiz kapsamında oluşturulan rota adı her rota katmanı i&ccedil;in benzersiz bir ad oluşturmak &uuml;zere eklenir.
+            </p>
+            <p>Oluşturulabilecek rota katmanı sayısı &uuml;st sınırı  1.000&rsquo;dir. Sonu&ccedil;  1.000&rsquo;den fazla rota i&ccedil;eriyorsa ve  <b>Rota katmanlarını ekle</b> se&ccedil;eneği işaretliyse, ara&ccedil; yalnızca &ccedil;ıktı detay servisini oluşturur.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır listesini kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

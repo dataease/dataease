@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Create Watersheds</h2><p/>
+        <h2><img src="./images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Create Watersheds"></h2>
+        <hr/>
+    <p>This tool determines the watershed, or upstream contributing area, for each point in your input layer. 
+    </p>
+    <p>For example, suppose you have point features representing  locations of waterborne contamination and you want to find the likely sources of the contamination. Since the source of the contamination must be somewhere within the watershed upstream of the point, you would use this tool to define the watersheds containing the sources of the contaminant.
+    </p>
+    <p>The location of your input points is important.  If they are not located precisely on a drainage line, the resulting watersheds may be very small and not useful for your analysis.  The   <b>Search distance to nearest drainage</b> can be used to adjust the location of your input points so they fall precisely on a drainage line in order to find the watershed that flows into the  point located on the drainage line.  The adjusted locations used to find the watersheds are written to the output layer&mdash;your input points are not modified.
+    </p>
+    <p>The result is a group layer  containing  two layers:  the watersheds and the  adjusted points used to compute the watersheds.     
+    </p>
+    <p>The resulting watersheds  will have all of the attributes  of your input points  as well as these additional attributes:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Contains the ID value from the input point
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Contains the area in square kilometers of the upstream watershed
+            </li>
+            <li> <i>Description</i> and <i>DataResolution</i>&mdash;Contains  information pertaining to the hydrologic data used to calculate the trace
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the current map extent will be used to compute watersheds.  If unchecked, all features in the input layer  will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Point features to use for calculating watersheds</h2></div>
+        <hr/>
+        <div>
+            <p>A watershed (the upstream contributing area) will be calculated 
+for each point.  
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Search distance to nearest drainage</h2></div>
+        <hr/>
+        <div>
+            <p>If your input points are located away from a drainage line, the resulting watersheds are likely to be very small and not of much use  in analysis, such as determining the upstream source of contamination.  In most cases, you want your input point to snap to the nearest drainage line in order to find the watersheds that flows to a point located on the drainage line.  To find the closest drainage line, specify a search distance.  If you do not specify a search distance, the tool will compute and use a conservative search distance.  
+            </p>
+            <p>To use the exact location of your input point, specify a search distance of zero.  
+            </p>
+            <p>For analysis purposes, drainage lines have been precomputed by Esri using standard hydrologic models.  If there is no drainage line within the search distance, the location containing the highest flow accumulation within the search distance is used.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+            <p> Running this tool does not consume credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

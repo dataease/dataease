@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Veld Berekenen</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Veld Berekenen"></h2>
+        <hr/>
+    <p> Deze tool werkt met een invoerlaag om waarden voor een nieuw of bestaand veld te berekenen. Bouw een Arcade-expressie om de waarden te berekenen waarmee functies worden gevuld. Als uw gegevens tijdgeschakeld en het type tijd direct zijn, kunt u optioneel circuitbewuste uitdrukkingen bouwen.
+    </p>
+    <p>Stel dat u een bestaand veld wilt wijzigen met de naam  <i>TotalSales</i>. U wilt dat het veld wordt weergegeven door de som van de totale verkopen in 2016 en 2017. Als u die velden in de uitdrukking gebruikt, berekent u de veldwaarde als <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Een ander voorbeeld: Stel dat u GPS-metingen hebt die de locatie, tijd, busnummer en snelheid van de bussen in een stad registreren. We willen een nieuw veld aanmaken met de naam  <i>SpeedFrom3</i> dat de snelheid berekent van de laatste 3 geregistreerde GPS-metingen voor elke object. Voor deze berekening zouden we een circuitbewuste berekening gebruiken, waarbij het circuit een bus is die wordt aangeduid door het busnummer. De berekening om de gemiddelde snelheid van de vorige 3 tijdstappen en de huidige tijdstap te bepalen is <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies een laag om veldwaarden voor te berekenen</h2></div>
+        <hr/>
+        <div>
+            <p>De punten, lijnen, gebieden of tabel waarvoor veldwaarden moeten worden berekend.  
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Veld Berekenenwaarden voor het veld</h2></div>
+        <hr/>
+        <div>
+            <p>Het nieuwe of bestaande veld waarvan de waarden zijn berekend en het gegevenstype van dat veld. Als u waarden berekent voor een veld dat al bestaat, hoeft u het gegevenstype niet aan te passen. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Bouw een expressie om de veldwaarden te berekenen</h2></div>
+        <hr/>
+        <div>
+            <p>Voeg een expressie toe met behulp van de expressiebouwer om veldwaarden te berekenen. 
+            </p>
+            <p>Stel dat we de waarden willen toevoegen van een veld met de naam  <i>income</i> en <i>bonus</i>. Om dit te doen, voegt u de expressie <code>$feature[&quot;inkomen&quot;] + $feature[&quot;bonus&quot;] toe </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>De expressie is bewust van tracking</h2></div>
+        <hr/>
+        <div>
+            <p>Geef aan of uw expressie trackbewust is. Een trackbewuste expressie bevat een opmaak zoals  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre> Trackbewuste expressies vereisen velden om individuele traceringen te identificeren. Traceringen kunnen worden samengesteld uit punten, lijnen, gebieden of tabellen en vereisen alleen dat de invoer een trackingsnummer heeft en dat de gegevens tijdgeschakeld is en ingesteld op tijdtype direct.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyseer gegevens met tijdsintervallen</h2></div>
+        <hr/>
+        <div>
+            <p>Geef op of u waarden voor uw tracks wilt berekenen met tijdsintervallen die uw invoer voor analyse zullen segmenteren. Als u tijdsintervallen gebruikt, moet u het tijdsinterval dat u wilt gebruiken instellen en optioneel de referentietijd instellen. Als u geen referentietijd instelt, wordt 1 januari 1970 gebruikt. 
+            </p>
+            <p>Als u bijvoorbeeld de tijdgrens instelt als 1 dag, beginnend om 9:00 op 1 januari 1990, dan wordt elke track afgekapt om 9.00 uur voor elke dag en geanalyseerd binnen dat segment. 
+            </p>
+            <p>Het gebruik van tijdsintervallen is een snelle manier om de rekentijd te versnellen, omdat het snel kleinere tracks voor analyse cre&euml;ert. Als splitsen met een terugkerend tijdsinterval zinvol is voor uw analyse, is het aan te raden voor de verwerking van big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

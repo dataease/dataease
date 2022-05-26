@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Disolver límites</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Disolver l&iacute;mites"></h2>
+        <hr/>
+    <p>Las &aacute;reas que se superponen o comparten un l&iacute;mite o valor de atributo se fusionan para formar una sola &aacute;rea.
+    </p>
+    <p>Puede controlar qu&eacute; l&iacute;mites est&aacute;n fusionados especificando un campo. 
+Por ejemplo, si tiene una capa de condados y cada condado tiene un atributo  <pre>State_Name</pre>, puede disolver los l&iacute;mites utilizando el atributo <pre>State_Name</pre>.
+  Los condados se fusionar&aacute;n si tienen el mismo valor de <pre>State_Name</pre>.  El resultado es una capa de l&iacute;mites de estado.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa de áreas cuyos límites se disolverán</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que contiene las entidades de &aacute;reas que se van a disolver. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Seleccionar método de disolución</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el m&eacute;todo utilizado para disolver los campos.
+            </p>
+            <p>Puede elegir entre dos m&eacute;todos para fusionar las entidades de &aacute;reas:
+                <ul>
+                    <li> <b>&Aacute;reas que se superponen o son adyacentes</b>: cuando los l&iacute;mites de dos o m&aacute;s &aacute;reas se superponen, estas &aacute;reas se fusionar&aacute;n en una sola.  Las &aacute;reas adyacentes (es decir, las que comparten un l&iacute;mite) tambi&eacute;n se fusionar&aacute;n en una sola &aacute;rea.
+                    </li>
+                    <li> <b>&Aacute;reas con el mismo valor de campo</b>: cuando dos o m&aacute;s &aacute;reas tengan el mismo valor de campo, estas &aacute;reas se fusionar&aacute;n en una sola.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Crear entidades multiparte</h2></div>
+        <hr/>
+        <div>
+            <p>Multiparte es la representaci&oacute;n de un lugar o una cosa que tiene m&aacute;s de una parte, pero que est&aacute; definida como una sola entidad porque hace referencia a un conjunto de atributos. En una capa de estados, por ejemplo, Haw&aacute;i podr&iacute;a considerarse una entidad multiparte porque sus partes geom&eacute;tricas individuales est&aacute;n clasificadas como un &uacute;nico estado.
+            </p>
+            <p> <b>Crear entidades multiparte</b> ofrece dos opciones:
+                <ul>
+                    <li>True (activado): el servicio de salida puede contener entidades multiparte.
+                    </li>
+                    <li>False (desactivado): el servicio de salida solamente contendr&aacute; entidades de una sola parte, y se crear&aacute;n entidades individuales para cada parte. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Agregar estadísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Cuando fusione &aacute;reas, puede resumir sus valores de atributos con estad&iacute;sticas significativas.  Por ejemplo, si va a disolver el l&iacute;mite entre condados seg&uacute;n  <pre>State_Name</pre>, y cada condado tiene un campo <i>Population</i>, podr&iacute;a calcular la suma de <pre>Population</pre> para el estado.
+            </p>
+            <p> Puede calcular estad&iacute;sticas sobre las entidades resumidas. Puede calcular lo siguiente en los campos num&eacute;ricos:
+                <ul>
+                    <li>Recuento: calcula el n&uacute;mero de valores no nulos. Se puede usar en campos num&eacute;ricos o cadenas de caracteres. El recuento de [nulo, 0, 2] es 2.
+                    </li>
+                    <li>Suma: la suma de valores num&eacute;ricos en un campo. La suma de [nulo, nulo, 3] es 3.
+                    </li>
+                    <li>Media: la media de valores num&eacute;ricos. La media de [0, 2, nulo] es 1.
+                    </li>
+                    <li>M&iacute;n: el valor m&iacute;nimo de un campo num&eacute;rico. El m&iacute;nimo de [0, 2, nulo] es 0. 
+                    </li>
+                    <li>M&aacute;x: el valor m&aacute;ximo de un campo num&eacute;rico. El m&aacute;ximo de [0, 2, nulo] es 2.
+                    </li>
+                    <li>Rango: el rango de un campo num&eacute;rico. Se calcula como los valores m&iacute;nimos restados del valor m&aacute;ximo. El rango de [0, nulo, 1] es 1. El rango de [nulo, 4] es 0.
+                    </li>
+                    <li>Varianza: la varianza de un campo num&eacute;rico en un recorrido. La varianza de [1] es nulo. La varianza de [nulo, 1,0,1,1] es 0,25.
+                    </li>
+                    <li>Desviaci&oacute;n est&aacute;ndar: la desviaci&oacute;n est&aacute;ndar de un campo num&eacute;rico. La desviaci&oacute;n est&aacute;ndar de [1] es nulo. La desviaci&oacute;n est&aacute;ndar de [nulo, 1,0,1,1] es 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puede calcular lo siguiente en los campos de cadena de caracteres:
+                <ul>
+                    <li>Recuento: el n&uacute;mero de cadenas de caracteres no nulas.
+                    </li>
+                    <li>Cualquiera: esta estad&iacute;stica es una muestra aleatoria del valor de una cadena de caracteres en el campo especificado.
+                    </li>
+                </ul>
+                Todas las estad&iacute;sticas se calculan sobre valores no nulos. La capa resultante contendr&aacute; un nuevo campo para cada estad&iacute;stica calculada. Se puede agregar cualquier n&uacute;mero de estad&iacute;sticas eligiendo un atributo y una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopeeri andmelattu</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopeeri andmelattu"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist v&otilde;tab sisendkihi ja kopeerib selle andmelattu. Tulemused saate kopeerida  ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu) ja kiht luuakse teie portaalis v&otilde;i saate tulemused kopeerida suurde andmefaili. 
+    </p>
+    <p>N&auml;iteks saate kopeerida  <code>suurandmete failikettale</code> salvestatud objektid <code>relatsioonilisse andmelattu</code> ja m&auml;&auml;rata, et kopeerida tuleb ainult praegu kaardil n&auml;htavad objektid. See looks majutatud objektiteenuse, milles on ainult need objektid, mis olid kaardil n&auml;htavad.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kopeeritav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Kopeeritav kiht v&otilde;i tabel. 
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Võite kasutada kõiki objekte või teha valitutele selektsioon (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>V&otilde;ite selekteerimise nupu abil m&auml;&auml;ratleda kopeeritavad asukohad.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Valige andmeladu, kuhukopeerida</h2></div>
+        <hr/>
+        <div>
+            <p>Andmeladu, kuhu kiht kopeeritakse. See parameeter alistab <b>anal&uuml;&uuml;sikeskkondade all</b> tehtud valiku. Valikud on j&auml;rgmised:
+                <ul>
+                    <li> <b>ArcGIS-i andmeladu</b> ArcGIS Data Store <ul>
+                            <li> <b>Ajalisruumiline</b> &ndash; see on vaikimisi valik.
+                            </li>
+                            <li> <b>Relatsiooniline</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Suure andmefaili jaotuse v&auml;ljundmallid</b>
+                        <ul>
+                            <li>Suurte andmefailide jaotusmallide loend on saadaval vormingus  <b>suureAndmeFailiJaotuseNimi-malliNimi</b>. Suurte andmefailide jaotuse mallid tuleb konfigureerida enne t&ouml;&ouml;riista kasutamist.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

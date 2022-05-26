@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>融合邊界</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="融合邊界"></h2>
+        <hr/>
+    <p>將重疊區域或分享邊界的區域進行合併，以形成單個區域。
+    </p>
+    <p>您可以透過指定欄位來控制合併哪些邊界。例如，如果有一個縣圖層，且每個縣具有  <i>State_Name</i> 屬性，則可以使用 <i>State_Name</i> 屬性來融合邊界。如果相鄰的縣具有相同的 <i>State_Name</i> 值，則可對它們進行合併。最終結果是一個州邊界圖層。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇其邊界將進行融合的區域圖層</h2></div>
+        <hr/>
+        <div>
+            <p>包含將執行融合的區域圖徵的圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>選擇融合方法</h2></div>
+        <hr/>
+        <div>
+            <p>在合併區域圖徵時，可以選擇以下兩種方法之一：
+                <ul>
+                    <li> <b>重疊或相鄰的區域</b> - 將邊界相互重叠的兩個或多個區域合併爲一個區域。此外，相鄰的區域（即共用一個共同的邊界）將合併爲一個區域。
+                    </li>
+                    <li> <b>具有相同欄位值的區域</b> - 如果重疊或共用一個共同邊界的區域具有相同的欄位值，則將其合併爲一個區域。
+                        <p>例如，如果有一個縣圖層，並且每個縣都具有  <i>State_Name</i> 欄位，則可以使用 <i>State_Name</i> 欄位來融合邊界。如果相鄰的縣具有相同的 <i>State_Name</i> 值，則可對它們進行合併。最終結果是一個州邊界圖層。
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果勾選 <b>使用目前地圖範圍</b>，則僅融合目前地圖範圍中可見的輸入圖層中的圖徵。如果未勾選，則將對輸入圖層中的所有圖徵進行融合，包括超出目前地圖範圍的圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>建立多組件圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>為 ArcGIS 中的地點或事物的數位表示方式，其具有多個組件，但由於參考一組屬性而被定義為一個圖徵。例如，在州的圖層中，可將夏威夷州視為多組件圖徵，因為其不同的幾何組件會歸類為單一州。此布林參數提供兩個選項：
+                <ul>
+                    <li>True (勾選)：輸出服務可包含多組件圖徵。
+                    </li>
+                    <li>False (取消勾選)：輸出服務僅包含單組件圖徵，並將為每個組件建立個別圖徵。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>新增統計資料</h2></div>
+        <hr/>
+        <div>
+            <p>合併區域後，可匯總它們的屬性。例如，如果基於  <i>State_Name</i> 來融合各縣的邊界，並且每個縣都具有 <i>Population</i> 欄位，則可以計算州的 <i>Population</i> 總和。
+            </p>
+            <p>可用的統計資料類型有：
+            </p>
+            <ul>
+                <li> <b>總和</b> - 新增指定欄位的合計值
+                    
+
+                </li>
+                <li> <b>平均值</b> - 計算指定欄位的平均值
+                    
+
+                </li>
+                <li> <b>最小值</b> - 尋找指定欄位中所有記錄的最小值
+                    
+
+                </li>
+                <li> <b>最大值</b> - 尋找指定欄位中所有記錄的最大值
+                    
+
+                </li>
+                <li> <b>標準 差</b> - 尋找指定欄位中的值的標準差
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/views/2d/engine/webgl/collisions/BoundingBox",["require","exports","../../../../../core/libs/gl-matrix/vec2"],function(c,f,g){Object.defineProperty(f,"__esModule",{value:!0});c=function(){function b(a,b,d,e){this.width=d;this.height=e;this.center=g.fromValues(a,b)}Object.defineProperty(b.prototype,"x",{get:function(){return this.center[0]},set:function(a){this.center[0]=a},enumerable:!0,configurable:!0});Object.defineProperty(b.prototype,"y",{get:function(){return this.center[1]},
+set:function(a){this.center[1]=a},enumerable:!0,configurable:!0});Object.defineProperty(b.prototype,"halfWidth",{get:function(){return this.width/2},enumerable:!0,configurable:!0});Object.defineProperty(b.prototype,"halfHeight",{get:function(){return this.height/2},enumerable:!0,configurable:!0});b.prototype.serialize=function(a){a.writeF32(this.center[0]);a.writeF32(this.center[1]);a.writeInt32(this.width);a.writeInt32(this.height);return a};b.deserialize=function(a){var c=a.readF32(),d=a.readF32(),
+e=a.readInt32();a=a.readInt32();return new b(c,d,e,a)};return b}();f.default=c});

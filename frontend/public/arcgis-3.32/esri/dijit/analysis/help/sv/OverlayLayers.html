@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Överlagra lager</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="&Ouml;verlagra lager"></h2>
+        <hr/>
+    <p>&Ouml;verlagring kombinerar tv&aring; eller flera lager till ett enda lager. Du kan t&auml;nka dig &ouml;verlagring som att titta igenom en h&ouml;g med kartor och skapa en enda karta med all information som finns i h&ouml;gen. &Ouml;verlagring handlar om mycket mer &auml;n att sammanfoga linjer. Alla attribut f&ouml;r de geoobjekt som ing&aring;r i &ouml;verlagringen f&ouml;ljer med till slutprodukten. &Ouml;verlagring anv&auml;nds f&ouml;r att besvara en av de vanligaste fr&aring;gorna inom geografin, &quot;Vad finns ovanp&aring; vad?&quot;Exempel:
+        <ul>
+            <li>Vilka fastigheter finns inom gr&auml;nserna f&ouml;r den 100-&aring;riga flodsl&auml;tten?(Vilket &auml;r ett annat s&auml;tt att s&auml;ga ovanp&aring;.)
+                  
+            </li>
+            <li>Vilka v&auml;gar ligger i vilka l&auml;nder?
+            </li>
+            <li>Vilken typ av markanv&auml;ndning finns p&aring; vilken jordtyp?
+                 
+            </li>
+            <li>Vilka brunnar finns p&aring; &ouml;vergivna milit&auml;rbaser?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, &ouml;verlagras bara de geoobjekt i indatalagret och &ouml;verlagringslagret som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat &ouml;verlagras alla geoobjekt i b&aring;de indatalagret och &ouml;verlagringslagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj indatalager</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;deslager som ska &ouml;verlagra.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Välj överlagringslager</h2></div>
+        <hr/>
+        <div>
+            <p>Lager som ska &ouml;verlagras p&aring; indatalagret.  
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Välj överlagringsmetod</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;verlagringsmetoden definierar hur indatalagret och &ouml;verl&auml;ggningslagret kombineras. 
+
+                <ul>
+                    <li> <b>Korsa</b> &ndash; Resultatet inneh&aring;ller bara de geoobjekt eller delar av geoobjekt i &ouml;verlagringslagret som &ouml;verlappar geoobjekt i indatalagret. Vid korsande linje- eller omr&aring;desgeoobjekt har du m&ouml;jlighet att ange typen av geoobjekt du vill ha som utdata.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punkter med punkter
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punkter och punktindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punkter och punkter med punktutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punkter med linjer
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Punkter och linjeindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Punkter och linjer med punktutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punkter med omr&aring;den
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Punkter och omr&aring;desindata">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Punkter och omr&aring;den med punktutdata">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linjer med linjer 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linjer och linjeindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Linjer och linjer med punktutdata">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linjer och linjer med linjeutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linjer med omr&aring;den
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Linjer och omr&aring;desindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Linjer och omr&aring;den med punktutdata">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Linjer och omr&aring;den med linjeutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Omr&aring;den med omr&aring;den
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Omr&aring;den och omr&aring;desindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Omr&aring;den och omr&aring;den med punktutdata">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Omr&aring;den och omr&aring;den med linjeutdata">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Omr&aring;den och omr&aring;den med omr&aring;desutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Sl&aring; samman</b> &ndash; Resultatet inneh&aring;ller geoobjekt fr&aring;n b&aring;de indatalagret och &ouml;verlagringslagret. Alternativet Sl&aring; samman &auml;r bara tillg&auml;ngligt om b&aring;de indatalagret och &ouml;verlagringslagret inneh&aring;ller omr&aring;desgeoobjekt.
+                    </li>
+                    <li> <b>Radera</b> &ndash; Resultatet inneh&aring;ller bara de geoobjekt eller delar av geoobjekt i &ouml;verlagringslagret som inte &ouml;verlappar omr&aring;dena i indatalagret. &Ouml;verlagringslagret kan inneh&aring;lla omr&aring;des-, linje- eller punktgeoobjekt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, &ouml;verlagras bara de geoobjekt i indatalagret och &ouml;verlagringslagret som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat &ouml;verlagras alla geoobjekt i b&aring;de indatalagret och &ouml;verlagringslagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Det h&auml;r &auml;r namnet p&aring; lagret som skapas i <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Det kommer att ha samma geoobjektstyp (omr&aring;den, linjer eller punkter) som &ouml;verlagringslagret. Standardnamnet bygger p&aring; &ouml;verlagringsmetoden och indatalagrets namn. Om lagret redan finns uppmanas du att ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

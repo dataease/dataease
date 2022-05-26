@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vektoros elem átalakítása raszterré</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Vektoros elem &aacute;talak&iacute;t&aacute;sa raszterr&eacute; eszk&ouml;z"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z vektoros elemeket alak&iacute;t &aacute;t raszteres adathalmazz&aacute;.
+    </p>
+    <p>B&aacute;rmely pontszerű, vonalas vagy polygon vektoros elemeket tartalmaz&oacute; vektoros oszt&aacute;ly &aacute;talak&iacute;that&oacute; raszteres adathalmazz&aacute;.
+    </p>
+    <p>A kimeneti raszteres pixel &eacute;rt&eacute;k&eacute;nek meghat&aacute;roz&aacute;s&aacute;hoz a cella k&ouml;z&eacute;ppontj&aacute;t haszn&aacute;lja.
+    </p>
+    <p>A kimeneti raszter t&iacute;pus&aacute;t a bemeneti mező t&iacute;pusa hat&aacute;rozza meg. Ha a mező integer, a kimeneti raszter is integer lesz; ha lebegőpontos &eacute;rt&eacute;k, akkor a kimenet is lebegőpontos &eacute;rt&eacute;k lesz.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki az átalakítani kívánt vektoros réteget</h2></div>
+        <hr/>
+        <div>
+            <p>A raszteres adathalmazz&aacute; &aacute;talak&iacute;tani k&iacute;v&aacute;nt bemeneti vektoros r&eacute;teg.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Válasszon mezőt</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a mezőt, amelyet az &eacute;rt&eacute;kek kimeneti raszterhez rendel&eacute;s&eacute;hez szeretne haszn&aacute;lni.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kimeneti cellaméret</h2></div>
+        <hr/>
+        <div>
+            <p>A kimeneti raszterek cellam&eacute;rete &eacute;s m&eacute;rt&eacute;kegys&eacute;ge.
+            </p>
+            <p>A rendelkez&eacute;sre &aacute;ll&oacute; m&eacute;rt&eacute;kegys&eacute;gek: m&eacute;rf&ouml;ld, l&aacute;b, kilom&eacute;ter &eacute;s m&eacute;ter. Az alap&eacute;rtelmezett m&eacute;rt&eacute;kegy&eacute;g a l&aacute;b.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cerca punts calents</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Cerca punts calents"></h2>
+        <hr/>
+    <p>L'eina Cerca punts calents determinar&agrave; si hi ha cap clusteritzaci&oacute; estad&iacute;sticament significativa al patr&oacute; espacial de les vostres dades. 
+        <ul>
+            <li>Els vostres punts (delictes, arbres, accidents de tr&agrave;nsit) estan realment clusteritzats?  Com en podeu estar segur?
+            </li>
+            <li>Heu descobert realment un punt calent estad&iacute;sticament significatiu o el mapa explicaria una hist&ograve;ria diferent si en canvi&eacute;ssiu els s&iacute;mbols?
+            </li>
+        </ul>
+        L'eina Cerca punts calents us ajudar&agrave; a respondre aquestes preguntes amb confian&ccedil;a.
+    </p>
+    <p>Fins i tot els patrons espacials aleatoris presenten un cert grau de clusteritzaci&oacute;.  A m&eacute;s, la nostra vista i el nostre cervell intenten, de forma natural, trobar patrons fins i tot quan no n'hi ha.  Per tant, pot ser dif&iacute;cil saber si els patrons de les dades s&oacute;n el resultat de processos espacials reals en acci&oacute; o d'una simple possibilitat aleat&ograve;ria.  &Eacute;s per aix&ograve; que els investigadors i analistes utilitzen m&egrave;todes estad&iacute;stics com ara Cerca punts calents (Getis-Ord Gi*) per quantificar els patrons espacials.  Si trobeu una clusteritzaci&oacute; estad&iacute;sticament significativa a les vostres dades, teniu informaci&oacute; valuosa.  Saber on i quan es produeix la clusteritzaci&oacute; pot proporcionar indicis importants sobre els processos que produeixen els patrons que veieu.  Saber que els robatoris residencials, per exemple, s&oacute;n sistem&agrave;ticament m&eacute;s freq&uuml;ents en determinats barris &eacute;s una informaci&oacute; vital si s'han de dissenyar estrat&egrave;gies de prevenci&oacute; eficaces, assignar recursos policials escassos, iniciar programes de vigil&agrave;ncia ve&iuml;nal, autoritzar investigacions criminals en profunditat o identificar sospitosos potencials.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Trieu la capa de la qual es calcularan els punts calents</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts on es cercaran punts calents i freds.
+            </p>
+            <p>Aquest an&agrave;lisi utilitza bins i necessita un sistema de coordenades projectades. Podeu definir l'opci&oacute; de  <b>Sistema de coordenades de processament</b> a <b>Entorns d'an&agrave;lisi</b>. Si el sistema de coordenades de processament no est&agrave; definit en un sistema de coordenades projectades, se us demanar&agrave; que el definiu quan utilitzeu <b>Executa l'an&agrave;lisi</b> .
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Cerca clústers de concentracions altes i baixes de punts</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Aquesta an&agrave;lisi respon la pregunta: on es clusteritzen espacialment els valors alts i baixos?
+            </p>
+            <p>Si les vostres dades s&oacute;n punts i trieu  <b>Recomptes de punts</b>, aquesta eina avaluar&agrave; la distribuci&oacute; espacial de les entitats de punts per respondre la pregunta: on es clusteritzen o es dispersen inesperadament els punts?
+            </p>
+            <p>Si trieu un camp, aquesta eina avaluar&agrave; la distribuci&oacute; espacial dels valors associats amb cada entitat per respondre la pregunta: on es clusteritzen els valors alts i baixos?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Seleccioneu la mida dels bins per a l'agregació</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia utilitzada per generar els bins quadrats que es faran servir per analitzar els punts d'entrada.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Cerca punts calents mitjançant períodes de temps (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Si el temps est&agrave; habilitat a la capa de punts i &eacute;s de tipus instant, podeu fer l'an&agrave;lisi amb per&iacute;odes de temps.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval de període de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de temps utilitzat per generar per&iacute;odes de temps. El temps es pot alinear amb l'hora inicial o final de les dades d'entrada o amb una hora de refer&egrave;ncia especificada.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Interval de període de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de temps utilitzat per generar per&iacute;odes de temps. El temps es pot alinear amb l'hora inicial o final de les dades d'entrada o amb una hora de refer&egrave;ncia especificada.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Trieu com s'alinearan els períodes de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Manera d'alinear els per&iacute;odes de temps. Hi ha tres maneres d'alinear els per&iacute;odes de temps:
+                <ul>
+                    <li> <b>Hora d'inici</b>: els per&iacute;odes de temps s'alineen amb la primera entitat en el temps.
+                    </li>
+                    <li> <b>Hora de finalitzaci&oacute;</b>: els per&iacute;odes de temps s'alineen amb la darrera entitat en el temps.
+                    </li>
+                    <li> <b>Temps de refer&egrave;ncia</b>: els per&iacute;odes de temps s'alineen amb una hora especificada.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Temps de referència amb el qual s'alinearan els períodes de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Data i hora utilitzades per alinear els per&iacute;odes de temps.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Seleccioneu la mida del veïnat per als càlculs de punts calents</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia utilitzada per determinar el ve&iuml;nat emprat per als c&agrave;lculs de punts calents. La mida del ve&iuml;nat ha de ser m&eacute;s gran que la del bin per garantir que cada bin tingui com a m&iacute;nim un ve&iacute;. Cada bin s'analitza i es compara amb els bins ve&iuml;ns.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;s un par&agrave;metre temporal de versi&oacute; preliminar per definir la refer&egrave;ncia espacial de processament. Moltes eines de dades massives necessiten que s'utilitzi un sistema de coordenades projectades com a refer&egrave;ncia espacial per al processament. Per defecte, l'eina utilitzar&agrave; el sistema de coordenades d'entrada, per&ograve; no funcionar&agrave; correctament si es tracta d'un sistema de coordenades geogr&agrave;fiques. Per definir un sistema de coordenades projectades, introdu&iuml;u el WKID. Per exemple,  <b>Web Mercator</b> s'introduiria com a <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un ArcGIS Data Store on desar els resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Aquesta capa de resultats us mostrar&agrave; els cl&uacute;sters estad&iacute;sticament significatius de recomptes de punts o valors alts i baixos. Si el nom de la capa de resultats ja existeix, se us demanar&agrave; que en canvieu el nom.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,18 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'gmd:MD_Metadata',label:'${i18nGemini.documentTypes.data.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+      <!-- specific for Gemini -->
+      <div data-dojo-type="esri/dijit/metadata/types/gemini/gmd/metadataEntity/MetadataSection"
+        data-dojo-props="label:'${i18nIso.sections.metadata}'"></div>
+      <!-- specific for Gemini -->
+      <div data-dojo-type="esri/dijit/metadata/types/gemini/gmd/identification/DataIdentification"
+        data-dojo-props="label:'${i18nIso.sections.identification}'"></div>
+      <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/distribution/Distribution"
+        data-dojo-props="label:'${i18nIso.sections.distribution}'"></div>
+      <!-- specific for Gemini -->
+      <div data-dojo-type="esri/dijit/metadata/types/gemini/gmd/dataQuality/Quality"
+        data-dojo-props="label:'${i18nIso.sections.quality}'"></div>
+    </div>
+  </div>
+</div>

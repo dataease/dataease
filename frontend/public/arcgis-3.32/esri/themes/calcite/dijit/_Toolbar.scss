@@ -1,0 +1,86 @@
+// Toolbar 
+// 
+// Styling Toolbar means styling the toolbar container and the widget inside toolbar  (dijitToolbar)
+// 
+// 1. toolbar (default styling): 
+//    .dijitToolbar - styles for outer container
+//
+// 2. widget inside toolbar
+//    .dijitToolbar .dijitButtonNode   - Button widget
+//            .dijitComboButton  - ComboButton widget
+//            .dijitDropDownButton  - DropDownButton widget
+//            .dijitToggleButton  - ToggleButton widget
+//    
+// 3. hovered widget inside toolbar (ie, mouse hover on the widget inside)
+//      .dijitToolbar .dijitButtonNodeHover  - styles for hovered Button widget
+// 
+// 4. actived widget inside toolbar (ie, mouse down on the widget inside)
+//      .dijitToolbar .dijitButtonNodeActive  - mouse down on Button widget
+//
+.#{$theme-name} {
+  .dijitToolbar {
+    background-color: $toolbar-bg;
+    border: 1px solid $toolbar-border;
+    padding: $padding-base-vertical $padding-base-horizontal;
+    zoom: 1;
+    > * {
+      margin: $padding-xs-vertical 0;
+    }
+    label {
+      padding: $padding-small-vertical $padding-small-horizontal;
+    }
+    .dijitButtonNode {
+      border: 0;
+      @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+      background-color: $toolbar-btn-bg;
+      .dijitIcon {
+        margin: 0;
+      }
+    }
+    .dijitArrowButton,
+    .dijitArrowButtonInner {
+      margin: 0 auto;
+      font-size: $icon-size-small;
+    }
+    .dijitDisabled {
+      @include opacity(.35);
+    }
+    .dijitButton,
+    .dijitToggleButton {
+      .dijitButtonContents {
+        padding: ($toolbar-btn-height-computed - $icon-size-large) * .5;
+      }
+    }
+    .dijitToggleButtonChecked {
+      .dijitButtonNode {
+        @include button-variant-default-active;
+      }
+    }
+    .dijitComboBox {
+      .dijitArrowButton {
+        padding: ($toolbar-input-height-computed - $icon-size-small - 2px) * 0.5;
+      }
+    }
+    $new-vertical-padding: ($toolbar-input-height-computed - $line-height-computed - 2px) * 0.5; // Local variable
+    .dijitTextBox {
+      margin-right: $padding-base-horizontal;
+      .dijitInputField {
+        padding-top: $new-vertical-padding;
+        padding-bottom: $new-vertical-padding;
+      }
+    }
+    .dijitTextBoxError {
+      .dijitValidationContainer {
+        padding: $new-vertical-padding;
+      }
+    }
+  }
+  .dijitToolbarSeparator {
+    width: 1px;
+    height: $toolbar-btn-height-computed - $padding-base-vertical * 2;
+    background-color: $toolbar-separator-bg;
+    padding: 0;
+    margin: $padding-base-vertical $padding-small-horizontal;
+  }
+}
+

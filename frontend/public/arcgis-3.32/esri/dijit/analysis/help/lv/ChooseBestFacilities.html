@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izvēlēties labākās vietas</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Izvēlēties labākās vietas"></h2>
+        <hr/>
+    <p>Rīks &ldquo;Izvēlēties labākās vietas&rdquo; ļauj izvēlēties labākos iespējamos novietojumus. Rīks pie&scaron;ķir novietojumus, atbilsto&scaron;i pieprasījumam pēc iespējas, balstoties uz norādīto mērķi.
+    </p>
+    <p>Iespējas norāda novietojumus, kas nodro&scaron;ina kādu pakalpojumu, piemēram, ugunsdzēsēju depo, skolas, bibliotēkas, veikalus vai vairumtirdzniecības centrus. Novietojumu pieprasījumi norāda novietojumus, kuros ir pieprasījums pēc vietu piedāvātajiem pakalpojumiem, piemēram, balsu skaitī&scaron;anas vēlē&scaron;anu iecirkņus, kas apkopo iedzīvotāju skaitu attiecīgajā teritorijā.
+    </p>
+    <p>Izvēlēties labākās vietas var palīdzēt jums atbildēt uz tādiem jautājumiem, kā:
+        <ul>
+            <li>Kā ārkārtas situācijā mājsaimniecības var tikt piesaistītas pareizajam evakuācijas centram, ja gultu skaits ir ierobežots un nedrīkst tikt pārsniegts?
+            </li>
+            <li>Kā varat piesaistīt apkaimes iedzīvotājus tiem tuvākajai bibliotēkas filiālei un atrast potenciālo pastāvīgo apmeklētāju skaitu, ko katra filiāle apkalpo? 
+            </li>
+            <li>Kā varat atrast labāko novietojumu pārtikas preču lielveikala loģistikas centram, kas samazina kopējo pārvieto&scaron;anās laiku (un līdz ar to izmaksas) piegādei uz pārtikas preču veikalu ķēdi?
+            </li>
+            <li>Kur jāatrodas jaunajam parkam, lai nodro&scaron;inātu, ka maksimāli liels pilsētas iedzīvotāju skaits dzīvo piecu minū&scaron;u gājiena attālumā no tā?
+            </li>
+            <li>Kas ir labākie novietojumi vairākiem zooveikaliem novadā, kur 40&nbsp;procenti apkaimes mājdzīvnieku īpa&scaron;nieku atrastos ne vairāk kā desmit minū&scaron;u brauciena attālumā no kāda veikala?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Mērķis</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet mērķi, kas ir jāsasniedz, vietām pie&scaron;ķirot pieprasījumu.
+            </p>
+            <p>Izmantojot rīku &ldquo;Izvēlēties labākās vietas&rdquo;, varat norādīt, kāda veida problēmu risināt&mdash; mērķi. Rīks ir optimizēts, lai nodro&scaron;inātu risinājumu &scaron;im konkrētajam mērķim. Neatkarīgi no mērķa, būtībā tā pati pamatmetode tiek izmantota, lai nodro&scaron;inātu risinājumu&nbsp;&mdash; pieprasījums no attiecīgā novietojuma tiek pie&scaron;ķirts tuvākajai vietai, kas to var nodro&scaron;ināt. Mērķi nosaka, kā tiek apstrādāta savstarpējā mijiedarbība starp attālumu (vai laiku) un pieprasījumu. Rīks ņem vērā gan pārvieto&scaron;anās attālumu/laiku, gan pieprasījuma apjomu, kā arī dažos gadījumos- iespēju vietu kapacitāti. Ja mērķis ir vērsts, piemēram, uz pārvieto&scaron;anās laika samazinā&scaron;anu, rīks tik un tā sekundāri mēģinās palielināt pieprasījuma pie&scaron;ķir&scaron;anu. Līdzīgi, ja mērķis ir palielināt pie&scaron;ķirto pieprasījumu, rīks to darīs, samazinot pārvieto&scaron;anās laiku (piesaistot pieprasījuma novietojumus tuvāk eso&scaron;ajai vietai, tā vietā lai izvēlētos jebkuru novietojumu).
+            </p>
+            <p>Atkarībā no jūsu datiem un izmantotajiem iestatījumiem dažādi mērķi var radīt tādus pa&scaron;us vai līdzīgus rezultātus. Tomēr ir ieteicams norādīt jūsu analīzei visatbilsto&scaron;āko mērķi.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Piešķirt esošajiem novietojumiem</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o mērķi, ja nevēlaties atrast jaunas vietas un vēlaties piesaistīt pieprasījumu eso&scaron;ajām vietām, kam var būt ierobežota vai neierobežota kapacitāte.    
+            </p>
+            <p>&Scaron;is mērķis piesaista pieprasījumu vietām, ņemot vērā vietas kapacitāti un pieprasījumu no tuvējās apkārtnes. Pieprasījums tiek pie&scaron;ķirts tuvākajai vietai, līdz tiek sasniegta pieejamā kapacitāte. Ja norādāt maksimālo pārvieto&scaron;anās diapazonu, pieprasījuma novietojumi ārpus diapazona netiks pie&scaron;ķirti vietai pat tad, ja viss pieprasījums nebūs pilnībā pie&scaron;ķirts.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Mazināt pārvietošanos</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o mērķi, ja vēlaties atrast vietas, lai kopējais pārvieto&scaron;anās laiks vai attālums starp pieprasījuma novietojumiem un vietām tiktu samazināts.
+            </p>
+            <p>&Scaron;is mērķis ir bieži lietojams, ja pārvieto&scaron;anās starp vietu un visiem pieprasījuma novietojumiem tiek veikta regulāri. &Scaron;o mērķi varat izmantot, piemēram, lai samazinātu kopējo pārvieto&scaron;anās attālumu, kas tiek veikts preču pārvieto&scaron;anai no izplatī&scaron;anas centriem uz veikaliem, vai lai atlasītu konferences norises vietu tā, lai visiem dalībniekiem tiks samazināts pārvieto&scaron;anās laiks.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Palielināt pārklājumu</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o mērķi, ja vēlaties palielināt pieprasījuma apjomu, ko var segt noteiktā laikā vai attālumā no vietām.    
+            </p>
+            <p>Vietas tiek izvēlētas tā, lai nodro&scaron;inātu maksimālo pieprasījumu un katras vietas pieprasījums tiktu pie&scaron;ķirts vienai vistuvāk eso&scaron;ai vietai.
+            </p>
+            <p>&Scaron;im mērķim ir nepiecie&scaron;ams ierobežots maksimālais pārvieto&scaron;anās diapazons; pretējā gadījumā viss pieprasījums var tikt piesaistīts vienai vietai. Pieprasītie novietojumi, kas atrodas ārpus pārvietojuma attāluma vai laika, netiks pie&scaron;ķirti (tas norādīs, kur pieprasījums netiek apmierināts un kur būtu nepiecie&scaron;amas papildu vietas).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Palielināt pārklājumu ar kapacitāti</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o mērķi, ja vēlaties palielināt pieprasījumu, ko var nodro&scaron;ināt vieta, kam ir ierobežota kapacitāte.    
+            </p>
+            <p>&Scaron;is mērķis vietas izvēlas tā, lai maksimālais pieprasījuma apjoms tiek pie&scaron;ķirts, nepārsniedzot nevienas vietas kapacitāti. Viss pieprasījums no katra pieprasījuma novietojuma tiek pie&scaron;ķirts vienai vietai, kas tam ir vistuvāk un kam ir atbilsto&scaron;a kapacitāte (t.i., ja pieprasījuma novietojuma pie&scaron;ķir&scaron;ana vietai pārsniegtu vietas pieejamo kapacitāti, pieprasījuma novietojums netiktu piesaistīts, nevis tiktu piesaistīta pieprasījuma daļa).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Nodrošināt noteiktu pieprasījumu</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o mērķi, ja vēlaties uzzināt minimālo vietu skaitu, kas jums nepiecie&scaron;ams, lai segtu norādīto pieprasījuma procentuālo daļu.
+            </p>
+            <p>&Scaron;is mērķis izvēlas minimālo vietu skaitu, kas nepiecie&scaron;ams, lai sasniegtu norādīto pieprasījuma procentuālo daļu. Pieprasījuma novietojuma, kas atrodas divu vai vairāku vietu maksimālajā pārvieto&scaron;anās diapazonā, pieprasījums tiks dalīts proporcionāli starp vietām, ņemot vērā tā attālumu no katras. &Scaron;is mērķi bieži tiek izmantots, ja personām ir iespēja izvēlēties, kuru vietu apmeklēt, un tiek pieņemts, ka kopumā tās apmeklēs tuvāko vietu (ja visi pārējie rādītāji ir vienādi).
+            </p>
+            <p>At&scaron;ķirībā no citiem mērķis, kas izvēlas vietas, kur jūs norādāt, cik vietas izvēlēties, &scaron;is mērķis izvēlas vietu skaitu jūsu vietā, ņemot vērā pieprasījuma procentuālo daļu, ko vēlaties apmierināt. Tas pieņem, ka vietām nav ierobežota kapacitāte.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Izmērīt</h2></div>
+        <hr/>
+        <div>
+            <p>Tāpat kā ar citiem rīkiem, kas analīzē ietver pārvieto&scaron;anos, varat norādīt, vai pārvieto&scaron;anās tiek mērīta, izmantojot attālumu vai laiku, kā arī atlasīt kādu no dažādajiem pārvieto&scaron;anās veidiem, piemēram, ie&scaron;anas laiku, brauk&scaron;anas laiku, brauk&scaron;anas laiku ārpus pilsētas utt. Pieejamos ceļo&scaron;anas veidus nosaka jūsu organizācijas administrators. Izmantojot opcijas  <b>Brauk&scaron;anas laiks</b>, <b>Brauk&scaron;anas laiks ārpus pilsētas</b> vai <b>Brauk&scaron;anas laiks ar kravas automa&scaron;īnu</b>, varat arī iekļaut konkrētas nedēļas dienas un diennakts laika satiksmi.
+            </p>
+            <p> Lai vietām precīzi pie&scaron;ķirtu pieprasījumu, norādiet, vai pārvieto&scaron;anās ir no iespējamajām vietām &nbsp;uz pieprasījuma novietojumiem (piemēram, no ugunsdzēsēju stacijām uz mājām) vai no pieprasījuma novietojumiem uz iespējamajām vietām&nbsp;(piemēram, pastāvīgajiem apmeklētājiem uz bibliotēkām). Rīks &ldquo;Izvēlēties labākās vietas&rdquo; ņems vērā pārvieto&scaron;anās virzienu vienvirziena ielās, vai varat nogriezties no vienas ielas uz citu, vai krustojumos nav aizliegts kreisais pagrieziens utt. atkarībā no tā, vai pārvieto&scaron;anās ir no iespējamās vietas&nbsp;uz pieprasījuma novietojumiem vai pretēji.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Pieprasīt novietojumu slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta elementi norāda novietojumus, kuros ir pieprasījums pēc vietu piedāvātajiem pakalpojumiem. Rīks &scaron;os pieprasījuma novietojumus piesaista atbilsto&scaron;ajām vietām, ņemot vērā atlasīto mērķi.
+            </p>
+            <p>Pieprasījuma novietojumiem ir saistīts pieprasījuma apjoms. Izmantojiet konstanti, lai norādītu vērtību, ja visiem pieprasījuma novietojumiem ir vienāds pieprasījums. Ja pieprasījuma apjoms katrā pieprasījuma novietojumā at&scaron;ķiras, izmantojiet lauku pieprasījuma novietojumu slānī, lai norādītu katra pieprasījuma novietojuma vērtību.
+            </p>
+            <p>Pieprasījums tiks pie&scaron;ķirts iespējām, līdz viss pieprasījums tiks pie&scaron;ķirts neatkarīgi no tā, cik tālu pieprasījuma novietojumi atrodas no iespēju vietām. Pieprasījuma novietojumu slānim varat piesaistīt maksimālo pārvieto&scaron;anās diapazonu, lai izveidotu no&scaron;ķir&scaron;anas attālumu vai laiku&nbsp;&mdash; pieprasījuma novietojumi, kas to pārsniegs, netiks pie&scaron;ķirti. Izmantojiet konstanti, lai norādītu vērtību, ja visiem pieprasījuma novietojumiem ir vienāds maksimālais pārvieto&scaron;anās diapazons. Ja maksimālais pārvieto&scaron;anās diapazons katrā pieprasījuma novietojumā at&scaron;ķiras, izmantojiet lauku pieprasījuma novietojumu slānī, lai precizētu katra pieprasījuma novietojuma vērtību.
+            </p>
+            <p>Ja mērķa veids ir  <b>Nodro&scaron;ināt pieprasījuma procentuālo daļu</b>, ir jānorāda minimālā pieprasījuma procentuālā daļa, kas vietām ir jānodro&scaron;ina.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+            <p>Rīks atbalsta līdz 10&nbsp;000&nbsp;elementiem pieprasījuma novietojumu slānī.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Vajadzīgo novietojumu slānis</h2></div>
+        <hr/>
+        <div>
+            <p>Punktveida elementi, kas norāda novietojumu, nodro&scaron;ina arī kāda veida pakalpojumus. Nepiecie&scaron;amās vietas parasti norāda jau eso&scaron;us novietojumus, salīdzinot ar kandidātu īpa&scaron;ībām, kas parasti norāda novietojumus, kur jaunās iespējas tiks veidotas vai izvietotas. Pie&scaron;ķirot pieprasītos novietojumus, rīks izmanto  <b>nepiecie&scaron;amo īpa&scaron;ību slānī</b> eso&scaron;ās vietas pirms vietām no <b>kandidātu īpa&scaron;ību slāņa</b>.
+            </p>
+            <p>Nepiecie&scaron;amajām vietām var būt neierobežota (t.i., tās var apmierināt visu tām piesaistīto pieprasījumu) vai ierobežota kapacitāte. Ja visām iespējām ir viena un tā pati ierobežotā kapacitāte (piemēram, mājsaimniecību skaits, ko ugunsdzēsēju depo var apkalpot (teiksim, 4000), norādiet konstantu vērtību. Ja dažādās vietās kapacitāte ir at&scaron;ķirīga (piemēram, jaunajiem skolēniem pieejamo vietu skaits katrā vidusskolā), norādiet laiku, kas satur katras vietas kapacitāti.
+            </p>
+            <p>Rīks atbalsta līdz 100&nbsp;elementiem  <b>nepiecie&scaron;amo vietu slānī</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Kandidātvietu slānis</h2></div>
+        <hr/>
+        <div>
+            <p>Punktveida elementi, kas norāda novietojumu, nodro&scaron;ina arī kāda veida pakalpojumus. Kandidātu vietas parasti norāda novietojumus, kur tiks izvietotas vai būvētas jaunas vietas, pretēji nepiecie&scaron;amajām vietām, kas parasti norāda novietojumus, kas jau pastāv.
+            </p>
+            <p>Atkarībā no jūsu analīzes mērķa ir jānorāda kandidātu vietu skaits, ko izvēlēties no kandidātu kopas. Ja norādāt gan nepiecie&scaron;amās, gan kandidātu vietas, rīks izmanto  <b>nepiecie&scaron;amo vietu slānī</b> eso&scaron;ās vietas pirms vietām no <b>kandidātu vietu slāņa</b>.
+            </p>
+            <p>Kandidātu vietām var būt neierobežota (t.i., tās var apmierināt visu tām piesaistīto pieprasījumu) vai ierobežota kapacitāte. Ja visām iespējām ir viena un tā pati ierobežotā kapacitāte (piemēram, mājsaimniecību skaits, ko ugunsdzēsēju depo var apkalpot (teiksim, 4000), norādiet konstantu vērtību. Ja dažādās vietās kapacitāte ir at&scaron;ķirīga (piemēram, jaunajiem skolēniem pieejamo vietu skaits katrā vidusskolā), norādiet lauku, kas satur katras vietas kapacitāti.
+            </p>
+            <p>Rīks atbalsta līdz 1&nbsp;000&nbsp;elementiem  <b>kandidātu vietu slānī</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izvēlēties barjeras slāņus</h2></div>
+        <hr/>
+        <div>
+            <p> Viens vai vairāki elementi, kas darbojas kā īslaicīgi ierobežojumi (barjeras), braucot pa ielām. Varat norādīt barjeras, izmantojot punkta, līnijas vai laukuma elementus.
+            </p>
+            <p>Punkta barjera var modelēt nokritu&scaron;u koku, negadījumu, pārrautu elektropārvades līniju vai jebko citu, kas pilnībā bloķē satiksmi konkrētā ielas vietā. Brauk&scaron;ana ir atļauta pa ielu, ne&scaron;ķērsojot barjeru. Varat norādīt līdz 250&nbsp;elementiem, kas darbosies kā punkta barjeras.
+            </p>
+            <p>Līnijas barjera aizliedz braukt jebkur, kur barjera &scaron;ķērso ielas. Piemēram: parādi vai protesta gājienu, kas bloķē satiksmi vairākās ielās, var attēlot kā līnijas barjeru. Ja tās ielas elementu skaits, ko &scaron;ķērso visas līnijas barjeras, pārsniedz&nbsp;500, rīks uzrāda kļūdu.
+            </p>
+            <p>Laukuma barjera aizliedz braukt jebkur, kur laukums &scaron;ķērso ielas. Viens &scaron;ādu barjeru lietojuma veids ir attēlot plūdus, kas pārklāj ielu tīklu un padara ceļus neizbraucamus. Ja laukuma barjeras &scaron;ķērsoto ielas elementu skaits pārsniedz&nbsp;2000, rīks uzrāda kļūdu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Rezultātu slānī būs slānis katram no &scaron;iem objektiem: vietas, kurām ir piesaistīts pieprasījums, pieprasījuma novietojumiem, kas ir pie&scaron;ķirti iespējamajām vietām, un pie&scaron;ķir&scaron;anas līnijām, kas savieno pieprasījuma novietojumus ar tiem piesaistītajām vietām. Pie&scaron;ķir&scaron;anas līnijas tiek zīmētas kā taisnas līnijas, tomēr pārvieto&scaron;anās laika vai attāluma starp vietu un pieprasījuma novietojumu pamatā vienmēr ir jūsu norādītais pārvieto&scaron;anās veids, un netiek izmantoti attālumi taisnā līnijā.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

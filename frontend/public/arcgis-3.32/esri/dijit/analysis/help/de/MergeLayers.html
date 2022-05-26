@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Layer zusammenführen</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Layer zusammenf&uuml;hren"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden Features aus zwei Layern in einen neuen Layer kopiert. Die Layer, die zusammengef&uuml;hrt werden sollen, m&uuml;ssen die gleichen Feature-Typen (Punkte, Linien oder Fl&auml;chen) enthalten. Sie k&ouml;nnen steuern, wie die Felder aus den Eingabe-Layern verkn&uuml;pft und kopiert werden. Beispiel:
+        <ul>
+            <li>Sie verf&uuml;gen &uuml;ber drei Layer, f&uuml;r England, Wales und Schottland, und Sie m&ouml;chten einen einzelnen Gro&szlig;britannien-Layer erstellen. 
+            </li>
+            <li>Sie verf&uuml;gen &uuml;ber 12 Layer, die jeweils Flurst&uuml;cksinformationen f&uuml;r zusammenh&auml;ngende Stadtgebiete enthalten. Sie m&ouml;chten sie zu einem einzelnen Layer zusammenf&uuml;hren und nur die Felder beibehalten, die in den 12 Eingabe-Layern den gleichen Namen und Typ aufweisen.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features zusammengef&uuml;hrt, die in der aktuellen Kartenausdehnung sichtbar sind.
+  Wenn diese Option deaktiviert ist, werden auch dann alle Features in beiden Layern zusammengef&uuml;hrt, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-, Linien- oder Fl&auml;chen-Features, die mit dem unten angegebenen Layer zusammengef&uuml;hrt werden sollen. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Layer für die Zusammenführung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Layer aus, der mit dem ersten Layer zusammengef&uuml;hrt werden soll.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Zusammengeführte Felder ändern</h2></div>
+        <hr/>
+        <div>
+            <p>Standardm&auml;&szlig;ig werden alle Felder beider Eingaben an die Ausgabe &uuml;bertragen. Sie k&ouml;nnen die &Uuml;bertragung an die Ausgabe folgenderma&szlig;en &auml;ndern:
+                <ul>
+                    <li> <b>Umbenennen</b>: Das Feld wird in der Ausgabe umbenannt.
+                    </li>
+                    <li> <b>Entfernen</b>: Das Feld wird aus der Ausgabe entfernt.
+                    </li>
+                    <li> <b>Abgleichen</b>: Die Feldnamen werden angeglichen.  Werte des Feldes aus dem zusammenzuf&uuml;hrenden Layer werden in das angeglichene Ausgabefeld kopiert.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn die beiden Layer ein Feld mit dem gleichen Namen und Datentyp enthalten, wird der Inhalt der beiden Felder in einem Feld mit diesem Namen zusammengef&uuml;hrt. Dies gilt nicht f&uuml;r Felder, bei denen im Parameter  <b>Zusammengef&uuml;hrte Felder &auml;ndern</b> die Option <b>Abgleichen</b> verwendet wird.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

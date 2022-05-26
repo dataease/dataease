@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>植生の監視</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="ポータルの [植生の監視] ツール"></h2>
+        <hr/>
+    <p>このツールは、マルチバンド ラスター レイヤーのバンドに対する算術演算を実行して、分析範囲の植被情報を明確にします。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>入力データを選択します</h2></div>
+        <hr/>
+        <div>
+            <p>マルチバンド ラスター レイヤーを選択します。入力ラスターに適したバンドが使用可能であることを確認します。
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>植生を監視する方法の選択</h2></div>
+        <hr/>
+        <div>
+            <p>植生指数レイヤーを作成する方法を選択します。異なる植生指数を使用すると、特定のフィーチャをハイライト表示したり、さまざまなノイズを低減したりすることができます。
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI は、衛星画像から地球環境を監視するための非線形の植生指数です。NDVI と類似していますが、大気の影響をほとんど受けない点が異なります。露出土壌の影響を受けるため、低密度の植生地域や中密度の植生地域に使用することはお勧めしません。
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI は当初、Landsat MSS 衛星画像での使用を目的として設計されましたが、Landsat TM 衛星画像で使用できるように改良されました。Landsat TM Tasseled Cap 森林植生指数とも呼ばれています。この監視指数は、同じスペクトルの特徴を共有するバンドのある衛星画像でも使用できます
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 は、SAVI 方法での露出土壌の影響を最小限に抑えることを目的とした植生指数です。
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI は、植生の有無・活性度を表す標準化された指数 (相対バイオマス) です。この指標は、マルチスペクトル ラスター データセットの 2 つのバンドの特性のコントラストを活用しています。具体的には、赤のバンドにおけるクロロフィル色素の吸収と、近赤外 (NIR) バンドにおける植物の細胞構造による高い反射特性を利用しています。
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI は、差分植生指数と類似していますが、大気変動の影響を受けやすい点が異なります。このメソッドを使用してさまざまな画像を比較する場合は、大気補正された画像のみを対象にこのメソッドを使用する必要があります。この情報は、データ ベンダーから提供されることがあります。
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI は、土壌調整係数を使用して、土壌の明るさの影響を最小限に抑えることを目的とした植生指数です。このメソッドは、植生の割合が低い乾燥した地域によく使用されます。
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultan の公式プロセスでは、取得した 6 バンドの 8 ビット画像に対して固有のアルゴリズムを適用して 3 バンドの 8 ビット画像を作成します。得られる画像では、海岸線に沿ったオフィオライトと呼ばれる岩石層が強調されます。この公式は、Landsat 5 または 7 シーンの TM バンドと ETM バンドに基づいて作成されたものです。
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+変換 SAVI は、ソイル ラインに任意の傾きと切片があると想定して、土壌の明るさの影響を最小限に抑えることを目的とした植生指数です。
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>近赤外バンドと赤バンドのインデックスの指定</h2></div>
+        <hr/>
+        <div>
+            <p>NIR および赤のバンドのバンド インデックスを指定します。
+            </p>
+            <p>それぞれの衛星センサーと航空写真カメラでは、バンド インデックスに分解される情報がキャプチャされます。各バンド インデックスには、電磁スペクトルの特定の部分に関する情報が格納されます。この植生監視方法では、NIR および赤の波長をキャプチャするバンド インデックスを指定する必要があります。
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>ソイル ラインの傾き</h2></div>
+        <hr/>
+        <div>
+            <p>ソイル ラインの傾き。この傾きは、散布図での NIR バンドと Red バンド間の近似的な線形の関係性を示します。
+            </p>
+            <p>このパラメーターは、変換土壌調整植生指数方法にのみ有効です。
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>インターセプト</h2></div>
+        <hr/>
+        <div>
+            <p>赤 (Red) バンドの反射値が特定のソイル ラインで 0 を示している場合の NIR バンドの値です。
+            </p>
+            <p> <code>(a = NIR - sRed)</code> Red が 0 の場合
+            </p> 
+            <p>このパラメーターは、変換土壌調整植生指数方法にのみ有効です。
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>緑色植生の割合</h2></div>
+        <hr/>
+        <div>
+            <p>SAVI 方法で必要な緑色植生の割合を指定します。
+            </p>
+            <p>有効な値は以下のとおりです。
+
+                <ul>
+                    <li>1 = 緑色植被がないエリア
+                        
+ 
+                    </li>
+                    <li>0.5 = 緑色植被の割合が中程度のエリア
+                        
+ 
+                    </li>
+                    <li>0 = 緑色植被の割合が高いエリア
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>調整係数</h2></div>
+        <hr/>
+        <div>
+            <p>変換土壌調整植生指数方法で必要な、土壌の影響を最小限に抑えることができる調整係数を指定します。デフォルト値は 0.08 です。
+            </p>
+            <p>値を小さくすると、土壌の影響が無視されます。値を大きくすると、土壌の影響が結果に反映されます。
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

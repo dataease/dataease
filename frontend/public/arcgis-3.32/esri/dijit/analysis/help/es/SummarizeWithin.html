@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Resumir dentro de</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Resumir dentro de"></h2>
+        <hr/>
+    <p>Esta herramienta busca entidades (y partes de entidades) que est&aacute;n dentro de los l&iacute;mites de las &aacute;reas de la primera capa de entrada.  Por ejemplo:
+        <ul>
+            <li>Dada una capa de l&iacute;mites de cuencas hidrogr&aacute;ficas y una capa de l&iacute;mites de uso del suelo, calcule la superficie total del tipo de uso del suelo para cada cuenca hidrogr&aacute;fica. 
+            </li>
+            <li>Dada una capa de parcelas de un condado y una capa de l&iacute;mites de ciudades, resuma el valor medio de las parcelas vac&iacute;as en cada l&iacute;mite de ciudad.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n las entidades de la capa de entrada y la capa que se va a resumir que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada y de la capa que se va a resumir, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Elegir la capa de áreas para resumir otras entidades dentro de sus límites</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de &aacute;reas que se usar&aacute; para resumir otras entidades que est&aacute;n dentro de sus l&iacute;mites. 
+            </p>
+            <p>Puede elegir entre una capa de &aacute;rea proporcionada por usted o bins generados al ejecutar la herramienta.   Cuando se generan bins, en el caso de  <b>Cuadrado</b>, son la cantidad y las unidades especificadas las que determinan la altura y la longitud del cuadrado. En el caso de <b>Hex&aacute;gono</b>, son la cantidad y las unidades especificadas las que determinan la distancia entre los lados paralelos.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Elegir la capa para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Se resumir&aacute;n las entidades de esta capa que est&eacute;n dentro de los l&iacute;mites de entidades de la capa de entrada anterior. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Agregar estadísticas desde la capa que se va a resumir</h2></div>
+        <hr/>
+        <div>
+            <p>De forma opcional, puede calcular las estad&iacute;sticas de los atributos num&eacute;ricos de los puntos que est&eacute;n dentro de los l&iacute;mites de las entidades. 
+            </p>
+            <p>Si se activa la casilla  <b>Recuento de puntos</b>, se calcular&aacute; el n&uacute;mero total de puntos dentro de cada l&iacute;mite de &aacute;rea.
+  Tambi&eacute;n puede calcular las estad&iacute;sticas de los atributos num&eacute;ricos de los puntos que est&eacute;n dentro de cada l&iacute;mite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del campo especificado.
+                </li>
+                <li> <b>Valor medio</b>: valor medio o media del campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>: valor m&aacute;s bajo del campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>: valor m&aacute;s alto del campo especificado.
+                </li>
+                <li> <b>Desviaci&oacute;n est&aacute;ndar</b>: desviaci&oacute;n est&aacute;ndar de los valores del campo especificado.
+                </li>
+            </ul>
+            
+            <p>Si la capa que se va a resumir no tiene ning&uacute;n campo num&eacute;rico, las estad&iacute;sticas adicionales no estar&aacute;n disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Agregar estadísticas de</h2></div>
+        <hr/>
+        <div>
+            <p>De forma opcional, puede calcular estad&iacute;sticas de los atributos num&eacute;ricos de las l&iacute;neas que se van a resumir. 
+            </p>
+            <p>Si se activa la casilla  <b>Longitud total de l&iacute;neas en</b>, se calcular&aacute; la longitud total de las l&iacute;neas dentro de cada l&iacute;mite de &aacute;rea.
+  Tambi&eacute;n puede calcular las estad&iacute;sticas de los atributos num&eacute;ricos de las l&iacute;neas que est&eacute;n dentro de cada l&iacute;mite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del campo especificado.
+                </li>
+                <li> <b>Valor medio</b>: valor medio o media del campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>: valor m&aacute;s bajo del campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>: valor m&aacute;s alto del campo especificado.
+                </li>
+                <li> <b>Desviaci&oacute;n est&aacute;ndar</b>: desviaci&oacute;n est&aacute;ndar de los valores del campo especificado.
+                </li>
+            </ul>
+            
+            <p>Si la capa que se va a resumir no tiene ning&uacute;n campo num&eacute;rico, las estad&iacute;sticas adicionales no estar&aacute;n disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Agregar estadísticas de</h2></div>
+        <hr/>
+        <div>
+            <p>De forma opcional, puede calcular estad&iacute;sticas de los atributos num&eacute;ricos de las &aacute;reas que se van a resumir. 
+            </p>
+            <p>Si se activa la casilla  <b>Sumar &aacute;rea utilizando</b>, se calcular&aacute; el &aacute;rea total de las entidades que est&aacute;n dentro de cada l&iacute;mite de &aacute;rea de la primera capa de entrada.  Tambi&eacute;n puede calcular las estad&iacute;sticas de los atributos num&eacute;ricos de las entidades que est&eacute;n dentro de cada l&iacute;mite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del campo especificado.
+                </li>
+                <li> <b>Valor medio</b>: valor medio o media del campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>: valor m&aacute;s bajo del campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>: valor m&aacute;s alto del campo especificado.
+                </li>
+                <li> <b>Desviaci&oacute;n est&aacute;ndar</b>: desviaci&oacute;n est&aacute;ndar de los valores del campo especificado.
+                </li>
+            </ul>
+            
+            <p>Si la capa que se va a resumir no tiene ning&uacute;n campo num&eacute;rico, las estad&iacute;sticas adicionales no estar&aacute;n disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Agregar estadísticas de</h2></div>
+        <hr/>
+        <div>
+            <p>Una vez que elija una capa para resumir, puede calcular las estad&iacute;sticas de cualquiera de los atributos num&eacute;ricos de los puntos, l&iacute;neas o &aacute;reas que est&eacute;n dentro de la capa de &aacute;rea de entrada. 
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del campo especificado
+                </li>
+                <li> <b>Valor medio</b>: valor medio o media del campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>: valor m&aacute;s bajo del campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>: valor m&aacute;s alto del campo especificado
+                </li>
+                <li> <b>Desviaci&oacute;n est&aacute;ndar</b>: desviaci&oacute;n est&aacute;ndar de los valores del campo especificado
+                </li>
+            </ul>
+            
+            <p>Seg&uacute;n el tipo de entidades que est&eacute; resumiendo, puede calcular el recuento total de puntos, la longitud total de las l&iacute;neas o el &aacute;rea total.
+            </p>
+            <p>Si la capa que se va a resumir no tiene ning&uacute;n campo num&eacute;rico, las estad&iacute;sticas adicionales no estar&aacute;n disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Seleccionar campo para agrupar</h2></div>
+        <hr/>
+        <div>
+            <p>Este es un atributo de las entidades  <b>Resumir</b> que puede utilizar para calcular las estad&iacute;sticas individuales de cada valor de atributo exclusivo.
+ Por ejemplo, supongamos que la primera capa de entrada contiene l&iacute;mites de ciudad y que las entidades de resumen son parcelas.  Uno de los atributos de las parcelas es <i>Status</i>, que contiene dos valores: VACANT y OCCUPIED. Para calcular el &aacute;rea total de parcelas vacantes y ocupadas dentro de los l&iacute;mites de las ciudades, utilice <i>Status</i> como el atributo por el que se va a agrupar. Las estad&iacute;sticas de cada grupo, as&iacute; como el recuento de entidades que est&aacute;n dentro del l&iacute;mite de cada &aacute;rea, se mostrar&aacute;n en la ventana emergente de la capa de resultados.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Agregar minoría, mayoría</h2></div>
+        <hr/>
+        <div>
+            <p>Esta casilla de verificaci&oacute;n est&aacute; habilitada cuando se selecciona un campo por el que agrupar. Si quiere saber qu&eacute; valores de atributo son minor&iacute;a (menos dominantes) en cada grupo o cu&aacute;les son mayor&iacute;a (m&aacute;s dominantes) en cada l&iacute;mite de la primera capa de entrada, active la casilla  <b>Agregar minor&iacute;a, mayor&iacute;a</b>.   Al activar la casilla <b>Agregar minor&iacute;a, mayor&iacute;a</b>, se agregar&aacute;n dos campos nuevos a la capa resultante.   Al activar tambi&eacute;n la casilla <b>Agregar porcentajes</b>, se agregan dos campos adicionales a la capa resultante, que contienen los porcentajes de los valores de atributo de mayor&iacute;a y de minor&iacute;a dentro de cada grupo.
+            </p>
+            <ul>
+                <li>Si est&aacute; resumiendo puntos, los valores de minor&iacute;a y mayor&iacute;a se calculan tomando como base el recuento de puntos en cada &aacute;rea l&iacute;mite de la capa de &aacute;reas de entrada.  
+                </li>
+                <li>Si est&aacute; resumiendo l&iacute;neas, los valores de minor&iacute;a y mayor&iacute;a se calculan tomando como base la longitud de las l&iacute;neas en cada &aacute;rea l&iacute;mite de la capa de &aacute;reas de entrada.  
+                </li>
+                <li>Si est&aacute; resumiendo &aacute;reas, los valores de minor&iacute;a y mayor&iacute;a se calculan tomando como base las &aacute;reas de cada &aacute;rea l&iacute;mite de la capa de &aacute;reas de entrada.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Agregar porcentajes</h2></div>
+        <hr/>
+        <div>
+            <p>Esta casilla de verificaci&oacute;n est&aacute; habilitada cuando se selecciona un campo por el que agrupar. Seleccione  <b>Agregar porcentajes</b> si desea buscar el porcentaje de cada valor de atributo en cada grupo.  Se agregar&aacute; un nuevo campo a la tabla de resultados, que contiene los porcentajes de cada valor de atributo en cada grupo. Si <b>Agregar minor&iacute;a, mayor&iacute;a</b> tambi&eacute;n est&aacute; activada, se agregan dos campos adicionales a la capa de resultados, que contienen los porcentajes de los valores de atributo de mayor&iacute;a y de minor&iacute;a dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

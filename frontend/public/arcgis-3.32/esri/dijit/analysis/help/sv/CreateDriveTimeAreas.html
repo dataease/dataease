@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skapa körtidsområden</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Skapa k&ouml;rtidsomr&aring;den"></h2>
+        <hr/>
+    <p>Med funktionen Skapa k&ouml;rtidsomr&aring;den kan du skapa omr&aring;den som du kan n&aring; inom en viss k&ouml;rtid, ett visst k&ouml;ravst&aring;nd, som ligger inom g&aring;ngavst&aring;nd och s&aring; vidare. Funktionen m&auml;ter avst&aring;ndet l&auml;ngs v&auml;gar och g&aring;ngv&auml;gar fr&aring;n en eller flera punkter (upp till 1&nbsp;000) f&ouml;r att skapa ett lager som hj&auml;lper dig besvara fr&aring;gor av typen:
+        <ul>
+            <li>Var kan jag &aring;ka inom 30 minuters k&ouml;rtid h&auml;rifr&aring;n?
+            </li>
+            <li>Var kan jag &aring;ka inom 30 minuters k&ouml;rtid h&auml;rifr&aring;n klockan 17:30 under rusningstrafik?
+            </li>
+            <li>Vad finns inom tv&aring; kilometers g&aring;ngavst&aring;nd fr&aring;n mitt hotell?
+            </li>
+            <li>Vilka delar av staden kan brandk&aring;ren komma till p&aring; under fem minuter? 
+            </li>
+            <li>Hur skulle brandk&aring;rens utryckningstider f&ouml;rb&auml;ttras om vi bygger en ny brandstation h&auml;r?
+            </li>
+            <li>Vilka marknadsomr&aring;den t&auml;cker mitt f&ouml;retag?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Du kanske kan besvara dessa fr&aring;gor genom att bara visualisera utdataomr&aring;dena. Alternativt kan du utf&ouml;ra ytterligare geografiska analyser med hj&auml;lp av utdataomr&aring;dena. Om du till exempel anv&auml;nder verktyget Aggregera punkter med hj&auml;lp av k&ouml;rtidsomr&aring;den med demografiska data, kan du fastst&auml;lla vilka m&ouml;jliga butiksplatser som ger den b&auml;sta kundbasen f&ouml;r din typ av f&ouml;retag. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Om du vill skapa omr&aring;den genom att m&auml;ta avst&aring;nd som en rak linje i st&auml;llet f&ouml;r att m&auml;ta l&auml;ngs v&auml;gar, anv&auml;nder du verktyget Skapa buffertar ist&auml;llet.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat, anv&auml;nds bara de geoobjekt som visas i den aktuella kartutbredningen f&ouml;r att skapa omr&aring;den baserade p&aring; k&ouml;rtid eller k&ouml;ravst&aring;nd. Om alternativet inte markeras anv&auml;nds alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj punktlager som körtidsområdena ska beräknas runt</h2></div>
+        <hr/>
+        <div>
+            <p>Punktfunktionerna runt de omr&aring;den som ska ber&auml;knas. Du kan v&auml;lja hur omr&aring;dena ska ber&auml;knas baserat p&aring; f&auml;rdl&auml;ge (bil, lastbil eller till fots) och m&aring;tt (tid eller avst&aring;nd).
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+            <p>Verktyget har st&ouml;d f&ouml;r upp till 1&nbsp;000 geoobjekt i indatalagret.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mät</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj f&auml;rdl&auml;ge (bilresa, lastbilstransport eller till fots) och m&aring;tt (tid eller avst&aring;nd). Vilka f&auml;rdl&auml;gen som &auml;r tillg&auml;ngliga avg&ouml;rs av organisationens administrat&ouml;r. N&auml;r du har valt l&auml;ge och m&aring;tt anger du en varaktighet eller ett avst&aring;nd p&aring; upp till  5 timmar (300 minuter) eller  300 engelska mil (482,80 kilometer). 
+            </p>
+            <p>Reseriktningen ( <b>Bort fr&aring;n inr&auml;ttning</b> eller <b>Mot inr&auml;ttning</b>) kan p&aring;verka hur omr&aring;dena genereras. Skapa k&ouml;rtidsomr&aring;den tar h&auml;nsyn till enkelriktade gator, undviker olagliga sv&auml;ngar och f&ouml;ljer andra regler beroende p&aring; f&auml;rdriktningen. Du b&ouml;r v&auml;lja f&auml;rdriktning baserat p&aring; typen av plats f&ouml;r indata och kontexten f&ouml;r din analys. Till exempel b&ouml;r k&ouml;rtidsomr&aring;det f&ouml;r en pizzeria skapas bort fr&aring;n inr&auml;ttningen, medan k&ouml;rtidsomr&aring;det f&ouml;r ett sjukhus b&ouml;r skapas mot inr&auml;ttningen.
+            </p>
+            <p>Om du v&auml;ljer  <b>K&ouml;rtid</b>, <b>K&ouml;rtid p&aring; landsbygd</b> eller <b>Tid med lastbil</b> finns det olika s&auml;tt att m&auml;ta k&ouml;rtiden p&aring;.
+                <ul>
+                    <li>
+                        <p>Avmarkera  <b>Anv&auml;nd trafik</b> om du vill skapa k&ouml;rtidsomr&aring;den som bygger p&aring; fasta hastigheter. Anv&auml;nd det h&auml;r alternativet om du vill ha ett allm&auml;nt k&ouml;rtidsomr&aring;de i st&auml;llet f&ouml;r ett omr&aring;de som ber&auml;knas med hj&auml;lp av varierande trafikf&ouml;rh&aring;llanden under specifika avresetider.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Markera  <b>Anv&auml;nd trafik</b> om du vill skapa k&ouml;rtidsomr&aring;den som bygger p&aring; en viss starttid och varierande trafikf&ouml;rh&aring;llanden. Om du &auml;ven v&auml;ljer alternativet <b>Trafik i realtid</b> anges avresetiden fr&aring;n indatapunkterna till den aktuella tiden, och aktuella och f&ouml;rutsagda trafikhastigheter refereras fr&aring;n sensorer och feeds n&auml;r k&ouml;rtidsomr&aring;dena skapas. De f&ouml;rutsagda trafikv&auml;rdena ber&auml;knas genom att referera trafikhastigheter i realtid, historik f&ouml;r hastigheter och aktuella f&ouml;ruts&auml;ttningar, till exempel v&auml;der. Trafikhastigheterna f&ouml;ruts&auml;gs 12 timmar fram&aring;t, s&aring; du kan flytta skjutreglaget f&ouml;r att st&auml;lla in en avresetid upp till 12 timmar fram&aring;t i tiden.
+                        </p>
+                        <p>Anv&auml;nd dessa inst&auml;llningar f&ouml;r trafik i realtid n&auml;r du vill ta reda p&aring; vilka omr&aring;den du kan n&aring; om du &aring;ker nu, om du &aring;ker om en timme och s&aring; vidare.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Om du markerar  <b>Anv&auml;nd trafik</b> och v&auml;ljer <b>Trafik baserad p&aring; typiska f&ouml;rh&aring;llanden</b> f&ouml;r en viss dag och tid, skapar verktyget k&ouml;rtidsomr&aring;den som bygger p&aring; historiska snitthastigheter f&ouml;r varje femminutersintervall under en vanlig vecka. Resultaten omfattar trafik, men tar inte med aktuella trafikf&ouml;rh&aring;llanden och h&auml;ndelser. De aktuella f&ouml;rh&aring;llandena kan i h&ouml;g grad skilja sig fr&aring;n normen.
+                        </p>
+                        <p>Du kan anv&auml;nda dessa historiska trafikinst&auml;llningar f&ouml;r att till exempel ta reda p&aring; &quot;Vilka omr&aring;den kan jag normalt sett komma till om jag &aring;ker klockan 11:30 p&aring; en onsdag?&quot; 
+                        </p>
+                        <p>Den tid du anger refererar till den tidszon d&auml;r dina indatapunkter finns. Om du st&auml;ller in tiden 08:00 och har tv&aring; startpunkter, en i New York City och en annan i Los Angeles, genereras rutterna baserat p&aring; avresetiden 08:00 Eastern Time respektive 08:00 Pacific Time.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Observera att tiden g&aring;r och trafikf&ouml;rh&aring;llandena &auml;ndras medan bilen k&ouml;r ut&aring;t fr&aring;n startpunkten. Verktyget K&ouml;rtidsomr&aring;den tar med dessa variationer i ber&auml;kningarna om du v&auml;ljer  <b>K&ouml;rtid</b> och markerar <b>Anv&auml;nd trafik</b>, trafikfunktionen st&ouml;ds dock inte i alla regioner. Klicka p&aring; l&auml;nken <b>Se tillg&auml;nglighet</b> i verktyget f&ouml;r att ta reda p&aring; om funktionen finns tillg&auml;nglig i ditt unders&ouml;kningsomr&aring;de.
+            </p>
+            <p> <b>Tid med lastbil</b> kan anv&auml;nda dynamiska hastigheter baserade p&aring; trafik men bara upp till hastighetsbegr&auml;nsningen f&ouml;r lastbilar. Om t.ex. den dynamiska hastigheten f&ouml;r en v&auml;g baserat p&aring; trafik i realtid &auml;r 110 km/h men hastighetsbegr&auml;nsningen f&ouml;r lastbilar p&aring; v&auml;gen &auml;r 90 km/h, anv&auml;nder ber&auml;kningen 90 km/h f&ouml;r den v&auml;gen.
+            </p>
+            <p> <b>G&aring;ngtid</b> och <b>G&aring;ngavst&aring;nd</b> anv&auml;nder en fast hastighet p&aring; 5 kilometer i timmen (3,1 engelska mil per timme) och f&ouml;ljer g&aring;ngv&auml;gar och angivna gator (utan h&auml;nsyn till regler som p&aring;verkar bilar, till exempel enkelriktade gator). </p>
+            <p> <b>Avst&aring;nd med lastbil</b> anv&auml;nder fasta hastigheter och f&ouml;ljer regler som g&auml;ller tunga lastbilar, medan <b>K&ouml;ravst&aring;nd</b> och <b>Avst&aring;nd p&aring; landsbygd</b> anv&auml;nder fasta hastigheter och f&ouml;ljer regler som g&auml;ller fordon som personbilar.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Välj hinderlager</h2></div>
+        <hr/>
+        <div>
+            <p> Ange ett eller flera geoobjekt som fungerar som tillf&auml;lliga restriktioner (hinder) vid resor p&aring; de underliggande gatorna. Du kan ange hindren med hj&auml;lp av punkt-, linje eller polygongeoobjekt.
+            </p>
+            <p>Ett punkthinder kan vara ett nedfallet tr&auml;d, en olycka, en nedrasad elledning eller n&aring;gonting annat som fullst&auml;ndigt blockerar trafiken p&aring; en specifik plats l&auml;ngs gatan. Det &auml;r till&aring;tet att f&auml;rdas p&aring; gatan men inte genom hindret. Du kan ange att upp till 250 geoobjekt ska fungera som punkthinder.
+            </p>
+            <p>Ett linjehinder f&ouml;rbjuder resor &ouml;verallt d&auml;r hindret korsar gatorna. Till exempel kan en parad eller protestmarsch som blockerar trafiken p&aring; flera gatusegment modelleras med ett linjehinder. Om antalet gatugeoobjekt som korsas av alla linjehinder &ouml;verstiger 500 visas ett felmeddelande i verktyget.
+            </p>
+            <p>Ett polygonhinder f&ouml;rbjuder resor &ouml;verallt d&auml;r polygonen korsar gatorna. En anv&auml;ndning f&ouml;r den h&auml;r typen av hinder &auml;r att modellera &ouml;versv&auml;mningar som t&auml;cker delar av gatun&auml;tet och g&ouml;r det om&ouml;jligt att f&auml;rdas p&aring; v&auml;garna. Om antalet gatugeoobjekt som korsas av alla polygonhinder &ouml;verstiger 2&nbsp;000 visas ett felmeddelande i verktyget.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Områden från olika punkter</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj hur delade omr&aring;den fr&aring;n olika indatapunkter ska hanteras n&auml;r de n&aring;r varandra. Du kan v&auml;lja:
+                <ul>
+                    <li> <b>&Ouml;verlappa</b> &ndash; Omr&aring;den fr&aring;n olika indatapunkter kan t&auml;cka samma v&auml;g. Det h&auml;r &auml;r anv&auml;ndbart om du beh&ouml;ver k&auml;nna till alla indatapunkter som kan n&aring; en viss plats inom en viss k&ouml;rtid eller k&ouml;ravst&aring;nd.
+                    </li>
+                    <li> <b>L&ouml;s upp</b> &ndash; Alla omr&aring;den sammanfogas till ett, och det &auml;r bara ett omr&aring;de som kan t&auml;cka en viss plats. Det h&auml;r &auml;r anv&auml;ndbart om du bara beh&ouml;ver veta om ett visst omr&aring;de g&aring;r att n&aring; inom en viss tid eller ett visst avst&aring;nd, men inte beh&ouml;ver veta vilka specifika indatapunkter som kan n&aring; platsen.
+                    </li>
+                    <li> <b>Dela</b> &ndash; De omr&aring;den fr&aring;n olika indataplatser som skulle &ouml;verlappa varandra delas p&aring; mitten s&aring; att de i st&auml;llet gr&auml;nsar till varandra. Det h&auml;r &auml;r anv&auml;ndbart om du vill se vilka omr&aring;den som ligger inom en viss tid eller ett visst avst&aring;nd fr&aring;n indatapunkterna, och samtidigt avg&ouml;ra vilken indatapunkt som ligger n&auml;rmast omr&aring;det.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Visa onåbara områden som hål</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj huruvida utdataomr&aring;dena ska inkludera h&aring;l om vissa gator inte kan n&aring;s p&aring; grund av  <b>M&auml;t</b>-tid eller avst&aring;nd eller p&aring; grund av f&auml;rdl&auml;gets restriktioner.
+            </p>
+            <p>K&ouml;rtidsomr&aring;den som skapas med denna parameter har en gr&auml;ns p&aring; 15 minuter eller 24 kilometer (15 miles).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Inkludera nåbara gator</h2></div>
+        <hr/>
+        <div>
+            <p>Inkludera gatorna som anv&auml;nds f&ouml;r att skapa k&ouml;rtidsomr&aring;den som ett utdatalager. 
+            </p>
+            <p>Skapa k&ouml;rtidsomr&aring;den m&auml;ter r&auml;ckvidden f&ouml;r en inr&auml;ttning l&auml;ngs gatun&auml;tet och skapar sedan k&ouml;rtidsomr&aring;den fr&aring;n de gator f&auml;rden g&aring;tt p&aring;. D&auml;rf&ouml;r &auml;r omr&aring;dena en approximation av de gator som f&auml;rden sker p&aring;. Om din analys &auml;r att fastst&auml;lla vilka gator som t&auml;cks inom en viss resestr&auml;cka eller tid fr&aring;n en inr&auml;ttning, kan du generera n&aring;bara gator mer korrekt &auml;n genom att anv&auml;nda k&ouml;rtidsomr&aring;den f&ouml;r att utv&auml;rdera om en viss gata var n&aring;bar.
+            </p>
+            <p>K&ouml;rtidsomr&aring;den som skapas med denna parameter har en gr&auml;ns p&aring; 15 minuter eller 24 kilometer (15 miles).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

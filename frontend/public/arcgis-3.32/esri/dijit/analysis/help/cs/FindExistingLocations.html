@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Najít stávající lokality</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Naj&iacute;t st&aacute;vaj&iacute;c&iacute; lokality"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vybere st&aacute;vaj&iacute;c&iacute; prvky v z&aacute;jmov&eacute; oblasti, kter&eacute; splňuj&iacute; stanoven&yacute; soubor krit&eacute;ri&iacute;. Tato krit&eacute;ria mohou b&yacute;t založena na požadavc&iacute;ch na atributy (např. parcely, kter&eacute; jsou voln&eacute;) a prostorov&yacute;ch požadavc&iacute;ch (např&iacute;klad do vzd&aacute;lenosti 1 km od řeky). 
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v rozsahu aktu&aacute;ln&iacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky, tj. i ty, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Vyberte vrstvu obsahující prvky, které chcete vyhledat pomocí požadavků na atributy a prostorových požadavků.</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, lini&iacute; nebo polygonů, pro kterou chcete vyhledat prvky na z&aacute;kladě kombinace požadavků na atributy a prostorov&yacute;ch požadavků určen&yacute;ch n&iacute;že.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Vytvořte dotaz pro hledání prvků.</h2></div>
+        <hr/>
+        <div>
+            <p>Chcete-li definovat v&yacute;raz, klikněte na tlač&iacute;tko  <b>Přidat v&yacute;raz</b>.  Můžete přidat v&iacute;ce v&yacute;razů. Až v&yacute;razy zad&aacute;te a kliknete na tlač&iacute;tko <b>Spustit anal&yacute;zu</b>, budou prvky ve vstupn&iacute; vrstvě filtrov&aacute;ny za použit&iacute; v&scaron;ech v&yacute;razů.  Prvky, kter&eacute; vyhovuj&iacute; v&scaron;em v&yacute;razům, budou zaps&aacute;ny do v&yacute;sledn&eacute; vrstvy.
+            </p>
+            <p>Můžete vytvořit dva z&aacute;kladn&iacute; typy v&yacute;razů: atributov&eacute; a prostorov&eacute;. Atributov&eacute; v&yacute;razy jsou dotazy na hodnoty pol&iacute;, jako je např&iacute;klad pole  <code>s n&aacute;zvem &bdquo;San Francisco&ldquo;</code>.  Existuj&iacute; 4 druhy prostorov&yacute;ch v&yacute;razů:
+                <ul>
+                    <li> <b>ve vzd&aacute;lenosti</b>: prvek se mus&iacute; nach&aacute;zet v určit&eacute; vzd&aacute;lenosti od prvku v jin&eacute; vrstvě.  Můžete např&iacute;klad vyhledat parcely, kter&eacute; se nach&aacute;zej&iacute; ve vzd&aacute;lenosti 500 metrů od řeky Los Angeles River.
+                    </li>
+                    <li> <b>obsahuje zcela</b>: v prvku mus&iacute; b&yacute;t obsažen cel&yacute; prvek jin&eacute; vrstvy.  Můžete např&iacute;klad vyhledat povod&iacute;, kter&aacute; obsahuj&iacute; parcely určen&eacute; pro průmyslov&eacute; využit&iacute;, a to v jejich cel&eacute; rozloze. Ž&aacute;dn&aacute; č&aacute;st parcely se nesm&iacute; nach&aacute;zet mimo toto povod&iacute;.
+                    </li>
+                    <li> <b>zcela uvnitř</b>: prvek mus&iacute; b&yacute;t zcela obklopen prvkem jin&eacute; vrstvy.  Můžete např&iacute;klad vyhledat sp&aacute;dov&eacute; oblasti &scaron;kol, kter&eacute; se nach&aacute;zej&iacute; zcela uvnitř hranic města. Ž&aacute;dn&aacute; sp&aacute;dov&aacute; oblast nesm&iacute; zasahovat mimo &uacute;zem&iacute; města.
+                    </li>
+                    <li> <b>prot&iacute;n&aacute;</b>: prvek obsahuje č&aacute;st prvku jin&eacute; vrstvy.  Můžete např&iacute;klad vyhledat parcely, kter&eacute; prot&iacute;naj&iacute; řeky. Parcelu prot&iacute;naj&iacute; v&scaron;echny řeky, kter&eacute; proch&aacute;z&iacute; parcelou nebo kter&eacute; se dot&yacute;kaj&iacute; jej&iacute;ho &uacute;zem&iacute;.
+                    </li>
+                    <li> <b>nejbl&iacute;že k</b>: prvek mus&iacute; b&yacute;t nejbl&iacute;že k prvku jin&eacute; vrstvy. Můžete např&iacute;klad vyhledat restauraci, kter&aacute; je nejbl&iacute;že ke každ&eacute;mu hotelu.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ke v&scaron;em prostorov&yacute;m př&iacute;kazům existuj&iacute; tak&eacute; odpov&iacute;daj&iacute;c&iacute; negace, s v&yacute;jimkou  <b>nejbl&iacute;že k</b>; <b>nen&iacute; ve vzd&aacute;lenosti</b>, <b>neobsahuje zcela</b>, <b>nen&iacute; zcela uvnitř</b> a <b>neprot&iacute;n&aacute;</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

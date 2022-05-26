@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Jelaskan Set Data</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagram alur kerja Jelaskan Set Data"></h2>
+        <hr/>
+    <p>Alat Jelaskan Set Data menyediakan tampilan yang lebih detail dalam set data Anda. Sebelum menjalankan analisis terhadap data dalam jumlah besar, gunakan alat ini untuk menentukan apa dan di mana data input Anda. Secara default, hasilnya akan menjadi pendeskripsi utama garis besar string JSON dari layer input Anda dan sebuah tabel yang membahas detail statistik ringkasan untuk setiap kolom. 
+    </p>
+    <p>Secara opsional, Anda dapat membuat feature layers output tambahan untuk menjelaskan data Anda lebih lanjut. Opsi tersebut adalah layer sampel atau sebuah layer jangkauan. Anda dapat memilih untuk menghasilkan output satu atau keduanya.
+    </p>
+    <p>Contoh, anggaplah Anda menerima berbagi file big data berisi 15 set data. Setiap set data memiliki 10 juta fitur area yang mewakili gedung dan rumah lintas wilayah berbeda di negara Anda. Anda diberi tugas menganalisis wilayah C, tapi Anda tidak tahu set data mana yang berisi fitur ini. Untuk menemukan set data mana yang harus Anda gunakan, jalankan Jelaskan Set Data dan pilih untuk membuat layer jangkauan untuk meneliti set data mana yang ada dalam wilayah studi Anda.
+    </p>
+    <p>Sebagai contoh lainnya, bayangkan Anda diberi tugas untuk menyelesaikan alur kerja analisis di volume data yang sangat besar. Anda tentu ingin mencoba alur kerja, tapi bisa memakan waktu berjam-jam atau berhari-hari dengan set data lengkap Anda. Jadi alih-alih memanfaatkan waktu dan sumber daya yang dijalankan dalam analisis lengkap, buat layer sampel untuk menguji alur kerja lengkap Anda secara efisien.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih set data untuk menjelaskan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer berisi fitur titik, garis, area, atau fitur tabular yang akan dijelaskan, diringkas, dan dijadikan sampel.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Memahami set data Anda dengan membuat (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Lakukan output layer deskriptif tambahan untuk meningkatkan pemahaman terhadap big data Anda. Anda dapat memilih untuk melakukan output nol, satu, atau kedua layer berikut:
+            </p>
+            <ul>
+                <li> <b>Layer jangkauan</b>&mdash;membuat fitur area yang mewakili jangkauan fitur input atau area perhatian Anda.
+                </li>
+                <li> <b>Layer sampel</b>&mdash;membuat sebuah layer subset berisi jumlah fitur input yang ditentukan dari dalam set data atau area perhatian Anda.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Layer sampel</h2></div>
+        <hr/>
+        <div>
+            <p>Lakukan output layer berisi subset fitur dari layer input Anda. Jika  <b>Layer sampel</b> dipilih, Anda akan dapat menentukan jumlah fitur yang ingin Anda kembalikan di layer sampel.  Secara default, 100 sampel fitur akan dikembalikan dalam layer output.
+            </p>
+            <p>Nilai harus lebih besar dari nol. Jika Anda menentukan jumlah yang lebih besar dari total jumlah fitur, maka semua fitur akan dikembalikan.
+            </p>
+            <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dipilih, maka kemudian layer sampel akan berisi fitur-fitur dari dalam jangkauan peta.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Layer jangkauan</h2></div>
+        <hr/>
+        <div>
+            <p>Lakukan output feature layer berisi fitur tunggal mewakili jangkauan fitur input dengan memilih tombol  <b>Layer jangkauan</b>. Ini dipilih secara default.
+            </p>
+            <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dipilih, maka layer jangkauan akan mewakili jangkauan peta yang terlihat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

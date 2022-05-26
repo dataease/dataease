@@ -1,0 +1,54 @@
+<div>
+  <div data-dojo-attach-point="modeSelection" style="display:none">
+    <div class="field">
+      <input name="rasterDataMode" type="radio" data-dojo-attach-point="urlMode"
+        data-dojo-attach-event="onclick: _onUrlModeSelect" style="font-size: 10px;"
+        class="jimu-leading-margin10 jimu-radio-btn"><label style="width: auto;" class="jimu-leading-margin025">${nls.useUrlForGPInput}</label>
+      <input name="rasterDataMode" type="radio" data-dojo-attach-point="itemMode"
+        style="font-size: 10px;" data-dojo-attach-event="onclick: _onItemModeSelect"
+        class="jimu-leading-margin2 jimu-radio-btn"><label style=" width: auto;" class="jimu-leading-margin025">${nls.useUploadForGPInput}</label>
+      <input name="rasterDataMode" type="radio" data-dojo-attach-point="imgServerMode"
+        style="font-size: 12px;" data-dojo-attach-event="onclick: _onSelectModeClick"
+        class="jimu-leading-margin35 jimu-radio-btn" /><label style=" width: auto;"
+        class="jimu-leading-margin05">${chooseLayerName}</label>
+    </div>
+  </div>
+  <div>
+    <div data-dojo-attach-point="settingNode">
+      <div data-dojo-attach-point="urlNode" data-dojo-props="label:urlNode">
+        <table>
+          <tr>
+            <td><label title="${nls.rasterFormat}">${nls.rasterFormat}</label></td>
+            <td><input type="text" data-dojo-attach-point="rasterFormatInput"
+                data-dojo-type="dijit/form/TextBox" class="common-input"/></td>
+          </tr>
+          <tr>
+            <td><label title="${nls.url}">${nls.url}</label></td>
+            <td><input type="text" data-dojo-props="rest:false" data-dojo-type="esri/dijit/analysis/customgp/common/dijit/URLInput"
+              data-dojo-attach-point="urlEditor" class="common-input"/></td>
+          </tr>
+        </table>
+      </div>
+      <div data-dojo-attach-point="fileNode" data-dojo-props="label:fileNode">
+        <div>
+          <form data-dojo-attach-point="fileForm"
+                enctype="multipart/form-data"
+                method="POST" data-dojo-type="dijit/form/Form">
+            <input id="${uniqueID}_raster" type="file" multiple="false" name="file"
+              data-dojo-attach-point="fileInput" style="display:none"
+              data-dojo-attach-event="onChange: _onUpload"/>
+            <div class="jimu-btn jimu-leading-margin10 jimu-float-leading">
+              <label class="file-input-label" for="${uniqueID}_raster">
+                ${nls.selectFileToUpload}
+              </label>
+            </div>
+            <input type="hidden" name="f" value="json"/>
+          </form>
+          <span data-dojo-attach-point="uploadFileName" class="jimu-leading-margin2"></span>
+        </div>
+      </div>
+      <div data-dojo-attach-point="ImgSvclayerNode" data-dojo-props="label:imgServNode">
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Об’єднання шарів</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Об&rsquo;єднання шарів"></h2>
+        <hr/>
+    <p>Цей інструмент копіює об&rsquo;єкти з двох шарів у новий шар. Шари, які треба об&rsquo;єднати, повинні всі містити однакові типи об'єктів (точки, лінії або області). Способом об'єднання й копіювання полів з вхідних шарів можна управляти. Наприклад:
+        <ul>
+            <li>Я маю три шари для Англії, Уельсу та Шотландії, і мені потрібен одиночний шар Великобританії. 
+            </li>
+            <li>У мене ж 12 шарів, кожен з яких містить інформацію про ділянки для суміжних тауншипів. Мені треба об&rsquo;єднати їх в одиночний шар, зберігши тільки ті поля, які мають однакову назву та тип у 12 вхідних шарах.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть об&rsquo;єднані тільки об&rsquo;єкти, видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть об&rsquo;єднані всі об'єкти в обох шарах, навіть якщо вони знаходяться за межами поточного екстенту карти.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Вибрати шар</h2></div>
+        <hr/>
+        <div>
+            <p>Точкові, лінійні або площадні об&rsquo;єкти, які треба об&rsquo;єднати з шарами, вказаними нижче. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Вибрати шар для об'єднання</h2></div>
+        <hr/>
+        <div>
+            <p>Виберіть шар для об&rsquo;єднання з першим шаром.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Змінити поля об'єднання</h2></div>
+        <hr/>
+        <div>
+            <p>За замовчуванням всі поля з обох вхідних шарів буде перенесено у вихідні дані. Змінити метод перенесення полів у вихідні дані можна наступним чином:
+                <ul>
+                    <li> <b>Перейменувати</b> &mdash; поле буде перейменовано у вихідних даних.
+                    </li>
+                    <li> <b>Вилучити</b> &mdash; поле буде видалено з вихідних даних.
+                    </li>
+                    <li> <b>Зіставити</b> &mdash; назви полів робляться еквівалентними. Значення поля з шару, який треба об&rsquo;єднати, буде скопійовано у зіставлене вихідне поле.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Якщо обидва шари містять поле з ідентичною назвою та типом даних, зміст обох полів буде об&rsquo;єднано в одне поле з цією назвою. Це не застосовується до полів, де використовується опція  <b>Зіставити</b> у параметрі <b>Змінити поля об'єднання</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

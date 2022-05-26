@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tìm Cụm điểm</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="T&igrave;m Cụm điểm"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ  T&igrave;m Cụm điểm sẽ t&igrave;m c&aacute;c cụm đối tượng điểm trong phạm vi nhiễu xung quanh căn cứ tr&ecirc;n ph&acirc;n bổ kh&ocirc;ng gian của ch&uacute;ng.
+    </p>
+    <p>V&iacute; dụ: một tổ chức phi ch&iacute;nh phủ đang nghi&ecirc;n cứu một căn bệnh g&acirc;y dịch hại cụ thể. Tổ chức n&agrave;y c&oacute; một bộ dữ liệu điểm thể hiện c&aacute;c hộ gia đ&igrave;nh trong khu vực nghi&ecirc;n cứu, một số gia đ&igrave;nh bị nhiễm bệnh, c&ograve;n một số th&igrave; kh&ocirc;ng. Bằng c&aacute;ch sử dụng c&ocirc;ng cụ  T&igrave;m Cụm điểm, một nh&agrave; ph&acirc;n t&iacute;ch c&oacute; thể x&aacute;c định c&aacute;c cụm hộ gia đ&igrave;nh bị nhiễm bệnh, gi&uacute;p đ&aacute;nh dấu lại khu vực để bắt đầu việc điều trị v&agrave; ti&ecirc;u diệt s&acirc;u bệnh.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp cần tìm các cụm cho nó</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm c&oacute; c&aacute;c cụm trong đ&oacute;. C&aacute;c lớp phải nằm trong một tham chiếu kh&ocirc;ng gian được tham chiếu đến hoặc c&oacute; một tham chiếu kh&ocirc;ng gian đang xử l&yacute; thiết lập đến một hệ tọa độ tham chiếu th&ocirc;ng qua  <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b>.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Chọn phương pháp gom cụm sẽ sử dụng</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p gom cụm sẽ sử dụng để ph&acirc;n biệt c&aacute;c cụm đối tượng điểm với nhiễu xung quanh. Bạn c&oacute; thể chọn sử dụng một khoảng c&aacute;ch x&aacute;c định hoặc thuật to&aacute;n gom cụm tự điều chỉnh.
+            </p>
+            <p>Khoảng c&aacute;ch x&aacute;c định (DBSCAN) sử dụng phạm vi t&igrave;m kiếm được chỉ định để ph&acirc;n t&aacute;ch c&aacute;c cụm d&agrave;y đặc khỏi nhiễu của bộ ph&acirc;n t&iacute;ch c&uacute; ph&aacute;p. Khoảng c&aacute;ch x&aacute;c định (DBSCAN) nhanh hơn nhưng chỉ ph&ugrave; hợp nếu &aacute;p dụng được phạm vi t&igrave;m kiếm r&otilde; r&agrave;ng, vốn c&oacute; khả năng x&aacute;c định tất cả c&aacute;c cụm c&oacute; thể c&oacute;. Khoảng c&aacute;ch x&aacute;c định (DBSCAN) t&igrave;m c&aacute;c cụm c&oacute; mật độ tương tự.
+            </p>
+            <p>Tự điều chỉnh (HDBSCAN) kh&ocirc;ng y&ecirc;u cầu chỉ định phạm vi t&igrave;m kiếm nhưng l&agrave; phương ph&aacute;p tốn nhiều thời gian hơn. Tự điều chỉnh (HDBSCAN) t&igrave;m c&aacute;c cụm điểm tương tự như t&ugrave;y chọn khoảng c&aacute;ch x&aacute;c định (DBSCAN) nhưng sử dụng c&aacute;c phạm vi t&igrave;m kiếm kh&aacute;c nhau cho ph&eacute;p c&aacute;c cụm c&oacute; mật độ kh&aacute;c nhau. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Số điểm tối thiểu cần xem xét một cụm</h2></div>
+        <hr/>
+        <div>
+            <p>Tham số n&agrave;y được sử dụng kh&aacute;c nhau t&ugrave;y thuộc v&agrave;o việc chọn phương ph&aacute;p gom cụm n&agrave;o:
+            </p>
+            <p>
+                <ul>
+                    <li>Khoảng c&aacute;ch x&aacute;c định (DBSCAN)&mdash;chỉ định số lượng đối tượng phải được t&igrave;m thấy trong khoảng c&aacute;ch nhất định của một điểm để điểm đ&oacute; bắt đầu h&igrave;nh th&agrave;nh một cụm. Khoảng c&aacute;ch được x&aacute;c định bằng c&aacute;ch sử dụng  <b>Giới hạn phạm vi t&igrave;m kiếm đến tham số</b>.
+                    </li>
+                    <li>Tự điều chỉnh (HDBSCAN)&mdash;chỉ định số lượng đối tượng l&acirc;n cận mỗi điểm (bao gồm cả điểm ch&iacute;nh n&oacute;) sẽ được xem x&eacute;t khi ước t&iacute;nh mật độ. Số n&agrave;y cũng l&agrave; k&iacute;ch thước cụm tối thiểu được ph&eacute;p khi tr&iacute;ch xuất c&aacute;c cụm.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Giới hạn phạm vi tìm kiếm đến</h2></div>
+        <hr/>
+        <div>
+            <p>Khi sử dụng khoảng c&aacute;ch x&aacute;c định (DBSCAN), th&ocirc;ng số n&agrave;y l&agrave; khoảng c&aacute;ch để t&igrave;m  <b>Số điểm tối thiểu cần xem x&eacute;t một cụm</b> trong đ&oacute;. Kh&ocirc;ng sử dụng th&ocirc;ng số n&agrave;y khi chọn tự điều chỉnh (HDBSCAN) l&agrave;m phương thức gom cụm.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

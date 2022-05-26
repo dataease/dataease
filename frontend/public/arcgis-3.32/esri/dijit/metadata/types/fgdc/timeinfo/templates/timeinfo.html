@@ -1,0 +1,106 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'timeinfo',label:'${i18nFgdc.timeinfo.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/ElementChoice">
+
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'sngdate',showHeader:false,
+          label:'${i18nFgdc.timeinfo.sngdate}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'caldate',
+            label:'${i18nFgdc.timeinfo.caldate}',
+            alternateValues:['Unknown']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputDate">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'time',minOccurs:0,
+            label:'${i18nFgdc.timeinfo.time}',
+            alternateValues:['Unknown']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputTime">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'mdattim',showHeader:false,
+          label:'${i18nFgdc.timeinfo.mdattim}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'sngdate',minOccurs:2,maxOccurs:'unbounded',
+            label:'${i18nFgdc.timeinfo.mdattim}'">
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'caldate',
+              label:'${i18nFgdc.timeinfo.caldate}',
+              alternateValues:['Unknown']">
+            <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputDate">
+              <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+                data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+            </div>
+          </div>
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'time',minOccurs:0,
+              label:'${i18nFgdc.timeinfo.time}',
+              alternateValues:['Unknown']">
+            <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputTime">
+              <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+                data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'rngdates',showHeader:false,
+          label:'${i18nFgdc.timeinfo.rngdates}'">
+
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'begdate',
+            label:'${i18nFgdc.timeinfo.begdate}',
+            alternateValues:['Unknown']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputDate">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'begtime',minOccurs:0,
+            label:'${i18nFgdc.timeinfo.begtime}',
+            alternateValues:['Unknown']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputTime">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+          </div>
+        </div>
+
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'enddate',
+            label:'${i18nFgdc.timeinfo.enddate}',
+            alternateValues:['Unknown','Present']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputDate">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Present',label:'${i18nFgdc.alternates.present}'"></div>
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'endtime',minOccurs:0,
+            label:'${i18nFgdc.timeinfo.endtime}',
+            alternateValues:['Unknown']">
+          <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputTime">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

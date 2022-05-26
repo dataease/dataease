@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/GenerateTessellations",{chooseShape:"Escolher forma",defineExtent:"Definir extens\u00e3o",defineBin:"Definir tamanho de bin especificando",area:"\u00c1rea",distance:"Dist\u00e2ncia",resultLayerName:"Nome da camada resultante",hexagon:"Hex\u00e1gono",transverseHexagon:"Hex\u00e1gono transversal",square:"Quadrado",triangle:"Tri\u00e2ngulo",diamond:"Diamante",sameAsDisplay:"O mesmo que o em exibi\u00e7\u00e3o",emptyBinSize:"O tamanho de bin n\u00e3o pode estar vazio",
+currentExtent:"extens\u00e3o atual",intersectExtent:"Manter apenas tessela\u00e7\u00f5es de intersec\u00e7\u00e3o",outputLayerName:"Gerar tessela\u00e7\u00f5es em ${extentLayerName}",itemDescription:"Extens\u00e3o de ${extentLayerName} usada.",itemTags:"Resultado da an\u00e1lise, Gerar tessela\u00e7\u00f5es, ${extentLayerName}",itemSnippet:"Camada de elementos gerada a partir de Gerar tessela\u00e7\u00f5es"});

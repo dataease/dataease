@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ausreißer suchen</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Ausrei&szlig;er suchen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Ausrei&szlig;er suchen&quot; ermittelt, ob die r&auml;umlichen Muster in den Daten statistisch signifikante Ausrei&szlig;er aufweisen. 
+        <ul>
+            <li>Gibt es ungew&ouml;hnliche Fl&auml;chen in den Mustern Ihrer Daten (Verbrechensf&auml;lle, B&auml;ume, Verkehrsunf&auml;lle)?  Wie kann dies sichergestellt werden?
+            </li>
+            <li>Haben Sie wirklich einen statistisch signifikanten Ausrei&szlig;er (f&uuml;r Ausgaben, S&auml;uglingssterblichkeit, durchweg hohe Pr&uuml;fungsergebnisse) gefunden oder lie&szlig;en sich andere Erkenntnisse aus der Karte ziehen, wenn die Art der Symbolisierung ge&auml;ndert w&uuml;rde?
+            </li>
+        </ul>
+        Mithilfe des Werkzeugs &quot;Ausrei&szlig;er suchen&quot; k&ouml;nnen Sie diese Fragen mit Sicherheit beantworten.
+    </p>
+    <p>Immer wenn wir einen Blick auf eine Karte werfen, ist es ganz nat&uuml;rlich f&uuml;r unsere Augen und unser Gehirn, automatisch nach Mustern zu suchen, auch wenn gar keine vorhanden sind.  Demzufolge kann es schwierig sein, zu wissen, ob die Muster in den Daten das Ergebnis echter r&auml;umlicher Prozesse sind oder ob es sich lediglich um ein zuf&auml;lliges Ergebnis handelt. Aus diesem Grund verwenden Forscher und Analysten Methoden wie &quot;Ausrei&szlig;er suchen&quot; (Anselin Local Moran's I), um r&auml;umliche Muster zu quantifizieren.  Wenn Sie eine statistisch signifikante Ausrei&szlig;er- oder Cluster-Bildung in Ihren Daten finden, verf&uuml;gen Sie &uuml;ber wertvolle Informationen.  Zu wissen, wo und wann Ausrei&szlig;er auftreten, kann wichtige Aufschl&uuml;sse &uuml;ber die Prozesse geben, die die Muster f&ouml;rdern, die Sie sehen.  Der n&auml;chste Schritte besteht in der Untersuchung, warum die Dinge in diesen Ausrei&szlig;gebieten so signifikant anders sind.  Zu wissen, dass die Anzahl der Wohnungseinbr&uuml;che in einer bestimmten Nachbarschaft beispielsweise signifikant h&ouml;her ausf&auml;llt, obwohl sie von Nachbarschaften umringt ist, bei denen die Anzahl der Wohnungseinbr&uuml;che niedrig ist, kann eine wichtige Rolle spielen, wenn Sie effektive Pr&auml;ventionsstrategien entwerfen, begrenzte polizeiliche Ressourcen verteilen, Nachbarschafts&uuml;berwachungsprogramme initiieren, strafrechtliche Ermittlungen durchf&uuml;hren oder potenzielle Verd&auml;chtige identifizieren m&uuml;ssen.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Layer auswählen, für die Ausreißer berechnet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt- oder Fl&auml;chen-Layer, zu dem Ausrei&szlig;er gefunden werden. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Ausreißer suchen von</h2></div>
+        <hr/>
+        <div>
+            <p>Diese Analyse beantwortet die Frage: Wo befinden sich die r&auml;umlichen Ausrei&szlig;er in meinen Daten?  
+            </p>
+            <p>Wenn es sich bei Ihren Daten um Punkte handelt und Sie  <b>Punktzanzahl</b> ausw&auml;hlen, wertet dieses Werkzeug die r&auml;umliche Anordnung der Punkt-Features aus, um die folgende Frage zu beantworten: Wo werden Punkte unerwartet geclustert oder verteilt?
+            </p>
+            <p>Wenn Sie ein Feld ausw&auml;hlen, wird die r&auml;umliche Anordnung der mit jedem Feature verkn&uuml;pften Werte von diesem Werkzeug ausgewertet, um die folgenden Fragen zu beantworten: Wo bilden sich niedrige Werte, die von hohen Werten umringt sind?  Wo bilden sich hohe Werte, die von niedrigen Werten umringt sind?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Punkte zählen innerhalb</h2></div>
+        <hr/>
+        <div>
+            <p>In der Standardeinstellung werden Punkte in einem vom Werkzeug erstellten Netz basierend auf Ihren Punktdaten gez&auml;hlt. Alternativ k&ouml;nnen Sie entweder Punkte in einem Hexagongitternetz z&auml;hlen oder einen Fl&auml;chen-Layer bereitstellen (diese spiegeln in der Regel Bezirke f&uuml;r administrative Berichtserstellung wie Z&auml;hlbezirke, Stadtgrenzen oder Landkreise wider), um die folgende Frage zu beantworten: Gibt es angesichts der Anzahl von Punkten innerhalb eines Fl&auml;chen-Features Standorte mit statistisch signifikant hohen oder niedrigen Punktzahlen im Vergleich zu ihren Nachbarschaften?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Bereiche festlegen, in denen Punkte möglich sind</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen oder stellen Sie einen Layer bereit, der definiert, wo Ereignisse m&ouml;glich sind, um die folgende Frage zu beantworten: Gibt es innerhalb der Fl&auml;chen Standorte mit unerwartet hohen oder niedrigen Punktkonzentrationen?   
+            </p>
+            <p>Die von Ihnen dargestellten Fl&auml;chen-Features bzw. in den Fl&auml;chen-Layern angegebenen Features sollten definieren, wo Punkte m&ouml;glicherweise auftreten k&ouml;nnten. Um diese Fl&auml;chen zu zeichnen, klicken Sie auf die  <b>Zeichenschaltfl&auml;che</b> und anschlie&szlig;end auf eine Position auf der Karte, um eine Fl&auml;che zu erstellen.  Um weitere Fl&auml;chen zu zeichnen, klicken Sie erneut auf die Zeichenschaltfl&auml;che und klicken Sie dann auf eine Position auf der Karte, um den Vorgang fortzusetzen.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Teilen durch</h2></div>
+        <hr/>
+        <div>
+            <p>In einigen Situationen empfiehlt es sich, Muster zu analysieren, die zugrunde liegende Verteilungen ber&uuml;cksichtigen. Wenn Ihre Punkte beispielsweise Verbrechen darstellen, f&uuml;hrt das Teilen durch die Gesamtbev&ouml;lkerung zu einer Analyse von Verbrechen pro Kopf statt zu einer groben Anzahl der Verbrechensf&auml;lle.  Die Auswahl eines Attributs, durch das geteilt werden soll, wird als Normalisierung bezeichnet.
+            </p>
+            <p> Durch Auswahl von <i>Esri Population</i> wird jedes Fl&auml;chen-Feature mit Geodaten in Form von Bev&ouml;lkerungswerten angereichert, die anschlie&szlig;end als Attribut verwendet werden, durch das geteilt wird.  F&uuml;r diese Option werden Credits verbraucht.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimieren für</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen eine Optimierung auf Geschwindigkeit oder Genauigkeit festlegen.  
+            </p>
+            <p>Dieses Werkzeug verwendet Permutationen, um festzulegen, wie unterschiedlich das r&auml;umliche Muster Ihrer Daten verglichen mit den Standards ist.  Eine h&ouml;here Anzahl von Permutationen f&uuml;hrt zu einer h&ouml;heren Genauigkeit, steigert aber auch die Verarbeitungszeit.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Optionen</h2></div>
+        <hr/>
+        <div>
+            <p>Das Werkzeug findet optimale Einstellungen f&uuml;r standardm&auml;&szlig;ige  <b>Zellengr&ouml;&szlig;e</b> und <b>Entfernungsband</b> basierend auf den Charakteristiken Ihrer Daten. Wenn Sie jedoch &uuml;ber eine bestimmte <b>Zellengr&ouml;&szlig;e</b> oder ein bestimmtes <b>Entfernungsband</b> verf&uuml;gen, die oder das bei Ihrer Analyse sinnvoll ist, k&ouml;nnen Sie <b>Optionen</b> verwenden, um diese Werte festzulegen.
+            </p>
+            <p>Die Einstellung  <b>Optionen</b> ist n&uuml;tzlich, wenn verschiedene Datasets analysiert werden, wodurch <b>Entfernungsband</b> und <b>Zellengr&ouml;&szlig;e</b> &uuml;ber mehrere Datasets hinweg konsistent gehalten werden k&ouml;nnen.  Dann k&ouml;nnen Sie die Ergebnisse vergleichen (zum Beispiel Adipositas- und Diabetesraten oder sogar Kriminalit&auml;tsraten aus zwei verschiedenen Jahren).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gr&ouml;&szlig;e der Gitterzellen, die zum Z&auml;hlen der Punkte darin verwendet werden.  
+            </p>
+            <p>Beim Verwenden eines Hexagongitters, um die Punkte darin zu z&auml;hlen, wird diese Entfernung als H&ouml;he der Hexagone verwendet.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Entfernungsband</h2></div>
+        <hr/>
+        <div>
+            <p>Jedes Feature wird im Kontext benachbarter Features analysiert, die sich innerhalb der Entfernung befinden, die Sie angeben.  Dieses Werkzeug berechnet eine Standardentfernung f&uuml;r Sie oder Sie k&ouml;nnen diese Option verwenden, um eine bestimmte Entfernung festzulegen, die f&uuml;r Ihre Analyse sinnvoll ist. 
+            </p>
+            <p>Wenn Sie beispielsweise Pendelmuster untersuchen und wissen, dass die durchschnittliche Fahrtdauer zur Arbeit beispielsweise 15&nbsp;Kilometer betr&auml;gt, k&ouml;nnen Sie ein Entfernungsband von 15&nbsp;Kilometern verwenden.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie einen Namen f&uuml;r den Layer an, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Dieser Ergebnis-Layer zeigt statistisch signifikante Ausrei&szlig;er mit hohen und niedrigen Werten bzw. Punktzahlen an. Wenn der Name des Ergebnis-Layers bereits vorhanden ist, werden Sie aufgefordert, ihn umzubenennen.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

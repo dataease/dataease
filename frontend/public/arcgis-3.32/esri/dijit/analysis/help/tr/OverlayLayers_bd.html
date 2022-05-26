@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Katmanları Örtüştür</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Katmanları &Ccedil;akıştır"></h2>
+        <hr/>
+    <p>Katmanları &Ccedil;akıştır, iki veya daha fazla katmanı birleştirerek tek bir katman haline getirir. Bir &ccedil;akıştırmayı bir dizi haritanın &uuml;st &uuml;ste getirilerek istifteki t&uuml;m bilgileri i&ccedil;eren tek bir harita oluşturulması olarak d&uuml;ş&uuml;nebilirsiniz. &Ccedil;akışma daha &ccedil;ok bir &ccedil;izgi &ccedil;akışma &ccedil;alışmasıdır; &ccedil;akışma yer alan detayların t&uuml;m &ouml;znitelikleri son &uuml;r&uuml;ne aktarılır. &Ccedil;akıştırma, coğrafyanın en temel sorularından birine cevap vermek i&ccedil;in kullanılır: Neyin &uuml;st&uuml;nde ne var? Aşağıda &ouml;rnekleri verilmiştir:
+        <ul>
+            <li>Hangi parseller 100 yıllık taşkın yatağı d&uuml;zlemi i&ccedil;indedir? (&quot;İ&ccedil;inde&quot;, &quot;&uuml;st&uuml;nde&quot; demenin bir diğer yoludur.)
+                  
+            </li>
+            <li>Hangi arazi kullanımı hangi toprak t&uuml;r&uuml; &uuml;zerinde?
+                 
+            </li>
+            <li>Hangi kuyular terk edilmiş askeri &uuml;slerin i&ccedil;inde?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi ve &ccedil;akıştırma katmanlarındaki detaylar yerleştirilir. 
+ İşaretli değilse, hem girdi katmanı hem de &ccedil;akıştırma katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile yerleştirilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Girdi katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;akıştırma yapılacak olan nokta, &ccedil;izgi ya da alan katmanıdır.
+            </p>
+            <p class="OnlineOnly">Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, aşağı a&ccedil;ılan listenin altında bulunan  <b>Living Atlas Analiz Katmanı Se&ccedil;</b> veya <b>analiz Katmanı Se&ccedil;</b> &ouml;ğesini de belirleyebilirsiniz. Bu, pek &ccedil;ok analiz i&ccedil;in kullanılabilen katman koleksiyonu i&ccedil;eren bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Çakıştırma katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi katmanında &ccedil;akıştırılacak katman.  
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Çakıştırma yöntemi seç</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;akıştırma y&ouml;ntemi, girdi katmanıyla yer paylaşım katmanının nasıl birleştirileceğini tanımlar.  
+
+                <ul>
+                    <li> <b>Kesişim</b>; Sonu&ccedil;, yalnızca yer paylaşım katmanında yer alan ve girdi katmanındaki detaylara &ccedil;akıştırılan detayları ya da detay kısımlarını i&ccedil;erecektir. &Ccedil;izgi veya alan detaylarını kesiştirirken &ccedil;ıktı olarak istediğiniz detay t&uuml;r&uuml;n&uuml; belirtme se&ccedil;eneğiniz vardır.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Noktası olan Noktalar
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Noktalar ve noktalar girdisi">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Noktalar ve noktası olan noktalar &ccedil;ıktısı">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>&Ccedil;izgileri olan &Ccedil;izgiler 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="&Ccedil;izgiler ve &ccedil;izgiler girdisi">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="&Ccedil;izgiler ve &ccedil;izgi &ccedil;ıkışlı &ccedil;izgiler ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Alanları olan Alanlar
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Alanlar ve alanlar girdisi">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Alanlar ve alanı olan alanlar &ccedil;ıktısı">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Sil</b>&mdash;Sonu&ccedil;, yer paylaşım katmanında yer alan ve girdi katmanındaki detaylarla &ouml;rt&uuml;şmeyen detayları ya da detay kısımlarını i&ccedil;erir.  &Ccedil;akıştırma katmanı alan, &ccedil;izgi ya da nokta detayları i&ccedil;erebilir.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Girdi ve &ccedil;akıştırma katmanları ile aynı detay t&uuml;r&uuml;ne (alanlar, &ccedil;izgiler veya noktalar) sahip olacaktır. Varsayılan ad, &ccedil;akıştırma y&ouml;ntemine ve girdi katmanı adına g&ouml;redir. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

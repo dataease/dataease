@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>중심 및 분산 요약</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="중심 및 분산 요약"></h2>
+        <hr/>
+    <p>이 도구는 중심 피처와 방향 분포를 찾습니다.
+이 도구를 사용하여 다음 질문에 답할 수 있습니다.
+        <ul>
+            <li>중심이 어디인가요?
+            </li>
+            <li>다른 모든 피처에서 가장 접근하기 쉬운 피처는 무엇인가요?
+            </li>
+            <li>피처는 얼마나 분산, 압축 또는 통합되어 있나요?
+            </li>
+            <li>방향에 대한 추세가 있나요?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 입력 레이어의 피처만 분석됩니다.  선택하지 않으면 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>설명할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>포인트, 라인, 영역 레이어는 중심 피처 및 방향 분포를 찾는 데 사용됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>요약 유형</h2></div>
+        <hr/>
+        <div>
+            <p>중심 및 분산 요약의 방법입니다. 
+            </p>
+            <ul>
+                <li>중심 피처 - 데이터셋에서 가장 중심에 위치한 피처를 식별합니다.
+                </li>
+                <li>평균 중심 - 피처 집합의 지리적 중심(또는 집중 중심)을 식별합니다.
+                </li>
+                <li>중앙값 중심 - 데이터셋의 피처까지의 전체 유클리드 거리를 최소화하는 위치를 식별합니다.
+                </li>
+                <li>타원 - 표준편차 타원을 생성하여 지리 피처의 공간 특성을 요약합니다. 중심 경향, 분산 및 방향 경향 타원의 크기는 1, 2 또는 3 표준편차로 조정할 수 있습니다.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>가중치 기준(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>상대적 중요성에 따라 위치에 가중치를 적용하는 데 사용되는 필드입니다. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>그룹화 기준(옵션)</h2></div>
+        <hr/>
+        <div>
+            <p>중심 피처 또는 분산의 개별 계산을 위해 피처를 그룹화하는 데 사용되는 필드입니다. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nb/ClassifyPixelsUsingDeepLearning",{toolDefine:"Klassifiser piksler ved hjelp av dypl\u00e6ring",outputLayerName:"${layername}_classified",modelLabel:"Velg dypl\u00e6ringsmodellen som skal brukes til \u00e5 klassifisere piksler",modelArgsLabel:"Angi argument for dypl\u00e6ringsmodell",nameLabel:"Navn",valueLabel:"Verdi",queryModelArgsMsg:"Sp\u00f8rring i modellargumenter...",analysisLayerLabel:"Velg bilde som skal brukes til \u00e5 klassifisere piksler",itemDescription:"Bildeanalysetjeneste generert fra Klassifiser piksler ved hjelp av dypl\u00e6ring",
+itemTags:"Rasteranalyseresultat, Klassifiser piksler ved hjelp av dypl\u00e6ring, ${layername}",itemSnippet:"Bildeanalysetjeneste generert fra Klassifiser piksler ved hjelp av dypl\u00e6ring"});

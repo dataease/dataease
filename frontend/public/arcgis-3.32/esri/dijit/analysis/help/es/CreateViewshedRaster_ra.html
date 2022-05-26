@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear cuenca visual</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Herramienta Crear cuenca visual"></h2>
+        <hr/>
+    <p>Esta herramienta identifica las &aacute;reas que puede ver un observador y refleja la topograf&iacute;a de la superficie. Las ubicaciones de puntos de entrada pueden representar observadores (como por ejemplo las personas en el suelo o los puestos de vigilancia en una atalaya) u objetos observados (como por ejemplo aerogeneradores, torres de agua, veh&iacute;culos u otras personas). Los resultados definen las &aacute;reas que se pueden ver desde las torres de observaci&oacute;n.
+    </p>
+    <p>Tanto los observadores como los objetos observados pueden tener una altura por encima del suelo y estas alturas se utilizan para determinar la visibilidad. Por ejemplo, una cuenca visual calculada para aerogeneradores de 90 metros y una persona de 1,80 m de pie en el suelo normalmente ser&aacute; mayor que una cuenca visual calculada para aerogeneradores de 60 metros y una persona de 1,50 m.
+    </p>
+    <p>La capa de resultados registra la cantidad de veces que los puntos de observaci&oacute;n de entrada pueden ver cada ubicaci&oacute;n de celda en el r&aacute;ster de superficie de entrada. Las celdas no visibles reciben valores NoData.
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se analizar&aacute;n el &aacute;rea de r&aacute;ster y los puntos de observador que est&eacute;n visibles en la extensi&oacute;n de mapa actual. Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todos los puntos de observador de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Superficie de elevación</h2></div>
+        <hr/>
+        <div>
+            <p>La superficie de elevaci&oacute;n que se va a utilizar para calcular la cuenca visual.
+            </p>
+            <p>Si la unidad vertical de la superficie de entrada es distinta de la unidad horizontal, por ejemplo, cuando los valores de elevaci&oacute;n se representan en pies pero el sistema de coordenadas est&aacute; en metros, la superficie debe tener definido un sistema de coordenadas verticales. Esto se debe a que la herramienta utiliza las unidades verticales (Z) y horizontales para calcular un factor z para el an&aacute;lisis de la cuenca visual. Sin un sistema de coordenadas verticales y, por lo tanto, sin informaci&oacute;n de unidad z disponible, la herramienta considerar&aacute; que la unidad Z es la misma que la unidad XY. Como resultado, se utilizar&aacute; un factor z interno de 1.0 para el an&aacute;lisis, lo que puede dar lugar a resultados inesperados.
+            </p>
+            <p>La superficie de elevaci&oacute;n puede ser un entero o un punto flotante.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Entidades de puntos que representan las ubicaciones del observador</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos que representan las ubicaciones del observador al calcular las cuencas visuales.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>El m&eacute;todo de optimizaci&oacute;n que se va a utilizar para calcular la cuenca visual.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Este m&eacute;todo optimiza la velocidad de procesamiento y ajusta la exactitud del resultado para obtener un mayor rendimiento. Esta es la opci&oacute;n predeterminada.
+
+                </li>
+                <li>Accuracy &mdash; 
+Este m&eacute;todo est&aacute; optimizado para la exactitud en los resultados, en detrimento de un tiempo de procesamiento m&aacute;s largo.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distancia de visualización máxima</h2></div>
+        <hr/>
+        <div>
+            <p>Introduzca una distancia de corte en la que se detendr&aacute; el c&oacute;mputo de las &aacute;reas visibles. M&aacute;s all&aacute; de esta distancia, no se determinar&aacute; si los puntos de observador y los otros objetos pueden verse mutuamente.
+            </p>
+            <p>Puede especificar un valor num&eacute;rico que represente una distancia lineal o seleccionar un campo num&eacute;rico de las entidades de observador de entrada. Si se indica un campo, los valores incluidos en &eacute;l deber&aacute;n estar expresados en la misma unidad que la unidad xy de la superficie de elevaci&oacute;n de entrada.
+            </p>
+            <p>Tenga en cuenta que con valores m&aacute;s altos se incrementar&aacute; el tiempo de c&oacute;mputo. Salvo que se especifique un valor, la distancia m&aacute;xima predetermina se calcular&aacute; seg&uacute;n la resoluci&oacute;n y la extensi&oacute;n de la superficie de elevaci&oacute;n de entrada.
+            </p>
+            <p>Este par&aacute;metro es &uacute;til para modelar determinados fen&oacute;menos. Por ejemplo, limitando la extensi&oacute;n de la visibilidad, puede modelar condiciones climatol&oacute;gicas como, por ejemplo, una ligera niebla. De forma parecida, al restringir la extensi&oacute;n de la visibilidad puede controlar la hora del d&iacute;a aproximando el efecto del anochecer.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distancia de visualización máxima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distancia de visualización mínima</h2></div>
+        <hr/>
+        <div>
+            <p>Introduzca la distancia en la que debe empezar el c&oacute;mputo de las &aacute;reas visibles. Las celdas en la superficie que est&aacute;n m&aacute;s cerca que esta distancia no son visibles en la salida, pero pueden seguir bloqueando la visibilidad de las celdas entre la distancia de visualizaci&oacute;n m&iacute;nima y m&aacute;xima.
+            </p>
+            <p>Puede especificar un valor num&eacute;rico que represente una distancia lineal o seleccionar un campo num&eacute;rico de las entidades de observador de entrada. Si se indica un campo, los valores incluidos en &eacute;l deber&aacute;n estar expresados en la misma unidad que la unidad xy de la superficie de elevaci&oacute;n de entrada.
+            </p>
+            <p>Este par&aacute;metro es &uacute;til para controlar el &aacute;rea de an&aacute;lisis de la cuenca visual a una distancia espec&iacute;fica desde el observador. Por ejemplo, si est&aacute; evaluando la visibilidad desde lo alto de un edificio hacia un parque a lo lejos, puede definir una distancia de visualizaci&oacute;n m&iacute;nima para excluir las &aacute;reas cercanas que no sean de inter&eacute;s y mejorar as&iacute; la velocidad de procesamiento.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distancia de visualización mínima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>La distancia es 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique si los par&aacute;metros de distancia de visualizaci&oacute;n m&iacute;nima y m&aacute;xima se van a medir de forma tridimensional o bidimensional. Si la opci&oacute;n est&aacute; activada, las distancias de visualizaci&oacute;n se tratan como una distancia 3D. Si est&aacute; desactivada, se tratan como distancias 2D.
+            </p> 
+            <p>Una distancia 2D es la distancia lineal simple medida entre un observador y el objetivo utilizando sus ubicaciones proyectadas a nivel del mar. Una distancia 3D ofrece un valor m&aacute;s realista al tener en cuenta las alturas relativas.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevación de ubicaciones de observador</h2></div>
+        <hr/>
+        <div>
+            <p>Introduzca la elevaci&oacute;n de las ubicaciones del observador.
+            </p>
+            <p>Puede especificar un valor num&eacute;rico que represente la elevaci&oacute;n de todos los observadores o como un campo que represente la elevaci&oacute;n de cada observador. Si se indica un campo, el valor incluido en &eacute;l deber&aacute; estar expresado en la misma unidad que la unidad Z de la superficie de elevaci&oacute;n de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevación de ubicaciones de observador</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Altura de observadores</h2></div>
+        <hr/>
+        <div>
+            <p>Introduzca la altura por encima del suelo para las ubicaciones de observador.
+            </p> 
+            <p>Puede especificar un valor num&eacute;rico para la altura o un campo de las entidades de observador de entrada. Si se indica un campo, el valor incluido en &eacute;l deber&aacute; estar expresado en la misma unidad que la unidad z de la superficie de elevaci&oacute;n de entrada.
+            </p>
+            <p>El valor predeterminado es 6 pies. Si va a observar desde una ubicaci&oacute;n elevada como, por ejemplo, una torre de observaci&oacute;n o un edificio alto, utilice esa altura en su lugar. Durante el c&aacute;lculo de la cuenca visual, este valor se agrega a la elevaci&oacute;n del observador si se ha especificado; de lo contrario, se agrega al valor z de la superficie interpolada.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Altura de observadores</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Altura de objetivo</h2></div>
+        <hr/>
+        <div>
+            <p>Introduzca la altura de las estructuras o personas sobre el suelo utilizada para establecer la visibilidad.
+            </p>
+            <p>Puede especificar un valor num&eacute;rico para la altura o un campo de las entidades de observador de entrada. Si se indica un campo, el valor incluido en &eacute;l deber&aacute; estar expresado en la misma unidad que la unidad z de la superficie de elevaci&oacute;n de entrada.
+            </p>
+            <p>La cuenca visual resultante identifica las &aacute;reas en las que un punto de observador puede ver estos objetos en el suelo. Lo contrario tambi&eacute;n es cierto; los objetos en el suelo pueden ver un punto de observador. 
+            </p>
+            <p>A continuaci&oacute;n se indican algunos ejemplos de la configuraci&oacute;n de la altura del objetivo:
+            </p>
+            <ul>
+                <li>Si los puntos de entrada representan aerogeneradores y desea determinar en qu&eacute; lugares puede verlos una persona que est&eacute; de pie en el suelo, introduzca la altura media de una persona (aproximadamente 1,80 metros).
+                    
+
+                </li>
+                <li>Si los puntos de entrada representan atalayas de vigilancia de incendios y desea determinar qu&eacute; atalayas de vigilancia pueden ver un penacho de humo de 6 metros o m&aacute;s de altura, introduzca 6 metros para la altura del objetivo.
+                    
+
+                </li>
+                <li>Si los puntos de entrada representan miradores en carreteras o senderos y desea determinar en qu&eacute; lugares pueden verse aerogeneradores de 120 metros o m&aacute;s de altura, introduzca 1,20 metros para la altura.
+                    
+
+                </li>
+                <li>Si los puntos de entrada representan miradores y desea determinar la superficie del suelo que pueden ver las personas que est&eacute;n de pie en el mirador, introduzca cero para la altura del objetivo. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Altura de observadores</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Altura de salida que va a ser visible</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre del resultado de nivel sobre el suelo (AGL) de salida. El resultado del AGL es un r&aacute;ster en el que cada valor de celda es la altura m&iacute;nima que se debe agregar a una celda por lo dem&aacute;s no visible para que resulte visible al menos para un observador. Se asignar&aacute; 0 a las celdas que ya estaban visibles en este r&aacute;ster de salida.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

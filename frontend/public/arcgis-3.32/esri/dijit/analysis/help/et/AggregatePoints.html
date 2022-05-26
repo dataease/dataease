@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agregeeri punktid</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Agregeeri punktid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist t&ouml;&ouml;tab punktobjektide kihi ja pindobjektide kihi alusel. T&ouml;&ouml;riist tuvastab esmalt, millised punktid langevad igasse alasse. P&auml;rast vastavasse pindobjekti j&auml;&auml;vate punktide koguarvu m&auml;&auml;ramist arvutatakse ala k&otilde;ikide punktide statistika. K&otilde;ige lihtsam statistika on punktide arv alas, kuid kasutada v&otilde;ib ka muud statistikat. 
+    </p>
+    <p>Kirjeldatud meetodit saab kasutada n&auml;iteks olukorras, kui teil on olemas kohvikute asukohad ja pindobjektid teatud maakonnas ning soovite summeerida selle alusel kohvikute m&uuml;&uuml;gitulu maakondade kaupa. Eeldades, et kohvikute kihil on m&auml;&auml;ratud atribuut  <i>TOTAL_SALES</i>, saate selle kaudu summeerida atribuudi <i>TOTAL_SALES</i> v&auml;&auml;rtused igas haldus&uuml;ksuses v&otilde;i leida atribuudi <i>TOTAL_SALES</i> miinimumi ja/v&otilde;i maksimumi igas haldus&uuml;ksuses v&otilde;i m&uuml;&uuml;gitulu standardh&auml;lbe vastavas haldus&uuml;ksuses.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kasutatakse anal&uuml;&uuml;sil ainult neid sisendpunkti- ja alakihi objekte, mis on praegu kaardil n&auml;htavad.  Kui see ruut pole m&auml;rgitud, anal&uuml;&uuml;sitakse k&otilde;iki sisendpunkti- ja alakihi objekte ka siis, kui neid pole praegu kuvataval kaardi osal n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Vali punkte sisaldav kiht, mis agregeeritakse aladeks</h2></div>
+        <hr/>
+        <div>
+            <p>Punktikiht, mis agregeeritakse aladeks.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Vali agregeeritud alasid sisaldav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Alakiht, kuhu punktid agregeeritakse. Mis tahes punktid, mis j&auml;&auml;vad pindobjektide selle kihi geomeetria alla, loendatakse ja valikuliselt summeeritakse, kasutades Teie statistikavalikut.  
+            </p>
+            <p>Saate valida enda antud alakihi v&otilde;i salved, mis luuakse, kui t&ouml;&ouml;riist k&auml;ivitub. Salvede loomisel  <b>ruuduna</b> m&auml;&auml;ratlevad ruudu k&otilde;rguse ja pikkuse m&auml;&auml;ratud arv ja &uuml;hikud. Kui teete valiku <b>Kuusnurk</b> m&auml;&auml;ravad arv ja &uuml;hikud paralleelk&uuml;lgede vahelise vahemaa.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Hoia alad punktideta</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab, kas pinnad, kuhu punkte ei lange, ilmuvad tulemkihti. Kui vastav tingimus on v&auml;lja l&uuml;litatud, siis punkte mittesisaldavad alad ei ilmu ka tulemkihti. Kui tingimus on sisse l&uuml;litatud, ilmuvad alad ilma punktideta ka tulemkihis.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lisa statistika</h2></div>
+        <hr/>
+        <div>
+            <p>Atribuutide sisu alusel on v&otilde;imalik arvutada j&auml;rgmisi statistilisi karakteristikuid: summa, keskmine, miinimum, maksimum ja standardh&auml;lve. Tulemkiht sisaldab t&auml;iendavaid atribuute valitud statistika kohta, mis anal&uuml;&uuml;sil arvutati. Soovitud statistikat on v&otilde;imalik selleks ette n&auml;htud rippmen&uuml;&uuml; kaudu lisada ja eemaldada.
+ 
+            </p>
+            <p>Kui summeeritav kiht ei sisalda arvuv&auml;lju, pole lisastatistika saadaval.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Vali väli, mille järgi rühmitada</h2></div>
+        <hr/>
+        <div>
+            <p> Saate koostada statistilisi gruppe, kasutades sisendpunktikihis olevat atribuuti.     Kui agregeerite n&auml;iteks kuritegusid naabruskonnapiiride alusel, v&otilde;ib atribuut <i>Crime_type</i> olla kirjeldatud viie erineva kuriteoliigiga. Iga omaette kuriteoliik moodustab grupi; teie valitav statistika arvutatakse atribuudi <i>Crime_type</i> iga ainuv&auml;&auml;rtuse jaoks. Iga grupi statistika ja punktide arv kuvatakse tulemkihi h&uuml;pikaknas. Kui valite atribuudi grupeerimise, luuakse kaks tulemust: tulemikiht ja -tabel, mis sisaldab statistikat iga unikaalse grupi kohta.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lisa vähemus, enamus</h2></div>
+        <hr/>
+        <div>
+            <p>See m&auml;rkeruut on aktiveeritud, kui valite r&uuml;hmitatava v&auml;lja. Kui soovite v&auml;lja selgitada, millised atribuudiv&auml;&auml;rtused on igas grupis iga piiraja piirides v&auml;hemuses (k&otilde;ige v&auml;hem domineerivad) v&otilde;i enamuses (k&otilde;ige rohkem domineerivad), valige  <b>Lisa v&auml;hemus, enamus</b>.   Ruudu <b>Lisa v&auml;hemus, enamus</b> m&auml;rkimisel lisatakse tulemkihile kaks uut v&auml;lja.   Kui m&auml;rgite ka ruudu <b>Lisa protsendid</b>, lisatakse tulemkihile veel kaks v&auml;lja, mis sisaldavad iga r&uuml;hma kohta v&auml;hemuse ja enamuse atribuudiv&auml;&auml;rtuste protsente.
+            </p>
+            <p>Kui olete n&auml;iteks linnaplaneerija ja soovite v&auml;lja selgitada, millised puuliigid on linna k&otilde;igis parkides v&auml;hemuses ja millised enamuses, agregeerige puude andmed parkide pindalaga ja l&uuml;litage sisse see tingimus.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Lisa protsendid</h2></div>
+        <hr/>
+        <div>
+            <p>Kui valite v&auml;lja, mille alusel r&uuml;hmitada, on see ruut lubatud. Valige  <b>Lisa protsendid</b>, kui soovite igas r&uuml;hmas leida iga atribuudiv&auml;&auml;rtuse protsendi.  Tulemtabelile lisatakse uus v&auml;li, mis sisaldab igas r&uuml;hmas k&otilde;igi atribuudiv&auml;&auml;rtuste protsente. Kui m&auml;rgite ka ruudu <b>Lisa v&auml;hemus, enamus</b>, lisatakse tulemkihile kaks t&auml;iendavat v&auml;lja, mis sisaldavad iga r&uuml;hma kohta v&auml;hemuse ja enamuse atribuudiv&auml;&auml;rtuste protsente.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

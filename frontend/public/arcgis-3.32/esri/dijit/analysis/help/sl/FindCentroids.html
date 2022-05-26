@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Najdi centroide</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Najdi centroide"></h2>
+        <hr/>
+    <p>To orodje deluje s slojem mnogotočkovnih, linijskih ali poligonskih geoobjektov za določanje reprezentativnega sredi&scaron;ča vsakega geoobjekta.
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo geoobjekti mnogotočkovnega, linijskega ali poligonskega sloja, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj, katerega geoobjekti bodo uporabljeni za ustvarjanje centroidov</h2></div>
+        <hr/>
+        <div>
+            <p> Mnogotočkovni, linijski ali poligonski sloj, ki bo uporabljen za iskanje centroidov.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Pokaži izhodne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p> Ko bo obkljukana možnost <b>Na pravem centroidu</b> (privzeto), bo rezultat prava lokacija centroida za vsak vhodni geoobjekt. Centroidi bodo na naslednjih lokacijah:
+                <ul>
+                    <li>Mnogočkovni geoobjekti &ndash; izhodni centroid bo na povprečju koordinat x in y vseh točk v mnogotočkovnem geoobjektu.
+                    </li>
+                    <li>Linijski geoobjekti &ndash; izhodni centroid bo na obteženem povprečju koordinat x in y sredi&scaron;čnih točk vseh linijskih segmentov v linijskem geoobjektu. Utež temelji na dolžini segmenta.
+                    </li>
+                    <li>Poligonski geoobjekt &ndash; izhodni centroid bo v sredi&scaron;ču poligona.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ko bo obkljukana možnost  <b>&raquo;ki ga vsebujejo vhodni geoobjekti&laquo;</b>, bo izhodni točkovni geoobjekt vsebovan ali bo znotraj vsakega vhodnega geoobjekta. Nastali točkovni geoobjekti bodo prikazani na naslednji način:
+                <ul>
+                    <li>Mnogočkovni geoobjekti &ndash; izhodni centroid bo sovpadal z eno od točk v mnogotočkovni skupini.
+                    </li>
+                    <li>Linijski geoobjekti &ndash; izhodni centroid bo na liniji. Če bo linija ukrivljena, bo izhodni centroid na sredi&scaron;čni točki linije. 
+                    </li>
+                    <li>Poligonski geoobjekti &ndash; izhodna točka bo znotraj poligonskega geoobjekta.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

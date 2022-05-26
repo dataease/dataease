@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>تحويل بيانات نقطية إلى معلم</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="أداة تحويل بيانات نقطية إلى معلم"></h2>
+        <hr/>
+    <p>تعمل هذه الأداة على تحويل البيانات النقطية إلى مجموعة بيانات معلم، في صورة نقاط أو خطوط أو مضلعات.
+    </p>
+    <p>تتيح المعلمة  <b>اختر حقل</b> باختيار حقل البيانات الجدولية لمجموعة البيانات النقطية المدخلة التي تصبح بيانات جدولية في تصنيف معلم المخرجات. تتوفر هذه المعلمة فقط لبيانات العدد الصحيح النقطية التي لديها بيانات جدولية إضافية في الجدول المرتبط.
+    </p>
+    <p>يمكن أن تحتوي البيانات النقطية المدخلة على أي حجم للخلية.
+    </p>
+    <p>يمكن تحويل بيانات العدد الصحيح النقطية إلى معالم نقطية أو خطية أو مضلعة؛ ومع ذلك، يمكن فقط تحويل البيانات النقطية للنقطة العائمة إلى معالم نقطية.
+    </p>
+    <p>عند التأشير على  <b>استخدام مدى الخريطة الحالي</b> سوف يتم فقط تحويل خلايا البيانات النقطية المرئية في المدى الحالي للخريطة. إذا لم يتم التأشير عليها، سوف يتم تحويل جميع الخلايا في طبقة البيانات النقطية، حتى إذا كانت خارج نطاق الخريطة الحالي. ضع في الاعتبار هذا إذا كانت طبقة البيانات النقطية كبيرة أو لديها دقة عالية جدًا.
+    </p>
+    <p>تتضمن حالات الاستخدام لهذه الأداة ما يلي:
+ 
+        <ul>
+            <li>إنشاء معالم مضلعة من البيانات النقطية لتصنيف استعمال الأراضي.
+                
+ 
+            </li>
+            <li>يمكن تحويل التدفقات المحددة في DEM إلى معالم خطية.
+                
+
+            </li>
+            <li>يمكن تحويل DEM إلى معالم نقطية يمكن استخدامها في سير عمل مستند إلى بيانات غير نقطية.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر طبقة بيانات نقطية لتحويلها</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة البيانات النقطية المدخلة التي سيتم تحويلها إلى طبقات المعلم.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>اختر حقلاً</h2></div>
+        <hr/>
+        <div>
+            <p>يوفر حقلاً يُحدد القيمة التي يتم استخدامها بغرض التحويل.
+            </p>
+            <p>يمكن أن تكون أي عدد صحيح أو قيمة نص.
+            </p>
+            <p>يمكن فقط استخدام أي حقل يتضمن قيم النقاط العائمة إذا كانت المخرجات مجموعة بيانات نقطية.
+            </p>
+            <p>الاختيار الافتراضي هو استخدام حقل  <i>Value</i>، الذي يتضمن القيمة في كل خلية من البيانات النقطية.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>اختر نوع المخرجات</h2></div>
+        <hr/>
+        <div>
+            <p>اختر نوع المخرجات بين النقطة أو الخط أو المضلع.
+            </p>
+            <ul>
+                <li>النقطة&mdash;سيتم تحويل البيانات النقطية إلى مجموعة بيانات النقطة.
+                    
+ 
+                </li>
+                <li>الخط&mdash;سيتم تحويل البيانات النقطية إلى مجموعة بيانات معلم خطي.
+                    
+ 
+                </li>
+                <li>المضلع&mdash;سيتم تحويل البيانات النقطية إلى مجموعة بيانات معلم مضلع.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>تبسيط الخطوط أو المضلعات</h2></div>
+        <hr/>
+        <div>
+            <p>يُحدد إذا كان ينبغي تبسيط المعالم أم لا.
+            </p>
+            <p>إذا تم التحديد (وهو الوضع الافتراضي)، سيتم تجانس المعالم الخطية أو المضلعة لإنتاج مزيد من النتائج العامة. إذا لم يتم التأشير على هذا الخيار، سوف تتبع المعالم الخطية حدود الخلية لمجموعة البيانات النقطية.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

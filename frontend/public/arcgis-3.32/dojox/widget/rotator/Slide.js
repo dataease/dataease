@@ -1,0 +1,3 @@
+//>>built
+define("dojox/widget/rotator/Slide",["dojo/_base/lang","dojo/_base/fx","dojo/dom-style"],function(d,g,f){function c(a,b){var c=b.node=b.next.node,d=b.rotatorBox,e=a%2;a=(e?d.w:d.h)*(2>a?-1:1);f.set(c,{display:"",zIndex:(f.get(b.current.node,"zIndex")||1)+1});b.properties||(b.properties={});b.properties[e?"left":"top"]={start:a,end:0};return g.animateProperty(b)}var e={slideDown:function(a){return c(0,a)},slideRight:function(a){return c(1,a)},slideUp:function(a){return c(2,a)},slideLeft:function(a){return c(3,
+a)}};d.mixin(d.getObject("dojox.widget.rotator"),e);return e});

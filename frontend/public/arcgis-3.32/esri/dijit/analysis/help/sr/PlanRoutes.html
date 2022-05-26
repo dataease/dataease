@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planiranje ruta</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planiranje ruta"></h2>
+        <hr/>
+    <p>Planiranje ruta određuje kako da se na efikasan način podele zadaci između pokretne radne snage.
+    </p>
+    <p>U alatku unosite skup stanica i broj vozila dostupnih za posećivanje stanica. Alatka dodeljuje stanice vozilima i daje rute pokazujući vam kako svako vozilo može da dostigne svoje dodeljene stanice za najkraće vreme.
+    </p>
+    <p>Koristeći Planiranje ruta terenski radnici stižu na vi&scaron;e lokacija posla za kraće vreme, &scaron;to povećava produktivnost i pobolj&scaron;ava korisničku uslugu.
+        <ul>
+            <li>Pregledajte domove, restorane ili gradili&scaron;ta
+                
+
+            </li>
+            <li>Omogućite popravke, instalacije ili tehničke servise
+            </li>
+            <li>Isporučite artikle i male pakete
+            </li>
+            <li>Ugovorite isporuku robe
+            </li>
+            <li>Prevezite ljude od njihovih domova do događaja
+            </li>
+        </ul>
+        
+    </p>
+    <p>Izlaz iz alatke Planiranje ruta obuhvata sloj sa stanicama kodiranim po rutama kojima su dodeljene, zatim sloj ruta koji prikazuje najkraće putanje za stizanje do dodeljenih stanica i, u zavisnosti od toga da li do nekih stanica nije bilo moguće doći, sloj nedodeljenih stanica. 
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, samo oni geoobjekti koji su vidljivi unutar trenutnog obuhvata mape biće uzeti u obzir u analizi. Ako nije izabrana, svi geoobjekti u ulaznom sloju biće uzeti u obzir, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Odaberite tačkasti sloj koji predstavlja stanice za posećivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite sloj tačaka koje rute (ili vozila) treba da posete. Ova tačke postaju dodeljene ili nedodeljene stanice u izlazu. 
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+            <p>Alatka podržava do 2000 ulaznih geoobjekata. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Režim putovanja za rute</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite režim putovanja. Izlazne rute pratiće puteve ili trotoare i po&scaron;tovaće primenljiva pravila, kao &scaron;to su jednosmerne ulice i nedozvoljena skretanja za vožnju automobilom ili kamionom. Dostupne režime putovanja određuje administrator organizacije.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Rute počinju u stanicama</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite gde i kada vozila počinju svoje rute.
+            </p>
+            <p>Koristeći alatku Planiranje ruta možete da navedete jednu ili vi&scaron;e početnih lokacija za va&scaron;a vozila.
+            </p>
+            <p>Kada je lokacija jedne tačke navedena, sva vozila kreću iz te tačke, bez obzira na broj dostupnih vozila. Možete da odaberete tačkasti sloj sa jednom tačkom ili da dodate tačku na mapu tako &scaron;to ćete da odaberete  <b>Dodaj tačku na mapu</b>, da kliknete na dugme za izmenu susedne tačke i da kliknete na mapu. 
+            </p>
+            <p>Kada je navedeno vi&scaron;e lokacija, svako vozilo treba da bude povezano sa svojom tačkom. Broj vozila mora da se podudara sa brojem tačaka u sloju. Odaberite sloj sa vi&scaron;e tačaka i navedite polje koje jedinstveno određuje pojedinačne rute, vozila ili vozače u padajućoj listi  <b>Polje ID-a rute</b>.
+            </p>
+            <p>Početno vreme je isto za sve rute. Vremenska zona za vreme početka je ista kao vremenska zona u kojoj se nalazi početna tačka ili tačke, zato se uverite da je vreme koje ste uneli lokalno vreme. Na primer, pretpostavimo da ste u vremenskoj zoni pacifičkog standardnog vremena (UTC-8:00), a vozila koja rutirate su u vremenskoj zoni planinskog standardnog vremena (UTC-7:00). Ako je trenutno 9:30 pre podne PST (10:30 pre podne MST), a vozila treba da započnu svoje rute za 30 minuta, vreme početka biste podesili na 11:00 pre podne. 
+            </p>
+            <p>Ako vozila kreću iz različitih vremenskih zona, vreme početka ne može da bude istovremeno; umesto toga, odstupaće jedno od drugog. Na primer, ako jedna ruta počinje iz tačke u vremenskoj zoni PST, a druga počinje iz vremenske zone MST, a uneli ste 11:00 pre podne kao vreme početka, ruta u vremenskoj zoni PST počeće u 11:00 pre podne PST, a rute u vremenskoj zoni MST počeće u 11:00 pre podne MST &ndash; &scaron;to je razlika od jednog sata.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Rute se završavaju u stanicama</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite gde vozila zavr&scaron;avaju svoje rute.
+            </p>
+            <p>Možete da konfiguri&scaron;ete da se rute zavr&scaron;e na jednoj od tri lokacije: 
+                <ul>
+                    <li>Na istoj lokaciji gde je ruta počela, bez obzira na to da li su krenule sa jedne ili vi&scaron;e lokacija
+                    </li>
+                    <li>Jedna lokacija
+                    </li>
+                    <li>Vi&scaron;e lokacija &ndash; to jest, jedna krajnja tačka za svaku rutu
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Potvrdite opciju  <b>Vrati se na početak</b> ako vozila počinju i zavr&scaron;avaju svoje rute na istim lokacijama.
+            </p>
+            <p>Da biste rutirali sva vozila do zajedničke krajnje tačke koja nije ista kao početna tačka, opozovite izbor opcije  <b>Vrati se na početak</b>, a zatim dodajte tačku na mapu ili odaberite sloj koji sadrži tačno jednu tačku.
+            </p>
+            <p>Da bi se rute zavr&scaron;avale na jedinstvenim lokacijama, opozovite izbor opcije  <b>Vrati se na početak</b>, a zatim odaberite sloj koji sadrži vi&scaron;e od jedne tačke. Broj vozila mora da bude jednak sa brojem tačaka u odabranom sloju. Iz padajuće liste <b>Polje ID-a rute</b> odaberite polje koje jedinstveno određuje pojedinačne rute, vozila ili vozače. Ako vozila kreću sa vi&scaron;e lokacija i zavr&scaron;avaju na vi&scaron;e lokacija, vrednosti ID-a ruta odabrani za početne i krajnje slojeve moraju da se podudaraju.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izaberite slojeve barijera</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji će da predstavljaju privremena ograničenja (barijere) prilikom putovanja po pozadinskim ulicama. Barijere možete da navedete kori&scaron;ćenjem tačkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Tačkasta barijera može da predstavlja oboreno drvo, nezgodu, oboreni električni vod ili bilo &scaron;ta &scaron;to u potpunosti blokira saobraćaj na određenom mestu duž ulice. Kretanje je dozvoljeno na ulici, ali ne kroz barijeru. Možete da navedete do 250 geoobjekata koji će da predstavljaju tačkaste barijere.
+            </p>
+            <p>Linijska barijera zabranjuje kretanje svuda kuda barijera preseca ulice. Na primer, parada ili protest koji blokiraju saobraćaj duž nekoliko segmenta ulica mogu da budu predstavljeni linijskom barijerom. Ako broj ulica koje su presečene linijskom barijerom prema&scaron;uje 500, alatka će prikazati gre&scaron;ku.
+            </p>
+            <p>Poligonalna barijera zabranjuje kretanje svuda gde poligon preseca ulice. Jedan vid kori&scaron;ćenja ovog tipa barijere je da predstavi poplave koje pokrivaju oblasti cele mreže ulica i onemogućavaju drumski saobraćaj. Ako broj ulica koje su presečene poligonalnom barijerom prema&scaron;uje 2000, alatka će prikazati gre&scaron;ku.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksimalni broj vozila za rutiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite broj vozila dostupnih za posećivanje stanica. Alatka podržava do  100 vozila. 
+            </p>
+            <p>Alatka može da pronađe re&scaron;enje koje koristi manje vozila od broja koji navedete ovde u zavisnosti od ukupnog broja stanica, broja stanica koji dozvolite po vozilu, udaljenosti stanica, vremena provedenog na svakoj stanici i bilo kojeg ograničenja koje podesite za ukupno vreme rute po vozilu.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksimalni broj stanica po vozilu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je jedan od dva parametara koji balansiraju ukupni obim posla na svim rutama. Možete da navedete vrednost između 1 i  200. 
+            </p>
+            <p>Smanjivanjem maksimalnog broja stanica koje mogu da budu dodeljene svakom vozilu, veća je verovatnoća da će vozilima biti dodeljen jednaki broj stanica. Ovo doprinosi balansiranju obima posla među vozačima. Međutim, nedostatak je to &scaron;to rezultat može da bude re&scaron;enje koje je manje efikasno.
+            </p>
+            <p>Povećavanjem broja stanica po vozilu, alatka ima veću slobodu da pronađe efikasnija re&scaron;enja; međutim, obim posla može da bude nejednako distribuiran među vozačima i vozilima. Imajte u vidu da možete da balansirate obime posla po trajanju, kao i po broju stanica tako &scaron;to ćete da navedete vrednost za parametar  <b>Ograniči ukupno trajanje rute po vozilu</b>.
+            </p>
+            <p>Sledeći primeri demonstriraju efekte ograničavanja maksimalnog broja stanica po vozilu ili ukupnog vremena po vozilu. U svim primerima postoji &scaron;est stanica i dve rute, koje počinju na istoj lokaciji.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Balansirani broj stanica i trajanja putovanja">
+                </td>
+                <td>
+                    <p>Balansirana trajanja putovanja i broj stanica po ruti:
+                    </p>
+                    <p>Stanice su manje ili vi&scaron;e ujednačeno raspoređene, tako da pode&scaron;avanje maksimalnog broja stanica po vozilu radi jednake raspodele obima posla daje rute koje su približno istog trajanja.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Nebalansirana trajanja ruta">
+                </td>
+                <td>
+                    <p>Balansirani broj stanica po ruti, ali nebalansirana trajanja putovanja:
+                    </p>
+                    <p>Pet ili &scaron;est stanica su u klasteru blizu početne lokacije, ali jedna stanica je izdvojena i zahteva mnogo dužu vožnju da bi se do nje stiglo. Jednaka raspodela stanica između dve rute dovodi do nebalansiranih trajanja putovanja.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Balansirana trajanja putovanja">
+                </td>
+                <td>
+                    <p>Nebalansirani broj stanica po ruti, ali balansirana trajanja putovanja:
+                    </p>
+                    <p>Stanice su na istoj lokaciji kao na prethodnom grafikonu, ali povećavanjem maksimalnog broja stanica po ruti i ograničavanjem ukupnog vremena putovanja po vozilu, trajanja putovanja se balansiraju.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Vreme provedeno na svakoj stanici</h2></div>
+        <hr/>
+        <div>
+            <p>Podesite očekivano prosečno vreme usluge provedeno na svakoj stanici. Na primer, ako planirate raspored radnog dana za inspektore, a prosečno vreme inspekcije je 45 minuta, unesite  <code>45</code>.
+            </p>
+            <p>Pretpostavlja se da je vreme usluge na svim stanicama isto.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Ograniči ukupno vreme rute po vozilu</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite maksimalno trajanje rute od početka do kraja. Ovo obuhvata očekivano vreme putovanja i vreme usluge provedeno na stanicama duž rute. Ako vozači ne bi trebalo da rade duže od datog vremena tokom dana, na primer osam sati, to ograničenje možete da navedete ovde.
+            </p>
+            <p>Pogledajte pomoć za  <b>Maksimalni broj stanica po vozilu</b>, &scaron;to će se uzeti u obzir prilikom balansiranja obima posla.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja geoobjekta koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Ako sloj geoobjekta već postoji, bićete upitani da unesete drugi naziv. Sloj geoobjekta će sadržati sloj za sve od sledećeg: rute, dodeljene stanice, kao i nedodeljene stanice, kad neke ulazne stanice ne mogu da budu dodeljene nijednoj ruti.
+            </p>
+            <p>Ako izaberete  <b>Uključi slojeve rute</b>, svaka ruta iz rezultata se takođe čuva kao sloj rute. Sloj rute uključuje sve informacije za određenu rutu, kao &scaron;to su stanice koje su dodeljene ruti, kao i uputstva za putovanje. Kreiranje slojeva rute je korisno u slučaju da želite da delite pojedinačne rute sa ostalim članovima iz va&scaron;e organizacije ili da dalje menjate rute kori&scaron;ćenjem dugmeta <b>Uputstva</b> u pregledniku mape. Slojevi rute koriste naziv koji je dat za sloj geoobjekta kao prefiks, a naziv rute generisan kao deo analize, koji se dodaje kako bi se kreirao jedinstven naziv za svaki sloj rute.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će sloj geoobjekta i slojevi rute, ako su kreirani, biti sačuvani.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

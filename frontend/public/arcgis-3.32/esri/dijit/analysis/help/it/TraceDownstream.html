@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Traccia Downstream</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Traccia Direzione della Corrente"></h2>
+        <hr/>
+    <p>Questo strumento consente di stabilire il tracciamento o il percorso di flusso in una direzione verso valle rispetto ai punti presenti nel layer di input.
+    </p>
+    <p>Si supponga, ad esempio, che siano presenti feature punto relative alle fonti di contaminazione e che si desideri individuare nell'area di studio dove scorre la contaminazione. Con Traccia Downstream &egrave; possibile individuare il percorso che la contaminazione seguir&agrave;. Specificando unit&agrave; e valori di distanza il tracciamento pu&ograve; essere anche diviso in singoli segmenti di linea. La linea restituita pu&ograve; corrispondere alla lunghezza totale del percorso di flusso, a una lunghezza massima di tracciamento specificata oppure pu&ograve; essere ritagliata in base alle feature dell'area (ad esempio dell'area di studio). Nella maggior parte dei casi, se si visualizza la lunghezza totale del percorso di tracciamento, questa corrisponder&agrave; alla distanza dalla fonte all'oceano.
+    </p>
+    <p>Il risultato &egrave; una linea che rappresenta il tracciamento di downstream. Se per  <b>Separa il tracciamento in segmenti di linea</b>viene indicata una distanza, la linea di tracciamento sar&agrave; suddivisa in numerose linee della lunghezza specificata.  Ad esempio, se il punto di input rappresenta il punto di fuoriuscita della contaminazione e il fiume in cui si riversa si muove a una velocit&agrave; di 0,6 miglia (0.96 chilometri) all'ora o di 15 miglia (24 chilometri) al giorno, potrebbe essere utile suddividere il fiume in segmenti di 15 miglia (24 chilometri). Suddividendo il tracciamento in intervalli di 15 miglia (24 chilometri) sar&agrave; possibile visualizzare orientativamente il percorso che la fuoriuscita effettuer&agrave; ogni giorno. La linea sar&agrave; rappresentata con gradazioni diverse di colore a seconda della distanza e sar&agrave; etichettata con la distanza dal punto di inizio del tracciamento.
+    </p>
+    <p>Il tracciamento risultante avr&agrave; tutti gli attributi dei punti di input oltre ad attributi aggiuntivi. 
+        <ul>
+            <li> <i>PointID</i>: contiene il valore dell'ID del punto di input.
+                
+
+            </li>
+            <li> <i>LengthKm</i>: contiene la lunghezza in chilometri per l'intero tracciamento di downstream.
+                
+
+            </li>
+            <li> <i>Description</i> e <i>DataResolution</i>: contengono informazioni relative ai dati idrologici usati per calcolare il tracciamento.
+                
+
+            </li>
+            <li> <i>FromDistance</i> e <i>ToDistance</i>: contengono la distanza dal punto di partenza e per quello di arrivo di ogni segmento di linea. Tali attributi vengono riportati se si usa l'opzione <b>Separa il tracciamento in segmenti di linea</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzate solo le feature puntuali nel layer di input visibili nell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, vengono utilizzate tutte le feature presenti nel layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Feature puntuali da utilizzare come località di partenza per ogni tracciamento a valle</h2></div>
+        <hr/>
+        <div>
+            <p>Feature puntuali da utilizzare come localit&agrave; di partenza per ogni tracciamento a valle L'output conterr&agrave; una linea per ciascun punto di input.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Suddividi traccia in segmenti lineari</h2></div>
+        <hr/>
+        <div>
+            <p>La linea di tracciamento sar&agrave; suddivisa in numerose linee della lunghezza specificata. Ad esempio, se il punto di input rappresenta il punto di fuoriuscita della contaminazione e il fiume in cui si riversa si muove a una velocit&agrave; di 0,6 miglia (0.96 chilometri) all'ora o di 15 miglia (24 chilometri) al giorno, potrebbe essere utile suddividere il fiume in segmenti di 15 miglia (24 chilometri). Suddividendo il tracciamento in intervalli di 15 miglia (24 chilometri) sar&agrave; possibile visualizzare orientativamente il percorso che la fuoriuscita effettuer&agrave; ogni giorno. La linea sar&agrave; rappresentata con gradazioni diverse di colore a seconda della distanza e sar&agrave; etichettata con la distanza dal punto di inizio del tracciamento. Il tracciamento risultante avr&agrave; molteplici segmenti di linea, ognuno con i campi  <i>FromDistance</i> e <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Distanza massima della traccia</h2></div>
+        <hr/>
+        <div>
+            <p>Definisce la lunghezza totale della linea restituita. Se si forniscono feature di area per ritagliare il tracciamento, il risultato sar&agrave; ritagliato in base alla feature dell'area, indipendentemente dalla distanza inserita.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Ritaglia output in</h2></div>
+        <hr/>
+        <div>
+            <p>Tracciare o specificare un layer dell'area in cui si desidera ritagliare il tracciamento. Se si desidera che il risultato del tracciamento sia solo all'interno dell'area di studio, ad esempio una regione specifica, &egrave; necessario usare la feature regione come input per interrompere il tracciamento ai confini di tale regione.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+            <p> L&rsquo;esecuzione di questo strumento non consuma crediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

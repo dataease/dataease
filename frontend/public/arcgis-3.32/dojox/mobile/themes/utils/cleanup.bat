@@ -1,0 +1,2 @@
+node cleanup.js
+pause

@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!--
+	Source file for tabBottomSelected.png, which is used by IE7-9 for selected tabs.
+	Compile to png with batik, gimp, or online tool ex: http://www.fileformat.info/convert/image/svg2raster.htm
+
+	Output should match CSS gradient from .topBottom-selected-tab-gradient() from TabContainer.less.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1px" height="250px" viewBox="0 0 1 250" preserveAspectRatio="none">
+	<defs>
+		<linearGradient id="gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+			<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+		</linearGradient>
+	</defs>
+	<rect x="0" y="0" width="1" height="242" fill="white"/>
+	<rect x="0" y="242" width="1" height="6" fill="url(#gradient)"/>
+	<rect x="0" y="248" width="1" height="2" fill="white"/>
+</svg>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Создать замощение</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Создать замощение"></h2>
+        <hr/>
+    <p>Инструмент создает замощения на исследуемой области на основе заданных формы и размера.
+    </p>
+    <p>Опция  <b>Использовать текущий экстент карты</b> отключена для этого инструмента, так как экстент, используемый для создания замощения, управляется параметром <b>Указать экстент</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Выбрать геометрию</h2></div>
+        <hr/>
+        <div>
+            <p>Форма или геометрия создаваемого замощения.  Доступны формы:  <code>Квадрат</code>, <code>Шестиугольник</code>, <code>Поперечный шестиугольник</code>, <code>Треугольник</code> или <code>Ромб</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Указать область изучения</h2></div>
+        <hr/>
+        <div>
+            <p>Экстент или область, которая покрывается замощением. Экстент можно задать с помощью текущего экстента карты, экстента существующего слоя или путем интерактивного рисования области, которая будет использоваться в качестве экстента.
+            </p>
+            <p>Если для определения экстента был выбран векторный слой, будет включена опция для сохранения только пересекающегося замощения. Если выбрано, то в результирующем слое замощения будет создано замощение, которое покрывает или пересекается с объектами в указанном слое экстента. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Не отмечено
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Покрытие полного экстента">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Отмечено
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Покрытие объекта">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Задайте размер бина, указав</h2></div>
+        <hr/>
+        <div>
+            <p>Размер каждой ячейки.  Размер ячейки можно задать, указав квадратные единицы измерения или указав расстояние, которое вычисляется с помощью следующих измерений, где d = расстояние: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Квадрат
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Замощение квадратами">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Шестиугольник
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Замощение шестиугольниками">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Поперечный шестиугольник
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Замощение поперечными шестиугольниками">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Треугольник
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Замощение треугольниками">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Ромб
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Замощение ромбами">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Это имя слоя, который будет создан в разделе  <b>Мои ресурсы</b> и добавлен на карту.  Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>С помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

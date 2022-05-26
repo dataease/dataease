@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>确定行程成本路径折线</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="&ldquo;确定行程成本路径折线&rdquo;工具图示"></h2>
+        <hr/>
+    <p>该工具用于计算源和已知目的地之间的最低成本折线路径。
+    </p>
+    <p>示例应用如下：
+        <ul>
+            <li>根据建设成本寻找新道路的最佳路线。
+                
+
+            </li>
+            <li>确定多个城郊位置（源）到最近购物中心（目标）的路径。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中可见的输入图层中的位置。如果未选中，则将分析这两个输入图层中的所有位置，包括超出当前地图范围的位置。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>选择栅格或要素源图层以确定路径起点</h2></div>
+        <hr/>
+        <div>
+            <p>用于识别像元的影像服务或要素服务，可以将最低成本路径确定为这些像元与成本最低目的地之间的路径。
+            </p>
+            <p>如果输入是影像服务，则输入由具有有效值（零是有效值）的像元组成，并且必须为其余的像元指定 NoData。
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>选择行程成本栅格图层</h2></div>
+        <hr/>
+        <div>
+            <p>定义以平面测量的经过每个像元所需的阻抗或成本。
+            </p>
+            <p>每个像元位置上的值表示经过像元时移动每单位距离所需的成本。每个像元位置值乘以像元分辨率，同时也会补偿对角线移动来获取经过像元的总成本。
+            </p>
+            <p>成本栅格的值可以是整型或浮点型，但不可以为负值或零（不存在负成本或零成本）。
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>输入目标栅格或要素</h2></div>
+        <hr/>
+        <div>
+            <p>定义用于计算距离的目的地的输入。图层可以是栅格或要素。
+            </p>
+            <p>如果输入是影像服务，则输入由具有有效值（零是有效值）的像元组成，并且必须为其余的像元指定 NoData。
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>结果折线图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>选择要确定的路径类型</h2></div>
+        <hr/>
+        <div>
+            <p>用于定义输入目标数据上的值和区域在成本路径计算中的解释方式。
+            </p>
+            <ul>
+                <li>最佳单一路径 - 针对输入目的地数据上的所有像元或位置，根据源位置最低成本路径最小的位置派生最低成本路径。这是默认设置
+                    
+
+                </li>
+                <li>到每个像元 - 对于输入目标数据上每一个具有有效值的像元或位置，系统会确定最低成本路径并将其保存在输出要素服务上。利用该选项，系统会单独处理输入目标数据的每个像元，并确定每个&ldquo;起始&rdquo;像元的最小成本路径。
+                    
+
+                </li>
+                <li>到每个区域 - 对于输入目的地数据上的每个区域，系统会确定最低成本路径并将其保存在输出要素服务上。利用此选项，每个区域的最低成本路径起点将位于区域内成本距离权重最低的像元或位置处。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

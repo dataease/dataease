@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>重心の検索</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="重心の検索"></h2>
+        <hr/>
+    <p>このツールは、マルチポイント、ライン、またはエリア フィーチャのレイヤーを操作して、各フィーチャの代表の中心点を判定します。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力マルチポイント、ライン、またはエリア レイヤーのフィーチャだけが解析されます。オフの場合、入力レイヤーのすべてのフィーチャが、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>重心の生成に使用されるフィーチャを持つレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p> 重心の検索に使用されるマルチポイント、ライン、またはエリア レイヤー。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>入力フィーチャに含まれる</h2></div>
+        <hr/>
+        <div>
+            <p>  <b>[重心に]</b> がオンの場合 (デフォルト)、出力は各入力フィーチャの重心の正確な位置を返します。重心は次のように特定されます。
+                <ul>
+                    <li>マルチポイント フィーチャ - 出力の重心は、そのマルチポイント フィーチャに含まれるすべてのポイントの XY 座標の平均値になります。
+                    </li>
+                    <li>ライン フィーチャ - 出力の重心は、そのライン フィーチャに含まれるすべてのライン セグメントの中間点の XY 座標の加重平均値になります。重み付けはセグメントの長さに基づきます。
+                    </li>
+                    <li>エリア フィーチャ - 出力の重心はエリアの中心になります。
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>[出力場所を表示]</b> がオンの場合、出力ポイント フィーチャは各入力フィーチャに含まれるか、その内部にあります。結果のポイント フィーチャは次のように表示されます。
+                <ul>
+                    <li>マルチポイント フィーチャ - 出力の重心はそのマルチポイント グループ内のポイントの 1 つに一致します。
+                    </li>
+                    <li>ライン フィーチャ - 出力の重心はそのライン上にあります。ラインが曲線である場合、出力はそのラインの中間点に位置します。
+                    </li>
+                    <li>エリア フィーチャ - 出力ポイントはエリア フィーチャの内部にあります。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

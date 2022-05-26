@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>計算密度</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="計算密度"></h2>
+        <hr/>
+    <p>「計算密度」工具用於透過將已知數量的特定現象（表示爲點或線的屬性）散布到整個地圖上，以從點或線圖徵建立密度地圖。 結果是按密度從小到大分類的區域圖層。   
+
+    </p>
+    <p>對於點輸入，每個點應表示某一事件或事件點的位置，結果圖層應表示每個單位面積中的事件點計數。 新位置中的密度值越高則表示此位置附近的點越多。 在多數情况下，結果圖層可視爲未來事件的風險表面。 例如，如果輸入點表示受到雷擊的位置，則結果圖層可視爲未來可能受到雷擊的風險表面。
+    </p>
+    <p>對於線輸入，線密度表面表示每個位置附近線的總數。 所計算的密度值的單位是每單位面積的線長度。 例如，如果線表示河流，則結果圖層表示搜尋半徑範圍內的河流總長度。 此結果可用於確定適合放牧動物的區域。
+    </p>
+    <p> 此工具的其他使用範例如下：
+        <ul>
+            <li>建立犯罪密度地圖以幫助警方適當分配資源到高犯罪率區域。
+            </li>
+            <li>計算某縣的醫院密度。 結果圖層將顯示容易到達醫院和不容易到達醫院的區域，此資訊可用於確定新建醫院的位置。
+            </li>
+            <li>根據發生森林火災的歷史位置確定森林火災的高風險區域。
+            </li>
+            <li>尋找距離主幹道較遠的社區以計劃修建新道路的位置。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇點圖層或線圖層，並根據其自身計算其密度</h2></div>
+        <hr/>
+        <div>
+            <p>將用於計算密度的點圖層或線圖層。
+
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>使用計數欄位</h2></div>
+        <hr/>
+        <div>
+            <p>提供一個欄位，用於指定每個位置處的事件點數量。 例如，如果您具有表示城市的點，則您可以將表示城市人口的欄位作爲計數欄位，産生的人口密度圖層將計算擁有較多人口之城市附近的較大的人口密度。
+            </p>
+            <p> 如果使用預設選項 None，則假定每個位置代表一個計數。
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>搜尋距離</h2></div>
+        <hr/>
+        <div>
+            <p>輸入距離，以指定計算密度值時尋找點圖徵或線圖徵的搜尋距離。 例如，如果提供的搜尋距離是 10,000 公尺，則輸出圖層中任意位置的密度將根據距此位置 10,000 公尺範圍內的圖徵進行計算。 在 10,000 公尺範圍內任何不具有事件點的位置所得到的密度值均為零。     
+
+            </p>
+            <p>如果未提供距離，則根據輸入圖徵的位置和計數欄位中的值（如果已提供計數欄位）計算預設值。
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>將輸出結果裁剪至</h2></div>
+        <hr/>
+        <div>
+            <p>繪製或提供一個圖層，以指定要計算密度的區域。 例如，如果您要對湖中魚的密度進行計算，則可以使用此參數中湖的邊界，使輸出結果僅繪製於湖的邊界內。
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>分類依據</h2></div>
+        <hr/>
+        <div>
+            <p>選擇將密度值分類到區域的方法。
+                <ul>
+                    <li>相等間隔 - 建立區域使每個區域的密度值範圍相等。
+                    </li>
+                    <li>幾何間隔 - 根據具有幾何級數的級距建立分類區域。 此方法可確保每個類別的類別範圍所擁有的值數量大致相同，且間隔之間的變化一致。
+                    </li>
+                    <li>自然間斷 - 區域的級距取決於資料的自然分組。 透過對類別斷點值進行識別，可對相似值進行最恰當的分組，並可使各個類別之間的差异最大化。
+
+                    </li>
+                    <li>等面積 - 建立區域使每個區域的大小相等。 例如，如果結果圖層的高密度值多於低密度值，則會為高密度建立更多區域。
+                    </li>
+                    <li>標準差 - 根據預測密度值的標準差建立區域。 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>類別數量</h2></div>
+        <hr/>
+        <div>
+            <p>指定結果圖層中的類別數量（預測值的範圍）。 每個類別定義了區域的邊界。 這些類別的值將由以上 <b>分類方法</b>參數確定。
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>輸出面積單位</h2></div>
+        <hr/>
+        <div>
+            <p>指定輸出面積單位。 密度等於計數除以面積，此參數用於指定密度計算中的面積單位。  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

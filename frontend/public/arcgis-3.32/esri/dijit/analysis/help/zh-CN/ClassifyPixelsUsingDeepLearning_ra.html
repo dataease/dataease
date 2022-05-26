@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>使用深度学习对像素进行分类</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="使用深度学习对像素进行分类"></h2>
+        <hr/>
+    <p>此工具用于运行输入栅格上的训练深度学习模型，以生成分类栅格，其中每个有效像素都被分配了一个类标注。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅对当前地图范围中可见的栅格区域进行分析。如果未选中，则将分析整个栅格，即使栅格位于当前地图范围之外。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>选择用于对像素进行分类的影像</h2></div>
+        <hr/>
+        <div>
+            <p>待分类的输入影像。
+            </p>
+            <p>可以是影像服务 URL、栅格图层或影像服务图层。
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>选择用于对像素进行分类的深度学习模型</h2></div>
+        <hr/>
+        <div>
+            <p>输入深度学习包 ( <code>.dlpk</code>) 项目。
+            </p>
+            <p>深度学习包由 Esri 模型定义 JSON 文件 ( <code>.emd</code>)、深度学习二进制模型文件以及要使用的 Python 栅格函数（可选）组成。
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>指定深度学习模型参数</h2></div>
+        <hr/>
+        <div>
+            <p>函数参数在输入模型引用的 Python 栅格函数类中定义。您可以在此列出其他深度学习参数和用于试验和优化的参数，例如用于调整灵敏度的置信度阈值。
+            </p>
+            <p>参数名称将由工具通过读取栅格分析服务器上的 Python 模块进行填充。
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

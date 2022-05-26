@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tạo Tầm nhìn</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="C&ocirc;ng cụ Tạo Tầm nh&igrave;n"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y x&aacute;c định c&aacute;c khu vực m&agrave; người quan s&aacute;t c&oacute; thể nh&igrave;n thấy, t&iacute;nh to&aacute;n bề mặt địa h&igrave;nh. C&aacute;c vị tr&iacute; điểm đầu v&agrave;o c&oacute; thể đại diện cho những người quan s&aacute;t (như người đứng tr&ecirc;n mặt đất hoặc trạm quan s&aacute;t trong một th&aacute;p b&aacute;o động hỏa hoạn) hoặc c&aacute;c đối tượng được quan s&aacute;t (như tua-bin gi&oacute;, th&aacute;p nước, xe cộ, hoặc những người kh&aacute;c). C&aacute;c kết quả x&aacute;c định những khu vực n&agrave;o c&oacute; thể được nh&igrave;n thấy từ vị tr&iacute; người quan s&aacute;t.
+    </p>
+    <p>Cả người quan s&aacute;t v&agrave; đối tượng được quan s&aacute;t đều c&oacute; thể c&oacute; độ cao tr&ecirc;n mặt đất, v&agrave; c&aacute;c độ cao n&agrave;y được d&ugrave;ng để x&aacute;c định khả năng nh&igrave;n thấy. V&iacute; dụ như tầm nh&igrave;n được t&iacute;nh cho c&aacute;c tua-bin gi&oacute; cao 300 foot v&agrave; một người cao 6 foot đứng tr&ecirc;n mặt đất thường lớn hơn tầm nh&igrave;n t&iacute;nh to&aacute;n cho c&aacute;c tua-bin gi&oacute; cao 200 foot v&agrave; một người cao 5 foot.
+    </p>
+    <p>Lớp kết quả ghi ch&eacute;p số lần m&agrave; mỗi vị tr&iacute; &ocirc; tr&ecirc;n bề mặt raster đầu v&agrave;o c&oacute; thể được nh&igrave;n thấy từ điểm quan s&aacute;t đầu v&agrave;o. C&aacute;c gi&aacute; trị kh&ocirc;ng c&oacute; dữ liệu được trả về dưới dạng &ocirc; kh&ocirc;ng hiển thị
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ phạm vi raster v&agrave; c&aacute;c điểm của người quan s&aacute;t c&oacute; thể nh&igrave;n thấy trong phạm vi phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả điểm người quan s&aacute;t trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Bề mặt độ cao</h2></div>
+        <hr/>
+        <div>
+            <p>Bề mặt độ cao để sử dụng t&iacute;nh to&aacute;n tầm nh&igrave;n.
+            </p>
+            <p>Nếu trục dọc của bề mặt đầu v&agrave;o kh&aacute;c với trục ngang, như khi c&aacute;c gi&aacute; trị độ cao được tr&igrave;nh b&agrave;y bằng foot nhưng hệ tọa độ l&agrave; m&eacute;t, th&igrave; bề mặt phải c&oacute; hệ tọa độ dọc x&aacute;c định. L&yacute; do của điều n&agrave;y l&agrave; c&ocirc;ng cụ sử dụng trục dọc (Z) v&agrave; trục ngang (XY) để t&iacute;nh to&aacute;n hệ số Z để ph&acirc;n t&iacute;ch tầm nh&igrave;n. Kh&ocirc;ng c&oacute; hệ tọa độ dọc v&agrave; v&igrave; vậy kh&ocirc;ng c&oacute; th&ocirc;ng tin đơn vị Z, c&ocirc;ng cụ sẽ giả định rằng đơn vị Z tương tự như đơn vị XY. Kết quả l&agrave; hệ số Z trong của 1.0 sẽ được sử dụng để ph&acirc;n t&iacute;ch, c&oacute; thể đem đến kết quả kh&ocirc;ng mong đợi.
+            </p>
+            <p>Bề mặt độ cao c&oacute; thể l&agrave; điểm nguy&ecirc;n hoặc điểm nổi.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Các đối tượng điểm đại diện cho vị trí người quan sát</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng điểm đại diện cho vị tr&iacute; của người quan s&aacute;t khi t&iacute;nh to&aacute;n tầm nh&igrave;n.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Tối ưu hóa cho</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p tối ưu h&oacute;a để sử dụng t&iacute;nh to&aacute;n tầm nh&igrave;n.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Phương ph&aacute;p n&agrave;y tối ưu h&oacute;a tốc độ xử l&yacute;, thực hiện kết quả kh&aacute; ch&iacute;nh x&aacute;c cho hiệu quả cao hơn. Điều n&agrave;y l&agrave; mặc định.
+
+                </li>
+                <li>Accuracy &mdash; 
+Phương ph&aacute;p n&agrave;y được tối ưu h&oacute;a để cho kết quả ch&iacute;nh x&aacute;c với thời gian xử l&yacute; l&acirc;u hơn.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Khoảng cách xem tối đa</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập khoảng c&aacute;ch đường tắt nơi t&iacute;nh to&aacute;n c&aacute;c khu vực c&oacute; thể nh&igrave;n thấy dừng lại. Ngo&agrave;i khoảng c&aacute;ch n&agrave;y, điểm người quan s&aacute;t v&agrave; đối tượng kh&aacute;c c&oacute; thể nh&igrave;n thấy nhau hay kh&ocirc;ng sẽ kh&ocirc;ng được x&aacute;c định.
+            </p>
+            <p>Bạn c&oacute; thể x&aacute;c định một gi&aacute; trị số đại diện cho khoảng c&aacute;ch tuyến t&iacute;nh hoặc chọn một trường số từ c&aacute;c đối tượng quan s&aacute;t đầu v&agrave;o. Nếu một trường được cung cấp, c&aacute;c gi&aacute; trị chứa trong trường phải c&oacute; c&ugrave;ng đơn vị với đơn vị xy của bề mặt độ cao đầu v&agrave;o.
+            </p>
+            <p>Lưu &yacute; rằng gi&aacute; trị lớn sẽ l&agrave;m tăng thời gian t&iacute;nh to&aacute;n. Trừ khi được x&aacute;c định, khoảng c&aacute;ch tối đa mặc định sẽ được t&iacute;nh to&aacute;n dựa tr&ecirc;n giải ph&aacute;p v&agrave; phạm vi bề mặt độ cao đầu v&agrave;o.
+            </p>
+            <p>Th&ocirc;ng số n&agrave;y hữu &iacute;ch để lập m&ocirc; h&igrave;nh c&aacute;c hiện tượng nhất định. V&iacute; dụ như khi giới hạn phạm vi nh&igrave;n, bạn c&oacute; thể lập m&ocirc; h&igrave;nh cho c&aacute;c điều kiện thời tiết như sương m&ugrave; nhẹ. Tương tự như vậy, việc giới hạn phạm vi nh&igrave;n c&oacute; thể gi&uacute;p bạn kiểm so&aacute;t thời gian trong ng&agrave;y bằng c&aacute;ch ước lượng t&aacute;c động của ho&agrave;ng h&ocirc;n.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Khoảng cách xem tối đa</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Khoảng cách xem tối thiểu</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập khoảng c&aacute;ch m&agrave; t&iacute;nh to&aacute;n c&aacute;c khu vực c&oacute; thể nh&igrave;n thấy bắt đầu. C&aacute;c &ocirc; tr&ecirc;n bề mặt gần với khoảng c&aacute;ch n&agrave;y hơn kh&ocirc;ng thể nh&igrave;n thấy trong dữ liệu đầu ra nhưng vẫn c&oacute; thể cản trở tầm nh&igrave;n của c&aacute;c &ocirc; giữa khoảng c&aacute;ch nh&igrave;n tối thiểu v&agrave; tối đa.
+            </p>
+            <p>Bạn c&oacute; thể x&aacute;c định một gi&aacute; trị số đại diện cho khoảng c&aacute;ch tuyến t&iacute;nh hoặc chọn một trường số từ c&aacute;c đối tượng quan s&aacute;t đầu v&agrave;o. Nếu một trường được cung cấp, c&aacute;c gi&aacute; trị chứa trong trường phải c&oacute; c&ugrave;ng đơn vị với đơn vị xy của bề mặt độ cao đầu v&agrave;o.
+            </p>
+            <p>Th&ocirc;ng số n&agrave;y hữu &iacute;ch để kiểm so&aacute;t diện t&iacute;ch ph&acirc;n t&iacute;ch tầm nh&igrave;n tại một khoảng c&aacute;ch cụ thể c&aacute;ch xa người quan s&aacute;t. V&iacute; dụ như nếu bạn đang đ&aacute;nh gi&aacute; tầm nh&igrave;n từ tr&ecirc;n t&ograve;a nh&agrave; đến c&ocirc;ng vi&ecirc;n c&aacute;ch xa, bạn c&oacute; thể lập khoảng c&aacute;ch nh&igrave;n tối thiểu để loại trừ c&aacute;c khu vực gần b&ecirc;n kh&ocirc;ng được quan t&acirc;m v&agrave; c&oacute; tốc độ xử l&yacute; tốt hơn.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Khoảng cách xem tối thiểu</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Khoảng cách là 3D</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định xem c&aacute;c th&ocirc;ng số khoảng c&aacute;ch nh&igrave;n tối thiểu v&agrave; tối đa c&oacute; được đo kh&ocirc;ng trong kh&ocirc;ng gian ba chiều hoặc hai chiều đơn giản hơn. Nếu chọn lựa chọn n&agrave;y, khoảng c&aacute;ch nh&igrave;n được xử l&yacute; l&agrave; khoảng c&aacute;ch 3D. Nếu kh&ocirc;ng chọn, ch&uacute;ng được xử l&yacute; l&agrave; khoảng c&aacute;ch 2D.
+            </p> 
+            <p>Khoảng c&aacute;ch 2D l&agrave; khoảng c&aacute;ch tuyến t&iacute;nh đơn giản được đo giữa người quan s&aacute;t v&agrave; đ&iacute;ch bằng c&aacute;c vị tr&iacute; dự kiến của họ theo mực nước biển. Khoảng c&aacute;ch 3D đem đến gi&aacute; trị thực tế hơn bằng c&aacute;ch xem x&eacute;t chiều cao tương đối của ch&uacute;ng.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Độ cao của các vị trí người quan sát</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập độ cao của vị tr&iacute; người quan s&aacute;t.
+            </p>
+            <p>Bạn c&oacute; thể x&aacute;c định gi&aacute; trị số đại diện cho độ cao của tất cả người quan s&aacute;t hoặc như l&agrave; trường đại diện cho độ cao của từng người quan s&aacute;t. Nếu trường được cung cấp, gi&aacute; trị c&oacute; trong trường phải c&oacute; c&ugrave;ng đơn vị với đơn vị Z của bề mặt độ cao đầu v&agrave;o.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Độ cao của các vị trí người quan sát</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Chiều cao của người quan sát</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập chiều cao tr&ecirc;n mặt đất của c&aacute;c vị tr&iacute; người quan s&aacute;t.
+            </p> 
+            <p>Bạn c&oacute; thể x&aacute;c định một gi&aacute; trị số cho chiều cao hoặc một trường từ c&aacute;c đối tượng quan s&aacute;t đầu v&agrave;o. Nếu trường được cung cấp, gi&aacute; trị c&oacute; trong trường phải c&oacute; c&ugrave;ng đơn vị với đơn vị z của bề mặt độ cao đầu v&agrave;o.
+            </p>
+            <p>Mặc định l&agrave; 6 feet. Nếu bạn đang nh&igrave;n từ vị tr&iacute; được n&acirc;ng cao như th&aacute;p quan s&aacute;t hoặc t&ograve;a nh&agrave; cao tầng, h&atilde;y sử dụng chiều cao đ&oacute;. Trong khi t&iacute;nh to&aacute;n tầm nh&igrave;n, gi&aacute; trị n&agrave;y được th&ecirc;m v&agrave;o độ cao người quan s&aacute;t nếu được x&aacute;c định; nếu kh&ocirc;ng, gi&aacute; trị n&agrave;y được th&ecirc;m v&agrave;o gi&aacute; trị z của bề mặt được nội suy.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Chiều cao của người quan sát</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Chiều cao của mục tiêu</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập chiều cao của cấu tr&uacute;c hoặc người tr&ecirc;n mặt đất được d&ugrave;ng để thiết lập khả năng nh&igrave;n.
+            </p>
+            <p>Bạn c&oacute; thể x&aacute;c định một gi&aacute; trị số cho chiều cao hoặc một trường từ c&aacute;c đối tượng quan s&aacute;t đầu v&agrave;o. Nếu trường được cung cấp, gi&aacute; trị c&oacute; trong trường phải c&oacute; c&ugrave;ng đơn vị với đơn vị z của bề mặt độ cao đầu v&agrave;o.
+            </p>
+            <p>Tầm nh&igrave;n từ đ&oacute; x&aacute;c định c&aacute;c khu vực m&agrave; tại đ&oacute; điểm người quan s&aacute;t c&oacute; thể nh&igrave;n thấy c&aacute;c đối tượng tr&ecirc;n mặt đất. Điều ngược lại cũng đ&uacute;ng; c&aacute;c đối tượng kh&aacute;c cũng thấy điểm người quan s&aacute;t. 
+            </p>
+            <p>Sau đ&acirc;y l&agrave; một số v&iacute; dụ về c&agrave;i đặt chiều cao đ&iacute;ch:
+            </p>
+            <ul>
+                <li>Nếu c&aacute;c điểm đầu v&agrave;o của bạn thể hiện cho c&aacute;c tua-bin gi&oacute; v&agrave; bạn muốn x&aacute;c định nơi người đứng tr&ecirc;n mặt đất c&oacute; thể nh&igrave;n thấy tua-bin, h&atilde;y nhập chiều cao trung b&igrave;nh của một người (khoảng 6 foot).
+                    
+
+                </li>
+                <li>Nếu c&aacute;c điểm đầu v&agrave;o của bạn thể hiện c&aacute;c th&aacute;p quan s&aacute;t b&aacute;o động hỏa hoạn v&agrave; bạn muốn x&aacute;c định c&aacute;c th&aacute;p quan s&aacute;t c&oacute; thể nh&igrave;n thấy ch&ugrave;m kh&oacute;i phun cao từ 20 foot trở l&ecirc;n, h&atilde;y nhập độ cao đ&iacute;ch l&agrave; 20 foot.
+                    
+
+                </li>
+                <li>Nếu c&aacute;c điểm đầu v&agrave;o thể hiện cho cảnh vật quan s&aacute;t dọc theo những con đường v&agrave; bạn muốn x&aacute;c định nơi c&oacute; thể nh&igrave;n thấy c&aacute;c tua-bin gi&oacute; cao từ 400 foot trở l&ecirc;n, h&atilde;y nhập độ cao l&agrave; 400 foot.
+                    
+
+                </li>
+                <li>Nếu c&aacute;c điểm đầu v&agrave;o thể hiện cho cảnh vật quan s&aacute;t v&agrave; bạn muốn x&aacute;c định diện t&iacute;ch tr&ecirc;n mặt đất m&agrave; người đang đứng tại điểm quan s&aacute;t c&oacute; thể nh&igrave;n thấy l&agrave; bao nhi&ecirc;u, h&atilde;y nhập chiều cao đ&iacute;ch l&agrave; kh&ocirc;ng. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Chiều cao của người quan sát</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Chiều cao đầu ra để có thể nhìn thấy được</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n của kết quả mức tr&ecirc;n mặt đất đầu ra (AGL). Kết quả AGL l&agrave; raster nơi m&agrave; mỗi gi&aacute; trị &ocirc; l&agrave; chiều cao tối thiểu phải được th&ecirc;m v&agrave;o &ocirc; kh&ocirc;ng thể nh&igrave;n thấy để khiến n&oacute; c&oacute; thể nh&igrave;n thấy bởi &iacute;t nhất một người quan s&aacute;t. C&aacute;c &ocirc; đ&atilde; được nh&igrave;n thấy sẽ được ấn định l&agrave; 0 trong raster đầu ra n&agrave;y.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

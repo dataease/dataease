@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ambil Lokasi Baru</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Ambil Lokasi Baru"></h2>
+        <hr/>
+    <p>Alat ini membawa fitur baru di area studi Anda yang memenuhi seperangkat kriteria yang Anda tentukan. Kriteria ini dapat didasarkan pada kueri atribut (contohnya, bidang yang kosong) dan kueri spasial (contohnya, bidang yang berada di zona banjir).
+
+    </p>
+    <p>Jika Anda mencentang  <b>Gunakan jangkauan peta saat ini</b>, hanya fitur yang terlihat di dalam jangkauan peta saat ini yang akan dianalisis. Jika tidak dicentang, seluruh fitur akan dianalisis, meskipun berada di luar cakupan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Mendapatkan lokasi baru yang cocok dengan ekspresi berikut</h2></div>
+        <hr/>
+        <div>
+            <p>Klik tombol  <b>Tambahkan Ekspresi</b> untuk menentukan ekspresi.  Anda dapat menambahkan beberapa ekspresi.  Setelah memasukkan ekspresi dan mengklik tombol <b>Jalankan Analisis</b>, fitur pada layer analisis Anda difilter melalui masing-masing ekspresi.  Bagian fitur yang memenuhi seluruh ekspresi ditulis pada layer hasil.
+            </p>
+            <p>Ada dua tipe ekspresi dasar yang dapat Anda buat; atribut dan spasial.  Ekspresi atribut adalah kueri pada kolom nilai, seperti  <code>ketika namanya 'San Francisco'</code>.  Ada empat tipe ekspresi spasial:
+                <ul>
+                    <li> <b>dalam jarak</b>: sebagian fitur dalam jarak fitur di layer lainnya.  Contoh, temukan bagian bidang yang dalam jarak 500 meter dari sungai Los Angeles.
+                    </li>
+                    <li> <b>sepenuhnya berisi</b>: fitur tersebut harus mengandung seluruh fitur pada layer lainnya.  Contoh, temukan batas air yang di dalamnya sepenuhnya mengandung bidang untuk zona industri. Tidak ada bagian dari bidang tersebut yang dapat berada di luar dari batas air.
+                    </li>
+                    <li> <b>sepenuhnya di dalam</b>: fitur tersebut harus seluruhnya dikelilingi oleh fitur pada layer lainnya.  Contoh, cari distrik sekolah yang sepenuhnya berada di dalam batasan suatu kota.  Tidak ada bagian dari distrik sekolah yang dapat berada di luar batas kota.
+                    </li>
+                    <li> <b>berpotongan</b>: fitur atau bagian dari fitur tersebut harus bertumpang tindih atau berpotongan dengan fitur pada layer lainnya.  Contoh, cari area vegetasi yang terbakar dari beberapa kebakaran dalam suatu taman nasional.   Area yang terbakar yang berada di luar batasan taman tidak akan dimasukkan.
+                    </li>
+                    <li> <b>terdekat ke</b>: fitur harus merupakan yang terdekat ke fitur pada layer lainnya.  Misalnya, temukan ruang terbuka hijau yang terdekat ke setiap sekolah.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Masing-masing ekspresi spasial memiliki negasi yang berkaitan, dengan pengecualian  <b>terdekat ke</b>; <b>tidak dalam jarak</b>, <b>tidak sepenuhnya berisi</b>, <b>tidak sepenuhnya di dalam</b>, dan <b>tidak berpotongan</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

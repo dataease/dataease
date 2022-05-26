@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>類似フィーチャの検索</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="類似フィーチャの検索"></h2>
+        <hr/>
+    <p>[類似フィーチャの検索] ツールは、指定する基準に基づいて、1 つ以上の場所に対する検索候補レイヤー内の類似場所を測定します。このツールは、次のような質問に答えることができます。
+        <ul>
+            <li>顧客プロファイルに関して、どの店舗が最も成績が優秀な店舗に類似しているか。
+            </li>
+            <li>病気によって最も大きな打撃を受けた村の特性を考慮すると、他のどの村のリスクが高いか。
+            </li>
+        </ul>
+        このような質問に答えるには、参照場所、候補の検索場所、および照合する基準を表すフィールドを指定します。最初の入力レイヤーには、参照場所または基準場所を含める必要があります。たとえば、これは、最も成績が優秀な店舗または病気によって最も大きな打撃を受けた村を含んでいるとします。次に、候補の検索場所を含んでいるレイヤーを指定します。これは、すべての店舗またはすべてのその他の村となる場合があります。最終的に、1 つ以上のフィールドを特定して、類似性の測定に使用します。次に、[類似フィーチャの検索] ツールは、選択したすべてのフィールドで候補の検索場所が参照場所とどれだけ一致しているかを基準にして、すべての候補の検索場所に順位を付けます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>参照場所を含むレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>照合する参照場所を含むレイヤー。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>すべてのフィーチャを使用するか一部を選択</h2></div>
+        <hr/>
+        <div>
+            <p>必要に応じて、選択ボタンを使用して、参照場所を特定します。このオプションを使用できるのは、フィーチャがマップ上に描画されている場合に限ります (ビッグ データ ファイル共有には使用できません)。たとえば、入力レイヤーにすべての場所 (参照場所および候補の検索場所) が含まれている場合、選択ツールの 1 つを使用して、参照場所を特定する必要があります。参照場所が含まれた 1 つのレイヤーおよびすべての候補の検索場所を含むもう一方のレイヤーの 2 つの別々のレイヤーを作成する場合は、選択する必要はありません。
+            </p>
+            <p>2 つ以上の参照場所がある場合、類似性の分析に使用される各フィールドの値の平均によって単一の場所が作成されます。
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>類似フィーチャの検索</h2></div>
+        <hr/>
+        <div>
+            <p>このレイヤー内の候補の検索フィーチャは、類似性の高いものから低いものへの順になります。 
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>類似性の基準</h2></div>
+        <hr/>
+        <div>
+            <p>選択するフィールドは、類似性の評価に使用される基準になります。たとえば、人口と収入フィールドを選択すると、最も低い (最高の) 順位を持つ候補の検索場所が、参照場所に類似した人口および収入の値を持つ場所になります。
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>次を使用して最も類似するものと最も類似しないものを決定</h2></div>
+        <hr/>
+        <div>
+            <p>選択した方法によって、照合方法が決まります。
+                <ul>
+                    <li> <b>[フィールド値]</b> 方法では、標準化された値の 2 乗差が使用されます。これがデフォルトです。
+                    </li>
+                    <li> <b>[フィールド プロファイル]</b> 方法では、標準化された値のプロファイルの比較にコサイン類似度計算が使用されます。属性プロファイルを使用するには、2 つ以上の解析フィールドが必要です。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>表示</h2></div>
+        <hr/>
+        <div>
+            <p>類似性が最も高いものから最も低いものへの順位が付けられた候補の検索場所をすべて表示するか、表示する結果の数を指定することができます。
+                <ul>
+                    <li> <b>[類似性が最も高いフィーチャから最も低いフィーチャを含むすべてのフィーチャ]</b> - 候補の検索レイヤー内のすべてのフィーチャが結果レイヤーにランク順に格納されます。最大 10,000 の結果が返されます。
+                    </li>
+                    <li> <code>類似性が最も高い場所、</code> <code>最も低い場所、</code> <b>または最も高い場所と最も低い場所の両方の数</b>を指定した場合は、結果レイヤーに含まれる類似性が最も高い候補、最も低い候補、または最も高い候補と最も低い候補の両方の数が決定されます。許容最大値は 10,000 です。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>結果に追加するフィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>必要に応じて、検索レイヤー内のデータにフィールドを追加します。デフォルトでは、すべてのフィールドが追加されます。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p>この結果レイヤーには、参照場所と指定した順位付きの候補の検索フィーチャの数が含まれます。結果レイヤーの名前がすでに存在する場合、結果の名前を変更するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

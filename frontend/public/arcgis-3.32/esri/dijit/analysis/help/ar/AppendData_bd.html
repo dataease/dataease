@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>إلحاق البيانات</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="مخطط سير عمل إلحاق البيانات"></h2>
+        <hr/>
+    <p>تقوم هذه الأداة بإلحاق البيانات بطبقة معالم مستضافة موجودة. يقوم &quot;إلحاق البيانات&quot; بتعديل الطبقة المدخلة الأصلية، ولا ينشئ طبقة ناتجة جديدة. يمكنك مطابقة الحقول بناءً على اسم الحقل ونوعه، أو يمكنك تطبيق طرق مطابقة أكثر تقدُّمًا.
+    </p>
+    <p>فيما يلي الأمثلة: 
+        <ul>
+            <li>أنت موظف لدى شركة تأمين كبرى تقوم بإنشاء سجلات المبيعات شهريًا. في التقرير السنوي الخاص بك، يجب تجميع البيانات من أجل التحليل شهريًا. لإصدار تحليل مبيعات، يمكنك رفع مستوى &quot;إلحاق البيانات&quot; لتحديث طبقة AnnualReport_2018 بمجرد أن تصبح أرقامك الشهرية متاحة. ونظرًا لأنك تعلم بأن مؤسستك تحتفظ بمخطط ثابت شهريًا، يمكنك استخدام طريقة تخطيط الحقل الافتراضي من أجل إلحاق المعالم بكفاءة بناءً على اسم ونوع الحقل.
+            </li>
+            <li>عشر مجموعات بيئية يقوم كل منها بتجميع مئات الآلاف من قياسات المناح ضمن الاختصاص. تريد هذه المؤسسات تجميع بياناتها للتعرف بشكل أفضل على الأنماط الإقليمية والعالمية. تحدد كل مؤسسة مخطط مجموعة بياناتها. كما يُحدد كل منها أسماء حقول أخرى محددة لبيانات درجة الحرارة وسرعة الرياح. وبوجود اختلافات اسم الحقل بين مجموعات البيانات، يمكن رفع مستوى تخطيط حقل  لتحديد كيفية إلحاق قياسات درجة الحرارة وسرعة الرياح إلى حقولها النسبية.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر الطبقة المطلوب الإلحاق بها</h2></div>
+        <hr/>
+        <div>
+            <p>معالم الجدول أو النقطة أو الخط أو المضلع الذي سيتم إلحاق البيانات به/بها.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>سيتم تعديل الطبقة التي تقوم بإلحاقها أثناء تنفيذ الأداة. قبل المتابعة، تأكد من أنك تريد تعديل هذه الطبقة.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لطبقة معالم مستضافة.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>اختر الطبقة المطلوب إلحاقها</h2></div>
+        <hr/>
+        <div>
+            <p>معالم الجدول أو النقطة أو الخط أو المضلع المطلوبة لإلحاق الطبقة المدخلة.
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>إلحاق كل المعالم أو تحديد مجموعة فرعية (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>تحديد المعالم المطلوب إلحاقها. هذه المعلمة اختيارية.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>اختر كيفية إلحاق الحقول (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>تحديد كيفية إلحاق حقول طبقة الإلحاق بالطبقة المدخلة. وافتراضيًا، سيتم إلحاق كل الحقول المدخلة وحقول الإلحاق المطابقة. تعد الحقول متطابقة إذا كان لديها نفس اسم ونوع الحقل. يمكنك اختيار كيفية مطابقة الحقول أو حساب تعبيرات Arcade لتعبئة قيم الحقل.
+            </p>
+            <p>على سبيل المثال، لديك طبقة مدخلة بحقول  <i>field_number</i> و <i>field_string</i> و <i>date_field</i> و <i>unused_field</i>، وطبقة إلحاق بحقول <i>field_string</i> و <i>field_number</i> و <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>وافتراضيًا، سيُطابق الأداء  <i>field_number</i> في الطبقة المدخلة بـ <i>field_number</i> في الطبقة الملحقة و <i>field_string</i> في الطبقة المدخلة بـ <i>field_string</i> في الطبقة الملحقة.
+                    </li>
+                    <li>وافتراضيًا، سيتم تعبئة حقول الطبقة المدخلة  <i>date_field</i> و <i>unused_field</i> بقيم <i>null</i> لأنها لا يتوفر لديها حقل مطابق في طبقة الإلحاق.
+                    </li>
+                    <li>يمكنك إلحاق القيم بالحقول التي لم تتم مطابقتها تلقائيًا بشكل افتراضي. على سبيل المثال، يمكن مطابقة  <i>date_field</i> في البقة المدخلة بحقل الإلحاق <i>MY_DATE_FIELD</i>. وللقيام بذلك، استخدم القائمة المنسدلة بجانب <i>date_field</i> في العمود الأول، ثم حدد <i>MY_DATE_FIELD</i> من القائمة المنسدلة في العمود الثاني.
+                    </li>
+                </ul>
+                 تعد الطبقة المدخلة التي تحتوي على الحقول الرقمية <i>value_1</i> و <i>value_2</i> و <i>value_3</i> و <i>my_Average</i>، وطبقة الإلحاق التي تحتوي على الحقول الرقمية <i>value_1</i> و <i>value_2</i> و <i>value_3</i> مثالاً آخرًا.
+                <ul>
+                    <li>وافتراضيًا، ستتم مطابقة وإلحاق  <i>value_1</i> و <i>value_2</i> و <i>value_3</i>.
+                    </li>
+                    <li>وإضافة إلى السلوك الافتراضي، يمكن حساب القيم لحقل  <i>my_Average</i>. يمكنك القيام بذلك باستخدام حقول متعددة وعمليات رياضية بتحديد الخيار المنسدلة <b>التعبير</b> في العمود بجانب <i>my_Average</i> وإنشاء تعبير Arcade مخصص، مثل <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

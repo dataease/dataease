@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Converte raster in feature</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Strumento Converte raster in feature"></h2>
+        <hr/>
+    <p>Questo strumento converte un raster in un feature dataset, come punti, linee o poligoni.
+    </p>
+    <p>Il parametro  <b>Scegli campo</b> consente di scegliere quale campo di attributo del dataset raster di input diventer&agrave; un attributo nella feature class di output. Questo parametro &egrave; disponibile solo per i raster interi che hanno altri attributi nella tabella associata.
+    </p>
+    <p>Il raster di input pu&ograve; avere qualunque dimensione di cella.
+    </p>
+    <p>I raster interi possono essere convertiti in feature punto, linea o poligono; invece, i raster a virgola mobile possono essere convertiti solo in feature punto.
+    </p>
+    <p>Se &egrave; selezionata l'opzione  <b>Usa estensione mappa corrente</b>, solo le celle del raster visibili nell'estensione mappa corrente verranno convertite. Se &egrave; deselezionata, verranno convertite tutte le celle nel layer raster, anche se esterne all'estensione mappa corrente. Tenere in considerazione questo fattore se il layer del raster &egrave; grande o ha una risoluzione molto alta.
+    </p>
+    <p>Di seguito sono descritti alcuni casi di utilizzo di questo strumento:
+ 
+        <ul>
+            <li>Creare feature poligono da un raster di classificazione di utilizzo del suolo.
+                
+ 
+            </li>
+            <li>I flussi identificati in un DEM possono essere convertiti in feature linea.
+                
+
+            </li>
+            <li>Un DEM pu&ograve; essere convertito in feature punto che possono essere utilizzate in un flusso di lavoro non basato su raster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli layer raster da convertire</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer del raster di input che verr&agrave; convertito in feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Scegli campo</h2></div>
+        <hr/>
+        <div>
+            <p>Fornire un campo che specifichi il valore che verr&agrave; utilizzato per la conversione.
+            </p>
+            <p>Pu&ograve; essere un valore intero o di testo.
+            </p>
+            <p>Un campo che contiene valori a virgola mobile pu&ograve; essere utilizzato solo se l'output &egrave; un dataset di punti.
+            </p>
+            <p>L'opzione predefinita consiste nell'utilizzare il campo  <i>Value</i> che contiene il valore di ciascuna cella del raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Seleziona tipo di output</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il tipo di output tra punto, linea o poligono.
+            </p>
+            <ul>
+                <li>Punto: il raster verr&agrave; convertito in un dataset di punti.
+                    
+ 
+                </li>
+                <li>Linea: il raster verr&agrave; convertito in un feature dataset di linea.
+                    
+ 
+                </li>
+                <li>Poligono: il raster verr&agrave; convertito in un feature dataset di poligono.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Semplifica linee o poligoni</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare se le feature devono essere semplificate.
+            </p>
+            <p>Se l'opzione &egrave; selezionata (impostazione predefinita), le feature di linea o poligono verranno smussate per produrre un risultato pi&ugrave; generalizzato. Se questa opzione &egrave; deselezionata, le feature di linea seguiranno i contorni della cella del dataset raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

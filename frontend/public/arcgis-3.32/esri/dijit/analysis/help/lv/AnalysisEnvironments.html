@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portāla analīzes darba vides iestatījumi</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Vides iestatījumi analīzei Portal for ArcGIS un  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Pārrakstīt rezultātu slāni</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Norāda, vai pārrakstīt eso&scaron;os slāņus. Ja atzīmēsiet &scaron;o opciju, tad gadījumā, ja jūsu saturā jau eksistē slānis ar tādu pa&scaron;u nosaukumu, tas tiks pārrakstīts.
+            </p>
+            <p>
+                <ul>
+                    <li>Atzīmēta&nbsp;&mdash; ja jūsu saturā jau eksistē slānis ar tādu pa&scaron;u nosaukumu, tas tiks pārrakstīts. Izvadē tiks izmantota tāda pati koordinātu sistēma, kāda tiek izmantota ievadē.
+                    </li>
+                    <li>Neatzīmēta&nbsp;&mdash; ja norādītais rezultātu slāņa nosaukums jau eksistē, radīsies kļūda un rezultātu slānis būs jāpārdēvē, lai varētu izpildīt rīku. Tā ir noklusējuma vērtība.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Aizvērt analīzes logrīku pēc analīzes izpildes</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda, vai analīzes dialoglodziņ&scaron; ir jāpatur atvērts un iespējots rīka apstrādes laikā.    &Scaron;is iestatījums ļauj veikt analīzes parametru izmaiņas, kamēr tiek turpināta iepriek&scaron;ējā analīzes darba izpilde. Analīze ir atkārtots process, un, paturot atvērtu rīku dialoglodziņu, tā ļauj veikt parametru izmaiņas un atkārtoti palaist analīzi.
+            </p>
+            <p>
+                <ul>
+                    <li>Atzīmēta&nbsp;&mdash; analīzes rīka logs tiks aizvērts un fokusā atkal būs satura tabula. Tā ir noklusējuma vērtība
+                    </li>
+                    <li>Neatzīmēta&nbsp;&mdash; analīzes rīka logs paliks atvērts un aktivizēts.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Saglabāt analīzes rezultātus kā viesotu elementu slāņus</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Norāda, vai no analīzes izveidotais rezultātu slānis būs elementu kolekcija vai viesots elementu slānis. 
+            </p>
+            <p>
+                <ul>
+                    <li>Atzīmēta&nbsp;&mdash; jūsu analīzes rezultāti izveidos viesotu elementu slāni un jūsu saturā tiks izveidota vienība. Tā ir noklusējuma vērtība.
+                    </li>
+                    <li>Neatzīmēta&nbsp;&mdash; no jūsu analīzes rezultātiem tiks izveidots elementu kopums.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Izvades koordinātu sistēma</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda rezultātu slāņa koordinātu sistēmu rastra analīzei.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Atbilsto&scaron;a ievadei</b>&nbsp;&mdash; jūsu analīzes rezultātā tiks izmantota tāda pati koordinātu sistēma kā ievadē. Tā ir noklusējuma vērtība.
+                    </li>
+                    <li> <b>Kā norādīts</b>&mdash;analīzes rezultāts būs jūsu izvēlētajā koordinātu sistēmā. Kad &scaron;ī opcija ir atlasīta, noklik&scaron;ķiniet uz globusa pogas un izvēlieties no zināmo koordinātu sistēmu saraksta vai pievienojiet telpisko atsauci WKID norādītajā lodziņā.
+                    </li>
+                    <li> <b>Slānis
+&lt;name&gt;</b>&mdash;Analīzes rezultāts būs tādā pa&scaron;ā koordinātu sistēmā kā eso&scaron;ais tīmekļa kartē izvēlētais slānis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Notiek koordinātu sistēmas apstrāde</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda koordinātu sistēmu, kas tiks izmantota GeoAnalytics analīzes laikā.   
+            </p>
+            <p>GeoAnalytics ietvaros dažu analīžu veik&scaron;anai ir nepiecie&scaron;ams izpildīt apstrādi projicētā koordinātu sistēmā.   Jebkuram rīkam, kurā ir ieviesta datu nodalī&scaron;ana vai lineāras mērvienības, ir nepiecie&scaron;ama projicēta koordinātu sistēma. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Atbilsto&scaron;a ievadei</b>&nbsp;&mdash; jūsu analīze tiks apstrādāta tāda pa&scaron;ā koordinātu sistēmā kā ievade. Tā ir noklusējuma vērtība.
+                    </li>
+                    <li> <b>Kā norādīts</b>&mdash;analīze notiks jūsu izvēlētajā koordinātu sistēmā. Kad &scaron;ī opcija ir atlasīta, noklik&scaron;ķiniet uz globusa pogas un izvēlieties no zināmo projektēto koordinātu sistēmu saraksta vai pievienojiet telpisko atsauci WKID norādītajā lodziņā.
+                    </li>
+                    <li> <b>Slānis
+&lt;name&gt;</b>&mdash;Analīze notiks tādā pa&scaron;ā koordinātu sistēmā kā eso&scaron;ais tīmekļa kartē izvēlētais slānis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Pārklājums</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda pārklājumu vai robežu, kas tiks izmantota, izpildot analīzi. Analīzē tiks izmantoti visi ievades elementi, kas ir pilnībā iekļauti norādītajā pārklājumā vai to &scaron;ķērso.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Noklusējums</b>&nbsp;&mdash;rīka nodro&scaron;inātais pārklājums.
+                    </li>
+                    <li> <b>Kā norādīts</b>&mdash;pakāpi nosaka jūsu nodro&scaron;inātās koordinātes.
+                    </li>
+                    <li> <b>Slānis
+&lt;name&gt;</b>&mdash;analīzes apstrādei izmantotais apjoms būs tāds pats kā tīmekļa kartē izvēlētā eso&scaron;ā slāņa telpiskais pārklājums. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Fiksēt rastru</h2></div>
+        <hr/>
+        <div>
+            <p>Pielāgo izvades rastra slāņa pārklājumu tā, lai tas atbilstu norādītā  <b>Rastra fiksē&scaron;anas</b> slāņa &scaron;ūnu salīdzinājumam rastra analīzē.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Šūnu izmērs</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda &scaron;ūnas lielumu vai iz&scaron;ķirtspēju, kas tiks izmantota, lai izveidotu izvades rastra slāni rastra analīzē. Noklusējuma izvades iz&scaron;ķirtspēju nosaka ievades rastra slāņa lielākais &scaron;ūnas izmērs.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Ievažu minimālā vērtība</b>&nbsp;&mdash; izmantojiet visu ievades slāņu mazāko &scaron;ūnu izmēru.
+                    </li>
+                    <li> <b>Ievažu maksimālā vērtība</b>&nbsp;&mdash; izmantojiet visu ievades slāņu lielāko &scaron;ūnu izmēru. Tā ir noklusējuma vērtība.
+                    </li>
+                    <li> <b>Kā norādīts</b>&nbsp;&mdash; norādiet ciparu vērtību, lai iestatītu &scaron;ūnu izmēru. Ja izvēlaties &scaron;o iespēju, noklusējuma vērtība ir&nbsp;1,
+                    </li>
+                    <li> <b>Slānis &lt;nosaukums&gt;</b>&nbsp;&mdash; izvēlēta &scaron;ūnu izmēru iestatī&scaron;ana atbilsto&scaron;i izvēlētajam rastra slānim.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maska</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda slāni, kas tiks izmantots, lai definētu rastra analīzē interesējo&scaron;o teritoriju. Analīzes darbībās tiks ņemtas vērā tikai tās &scaron;ūnas, kas ietilpst analīzes maskā.
+            </p>
+            <ul>
+                <li>Maska var būt rastrs vai elementu slānis.
+                </li>
+                <li>Ja analīzes maska ir rastrs, visas &scaron;ūnas, kam ir pie&scaron;ķirta vērtība, tiks ņemtas vērā, definējot masku. Maskas rastrā iekļautās &scaron;ūnas &ldquo;NoData&rdquo; tiks uzskatītas par ārpus maskas eso&scaron;ām un analīzes rezultātu slānī tiks iekļautas ar vērtību &ldquo;NoData&rdquo;. 
+                </li>
+                <li>Ja analīzes maska ir elementu slānis, tas tiks izpildes laikā iek&scaron;ēji konvertēts par rastru. &Scaron;ī iemesla dēļ  ir ieteicams pārliecināties, lai analīzē būtu pareizi iestatīts <b>&Scaron;ūnu izmērs</b> un <b>Rastra fiksē&scaron;anas</b> vērtības.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datu krātuve</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultātus var saglabāt vai nu  ArcGIS Data Store un parādīt kā elementa slāni  Portal for ArcGIS vai konfigurētā lielā datu faila koplietojumā. 
+            </p>
+            <p>Ja saglabājat rezultātu  ArcGIS Data Store,vairumā gadījumu rezultāti ir jāglabā vietas un laika datu krātuvē. Tā ir noklusējuma vērtība. Iemesli, kādēļ rezultātus vajadzētu glabāt saistītajā datu krātuvē: 
+                <ul>
+                    <li>Lai rezultātus izmantotu starpportālu sadarbībā
+                    </li>
+                    <li>Lai aktivizētu sinhronizācijas iespējas ar rezultātiem
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot, ja ir sagaidāms, ka palielināsies jūsu GeoAnalytics rezultāti, un jūs vēlēsieties izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Paralēlās apstrādes koeficients</h2></div>
+        <hr/>
+        <div>
+            <p>Izplata analīzi vairākās rastra apstrādes pakalpojumu instancēs. 
+            </p>
+            <p>Rīki, kas attiecas uz  <b>Paralēlo apstrādes faktoru</b> vidi, ļauj kontrolēt rastra apstrādes pakalpojumu instanču skaitu, ko var izmantot datu apstrādei.
+            </p>
+            <p>Ja rīks neatbilst  <b>Procesora tipam</b>, vai ja <b>Procesora tipa</b> vide ir iestatīta kā <b>CPU</b>, <b>Paralēlās apstrādes faktora</b> vide kontrolē rastra apstrādes (CPU) pakalpojuma instances. Ja <b>Procesora tips</b> ir iestatīts uz <b>GPU</b>, <b>Paralēlā apstrādes faktora</b> vide kontrolē rastra apstrādes GPU instanču skaitu.
+            </p> 
+            <p>Iestatot  <b>Paralēlas apstrādes faktoru</b>, varat pieprasīt paralēlo darbinieku skaitu, ko rastra analīzes attēlu serveris izmanto viena rastra analīzes uzdevuma apstrādei. Tomēr, ja kopējais paralēlo procesu skaits pārsniedz maksimālo rastra apstrādes (CPU vai GPU) pakalpojumu instanču skaitu, papildu paralēlie procesi tiks ievietoti rindā.
+            </p>
+            <p>Ja  <b>Paralēlās apstrādes faktors</b> netiek norādīts, kas ir noklusējums, rīks izmantos 80 procentus no maksimālā rastra apstrādes pakalpojuma instanču skaita. Kā paralēlās apstrādes faktoru var norādīt veselu skaitli vai procentus.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Procesora veids</h2></div>
+        <hr/>
+        <div>
+            <p>Rīki, kas nodro&scaron;ina  <b>Procesora tipa</b> vidi, ļauj izvēlēties, kur un kā apstrādāt datus. Datus var apstrādāt, izmantojot servera datoru CPU vai GPU. Ja <b>Procesora tipa</b> vide ir tuk&scaron;a, rīks izmanto CPU, lai apstrādātu datus. Tā ir noklusējuma vērtība.
+            </p> 
+            <p>CPU apstrādi var paralelizēt vairākos kodolos un instancēs, kā to apstrādā  <b>Paralēlais apstrādes faktors</b>.
+            </p>
+            <p>GPU ir efektīvas grafikas un attēlu apstrādes jomā, kur to lielā, paralēlā struktūra padara tos efektīvus lielu datu bloku atkārtotā apstrādē. Rastra analīzes rīki, kas atbilst &scaron;ai videi, var izplatīt savu darbu GPU instancēs vairākos rastra analīzes servera datoros, kā to apstrādā  <b>Paralēlais apstrādes faktors</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;dati tiks apstrādāti, izmantojot grafikas apstrādes mērvienību.
+                    </li>
+                    <li> <b>CPU</b>&mdash;dati tiks apstrādāti, izmantojot datora centrālo procesoru.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

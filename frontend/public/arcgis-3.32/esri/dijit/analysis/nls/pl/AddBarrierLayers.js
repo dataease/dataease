@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/AddBarrierLayers",{addBarriers:"Wybierz warstwy barier",pointBarrier:"Bariery punktowe",lineBarrier:"Bariery liniowe",polygonBarrier:"Bariery poligonowe",choosePointBarrier:"Wybierz warstw\u0119 barier punktowych",chooseLineBarrier:"Wybierz warstw\u0119 barier liniowych",choosePolygonBarrier:"Wybierz warstw\u0119 barier poligonowych",selectPointBarrier:"Wybierz bariery punktowe",selectLineBarrier:"Wybierz bariery liniowe",selectPolygonBarrier:"Wybierz bariery poligonowe"});

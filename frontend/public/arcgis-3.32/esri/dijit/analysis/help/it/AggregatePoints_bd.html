@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggrega punti</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Aggrega Punti"></h2>
+        <hr/>
+    <p>Questo strumento funziona con un layer di feature punto e un layer di feature area.  Le feature area di input possono provenire da un layer poligono o possono essere contenitori quadrati o esagonali calcolati quando lo strumento &egrave; in esecuzione. Lo strumento determina innanzitutto quali punti sono compresi in ogni area specificata. Dopo aver stabilito questa relazione spaziale tra i punti dell'area, le statistiche relative a tutti i punti compresi nell'area vengono calcolate ed assegnate all'area. La statistica pi&ugrave; semplice &egrave; costituita dal numero di punti compresi nell'area, tuttavia &egrave; possibile ottenere anche altre statistiche. 
+
+    </p>
+    <p>Si supponga, ad esempio, che siano presenti feature punto relative alla posizione dei bar e feature area per le regioni e che si desideri riepilogare le vendite di caff&egrave; per regione. Supponendo che i bar abbiano un attributo  <i>TOTAL_SALES</i>, &egrave; possibile calcolare la somma di tutti i <i>TOTAL_SALES</i> all'interno di ciascuna regione, i valori minimi e massimi di <i>TOTAL_SALES</i>
+di ciascuna regione o altre statistiche come, ad esempio, il conteggio, l'intervallo, la deviazione standard e la varianza.
+    </p>
+    <p>Questo strumento pu&ograve; funzionare anche con dati abilitati per le variazioni temporali. Se la variazione temporale &egrave; abilitata sui punti di input, sono disponibili le opzioni dei periodi di tempo. Il periodo di tempo consente di calcolare la relazione tra i punti dell'area mentre si osserva uno specifico periodo di tempo. Ad esempio, &egrave; possibile osservare intervalli orari che avranno come risultato output ogni ora. 
+    </p>
+    <p>Per un esempio sul tempo, si supponga di avere feature punto di ogni transazione eseguita in diverse ubicazioni di bar e nessun layer area. I dati sono stati registrati nell'arco di un anno e ciascuna transazione ha un'ubicazione e un indicatore data e ora. Supponendo che ciascuna transazione abbia un attributo  <i>TOTAL_SALES</i>, &egrave; possibile ottenere la somma di tutti i <i>TOTAL_SALES</i> nell'ambito dello spazio e del tempo di interesse. Se queste transazioni sono relative a una sola citt&agrave;, &egrave; possibile generare aree in forma di griglie di 1 km e osservare gli intervalli di tempo settimanali per riepilogare le transazioni sia nel tempo che nello spazio.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Scegliere un layer che contiene i punti da aggregare nelle aree</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti che verr&agrave; aggregato nelle aree. I layer di punti che vengono aggregati nei contenitori  <b>Quadrato</b> o <b>Esagono</b> devono disporre del riferimento spaziale di elaborazione impostato su un sistema di coordinate proiettate utilizzando gli <b>Ambienti di analisi</b>.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Scegli un layer di area in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>Le aree in cui verr&agrave; aggregato il layer di punti. &Egrave; possibile scegliere tra un layer area fornito e i contenitori generati quando lo strumento &egrave; in esecuzione.   Quando si generano i contenitori, nel caso di  <b>Quadrato</b>, il numero e le unit&agrave; specificate determinano l'altezza e la lunghezza del quadrato. Nel caso di <b>Esagono</b>, il numero e le unit&agrave; specificate determinano la distanza tra i lati paralleli.
+            </p>
+            <p>L'analisi tramite l'utilizzo di contenitori  <b>Quadrato</b> o <b>Esagono</b> richiede un sistema di coordinate proiettato. &Egrave; possibile impostare il <b>Sistema di coordinate di elaborazione</b> negli <b>Ambienti di analisi</b>. Se il sistema di coordinate di elaborazione non &egrave; impostato su un sistema di coordinate proiettate, verr&agrave; chiesto di impostarlo quando si <b>Esegue l'analisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Scegliere il layer di area in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di area a cui verranno aggregati i punti. Tutti i punti compresi nei confini delle aree in questo layer verranno conteggiati e potranno essere riepilogati utilizzando le opzioni di statistiche selezionate. 
+            </p>
+            <p>&Egrave; necessario impostare la  <b>Dimensione contenitore</b> per i contenitori o un <b>Layer di area</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Scegliere una distanza per generare contenitori e in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>La distanza utilizzata per generare contenitori in cui aggregare i punti di input. Per un contenitore quadrato, la dimensione rappresenta l'altezza del quadrato. Per un esagono, la dimensione rappresenta l'altezza dell'esagono (dai lati paralleli).  
+            </p>
+            <p>&Egrave; necessario impostare la  <b>Dimensione contenitore</b> per i contenitori o un <b>Layer di area</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggrega usando passaggi temporali (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Se il layer di punti di input &egrave; abilitato per variazioni temporali ed &egrave; di tipo istante, &egrave; possibile eseguire l'analisi utilizzando incrementi di tempo. Sono disponibili tre parametri da impostare quando si utilizza il tempo:
+                <ul>
+                    <li> <b>Intervallo del passaggio temporale</b>
+                    </li>
+                    <li> <b>Frequenza di ripetizione del passaggio temporale</b>
+                    </li>
+                    <li> <b>Tempo a cui allineare i passaggi temporali</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando incrementi settimanali. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>. 
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando la prima settimana del mese. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 mese</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>1 gennaio alle ore 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervallo del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallo di tempo utilizzato per la generazione di passaggi temporali.  <b>Intervallo del passaggio temporale</b> pu&ograve; essere utilizzato da solo o con i parametri <b>Frequenza di ripetizione del passaggio temporale</b> o <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p>Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Frequenza di ripetizione del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p> Il passaggio utilizzato per calcolare un passaggio temporale. <b>Frequenza di ripetizione del passaggio temporale</b>  pu&ograve; essere utilizzata da sola, o con <b>Intervallo del passaggio temporale</b>, con <b>Ora di riferimento</b> o con <b>Intervallo del passaggio temporale</b> e <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tempo a cui allineare i passaggi temporali</h2></div>
+        <hr/>
+        <div>
+            <p>La data e l'ora utilizzate per allineare il periodo di tempo. Gli incrementi di tempo inizieranno e continueranno a ritroso da questo momento. Se non &egrave; stata selezionata un'ora di riferimento, gli incrementi di tempo si allineeranno al 1 gennaio 1970. 
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Riferimento spaziale (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; un parametro temporaneo per la versione provvisoria che consente di impostare il riferimento spaziale per l'elaborazione. Molti strumenti Big Data richiedono l'utilizzo di un sistema di coordinate proiettato come riferimento spaziale per l'elaborazione. Per impostazione predefinita, lo strumento utilizzer&agrave; il sistema di coordinate di input ma non verr&ograve; eseguito se si tratta di un sistema di coordinate geografiche. Per impostare un sistema di coordinate proiettato, immettere il WKID. Ad esempio,  <b>Mercatore Sferica</b> deve essere inserito come <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere un ArcGIS Data Store in cui salvare i risultati</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome layer di risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

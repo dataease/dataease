@@ -1,0 +1,139 @@
+/* dojox.mobile.Switch */
+/* Switch - common */
+.dj_gecko {
+	.mblSwitchBg {
+		-moz-box-sizing: border-box;
+	}
+	.mblSwitchKnob {
+		-moz-box-sizing: border-box;
+	}
+	.mblSwitch {
+		.mblSwitchBgLeft {
+			background-image: @mbl-switch-bg-left-background-image-gecko;
+		}
+		.mblSwitchBgRight {
+			background-image: @mbl-switch-bg-right-background-image-gecko;
+		}
+		.mblSwitchKnob {
+			background-image: @mbl-switch-knob-background-image-gecko;
+		}
+	}
+}
+
+.dj_ie {
+	.mblSwitchBg {
+		border: none;
+		background: none;
+	}
+	.mblSwitchBgLeft {
+		background-repeat: no-repeat;
+	}
+	.mblSwitchBgRight {
+		background-repeat: no-repeat;
+	}
+	.mblSwitchKnob {
+		background: none;
+		background-repeat: no-repeat;
+		border: none;
+	}
+}
+
+/* Square Shape */
+.mblSwSquareShape-styles () {
+	.mblSwitchBg {
+		-moz-border-radius: @mbl-switch-square-border-radius;
+	}
+	.mblSwitchBgLeft {
+		background-image: url(compat/switch-square-l.gif);
+	}
+	.mblSwitchBgRight {
+		background-image: url(compat/switch-square-r.gif);
+	}
+	.mblSwitchKnob {
+		-moz-border-radius: @mbl-switch-square-border-radius;
+		background-image: url(compat/switch-square-k.gif);
+	}
+}
+.mblSwSquareShape {
+	.mblSwSquareShape-styles;
+}
+
+/* Round Shape1 */
+.mblSwRoundShape1-styles () {
+	.mblSwitchBg {
+		-moz-border-radius: 14px;
+	}
+	.mblSwitchBgLeft {
+		background-image: url(compat/switch-round1-l.gif);
+	}
+	.mblSwitchBgRight {
+		background-image: url(compat/switch-round1-r.gif);
+	}
+	.mblSwitchKnob {
+		-moz-border-radius: 13px;
+		background-image: url(compat/switch-round1-k.gif);
+	}
+}
+.mblSwRoundShape1 {
+	.mblSwRoundShape1-styles;
+}
+
+/* Round Shape2 */
+.mblSwRoundShape2-styles () {
+	.mblSwitchBg {
+		-moz-border-radius: 14px;
+	}
+	.mblSwitchBgLeft {
+		background-image: url(compat/switch-round2-l.gif);
+	}
+	.mblSwitchBgRight {
+		background-image: url(compat/switch-round2-r.gif);
+	}
+	.mblSwitchKnob {
+		-moz-border-radius: 13px;
+		background-image: url(compat/switch-round2-k.gif);
+	}
+}
+.mblSwRoundShape2 {
+	.mblSwRoundShape2-styles;
+}
+
+/* Arc Shape1 */
+.mblSwArcShape1-styles () {
+	.mblSwitchBg {
+		-moz-border-radius: ~"5px/14px";
+	}
+	.mblSwitchBgLeft {
+		background-image: url(compat/switch-arc1-l.gif);
+	}
+	.mblSwitchBgRight {
+		background-image: url(compat/switch-arc1-r.gif);
+	}
+	.mblSwitchKnob {
+		-moz-border-radius: ~"5px/13px";
+		background-image: url(compat/switch-arc1-k.gif);
+	}
+}
+.mblSwArcShape1 {
+	.mblSwArcShape1-styles;
+}
+
+/* Switch - Arc Shape2 */
+.mblSwArcShape2-styles () {
+	.mblSwitchBg {
+		-moz-border-radius: ~"5px/14px";
+	}
+	.mblSwitchBgLeft {
+		background-image: url(compat/switch-arc2-l.gif);
+	}
+	.mblSwitchBgRight {
+		background-image: url(compat/switch-arc2-r.gif);
+	}
+	.mblSwitchKnob {
+		-moz-border-radius: ~"5px/13px";
+		background-image: url(compat/switch-arc2-k.gif);
+	}
+}
+.mblSwArcShape2 {
+	.mblSwArcShape2-styles;
+}

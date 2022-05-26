@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Praćenje toka nizvodno</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Praćenje toka nizvodno"></h2>
+        <hr/>
+    <p>Ova alatka određuje trag ili putanju toka u nizvodnom smeru od tačaka na ulaznom sloju.
+    </p>
+    <p>Na primer, pretpostavimo da imate tačkaste geoobjekte koji predstavljaju izvore zagađenja, a želite da odredite gde će u oblasti ispitivanja zagađenje da protiče. Možete da koristite alatku Praćenje toka nizvodno da biste odredili putanju zagađenja. Ova putanja se može takođe podeliti u pojedinačne linijske segmente navođenjem vrednosti razdaljine i jedinica. Linija koja se dobija može da bude ukupna dužina putanje toka, navedena maksimalna dužina traga ili ograničena na geoobjekte oblasti kao &scaron;to je va&scaron;a oblast ispitivanja. U mnogim slučajevima, ako je dobijena ukupna dužina putanje, ona će ići od izvora sve do okeana.
+    </p>
+    <p>Rezultat je linija koja predstavlja nizvodni tok. Ako je navedena razdaljina za alatku  <b>Razdeli putanju na linijske segmente</b>, linija putanje će biti podeljena na vi&scaron;e linija, od kojih će svaka linija biti navedene dužine. Na primer, ako va&scaron;a ulazna tačka predstavlja prolivanje zagađenja, a reka u koju se uliva se kreće brzinom od 0,6 milja na sat ili 15 milja na dan, možda ćete želeti da podelite reku u segmente od 15 milja. Deljenje putanje na intervale od 15 milja prikazaće približno kuda zagađenje prolazi svakog dana. Linija će biti simbolizovana koristeći graduisanu skalu boja na osnovu razdaljine i biće označene razdaljinom od početka putanje.
+    </p>
+    <p>Rezultujući trag imaće sve atribute va&scaron;ih ulaznih tačaka, kao i dodatne atribute. 
+        <ul>
+            <li> <i>PointID</i> &ndash; sadrži vrednost ID-a iz ulazne tačke.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; sadrži dužinu u kilometrima za ukupnu nizvodnu putanju.
+                
+
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i> &ndash; sadrži informacije koje pripadaju hidrolo&scaron;kim podacima koji se koriste za izračunavanje praćenja.
+                
+
+            </li>
+            <li> <i>FromDistance</i> i <i>ToDistance</i> &ndash; sadrži razdaljinu od i do za svaki linijski segment. Ovi atributi su upisani ako se koristi <b>Razdeli putanju na linijske segmente</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirani samo oni geoobjekti iz ulaznog sloja koji su vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, koristiće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tačkasti geoobjekti koji treba da se koriste kao početne lokacije za svako praćenje toka nizvodno</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji treba da se koriste kao početna lokacija za praćenje toka nizvodno. Izlaz će sadržati liniju za svaku ulaznu tačku.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Razdeli praćenje na linijske segmente</h2></div>
+        <hr/>
+        <div>
+            <p>Linija praćenja će biti podeljena u vi&scaron;e linija, od kojih je svaka navedene dužine. Na primer, ako va&scaron;a ulazna tačka predstavlja prolivanje zagađenja, a reka u koju se uliva se kreće brzinom od 0,6 milja na sat ili 15 milja na dan, možda ćete želeti da podelite reku u segmente od 15 milja. Deljenje putanje na intervale od 15 milja prikazaće približno kuda zagađenje prolazi svakog dana. Linija će biti simbolizovana koristeći graduisanu skalu boja na osnovu razdaljine i biće označene razdaljinom od početka putanje. Rezultujuća putanja će imati vi&scaron;e segmenata linije, svaki sa poljima  <i>FromDistance</i> i <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimalna razdaljina praćenja</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje ukupnu dužinu linije koja će biti dobijena. Ako unesete geoobjekte oblasti da biste isekli putanju, rezultat će biti ograničen na geoobjekat oblasti, bez obzira na razdaljinu koju unesete ovde.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Opseci izlazne rezultate na</h2></div>
+        <hr/>
+        <div>
+            <p>Nacrtajte ili unesite sloj oblasti kojom želite da ograničite putanju. Na primer, ako želite samo da rezultat putanje bude unutar oblasti ispitivanja, kao &scaron;to je va&scaron; okrug, koristite geoobjekat oblasti kao ulaz tako da se putanja zaustavi na granici okruga.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+            <p> Pokretanje ove alatke ne tro&scaron;i kredite.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

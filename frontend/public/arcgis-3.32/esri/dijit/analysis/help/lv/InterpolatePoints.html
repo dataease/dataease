@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolēt punktus</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolēt punktus"></h2>
+        <hr/>
+    <p>   Rīks Interpolēt punktus sniedz iespēju prognozēt vērtības jaunos izvietojumos, pamatojoties uz mērījumiem no punktu kolekcijas. Rīks izmanto punkta datus ar vērtībām katrā punktā un atgriež teritorijas, ko klasificē prognozētās vērtības. Piemēram:
+        <ul>
+            <li>Gaisa kvalitātes uzraudzības apgabalā ir sensori, kas mēra piesārņojuma līmeni. Interpolēt punktus var izmantot, lai prognozētu piesārņojuma līmeni izvietojumos, kuros nav sensoru, piemēram, izvietojumos, kur atrodas riska grupas&nbsp;&mdash; skolas vai slimnīcas.
+            </li>
+            <li>Prognozējiet smago metālu koncentrāciju ražā, pamatojoties uz paraugiem, kas iegūti no atsevi&scaron;ķiem augiem.
+            </li>
+            <li>Prognozējiet augsnes barības vielu līmeņus (slāpeklis, fosfors, kālijs u.c.) un citus indikatorus (piemēram, elektrovadītspēju), lai izpētītu to relāciju ar ražas apjomu un noteiktu precīzu mēslojuma daudzumu katram izvietojumam laukā. 
+            </li>
+            <li>Meteoroloģiskais lietojums ietver temperatūru, lietavu un citu saistīto mainīgo prognozes (piemēram, skābā lietus). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties punkta slāni, kas satur vietas ar zināmām vērtībām</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta slānis, kas jāizmanto kā interpolācijas pamats.  
+
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Izvēlēties lauku interpolēšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties lauku, kurā ietvertas interpolējamās vērtības.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimizēt</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties savu iestatījumu ātruma un precizitātes attiecībai. Precīzākas prognozes tiek aprēķinātas ilgāk.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Izvades prognožu kļūdas</h2></div>
+        <hr/>
+        <div>
+            <p> Ja atzīmēts, tiks izveidots slānis ar interpolācijas prognožu standarta kļūdām. Izvades slāņa nosaukums būs rezultātu slāņa nosaukums ar pievienotu &ldquo;Errors&rdquo;.
+            </p>
+            <p>Standarta kļūdas ir noderīgas, jo sniedz informāciju par prognozēto vērtību uzticamību. Vienkār&scaron;s nosacījums ir tāds, ka patiesā vērtība 95 procentos gadījumu atradīsies starp divām prognozētās vērtības standarta kļūdām. Piemēram, pieņemsim, ka jaunā izvietojumā tiek prognozēta vērtība 50 ar standarta kļūdu&nbsp;5. Tas nozīmē, ka &scaron;is rīks prognozē, ka patiesā vērtībā &scaron;ajā izvietojumā ir 50, bet tā var būt arī augstāka vai zemāka, piemēram, 40 vai 60. Lai aprēķinātu &scaron;o saprātīgo vērtību diapazonu, reiziniet standarta kļūdu ar&nbsp;2, pieskaitiet &scaron;o vērtību prognozētajai vērtībai, lai iegūtu diapazona aug&scaron;ējo robežu, un atņemiet to no prognozētās vērtības, lai iegūtu diapazona apak&scaron;ējo robežu.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasificēt pēc</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties, kā prognozētās vērtības tiks klasificētas teritorijās.
+                <ul>
+                    <li>Ģeometrisks intervāls&nbsp;&mdash; teritorijas tiek izveidotas, pamatojoties uz kla&scaron;u intervāliem, kuros ir ģeometriskas sērijas. &Scaron;ī metode garantē, ka katras klases diapazonā ir aptuveni tāds pats vērtību skaits un ka starpība starp intervāliem ir konstanta.
+                    </li>
+                    <li>Līdzvērtīgs intervāls&nbsp;&mdash; teritorijas tiek izveidotas tā, lai prognozēto vērtību diapazons būtu līdzvērtīgs katrā teritorijā.
+                    </li>
+                    <li>Līdzvērtīga teritorija&nbsp;&mdash; teritorijas tiek izveidotas tā, lai datu vērtību skaits būtu līdzvērtīgs katrā teritorijā. Piemēram, ja datiem ir vairāk lielu vērtību nekā mazu vērtību, ar lielām vērtībām tiks izveidots lielāks teritoriju skaits.
+                    </li>
+                    <li>Manuāli&nbsp;&mdash; &scaron;ī opcija sniedz iespēju definēt teritorijām jūsu noteiktu vērtību diapazonu. &Scaron;īs vērtības tiks ievadītas parametrā  <b>Klases robežvērtības</b>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Klašu skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Norādīts kla&scaron;u skaits (prognozēto vērtību diapazons) rezultāta slānī. Katra klase definē teritoriju robežu. &Scaron;o kla&scaron;u vērtības noteiks iepriek&scaron; norādītais parametrs  <b>Klasificēt pēc</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Klases robežvērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Ievadiet vēlamās klases robežvērtības, atdalot tās ar atstarpēm. Piemēram, ja vēlaties klases robežvērtības 1.5, 3 un 7, ievadiet  <code>1.5 3 7</code>. &Scaron;īs vērtības definēs katras klases augstāko robežu tā, lai kla&scaron;u skaits būtu vienāds ar ievadīto vērtību skaitu. Teritorijas netiks izveidotas izvietojumiem ar prognozētajām vērtībām, kas pārsniedz lielāko ievadīto robežvērtību. Jums jāievada vismaz divas un ne vairāk par 32 vērtībām.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Izgriezt izvadi uz</h2></div>
+        <hr/>
+        <div>
+            <p>Vai nu uzzīmējiet, vai norādiet slāni, kas apzīmē teritoriju, kur vēlaties uzzīmēt rezultātu. Piemēram, ja interpolējat ezera piesārņojuma mērījumus, varat izmantot ezera robežu &scaron;ajā parametrā, un izvade tiks uzzīmēta tikai ezera robežās.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prognozēt šajos izvietojumos</h2></div>
+        <hr/>
+        <div>
+            <p>Vai nu uzzīmējiet, vai arī norādiet slāņa punktu izvietojumus, lai aprēķinātu prognožu vērtības. Tādējādi varat veikt prognozes konkrētos interesējo&scaron;os izvietojumos. Ja, piemēram, ievades slānis parāda piesārņojuma līmeņu mērījumus, &scaron;o parametru var izmantot, lai prognozētu piesārņojuma līmeni vietās, kurās ir daudz apdraudētu iedzīvotāju, piemēram, skolās vai slimnīcās.  Pēc tam varat izmantot &scaron;o informāciju, lai sniegtu ieteikumus veselības uzraudzības iestādēm &scaron;ajos izvietojumos.
+            </p>
+            <p>Ja iekļauts, &scaron;is rīks nodro&scaron;inās prognožu punktu slāņa izvadi norādītajos izvietojumos. Izvades slāņa nosaukums būs rezultātu slāņa nosaukums ar pievienotu &ldquo;Points&rdquo;.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultāta slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

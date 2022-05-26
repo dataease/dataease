@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Vispārināta lineārā regresija</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="GeneralizedLinearRegression darbplūsmas diagramma"></h2>
+        <hr/>
+    <p>Veic ģeneralizētu lineāro regresiju
+(GLR), lai ģenerētu prognozes vai modelētu atkarīga mainīgā lielumu, ņemot vērā tā saistību ar paskaidrojo&scaron;u mainīgo lielumu kopumu. &Scaron;o rīku var izmantot, lai ietilpinātu nepārtrauktos (Gausa), bināros (loģistikas) un skaitļo&scaron;anas (Puasona) modeļus.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analīzes veids</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda rīka darbības režīmu. Rīku var palaist, lai trenētu modeli, kas tikai novērtē veiktspēju, vai trenētu modeli un prognozētu elementus. Prognožu veidi ir &scaron;ādi:
+                <ul>
+                    <li> <b>Pielāgot modeli, lai novērtētu modeļa veiktspēju</b>&mdash;modelis būs piemērots un lietots ievaddatiem. Izmantojiet &scaron;o opciju, lai novērtētu modeļa precizitāti pirms prognožu ģenerē&scaron;anas jaunā datu kopā vai izprastu paredzamā mainīgā attiecības un draiverus. &Scaron;īs opcijas izvade būs uzstādīto datu un modeļu diagnostikas elementu serviss.
+                    </li>
+                    <li> <b>Pielāgojiet modeli un prognozējiet vērtības</b>&mdash;ievades funkcijām un prognozē&scaron;anas funkcijām tiks ģenerētas prasības vai klasifikācijas. Jāsniedz paskaidrojo&scaron;i mainīgie lielumi gan prognozējamajiem līdzekļiem, gan prognozējamajām iezīmēm. &Scaron;īs opcijas izvade būs modeļa elementu serviss, kas ir pielāgots ievaddatiem, prognozēto datu elementu servisiem un modeļu diagnostika.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Pielāgojiet modeli, lai novērtētu modeļa veiktspēju</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o režīmu, ja vēlaties pielāgot modeli un izpētīt to.
+            </p>
+            <p>Izmantojot &scaron;o izvēli, modelis tiks trenēts, izmantojot ievades slāni. Izmantojiet &scaron;o opciju, lai novērtētu modeļa precizitāti pirms prognožu ģenerē&scaron;anas jaunā datu kopā. Izmantojot &scaron;o opciju, izvades modeļa diagnostiku pielietos jūsu treniņu datiem.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Modeļa pielāgošana un vērtību prognozēšana</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o režīmu, ja vēlaties pielāgot modeli, un lietojiet modeli datu kopai, lai ģenerētu prognozes.
+            </p>
+            <p>Elementiem tiks ģenerētas prognozes vai klasifikācijas. &Scaron;īs opcijas izvade būs funkciju pakalpojums, modeļu diagnostika un mainīgas nozīmes izvēles tabula.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, no kura ģenerēt modeli</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kurā ir punktu, rindu, laukumu vai tabulu iezīmes, kas satur atkarīgos un skaidrojo&scaron;os mainīgos.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Izvēlieties modelējamo lauku</h2></div>
+        <hr/>
+        <div>
+            <p>Skaitliskais lauks, kas satur modelējamās novērotās vērtības un modelējamās vērtības tipu. Ir trīs vērtību tipi, kurus varat modelēt
+                <ul>
+                    <li>Nepārtraukts&mdash;attēlo nepārtrauktās vērtības. Ja izmantots Gausa modelis un rīks veic parasto mazāko kvadrātu regresiju.
+                    </li>
+                    <li>Binārs&mdash;attēlo klātbūtnes vai kavējumu vērtības. Tiem jābūt 1s un 0s. Izmantotais modelis ir Loģistiskā regresija.
+                    </li>
+                    <li>Skaits&mdash;attēlo atsevi&scaron;ķi un atspoguļo notikumus, piemēram, noziegumu skaitu, slimības gadījumus vai satiksmes negadījumus. Izmantotais modelis ir Puasona regresija. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Izvēlieties slāni, kuram prognozēt vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis ar funkcijām, kas attēlo atra&scaron;anās vietas, kurās jāveic aprēķini. Katram &scaron;īs datu kopas elementam ir jāsatur vērtības visiem norādītajiem paskaidrojo&scaron;ajiem mainīgajiem. Atkarīgais mainīgais &scaron;īm funkcijām tiks aprēķināts, izmantojot modeli, kas kalibrēts ievades slānim.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Izvēlēties skaidrojošos laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Viens vai vairāki lauki, kas attēlo skaidrojo&scaron;os mainīgos (laukus), kas palīdz prognozēt vērtību. Būs redzami tikai skaitliskie lauki.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Izvēlēties skaidrojošo lauku atbilstību</h2></div>
+        <hr/>
+        <div>
+            <p>Kā atbilsto&scaron;ie mainīgie ievades slānī atbildīs mainīgajiem prognozē&scaron;anas līmenī. Tabulā tiks iekļauti tikai tie mainīgie, kas izmantoti modeļa ģenerē&scaron;anā. Var izmantot tikai skaitliskas vērtības. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Atgrieztie rezultāti būs atkarīgi no analīzes veida. Ja pielāgojiet, lai novērtētu modeļa pielāgojamību, rezultāti satur modelim piemērotu ievades datu slāni un rezultātu informāciju, kas novērtē modeļa piemērotību. Ja pielāgojat un prognozējat, rezultāti satur modelim piemērotu ievades datu slāni, prognozēto rezultātu slāni un rezultātu informāciju, kas novērtē modeļa piemērotību.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

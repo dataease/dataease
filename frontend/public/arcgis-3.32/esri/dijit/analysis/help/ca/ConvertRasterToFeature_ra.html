@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Converteix un ràster a entitat</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Eina Converteix un r&agrave;ster a entitat"></h2>
+        <hr/>
+    <p>Aquesta eina converteix un r&agrave;ster en un dataset d'entitats, com ara punts, l&iacute;nies o pol&iacute;gons.
+    </p>
+    <p>El par&agrave;metre  <b>Trieu un camp</b> us permet triar quin camp d'atribut del dataset r&agrave;ster d'entrada esdevindr&agrave; un atribut a la classe d'entitat de sortida. Aquest par&agrave;metre nom&eacute;s est&agrave; disponible per a r&agrave;sters enters que tenen atributs addicionals a la taula associada.
+    </p>
+    <p>El r&agrave;ster d'entrada pot tenir qualsevol mida de cel&middot;la.
+    </p>
+    <p>Els r&agrave;sters enters es poden convertir en entitats de punts, l&iacute;nies o pol&iacute;gons; aix&ograve; no obstant, els r&agrave;sters de punt flotant nom&eacute;s es poden convertir en entitats de punts.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s es convertiran les cel&middot;les de r&agrave;ster que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, es convertiran totes les cel&middot;les de la capa de r&agrave;ster, encara que estiguin fora de l'extensi&oacute; de mapa actual. Preneu nota d'aix&ograve; si la capa de r&agrave;ster &eacute;s gran o t&eacute; una resoluci&oacute; molt alta.
+    </p>
+    <p>Els casos d'&uacute;s d'aquesta eina inclouen el seg&uuml;ent:
+ 
+        <ul>
+            <li>Creeu entitats de pol&iacute;gons a partir d'un r&agrave;ster de classificaci&oacute; d'&uacute;s del s&ograve;l.
+                
+ 
+            </li>
+            <li>Les transmissions identificades en un DEM es poden convertir en entitats de l&iacute;nies.
+                
+
+            </li>
+            <li>Un DEM es pot convertir en entitats de punts que es poden utilitzar en un flux de treball no basat en r&agrave;ster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa de ràster per convertir</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de r&agrave;ster d'entrada que es convertir&agrave; en capes d'entitats.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Trieu un camp</h2></div>
+        <hr/>
+        <div>
+            <p>Proporcioneu un cap que especifiqui quin valor s'utilitzar&agrave; per a la conversi&oacute;.
+            </p>
+            <p>Pot ser qualsevol enter o valor de text.
+            </p>
+            <p>Un camp que contingui valors de punt flotant nom&eacute;s es pot utilitzar si la sortida es fa a un dataset de punts.
+            </p>
+            <p>L'opci&oacute; per defecte &eacute;s utilitzar el camp  <i>Value</i>, que cont&eacute; el valor de cada cel&middot;la del r&agrave;ster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Trieu el tipus de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el tipus de sortida entre punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <ul>
+                <li>Punt: el r&agrave;ster es convertir&agrave; en un dataset de punts.
+                    
+ 
+                </li>
+                <li>L&iacute;nia: el r&agrave;ster es convertir&agrave; en un dataset d'entitats de l&iacute;nies.
+                    
+ 
+                </li>
+                <li>Pol&iacute;gon: el r&agrave;ster es convertir&agrave; en un dataset d'entitats de pol&iacute;gons.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplifica les línies o els polígons</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu si les entitats s'han de simplificar.
+            </p>
+            <p>Si est&agrave; activada (valor per defecte), les entitats de l&iacute;nies o pol&iacute;gons es suavitzaran per produir un resultat m&eacute;s generalitzat. Si aquesta opci&oacute; est&agrave; desactivada, les entitats lineals seguiran els l&iacute;mits de la cel&middot;la del dataset r&agrave;ster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

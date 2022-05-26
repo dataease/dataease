@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Utwórz zlewnie</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Utw&oacute;rz zlewnie"></h2>
+        <hr/>
+    <p>To narzędzie pozwala ustalić zlewnie lub obszary spływu w&nbsp;g&oacute;rze rzeki dla każdego punktu w&nbsp;Twojej warstwie wejściowej. 
+    </p>
+    <p>Na przykład zał&oacute;żmy, że mamy obiekty punktowe przedstawiające lokalizację zanieczyszczenia w&oacute;d i&nbsp;chcemy znaleźć prawdopodobne źr&oacute;dła zanieczyszczenia. Ponieważ źr&oacute;dło zanieczyszczenia musi znajdować się gdzieś w zlewni powyżej analizowanego punktu, możemy użyć tego narzędzia do wyznaczenia zlewni zawierających źr&oacute;dła zanieczyszczenia.
+    </p>
+    <p>Ważna jest lokalizacja wybranych punkt&oacute;w wejściowych. Jeżeli nie znajdują się one dokładnie na linii spływu, wynikowe zlewnie mogą być bardzo małe i&nbsp;nie będą przydatne do Twojej analizy. Opcja  <b>Wyszukaj odległość do najbliższego spływu</b> może być używana do dostosowania lokalizacji Twoich punkt&oacute;w wejściowych, tak aby wypadały dokładnie na linii spływu w celu znalezienia zlewni, kt&oacute;ra wpływa do punktu zlokalizowanego na linii spływu. Dostosowane lokalizacje użyte do znalezienia zlewni są zapisane w&nbsp;warstwie wynikowej &mdash; Twoje punkty wejściowe nie zostają zmodyfikowane.
+    </p>
+    <p>Wynikiem jest warstwa grupowa zawierająca dwie warstwy: zlewni oraz dostosowanych punkt&oacute;w użytych do wyznaczenia zlewni.     
+    </p>
+    <p>Wynikowe zlewnie będą posiadały wszystkie atrybuty Twoich punkt&oacute;w wejściowych, jak r&oacute;wnież atrybuty dodatkowe:     
+        <ul>
+            <li> <i>PourPtID</i> &mdash; zawiera wartość ID z punktu wejściowego
+            </li>
+            <li> <i>Area Square Kilometers</i> &mdash; zawiera pole powierzchni w kilometrach kwadratowych zlewni w g&oacute;rze rzeki
+            </li>
+            <li> <i>Description</i> oraz <i>DataResolution</i> &mdash; zawierają informacje dotyczące danych hydrologicznych użytych do obliczenia szlaku
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, to do wyznaczenia zlewni użyte zostaną tylko obiekty widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Obiekty punktowe używane do obliczania zlewni</h2></div>
+        <hr/>
+        <div>
+            <p>Zlewnia (obszar spływu w&nbsp;g&oacute;rze rzeki) zostanie obliczona dla każdego punktu.  
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Wyszukaj odległość do najbliższego spływu</h2></div>
+        <hr/>
+        <div>
+            <p>Jeżeli Twoje punkty wejściowe są zlokalizowane z dala od linii spływu, wynikowe zlewnie prawdopodobnie będą bardzo małe i niezbyt użyteczne podczas analizy, np. w określeniu źr&oacute;dła zanieczyszczenia w g&oacute;rze rzeki. W&nbsp;większości przypadk&oacute;w punkty wejściowe powinny być dociągnięte do najbliższej linii spływu, tak aby zostały wyszukane te zlewnie, kt&oacute;re wpływają do punktu zlokalizowanego na linii spływu. Aby znaleźć najbliższą linię spływu, podaj odległość wyszukiwania. Jeżeli nie określisz odległości wyszukiwania, narzędzie użyje do obliczeń tradycyjnej odległości wyszukiwania.  
+            </p>
+            <p>Aby użyć dokładnej lokalizacji Twojego punktu wejściowego, podaj odległość wyszukiwania r&oacute;wną zeru.  
+            </p>
+            <p>Dla cel&oacute;w analizy linie spływu zostały obliczone wcześniej przez Esri przy użyciu standardowych modeli hydrologicznych. Jeżeli w odległości wyszukiwania nie ma linii spływu, zostanie użyta lokalizacja zawierająca najwyższą ilość przepływu w ramach tej odległości wyszukiwania.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+            <p> Uruchomienie tego narzędzia nie powoduje wykorzystania kredyt&oacute;w.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

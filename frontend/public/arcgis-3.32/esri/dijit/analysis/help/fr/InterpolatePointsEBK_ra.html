@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoler les points</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Outil Interpoler les points"></h2>
+        <hr/>
+    <p>Cet outil vous permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures provenant d'une collection de points. L'outil pr&eacute;l&egrave;ve des donn&eacute;es ponctuelles avec des valeurs &agrave; chaque point et renvoie un raster de valeurs pr&eacute;vues.
+    </p>
+    <p>Voici les autres cas d'utilisation de cet outil :
+
+        <ul>
+            <li>Un r&eacute;seau de gestion de la qualit&eacute; de l&rsquo;air poss&egrave;de des capteurs qui mesurent les niveaux de pollution. L'outil Interpoler les points peut servir &agrave; pr&eacute;voir les niveaux de pollution aux endroits non pourvus de capteurs, tels que les sites o&ugrave; vivent les populations &agrave; risque (&eacute;coles ou h&ocirc;pitaux, par exemple).
+                
+
+            </li>
+            <li>Pr&eacute;voyez les concentrations de m&eacute;taux lourds dans les r&eacute;coltes en fonction d'&eacute;chantillons pr&eacute;lev&eacute;s sur des plants individuels.
+                
+
+            </li>
+            <li>Pr&eacute;voyez les niveaux nutritifs du sol (azote, phosphore, potassium, etc.) et d'autres indicateurs (comme la conductivit&eacute; &eacute;lectrique) afin d'&eacute;tudier leur impact sur le rendement des r&eacute;coltes et prescrivez des quantit&eacute;s pr&eacute;cises de fertilisants pour chaque endroit du champ.
+                
+
+            </li>
+            <li>Les applications m&eacute;t&eacute;orologiques sont notamment la pr&eacute;vision des temp&eacute;ratures, des pr&eacute;cipitations et des variables associ&eacute;es (par exemple, les pluies acides).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Choisissez la couche ponctuelle contenant des emplacements dotés de valeurs connues</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de points qui contient les points o&ugrave; les valeurs ont &eacute;t&eacute; mesur&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Choisissez le champ à interpoler</h2></div>
+        <hr/>
+        <div>
+            <p>S&eacute;lectionnez le champ contenant les valeurs que vous souhaitez interpoler. Le champ doit &ecirc;tre num&eacute;rique.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiser pour</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez entre la vitesse et la pr&eacute;cision.
+            </p>
+            <p>Plus les pr&eacute;visions sont pr&eacute;cises et plus leur calcul est long. Ce param&egrave;tre modifie les valeurs par d&eacute;faut de plusieurs autres param&egrave;tres de l'outil Interpoler les points pour optimiser la vitesse de calcul, la pr&eacute;cision des r&eacute;sultats, ou pour &eacute;quilibrer les deux. Par d&eacute;faut, l'outil proc&egrave;de &agrave; une optimisation pour parvenir &agrave; un &eacute;quilibre.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformer les données en distribution normale</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez si vous souhaitez transformer vos donn&eacute;es pour une distribution normale.
+            </p>
+            <p>La pr&eacute;cision de l'interpolation est optimale pour les donn&eacute;es dont la distribution est normale (en forme de cloche). Si la distribution de vos donn&eacute;es ne semble pas normale, vous devez proc&eacute;der &agrave; une transformation.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Taille des modèles locaux</h2></div>
+        <hr/>
+        <div>
+            <p>L'outil Interpoler les points g&eacute;n&egrave;re des mod&egrave;les d'interpolation locaux qui sont m&eacute;lang&eacute;s pour cr&eacute;er la carte de pr&eacute;vision finale. Ce param&egrave;tre d&eacute;termine le nombre de points pr&eacute;sents dans chaque mod&egrave;le local. Des valeurs inf&eacute;rieures produiront des r&eacute;sultats plus locaux en r&eacute;v&eacute;lant des effets &agrave; petite &eacute;chelle, mais elles risquent de fausser l&eacute;g&egrave;rement les calculs. Des valeurs plus importantes sont plus stables, mais certains effets locaux risquent d'&ecirc;tre ignor&eacute;s.
+            </p>
+            <p>La valeur peut &ecirc;tre comprise entre&nbsp;30 et&nbsp;500, mais les valeurs typiques sont comprises entre&nbsp;50 et&nbsp;200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Nombre de voisins</h2></div>
+        <hr/>
+        <div>
+            <p>Les pr&eacute;visions sont calcul&eacute;es en fonction des points voisins. Ce param&egrave;tre d&eacute;termine le nombre de points utilis&eacute;s dans le calcul. Un nombre plus important de voisins produit habituellement des r&eacute;sultats plus pr&eacute;cis, mais le calcul des r&eacute;sultats prend davantage de temps.
+            </p>
+            <p>Cette valeur peut &ecirc;tre comprise entre&nbsp;1 et&nbsp;64, mais les valeurs typiques sont comprises entre&nbsp;5 et&nbsp;15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Taille de cellule en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Taille de cellule et unit&eacute; des rasters en sortie.
+            </p>
+            <p>Les unit&eacute;s disponibles sont les pieds, les miles, les m&egrave;tres et les kilom&egrave;tres.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Erreur de prévision en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;cidez si vous souhaitez cr&eacute;er un raster d'erreurs standard pour les valeurs pr&eacute;vues.
+            </p>
+            <p>Les erreurs standard sont utiles, car elles offrent des informations sur la fiabilit&eacute; des valeurs pr&eacute;vues. Un principe simple est que la valeur r&eacute;elle est comprise entre deux erreurs standard de la valeur pr&eacute;vue dans 95 pour cent des cas. Par exemple, supposons qu'un nouvel emplacement obtienne une valeur pr&eacute;vue de 50 avec une erreur standard de 5. Cela signifie que la meilleure estimation de l'outil est que la valeur r&eacute;elle &agrave; cet emplacement est de 50, mais qu'elle peut raisonnablement descendre &agrave; 40 ou monter &agrave; 60. Pour calculer cette plage de valeurs raisonnables, multipliez l'erreur standard par 2, ajoutez cette valeur &agrave; la valeur pr&eacute;vue pour obtenir la limite sup&eacute;rieure de la plage et soustrayez-la de la valeur pr&eacute;vue pour obtenir la limite inf&eacute;rieure de la plage.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

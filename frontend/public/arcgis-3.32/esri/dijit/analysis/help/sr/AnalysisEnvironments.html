@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Postavke okruženja analize za Portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Postavke okruženja za analizu u okviru Portal for ArcGIS i  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Zameni sloj sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Određuje da li se zamenjuju postojeći slojevi.  Kada je ova opcija izabrana, ako unutar va&scaron;eg sadržaja već postoji sloj sa istim imenom, biće zamenjen.
+            </p>
+            <p>
+                <ul>
+                    <li>Opcija izabrana &ndash; ako unutar va&scaron;eg sadržaja već postoji sloj sa istim imenom, biće zamenjen. Izlaz će imati isti koordinatni sistem kao ulaz.
+                    </li>
+                    <li>Opcija nije izabrana &ndash; ako već postoji dati naziv sloja sa rezultatima, doći će do gre&scaron;ke i sloj sa rezultatima će morati da se preimenuje da bi alatka mogla da se izvr&scaron;i. Ovo je podrazumevano.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Zatvori vidžet za analizu nakon pokretanja analize</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje da li da se dijalog za analizu drži otvorenim i omogućenim dok alatka vr&scaron;i obradu.     Ova postavka vam omogućava da pravite izmene parametara analize, dok prethodni posao analize nastavlja da se izvr&scaron;ava.  Analiza je iterativni proces i održavanjem dijaloga alatke otvorenim vam omogućava da vr&scaron;ite izmene parametara i da ponovo izvr&scaron;avate analizu.
+            </p>
+            <p>
+                <ul>
+                    <li>Opcija izabrana &ndash; dijalog alatke za analizu će se zatvoriti i fokus će se vratiti na sadržaj. Ovo je podrazumevano
+                    </li>
+                    <li>Opcija nije izabrana &ndash; dijalog alatke za analizu će ostati otvoren i omogućen.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Sačuvaj rezultate analize kao hostovane slojeve geoobjekata</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Određuje da li će rezultujući sloj va&scaron;e analize biti kolekcija geoobjekata ili hostovani sloj geoobjekata. 
+            </p>
+            <p>
+                <ul>
+                    <li>Opcija izabrana &ndash; rezultati va&scaron;e analize će kreirati hostovani sloj geoobjekata i stavka će biti kreirana u va&scaron;em sadržaju. Ovo je podrazumevano.
+                    </li>
+                    <li>Opcija nije izabrana &ndash; rezultati va&scaron;e analize će kreirati kolekciju geoobjekata.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Izlazni koordinatni sistem</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje koordinatni sistem sloja sa rezultatima za rastersku analizu.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Isto kao ulaz</b> &ndash; rezultat va&scaron;e analize će biti u istom koordinatnom sistemu kao ulaz. Ovo je podrazumevano.
+                    </li>
+                    <li> <b>Kao &scaron;to je navedeno</b> &ndash; rezultat va&scaron;e analize će biti u koordinatnom sistemu koji odaberete.   Kada je izabrana ova opcija, kliknite na dugme globusa i odaberite iz liste poznatih koordinatnih sistema, ili dodajte prostornu referencu WKID u obezbeđenom polju.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b> &ndash; rezultat postojeće analize će biti u istom koordinatnom sistemu kao i postojeći sloj koji odaberete na svojoj veb mapi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Koordinatni sistem obrade</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje koordinatni sistem koji će va&scaron;a analiza da koristi tokom izvr&scaron;avanja GeoAnalytics analize.   
+            </p>
+            <p>Za GeoAnalytics, neke analize zahtevaju da obrada bude izvr&scaron;ena u projektovanom koordinatnom sistemu.   Svaka alatka koja ima implementirano sme&scaron;tanje podataka ili linearnih jedinica u blokove zahteva projektovani koordinatni sistem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Isto kao ulaz</b> &ndash; va&scaron;a analiza će biti obrađena u istom koordinatnom sistemu kao ulaz. Ovo je podrazumevano.
+                    </li>
+                    <li> <b>Kao &scaron;to je navedeno</b> &ndash; va&scaron;a analiza će biti u koordinatnom sistemu koji odaberete.   Kada je izabrana ova opcija, kliknite na dugme globusa i odaberite iz liste poznatih projektovanih koordinatnih sistema, ili dodajte prostornu referencu WKID u obezbeđenom polju.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b> &ndash; va&scaron;a analiza će biti u istom koordinatnom sistemu kao i postojeći sloj koji odaberete na svojoj veb mapi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Obuhvat</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje obuhvat ili granicu koja će se koristiti tokom vr&scaron;enja analize.  Svi ulazni geoobjekti koji su potpuno unutar ili koji presecaju navedeni obuhvat će se koristiti u analizi.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Podrazumevano</b> &ndash; obuhvat obezbeđen od strane alata.
+                    </li>
+                    <li> <b>Kao &scaron;to je navedeno</b> &ndash; obuhvat je definisan koordinatama koje unesete.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b> &ndash; obuhvat koji se koristi za obradu va&scaron;e analize će biti isti kao prostorni obuhvat postojećeg sloja koji odaberete na svojoj veb mapi. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Raster za kačenje</h2></div>
+        <hr/>
+        <div>
+            <p>Pode&scaron;ava obuhvat sloja izlaznog rastera tako da se poklapa sa poravnanjem ćelija navedenog sloja  <b>Raster za kačenje</b> u rasterskoj analizi.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Veličina ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje veličinu ćelije ili rezoluciju koja će se koristiti za kreiranje sloja izlaznog rastera u rasterskoj analizi. Podrazumevana rezolucija izlaza je određena najvećom veličinom ćelije sloja ulaznog rastera.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimum ulaza</b> &ndash; koristite najmanju veličinu ćelije svih ulaznih slojeva.
+                    </li>
+                    <li> <b>Maksimum ulaza</b> &ndash; koristite najveću veličinu ćelije svih ulaznih slojeva. Ovo je podrazumevano.
+                    </li>
+                    <li> <b>Kao &scaron;to je navedeno</b> &ndash; navedite numeričku vrednost da biste podesili veličinu ćelije. Ako je ovo selektovano, podrazumevana vrednost je 1.
+                    </li>
+                    <li> <b>Sloj &lt;name&gt;</b> &ndash; pode&scaron;ava veličinu ćelije za odabrani sloj rastera.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maska</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi sloj koji će se koristiti za definisanje va&scaron;e oblasti interesovanja u rasterskoj analizi.   Samo one ćelije koje padaju unutar granica maske analize će biti razmatrane pri radu analize.
+            </p>
+            <ul>
+                <li>Maska može da bude ili raster ili sloj geoobjekta.
+                </li>
+                <li>Ako je maska analize raster, za sve ćelije koje imaju vrednost će se smatrati da defini&scaron;u masku. Za ćelije u rasteru maske koje su tipa NoData (bez podataka) će se smatrati da su izvan maske i biće NoData (bez podataka) u sloju rezultata analize. 
+                </li>
+                <li>Ako je maska analize sloj geoobjekata, on će biti interno konvertovan u raster prilikom izvr&scaron;avanja. Iz tog razloga, pobrinite se da
+ <b>Veličina ćelije</b> i <b>Raster za kačenje</b> budu odgovarajuće pode&scaron;eni za analizu.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Skladište podataka</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultati mogu da se skladi&scaron;te ili u  ArcGIS Data Store i izlože kao sloj geoobjekata u  Portal for ArcGIS ili konfigurisanom deljenom resursu za datoteke sa velikim podacima. 
+            </p>
+            <p>Kada skladi&scaron;tite rezultat u  ArcGIS Data Store, u većini slučajeva bi rezultati trebalo da se skladi&scaron;te u skladi&scaron;tu prostorno-vremenskih podataka. Ovo je podrazumevano. Slede razlozi zbog kojih ćete želeti da skladi&scaron;tite rezultate u skladi&scaron;tu relacionih podataka: 
+                <ul>
+                    <li>Da biste koristili va&scaron;e rezultate u portal-ka-portalu kolaboraciji
+                    </li>
+                    <li>Da biste omogućili mogućnosti sinhronizacije sa rezultatima
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne treba da koristite skladi&scaron;te relacionih podataka ako očekujete da se geoanalitički podaci povećaju i želite da iskoristite mogućnosti prostorno-vremenskog skladi&scaron;ta velikih podataka kako biste upravljali velikim količinama podataka. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Faktor paralelne obrade</h2></div>
+        <hr/>
+        <div>
+            <p>Raspodeljuje analizu na vi&scaron;e instanci servisa za obradu rastera. 
+            </p>
+            <p>Alatke koje po&scaron;tuju okruženje  <b>Faktora paralelne obrade</b> vam omogućavaju da kontroli&scaron;ete broj instanci servisa za obradu rastera koje mogu da se koriste za obradu va&scaron;ih podataka.
+            </p>
+            <p>Ako alatka ne po&scaron;tuje  <b>Tip procesora</b> ili ako je okruženje <b>Tipa procesora</b> pode&scaron;eno na <b>CPU</b>, okruženje <b>Faktora paralelne obrade</b> kontroli&scaron;e instance servisa za obradu rastera (CPU). Ako je <b>Tip procesora</b> pode&scaron;en na <b>GPU</b>, okruženje <b>Faktora paralelne obrade</b> kontroli&scaron;e broj GPU instanci za obradu rastera.
+            </p> 
+            <p>Pode&scaron;avanjem  <b>Faktora paralelne obrade</b>, možete da tražite broj paralelnih radnika koje server snimaka rasterske analitike koristi za obradu jednog zadatka rasterske analize. Međutim, ako ukupan broj paralelnih procesa prema&scaron;i maksimalni broj instanci servisa za obradu rastera (CPU ili GPU), dodatni paralelni procesi će biti stavljeni u red za čekanje.
+            </p>
+            <p>Ako nije naveden  <b>Faktor paralelne obrade</b>, &scaron;to je podrazumevano, alatka će koristiti 80 procenata maksimalnog broja instanci servisa za obradu rastera. Za faktor paralelne obrade se može navesti ili ceo broj ili procenat.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tip procesora</h2></div>
+        <hr/>
+        <div>
+            <p>Alatke koje po&scaron;tuju okruženje  <b>Tipa procesora</b> vam omogućavaju da odaberete gde i na koji način želite da obradite svoje podatke. Podatke možete da obradite kori&scaron;ćenjem CPU-a ili GPU-a server računara.  Ako je okruženje <b>Tipa procesora</b> prazno, alatka koristi CPU za obradu podataka. Ovo je podrazumevano.
+            </p> 
+            <p>CPU obrada može da bude paralelna na vi&scaron;e jezgara i instanci, onako kako njom upravlja  <b>Faktor paralelne obrade</b>.
+            </p>
+            <p>GPU-ovi su efikasni u obradi grafike i snimaka, gde ih njihova izrazito paralelna struktura čini efikasnim u obradi velikih blokova podataka na repetitivan način. Alatka Rasterske analize koja po&scaron;tuje ovo okruženje može da raspodeli svoj posao &scaron;irom GPU instanci na vi&scaron;e serverskih ma&scaron;ina za rastersku analizu, onako kako njom upravlja <b>Faktor paralelne obrade</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> &ndash; podaci će biti obrađeni pomoću grafičke procesorske jedinice.
+                    </li>
+                    <li> <b>CPU</b> &ndash; podaci će biti obrađeni pomoću centralne procesorske jedinice računara.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

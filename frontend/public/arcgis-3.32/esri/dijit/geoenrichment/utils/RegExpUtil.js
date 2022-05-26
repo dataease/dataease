@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/RegExpUtil",[],function(){var b={createRegExp:function(a,c,d){a=b.trimText(a);return!a&&d?null:new RegExp(a,c)},trimText:function(a){return a?a.replace(/([\.$?*|{}\(\)\[\]\\\/\+\-^])/g,"").trim():""},replace:function(a,b,d){return null==a?"":(""+a).replace(b,function(a){return d[a]||""})}},e=/&|<|>/g,f=/&|<|>|"|'/g,g={"\x26":"\x26amp;","\x3c":"\x26lt;","\x3e":"\x26gt;",'"':"\x26quot;","'":"\x26apos;"};b.encodeXML=function(a,c){return b.replace(a,c?f:e,g)};var h=
+/&amp;|&lt;|&gt;|&quot;|&apos;/g,k={"\x26amp;":"\x26","\x26lt;":"\x3c","\x26gt;":"\x3e","\x26quot;":'"',"\x26apos;":"'"};b.decodeXML=function(a){return b.replace(a,h,k)};b.IS_RICH_TEXT_RE=/<\w/;b.IS_URL_RE=/((www\.|http:\/\/|https:\/\/)[A-Za-z0-9_.\-~]+\.[A-Za-z0-9_.\-~/]+)|([A-Za-z0-9_.\-~]+\.com[A-Za-z0-9_.\-~/]*)/;b.isRichText=function(a){return a&&b.IS_RICH_TEXT_RE.test(a)};b.isUrl=function(a){return a&&b.IS_URL_RE.test(a)};var l=/^[0-9a-fA-F]{32}$/;b.isId=function(a){return a&&l.test(a)};return b});

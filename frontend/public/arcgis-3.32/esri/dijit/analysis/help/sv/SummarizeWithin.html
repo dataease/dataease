@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summera inom</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summera inom"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget anv&auml;nds f&ouml;r att hitta geoobjekt (och delar av geoobjekt) som ligger inom gr&auml;nserna f&ouml;r omr&aring;den i det f&ouml;rsta indatalagret. Exempel:
+        <ul>
+            <li>Med ett lager f&ouml;r avrinningsgr&auml;nser och ett lager med markanv&auml;ndningsgr&auml;nser enligt markanv&auml;ndningstyp kan du ber&auml;kna den totala arealen f&ouml;r de olika markanv&auml;ndningstyperna f&ouml;r varje avrinningsomr&aring;de. 
+            </li>
+            <li>Med ett lager f&ouml;r fastigheter i ett l&auml;n och ett lager kommungr&auml;nser kan du summera snittv&auml;rdet f&ouml;r de tomma fastigheterna inom varje kommungr&auml;ns.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatalagret och lagret som ska summeras som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat, analyseras alla geoobjekt i b&aring;de indatalagret och lagret som ska summeras, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Välj områdeslager där andra geoobjekt ska summeras inom dess gränser</h2></div>
+        <hr/>
+        <div>
+            <p>Det omr&aring;deslager som ska anv&auml;ndas f&ouml;r att summera geoobjekt inom dess gr&auml;nser. 
+            </p>
+            <p>Du kan v&auml;lja mellan ett omr&aring;deslager som du anger eller lagringsplatser som genereras n&auml;r verktyget k&ouml;rs.   N&auml;r lagringsplatser skapas avg&ouml;r siffran och enheterna som angivits f&ouml;r  <b>Kvadrat</b> kvadratens h&ouml;jd och l&auml;ngd. F&ouml;r <b>Hexagon</b> avg&ouml;r siffran och enheterna som angivits avst&aring;ndet mellan parallella sidor.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Välj lager som ska summeras</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjekt i det h&auml;r lagret som hamnar innanf&ouml;r gr&auml;nserna f&ouml;r geoobjekt i indatalagret ovan summeras. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Lägg till statistik från lagret som ska summeras</h2></div>
+        <hr/>
+        <div>
+            <p>Alternativt kan du ber&auml;kna statistik f&ouml;r numeriska attribut hos punkter som hamnar inom geoobjektens gr&auml;nser. 
+            </p>
+            <p>Om du markerar kryssrutan  <b>Antal punkter</b> ber&auml;knas det totala antalet punkter inom varje omr&aring;desgr&auml;ns. Dessutom kan du ber&auml;kna statistik f&ouml;r numeriska attribut hos de punkter som ligger inom varje omr&aring;desgr&auml;ns.
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; Totalv&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Genomsnitt</b> &ndash; Snittv&auml;rde eller medelv&auml;rde f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Det l&auml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Maximum</b> &ndash; Det h&ouml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Std. avvikelse</b> &ndash; Standardavvikelsen f&ouml;r v&auml;rdena i det angivna f&auml;ltet.
+                </li>
+            </ul>
+            
+            <p>Om lagret som ska summeras inte har n&aring;gra nummerf&auml;lt kommer ingen ytterligare statistik att vara tillg&auml;nglig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Lägg till statistik från</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ocks&aring; ber&auml;kna statistik f&ouml;r de numeriska attributen till de linjer som ska summeras. 
+            </p>
+            <p>Om du markerar kryssrutan  <b>Total l&auml;ngd f&ouml;r linjerna i</b> ber&auml;knas den totala l&auml;ngden f&ouml;r linjer inom varje omr&aring;desgr&auml;ns. Dessutom kan du ber&auml;kna statistik f&ouml;r numeriska attribut hos de linjer som ligger inom varje omr&aring;desgr&auml;ns.
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; Totalv&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Genomsnitt</b> &ndash; Snittv&auml;rde eller medelv&auml;rde f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Det l&auml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Maximum</b> &ndash; Det h&ouml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Std. avvikelse</b> &ndash; Standardavvikelsen f&ouml;r v&auml;rdena i det angivna f&auml;ltet.
+                </li>
+            </ul>
+            
+            <p>Om lagret som ska summeras inte har n&aring;gra nummerf&auml;lt kommer ingen ytterligare statistik att vara tillg&auml;nglig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Lägg till statistik från</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ocks&aring; ber&auml;kna statistik f&ouml;r de numeriska attributen till de omr&aring;den som ska summeras. 
+            </p>
+            <p>Om du markerar kryssrutan  <b>Summera omr&aring;de med</b> ber&auml;knas den totala ytan f&ouml;r geoobjekt som ligger inom varje omr&aring;desgr&auml;ns i det f&ouml;rsta indatalagret. Dessutom kan du ber&auml;kna statistik f&ouml;r numeriska attribut hos de geoobjekt som ligger inom varje omr&aring;desgr&auml;ns.
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; Totalv&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Genomsnitt</b> &ndash; Snittv&auml;rde eller medelv&auml;rde f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Det l&auml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Maximum</b> &ndash; Det h&ouml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                </li>
+                <li> <b>Std. avvikelse</b> &ndash; Standardavvikelsen f&ouml;r v&auml;rdena i det angivna f&auml;ltet.
+                </li>
+            </ul>
+            
+            <p>Om lagret som ska summeras inte har n&aring;gra nummerf&auml;lt kommer ingen ytterligare statistik att vara tillg&auml;nglig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Lägg till statistik från</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;r du har valt ett lager som ska summeras kan du ber&auml;kna statistik f&ouml;r valfria de numeriska attributen till punkterna, linjerna och omr&aring;dena i indataomr&aring;deslagret. 
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; Totalv&auml;rdet f&ouml;r det angivna f&auml;ltet
+                </li>
+                <li> <b>Genomsnitt</b> &ndash; Snittv&auml;rde eller medelv&auml;rde f&ouml;r det angivna f&auml;ltet
+                </li>
+                <li> <b>Minimum</b> &ndash; Det l&auml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet
+                </li>
+                <li> <b>Maximum</b> &ndash; Det h&ouml;gsta v&auml;rdet f&ouml;r det angivna f&auml;ltet
+                </li>
+                <li> <b>Std. avvikelse</b> &ndash; Standardavvikelsen f&ouml;r v&auml;rdena i det angivna f&auml;ltet.
+                </li>
+            </ul>
+            
+            <p>Beroende p&aring; vilka typer av geoobjekt du summerar kan du ber&auml;kna det totala antalet punkter, linjernas totala l&auml;ngd eller totalarean.
+            </p>
+            <p>Om lagret som ska summeras inte har n&aring;gra nummerf&auml;lt kommer ingen ytterligare statistik att vara tillg&auml;nglig.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Välj fält att gruppera efter</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r ett attribut f&ouml;r funktionen  <b>Summera</b> geoobjekt som du kan anv&auml;nda f&ouml;r att ber&auml;kna statistik separat f&ouml;r varje unikt attributv&auml;rde. Anta till exempel att det f&ouml;rsta indatalagret inneh&aring;ller kommungr&auml;nser och att summeringsgeoobjekten &auml;r fastigheter. Ett av attributen f&ouml;r fastigheterna &auml;r <i>Status</i>, som inneh&aring;ller tv&aring; v&auml;rden: LEDIG och UPPTAGEN. Om du vill ber&auml;kna den totala ytan f&ouml;r lediga och upptagna fastigheter inom kommungr&auml;nserna anv&auml;nder du <i>Status</i> som attribut f&ouml;r grupperingen. Statistiken f&ouml;r varje grupp visas i resultatlagrets popupf&ouml;nster tillsammans med antalet geoobjekt inom varje omr&aring;desgr&auml;ns.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lägg till minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r kryssrutan aktiveras n&auml;r du v&auml;ljer ett f&auml;lt att gruppera efter. Om du vill ta reda p&aring; vilket attributv&auml;rde inom varje grupp som &auml;r i minoritet (minst dominant) eller majoritet (mest dominant) inom varje gr&auml;ns i det f&ouml;rsta indatalagret v&auml;ljer du  <b>L&auml;gg till minoritet, majoritet</b>. N&auml;r du v&auml;ljer <b>L&auml;gg till minoritet, majoritet</b> l&auml;ggs tv&aring; nya f&auml;lt till i resultatlagret. Om du &auml;ven v&auml;ljer <b>L&auml;gg till procenttal</b> l&auml;ggs tv&aring; ytterligare f&auml;lt till i resultatlagret som inneh&aring;ller procenttalen f&ouml;r minoritetens och majoritetens attributv&auml;rden inom varje grupp.
+            </p>
+            <ul>
+                <li>Om du summerar punkter ber&auml;knas minoritetens och majoritetens v&auml;rden baserat p&aring; antalet punkter inom varje begr&auml;nsningsomr&aring;de i indataomr&aring;deslagret.  
+                </li>
+                <li>Om du summerar linjer ber&auml;knas minoritetens och majoritetens v&auml;rden baserat p&aring; l&auml;ngden f&ouml;r linjerna inom varje begr&auml;nsningsomr&aring;de i indataomr&aring;deslagret.  
+                </li>
+                <li>Om du summerar omr&aring;den ber&auml;knas minoritetens och majoritetens v&auml;rden baserat p&aring; omr&aring;dena inom varje begr&auml;nsningsomr&aring;de i indataomr&aring;deslagret.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Lägg till procenttal</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r kryssrutan aktiveras n&auml;r du v&auml;ljer ett f&auml;lt att gruppera efter. V&auml;lj  <b>L&auml;gg till procenttal</b> om du vill ta reda p&aring; procenttalet f&ouml;r varje attributv&auml;rde inom varje grupp. Ett nytt f&auml;lt l&auml;ggs till i resultattabellen som inneh&aring;ller procenttalet f&ouml;r varje attributv&auml;rde inom varje grupp. Om du &auml;ven markerar <b>L&auml;gg till minoritet, majoritet</b> l&auml;ggs tv&aring; ytterligare f&auml;lt till i resultatlagret som inneh&aring;ller procenttalen f&ouml;r minoritetens och majoritetens attributv&auml;rden inom varje grupp.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

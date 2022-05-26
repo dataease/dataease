@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Täsmäytä arvot uudelleen</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Portaalin T&auml;sm&auml;yt&auml; arvot uudelleen -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voit muuttaa tai luokitella uudelleen rasteriaineiston pikseliarvot. Pikseliarvot t&auml;sm&auml;ytet&auml;&auml;n uudelleen m&auml;&auml;ritt&auml;m&auml;ll&auml; pikselien arvoalue tulosaineiston pikseliarvoon t&auml;sm&auml;ytt&auml;mist&auml; varten. Tulosaineiston pikseliarvo voi olla kelvollinen arvo tai NoData-arvo. NoData-arvoisilla pikseleill&auml; ei ole tunnettua arvoa.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, toiminto t&auml;sm&auml;ytt&auml;&auml; uudelleen vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevat solut. Jos vaihtoehtoa ei ole valittu, kaikki rasterin solut k&auml;sitell&auml;&auml;n, my&ouml;s nykyisen karttalaajuuden ulkopuolella olevat solut.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Lähtöaineisto</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineisto, jonka arvot on t&auml;sm&auml;ytetty uudelleen.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Täsmäytä pikseliarvot uudelleen uusiin arvoihin</h2></div>
+        <hr/>
+        <div>
+            <p>Anna arvoalue m&auml;&auml;ritt&auml;m&auml;ll&auml; minimi- ja maksimiarvo ja anna sitten tulosaineiston arvo tai NoData-arvo m&auml;&auml;ritetylle arvoalueelle.
+            </p>
+            <p>Jos haluat t&auml;sm&auml;ytt&auml;&auml; uuden arvoalueen uudelleen, lis&auml;&auml; rivi valitsemalla  <b>Lis&auml;&auml;</b>. Muokkaa haluamiasi taulukossa olevia arvoalueita ja uudelleen t&auml;sm&auml;ytetty&auml; arvoa napsauttamalla arvoja. Arvoalueiden m&auml;&auml;ritt&auml;misess&auml; k&auml;ytet&auml;&auml;n kahta s&auml;&auml;nt&ouml;&auml;:
+                <ul>
+                    <li>Arvoalueen minimiarvo on sis&auml;ltyv&auml; ja maksimiarvo on poissuljettu.
+                    </li>
+                    <li>Taulukon rivit k&auml;sitell&auml;&auml;n ylh&auml;&auml;lt&auml; alasp&auml;in.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Alla olevassa taulukossa n&auml;kyy, ett&auml; minimiarvo sis&auml;ltyy tulosaineistoon mutta maksimiarvo ei.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Taulukossa m&auml;&auml;ritettyjen arvoalueiden j&auml;rjestys on my&ouml;s merkitt&auml;v&auml;. Taulukon yl&auml;rivi k&auml;sitell&auml;&auml;n ensin ja sitten k&auml;sitell&auml;&auml;n alapuolella oleva rivi. Kahdessa alla olevassa taulukossa n&auml;kyy, miten samat arvoalueet tuottavat eri tulokset taulukon rivien j&auml;rjestyksen mukaan.
+            </p> 
+            <p>Alla oleva taulu n&auml;ytt&auml;&auml; tulosarvon, kun ensimm&auml;inen sarake on lajiteltu numeerisesti.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Alla oleva taulu osoittaa, miten rivien eri j&auml;rjestys tuottaa erilaiset tulosarvot.
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Molempia s&auml;&auml;nt&ouml;j&auml; on k&auml;ytetty arvojen j&auml;rjest&auml;misess&auml; uudelleen. Koska jokainen rivi k&auml;sitell&auml;&auml;n ylh&auml;&auml;lt&auml; alasp&auml;in, n&auml;m&auml; arvot ovat etusijalla tulosaineistoa m&auml;&auml;ritett&auml;ess&auml;, vaikka k&auml;ytet&auml;&auml;n samoja arvoalueita.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

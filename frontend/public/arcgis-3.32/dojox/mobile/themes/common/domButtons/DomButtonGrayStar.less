@@ -1,0 +1,50 @@
+@import "../css3.less";
+/* === Gray Star ==*/
+.mblDomButtonGrayStar {
+	position: relative;
+	width: 29px;
+	height: 29px;
+}
+.mblDomButtonGrayStar > div {
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	border-style: solid;
+	border-color: #bdbabd transparent transparent transparent;
+	top: 12px;
+	left: 3px;
+	border-width: 9px 12px 0px 12px;
+	.transform(rotate(0deg));
+}
+.mblDomButtonGrayStar > div > div {
+	position: absolute;
+	width: 24px;
+	height: 0px;
+	border-style: solid;
+	border-color: #8c8e8c;
+	border-width: 1px 0px 0px 0px;
+	top: -10px;
+	left: -12px;
+}
+.mblDomButtonGrayStar > div > div > div {
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	border-style: solid;
+	border-color: #bdbabd transparent transparent transparent;
+	top: 0px;
+	left: 0px;
+	border-width: 9px 12px 0px 12px;
+	.transform(rotate(72deg));
+}
+.mblDomButtonGrayStar > div > div > div > div {
+	position: absolute;
+	width: 0px;
+	height: 0px;
+	border-style: solid;
+	border-color: #bdbabd transparent transparent transparent;
+	top: -10px;
+	left: -12px;
+	border-width: 9px 12px 0px 12px;
+	.transform(rotate(216deg));
+}

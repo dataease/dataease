@@ -1,0 +1,146 @@
+@import "variables.less";
+@import "../common/Tooltip.less";
+
+.mblOpener {
+	background-color: @win-dialog-color;
+	width: calc(~"100% - @{default-padding-right} - @{default-padding-left}");
+	height: calc(~'100% - 50px');
+	border: none;
+	top: 0px !important;
+	left: 0 !important;
+	margin: 0 !important;
+	position: fixed;
+	padding: 50px @default-padding-right 0 @default-padding-left;
+	opacity: 1;
+	-ms-touch-action: none;
+
+	& .mblTooltipAnchor,
+	& .mblOpenerUnderlay {
+		display: none;
+	}
+
+	& .mblHeading {
+		min-height: 50px;
+		position: absolute;
+		bottom: 0px;
+		text-transform: uppercase;
+		font-size: @win-font-size-normal;
+		width: calc(~"100% - @{default-padding-right} - @{default-padding-left}");
+		z-index:3;
+
+		& .mblHeadingDivTitle {
+			text-align: left;
+			position: fixed;
+			top: 0px;
+			width: auto;
+			padding-left: @default-padding-left;
+		}
+
+		& ~ .mblScrollableView {
+			height: calc(~"100% - 60px") !important;
+		}
+
+		& .mblButton,
+		& .mblToolBarButton {
+			bottom: 10px;
+			border: 2px solid @win-foreground-color;
+			position: absolute;
+			width: 100%;
+			max-width: 45%;
+			padding: 0px;
+			&:nth-of-type(odd) {
+				left: 0px;
+			}
+
+			&:nth-of-type(even) {
+				left: auto !important;
+				right: 0px;
+			}
+		}
+
+	}
+
+}
+
+.mblOpener .dijitColorPalette {
+	width: calc(~"100% - @{default-padding-right} - @{default-padding-left}");
+	height: calc(~'100% - 50px');
+
+	table {
+		width: 100%;
+		height: 100%;
+		padding: 0px !important;
+	}
+
+	tbody {
+		width: 100%;
+
+		height: 100%;
+		position: absolute;
+	}
+
+	tr {
+		display: -ms-flexbox;
+		-ms-flex: 1;
+		-ms-flex-align: center;
+	}
+
+	td {
+		-ms-flex:1;
+		display: inline-block;
+	}
+
+	.dijitPaletteImg {
+		border: none !important;
+		padding: 2px !important;
+	}
+
+	.dijitColorPaletteSwatch {
+		border-radius: 0px!important;
+		border: 2px solid transparent;
+	}
+
+	.dijitPaletteCellSelected {
+		.dijitPaletteImg {
+			margin: 2px 0px !important;
+		}
+		.dijitColorPaletteSwatch {
+			border: 2px solid @win-accent-color !important;
+		}
+	}
+}
+
+@media screen and (orientation: landscape) {
+  .dijitColorPalette tbody {
+	  display: -ms-flexbox;
+	  -ms-flex-direction: column;
+  }
+
+}
+
+.mblTooltip:not(.mblOpener) {
+	&.mblTooltipAbove {
+		& .mblSpinWheel {
+			bottom: auto;
+		}
+	}
+
+	&.mblTooltipBelow {
+		& .mblSpinWheel {
+			top: auto;
+		}
+	}
+
+	&.mblTooltipBefore {
+		& .mblSpinWheel {
+			left: 0px;
+		}
+	}
+
+	&.mblTooltipAfter {
+		& .mblSpinWheel {
+			left: auto;
+			right: 0px;
+		}
+	}
+}

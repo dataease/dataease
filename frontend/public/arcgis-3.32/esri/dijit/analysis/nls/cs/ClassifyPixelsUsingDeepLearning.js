@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/ClassifyPixelsUsingDeepLearning",{toolDefine:"Klasifikovat pixely pomoc\u00ed deep learningu (Classify Pixels Using Deep Learning)",outputLayerName:"${layername}_classified",modelLabel:"Vyberte model deep learningu, kter\u00fd bude pou\u017eit ke klasifikov\u00e1n\u00ed pixel\u016f",modelArgsLabel:"Zadejte argumenty modelu deep learningu",nameLabel:"Jm\u00e9no",valueLabel:"Hodnota",queryModelArgsMsg:"Dotazov\u00e1n\u00ed argument\u016f modelu...",analysisLayerLabel:"Vyberte sn\u00edmek, kter\u00fd bude pou\u017eit ke klasifikov\u00e1n\u00ed pixel\u016f",
+itemDescription:"Image slu\u017eba anal\u00fdzy vytvo\u0159en\u00e1 \u0159e\u0161en\u00edm Klasifikovat pixely pomoc\u00ed deep learningu",itemTags:"V\u00fdsledek anal\u00fdzy rastru, klasifikovat pixely pomoc\u00ed deep learningu, ${layername}",itemSnippet:"Image slu\u017eba anal\u00fdzy vytvo\u0159en\u00e1 \u0159e\u0161en\u00edm Klasifikovat pixely pomoc\u00ed deep learningu"});

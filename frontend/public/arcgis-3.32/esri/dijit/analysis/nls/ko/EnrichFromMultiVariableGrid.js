@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ko/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"\ubcf4\uac15\ud560 \ud3ec\uc778\ud2b8 \ud53c\ucc98 \uc120\ud0dd",chooseMVgridLyrLabel:"\ubcf4\uac15\ud560 \ub2e4\uc911 \ubcc0\uc218 \uaca9\uc790 \uc120\ud0dd",chooseVariables:"\ucd94\uac00\ud560 \ubcc0\uc218 \uc120\ud0dd",outputLayerName:"${gridLayer}\uc5d0\uc11c \ubcf4\uac15\ub41c ${inputFeatures}",itemDescription:"${inputFeatures}\uc5d0 \ub300\ud574 \ub2e4\uc911 \ubcc0\uc218 \uaca9\uc790\uc5d0\uc11c \ubcf4\uac15 \uc194\ub8e8\uc158\uc744 \uc2e4\ud589\ud558\uc5ec \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4.",
+itemTags:"\ubd84\uc11d \uacb0\uacfc, \ub2e4\uc911 \ubcc0\uc218 \uaca9\uc790\uc5d0\uc11c \ubcf4\uac15, ${inputFeatures}, ${gridLayer}",itemSnippet:"\ub2e4\uc911 \ubcc0\uc218 \uaca9\uc790\uc5d0\uc11c \ubcf4\uac15\uc744 \ud1b5\ud574 \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4."});

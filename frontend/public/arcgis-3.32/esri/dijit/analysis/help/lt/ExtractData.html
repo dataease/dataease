@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Atsisiųsti duomenis</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Atsisiųsti duomenis"></h2>
+        <hr/>
+    <p>Naudodami &scaron;į įrankį, galite pažymėti ir atsisiųsti dominančios teritorijos duomenis. Pasirinkti sluoksniai bus pateikti ZIP, CSV ar KMZ failu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Sluoksniai, kuriuos norite atsisiųsti</h2></div>
+        <hr/>
+        <div>
+            <p>Tai yra turinio lentelėje esantys sluoksniai, i&scaron; kurių galite atsisiųsti elementus. Pasirinktų sluoksnių duomenys bus eksportuoti ir pateikti ZIP ar CSV failu.
+            </p>
+            <p>Tam, kad sluoksnis būtų i&scaron;renkamų sluoksnių sąra&scaron;e, turite būti duomenų savininku arba savininkas turi būti įgalinęs duomenų eksportavimą. Kad leistumėte turimų duomenų eksportavimą: 
+                <ul>
+                    <li>Atverkite duomenų apra&scaron;ą.
+                    </li>
+                    <li>Spustelėkite skirtuką  <b>Parametrai</b>.
+                    </li>
+                    <li>Pereikite į skyrelį  <b>Eksportuoti duomenis</b>.
+                    </li>
+                    <li>Pažymėkite  <b>Leisti kitiems eksportuoti į įvairius formatus</b>. Baigę spustelėkite <b>Įra&scaron;yti</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jei analizės sluoksnyje yra priedų, atminkite, kad jie bus įtraukti, tik tada, jei i&scaron;vesties duomenų formatas yra failų geoduomenų bazė ir nužymėtas laukas  <b>Apkirpti elementus</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Tiriama teritorija</h2></div>
+        <hr/>
+        <div>
+            <p>Dominanti teritorija, kurios duomenis norite atsisiųsti ZIP ar CSV failu. Teritoriją galite pasirinkti tokiais būdais:
+                <ul>
+                    <li>Matoma teritorija ( <b>Esama žemėlapio aprėptis</b>).
+                    </li>
+                    <li>Vienas i&scaron; sluoksnių turinio lentelėje. Jei pasirinktą sluoksnį sudaro ta&scaron;kiniai arba linijiniai elementai, kaip tiriama teritorija bus naudojama sluoksnio aprėptis.
+                    </li>
+                    <li>Įbrėžiama teritorija, nusakanti tiriamąjį plotą.
+                    </li>
+                </ul>
+                 Visi elementai, pilnai patenkantys į žemėlapio aprėptį bus eksportuoti. Elementams, kurie i&scaron; dalies patenka į teritoriją, galite pasirinkti:
+                <ul>
+                    <li> <b>Pažymėti elementus</b> - bus eksportuoti visi elementai, kertantys dominančios teritorijos ribą.
+                    </li>
+                    <li> <b>Apkirpti elementus</b> - bus eksportuotos tik tos elementų dalys, kurios patenka į dominančią teritoriją.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Rezultato duomenų formatas</h2></div>
+        <hr/>
+        <div>
+            <p>Duomenų, kurie bus atsisiunčiami, formatas. Jei linijos ar plotiniai objektai eksportuojami į CSV failą, bus pateikti tik atributiniai duomenys. Eksportuojant ta&scaron;kinius elementus, atrenkami tiek erdviniai, tiek ne erdviniai atributai.  
+            </p>
+            <p>Atsisiųstiems duomenims bus naudojama Web Mercator 1984 projekcija.  CSV failuose laukai  <i>Lat</i> ir <i>Long</i> bus pridėti prie Web Mercator 1984 duomenų su koordinatėmis.
+            </p> 
+            <p>Toliau pateikti i&scaron;vesties formatai nepalaikomi:
+                <ul>
+                    <li>Kableliais atskirta reik&scaron;mė (CSV) &ndash;  <code>.csv</code> arba <code>.zip</code>
+                    </li>
+                    <li>Failnė geoduomenų bazė &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML) &ndash;  <code>.kmz</code> arba <code>.zip</code>
+                    </li>
+                    <li>Shape failas &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultatų failo vardas</h2></div>
+        <hr/>
+        <div>
+            <p>Elemento, kuris bus patalpintas į  <b>Turinį</b>, pavadinimas. Elemento pavadinimas formuojamas pagal nurodytą <b>I&scaron;vesties duomenų formato</b> parinktį. Jei toks elementas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>Naudodami i&scaron;plečiamo meniu parinktį  <b>Rezultatą įra&scaron;yti į</b>, galite nurodyti puslapyje <b>Turinys</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

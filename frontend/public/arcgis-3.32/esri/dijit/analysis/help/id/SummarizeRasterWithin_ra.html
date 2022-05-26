@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ringkas Raster di Dalam</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Alat Ringkas Raster di Dalam"></h2>
+        <hr/>
+    <p>Alat ini meringkas raster berdasarkan area (zona) yang ditentukan oleh layer input pertama.
+    </p>
+    <p>Beberapa aplikasi contoh termasuk hal berikut:
+    </p>
+    <p>
+        <ul>
+            <li>Dengan mengetahui batas air dan layer batas penggunaan lahan menurut jenis penggunaan lahan, hitung luas total dari jenis penggunaan lahan untuk setiap batas air.
+                
+
+            </li>
+            <li>Dengan mengetahui layer bagian persil di suatu daerah dan layer batas kota, ringkaslah nilai rata-rata dari bagian persil yang kosong di dalam setiap batas kota.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur-fitur pada layer input dan layer yang akan diringkas yang terlihat di jangkauan peta saat ini yang akan dianalisis. Jika tidak dicentang, semua fitur pada layer input dan layer yang akan diringkas akan dianalisis meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Pilih area layer untuk meringkas layer raster di dalam batas yang ditentukan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer yang menentukan perbatasan area atau zona yang akan diringkas.
+            </p>
+            <p>Layer dapat berupa raster atau data fitur. Untuk raster, zona ditentukan oleh semua lokasi di input yang memiliki nilai sel yang sama. Area itu tidak harus menular.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Pilih kolom untuk menentukan batas</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah artibut layer yang akan digunakan untuk menentukan perbatasan area.
+            </p>
+            <p>Contoh, misalnya layer input pertama menentukan batas unit manajemen, dengan atribut yang menentukan wilayah, distrik, dan ID persil setiap unit. Anda pun memiliki layer raster yang menentukan indeks hayati untuk setiap lokasi. Dengan kolom yang Anda pilih, Anda dapat memutuskan untuk menghitung rata-rata hayati di tingkat lokal, distrik, atau wilayah.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Pilih layer raster untuk diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Sel raster di layer ini akan diringkas berdasarkan area (zona) tempat posisi sel tersebut.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Pilih statistik yang akan dihitung</h2></div>
+        <hr/>
+        <div>
+            <p>Setelah Anda memilih layer untuk diringkas, Anda dapat memilih untuk menghitung statistik dari setiap atribut numerik dari titik, garis, atau area di dalam layer area input.
+            </p>
+            <p>Tipe statistik yang tersedia ketika kolom yang dipilih adalah bilangan bulat adalah Rata-rata, Mayoritas, Maksimal, Median, Minimal, Minoritas, Rentang, Standar deviasi, Jumlah, dan Keragaman.
+            </p>
+            <p>Jika kolom adalah bilangan titik mengambang, opsinya adalah Rata-rata, Maksimal, Minimal, Rentang, Standar deviasi, dan Jumlah.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Abaikan nilai yang hilang dalam penghitungan</h2></div>
+        <hr/>
+        <div>
+            <p>Jika Anda memilih untuk mengabaikan nilai yang hilang, hanya sel yang memiliki nilai di dalam layer yang akan diringkas yang akan digunakan untuk menentukan nilai output untuk area tersebut. Jika tidak, jika ada nilai yang hilang di mana pun di dalam area, maka akan diasumsikan bahwa informasi tidak memadai untuk melakukan perhitungan statistik untuk semua sel di zona itu, dan area itu akan menerima nilai null (NoData) di output.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

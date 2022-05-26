@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoleringspunkter</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoleringspunkter"></h2>
+        <hr/>
+    <p>   Med verktyget Interpoleringspunkter kan du f&ouml;ruts&auml;ga v&auml;rden p&aring; nya platser baserat p&aring; m&auml;tningar fr&aring;n en samling punkter. Verktyget samlar punktdata med v&auml;rden vid varje punkt och returnerar omr&aring;den klassificerade enligt f&ouml;rutsagda v&auml;rden. Exempel
+        <ul>
+            <li>Ett ledningscentrum f&ouml;r luftkontroll har sensorer som m&auml;ter utsl&auml;ppsniv&aring;er. Interpoleringspunkter kan anv&auml;ndas f&ouml;r att f&ouml;ruts&auml;ga utsl&auml;ppsniv&aring;er p&aring; platser som saknar sensorer, till exempel skolor, sjukhus och andra platser med k&auml;nsliga populationer.
+            </li>
+            <li>F&ouml;ruts&auml;g koncentrationen av tungmetaller i gr&ouml;dor baserat p&aring; prover tagna fr&aring;n enskilda v&auml;xter.
+            </li>
+            <li>F&ouml;ruts&auml;g niv&aring;erna av n&auml;rings&auml;mnen i marken (kv&auml;ve, fosfor, kalium osv.) och andra indikatorer (till exempel elektrisk ledningsf&ouml;rm&aring;ga) f&ouml;r att studera deras samband med gr&ouml;dornas avkastning och f&ouml;reskriva exakta m&auml;ngder g&ouml;dningsmedel f&ouml;r varje del av &aring;kern.
+
+            </li>
+            <li>Bland de metrologiska anv&auml;ndningsomr&aring;dena m&auml;rks att f&ouml;ruts&auml;ga temperaturer, regnm&auml;ngder och tillh&ouml;rande variabler (till exempel surt regn). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj punktlager som innehåller platser med kända värden</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager som ska anv&auml;ndas som grund f&ouml;r interpolationen.  
+
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Välj fält för interpolering</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj det f&auml;lt som inneh&aring;ller v&auml;rdena som du vill interpolera.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimera för</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj om du f&ouml;redrar snabbhet eller noggrannhet. Mer noggranna f&ouml;ruts&auml;gelser tar l&auml;ngre tid att ber&auml;kna.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Mata ut förutsägelsefel</h2></div>
+        <hr/>
+        <div>
+            <p> Om det h&auml;r alternativet markeras, skapas ett lager med standardfel f&ouml;r interpoleringsf&ouml;ruts&auml;gelsen. Utdatalagrets namn blir resultatdatalagrets namn med ordet Fel (Error) tillagt.
+            </p>
+            <p>Standardfel &auml;r anv&auml;ndbara eftersom de ger information om p&aring;litligheten hos de f&ouml;rutsagda v&auml;rdena. En enkel tumregel &auml;r att det verkliga v&auml;rdet hamnar mellan tv&aring; standardv&auml;rden f&ouml;r det f&ouml;rutsagda v&auml;rdet 95 procent av g&aring;ngerna. Anta att en ny plats ger ett f&ouml;rutsagt v&auml;rde p&aring; 50 med ett standardfel p&aring; 5. Detta inneb&auml;r att verktygets b&auml;sta gissning &auml;r att det verkliga v&auml;rdet f&ouml;r platsen &auml;r 50, men att det &auml;r rimligt att anta att det kan vara s&aring; l&aring;gt som 40 eller s&aring; h&ouml;gt som 60. F&ouml;r att ber&auml;kna intervallet f&ouml;r de rimliga v&auml;rdena multiplicerar du standardfelet med 2, l&auml;gger till det h&auml;r v&auml;rdet till det f&ouml;rutsagda v&auml;rdet f&ouml;r att f&aring; den &ouml;vre delen av intervallet, och drar bort det fr&aring;n det f&ouml;rutsagda v&auml;rdet f&ouml;r att f&aring; den l&auml;gre delen av intervallet.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassificera efter</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj hur det f&ouml;rutsagda v&auml;rdet ska klassificeras i omr&aring;den.
+                <ul>
+                    <li>Geometriskt intervall &ndash; Omr&aring;dena baseras p&aring; klassintervall med en geometrisk serie. Den h&auml;r metoden s&auml;kerst&auml;ller att varje klassintervall har ungef&auml;r samma antal v&auml;rden inom varje klass och att f&ouml;r&auml;ndringen mellan intervallen &auml;r konsekvent.
+                    </li>
+                    <li>Lika intervall &ndash; Omr&aring;dena skapas s&aring; att intervallet f&ouml;r de f&ouml;rutsagda v&auml;rdena &auml;r lika stort f&ouml;r varje omr&aring;de.
+                    </li>
+                    <li>Lika omr&aring;de &ndash; Omr&aring;dena skapas s&aring; att antalet datav&auml;rden i varje omr&aring;de &auml;r lika stort. Om informationen till exempel inneh&aring;ller fler stora v&auml;rden &auml;n sm&aring; v&auml;rden, skapas fler omr&aring;den f&ouml;r stora v&auml;rden.
+                    </li>
+                    <li>Manuellt &ndash; Med det h&auml;r alternativet kan du skapa egna intervall med v&auml;rden f&ouml;r omr&aring;dena. Dessa v&auml;rden anges i parametern  <b>V&auml;rden f&ouml;r klassbrytning</b> nedan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Antal klasser</h2></div>
+        <hr/>
+        <div>
+            <p>Anger antalet klasser (intervall f&ouml;r f&ouml;rutsagda v&auml;rden) i resultatlagret. Varje klass definierar gr&auml;nsen f&ouml;r ett omr&aring;de. Klassernas v&auml;rden avg&ouml;rs av parametern 
+ <b>Klassificera efter</b> ovan.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Värden för klassbrytning</h2></div>
+        <hr/>
+        <div>
+            <p>Ange de &ouml;nskade klassbrytningsv&auml;rdena separerade med blanksteg. Om du till exempel vill anv&auml;nda klassbrytningar med v&auml;rdena 1,5, 3 och 7 anger du  <code>1,5 3 7</code>. Dessa v&auml;rden definierar den &ouml;vre gr&auml;nsen f&ouml;r varje klass, s&aring; att antalet klasser blir lika med antalet angivna v&auml;rden. Omr&aring;den skapas inte f&ouml;r platser med f&ouml;rutsagda v&auml;rden &ouml;ver det st&ouml;rsta angivna brytpunktsv&auml;rdet. Du m&aring;ste ange minst tv&aring; v&auml;rden och inte fler &auml;n 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Klipp ut utdata till</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan antingen rita eller ange ett lager f&ouml;r det omr&aring;de d&auml;r du vill att resultatet ska ritas. Om du till exempel interpolerar m&auml;tningar av f&ouml;roreningar i en sj&ouml;, kan du anv&auml;nda sj&ouml;ns gr&auml;nser i den h&auml;r parametern. D&aring; ritas resultaten endast inom sj&ouml;ns gr&auml;nser.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Förutsäg på dessa platser</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan aningen rita eller ange ett lager f&ouml;r de punkter d&auml;r du vill ber&auml;kna f&ouml;rutsagda v&auml;rden. D&auml;rmed kan du f&ouml;ruts&auml;ga v&auml;rden f&ouml;r specifika intressanta platser. Om indatalagret till exempel motsvarar m&auml;tningar av f&ouml;roreningsniv&aring;er, kan du anv&auml;nda den h&auml;r parametern f&ouml;r att f&ouml;ruts&auml;ga f&ouml;roreningsniv&aring;erna p&aring; platser med stora riskpopulationer, till exempel skolor eller sjukhus. D&auml;refter kan du anv&auml;nda informationen f&ouml;r att l&auml;mna rekommendationer till h&auml;lsov&aring;rdsansvariga p&aring; dessa platser.
+            </p>
+            <p>Om v&auml;rden anges kommer verktyget att skapa ett punktlager med f&ouml;ruts&auml;gelser p&aring; de specifika platserna. Utdatalagrets namn blir resultatdatalagrets namn med ordet Punkter (Points) tillagt.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Área de Separação de Águas</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Tarefa Watershed"></h2>
+        <hr/>
+    <p>Esta ferramenta determina a &aacute;rea de contribui&ccedil;&atilde;o acima de um conjunto de c&eacute;lulas num raster.
+    </p>
+    <p>Uma watershed (bacia hidrogr&aacute;fica) &eacute; a &aacute;rea aclive que contribui com fluxo&mdash;geralmente de &aacute;gua&mdash;para um escoamento comum, como drenagem concentrada. Pode fazer parte de uma watershed maior e tamb&eacute;m pode conter watersheds menores, denominadas sub-bacias.
+    </p>
+    <p>O valor de cada watershed ser&aacute; retirado do valor da origem na camada raster ou de ponto de escoamento de elementos de entrada. Quando o ponto de escoamento +e um conjunto de dados raster, os valores das c&eacute;lulas s&atilde;o utilizados por predefini&ccedil;&atilde;o. Quando o ponto de escoamento &eacute; um conjunto de dados de elementos de ponto, os valores ser&atilde;o provenientes do campo especificado.
+    </p>
+    <p>A ferramenta Watershed apenas suporta uma camada raster de fluxo de entrada D8.
+    </p>
+    <p>Ao especificar os locais de pontos de escoamento de entrada como dados de elementos, o campo predefinido ser&aacute; o primeiro campo v&aacute;lido dispon&iacute;vel. Caso n&atilde;o exista um campo v&aacute;lido, o campo ObjectID (por exemplo, OID ou FID) ser&aacute; o predefinido.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Selecionar camada de direção de fluxo</h2></div>
+        <hr/>
+        <div>
+            <p>O raster de entrada que exibe a dire&ccedil;&atilde;o do fluxo a partir de cada c&eacute;lula.
+            </p>
+            <p>O raster de dire&ccedil;&atilde;o de fluxo pode ser criado utilizando a ferramenta Flow Direction ou a tarefa FlowDirection no servi&ccedil;o RasterAnalysisTools, executado utilizando o tipo de dire&ccedil;&atilde;o de fluxo predefinido  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Especificar locais de pontos de escoamento de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Os locais de pontos de escoamento de entrada
+            </p>
+            <p>Para um raster, isto representa c&eacute;lulas acima das quais a &aacute;rea contribuinte, ou capta&ccedil;&atilde;o, ser&aacute; determinada. Todas as c&eacute;lulas que n&atilde;o sejam NoData ser&atilde;o utilizadas como c&eacute;lulas de origem. Para uma entrada de pontos, isto representa locais acima dos quais a &aacute;rea contribuinte, ou capta&ccedil;&atilde;o, ser&aacute; determinada.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Selecionar campo de ponto de escoamento</h2></div>
+        <hr/>
+        <div>
+            <p>O campo utilizado para atribuir valores aos locais de pontos de escoamento.
+            </p>
+            <p>Caso a camada de ponto de escoamento de entrada seja um raster, Value ser&aacute; utilizado. Caso seja um elemento, ser&aacute; utilizado um campo num&eacute;rico. Caso o campo contenha valores de ponto flutuantes, estes ser&atilde;o truncados para n&uacute;meros inteiros.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

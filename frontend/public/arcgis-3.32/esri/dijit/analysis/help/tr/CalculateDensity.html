@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Yoğunluğu Hesapla</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Yoğunluğu Hesapla"></h2>
+        <hr/>
+    <p>Yoğunluğu Hesaplama aracı, bazı olayların bilinen miktarlarını (nokta veya &ccedil;izgi &ouml;znitelikleri olarak g&ouml;sterilen) haritada dağıtarak nokta veya &ccedil;izgi detaylı bir yoğunluk haritası oluşturur. Sonu&ccedil;ta ortaya en az yoğundan en fazla yoğun olana doğru sınıflanan bir alan katmanı &ccedil;ıkar.   
+
+    </p>
+    <p>Nokta girdileri i&ccedil;in her noktanın bazı olay veya oluşumları temsil etmesi gerekir; sonu&ccedil; katmanı birim alan başına olay sayısını g&ouml;sterir. Yeni konumdaki daha y&uuml;ksek bir yoğunluk değeri, o konumda daha fazla nokta olduğu anlamına gelir. Pek &ccedil;ok durumda sonu&ccedil; katmanı gelecekteki olaylar a&ccedil;ısından bir risk y&uuml;zeyi olarak yorumlanabilir. &Ouml;rneğin, girdi noktaları yıldırım d&uuml;şen yerleri g&ouml;steriyorsa, sonu&ccedil; katmanı gelecekteki yıldırım d&uuml;şme olayları i&ccedil;in bir risk y&uuml;zeyi olarak yorumlanabilir.
+    </p>
+    <p>&Ccedil;izgi girdileri i&ccedil;in ise, &ccedil;izgi yoğunluğu y&uuml;zeyi her konumun yakınındaki toplam &ccedil;izgi miktarını g&ouml;sterir. Hesaplanan yoğunluk değerlerinin birimi, birim alan başına &ccedil;izgi uzunluğudur. &Ouml;rneğin, &ccedil;izgilerin nehirleri g&ouml;sterdiği durumda, sonu&ccedil; katmanı arama yarı&ccedil;apı i&ccedil;indeki nehirlerin toplam uzunluğunu g&ouml;sterir. Bu sonu&ccedil;, hayvanların otlatılması a&ccedil;ısından uygun alanların belirlenmesi amacıyla kullanılabilir.
+    </p>
+    <p> Bu aracın kullanıldığı diğer durumlar şunlardır:
+        <ul>
+            <li>Polis merkezlerinin y&uuml;ksek su&ccedil; oranlı alanlarda uygun kaynak bulundurmasına yardımcı olmak amacıyla su&ccedil; yoğunluğu haritaları oluşturulması.
+            </li>
+            <li>B&ouml;lgedeki hastane yoğunluğunu hesaplama. Sonu&ccedil; katmanı, y&uuml;ksek ve d&uuml;ş&uuml;k hastane erişimini g&ouml;sterir ve bu bilgiler yeni hastanelerin yapılması gereken yerleri belirlemek i&ccedil;in kullanılabilir.
+            </li>
+            <li>Orman yangınlarının ge&ccedil;mişte oluştuğu yerlere g&ouml;re, orman yangını riskinin y&uuml;ksek olduğu alanların tanımlanması.
+            </li>
+            <li>Yeni yolların nereye yapılması gerektiğini planlamak amacıyla ana yollardan uzakta yaşayan toplulukların belirlenmesi.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Yoğunluğun hesaplanacağı nokta veya çizgi katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluğun hesaplanacağı nokta veya &ccedil;izgi katmanıdır.
+
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Sayma alanı kullan</h2></div>
+        <hr/>
+        <div>
+            <p>Her konumdaki olay sayısını belirten bir alan girin. &Ouml;rneğin, şehirleri g&ouml;steren noktalarınız varsa, hesaplama alanı olarak şehir n&uuml;fusunu g&ouml;steren bir alanı kullanabilirsiniz; sonu&ccedil; n&uuml;fus yoğunluğu katmanı, yoğun n&uuml;fusa sahip şehirlerin etrafındaki daha yoğun n&uuml;fus yoğunluklarını hesaplar.
+            </p>
+            <p> Varsayılan tercih olarak Hi&ccedil;biri kullanılırsa, her konumun bir tek sayımı temsil ettiği varsayılır.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Arama Mesafesi</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluk değerlerini hesaplarken, nokta veya &ccedil;izgi detayını bulmak i&ccedil;in ne kadar uzağın aranacağını belirten bir mesafe değeri girin. &Ouml;rneğin, 10.000 metrelik bir arama mesafesi girerseniz, &ccedil;ıktı katmanında bulunan herhangi bir konumun yoğunluğu konumun 10.000 metre etrafındaki detaylara dayanarak hesaplanır.10.000 metre i&ccedil;inde hi&ccedil;bir olayı bulunmayan konuma sıfır yoğunluk değeri atanır.     
+
+            </p>
+            <p>Herhangi bir mesafe değeri girilmezse, girdi detaylarının konumlarına ve hesaplama alanındaki (hesaplama alanı girilmişse) değerlere bağlı olarak bir varsayılan değer hesaplanır.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Çıktının kırpılacağı yer</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunlukların hesaplanmasını istediğiniz alanı belirtmek i&ccedil;in &ccedil;izim yapın ya da katman sağlayın. &Ouml;rneğin, bir g&ouml;ldeki balık yoğunluğunu hesaplarken, bu parametrede g&ouml;l&uuml;n sınırını kullanabilirsiniz, &ccedil;ıktı da yalnızca g&ouml;l&uuml;n sınırları i&ccedil;inde &ccedil;izilir.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Sınıflandırma ölçütü</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluk değerlerinin nasıl alan olarak sınıflandırılacağını belirleyin.
+                <ul>
+                    <li>Eşit aralık - Alanlar tahmin edilen yoğunluk değeri aralığı her alan i&ccedil;in eşit olacak bi&ccedil;imde oluşturulur.
+                    </li>
+                    <li>Geometrik aralık - Alanlar geometrik seriye sahip sınıf aralıklarına dayanır. Bu y&ouml;ntem, her sınıf aralığının her sınıfta yaklaşık olarak aynı sayıda değere sahip olmasını ve aralıklar arasındaki değişimin tutarlı olmasını sağlar.
+                    </li>
+                    <li>Doğal kırılmalar - Alan sınıf aralıkları verilerin doğal gruplandırmasına bağlıdır. Sınıf kırılma değerleri, benzer değerler en iyi gruplandırılacak ve sınıflar arasındaki farklar en b&uuml;y&uuml;k olacak bi&ccedil;imde tanımlanır.
+
+                    </li>
+                    <li>Eşit alan; Alanlar her alandaki veri alanı boyutu eşit olacak bi&ccedil;imde oluşturulur. &Ouml;rneğin, sonu&ccedil; katmanında d&uuml;ş&uuml;k yoğunluk değerlerden daha &ccedil;ok sayıda y&uuml;ksek yoğunluk değeri varsa, y&uuml;ksek yoğunluklar i&ccedil;in daha fazla alan oluşturulur.
+                    </li>
+                    <li>Standart sapma - Alanlar tahmin edilen yoğunluk değerlerinin standart sapmasına g&ouml;re oluşturulur. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Sınıfların sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Sonu&ccedil; katmanındaki sınıf sayısını (tahmin edilen değer aralığı) belirtir. Her sınıf, alanların sınırını tanımlar. Bu sınıf değerleri, yukarıdaki 
+ <b>Sınıflandırma &ouml;l&ccedil;&uuml;t&uuml;</b> parametresi ile belirlenir.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Çıktı alanı birimleri</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı alanı birimini belirtin. Yoğunluk, sayımın alana b&ouml;l&uuml;nmesiyle elde edilir ve bu parametre yoğunluk hesaplamasında alan birimini belirtir.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

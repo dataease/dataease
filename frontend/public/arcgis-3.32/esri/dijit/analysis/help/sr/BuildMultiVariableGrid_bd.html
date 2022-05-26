@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izradite mrežu sa višestrukim promenljivima</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Dijagram toka posla &bdquo;Dodaj podatke&ldquo;"></h2>
+        <hr/>
+    <p>Alatka za izradu mreže sa vi&scaron;estrukim promenljivima radi sa jednim ili vi&scaron;e slojeva sa tačkastim, linijskim ili poligonalnim geoobjektima. Alatka generi&scaron;e mrežu kvadratnih ili &scaron;estougaonih blokova i izračunava vrednosti za svaki blok na osnovu bliskosti svakog ulaznog sloja. Ove vrednosti mogu da uključe sledeće promenljive: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Rastojanje do najbližeg</b>&mdash;rastojanje od svakog bloka do najbližeg geoobjekta
+            </li>
+            <li> <b>Atribut do najbližeg</b>&mdash;vrednost polja geoobjekta najbližeg svakom bloku
+            </li>
+            <li> <b>Rezime najbližeg</b>&mdash;određenu statistiku svih geoobjekata unutar razdaljine za svaki blok
+            </li>
+            <li> <b>Rezime presecanja</b>&mdash;određenu statistiku svih geoobjekata koji presecaju svaki blok
+            </li>
+        </ul>
+        
+    </p>
+    <p>Samo promenljive koje navedete će biti uključene u sloj sa rezultatima. Ove promenljive mogu da vam pomognu da razumete bliskost i raspoređenost va&scaron;ih podataka. Rezultati mogu da vam pomognu da se približite odgovorima na pitanja kao &scaron;to je:
+        <ul>
+            <li>Ako se u obzir uzme vi&scaron;e slojeva infrastrukture javnog transporta, koji deo grada je najnepristupačniji javnim prevozom?
+            </li>
+            <li>Ako se u obzir uzmu slojevi vodenih tokova, kao &scaron;to su jezera i reke, koji je naziv vodene povr&scaron;ine najbliže svakoj lokaciji u SAD?
+            </li>
+            <li>Ako se u obzir uzme sloj prihoda domaćinstava, gde je u SAD varijacija prihoda u okrugu od 50 milja najveća?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Odaberite tip blokova koji ćete koristiti za izradu mreže sa višestrukim promenljivima</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Tip i veličina blokova koji će se koristiti za kreiranje mreže sa vi&scaron;estrukim promenljivima. Za opciju  <b>Kvadrat</b>, navedeni broj i jedinice određuju visinu i dužinu kvadrata. Za opciju <b>&Scaron;estougao</b>, navedeni broj i jedinice određuju rastojanje između paralelnih stranica.
+            </p>
+            <p>Ova analiza koristi blokove i zahteva projektovani koordinatni sistem.  <b>Koordinatni sistem obrade</b> možete da podesite u <b>Okruženja analize</b>. Ako koordinatni sistem obrade nije pode&scaron;en na projektovani koordinatni sistem, od vas će se tražiti da ga podesite prilikom kori&scaron;ćenja opcije <b>Pokreni analizu</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Odaberite ulazni sloj i promenljive koje biste želeli da uključite u mrežu</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite na dugme dodavanja ( <b>+</b>) da biste otvorili prozor <b>Dodaj promenljive</b> i dodali sloj u analizu U prozoru <b>Dodaj promenljive</b>, odaberite ulazni sloj i konfiguri&scaron;ite promenljive koje želite da izračunate za taj ulazni sloj.
+            </p>
+            <p>Kada ste odabrali i konfigurisali promenljive koje želite da izračunate, sloj će biti naveden u prozoru alatke uz bilo koji drugi selektovani sloj. Kliknite na dugme za uređivanje da bi bilo koji sloj otvorio prozor  <b>Dodaj promenljive</b> i pogledajte sve promenljive konfigurisane za taj sloj. Kliknite na dugme za brisanje da bi bilo koji sloj uklonio taj sloj i sve povezane promenljive iz analize.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Dodaj promenljive</h2></div>
+        <hr/>
+        <div>
+            <p>Prozor vam omogućava da odaberete ulazni sloj i konfiguri&scaron;ite promenljive koje želite da izračunate za taj ulazni sloj. Da biste počeli, koristite padajući meni  <b>Odaberite ulazni sloj</b> kako biste selektovali tačkasti, poligonalni ili linijski sloj koji želite da dodate u va&scaron;u analizu.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+            <p>Kada ste odabrali ulazni sloj, kliknite na dugme  <b>Dodaj promenljivu</b> da biste otvorili novu promenljivu za uređivanje. Morate da odaberete jedinstveni naziv za svaku promenljivu. To će biti naziv polja koje se kreira u tabli atributa sloja sa rezultatima.
+            </p>
+            <p>Koristite padajući meni da biste izabrali tip promenljive za dodavanje. Svaki tip promenljive mora da bude konfigurisan jedinstvenim skupom parametara i svi parametri su obavezni.
+            </p>
+            <p>Kada ste dodali sve željene promenljive za izabrani sloj, kliknite na dugme  <b>Dodaj</b> da biste sačuvali promenljive.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

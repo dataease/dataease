@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Rasti taškų sankaupas</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Rasti ta&scaron;kų sankaupas"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis randa ta&scaron;kų elementų sankaupas juos supančioje aplinkoje (triuk&scaron;me) pagal jų pasiskirstymą erdvėje.
+    </p>
+    <p>Jei pažymėta  <b>Naudoti esamą žemėlapio aprėptį</b>, bus analizuojami tik aprėptyje matomi įvesties ta&scaron;kų sluoksnio elementai. Jei nepažymėta, bus analizuojami visi įvesties ta&scaron;kų sluoksnio elementai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pasirinkite sluoksnį, kurio sankaupų bus ieškoma</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kinis sluoksnis, kuriame bus ie&scaron;koma sankaupų. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalus taškų skaičius, kuris bus laikomas sankaupa</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalus elementų skaičius, kuris bus laikomas sankaupa Bet kokia mažiau nei nurodyta elementų turinti sankaupa bus laikoma triuk&scaron;mu. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Apriboti paieškos intervalą iki (pasirinktina)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Didžiausias atstumas, kuriuo nutolę elementai laikomi tos pačios sankaupos dalimi.  Jei nenurodyta, įrankis naudos HDBSCAN, kuris naudoja kintamą atstumą nevienodo tankumo sankaupoms nuo i&scaron;sklaidyto triuk&scaron;mo atskirti. Jei reik&scaron;mė nurodyta, įrankis naudos DBSCAN, kuris naudoja apibrėžtą atstumą tankioms sankaupoms nuo i&scaron;sklaidyto triuk&scaron;mo atskirti.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

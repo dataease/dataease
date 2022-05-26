@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/FindPointClusters",{clustersLabel:"Za sloj ${inputLayerName} prona\u0111ite klastere.",chooseLayerLabel:"Odaberite sloj za koji \u0107e klasteri da budu prona\u0111eni",minClusterPtsLabel:"Minimalni broj ta\u010daka koje se uzimaju u razmatranje za klaster",minClustersPtsGAXLbl:"Minimalan broj ta\u010daka koje mogu da budu mati\u010dne za klaster",limitSearchLabel:"Ograni\u010dite opseg pretrage na (opciono)",limitSearchReqLabel:"Ograni\u010dite opseg pretrage na",
+outputLayerName:"Prona\u0111ite klastere za ${inputLayerName}",itemDescription:"Sloj geoobjekata nastao usled pokretanja re\u0161enja Prona\u0111i ta\u010dkaste klastere za ${inputLayerName}.",itemTags:"Rezultat analize, Prona\u0111i ta\u010dkaste klastere, ${inputLayerName}",itemSnippet:"Sloj geoobjekata nastao iz zadatka Prona\u0111i ta\u010dkaste klastere",chooseClusteringMethod:"Odaberite metod grupisanja koji \u0107e se koristiti",dbscanLabel:"Definisano rastojanje (DBSCAN)",hdbscanLabel:"Samopode\u0161avanje (HDBSCAN)",
+useTimeToFindCLusters:"Upotrebi vreme za pronala\u017eenje klastera",limitSearchDurLabel:"Ograni\u010dite trajanje pretrage na"});

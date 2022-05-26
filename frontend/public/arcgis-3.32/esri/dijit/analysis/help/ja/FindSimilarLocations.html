@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>類似フィーチャの検索</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="類似フィーチャの検索"></h2>
+        <hr/>
+    <p>[類似フィーチャの検索] ツールは、指定する基準に基づいて、1 つ以上の場所に対する検索候補レイヤー内の類似場所を測定します。このツールは、次のような質問に答えることができます。
+        <ul>
+            <li>顧客プロファイルに関して、どの店舗が最も成績が優秀な店舗に類似しているか。
+            </li>
+            <li>病気によって最も大きな打撃を受けた村の特性を考慮すると、他のどの村のリスクが高いか。
+            </li>
+        </ul>
+        このような質問に答えるには、参照場所、候補の検索場所、および照合する基準を表すフィールドを指定します。最初の入力レイヤーには、参照場所または基準場所を含める必要があります。たとえば、これは、最も成績が優秀な店舗または病気によって最も大きな打撃を受けた村を含んでいるとします。次に、候補の検索場所を含んでいるレイヤーを指定します。これは、すべての店舗またはすべてのその他の村となる場合があります。最終的に、1 つ以上のフィールドを特定して、類似性の測定に使用します。次に、[類似フィーチャの検索 (Find Similar Locations)] ツールは、候補の検索場所が、選択したすべてのフィールドに対してどれだけ参照場所に一致しているかを基準にして、候補の検索場所に順位を付けます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>参照場所を含むレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>照合する参照場所を含むポイント レイヤー、ライン レイヤー、またはエリア レイヤー。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>すべてのフィーチャを使用するか一部を選択</h2></div>
+        <hr/>
+        <div>
+            <p>必要に応じて、選択ボタンを使用して、参照場所を特定します。たとえば、入力レイヤーにすべての場所 (参照場所および候補の検索場所) が含まれている場合、選択ツールの 1 つを使用して、参照場所を特定する必要があります。参照場所が含まれた 1 つのレイヤーおよびすべての候補の検索場所を含むもう一方のレイヤーの 2 つの別々のレイヤーを作成する場合は、選択する必要はありません。
+            </p>
+            <p>2 つ以上の参照場所がある場合、類似性の分析に使用される各フィールドの値の平均によって単一の場所が作成されます。
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>類似フィーチャの検索</h2></div>
+        <hr/>
+        <div>
+            <p>このレイヤー内の候補の検索場所は、類似性の高いものから低いものへ順位が付けられます。類似性は、各場所が指定したフィールドに対してどれだけ参照場所に一致しているかを基準にします。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>類似性の基準</h2></div>
+        <hr/>
+        <div>
+            <p>選択するフィールドは、類似性の評価に使用される基準になります。たとえば、人口と収入フィールドを選択すると、最も低い (最高の) 順位を持つ候補の検索場所が、参照場所に類似した人口および収入の値を持つ場所になります。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>表示</h2></div>
+        <hr/>
+        <div>
+            <p>類似性が最も高いものから低いものへ順位が付けられたフィーチャをすべてを表示するか、表示させるフィーチャ数を指定できます。
+                <ul>
+                    <li> <b>[類似性が最も高いものから低いものを含むすべての場所]</b> - 候補の検索レイヤー内のすべてのフィーチャは、結果レイヤーのランク順に含められます。
+                    </li>
+                    <li> <b>[返された場所の数]</b> - 結果レイヤーに含める類似性の最も高い候補の検索場所の数を決定します。デフォルトの入力は 1 です。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前を指定します。この結果レイヤーには、指定した参照場所および順位が付けられた候補の検索場所の数が含められます。結果レイヤーの名前がすでに存在する場合、結果の名前を変更するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

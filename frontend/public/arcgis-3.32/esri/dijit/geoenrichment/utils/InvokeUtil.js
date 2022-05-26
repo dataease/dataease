@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/InvokeUtil",["esri/dijit/geoenrichment/Deferred","esri/dijit/geoenrichment/when"],function(f,g){return{invoke:function(a,b,d,h,e){a.__invokeTimeoutIDs||(a.__invokeTimeoutIDs={});var c=a.__invokeTimeoutIDs[b];if(c){if(null==d||!1===h)return c.dfd.promise;clearTimeout(c.handle)}c||(c=a.__invokeTimeoutIDs[b]={dfd:new f});c.handle=setTimeout(function(){delete a.__invokeTimeoutIDs[b];g(e?a[b].apply(a,e):a[b](),function(a){c.dfd.resolve(a)},function(a){c.dfd.reject(a)})},
+d||0);return c.dfd.promise},hasPendingInvoke:function(a,b){return!(!a.__invokeTimeoutIDs||!a.__invokeTimeoutIDs[b])},cancelInvoke:function(a,b){a.__invokeTimeoutIDs&&a.__invokeTimeoutIDs[b]&&(clearTimeout(a.__invokeTimeoutIDs[b].handle),delete a.__invokeTimeoutIDs[b])}}});

@@ -1,0 +1,204 @@
+{
+    "version": "1.0",
+    "map": {
+        "AggregatePoints": {
+            "toolDescription": "120001612",
+            "pointLayer": "120001612",
+            "polygonLayer": "120001612"
+        },
+        "AggregatePoints_bd": {
+            "toolDescription": "120001587"
+        },
+        "BuildMultiVariableGrid_bd": {
+          "toolDescription": "120001589"
+        },
+        "CalculateDensity": {
+            "toolDescription": "120001627",
+            "inputLayer": "120001627"
+        },
+        "CalculateDensity_bd": {
+            "toolDescription": "120001590"
+        },
+        "CalculateField_bd": {
+          "toolDescription": "120001591"
+        },
+        "ChooseBestFacilities": {
+            "toolDescription": "120001622",
+            "allocateToExistingFacilities": "120001662",
+            "minimizeTravel": "120001663",
+            "maximizeCoverage": "120001664",
+            "maximizeCoverageWithCapacity": "120001665",
+            "coverAPercentageOfDemand": "120001666",
+            "demandLocationsLayer": "120001667",
+            "requiredFacilitiesLayer": "120001667",
+            "candidateFacilitiesLayer": "120001667",
+            "goal": "120001668"
+        },
+        "ConnectOriginsToDestinations": {
+            "toolDescription": "120001636"
+        },
+        "CreateBuffers": {
+            "toolDescription": "120001632",
+            "inputLayer": "120001632"
+        },
+        "CreateBuffers_bd": {
+            "toolDescription": "120001594"
+        },
+        "CreateDriveTimeAreas": {
+            "toolDescription": "120001633",
+            "inputLayer": "120001633"
+        },
+        "DeriveNewLocations": {
+            "toolDescription": "120001619",
+            "Expression": "120001619"
+        },
+        "CopyToDataStore_bd": {
+            "toolDescription": "12000193"
+        },
+        "CreateViewshed": {
+            "toolDescription": "120001623"
+        },
+        "CreateWatersheds": {
+            "toolDescription": "120001624"
+        },
+        "DissolveBoundaries": {
+            "toolDescription": "120001638",
+            "multiPartFeatures": "120001638"
+        },
+        "DissolveBoundaries_bd": {
+          "toolDescription": "120001598"
+        },
+        "DetectIncidents_bd": {
+            "toolDescription": "120001596"
+        },
+        "DescribeDataset_bd": {
+            "toolDescription": "120001595"
+        },
+        "EnrichLayer": {
+            "toolDescription": "120001626",
+            "DataCollection": "120001626"
+        },
+        "EnrichFromMultiVariableGrid_bd": {
+          "toolDescription": "120001599"
+        },
+        "ExtractData": {
+            "toolDescription": "120001637",
+            "InputLayers": "120001637"
+        },
+        "FindCentroids": {
+          "toolDescription": "120001617"
+        },
+        "FindDwellLocations_bd": {
+            "toolDescription": "120001777"
+        },
+        "FindExistingLocations": {
+            "toolDescription": "120001618",
+            "Expression": "120001618"
+        },
+        "FindHotSpots": {
+            "toolDescription": "120001628",
+            "analysisFieldPoly": "120001669",
+            "analysisFieldPoint": "120001671",
+            "boundingPolygonLayer": "120001672",
+            "aggregationPolygonLayer": "120001672"
+        },
+        "FindHotSpots_bd": {
+            "toolDescription": "120001600"
+        },
+        "FindNearest": {
+            "toolDescription": "120001634",
+            "analysisLayer": "120001634"
+        },
+        "FindOutliers": {
+            "toolDescription": "120001629"
+        },
+        "FindPointClusters": {
+          "toolDescription": "120001630"
+        },
+        "FindPointClusters_bd": {
+          "toolDescription": "120001601"
+        },
+        "FindSimilarLocations": {
+            "toolDescription": "120001620",
+            "inputLayer": "120001673",
+            "searchLayer": "120001673",
+            "analysisFields": "120001674"
+        },
+        "FindSimilarLocations_bd": {
+            "toolDescription": "120001602"
+        },
+        "GeocodeLocationsfromTable": {
+            "toolDescription": "120001621",
+            "geocodeServiceURL": "120001621"
+        },
+        "GeocodeLocationsfromTable_bd": {
+          "toolDescription": "120001605"
+        },
+        "GenerateTessellations": {
+          "toolDescription": "120001677"
+        },
+        "InterpolatePoints": {
+            "toolDescription": "120001631"
+        },
+        "JoinFeatures": {
+            "toolDescription": "120001613"
+        },
+        "JoinFeatures_bd": {
+            "toolDescription": "120001606"
+        },
+        "MergeLayers": {
+            "toolDescription": "120001639"
+        },
+        "MergeLayers_bd": {
+            "toolDescription": "120001607"
+        },
+        "ClipLayer_bd": {
+            "toolDescription": "120001592"
+        },
+        "GeneralizedLinearRegression_bd" : {
+            "toolDescription": "120001604"
+        },
+        "OverlayLayers": {
+            "toolDescription": "120001640",
+            "inputLayer": "120001640"
+        },
+        "OverlayLayers_bd": {
+            "toolDescription": "120001608"
+        },
+        "PlanRoutes": {
+            "toolDescription": "120001635",
+            "endLayer": "120001675",
+            "startLayer": "120001675"
+        },
+        "ReconstructTracks_bd": {
+            "toolDescription": "120001609"
+        },
+        "SummarizeAttributes_bd": {
+            "toolDescription": "120001610"
+        },
+        "SummarizeCenterAndDispersion": {
+          "toolDescription": "120001616"
+        },
+        "SummarizeNearby": {
+            "toolDescription": "120001614"
+        },
+        "SummarizeWithin": {
+            "toolDescription": "120001615"
+        },
+        "SummarizeWithin_bd": {
+            "toolDescription": "120001611"
+        },
+        "TraceDownstream": {
+            "toolDescription": "120001625"
+        },
+        "AppendData_bd": {
+            "toolDescription": "120001588"
+        },
+        "ForestBasedClassificationAndRegression_bd": {
+            "toolDescription": "120001603" 
+        },
+        "GeographicallyWeightedRegression_bd": {
+            "toolDescription": "120001799"
+        }
+    }
+}

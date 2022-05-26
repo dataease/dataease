@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Synthétiser le centre et la dispersion</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Synth&eacute;tiser le centre et la dispersion"></h2>
+        <hr/>
+    <p>Cet outil recherche les entit&eacute;s centrales et les distributions directionnelles.
+Il peut servir &agrave; r&eacute;pondre &agrave; des questions du type&nbsp;:
+        <ul>
+            <li>O&ugrave; se trouve le centre&nbsp;?
+            </li>
+            <li>Parmi toutes les entit&eacute;s, quelle entit&eacute; est la plus accessible&nbsp;?
+            </li>
+            <li>Les entit&eacute;s sont-elles dispers&eacute;es, compactes ou int&eacute;gr&eacute;es&nbsp;?
+            </li>
+            <li>Existe-t-il des tendances de direction&nbsp;?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l&rsquo;option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e visibles dans la carte actuelle seront analys&eacute;es. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e sont analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choisir une couche à décrire</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique qui sera utilis&eacute;e pour rechercher les entit&eacute;s centrales et les distributions directionnelles.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Types de résumés</h2></div>
+        <hr/>
+        <div>
+            <p>M&eacute;thode pour synth&eacute;tiser le centre et la dispersion. 
+            </p>
+            <ul>
+                <li>Entit&eacute; centrale&nbsp;: identifie l&rsquo;entit&eacute; situ&eacute;e le plus au centre dans un jeu de donn&eacute;es.
+                </li>
+                <li>Centre moyen&nbsp;: identifie le centre g&eacute;ographique (ou centre de concentration) d&rsquo;un ensemble d&rsquo;entit&eacute;s.
+                </li>
+                <li>Centre m&eacute;dian&nbsp;: identifie l&rsquo;emplacement qui minimise la distance euclidienne globale vers toutes les entit&eacute;s d&rsquo;un jeu de donn&eacute;es.
+                </li>
+                <li>Ellipse&nbsp;: cr&eacute;e des ellipses de l&rsquo;&eacute;cart type pour r&eacute;capituler les caract&eacute;ristiques spatiales d&rsquo;entit&eacute;s g&eacute;ographiques&nbsp;: tendance centrale, dispersion et tendances directionnelles. Les ellipses peuvent &ecirc;tre dimensionn&eacute;es en 1, 2 ou 3&nbsp;&eacute;carts types.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Pondérer par (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Champ permettant de pond&eacute;rer les emplacements en fonction de leur importance relative. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Regrouper par (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Champ utilis&eacute; pour regrouper des entit&eacute;s en vue de calculs distincts d&rsquo;entit&eacute;s centrales ou de dispersion. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

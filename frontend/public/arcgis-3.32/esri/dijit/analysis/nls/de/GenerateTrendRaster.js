@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/GenerateTrendRaster",{toolDefine:"Trend-Raster generieren",outputLayerName:"${layername}_trend",dimensionLabel:"Dimension ausw\u00e4hlen, f\u00fcr die der Variablentrend analysiert wird",variablesLabel:"Variable(n) f\u00fcr die Trendanalyse ausw\u00e4hlen",variablesListLabel:"Variablen [Dimensionsinfo] (Beschreibung)",trendLineTypeLabel:"Linientyp f\u00fcr die Anpassung von Variablenwerten in einer Dimension angeben",linear:"Linear",harmonic:"Harmonisch",polynomial:"Polynomial",
+frequencyLabel:"Die f\u00fcr die harmonische Trendanpassung verwendete Frequenz angeben",polynomialOrderLabel:"Die f\u00fcr die Trendanpassung verwendete Polynom-Ordnung angeben",ignoreNodataLabel:"Fehlende Werte in Berechnung ignorieren",ignore:"Ignorieren",analysisLayerLabel:"Multidimensionalen Bilddaten-Layer f\u00fcr die Trendanalyse ausw\u00e4hlen",itemDescription:'\u00dcber "Trend-Raster generieren" erstellter Analyse-Image-Service',itemTags:"Raster-Analyseergebnis, Trend-Raster generieren, ${layername}",
+itemSnippet:'\u00dcber "Trend-Raster generieren" erstellter Analyse-Image-Service'});

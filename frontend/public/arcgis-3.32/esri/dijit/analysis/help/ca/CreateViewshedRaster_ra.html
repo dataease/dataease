@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea una conca visual</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Eina Crea una conca visual"></h2>
+        <hr/>
+    <p>Aquesta eina identifica les &agrave;rees que un observador pot veure i t&eacute; en compte la topografia de la superf&iacute;cie. Les ubicacions dels punts d'entrada poden representar observadors (com ara persones al terra o torres de vigil&agrave;ncia d'incendis) o objectes observats (com ara aerogeneradors, torres d'aigua, vehicles o altres persones). Els resultats defineixen les &agrave;rees que es poden veure des de les ubicacions d'observador.
+    </p>
+    <p>Tant els observadors com els objectes observats poden tenir una altura per sobre del terra; aquestes altures es fan servir per determinar la visibilitat. Per exemple, una conca visual calculada per a aerogeneradors de 90 metres d'altura i persones de metre vuitanta que estan a terra ser&agrave; normalment m&eacute;s gran que una conca visual calculada per a aerogeneradors de 60 metres d'altura i persones de metre cinquanta.
+    </p>
+    <p>La capa de resultats registra el nombre de vegades que els punts d'observaci&oacute; d'entrada poden veure cada ubicaci&oacute; de cel&middot;la del r&agrave;ster de superf&iacute;cie d'entrada. S'assignen valors NoData a les cel&middot;les no visibles.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran l'&agrave;rea de r&agrave;ster i els punts d'observador que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzaran tots els punts d'observador de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Superfície d'elevació</h2></div>
+        <hr/>
+        <div>
+            <p>Superf&iacute;cie d'elevaci&oacute; que s'utilitzar&agrave; per calcular la conca visual.
+            </p>
+            <p>Si la unitat vertical de la superf&iacute;cie d'entrada &eacute;s diferent de la unitat horitzontal, com quan els valors d'elevaci&oacute; es representen en peus per&ograve; el sistema de coordenades &eacute;s en metres, la superf&iacute;cie ha de tenir un sistema de coordenades verticals definit. El motiu &eacute;s que l'eina utilitza les unitats verticals (Z) i horitzontals (XY) per calcular un factor z per a l'an&agrave;lisi de la conca visual. Sense un sistema de coordenades verticals i, per tant, sense cap informaci&oacute; de la unitat de Z disponible, l'eina suposar&agrave; que la unitat de Z coincideix amb la unitat d'XY. El resultat &eacute;s que s'utilitzar&agrave; un factor z intern d'1,0 per a l'an&agrave;lisi, el que pot proporcionar resultats inesperats.
+            </p>
+            <p>La superf&iacute;cie d'elevaci&oacute; pot ser un enter o un punt flotant.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Entitats de punts que representen les ubicacions de l'observador</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que representen les ubicacions de l'observador quan es calculen les conques visuals.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimitza per a</h2></div>
+        <hr/>
+        <div>
+            <p>M&egrave;tode d'optimitzaci&oacute; que s'utilitzar&agrave; per calcular la conca visual.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Aquest m&egrave;tode optimitza la velocitat de processament i ajusta la precisi&oacute; del resultat per millorar el rendiment. Aquesta &eacute;s l'opci&oacute; per defecte.
+
+                </li>
+                <li>Accuracy &mdash; 
+Aquest m&egrave;tode est&agrave; optimitzat perqu&egrave; els resultats siguin precisos a costa d'un temps de processament m&eacute;s llarg.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distància de visualització màxima</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u una dist&agrave;ncia de valor l&iacute;mit on s'aturar&agrave; el c&agrave;lcul de les &agrave;rees visibles. M&eacute;s enll&agrave; d'aquesta dist&agrave;ncia, no es determinar&agrave; si els punts d'observador i els altres objectes es poden veure entre si.
+            </p>
+            <p>Podeu especificar un valor num&egrave;ric que representi una dist&agrave;ncia lineal o seleccionar un camp num&egrave;ric de les entitats d'observador d'entrada. Si es proporciona un camp, el valor del camp haur&agrave; de tenir la mateixa unitat que la unitat xy de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+            <p>Tingueu en compte que els valors alts augmentaran el temps de c&agrave;lcul. Tret que s'especifiqui, es calcular&agrave; una dist&agrave;ncia m&agrave;xima per defecte basada en la resoluci&oacute; i l'extensi&oacute; de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+            <p>Aquest par&agrave;metre &eacute;s &uacute;til per modelitzar determinats fen&ograve;mens. Per exemple, si limiteu l'extensi&oacute; de la visibilitat, podeu modelitzar les condicions meteorol&ograve;giques, com ara una boira lleugera. De manera similar, la restricci&oacute; de l'extensi&oacute; de la visibilitat us pot proporcionar cert control sobre l'hora del dia mitjan&ccedil;ant l'aproximaci&oacute; de l'efecte de capvespre.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distància de visualització màxima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distància de visualització mínima</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u una dist&agrave;ncia on s'iniciar&agrave; el c&agrave;lcul de les &agrave;rees visibles. Les cel&middot;les de la superf&iacute;cie m&eacute;s pr&ograve;ximes que aquesta dist&agrave;ncia no seran visibles a la sortida, per&ograve; podran bloquejar la visibilitat de les cel&middot;les entre les dist&agrave;ncies de visualitzaci&oacute; m&iacute;nima i m&agrave;xima.
+            </p>
+            <p>Podeu especificar un valor num&egrave;ric que representi una dist&agrave;ncia lineal o seleccionar un camp num&egrave;ric de les entitats d'observador d'entrada. Si es proporciona un camp, el valor del camp haur&agrave; de tenir la mateixa unitat que la unitat xy de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+            <p>Aquest par&agrave;metre resulta &uacute;til per controlar l'&agrave;rea d'an&agrave;lisi de la conca visual a una dist&agrave;ncia espec&iacute;fica de l'observador. Per exemple, si esteu avaluant la visibilitat des de la teulada d'un edifici fins a un parc distant, podeu definir la dist&agrave;ncia de visualitzaci&oacute; m&iacute;nima per excloure les &agrave;rees pr&ograve;ximes que no siguin d'inter&egrave;s i millorar la velocitat de processament.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distància de visualització mínima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>La distància és 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu si els par&agrave;metres de dist&agrave;ncia de visualitzaci&oacute; m&iacute;nima i m&agrave;xima es mesuren de manera tridimensional, o b&eacute; de manera bidimensional m&eacute;s simple. Si l'opci&oacute; est&agrave; activada, les dist&agrave;ncies de visualitzaci&oacute; es tracten com a dist&agrave;ncies 3D. Si est&agrave; desactivada, es tracten com a dist&agrave;ncies 2D.
+            </p> 
+            <p>Una dist&agrave;ncia 2D &eacute;s la dist&agrave;ncia lineal simple que es mesura entre un observador i l'objectiu mitjan&ccedil;ant les seves ubicacions projectades al nivell del mar. Una dist&agrave;ncia 3D proporciona un valor m&eacute;s realista perqu&egrave; t&eacute; en compte les altures relatives.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevació de les ubicacions d'observador</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u l'elevaci&oacute; de les ubicacions d'observador.
+            </p>
+            <p>Podeu especificar un valor num&egrave;ric que representi l'elevaci&oacute; de tots els observadors o un camp que representi l'elevaci&oacute; de cadascun individualment. Si es proporciona un camp, el valor del camp haur&agrave; de tenir la mateixa unitat que la unitat Z de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevació de les ubicacions d'observador</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Altura dels observadors</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u l'altura sobre el terra de les ubicacions d'observador.
+            </p> 
+            <p>Podeu especificar un valor num&egrave;ric per a l'altura o un camp num&egrave;ric de les entitats d'observador d'entrada. Si es proporciona un camp, el valor del camp haur&agrave; de tenir la mateixa unitat que la unitat z de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+            <p>El valor per defecte &eacute;s 6 peus. Si mireu des d'una ubicaci&oacute; elevada, com ara una torre d'observaci&oacute; o un edifici alt, utilitzeu aquesta altura en lloc seu. Durant el c&agrave;lcul de la conca visual, aquest valor s'afegeix a l'elevaci&oacute; de l'observador si s'especifica; altrament, s'afegeix al valor z de la superf&iacute;cie interpolada.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Altura dels observadors</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Altura de l'objectiu</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u l'altura de les estructures o les persones al terra que es fa servir per determinar la visibilitat.
+            </p>
+            <p>Podeu especificar un valor num&egrave;ric per a l'altura o un camp num&egrave;ric de les entitats d'observador d'entrada. Si es proporciona un camp, el valor del camp haur&agrave; de tenir la mateixa unitat que la unitat z de la superf&iacute;cie d'elevaci&oacute; d'entrada.
+            </p>
+            <p>La conca visual resultant identifica les &agrave;rees on un punt d'observador pot veure aquests objectes sobre el terra. La situaci&oacute; contr&agrave;ria tamb&eacute; es compleix: els altres objectes sobre el terra poden veure un punt d'observador. 
+            </p>
+            <p>A continuaci&oacute; s'inclouen alguns exemples de configuraci&oacute; d'altura de l'objectiu:
+            </p>
+            <ul>
+                <li>Si els vostres punts d'entrada representen aerogeneradors i voleu determinar des d'on poden veure les turbines les persones que estiguin al terra, introdu&iuml;u l'al&ccedil;ada mitjana d'una persona, aproximadament 6 peus (1,80 metres).
+                    
+
+                </li>
+                <li>Si els vostres punts d'entrada representen torres de vigil&agrave;ncia d'incendis i voleu determinar quines torres de vigil&agrave;ncia poden veure una columna de fum de 20 peus (6 metres) o m&eacute;s d'altura, introdu&iuml;u 20 peus per a l'altura de l'objectiu.
+                    
+
+                </li>
+                <li>Si els vostres punts d'entrada representen miradors en carreteres i camins i voleu determinar en quins llocs es poden veure els aerogeneradors de 400 peus (120 metres) o m&eacute;s d'altura, introdu&iuml;u 400 peus per a l'altura.
+                    
+
+                </li>
+                <li>Si els vostres punts d'entrada representen miradors i voleu determinar la superf&iacute;cie que poden veure les persones que estan al mirador, introdu&iuml;u zero per a l'altura de l'objectiu. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Altura dels observadors</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Altura de sortida que serà visible</h2></div>
+        <hr/>
+        <div>
+            <p>Nom del resultat de la sortida sobre el nivell del terra (AGL). El resultat d'AGL &eacute;s un r&agrave;ster on cada valor de cel&middot;la &eacute;s l'altura m&iacute;nima que s'ha d'afegir a una cel&middot;la no visible perqu&egrave; la pugui veure com a m&iacute;nim un observador. A les cel&middot;les que ja eren visibles se'ls assigna 0 en aquest r&agrave;ster de sortida.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

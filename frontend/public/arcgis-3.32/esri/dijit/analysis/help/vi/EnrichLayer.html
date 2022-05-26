@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Bổ sung thông tin lớp</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Bổ sung th&ocirc;ng tin lớp"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y bổ sung th&ocirc;ng tin dữ liệu của bạn bằng c&aacute;ch lấy số liệu về con người, địa điểm v&agrave; doanh nghiệp xung quanh vị tr&iacute; dữ liệu của bạn. Cho ph&eacute;p bạn trả lời những c&acirc;u hỏi mới về c&aacute;c vị tr&iacute; m&agrave; bạn kh&ocirc;ng thể trả lời chỉ bằng bản đồ. V&iacute; dụ: Những người n&agrave;o sống ở đ&acirc;y? Mọi người th&iacute;ch l&agrave;m g&igrave; tại khu vực n&agrave;y? Th&oacute;i quen v&agrave; lối sống của họ như thế n&agrave;o? C&oacute; loại h&igrave;nh doanh nghiệp n&agrave;o trong khu vực n&agrave;y?
+    </p>
+    <p>Kết quả sẽ l&agrave; một lớp mới chứa tất cả c&aacute;c th&ocirc;ng tin nh&acirc;n khẩu học v&agrave; địa l&yacute; được lấy từ c&aacute;c bộ sưu tập dữ liệu nhất định. Th&ocirc;ng tin mới n&agrave;y được th&ecirc;m th&agrave;nh c&aacute;c trường trong bảng.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; phạm vi bản đồ hiện tại sẽ được cung cấp th&ocirc;ng tin. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o sẽ được bổ sung th&ocirc;ng tin, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp để bổ sung dữ liệu mới</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm, đường, hoặc v&ugrave;ng sẽ được bổ sung dữ liệu thuộc t&iacute;nh mới. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Biến số bổ sung</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Bấm v&agrave;o  <b>Chọn Biến số</b> để mở <b>Tr&igrave;nh duyệt Dữ liệu</b>. <b>Tr&igrave;nh duyệt Dữ liệu</b> gi&uacute;p bạn t&igrave;m v&agrave; chọn c&aacute;c biến số bổ sung ri&ecirc;ng lẻ hoặc trong c&aacute;c bộ sưu tập.
+            </p>
+            <p>V&ugrave;ng được chọn tự động dựa tr&ecirc;n dữ liệu của bạn. Bạn c&oacute; thể chọn một v&ugrave;ng kh&aacute;c nếu dữ liệu của bạn bao tr&ugrave;m nhiều hơn một quận. 
+            </p>
+            <p>Biến số bổ sung được sắp xếp v&agrave;o c&aacute;c bộ sưu tập dữ liệu để dễ d&agrave;ng cho việc truy cập. Khi bạn chọn một bộ sưu tập dữ liệu, tr&igrave;nh duyệt hiển thị một v&agrave;i trong số c&aacute;c biến số bổ sung phổ biến nhất trong bộ sưu tập đ&oacute;. Dưới  <b>Tiếp tục Duyệt</b>, n&oacute; cũng hiển thị c&aacute;c thể loại trong phạm vi bộ sưu tập. Trong mỗi thể loại bạn c&oacute; thể lựa chọn to&agrave;n bộ thể loại con hoặc chuy&ecirc;n s&acirc;u v&agrave;o một thể loại con v&agrave; chọn c&aacute;c biến số bổ sung ri&ecirc;ng lẻ. Bạn cũng c&oacute; thể sử dụng hộp t&igrave;m kiếm để t&igrave;m một biến số cụ thể trong một thể loại.
+            </p>
+            <p>Khi bạn chọn c&aacute;c biến số để đưa v&agrave;o bổ sung th&ocirc;ng tin, ch&uacute;ng sẽ được th&ecirc;m v&agrave;o giỏ h&agrave;ng nằm ở g&oacute;c của  <b>Tr&igrave;nh duyệt Dữ liệu</b>. Sử dụng giỏ h&agrave;ng n&agrave;y để theo d&otilde;i số lượng biến số m&agrave; bạn đ&atilde; chọn.
+            </p>
+            <p>Mỗi biến số được chọn sẽ được th&ecirc;m v&agrave;o như một trường trong lớp kết quả của bạn.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Xác định khu vực bổ sung</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định khu vực xung quanh c&aacute;c đường hoặc điểm đầu v&agrave;o sẽ được bổ sung th&ocirc;ng tin bằng khoảng c&aacute;ch theo đường thẳng hoặc phương thức đi lại được lựa chọn. Đối với khoảng c&aacute;ch đường thẳng, nhập gi&aacute; trị tối đa 1000 dặm (1609 kil&ocirc;m&eacute;t). Chỉ c&oacute; thể sử dụng phương thức đi lại khi lớp đầu v&agrave;o của bạn c&oacute; chứa c&aacute;c điểm. Người quản trị của tổ chức của bạn c&oacute; thể x&aacute;c định c&aacute;c phương thức đi lại khả dụng. Khi sử dụng một trong c&aacute;c phương thức đi lại, thực hiện c&aacute;c ph&eacute;p đo dọc theo con đường hoặc lối đi, v&agrave; tu&acirc;n theo c&aacute;c quy tắc hiện h&agrave;nh, v&iacute; dụ như đường một chiều hay cấm quay đầu xe, v.v. Sau khi chọn phương thức v&agrave; đo lường, nhập khoảng thời gian v&agrave; khoảng c&aacute;ch tối đa 5 giờ (300 ph&uacute;t) hoặc 300 dặm (482,8 kil&ocirc;m&eacute;t).
+            </p>
+            <p>Nếu chọn  <b>Trả về kết quả dưới dạng khu vực bao quanh</b>, kết quả được trả về sẽ l&agrave; c&aacute;c đối tượng v&ugrave;ng được x&aacute;c định theo c&aacute;c gi&aacute; trị thời gian hoặc khoảng c&aacute;ch ở tr&ecirc;n. Nếu bỏ chọn, kết quả được trả về sẽ l&agrave; c&aacute;c đối tượng điểm.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

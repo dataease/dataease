@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Reconstrueix els recorreguts</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Reconstrueix els recorreguts"></h2>
+        <hr/>
+    <p> Aquesta eina funciona amb una capa d'entitats de punts o &agrave;rees que t&eacute; la funci&oacute; de temps habilitada i que representa un <code>instant</code> de temps.   En primer lloc, determina quines entitats pertanyen a un recorregut mitjan&ccedil;ant un identificador. Mitjan&ccedil;ant l'hora de cada ubicaci&oacute;, els recorreguts s'ordenen de manera seq&uuml;encial i es transformen en una l&iacute;nia o una &agrave;rea que representa la ruta del moviment a trav&eacute;s del temps. De manera opcional, es pot crear una &agrave;rea d'influ&egrave;ncia de l'entrada mitjan&ccedil;ant un camp, que crear&agrave; una &agrave;rea a cada ubicaci&oacute;. Despr&eacute;s, aquests punts amb &agrave;rea d'influ&egrave;ncia o &agrave;rees d'entrada s'uneixen de manera seq&uuml;encial per crear un recorregut com una &agrave;rea on l'amplada representa l'atribut d'inter&egrave;s. Els recorreguts resultants tenen hores d'inici i final, que representen temporalment les entitats primera i &uacute;ltima d'un recorregut determinat. Quan es creen els recorreguts, les estad&iacute;stiques sobre les entitats d'entrada es calculen i s'assignen al recorregut de sortida. L'estad&iacute;stica m&eacute;s b&agrave;sica &eacute;s el recompte de punts dins de l'&agrave;rea, per&ograve; tamb&eacute; es poden calcular altres estad&iacute;stiques.
+    </p>
+    <p>Les entitats de les capes amb la funci&oacute; de temps habilitada es poden representar de dues maneres diferents:
+        <ul>
+            <li>Instant: un moment &uacute;nic en el temps
+            </li>
+            <li>Interval: una hora d'inici i una hora final
+            </li>
+        </ul>
+        
+    </p>
+    <p>Per exemple, suposem que teniu mesures GPS d'huracans cada 10 minuts. Cada mesura GPS registra el nom, la ubicaci&oacute;, l'hora de l'enregistrament i la velocitat del vent de l'hurac&agrave;. Amb aquesta informaci&oacute;, podeu crear recorreguts de cada hurac&agrave; amb el nom per identificar el recorregut, i es generaran recorreguts de cada hurac&agrave;. A m&eacute;s, podeu calcular estad&iacute;stiques, com ara la mitjana, la velocitat del vent m&agrave;xima i m&iacute;nima de cada hurac&agrave; i el recompte de mesures de cada recorregut.
+    </p>
+    <p>Amb el mateix exemple, podeu crear &agrave;rees d'influ&egrave;ncia dels vostres recorreguts per la velocitat del vent. D'aquesta manera, es crearien &agrave;rees d'influ&egrave;ncia de cada mesura pel camp de velocitat del vent a la ubicaci&oacute; i s'unirien entre si. Com a resultat, es crearia una &agrave;rea representativa del recorregut, aix&iacute; com dels canvis de la velocitat del vent a mesura que els huracans evolucionen.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu les entitats de les quals voleu reconstruir el recorregut</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts o d'&agrave;rees que es reconstruiran en recorreguts. La capa d'entrada ha tenir la funci&oacute; de temps habilitada i entitats que representin un instant de temps. La capa d'entrada s'ha de trobar en un sistema de coordenades projectades o ha de tenir la refer&egrave;ncia espacial de processament definida en un sistema de coordenades projectades mitjan&ccedil;ant els  <b>entorns d'an&agrave;lisi</b> si s'ha aplicat una &agrave;rea d'influ&egrave;ncia.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Trieu un o diversos camps per identificar recorreguts</h2></div>
+        <hr/>
+        <div>
+            <p>Camps que representen l'identificador del recorregut. 
+            </p>
+            <p>Per exemple, si esteu reconstruint recorreguts d'huracans, podeu utilitzar el nom de l'hurac&agrave; com a camp de recorregut.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Escolliu el mètode que s'hagi utilitzat per reconstruir els recorreguts</h2></div>
+        <hr/>
+        <div>
+            <p>M&egrave;tode utilitzat per unir recorreguts i aplicar l'&agrave;rea d'influ&egrave;ncia (si escau). El m&egrave;tode  <b>Pla</b> pot calcular els resultats m&eacute;s r&agrave;pidament, per&ograve; no ajustar&agrave; els recorreguts al voltant de la l&iacute;nia internacional de canvi de data ni representar&agrave; la forma real de la Terra en crear l'&agrave;rea d'influ&egrave;ncia. El m&egrave;tode <b>Geod&egrave;sic</b> ajustar&agrave; els recorreguts al voltant de la l&iacute;nia de canvi de data si &eacute;s necessari i aplicar&agrave; una &agrave;rea d'influ&egrave;ncia geod&egrave;sica per representar la forma de la Terra.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Creeu una expressió amb la qual crear àrees d'influència d'entitats d'entrada (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Equaci&oacute; utilitzada per calcular la dist&agrave;ncia de l'&agrave;rea d'influ&egrave;ncia al voltant de les entitats d'entrada. Aquesta equaci&oacute; es pot generar mitjan&ccedil;ant la calculadora d'&agrave;rees d'influ&egrave;ncia i tamb&eacute; s'admeten operacions b&agrave;siques, com ara les de suma, resta, multiplicaci&oacute; i divisi&oacute;. Els valors es calculen amb el sistema de coordenades d'an&agrave;lisi. La capa d'entrada s'ha de trobar en un sistema de coordenades projectades o ha de tenir la refer&egrave;ncia espacial de processament definida en un sistema de coordenades projectades mitjan&ccedil;ant els  <b>entorns d'an&agrave;lisi</b> si s'ha aplicat una &agrave;rea d'influ&egrave;ncia.
+            </p>
+            <p>Una equaci&oacute; com  <code>$feature.windspeed * 1000</code> aplicaria una &agrave;rea d'influ&egrave;ncia de 1.000 multiplicat pel camp <i>windspeed</i>. Podeu utilitzar m&eacute;s d'un camp a la calculadora d'&agrave;rees d'influ&egrave;ncia.
+            </p>
+            <p> Tamb&eacute; podeu especificar una expressi&oacute; que tingui en compte el seguiment. Per exemple, podeu calcular la suma del valor <i>windspeed</i> del camp per a l'entitat actual i les dues entitats anteriors amb una equaci&oacute; com <code>$track.field(windspeed).history(-3)</code>. En cada ubicaci&oacute;, es calcular&agrave; la suma del valor <i>windspeed</i> actual i les dues mesures anteriors, i se'n crear&agrave; l'&agrave;rea d'influ&egrave;ncia.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Seleccioneu un interval de temps per dividir els recorreguts (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Temps utilitzat per dividir els recorreguts. Si la durada entre els punts o les &agrave;rees d'entrada &eacute;s m&eacute;s llarga que la divisi&oacute; de temps, aquests es dividiran en recorreguts diferents.
+            </p>
+            <p>Si especifiqueu una divisi&oacute; de temps i una divisi&oacute; de dist&agrave;ncia, els recorreguts es dividiran quan es doni una de les condicions o totes dues. 
+            </p>
+            <p>Imagineu que teniu entitats de punts que representen vols d'avi&oacute;, on el camp de recorregut &eacute;s l'ID de l'avi&oacute;. L'avi&oacute; pot fer diversos viatges que representarien un recorregut.  Si sabeu que hi ha una pausa d'una hora entre els vols, podeu utilitzar el valor  <code>1 hora</code> com a divisi&oacute; de recorregut i cada vol es dividir&agrave; en el seu propi recorregut.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Divideix recorreguts (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu dividir recorreguts mitjan&ccedil;ant tres m&egrave;todes diferents. Podeu utilitzar una combinaci&oacute; que inclogui tots, algun o cap dels m&egrave;todes de divisi&oacute;. 
+            </p>
+            <p>Les divisions es poden completar de les maneres seg&uuml;ents:
+                <ul>
+                    <li> <b>Basat en una dist&agrave;ncia entre entrades</b>: si la dist&agrave;ncia entre els punts o les &agrave;rees d'entrada supera la dist&agrave;ncia especificada, aquests es dividiran en recorreguts diferents. Per exemple, si heu especificat una dist&agrave;ncia de 10 quil&ograve;metres, els punts seq&uuml;encials de m&eacute;s de 10 quil&ograve;metres seran recorreguts independents.
+                    </li>
+                    <li> <b>Basat en un temps entre entrades</b>: si la durada entre els punts o les &agrave;rees d'entrada &eacute;s m&eacute;s llarga que la divisi&oacute; de temps, aquests es dividiran en recorreguts diferents. Per exemple, si teniu entitats de punts que representen vols d'avi&oacute;, on el camp de recorregut &eacute;s l'ID de l'avi&oacute;. L'avi&oacute; pot fer diversos viatges que representarien un recorregut.  Si sabeu que hi ha una pausa d'una hora entre els vols, podeu utilitzar el valor <code>1 hora</code> com a divisi&oacute; de recorregut i cada vol es dividir&agrave; en el seu propi recorregut.
+                    </li>
+                    <li> <b>A intervals de temps definits</b>: la divisi&oacute; s'ha fet amb intervals regulars, amb l'especificaci&oacute; d'un interval de temps i un temps de refer&egrave;ncia. Si no especifiqueu un temps de refer&egrave;ncia, s'utilitzar&agrave; l'1 de gener de 1970. Per exemple, si heu especificat 1 any amb el temps de refer&egrave;ncia 2 de febrer de 1990 a les 10:00, els recorreguts es dividiran el 2 de febrer de 1990 a les 10:00, el 2 de febre de 1991 a les 10:00 i aix&iacute; successivament amb intervals d'un any.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si especifiqueu diverses opcions de divisi&oacute;, els recorreguts es dividiran quan es donin una o diverses condicions. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Seleccioneu una distància amb la qual dividir els recorreguts (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia utilitzada per dividir recorreguts. Si la dist&agrave;ncia entre els punts o les &agrave;rees d'entrada supera la divisi&oacute; de dist&agrave;ncia, aquests es dividiran en recorreguts diferents.
+            </p>
+            <p>Si especifiqueu una divisi&oacute; de temps i una divisi&oacute; de dist&agrave;ncia, els recorreguts es dividiran quan es doni una de les condicions o totes dues. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un ArcGIS Data Store on desar els resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

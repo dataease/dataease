@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pontok interpolálása</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Pontok interpol&aacute;l&aacute;sa eszk&ouml;z"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z a pontgyűjtem&eacute;nyekből sz&aacute;rmaz&oacute; m&eacute;rt &eacute;rt&eacute;kek alapj&aacute;n &eacute;rt&eacute;keket jelez előre az &uacute;j helyeken. Az eszk&ouml;z az egyes pontokban az &eacute;rt&eacute;kkel rendelkező pont adatok alapj&aacute;n előre jelzett &eacute;rt&eacute;kek raszter&eacute;t adja eredm&eacute;ny&uuml;l.
+    </p>
+    <p>Az eszk&ouml;z ezenk&iacute;v&uuml;l az al&aacute;bbiakra is haszn&aacute;lhat&oacute;:
+
+        <ul>
+            <li>A levegőminős&eacute;g-kezel&eacute;si k&ouml;rzetben &eacute;rz&eacute;kelők m&eacute;rik a szennyez&eacute;s m&eacute;rt&eacute;k&eacute;t. A Pontok interpol&aacute;l&aacute;sa eszk&ouml;zzel előre jelezhető a szennyez&eacute;s m&eacute;rt&eacute;ke a m&eacute;rőműszerek n&eacute;lk&uuml;li helyeken, ahol a lakoss&aacute;g vesz&eacute;lyeztetett lehet &ndash; p&eacute;ld&aacute;ul iskol&aacute;kban vagy k&oacute;rh&aacute;zakban.
+                
+
+            </li>
+            <li>N&ouml;v&eacute;nykult&uacute;r&aacute;k neh&eacute;zf&eacute;m-koncentr&aacute;ci&oacute;j&aacute;nak előrejelz&eacute;se egyes n&ouml;v&eacute;nyekből vett mint&aacute;k alapj&aacute;n.
+                
+
+            </li>
+            <li>A talaj t&aacute;panyagtartalm&aacute;nak (nitrog&eacute;n, foszfor, k&aacute;lium stb.) &eacute;s egy&eacute;b mutat&oacute;inak (p&eacute;ld&aacute;ul elektromos vezetők&eacute;pess&eacute;g&eacute;nek) előrejelz&eacute;se a term&eacute;nyhozammal val&oacute; &ouml;sszef&uuml;gg&eacute;s tanulm&aacute;nyoz&aacute;sa &eacute;s a sz&aacute;nt&oacute;f&ouml;ld egyes pontjaira kihordand&oacute; talajjav&iacute;t&oacute; anyag pontos mennyis&eacute;g&eacute;nek meghat&aacute;roz&aacute;sa c&eacute;lj&aacute;b&oacute;l.
+                
+
+            </li>
+            <li>A meteorol&oacute;giai alkalmaz&aacute;sok magukban foglalj&aacute;k a hőm&eacute;rs&eacute;klet, az eső &eacute;s a kapcsol&oacute;d&oacute; v&aacute;ltoz&oacute;k (p&eacute;ld&aacute;ul savas eső) előrejelz&eacute;s&eacute;t.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Ismert értékű helyeket tartalmazópont réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az azokat a pontokat tartalmaz&oacute; pontr&eacute;teg, ahol az &eacute;rt&eacute;keket m&eacute;rt&eacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Interpolálni kívánt mező kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az interpol&aacute;lni k&iacute;v&aacute;nt &eacute;rt&eacute;kekkel rendelkező mezőt. A mezőnek numerikusnak kell lennie.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimalizálás alapja</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki, hogy a gyorsas&aacute;got vagy a pontoss&aacute;got r&eacute;szes&iacute;ti-e előnyben.
+            </p>
+            <p>A pontos előrejelz&eacute;sek kisz&aacute;m&iacute;t&aacute;sa hosszabb ideig tart. Ez a param&eacute;ter m&oacute;dos&iacute;tja a Pontok interpol&aacute;l&aacute;sa sz&aacute;mos m&aacute;s param&eacute;ter&eacute;nek alap&eacute;rtelmezett &eacute;rt&eacute;k&eacute;t a sz&aacute;m&iacute;t&aacute;s gyorsas&aacute;g&aacute;nak &eacute;s az eredm&eacute;nyek pontoss&aacute;g&aacute;nak optimaliz&aacute;l&aacute;sa, vagy a kettő egyens&uacute;lyba hoz&aacute;sa &eacute;rdek&eacute;ben. Alap&eacute;rtelmez&eacute;s szerint az eszk&ouml;z az optimaliz&aacute;l&aacute;s sor&aacute;n az egyens&uacute;lyra t&ouml;rekszik.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Adatok átalakítása normális eloszlássá</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhatja, hogy &aacute;t szeretn&eacute;-e alak&iacute;tani az adatokat norm&aacute;lis eloszl&aacute;s&uacute; adatokk&aacute;.
+            </p>
+            <p>Az interpol&aacute;ci&oacute; a norm&aacute;lis (harangg&ouml;rbe alak&uacute;) eloszl&aacute;ssal rendelkező adatokn&aacute;l a legpontosabb. Ha az adatai nem tűnnek norm&aacute;lis eloszl&aacute;s&uacute;nak, v&eacute;gezze el az &aacute;talak&iacute;t&aacute;st.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Helyi modellek mérete</h2></div>
+        <hr/>
+        <div>
+            <p>A Pontok interpol&aacute;l&aacute;sa eszk&ouml;z helyi interpol&aacute;ci&oacute;s modelleket kialak&iacute;tva, majd azokat keverve hozza l&eacute;tre a v&eacute;gső előrejelz&eacute;si t&eacute;rk&eacute;pet. Ez a param&eacute;ter szab&aacute;lyozza, hogy egy-egy helyi modell h&aacute;ny pontot fog tartalmazni. A kisebb &eacute;rt&eacute;kektől az eredm&eacute;nyek lok&aacute;lisabbak lesznek, &eacute;s kis l&eacute;pt&eacute;kű hat&aacute;sokat t&aacute;rhatnak fel, de ez a sz&aacute;m&iacute;t&aacute;sok instabilit&aacute;s&aacute;hoz is vezethet. A nagyobb &eacute;rt&eacute;kek stabilabbak lesznek, de lok&aacute;lis hat&aacute;sok veszhetnek el.
+            </p>
+            <p>Az &eacute;rt&eacute;kek 30 &eacute;s 500 k&ouml;z&ouml;tt lehetnek, de a jellemző &eacute;rt&eacute;kek 50 &eacute;s 200 k&ouml;z&eacute; esnek.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Szomszédok száma</h2></div>
+        <hr/>
+        <div>
+            <p>Szomsz&eacute;dos pontok alapj&aacute;n sz&aacute;m&iacute;tja az előrejelz&eacute;seket. Ez a param&eacute;ter szab&aacute;lyozza a sz&aacute;m&iacute;t&aacute;shoz haszn&aacute;lt pontok sz&aacute;m&aacute;t. Nagy sz&aacute;m&uacute; szomsz&eacute;d haszn&aacute;lata &aacute;ltal&aacute;ban pontosabb eredm&eacute;nyekhez vezet, de az eredm&eacute;nyek kisz&aacute;m&iacute;t&aacute;sa is tov&aacute;bb tart.
+            </p>
+            <p>Ez az &eacute;rt&eacute;k 1 &eacute;s 64 k&ouml;z&ouml;tt lehet, de a jellemző &eacute;rt&eacute;kei 5 &eacute;s 15 k&ouml;z&eacute; esnek.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kimeneti cellaméret</h2></div>
+        <hr/>
+        <div>
+            <p>A kimeneti raszterek cellam&eacute;rete &eacute;s m&eacute;rt&eacute;kegys&eacute;ge.
+            </p>
+            <p>Rendelkez&eacute;sre &aacute;ll&oacute; m&eacute;rt&eacute;kegys&eacute;gek: l&aacute;b, m&eacute;rf&ouml;ld, m&eacute;ter &eacute;s kilom&eacute;ter.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Kimeneti hibabecslés</h2></div>
+        <hr/>
+        <div>
+            <p>Kiv&aacute;laszthatja, hogy l&eacute;tre szeretne-e hozni egy, az előre jelzett &eacute;rt&eacute;kek standard hib&aacute;it tartalmaz&oacute; rasztert.
+            </p>
+            <p>A standard hib&aacute;k amiatt hasznosak, mert inform&aacute;ci&oacute;t ny&uacute;jtanak a v&aacute;rhat&oacute; &eacute;rt&eacute;kek megb&iacute;zhat&oacute;s&aacute;g&aacute;r&oacute;l. Egyszerű tapasztalati szab&aacute;ly szerint az esetek 95 sz&aacute;zal&eacute;k&aacute;ban a val&oacute;s &eacute;rt&eacute;k a v&aacute;rhat&oacute; &eacute;rt&eacute;k k&eacute;tszeres sz&oacute;r&aacute;si hib&aacute;ja k&ouml;z&eacute; esik. Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy egy &uacute;j hely v&aacute;rhat&oacute; &eacute;rt&eacute;ke 50, a standard hiba pedig 5. Ez azt jelenti, hogy az eszk&ouml;z legjobb becsl&eacute;se szerint a val&oacute;s &eacute;rt&eacute;k az adott helyen 50, de &eacute;sszerű felt&eacute;telez&eacute;s szerint ak&aacute;r 40 vagy 60 is lehet. Az &eacute;sszerű &eacute;rt&eacute;kek tartom&aacute;ny&aacute;nak kisz&aacute;m&iacute;t&aacute;s&aacute;hoz szorozza meg a standard hib&aacute;t 2-vel, az eredm&eacute;nyt a v&aacute;rhat&oacute; &eacute;rt&eacute;khez hozz&aacute;adva megkapja a tartom&aacute;ny felső, illetve a v&aacute;rhat&oacute; &eacute;rt&eacute;kből levonva a tartom&aacute;ny als&oacute; &eacute;rt&eacute;k&eacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

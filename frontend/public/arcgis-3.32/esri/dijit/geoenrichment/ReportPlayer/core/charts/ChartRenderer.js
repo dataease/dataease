@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/ChartRenderer",["require","esri/dijit/geoenrichment/Deferred","dojo/dom-construct"],function(l,m,n){var h,k,g,e={isAsync:!0,loadModules:function(){var b=new m;l(["./ChartContainer","./utils/ThemeCalculator","./utils/ChartJsonUtil"],function(c,d,a){h=c;k=d;g=a;e.isAsync=!1;b.resolve()});return b.promise},createChartPage:function(b,c){var d=b.json,a=b.creationParams;g.provideDefaultValueForMissing(d);var f=a.viewModel.isBenchmarkedArea&&a.viewModel.isBenchmarkedArea(a.currentFeatureIndex),
+d=g.cleanUpJson(d,a.viewModel.isGraphicStyle,{isBenchmarked:f}),e=a.viewModel.getChartDefaultStyles(a.theme);a.chartTheme=k.getThemeForSettings(d,e,{isEditMode:a.isEditMode,isBenchmarked:f});c=c||h;f=b.node?n.create("div",null,b.node):void 0;c=new c(a,f);"function"===typeof b.placeFunc&&b.placeFunc(c);c.updateChart(d);return c}};return e});

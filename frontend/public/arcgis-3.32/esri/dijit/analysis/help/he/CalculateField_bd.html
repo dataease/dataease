@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>חשב שדה</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="חשב שדה"></h2>
+        <hr/>
+    <p> כלי זה עובד עם שכבת קלט לחישוב ערכים עבור שדה חדש או קיים. בנה ביטוי Arcade לחישוב הערכים שיאכלסו ישויות.   אם הנתונים שלך כוללים רכיב זמן מופעל ומסוג רגע בזמן, באפשרותך לבחור לבנות ביטויים שמתחשבים במסלולים.
+    </p>
+    <p>לדוגמה, נניח שברצונך לשנות שדה קיים בשם  <i>TotalSales</i>. אתה רוצה שהשדה ייוצג על ידי הסכום הכולל של המכירות בשנים 2016 ו-2017. תוך שימוש בשדות אלה בביטוי, אתה מחשב את ערך השדה כ- <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>בדוגמה אחרת, נניח שיש לך מדידות GPS שמתעדות את המיקום, הזמן, מזהה האוטובוס והמהירות של האוטובוסים בעיר. ברצוננו ליצור שדה חדש בשם  <i>SpeedFrom3</i> שמחשב ממוצע של מהירות 3 מדידות ה-GPS האחרונות שנרשמו עבור כל ישות. לצורך חישוב זה נשתמש בחישוב מתחשב במסלולים, שבו המסלול הוא אוטובוס שמצוין על ידי מזהה האוטובוס.    החישוב לקביעת המהירות הממוצעת של 3 השלבים הקודמים ושלה הזמן הנוכחי הוא <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה לחישוב ערכי שדות</h2></div>
+        <hr/>
+        <div>
+            <p>הנקודות, הקווים, האזורים או הטבלה שעבורם יחושבו ערכי שדה.  
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>חשב ערכי שדות לשדה</h2></div>
+        <hr/>
+        <div>
+            <p>השדה החדש או הקיים שהערכים שלו יחושבו וסוג הנתונים של שדה זה. אם אתה מחשב ערכים בשדה שכבר קיים, אינך נדרש להתאים את סוג הנתונים. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>צור ביטוי לחישוב ערכי השדות</h2></div>
+        <hr/>
+        <div>
+            <p>הוסף ביטוי בעזרת בונה הביטויים כדי לחשב ערכי שדה. 
+            </p>
+            <p>לדוגמה, נניח שברצונך להוסיף את הערכים של שדה בשם  <i>income</i> ו- <i>bonus</i>. כדי לעשות זאת, הוסף את הביטוי &lrm; <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>הביטוי מתחשב במסלולים</h2></div>
+        <hr/>
+        <div>
+            <p>ציין אם הביטוי שלך מתחשב במסלולים. ביטוי מתחשב במסלולים יכלול ניסוח כגון       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. ביטויים מתחשבים במסלולים מחייבים שדות לזיהוי מסלולים ספציפיים. מסלולים יכולים להיות מורכבים מנקודות, קווים, אזורים או טבלאות, ומחייבים רק שלקלט יהיה מזהה מסלול ושהנתונים יהיו בעלי רכיב זמן מופעל של רגע בזמן.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>ניתוח נתונים לפי מרווחי זמן</h2></div>
+        <hr/>
+        <div>
+            <p>ציין אם ברצונך לחשב ערכים עבור המסלולים בעזרת מרווחי זמן אשר יחתוך את הקלטים למקטעים לצורך ניתוח. אם תשתמש במרווחי זמן, עליך להגדיר את מרווח הזמן הרצוי, ואופציונלית להגדיר זמן ייחוס. אם לא תגדיר זמן ייחוס, יעשה שימוש ב-1 בינואר 1970. 
+            </p>
+            <p>לדוגמה, אם תגדיר את גבול הזמן ליום אחד, שמתחיל ב-09:00 ב-1 בינואר 1990, כל מסלול ייחתך ב-09:00 בכל יום וינותח במסגרת מקטע זה. 
+            </p>
+            <p>שימוש במרווחי זמן זו דרך מהירה להאיץ את זמן החישוב, מכיוון שהם יוצרים במהירות מסלולים קטנים יותר לניתוח. אם פיצול לפי מרווח זמן חוזר ונשנה מתאים לצורך הניתוח שלך, אפשרות זאת מומלצת עבור עיבוד של Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

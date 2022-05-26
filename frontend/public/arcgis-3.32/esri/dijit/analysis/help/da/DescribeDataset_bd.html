@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beskriv datasæt</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Workflow-diagram for Beskriv datas&aelig;t"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet Beskriv datas&aelig;t giver flere oplysninger om dit datas&aelig;t. F&oslash;r du k&oslash;rer analyse p&aring; store m&aelig;ngder data, kan du bruge dette v&aelig;rkt&oslash;j til at fastl&aelig;gge, hvad og hvor dine inputdata er. Som standard er resultatet en JSON-streng, der angiver hovedbeskrivelsen af dit inputlag, og en tabel, der angiver oversigtsstatistik for hvert felt. 
+    </p>
+    <p>Du kan v&aelig;lge at oprette yderligere output-vektorlag for at beskrive dine data yderligere. Du kan v&aelig;lge mellem eksempellag og et udstr&aelig;kningslag. Du kan v&aelig;lge at det ene eller begge skal v&aelig;re output.
+    </p>
+    <p>Lad os sige, at du har en big data-fil, der indeholder 15 datas&aelig;t. Hvert datas&aelig;t har 10 millioner omr&aring;deobjekter, der repr&aelig;senterer bygninger og huse i forskellige regioner i dit land. Du har til opgave at analysere region C, men du ved ikke, hvilket datas&aelig;t der indeholder disse objekter. For at finde ud af, hvilket datas&aelig;t du skal bruge, kan du k&oslash;re Beskriv datas&aelig;t og v&aelig;lge at oprette et udstr&aelig;kningslag for at unders&oslash;ge, hvilket datas&aelig;t der er i den region, du skal arbejde med.
+    </p>
+    <p>Som et andet eksempel kan du forestille dig, at du har til opgave at udf&oslash;re en analyse p&aring; en stor m&aelig;ngde data. Du vil afpr&oslash;ve arbejdsprocessen, men det kan tage timer eller dage med det fulde datas&aelig;t. I stedet for at bruge tid og ressourcer p&aring; at k&oslash;re den fulde analyse, kan du oprette et eksempellag for at teste din komplette arbejdsgang.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg et datasæt, der skal beskrives</h2></div>
+        <hr/>
+        <div>
+            <p>Laget indeholder punkt-, linje-, omr&aring;de- eller tabelobjekter, som bliver beskrevet, opsummeret og eksemplificeret.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Forstå dit datasæt ved at oprette (valgfri)</h2></div>
+        <hr/>
+        <div>
+            <p>F&aring; yderligere output i form af beskrivende lag for at &oslash;ge din viden om dine big data. Du kan v&aelig;lge, at output skal v&aelig;re nul, et eller begge af f&oslash;lgende lag:
+            </p>
+            <ul>
+                <li> <b>Udstr&aelig;kningslag</b> &ndash; skaber et omr&aring;deobjekt, der repr&aelig;senterer udstr&aelig;kningen af dine inputobjekter eller dit interesseomr&aring;de.
+                </li>
+                <li> <b>Eksempellag</b> &ndash; skaber en undergruppe, der indeholder en specificeret m&aelig;ngde inputobjekter fra dit datas&aelig;t eller interesseomr&aring;de.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Eksempellag</h2></div>
+        <hr/>
+        <div>
+            <p>Output er et lag, der indeholder en undergruppe af objekter fra dit inputlag. Hvis  <b>Eksempellag</b> er valgt, kan du angive antallet af objekter, der skal returneres i eksempellaget. Som standard returneres 100 eksempelobjekter i outputlaget.
+            </p>
+            <p>V&aelig;rdien skal v&aelig;re st&oslash;rre end nul. Hvis du angiver et nummer, der er st&oslash;rre end det samlede antal objekter, returneres alle objekter.
+            </p>
+            <p>Hvis  <b>Brug aktuel kortudstr&aelig;kning</b> er valgt, indeholder eksempellaget objekter fra kortets udstr&aelig;kning.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Udstrækningslag</h2></div>
+        <hr/>
+        <div>
+            <p>F&aring; et output, der er et vektorlag med et enkelt objekt, som repr&aelig;senterer udstr&aelig;kningen af inputobjekterne, ved at v&aelig;lge knappen  <b>Udstr&aelig;kningslag</b>. Dette er valgt som standard.
+            </p>
+            <p>Hvis  <b>Brug aktuel kortudstr&aelig;kning</b> er valgt, vil udstr&aelig;kningslaget repr&aelig;sentere den synlige udstr&aelig;kning af kortet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

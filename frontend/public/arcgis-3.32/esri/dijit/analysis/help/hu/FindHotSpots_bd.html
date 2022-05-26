@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot spotok keresése</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Hot spotok keres&eacute;se"></h2>
+        <hr/>
+    <p>A Hot spot-ok keres&eacute;se eszk&ouml;zzel meghat&aacute;rozhat&oacute;, hogy l&eacute;teznek-e statisztikailag szignifik&aacute;ns klaszterek az adatok t&eacute;rbeli mint&aacute;zat&aacute;ban. 
+        <ul>
+            <li>Val&oacute;ban klaszterezettek a kiv&aacute;lasztott pontok (bűnt&eacute;nyek, f&aacute;k, k&ouml;zleked&eacute;si balesetek)?  Hogyan tudhatja biztosan?
+            </li>
+            <li>Val&oacute;ban statisztikailag szignifik&aacute;ns hot spot-ra bukkant, vagy m&aacute;st sugallna a t&eacute;rk&eacute;p, ha megv&aacute;ltoztatn&aacute; a megjelen&iacute;t&eacute;s m&oacute;dj&aacute;t?
+            </li>
+        </ul>
+        A Hot spot-ok keres&eacute;se eszk&ouml;z seg&iacute;t megb&iacute;zhat&oacute; v&aacute;laszt tal&aacute;lni az ilyen k&eacute;rd&eacute;sekre.
+    </p>
+    <p>M&eacute;g a v&eacute;letlenszerű t&eacute;rbeli mint&aacute;k is mutatnak bizonyos fok&uacute; klaszterez&eacute;st.  Ezenk&iacute;v&uuml;l szem&uuml;nk &eacute;s agyunk term&eacute;szetes m&oacute;don mint&aacute;zatokat kezd keresni, ott is, ahol nem l&eacute;teznek ilyenek.  Ebből ad&oacute;d&oacute;an neh&eacute;z meg&iacute;t&eacute;lni, hogy az adatok mint&aacute;zata val&oacute;ban műk&ouml;dő t&eacute;rbeli folyamatok, vagy puszt&aacute;n egy v&eacute;letlenszerű v&aacute;laszt&aacute;s eredm&eacute;nyei.  A kutat&oacute;k &eacute;s elemzők ez&eacute;rt haszn&aacute;lj&aacute;k a Hot spot-ok keres&eacute;se eszk&ouml;zh&ouml;z hasonl&oacute; statisztikai m&oacute;dszereket (Getis-Ord Gi*) a t&eacute;rbeli mint&aacute;zatok mennyis&eacute;gi meghat&aacute;roz&aacute;s&aacute;ra.  Az adatok k&ouml;z&ouml;tt tal&aacute;lt, statisztikailag szignifik&aacute;ns klaszterek &eacute;rt&eacute;kes inform&aacute;ci&oacute;t k&eacute;pviselnek.  A klaszterek előfordul&aacute;s&aacute;nak helye &eacute;s ideje a l&aacute;that&oacute; mint&aacute;zatokat előid&eacute;ző folyamatokkal kapcsolatos, fontos inform&aacute;ci&oacute; az elemz&eacute;sek sor&aacute;n.  L&eacute;nyeges inform&aacute;ci&oacute; annak ismerete, hogy a lak&aacute;sbet&ouml;r&eacute;sek sz&aacute;ma p&eacute;ld&aacute;ul egy adott k&ouml;rny&eacute;ken k&ouml;vetkezetesen magasabb: ekkor hat&eacute;kony megelőz&eacute;si strat&eacute;gi&aacute;kat kell kidolgozni, szűk&ouml;s rendőri erőforr&aacute;sokat kell beosztani, lakoss&aacute;gi figyelőszolg&aacute;latot kell megszervezni, bűncselekm&eacute;nyek m&eacute;lyrehat&oacute; nyomoz&aacute;s&aacute;t kell enged&eacute;lyezni, vagy potenci&aacute;lis gyan&uacute;s&iacute;tottakat kell azonos&iacute;tani.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>A réteg kiválasztása, amelynek hot spotjait ki szeretné számítani</h2></div>
+        <hr/>
+        <div>
+            <p>A pontr&eacute;teg, amelyeknek hot spot-jait &eacute;s cold spot-jait (&bdquo;meleg&rdquo; &eacute;s &bdquo;hideg&rdquo; pontjait) az eszk&ouml;z megtal&aacute;lja.
+            </p>
+            <p>Ez az elemz&eacute;s gyűjtőket haszn&aacute;l, &eacute;s vet&uuml;leti koordin&aacute;ta-rendszert ig&eacute;nyel. A  <b>Feldolgoz&aacute;si koordin&aacute;ta-rendszert</b> az <b>Elemz&eacute;si k&ouml;rnyezetekben</b> &aacute;ll&iacute;thatja be. Ha a feldolgoz&aacute;si koordin&aacute;ta-rendszer nem vet&uuml;leti koordin&aacute;ta-rendszerre van &aacute;ll&iacute;tva, az eszk&ouml;z ennek be&aacute;ll&iacute;t&aacute;s&aacute;t k&eacute;ri az <b>elemz&eacute;s futtat&aacute;sakor</b> .
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Magas és alacsony értékek klasztereinek keresése</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Ez az elemz&eacute;s arra a k&eacute;rd&eacute;sre ad v&aacute;laszt, hogy: Hol tal&aacute;lhat&oacute;k a magas &eacute;s alacsony &eacute;rt&eacute;kek t&eacute;rbeli klaszterei?
+            </p>
+            <p>Ha pont adatok eset&eacute;n a  <b>Pontok sz&aacute;ma </b>lehetős&eacute;get v&aacute;lasztja, az eszk&ouml;z a pontszerű vektor elemek t&eacute;rbeli elrendez&eacute;s&eacute;nek &eacute;rt&eacute;kel&eacute;s&eacute;vel v&aacute;laszol a k&eacute;rd&eacute;sre: Hol csoportosulnak nem v&aacute;rt m&oacute;don illetve helyezkednek el sz&eacute;tsz&oacute;rtan az adatok?
+            </p>
+            <p>Ha kiv&aacute;laszt egy mezőt, az eszk&ouml;z az egyes vektoros elemekhez t&aacute;rs&iacute;tott &eacute;rt&eacute;kek t&eacute;rbeli elrendez&eacute;s&eacute;t &eacute;rt&eacute;kelve v&aacute;laszol a k&ouml;vetkező k&eacute;rd&eacute;sre: Hol tal&aacute;lhat&oacute;k magas &eacute;s alacsony &eacute;rt&eacute;kklaszterek?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Válassza ki az összevonási gyűjtőméretet</h2></div>
+        <hr/>
+        <div>
+            <p>A bemenő pontok elemz&eacute;s&eacute;n&eacute;l alkalmazott n&eacute;gysz&ouml;g alak&uacute; gyűjtők l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt t&aacute;vols&aacute;g.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Hot spotok keresése időbeli lépésekkel (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Ha az idő enged&eacute;lyezve van a pontr&eacute;tegen, &eacute;s azonnali t&iacute;pus&uacute;, akkor időbeli l&eacute;p&eacute;seket haszn&aacute;lva is elemezhet.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Időbeli lépés intervalluma</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt időintervallum. Az idő a bemeneti adatok kezd&eacute;si vagy befejez&eacute;si idej&eacute;hez, vagy egy meghat&aacute;rozott referenciaidőh&ouml;z igaz&iacute;that&oacute;.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Időbeli lépés intervalluma</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt időintervallum. Az idő a bemeneti adatok kezd&eacute;si vagy befejez&eacute;si idej&eacute;hez, vagy egy meghat&aacute;rozott referenciaidőh&ouml;z igaz&iacute;that&oacute;.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Válassza ki az időbeli lépések igazításának módját</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;nak m&oacute;dja. Az időbeli l&eacute;p&eacute;sek h&aacute;romf&eacute;lek&eacute;ppen igaz&iacute;that&oacute;k:
+                <ul>
+                    <li> <b>Kezd&eacute;si idő</b> &ndash; az időbeli l&eacute;p&eacute;seket az időben első vektoros elemhez igaz&iacute;tja.
+                    </li>
+                    <li> <b>Befejez&eacute;si idő</b> &ndash; az időbeli l&eacute;p&eacute;seket az időben utols&oacute; vektoros elemhez igaz&iacute;tja.
+                    </li>
+                    <li> <b>Referenciaidő</b> &ndash; az időbeli l&eacute;p&eacute;seket egy meghat&aacute;rozott időponthoz igaz&iacute;tja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Az időbeli lépések igazításához használt referenciaidő</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt d&aacute;tum &eacute;s időpont.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Válassza ki a szomszédság méretét a hotspot-számításokhoz</h2></div>
+        <hr/>
+        <div>
+            <p>A hotspot-sz&aacute;m&iacute;t&aacute;sokhoz haszn&aacute;lt szomsz&eacute;ds&aacute;g meghat&aacute;roz&aacute;s&aacute;hoz haszn&aacute;lt t&aacute;vols&aacute;g. A szomsz&eacute;ds&aacute;gnak nagyobbnak kell lennie a gyűjtő m&eacute;ret&eacute;n&eacute;l, hogy mindegyik gyűjtő rendelkezzen legal&aacute;bb egy szomsz&eacute;ddal. Mindegyik gyűjtőt elemzi &eacute;s &ouml;sszehasonl&iacute;tja a szomsz&eacute;dos gyűjtőkkel.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (WKID)</h2></div>
+        <hr/>
+        <div>
+            <p>Ez az előzetes kiad&aacute;s egy ideiglenes param&eacute;tere az alkalmazott t&eacute;rbeli referencia be&aacute;ll&iacute;t&aacute;s&aacute;hoz. Sz&aacute;mos big data eszk&ouml;z vet&uuml;leti koordin&aacute;ta-rendszer alkalmaz&aacute;s&aacute;t k&iacute;v&aacute;nja meg t&eacute;rbeli referenciak&eacute;nt a feldolgoz&aacute;shoz. Az eszk&ouml;z alap&eacute;rtelmez&eacute;s szerint a bemeneti koordin&aacute;ta-rendszert haszn&aacute;lja, de eredm&eacute;nytelen lesz, ha az f&ouml;ldrajzi koordin&aacute;ta-rendszer. Vet&uuml;leti koordin&aacute;ta-rendszer be&aacute;ll&iacute;t&aacute;s&aacute;hoz adja meg a WKID-t. A  <b>Web Mercator</b> eset&eacute;n p&eacute;ld&aacute;ul <code>3857</code>-et kell be&iacute;rni.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>ArcGIS Data Store adattár kiválasztása az eredmények mentéséhez</h2></div>
+        <hr/>
+        <div>
+            <p>A geoanalitikai eredm&eacute;nyek ment&eacute;se egy adatt&aacute;rban t&ouml;rt&eacute;nik, &eacute;s a(z)  Portal for ArcGIS vektoros r&eacute;tegeik&eacute;nt szerepelnek. Az eredm&eacute;nyeket t&ouml;bbnyire a t&eacute;rbeli-időbeli adatt&aacute;rban aj&aacute;nlott t&aacute;rolni, &eacute;s az alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s is ez. Egyes esetekben j&oacute; v&aacute;laszt&aacute;s lehet az eredm&eacute;nyek ment&eacute;se a rel&aacute;ci&oacute;s adatt&aacute;rban. Az al&aacute;bbi &eacute;rvek sz&oacute;lnak az eredm&eacute;nyek rel&aacute;ci&oacute;s adatt&aacute;rban t&ouml;rt&eacute;nő t&aacute;rol&aacute;sa mellett: 
+                <ul>
+                    <li>Az eredm&eacute;nyek port&aacute;lok k&ouml;z&ouml;tti egy&uuml;ttműk&ouml;d&eacute;sben haszn&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Enged&eacute;lyezheti az eredm&eacute;nyekkel val&oacute; szinkroniz&aacute;l&aacute;si lehetős&eacute;geket
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nem aj&aacute;nlott a rel&aacute;ci&oacute;s adatt&aacute;r haszn&aacute;lata, ha a geoanalitikai eredm&eacute;nyek mennyis&eacute;g&eacute;nek n&ouml;veked&eacute;se v&aacute;rhat&oacute;, &eacute;s ki kell haszn&aacute;lni a t&eacute;rbeli-időbeli big data-adatt&aacute;r k&eacute;pess&eacute;geit a nagy adatmennyis&eacute;g kezel&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Az eredm&eacute;ny r&eacute;teg megjelen&iacute;ti a magas &eacute;s alacsony &eacute;rt&eacute;kek vagy pontsz&aacute;mok statisztikailag szignifik&aacute;ns klasztereit. Ha az eredm&eacute;ny r&eacute;teg neve m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy nevezze &aacute;t.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

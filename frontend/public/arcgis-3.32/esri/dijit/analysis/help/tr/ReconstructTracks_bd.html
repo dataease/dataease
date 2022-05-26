@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>İzleri Yeniden Oluşturma</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="İzleri Yeniden Oluştur"></h2>
+        <hr/>
+    <p> Bu ara&ccedil;, zamanda bir <code>anı</code> g&ouml;steren nokta veya alan detaylarının zaman etkin bir katmanı ile &ccedil;alışır. &Ouml;ncelikle bir tanımlayıcı kullanarak hangi detayların bir ize ait olduğunu belirler. Her konumdaki zaman kullanılarak izler sıralı olarak dizilir ve zaman i&ccedil;indeki hareket yolunu g&ouml;steren bir &ccedil;izgiye veya alana d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r. İsteğe bağlı olarak, girdi her konumda bir alan oluşturmak &uuml;zere bir alan tarafından tamponlanabilir. Bu tamponlanan noktalar ya da girdi alanları, sıralı olarak birleştirilerek genişliğin ilgi &ouml;zniteliğini g&ouml;sterdiği bir alan olarak iz oluşturulur. Sonu&ccedil;ta ortaya &ccedil;ıkan izlerin bir başlangı&ccedil; ve bitiş saatleri vardır ve bunlar verilen bir izde zamansal olarak ilk ve son detayları g&ouml;sterir. İzler oluşturulduğunda, girdi detayları hakkındaki istatistikler hesaplanır ve &ccedil;ıktı izine atanır. En temel istatistik alan i&ccedil;indeki nokta sayısıdır, ancak diğer istatistikleri de hesaplayabilirsiniz.
+    </p>
+    <p>Zaman etkin katmanlardaki detaylar aşağıdaki iki y&ouml;ntemden biriyle g&ouml;sterilebilir:
+        <ul>
+            <li>An; zaman i&ccedil;inde belirli bir an
+            </li>
+            <li>Aralık; başlangı&ccedil; ve bitiş zamanı arasında kalan
+            </li>
+        </ul>
+        
+    </p>
+    <p>&Ouml;rneğin, her 10 dakikada bir yapılan kasırga GPS &ouml;l&ccedil;&uuml;mleriniz var. Her GPS &ouml;l&ccedil;&uuml;m&uuml; fırtınanın adını, konumunu, kayıt zamanını ve r&uuml;zgar hızını kaydeder. Bu bilgilerle, iz tanımlama i&ccedil;in adı kullanarak her fırtına i&ccedil;in izler oluşturabilir ve b&ouml;ylece her fırtına i&ccedil;in izleri elde edebilirsiniz. Ayrıca, her fırtına i&ccedil;in ortalama, maksimum ve minimum r&uuml;zgar hızı gibi istatistikleri hesaplayabilir, her iz i&ccedil;indeki &ouml;l&ccedil;&uuml;m sayısını belirleyebilirsiniz.
+    </p>
+    <p>Aynı &ouml;rneği kullanarak, izleriniz i&ccedil;in r&uuml;zgar hızına g&ouml;re tampon oluşturabilirsiniz. Bu, her &ouml;l&ccedil;&uuml; i&ccedil;in s&ouml;z konusu konumdaki r&uuml;zgar hızı alanı kadar tampon oluşturur ve tampona alınan alanları birleştirerek iz yolunu g&ouml;steren bir alan oluşturur, fırtına ilerledik&ccedil;e r&uuml;zgar hızındaki değişiklikler de burada g&ouml;sterilir.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>İzlerin yeniden oluşturulacağı detayları seçin</h2></div>
+        <hr/>
+        <div>
+            <p>İzlerde yeniden oluşturulacak nokta veya alan katmanı. Girdi katmanı, zamanda bir anı g&ouml;steren detaylarla zamana duyarlı olarak d&uuml;zenlenmelidir. Katmanın izd&uuml;ş&uuml;mlenmiş bir koordinat sisteminde olması gerekir veya bir tampon uygulandığında işlemci mekansal referans  <b>Analiz Ortamları</b> kullanılarak izd&uuml;ş&uuml;mlenmiş bir koordinat sistemine ayarlanmalıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>İzleri tanımlamak için bir veya birkaç alan seçin</h2></div>
+        <hr/>
+        <div>
+            <p>İz tanımlayıcısını g&ouml;steren alanlar. 
+            </p>
+            <p>Bir &ouml;rnek olarak, fırtına izlerini yeniden oluştururken, iz alanı olarak fırtınanın adını kullanabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>İzleri yeniden oluşturmada kullanılacak yöntemi seçin</h2></div>
+        <hr/>
+        <div>
+            <p>İzleri birleştirmek ve tampon uygulamak (uygunsa) i&ccedil;in kullanılan y&ouml;ntem.  <b>D&uuml;zlemsel</b> y&ouml;ntem, sonu&ccedil;ları daha hızlı hesaplayabilir ancak, izleri uluslararası tarih &ccedil;izgisine sarmaz veya tampon oluştururken d&uuml;nyanın ger&ccedil;ek şeklini değerlendirmez. <b>Jeodezik</b> y&ouml;ntem, gerekirse izleri tarih &ccedil;izgisine sarar ve d&uuml;nyanın ger&ccedil;ek şeklini hesaba katmak i&ccedil;in bir jeodezik tampon uygular.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Girdi detayları için tampon oluşturmak üzere bir ifade ayarlayın (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi detaylarının etrafındaki tampon mesafesini hesaplamak i&ccedil;in kullanılan denklem. Bu denklem, tampon hesaplayıcı ve toplama, &ccedil;ıkarma, &ccedil;arpma ve b&ouml;lme gibi desteklenen temel işlemler kullanılarak oluşturulabilir. Değerler, analiz koordinat sistemi kullanılarak hesaplanır. Katmanın izd&uuml;ş&uuml;mlenmiş bir koordinat sisteminde olması gerekir veya bir tampon uygulandığında işlemci mekansal referans  <b>Analiz Ortamları</b> kullanılarak izd&uuml;ş&uuml;mlenmiş bir koordinat sistemine ayarlanmalıdır.
+            </p>
+            <p> <code>$feature.windspeed * 1000</code> gibi bir denklem, <i>windspeed</i> alanının 1.000 katı bir tampon uygular. Tampon hesaplayıcıda birden fazla alan kullanabilirsiniz.
+            </p>
+            <p> Ayrıca ize duyarlı bir ifade de belirtebilirsiniz. &Ouml;rneğin, mevcut detay ve &ouml;nceki iki detay i&ccedil;in <i>windspeed</i> alanındaki değerlerin toplamını <code>$track.field(windspeed).history(-3)</code> gibi bir denklemle hesaplayabilirsiniz. Her konumda, mevcut <i>windspeed</i> değeri ve &ouml;nceki iki &ouml;l&ccedil;&uuml;m&uuml;n toplamı hesaplanır ve tamponlanır.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>İzleri ayırmak için kullanılacak süreyi seçin (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>İzleri ayırmak i&ccedil;in kullanılan s&uuml;re. Girdi noktaları veya alanları arasında zaman diliminden daha uzun bir s&uuml;re bulunuyorsa, bunlar farklı izlere ayrılır.
+            </p>
+            <p>Bir zaman dilimi ve bir mesafe dilimi belirlerseniz, bir veya her iki koşul da sağlandığında par&ccedil;alar ayrılır. 
+            </p>
+            <p>İz alanının u&ccedil;ak kimliği olarak kullanıldığı havayolu u&ccedil;uşlarını g&ouml;steren nokta detaylarınızın olduğunu varsayın. Bu u&ccedil;ak, birden &ccedil;ok u&ccedil;uş yapabilir ve bu bir tek izde g&ouml;sterilebilir.  U&ccedil;uşlar arasında 1 saatlik bir boşluk olduğunu bildiğinizde, iz ayırıcınız olarak  <code>1 saat</code> değerini kullanarak, her u&ccedil;uşun kendi izine ayrılmasını sağlayabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>İzleri böl (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>İzleri &uuml;&ccedil; farklı y&ouml;ntem kullanarak b&ouml;lebilirsiniz. B&ouml;lme y&ouml;ntemlerinin hi&ccedil;birini, t&uuml;m&uuml;n&uuml; ya da bazılarını kullanabilirsiniz. 
+            </p>
+            <p>B&ouml;lme işlemi aşağıdaki şekillerde tamamlanabilir:
+                <ul>
+                    <li> <b>Girdiler arasındaki mesafeye g&ouml;re</b>&mdash;Girdi noktaları veya alanları arasında belirtilen mesafeden daha b&uuml;y&uuml;k bir mesafe bulunuyorsa, bunlar farklı izlere ayrılır. &Ouml;rneğin, 10 km&rsquo;lik bir mesafe belirlediyseniz, 10 kilometreden daha b&uuml;y&uuml;k sıralı noktalar ayrı izler olarak oluşturulur.
+                    </li>
+                    <li> <b>Girdiler arasındaki s&uuml;reye g&ouml;re</b>&mdash;Girdi noktaları veya alanları arasında zaman diliminden daha uzun bir s&uuml;re bulunuyorsa, bunlar farklı izlere ayrılır. &Ouml;rneğin, iz alanının u&ccedil;ak kimliği olarak kullanıldığı havayolu u&ccedil;uşlarını g&ouml;steren nokta detaylarınızın olduğunu varsayın. Bu u&ccedil;ak, birden &ccedil;ok u&ccedil;uş yapabilir ve bu bir tek izde g&ouml;sterilebilir.  U&ccedil;uşlar arasında 1 saatlik bir boşluk olduğunu bildiğinizde, iz ayırıcınız olarak <code>1 saat</code> değerini kullanarak, her u&ccedil;uşun kendi izine ayrılmasını sağlayabilirsiniz.
+                    </li>
+                    <li> <b>Tanımlanan zaman aralıklarında</b>&mdash;Bir zaman aralığı ve bir referans zaman tarafından belirtilen d&uuml;zenli aralıklarla b&ouml;ler. Bir referans zamanı ayarlamadığınızda, 1 Ocak 1970 kullanılacaktır. &Ouml;rneğin, 1 yılı referans zamanı 2 Şubat 1990 saat 10:00 olacak şekilde belirttiyseniz, izleri 2 Şubat 1990 saat 10:00, 2 Şubat 1991 saat 10:00&rsquo;da b&ouml;ler ve bir yıllık aralıklarla devam edersiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Birden fazla b&ouml;lme se&ccedil;eneği belirlediğinizde izler, bir veya her iki koşul da sağlandığında ayrılır. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>İzleri ayırmak için kullanılacak mesafeyi seçin (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>İzleri ayırmak i&ccedil;in kullanılan mesafe. Girdi noktaları veya alanları arasında mesafe diliminden daha geniş bir mesafe bulunuyorsa, bunlar farklı izlere ayrılır.
+            </p>
+            <p>Bir zaman dilimi ve bir mesafe dilimi belirlerseniz, bir veya her iki koşul da sağlandığında par&ccedil;alar ayrılır. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p> &Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Aşağıdakileri sayısal alanlarda hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdakileri dize alanlarında hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Sonuçların kaydedileceği bir ArcGIS Veri Deposu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

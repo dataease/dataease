@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>ลุ่มน้ำ</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="งานลุ่มน้ำ"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะกำหนดพื้นที่การไหลเหนือชุดของเซลล์ในแรสเตอร์
+    </p>
+    <p>ลุ่มน้ำคือพื้นที่ลาดเนินเขาที่ทำให้เกิดการไหลโดยเฉพาะของน้ำไปยังช่องทางออกทั่วไป เช่น ทางระบายที่กระจุกตัว ซึ่งอาจเป็นส่วนหนึ่งของลุ่มน้ำขนาดใหญ่กว่า และอาจประกอบด้วยลุ่มน้ำขนาดเล็ก ๆ ที่เรียกว่า ลุ่มน้ำย่อย
+    </p>
+    <p>ค่าของแต่ละลุ่มน้ำจะนำมาจากค่าของต้นทางของชั้นข้อมูลแรสเตอร์อินพุตหรือชั้นข้อมูลจุดเทของฟีเจอร์ เมื่อจุดเทคือชุดข้อมูลแรสเตอร์ ระบบจะใช้ค่าของเซลล์เป็นค่าเริ่มต้น เมื่อจุดเทคือชุดข้อมูลฟีเจอร์จุด ค่าจะมาจากฟิลด์เฉพาะ
+    </p>
+    <p>เครื่องมือลุ่มน้ำจะรองรับเฉพาะชั้นข้อมูลแรสเตอร์ทิศทางการไหลเข้า D8
+    </p>
+    <p>เมื่อระบุตำแหน่งจุดเทเข้าเป็นข้อมูลฟีเจอร์ ฟิลด์เริ่มต้นจะเป็นฟิลด์แรกที่ถูกต้องและนำมาใช้ได้ หากไม่มีฟิลด์ที่ใช้ได้อยู่เลย ฟิลด์ ObjectID (ตัวอย่างเช่น OID หรือ FID) จะเป็นฟิลด์เริ่มต้น
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>เลือกชั้นข้อมูลทิศทางการไหล</h2></div>
+        <hr/>
+        <div>
+            <p>แรสเตอร์อินพุตที่แสดงทิศทางการไหลออกของแต่ละเซลล์
+            </p>
+            <p>แรสเตอร์ทิศทางการไหลสามารถสร้างขึ้นได้โดยใช้เครื่องมือทิศทางการไหลหรืองาน FlowDirection ในบริการ RasterAnalysisTools ที่ทำงานได้โดยใช้ประเภททิศทางการไหลเริ่มต้นเป็น  <b>D8</b>
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>ระบุตำแหน่งจุดเทเข้า</h2></div>
+        <hr/>
+        <div>
+            <p>ตำแหน่งจุดเทเข้า
+            </p>
+            <p>สำหรับแรสเตอร์ ตำแหน่งนี้แทนเซลล์ที่อยู่เหนือพื้นที่การกระจายหรือพื้นที่เก็บกักน้ำที่จะถูกกำหนดขึ้น เซลล์ทั้งหมดที่ไม่ใช่ NoData จะถูกใช้เป็นเซลล์ต้นทาง สำหรับอินพุตจุด ส่วนนี้จะแทนตำแหน่งที่อยู่เหนือพื้นที่การกระจายหรือพื้นที่เก็บกักน้ำที่จะถูกกำหนดขึ้น
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>เลือกฟิลด์จุดเท</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์ที่ใช้เพื่อกำหนดค่าให้กับตำแหน่งของจุดเท
+            </p>
+            <p>หากชั้นข้อมูลจุดเทเข้าเป็นแรสเตอร์ ค่าจะถูกนำมาใช้ หากเป็นฟีเจอร์ ฟิลด์ตัวเลขจะถูกนำมาใช้ หากฟิลด์ประกอบด้วยค่าที่เป็นจุดลอย ค่าจะถูกแบ่งออกเป็นจำนวนเต็ม
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,19 @@
+.#{$theme-name} {
+  .dijitMenuItemRtl {
+    // Expander
+    .dijitMenuExpand {
+      &:before {
+        border-left: 0;
+        border-right: $caret-width-base dashed;
+      }
+    }
+  }
+  // Menu Bar
+  // --------------------------------------------------
+  .dijitMenuBarRtl {
+    .dijitMenuItem {
+      float: right;
+    }
+  }
+}
+

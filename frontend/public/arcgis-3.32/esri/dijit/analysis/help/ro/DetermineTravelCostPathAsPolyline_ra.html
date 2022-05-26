@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determine Travel Cost Path As Polyline</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Determine Travel Cost Path as Polyline tool illustration"></h2>
+        <hr/>
+    <p>Acest instrument calculează traseul cu polilinie cu cel mai mic cost dintre surse și destinațiile cunoscute.
+    </p>
+    <p>Example applications include the following:
+        <ul>
+            <li>Find the best route for a new road in terms of construction costs.
+                
+
+            </li>
+            <li>Identify the path to take from several suburban locations (sources) to the closest shopping mall (destination).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those locations in the input layers that are visible within the current map extent will be analyzed. If unchecked, all locations in both input layers will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Choose raster or feature source layer to determine paths from</h2></div>
+        <hr/>
+        <div>
+            <p>An image service or feature service that identifies the cells from which the least-cost path is determined to the least costly destination.
+            </p>
+            <p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Choose travel cost raster layer</h2></div>
+        <hr/>
+        <div>
+            <p>Un raster care definește impedanța sau costul deplasării planimetrice prin fiecare celulă.
+            </p>
+            <p>Valoarea din fiecare amplasare a celulei reprezintă distanța cost-pe-unitate pentru deplasarea prin celulă. Fiecare valoare de localizare a celulei este &icirc;nmulțită cu rezoluției celulei &icirc;n timp ce se compensează deplasarea pe diagonală pentru a obține costul total al deplasării prin celulă.
+            </p>
+            <p>Valorile rasterului de cost poate fi un număr &icirc;ntreg sau o virgulă mobilă, dar nu pot fi negative sau zero (nu puteți avea un cost negativ sau zero).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Input Destination Raster or Features</h2></div>
+        <hr/>
+        <div>
+            <p>An input that defines the destinations used to calculate the distance. The layer can be raster or feature.
+            </p>
+            <p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Result polyline layer name</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Choose type of paths to determine</h2></div>
+        <hr/>
+        <div>
+            <p>Defines the manner in which the values and zones on the input destination data will be interpreted in the cost path calculations.
+            </p>
+            <ul>
+                <li>Best Single&mdash;For all cells or locations on the input destination data, the least-cost path is derived from the location with the minimum of the least-cost paths to source location. Aceasta este acţiunea implicită
+                    
+
+                </li>
+                <li>To Each Cell&mdash;For each cell or location with valid values on the input destination data, a least-cost path is determined and saved on the output feature service. With this option, each cell of the input destination data is treated separately, and a least-cost path is determined for each from cell.
+                    
+
+                </li>
+                <li>To Each Zone&mdash;For each zone on the input destination data, a least-cost path is determined and saved on the output feature service. With this option, the least-cost path for each zone begins at the cell or location with the lowest cost distance weighting in the zone.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

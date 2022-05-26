@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Superposa les capes</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Superposa les capes"></h2>
+        <hr/>
+    <p>Superposa les capes combina dues o m&eacute;s capes en una de sola.  La superposici&oacute; equival a examinar una pila de mapes i crear un mapa &uacute;nic que contingui tota la informaci&oacute; que s'hagi trobat a la pila.    La superposici&oacute; &eacute;s molt m&eacute;s que una fusi&oacute; de les l&iacute;nies; tots els atributs de les entitats que formen part de la superposici&oacute; es traslladen fins al producte final. La superposici&oacute; s'utilitza per respondre una de les preguntes geogr&agrave;fiques m&eacute;s essencials: &quot;Qu&egrave; est&agrave; a sobre de qu&egrave;?&quot;. A continuaci&oacute; s'indiquen alguns exemples:
+        <ul>
+            <li>Quines parcel&middot;les estan dins de les planes d'inundaci&oacute; de 100 anys? (Dins &eacute;s nom&eacute;s una altra forma de dir a sobre de.)
+                  
+            </li>
+            <li>Quin &uacute;s del s&ograve;l est&agrave; a sobre de quin tipus de s&ograve;l?
+                 
+            </li>
+            <li>Quins pous estan dins de bases militars abandonades?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s se superposaran les entitats de les capes d'entrada i de superposici&oacute; que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, se superposaran totes les entitats de les capes d'entrada i de superposici&oacute;, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts, de l&iacute;nies o d'&agrave;rees que se superposar&agrave;.
+            </p>
+            <p class="OnlineOnly">A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu una capa d'an&agrave;lisi del Living Atlas</b> o <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. S'obrir&agrave; una galeria que cont&eacute; una col&middot;lecci&oacute; de capes que resulten &uacute;tils per a moltes an&agrave;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Trieu la capa de superposició</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que se superposar&agrave; a la capa d'entrada.  
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Trieu el mètode de superposició</h2></div>
+        <hr/>
+        <div>
+            <p>El m&egrave;tode de superposici&oacute; defineix com es combinen la capa d'entrada i la capa de superposici&oacute;.  
+
+                <ul>
+                    <li> <b>Interseca</b>: el resultat nom&eacute;s contindr&agrave; aquelles entitats o porcions d'entitats de la capa de superposici&oacute; que se superposin amb entitats de la capa d'entrada. Quan intersequeu entitats de l&iacute;nies o d'&agrave;rees, teniu l'opci&oacute; d'especificar el tipus d'entitats que voleu com a sortida.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punts amb punts
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Entrada de punts i punts">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punts i punts amb sortida de punts">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>L&iacute;nies amb l&iacute;nies 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Entrada de l&iacute;nies i l&iacute;nies">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="L&iacute;nies i l&iacute;nies amb sortida de l&iacute;nies ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>&Agrave;rees amb &agrave;rees
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Entrada d'&agrave;rees i &agrave;rees">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="&Agrave;rees i &agrave;rees amb sortida d'&agrave;rees">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Esborra</b>: el resultat contindr&agrave; entitats o porcions d'entitats de la capa de superposici&oacute; que no se superposin amb les &agrave;rees de la capa d'entrada.  La capa de superposici&oacute; pot contenir entitats d'&agrave;rees, de l&iacute;nies o de punts.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  Tindr&agrave; el mateix tipus d'entitats (&agrave;rees, l&iacute;nies o punts) que les capes d'entrada i de superposici&oacute;.  El nom per defecte es basa en el m&egrave;tode de superposici&oacute; i el nom de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

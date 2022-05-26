@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Calcular distancia</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calcular distancia"></h2>
+        <hr/>
+    <p>Esta herramienta calcula la distancia euclidiana, direcci&oacute;n y asignaci&oacute;n a partir de un solo origen o un conjunto de or&iacute;genes.
+    </p>
+    <p>Las aplicaciones de ejemplo dan respuesta a preguntas como las siguientes:
+
+        <ul>
+            <li>&iquest;Cu&aacute;l es la distancia a la poblaci&oacute;n m&aacute;s cercana?
+                
+
+            </li>
+            <li>&iquest;Cu&aacute;l es la distancia hasta la carretera m&aacute;s cercana?
+                
+
+            </li>
+            <li>&iquest;Cu&aacute;l es la distancia hasta la fuente de agua m&aacute;s cercana?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n aquellas entidades de la capa de entrada que est&eacute;n visibles en la extensi&oacute;n de mapa actual. Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de visualizaci&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Elegir la capa de ubicación de entidad o ráster respecto a la cual se calculará la distancia</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que define los or&iacute;genes respecto de los cuales se calcular&aacute; la distancia. La capa puede ser un servicio de im&aacute;genes o un servicio de entidades.
+            </p>
+            <p>En el caso de un servicio de im&aacute;genes, el tipo de entrada puede ser de tipo entero o de punto flotante.
+            </p>
+            <p>En el caso de un servicio de entidades, la entrada puede ser un punto, una l&iacute;nea o un pol&iacute;gono.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distancia máxima a calcular</h2></div>
+        <hr/>
+        <div>
+            <p>La distancia m&aacute;xima a calcular. Por ejemplo, si indica un valor de 10.000 metros, la distancia euclidiana se calcular&aacute; a partir de las ubicaciones de origen y hasta ese valor (distancia).
+            </p>
+            <p>Si no se proporciona ning&uacute;n valor, la distancia se calcular&aacute; hasta la extensi&oacute;n definida.
+            </p>
+            <p>Las unidades disponibles son: kil&oacute;metros, metros, millas y pies.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamaño de celda de salida</h2></div>
+        <hr/>
+        <div>
+            <p>El tama&ntilde;o de celda y las unidades para los r&aacute;steres de salida.
+            </p>
+            <p>Las unidades pueden estar en kil&oacute;metros, metros, millas o pies.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nombre de la capa de resultados de distancia</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nombre de la capa de resultados de dirección</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b>. Debe indicar un nombre que no exista a&uacute;n en <b>Mi contenido</b>.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nombre de la capa de resultados de asignación</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b>. Debe indicar un nombre que no exista a&uacute;n en <b>Mi contenido</b>.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Elegir campo de asignación</h2></div>
+        <hr/>
+        <div>
+            <p>Un campo de la capa de origen de entrada que contiene los valores que definen cada origen. Puede ser un campo de enteros o de cadenas de caracteres del dataset de origen.
+            </p>
+            <p>El valor predeterminado es  <i>Value</i>. Si se utiliza un servicio de entidades y no est&aacute; disponible ning&uacute;n campo <i>Value</i>, se utiliza el primer campo de entero o cadena de caracteres disponible. Si no existen campos v&aacute;lidos, se utilizar&aacute; el campo ObjectID (por ejemplo, OID o FID, dependiendo del tipo de entrada de entidad).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

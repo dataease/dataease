@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Add your GLSL snippets to this file. You should start from
+  importing your old GLSL files. For instance, if you have a
+  file such as myShader.vs.glsl you should create a new <snippet name="myShaderVS">
+  and then copy and paste the GLSL source as the content. You will then convert your
+  code to use the {@link esri/views/2d/engine/webgl/glShaderSnippets glShaderSnippets}
+  instance to access the GLSL code, instead of importing it directly with require("dojo/text!...").
+-->
+<snippets>
+
+  <snippet name="rgba2float"><![CDATA[
+    // TODO consider moving this snippet into a util.xml file
+
+    // Factors to convert rgba back to float
+    const vec4 rgba2float_factors = vec4(
+        255.0 / (256.0),
+        255.0 / (256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0 * 256.0)
+      );
+
+    float rgba2float(vec4 rgba) {
+      // Convert components from 0->1 back to 0->255 and then
+      // add the components together with their corresponding
+      // fixed point factors, i.e. (256^1, 256^2, 256^3, 256^4)
+      return dot(rgba, rgba2float_factors);
+    }
+  ]]></snippet>
+
+  <snippet name="iconVVUniformsVS">
+    <![CDATA[
+  #if defined(VV_COLOR) || defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE) || defined(VV_OPACITY) || defined(VV_ROTATION)
+    attribute vec4 a_vv;
+  #endif // VV_COLOR || VV_SIZE_MIN_MAX_VALUE || VV_SIZE_SCALE_STOPS || VV_SIZE_FIELD_STOPS || VV_SIZE_UNIT_VALUE || VV_OPACITY || VV_ROTATION
+
+  #ifdef VV_COLOR
+    uniform float u_vvColorValues[8];
+    uniform vec4 u_vvColors[8];
+  #endif // VV_COLOR
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    uniform vec4 u_vvSizeMinMaxValue;
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_SCALE_STOPS
+    uniform float u_vvSizeScaleStopsValue;
+  #endif // VV_SIZE_SCALE_STOPS
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    uniform float u_vvSizeFieldStopsValues[6];
+    uniform float u_vvSizeFieldStopsSizes[6];
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    uniform float u_vvSizeUnitValueWorldToPixelsRatio;
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    uniform float u_vvOpacityValues[8];
+    uniform float u_vvOpacities[8];
+  #endif // VV_OPACITY
+
+  #ifdef VV_ROTATION
+    uniform lowp float u_vvRotationType;
+  #endif // VV_ROTATION
+
+    ]]>
+  </snippet>
+
+  <snippet name="iconVVFunctions">
+    <![CDATA[
+    bool isNan(float val) {
+      return !( val < 0.0 || 0.0 < val || val == 0.0 );
+    }
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    float getVVMinMaxSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      // we need to multiply by 8 in order to translate to tile coordinates
+      float interpolationRatio = (sizeValue  - u_vvSizeMinMaxValue.x) / (u_vvSizeMinMaxValue.y - u_vvSizeMinMaxValue.x);
+      interpolationRatio = clamp(interpolationRatio, 0.0, 1.0);
+      return u_vvSizeMinMaxValue.z + interpolationRatio * (u_vvSizeMinMaxValue.w - u_vvSizeMinMaxValue.z);
+    }
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    const int VV_SIZE_N = 6;
+    float getVVStopsSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      if (sizeValue <= u_vvSizeFieldStopsValues[0]) {
+        return u_vvSizeFieldStopsSizes[0];
+      }
+
+      for (int i = 1; i < VV_SIZE_N; ++i) {
+        if (u_vvSizeFieldStopsValues[i] >= sizeValue) {
+          float f = (sizeValue - u_vvSizeFieldStopsValues[i-1]) / (u_vvSizeFieldStopsValues[i] - u_vvSizeFieldStopsValues[i-1]);
+          return mix(u_vvSizeFieldStopsSizes[i-1], u_vvSizeFieldStopsSizes[i], f);
+        }
+      }
+
+      return u_vvSizeFieldStopsSizes[VV_SIZE_N - 1];
+    }
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    float getVVUnitValue(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      return u_vvSizeUnitValueWorldToPixelsRatio * sizeValue;
+    }
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    const int VV_OPACITY_N = 8;
+    float getVVOpacity(float opacityValue) {
+      if (isNan(opacityValue)) {
+        return 1.0;
+      }
+
+      if (opacityValue <= u_vvOpacityValues[0]) {
+        return u_vvOpacities[0];
+      }
+
+      for (int i = 1; i < VV_OPACITY_N; ++i) {
+        if (u_vvOpacityValues[i] >= opacityValue) {
+          float f = (opacityValue - u_vvOpacityValues[i-1]) / (u_vvOpacityValues[i] - u_vvOpacityValues[i-1]);
+          return mix(u_vvOpacities[i-1], u_vvOpacities[i], f);
+        }
+      }
+
+      return u_vvOpacities[VV_OPACITY_N - 1];
+    }
+  #endif // VV_OPACITY
+
+  #ifdef VV_ROTATION
+    mat4 getVVRotation(float rotationValue) {
+      // YF TODO: if the symbol has rotation we need to combine the symbo's rotation with the VV one
+      if (isNan(rotationValue)) {
+        return mat4(1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1);
+      }
+
+      float rotation = rotationValue;
+      if (u_vvRotationType == 1.0) {
+        rotation = 90.0 - rotation;
+      }
+
+      float angle = C_DEG_TO_RAD * rotation;
+
+      float sinA = sin(angle);
+      float cosA = cos(angle);
+
+      return mat4(cosA, sinA, 0, 0,
+                  -sinA,  cosA, 0, 0,
+                  0,     0, 1, 0,
+                  0,     0, 0, 1);
+    }
+  #endif // VV_ROTATION
+
+  #ifdef VV_COLOR
+    const int VV_COLOR_N = 8;
+
+    vec4 getVVColor(float colorValue, vec4 fallback) {
+      if (isNan(colorValue)) {
+        return fallback;
+      }
+
+      if (colorValue <= u_vvColorValues[0]) {
+        return u_vvColors[0];
+      }
+
+      for (int i = 1; i < VV_COLOR_N; ++i) {
+        if (u_vvColorValues[i] >= colorValue) {
+          float f = (colorValue - u_vvColorValues[i-1]) / (u_vvColorValues[i] - u_vvColorValues[i-1]);
+          return mix(u_vvColors[i-1], u_vvColors[i], f);
+        }
+      }
+
+      return u_vvColors[VV_COLOR_N - 1];
+    }
+  #endif // VV_COLOR
+    ]]>
+  </snippet>
+
+
+  <snippet name="iconVS">
+  <![CDATA[
+    precision mediump float;
+
+    //const float C_256_TO_RAD = 3.14159265359 / 128.0;
+    const float C_DEG_TO_RAD = 3.14159265359 / 180.0;
+
+    // per quad (instance) attributes (20 bytes ==> equivalent of 5 bytes per vertex)
+    attribute vec2 a_pos;
+    attribute vec2 a_vertexOffset;
+    attribute vec4 a_vertexTex;
+
+    attribute vec4 a_id; // since we need to render the Id as a color we need to break it into RGBA components. so just like a color, the Id is normalized.
+    attribute vec4 a_color;
+    attribute vec4 a_outlineColor;
+    attribute vec4 a_sizeAndOutlineWidth;
+
+    // the relative transformation of a vertex given in tile coordinates to a relative normalized coordinate
+    // relative to the tile's upper left corner
+    // the extrusion vector.
+    uniform highp mat4 u_transformMatrix;
+    // the extrude matrix which is responsible for the 'anti-zoom' as well as the rotation
+    uniform highp mat4 u_extrudeMatrix;
+    // u_normalized_origin is the tile's upper left corner given in normalized coordinates
+    uniform highp vec2 u_normalized_origin;
+
+    // the size of the mosaic given in pixels
+    uniform vec2 u_mosaicSize;
+
+    // the opacity of the layer given by the painter
+    uniform mediump float u_opacity;
+
+    // the interpolated texture coordinate value to be used by the fragment shader in order to sample the sprite texture
+    varying mediump vec2 v_tex;
+    // the calculated transparency to be applied by the fragment shader. It is incorporating both the fade as well as the
+    // opacity of the layer given by the painter
+    varying lowp float v_transparency;
+    // the of the icon given in pixels
+    varying mediump vec2 v_size;
+
+    // icon color. If is a picture-marker it is used to tint the texture color
+    varying lowp vec4 v_color;
+
+ #ifdef SDF
+    varying lowp vec4 v_outlineColor;
+    varying mediump float v_outlineWidth;
+ #endif // SDF
+
+ #ifdef ID
+    varying highp vec4 v_id;
+ #endif // ID
+
+ #ifdef HEATMAP
+    attribute float a_heatmapWeight;
+    varying mediump float v_heatmapWeight;
+ #endif // HEATMAP
+
+    // import the VV inputs and functions (they are #ifdefed, so if the proper #define is not set it will end-up being a no-op)
+    $iconVVUniformsVS
+    $iconVVFunctions
+
+    void main()
+    {
+      vec2 a_offset = a_vertexOffset;
+      vec2 a_tex = a_vertexTex.xy;
+      vec2 a_size = a_sizeAndOutlineWidth.xy;
+
+      // default values (we need them for the variations to come)
+      float a_angle = 0.0;
+      float delta_z = 0.0;
+      float depth = 0.0;
+      v_transparency = 1.0;
+
+  #if defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+      // vv size override the original symbol's size
+      float h = getVVMinMaxSize(a_vv.x, a_size.y);
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_SCALE_STOPS
+      float h = u_vvSizeScaleStopsValue;
+  #endif // VV_SIZE_SCALE_STOPS
+
+  #ifdef VV_SIZE_FIELD_STOPS
+      float h = getVVStopsSize(a_vv.x, a_size.y);
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+      float h = getVVUnitValue(a_vv.x, a_size.y);
+  #endif // VV_SIZE_UNIT_VALUE
+
+      // make sure to preserve the aspect ratio of the symbol
+      vec2 size = vec2(h * a_size.x / a_size.y, h);
+      vec2 offset = a_offset * size / a_size;
+      v_size = size;
+  #else
+  #ifdef HEATMAP
+      // reconstruct the kernel size
+      a_size = 9.0 * a_size + 1.0;
+  #endif // HEATMAP
+
+      vec2 offset = a_offset;
+      v_size = a_size;
+  #endif // defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+  #ifdef SDF
+    offset *= 2.0;
+  #endif // SDF
+
+  #ifdef VV_ROTATION
+      gl_Position = vec4(u_normalized_origin, depth, 0.0) + u_transformMatrix * vec4(a_pos, 0.0, 1.0) + u_extrudeMatrix * getVVRotation(a_vv.w) * vec4(offset, delta_z, 0.0);
+  #else
+      gl_Position = vec4(u_normalized_origin, depth, 0.0) + u_transformMatrix * vec4(a_pos, 0.0, 1.0) + u_extrudeMatrix * vec4(offset, delta_z, 0.0);
+  #endif // VV_ROTATION
+
+  #ifdef VV_OPACITY
+      v_transparency = getVVOpacity(a_vv.z);
+  #else
+      v_transparency = u_opacity;
+  #endif // VV_OPACITY
+
+  #ifdef VV_COLOR
+      v_color = getVVColor(a_vv.y, a_color);
+  #else
+      v_color = a_color;
+  #endif // VV_COLOR
+
+      // output the texture coordinates and the transparency
+      v_tex = a_tex / u_mosaicSize;
+
+ #ifdef SDF
+      v_outlineColor = a_outlineColor;
+      v_outlineWidth = a_sizeAndOutlineWidth.z;
+ #endif // SDF
+
+ #ifdef ID
+      v_id = a_id;
+ #endif // ID
+
+ #ifdef HEATMAP
+    v_heatmapWeight = a_heatmapWeight;
+ #endif // HEATMAP
+    }
+  ]]>
+  </snippet>
+
+  <snippet name="iconFS">
+   <![CDATA[
+    precision mediump float;
+
+    uniform lowp sampler2D u_texture;
+
+    varying lowp vec2 v_tex;
+    varying lowp float v_transparency;
+    varying mediump vec2 v_size;
+    varying lowp vec4 v_color;
+
+ #ifdef SDF
+    varying lowp vec4 v_outlineColor;
+    varying mediump float v_outlineWidth;
+
+    // we need the conversion function from RGBA to float
+    $rgba2float
+ #endif // SDF
+
+ #ifdef ID
+    varying highp vec4 v_id;
+ #endif // ID
+
+ #ifdef HEATMAP
+    varying mediump float v_heatmapWeight;
+ #endif // HEATMAP
+
+    const float softEdgeRatio = 1.0; // use blur here if needed
+
+    void main()
+    {
+ #ifdef SDF
+      lowp vec4 fillPixelColor = v_color;
+
+      // calculate the distance from the edge [-0.5, 0.5]
+      float d = 0.5 - rgba2float(texture2D(u_texture, v_tex));
+
+      // the soft edge ratio is about 1.5 pixels allocated for the soft edge.
+      float size = max(v_size.x, v_size.y);
+      float dist = d * size * softEdgeRatio;
+
+      // set the fragment's transparency according to the distance from the edge
+      fillPixelColor *= clamp(0.5 - dist, 0.0, 1.0);
+
+      // count for the outline
+      // therefore tint the entire icon area.
+      if (v_outlineWidth > 0.25) {
+        lowp vec4 outlinePixelColor = v_outlineColor;
+
+        // outlines can't be larger than the size of the symbol
+        float clampedOutlineSize = min(v_outlineWidth, size);
+
+        outlinePixelColor *= clamp(0.5 - abs(dist) + clampedOutlineSize * 0.5, 0.0, 1.0);
+
+        // finally combine the outline and the fill colors (outline draws on top of fill)
+        gl_FragColor = v_transparency * ((1.0 - outlinePixelColor.a) * fillPixelColor + outlinePixelColor);
+      }
+      else {
+        gl_FragColor = v_transparency * fillPixelColor;
+      }
+ #else // not an SDF
+      lowp vec4 texColor = texture2D(u_texture, v_tex);
+
+ #ifdef HEATMAP
+      texColor.r *= v_heatmapWeight;
+ #endif // HEATMAP
+
+      gl_FragColor = v_transparency * texColor;
+ #endif // SDF
+
+ #ifdef HIGHLIGHT
+      gl_FragColor.a = step(1.0 / 255.0, gl_FragColor.a);
+ #endif // HIGHLIGHT
+
+ #ifdef ID
+      if (gl_FragColor.a < 1.0 / 255.0) {
+        discard;
+      }
+      gl_FragColor = v_id;
+ #endif // ID
+    }
+   ]]>
+  </snippet>
+</snippets>
+

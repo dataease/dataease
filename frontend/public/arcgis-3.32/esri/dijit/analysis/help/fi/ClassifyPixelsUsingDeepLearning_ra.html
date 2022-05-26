@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Luokittele pikselit syväoppimisen avulla</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Luokittele pikselit syv&auml;oppimisen avulla"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu suorittaa koulutetun syv&auml;oppimismallin l&auml;ht&ouml;aineiston rasterille ja tuottaa luokitellun rasterin, jossa jokaiselle kelvolliselle pikselille on m&auml;&auml;ritetty luokkatunnusteksti.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; oleva rasterialue analysoidaan. Jos toimintoa ei ole valittu, koko rasteri analysoidaan, vaikka se olisi nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Valitse pikselien luokittelussa käytettävä kuva</h2></div>
+        <hr/>
+        <div>
+            <p>Luokiteltava l&auml;ht&ouml;aineiston kuva.
+            </p>
+            <p>Se voi olla kuvapalvelun URL-osoite, rasterikarttataso tai kuvapalvelukarttataso.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Valitse pikselien luokittelussa käytettävä syväoppimismalli</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston syv&auml;oppimisen paketin ( <code>.dlpk</code>) kohde.
+            </p>
+            <p>Syv&auml;oppimisen paketti koostuu Esrin mallim&auml;&auml;rityksen JSON-tiedostosta ( <code>.emd</code>), syv&auml;oppimisen binaarimuotoisesta mallitiedosta ja valinnaisesti k&auml;ytett&auml;v&auml;st&auml; Python-rasterifunktiosta.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Määritä syväoppimismallin argumentit</h2></div>
+        <hr/>
+        <div>
+            <p>Funktion argumentit on m&auml;&auml;ritetty l&auml;ht&ouml;aineiston mallin viittamassa Python-rasterifunktion luokassa. T&auml;ss&auml; voit luetella syv&auml;oppimisen lis&auml;parametrit ja -argumentit kokeiluja ja parannustoimia varten, esimerkiksi herkkyyden s&auml;&auml;t&auml;misess&auml; k&auml;ytett&auml;v&auml;n luotettavuuden raja-arvon.
+            </p>
+            <p>Ty&ouml;kalu t&auml;ytt&auml;&auml; argumenttien nimet lukemalla rasterianalyysipalvelimen Python-moduulia.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

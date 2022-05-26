@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extraer datos</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extraer datos"></h2>
+        <hr/>
+    <p>Con esta herramienta, puede seleccionar y descargar los datos de un &aacute;rea de inter&eacute;s concreta. Las capas que selecciones se agregar&aacute;n a un archivo ZIP, CSV o KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Capas para extraer</h2></div>
+        <hr/>
+        <div>
+            <p>Estas son las capas de la tabla de contenido de las que puedes extraer entidades. Las capas que se activan se extraen y se incluyen en el archivo ZIP o CSV resultante.
+            </p>
+            <p>Para que una capa aparezca en la lista de capas para extraer, hay que ser el propietario de los datos o el propietario de los mismos debe habilitar la exportaci&oacute;n de los datos. Para habilitar la exportaci&oacute;n de datos de tu propiedad: 
+                <ul>
+                    <li>Abre la descripci&oacute;n del elemento de los datos.
+                    </li>
+                    <li>Haga clic en la pesta&ntilde;a  <b>Configuraci&oacute;n</b>.
+                    </li>
+                    <li>Despl&aacute;cese hacia abajo hasta la secci&oacute;n  <b>Exportar datos</b>.
+                    </li>
+                    <li>Active la opci&oacute;n  <b>Permitir que otros usuarios exporten a distintos formatos</b>.  Cuando haya finalizado, haga clic en <b>Guardar</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si tu capa de an&aacute;lisis contiene adjuntos, tenga en cuenta que estos solo se extraer&aacute;n si el formato de datos de salida es una geodatabase de archivos y  <b>Recortar entidades</b> est&aacute; desactivado.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Área de estudio</h2></div>
+        <hr/>
+        <div>
+            <p>&Aacute;rea que define las entidades que se incluir&aacute;n en el archivo ZIP o CSV de salida. Puedes elegir entre las opciones siguientes:
+                <ul>
+                    <li>La extensi&oacute;n visible actual del mapa ( <b>Igual que la visualizaci&oacute;n</b>).
+                    </li>
+                    <li>Una de las capas de la tabla de contenido. Si la capa seleccionada contiene entidades de l&iacute;neas o puntos, la extensi&oacute;n de la capa se utilizar&aacute; como &aacute;rea de estudio.
+                    </li>
+                    <li>Dibuja un &aacute;rea para definir el &aacute;rea del estudio.
+                    </li>
+                </ul>
+                 Se extraer&aacute;n todas las entidades que est&eacute;n totalmente dentro de la extensi&oacute;n del mapa. Para las entidades que cruzan el l&iacute;mite de la extensi&oacute;n del mapa o se intersecan con &eacute;l, pero no est&aacute;n completamente contenidas en la extensi&oacute;n, tienes dos opciones:
+                <ul>
+                    <li> <b>Seleccionar entidades</b>: se extraer&aacute;n las entidades completas que cruzan el l&iacute;mite del &aacute;rea de estudio.
+                    </li>
+                    <li> <b>Recortar entidades</b>: solo se extraer&aacute;n las partes de las entidades que est&eacute;n contenidas en el &aacute;rea de estudio.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Formato de datos de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Formato de los datos que se extraer&aacute;n. Al exportar entidades de l&iacute;nea o de &aacute;rea a archivos CSV, solo se extraen atributos no espaciales. Al exportar entidades de puntos, se extraen tanto los atributos espaciales como los no espaciales.  
+            </p>
+            <p>Los datos extra&iacute;dos utilizar&aacute;n la proyecci&oacute;n Web Mercator 1984.  En los archivos CSV, los campos  <i>Lat</i> y <i>Long</i> se incorporar&aacute;n a los datos con coordenadas en Web Mercator 1984.
+            </p> 
+            <p>Son compatibles los siguientes formatos de salida:
+                <ul>
+                    <li>Valores separados por comas (CSV):  <code>.csv</code> o <code>.zip</code>
+                    </li>
+                    <li>Geodatabase de archivos:  <code>.zip</code>
+                    </li>
+                    <li>Lenguaje de marcado keyhole (KML):  <code>.kmz</code> o <code>.zip</code>
+                    </li>
+                    <li>Shapefile:  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nombre de archivo de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre del elemento que se agregar&aacute; a  <b>Mi contenido</b>.  El nombre del elemento se basa en el <b>formato de datos de salida</b>.     Si el elemento ya existe, se te pedir&aacute; que indiques otro nombre.
+            </p>
+            <p>En el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

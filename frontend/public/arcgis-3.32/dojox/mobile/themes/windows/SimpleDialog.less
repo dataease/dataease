@@ -1,0 +1,27 @@
+@import "variables.less";
+@import "../common/SimpleDialog.less";
+
+.mblSimpleDialog {
+	position: fixed;
+	top: 0px !important;
+	-ms-touch-action: none;
+
+	& .mblButton {
+		width: 100%;
+		max-width: 46%;
+
+		&:nth-of-type(odd) {
+			float: left;
+		}
+
+		&:nth-of-type(even) {
+			float: right;
+		}
+	}
+}
+
+.mblSimpleDialogCover {
+	position: fixed;
+	top: 0px !important;
+	-ms-touch-action: none;
+}

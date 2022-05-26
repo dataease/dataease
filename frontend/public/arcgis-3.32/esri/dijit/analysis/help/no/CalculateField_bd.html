@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn felt</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Beregn felt"></h2>
+        <hr/>
+    <p> Dette verkt&oslash;yet fungerer med et inndatalag og beregner verdier for et nytt eller eksisterende felt. Bygg et Arcade-uttrykk for &aring; beregne verdiene som skal brukes i geoobjektene. Hvis dataene er tidsaktiverte og av tidstypen umiddelbart, kan du velge &aring; bygge uttrykk som er sporingsf&oslash;lsomme.
+    </p>
+    <p>La oss for eksempel si at du vil endre et eksisterende felt som heter  <i>TotalSales</i>. Du vil at feltet skal representeres av summen av det totale salget i 2016 og 2017. Ved &aring; bruke disse feltene i uttrykket, beregner du feltverdien som <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>For &aring; bruke et annet eksempel, anta at du har GPS-m&aring;linger som registrerer posisjonen, tidene, buss-ID-ene og hastighetene til bussene i en by. Vi vil opprette et nytt felt som heter  <i>SpeedFrom3</i>, og som finner gjennomsnittet av hastigheten til de tre sist registrerte GPS-m&aring;lingene for hvert geoobjekt. For denne beregningen vil vi bruke en sporingsf&oslash;lsom beregning, der sporet er en buss angitt av buss-ID-en. Beregningen for &aring; fastsette den gjennomsnittlige hastigheten for de forrige 3 tidsstegene og gjeldende tidssteg er <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg et lag du vil beregne feltverdier for</h2></div>
+        <hr/>
+        <div>
+            <p>Punktene, linjene, polygonene eller tabellen det skal beregnes feltverdier for.  
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Beregn feltverdier for feltet</h2></div>
+        <hr/>
+        <div>
+            <p>Det nye eller eksisterende feltet det skal beregnes verdier for og datatypen i dette feltet. Hvis du beregner verdier i et felt som allerede finnes, trenger du ikke matche datatypen. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Bygg et uttrykk for å beregne feltverdiene</h2></div>
+        <hr/>
+        <div>
+            <p>Legg til et uttrykk ved &aring; bruke Expression Builder til &aring; beregne feltverdier. 
+            </p>
+            <p>La oss for eksempel si at du vil legge til verdiene for et felt som heter  <i>income</i> og <i>bonus</i>. Det gj&oslash;r du ved &aring; legge til uttrykket <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Uttrykket er sporingsfølsomt</h2></div>
+        <hr/>
+        <div>
+            <p>Angi om uttrykket er sporingsf&oslash;lsomt. Et sporingsf&oslash;lsomt uttrykk vil inkludere formatering som       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Sporingsf&oslash;lsomme uttrykk krever felt til &aring; identifisere individuelle spor. Spor kan best&aring; av punkter, linjer, polygoner eller tabeller og krever bare at inndataene har en spor-ID og at dataene er tidsaktivert av tidstypen umiddelbart.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyser data med tidsintervaller</h2></div>
+        <hr/>
+        <div>
+            <p>Angi om du vil beregne verdier for sporene dine ved hjelp av tidsintervaller som segmenterer inndataene for analyse. Hvis du bruker tidsintervaller, m&aring; du angi tidsintervallet du vil bruke, og eventuelt ogs&aring; referansetidspunktet. Hvis du ikke angir et referansetidspunkt, brukes 1.&nbsp;januar&nbsp;1970. 
+            </p>
+            <p>Hvis du for eksempel setter tidsgrensen til 1&nbsp;dag som starter kl. 09:00 1.&nbsp;januar&nbsp;1990, trunkeres hvert spor kl. 09:00 for hver dag og analyseres innenfor det segmentet. 
+            </p>
+            <p>Tidsintervaller er en rask m&aring;te &aring; akselerere tidsberegning p&aring;, ettersom det raskt oppretter mindre spor til analyse. Hvis inndeling etter et repeterende tidsintervall gir mening i analysen din, anbefales det for behandling av stordata.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

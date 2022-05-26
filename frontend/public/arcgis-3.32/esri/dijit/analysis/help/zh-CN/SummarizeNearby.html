@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>邻近汇总</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="邻近汇总"></h2>
+        <hr/>
+    <p>此工具用于在第一个输入图层中查找位于距选定要素指定距离内的要素并进行汇总。可以按直线距离或使用所选出行模式测量距离。出行模式选项包括：行驶距离、行驶时间、货运距离、货运时间、步行距离或步行时间。然后，计算邻近要素的统计数据。例如
+        <ul>
+            <li>计算在建议的新商店位置五分钟车程内的总人口数。
+            </li>
+            <li>计算在建议的新商店位置的一英里行驶距离内的高速公路匝道数，以便评估商店的可达性。
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围内可见的输入图层和待汇总图层中的要素。如果未选中，则会对输入图层和待汇总图层内的所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>选择将要测量与待汇总图层中要素之间距离的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将用于作为起始位置汇总邻近要素的点图层、线图层或面图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+            <p>该工具支持此图层中最多包含 1,000 个要素。
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>选择汇总图层</h2></div>
+        <hr/>
+        <div>
+            <p>将汇总此图层中与上述指定图层中的要素相距指定距离的要素。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>使用以下方法汇总邻近要素</h2></div>
+        <hr/>
+        <div>
+            <p> 您可以定义要使用的距离测量方式：直线距离或所选出行模式。行驶模式仅在第一个输入图层（自其测量距离的图层）包含点时启用。可用的出行模式由您的组织管理员决定。使用某一个出行模式时，将沿着道路或人行道进行测量，并且支持适用的规则，例如单行道和违章转弯等。 <b>行驶时间</b>、 <b>农村行驶时间</b>和 <b>货运时间</b>支持您选择基于实时流量或典型流量的行驶速度。实时速度通过当前的传感器读数进行收集，典型速度通过计算历史平均值得出。
+            </p>
+            <p>您可以输入多个距离。汇总处于您所输入距离内（包含该距离）的要素。
+            </p>
+            <p>如果选中 <b>返回边界区域</b>复选框，将返回由指定距离测量结果定义的区域的结果图层。结果图层将包括所有请求的汇总信息。例如，在汇总邻近点时，如果使用 5 英里的 <b>线距离</b>，结果将包含输入要素周围以 5 英里为半径的区域以及所有汇总信息，例如点计数和所有添加的统计数据。如果未选中，生成的图层将返回第一个输入图层的相同要素以及所有请求的汇总信息。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>从图层添加统计数据以进行汇总</h2></div>
+        <hr/>
+        <div>
+            <p>您还可以计算邻近点的任何数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>点计数</b>复选框，则会计算邻近点的总数。另外，您可以计算邻近点的数值字段的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>从图层添加统计数据以进行汇总</h2></div>
+        <hr/>
+        <div>
+            <p>您还可以计算邻近线的任何数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>总长度</b>复选框，则会计算邻近线的总长度。另外，您可以计算邻近线的数值字段的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>从图层添加统计数据以进行汇总</h2></div>
+        <hr/>
+        <div>
+            <p>您还可以计算邻近面的任何数值属性的统计数据。
+            </p>
+            <p>如果选中 <b>总面积</b>复选框，则会计算邻近要素的总面积。另外，您可以计算邻近要素的数值字段的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差
+                </li>
+            </ul>
+            
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>从图层添加统计数据以进行汇总</h2></div>
+        <hr/>
+        <div>
+            <p>选择要汇总的图层后，您还可以计算所有附近点、线或面的数值属性的统计数据。
+            </p>
+            <ul>
+                <li> <b>总和</b> - 指定字段的合计值
+                </li>
+                <li> <b>平均值</b> - 指定字段的平均值
+                </li>
+                <li> <b>最小值</b> - 指定字段中的最小值
+                </li>
+                <li> <b>最大值</b> - 指定字段中的最大值
+                </li>
+                <li> <b>标准 差</b> - 指定字段中值的标准差
+                </li>
+            </ul>
+            
+            <p>根据要汇总的要素类型，您可以计算附近点的总数、附近线的总长度或附近面要素的总面积。
+            </p>
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>选择作为分组依据的字段</h2></div>
+        <hr/>
+        <div>
+            <p> 这是邻近要素的一个属性，可用于分别计算每个唯一属性值的统计数据。例如，假设您的第一个输入图层（自其测量距离的图层）包含待售的空闲地块，并且邻近要素为建筑物覆盖区。建筑物覆盖区的一个属性是 <i>UseType</i>，它包含 RETAIL、RESIDENTIAL、MANUFACTURING、PUBLIC 等值。为了突出每个空闲宗地附近的建筑物混合使用情况，您可以使用 <i>UseType</i> 作为按属性进行分组的条件，计算空闲宗地两公里范围内每一种建筑物使用类型的总面积。每个组的统计数据以及邻近要素计数将显示在结果图层的弹出窗口中。
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>添加少数、多数</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解指定距离或时间内各组中的哪些属性值为少数（所占比例最小）或多数（所占比例最大），请选择 <b>添加少数、多数</b>。选择 <b>添加少数、多数</b>后，两个新字段将添加到结果图层。如果同时选择 <b>添加百分比</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+            <ul>
+                <li>如果对邻近点进行汇总，则少数值和多数值将根据指定距离或时间内的点数进行计算。
+                </li>
+                <li>如果对邻近线进行汇总，则少数值和多数值将根据指定距离或时间内的线长度进行计算。
+                </li>
+                <li>如果对邻近面进行汇总，则少数值和多数值将根据指定距离或时间内的面积进行计算。
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>添加百分比</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解每组内每个属性值所占的百分比，可选择 <b>添加百分比</b>。向结果表添加一个新字段，其中包含每组内每个属性值所占的百分比。如果也选中了 <b>添加少数、多数</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

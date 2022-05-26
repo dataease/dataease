@@ -1,0 +1,29 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'distInfo',minOccurs:0,label:'${i18nArcGIS.distInfo.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.distInfo.section.transfer}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'distTranOps',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.distInfo.distTranOps.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/distribution/TransferElements"></div>
+        </div>
+      </div>
+    
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.distInfo.section.format}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'distFormat',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.distInfo.distFormat.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/distribution/FormatElements"></div>
+        </div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.distInfo.section.distributor}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/distribution/Distributor"></div>
+      </div>
+      
+    </div>
+  </div>
+</div>

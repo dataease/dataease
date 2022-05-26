@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Wyznacz sieć optymalnego kosztu podróży</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Rysunek pokazujący narzędzie Wyznacz sieć optymalnego kosztu podr&oacute;ży"></h2>
+        <hr/>
+    <p>To narzędzie oblicza sieć optymalnego kosztu na podstawie zestawu region&oacute;w wejściowych.
+    </p>
+    <p>Jednym z przykład&oacute;w zastosowania tego narzędzia jest znajdowanie najlepszych sieci dla pojazd&oacute;w ratunkowych.
+    </p>
+    <p>Jeśli zaznaczona jest opcja  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko obiekty warstwy wejściowej widoczne w bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w warstwie wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Wybierz raster lub warstwę lokalizacji obiektów w celu wyznaczenia tras podróży między</h2></div>
+        <hr/>
+        <div>
+            <p>Regiony wejściowe, kt&oacute;re mają zostać połączone siecią o najniższym koszcie.
+            </p>
+            <p>Regiony można definiować za pomocą usługi rastrowej lub usługi obiektowej.
+            </p>
+            <p>W przypadku użycia usługi rastrowej regiony są definiowane przez grupy przylegających (sąsiadujących) kom&oacute;rek o tej samej wartości. Każdy region musi mieć unikalny numer. Kom&oacute;rki niebędące częścią żadnego regionu muszą mieć wartość Brak danych. Raster musi być typu całkowitoliczbowego, a wartości mogą być dodatnie lub ujemne.
+            </p>
+            <p>W przypadku usługi obiektowej danymi wejściowymi mogą być punkty, linie lub poligony.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Wybierz warstwę rastrową kosztu podróży</h2></div>
+        <hr/>
+        <div>
+            <p>Raster definiujący impedancję (koszt) ruchu planimetrycznego między poszczeg&oacute;lnymi kom&oacute;rkami.
+            </p>
+            <p>Wartość w każdej lokalizacji kom&oacute;rki reprezentuje odległość kosztu na jednostkę na potrzeby poruszania się przez tę kom&oacute;rkę. Wartość każdej lokalizacji kom&oacute;rki jest mnożona przez rozdzielczość kom&oacute;rki, a jednocześnie następuje kompensacja ruchu ukośnego, aby uzyskać łączny koszt poruszania się przez kom&oacute;rkę.
+            </p>
+            <p>Wartości rastra koszt&oacute;w mogą być całkowitoliczbowe lub zmiennoprzecinkowe, ale nie mogą być ujemne ani r&oacute;wne zero (koszt nie może być wartością ujemną ani mieć wartość zerową).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nazwa warstwy wynikowej polilinii optymalnych ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nazwa warstwy wynikowej polilinii sąsiadujących ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>עיגון כתובות מיקומים מטבלה</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="עיגון כתובות מיקומים מטבלה"></h2>
+        <hr/>
+    <p>עיגון כתובות ממיר כתובות לקואורדינטות. כלי זה ממיר כתובות מטבלת שיתוף קובץ Big Data לשכבת ישויות עם קואורדינטות כעמודות נוספות.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>בחר טבלת קלט</h2></div>
+        <hr/>
+        <div>
+            <p>טבלת הקלט עם הכתובות לעיגון. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>בחר מגדיר עיגון כתובות</h2></div>
+        <hr/>
+        <div>
+            <p>בחר שירות מגדיר עיגון כתובות לביצוע עיגון כתובות לפיו. אם שירות מגדיר עיגון הכתובות הרצוי לא מופיע בתפריט הנפתח, פנה למנהל המערכת שלך כדי להוסיף את מדריך עיגון הכתובות לצורך עיגון כתובות באצווה.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>מדינה</h2></div>
+        <hr/>
+        <div>
+            <p>אם כל הכתובות שלך הן מארץ אחת, בחר ארץ זו כדי להבטיח דיוק מרבי של התוצאות. אחרת, השאר פרמטר זה ריק.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>בחר שדות נתונים</h2></div>
+        <hr/>
+        <div>
+            <p>שירות מגדיר עיגון הכתובות מצפה לשדות מסוימים בנתונים, כגון כתובת, עיר, מדינה ומיקוד. התאם את שדות הנתונים בקובץ הקלט או בטבלה לשדות שלהם מצפה מגדיר עיגון הכתובות, בעזרת התיבות הנפתחות. ככל שתמפה יותר שדות, כך התוצאות יהיו מדויקות יותר. אם טבלת הקלט מכילה את כל הנתונים בעמודה אחת, בחר  <b>שדה בודד</b> ובחר שדה נתונים מהתפריט הנפתח. אחרת, בחר באפשרות <b>שדות מרובים</b> ומפֵּה את השדות המתאימים במגדיר עיגון הכתובות לעמודות השדות המרובים בטבלה שלך.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>לכל מיקום</h2></div>
+        <hr/>
+        <div>
+            <p>כלול שדות נוספים שהחזיר שירות המיקום. אם אפשרות זו מסומנת, כל השדות שנוצרו על ידי מגדיר עיגון הכתובות יוחזרו. אם אפשרות זו לא מסומנת, נתוני הקלט יוחזרו עם קואורדינטות של עיגון כתובות. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם תוצאת הפלט</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

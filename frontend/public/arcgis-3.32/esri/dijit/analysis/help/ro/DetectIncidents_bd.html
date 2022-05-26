@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detectare incidente</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detecţie incidente"></h2>
+        <hr/>
+    <p> Acest instrument funcţionează cu un strat tematic legat de timp cu puncte, linii, suprafeţe sau tabele care reprezintă instantaneu timpul. Folosind obiectele spaţiale ordonate secvenţial, numite trasee, acest instrument stabileşte care obiecte spaţiale sunt incidente care prezintă interes. Incidentele sunt stabilite de condiţiile specificate.
+    </p>
+    <p>Mai &icirc;nt&acirc;i, acest instrument stabileşte care obiecte spaţiale aparţin unei căi folosind unul sau mai multe c&acirc;mpuri. Folosind timpul pentru fiecare obiect spaţial, traseele sunt ordonate secvenţial şi este aplicată condiţia de incident. Obiectele spaţiale care &icirc;ndeplinesc condiţia de incident sunt marcate ca incidente. Opţional, puteţi aplica o condiţie pentru &icirc;ncheierea incidentului; c&acirc;nd condiţia de &icirc;ncheiere este adevărată, obiectul spaţial nu mai este un incident.  Rezultatele sunt calculate pentru obiectele spaţiale originale&mdash;coloanele noi reprezent&acirc;nd numele incidentului&mdash;şi indică obiectul spaţial care &icirc;ndeplineşte condiţia de incident. Puteţi afişa toate obiectele spaţiale originale sau numai pe acelea care sunt incidente.
+    </p>
+    <p>De exemplu, să presupunem că aveţi măsurători GPS pentru uragane la fiecare 10 minute. Fiecare măsurătoare GPS &icirc;nregistrează numele, locaţia, ora &icirc;nregistrării şi viteza v&acirc;ntului pentru uragan. Folosind aceste c&acirc;mpuri, puteţi crea un incident &icirc;n care oricare măsurătoare a vitezei v&acirc;ntului care depăşeşte  208 km/h este un incident numit  <code>Catastrofal (Catastrophic)</code>. Dacă nu se setează condiţia de &icirc;ncheiere, incidentul se &icirc;ncheie dacă obiectul spaţial nu mai &icirc;ndeplineşte condiţia de declanşare (viteza v&acirc;ntului scade la mai puţin de 208).
+    </p>
+    <p>Pentru un alt exemplu, să presupunem că monitorizaţi concentraţiile unei substanţe chimice din sistemul local de alimentare cu apă folosind un c&acirc;mp numit  <code>Nivel de contaminare</code>. Ştiţi că nivelurile recomandate sunt mai mici de 0,01 mg/L şi că nivelurile de pericol sunt mai mari de 0,03 mg/L. Pentru a detecta incidentele &icirc;n care o valoare mai mare de 0,03mg/L reprezintă un incident şi răm&acirc;ne astfel p&acirc;nă c&acirc;nd nivelul de contaminare revine la normal, creaţi un incident folosind condiţia de declanşare <code>Nivel de contaminare &gt; 0.03</code> şi condiţia de &icirc;ncheiere <code>Nivel de contaminare  &lt; 0.01</code>. Acest lucru va marca orice secvenţă &icirc;n care valorile depăşesc 0,03mg/L, p&acirc;nă c&acirc;nd aceste revin la o valoare mai mică de 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeți stratul tematic din care să detectați incidentele</h2></div>
+        <hr/>
+        <div>
+            <p>Punctele, liniile, suprafeţele sau tabelul folosite pentru a găsi incidente. Stratul tematic de intrare trebuie activat de timp cu obiecte spaţiale care reprezintă un instantaneu de timp şi, de asemenea, trebuie să aibă unul sau mai multe c&acirc;mpuri care să poată fi folosite pentru identificarea traseelor.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selectați unul sau mai multe câmpuri din care să identificați traseele</h2></div>
+        <hr/>
+        <div>
+            <p>C&acirc;mpurile care reprezintă identificatorul traseului. Puteţi folosi unul cau mai multe c&acirc;mpuri pentru a reprezenta valorile unice ale traseelor.
+            </p>
+            <p>De exemplu, dacă aţi reconstrui traseele uraganelor, aţi putea utiliza numele uraganului drept c&acirc;mp de traseu.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Construiți o condiție a expresiei pentru a semnifica începutul unui incident</h2></div>
+        <hr/>
+        <div>
+            <p>Adăugaţi o condiţie folosind instrumentul de construcţie a expresiilor pentru a stabili ce este un incident. Dacă este adevărată condiţia specificată, obiectul spaţial este un incident. Dacă nu se specifică o condiţie de &icirc;ncheiere, incidentul se &icirc;ncheie c&acirc;nd nu mai este adevărată condiţia de declanşare.
+            </p>
+            <p>De exemplu, să presupunem că doriţi să fiţi alertat c&acirc;nd suma c&acirc;mpurilor   <code>concentraţie_1</code> şi <code>concentraţie_2</code> este mai mare dec&acirc;t <code>concentraţie_3</code>.   Pentru acest lucru, aplicaţi condiţia <code>($feature[&quot;concentraţie_1&quot;] +  $feature[&quot;concentraţie_2&quot;]) &gt; $feature[&quot;concentraţie_3&quot;])</code>.
+            </p>
+            <p>Dacă sunteți interesați de schimbarea concentrațiilor &icirc;n timp și doriți să fiți alertați atunci c&acirc;nd  <code>concentration_1</code> actuală este mai mare dec&acirc;t cele două măsurători anterioare ale <code>concentration_2</code> puteți folosi o expresie ca <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Creaţi o condiţie de expresie pentru a indica sfârșitul unui incident (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p>Opţional, adăugaţi o condiţie folosind instrumentul de construcţie a expresiilor pentru a stabili finalul unui incident. Dacă este adevărată condiţia de &icirc;ncheiere specificată, obiectul spaţial nu mai este un incident. Dacă nu se specifică o condiţie de &icirc;ncheiere, incidentul se &icirc;ncheie c&acirc;nd nu mai este adevărată condiţia de declanşare.    
+            </p>
+            <p>De exemplu, să presupunem că doriţi să fiţi alertat c&acirc;nd suma c&acirc;mpurilor   <code>concentraţie_1</code> şi <code>concentraţie_2</code> este mai mare dec&acirc;t <code>concentraţie_3</code> şi doriţi ca incidentul să se &icirc;ncheie dacă valoarea pentru <code>concentraţie_4</code> este mai mică dec&acirc;t <code>concentraţie_1</code>. Pentru acest lucru, aplicaţi condiţia de declanşare <code>($feature[&quot;concentraţie_1&quot;] +  $feature[&quot;concentraţie_2&quot;]) &gt; ($join[&quot;venit&quot;] * .20)</code> şi condiţia de &icirc;ncheiere <code>($feature[&quot;concentraţie_4&quot;] &lt; $feature[&quot;concentraţie_1&quot;])</code>.
+            </p>
+            <p>Dacă doriți &icirc;ncheierea unui incident atunci c&acirc;nd media valorii  <code>concentration_1</code> actuale și a celor patru măsurători anterioare este mai mare de prima măsurătoare, puteți folosi o expresie ca <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Arată</h2></div>
+        <hr/>
+        <div>
+            <p>Toate modurile de afişare anexează c&acirc;mpurile la obiectele spaţiale originale. Sunt disponibile două moduri pentru a stabili obiectele spaţiale afişate:
+                <ul>
+                    <li> <b>Toate obiectele spaţiale</b>&mdash;Aceasta este setarea implicită. Sunt afişate toate obiectele spaţiale din intrare.
+                    </li>
+                    <li> <b>Numai incidentele</b>&mdash;Metoda afişează numai obiectele spaţiale care sunt incidente. Nu sunt afişate obiectele spaţiale care nu sunt incidente.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizați date cu intervale de timp (opțional)</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați dacă doriți să detectați incidente folosind intervale de timp care segmentează obiectele spațiale de intrare pentru analiză. Dacă utilizați intervale de timp, trebuie să setați intervalul de timp pe care doriți să-l utilizați și, opțional, să setați momentul de referință. Dacă nu setați un moment de referință, va fi utilizată data de 1 ianuarie 1970. 
+            </p>
+            <p>De exemplu, dacă setați limita de timp la 1 zi, &icirc;ncep&acirc;nd cu ora 9:00 AM de pe 1 ianuarie 1990, fiecare traseu va fi trunchiat la ora 9:00 AM pentru fiecare zi și analizat &icirc;n cadrul acelui segment. 
+            </p>
+            <p>Utilizarea intervalelor de timp este o metodă rapidă de accelerare a timpului de calcul, deoarece se creează rapid trasee mai mici pentru analiză. Dacă &icirc;mpărțirea printr-un interval de timp recurent are sens pentru analiza dvs., este recomandată &icirc;n prelucrarea volumelor mari de date.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

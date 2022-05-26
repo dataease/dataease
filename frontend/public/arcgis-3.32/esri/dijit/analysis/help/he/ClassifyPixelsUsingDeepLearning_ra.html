@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>סווג פיקסלים באמצעות למידה לעומק</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="סווג פיקסלים באמצעות למידה לעומק"></h2>
+        <hr/>
+    <p>כלי זה מריץ מודל למידה לעומק מאומן על רסטר קלט כדי להפיק רסטר מסווג, ולכל פיקסל תקף יש תווית מחלקה משויכת.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק אזור הרסטר שנראה בתיחום המפה הנוכחי ינותחו. אם האפשרות לא מסומנת, כל הרסטר ינותח, גם אם הוא מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>בחר תמונה לסיווג פיקסלים</h2></div>
+        <hr/>
+        <div>
+            <p>הקלט לסיווג.
+            </p>
+            <p>זה יכול להיות URL של שירות ישויות, שכבת רסטר או שכבת שירות תמונה.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>בחר מודל של למידה לעומק (deep learning) המשמש לסיווג פיקסלים</h2></div>
+        <hr/>
+        <div>
+            <p>פרט חבילת למידה עמוקה (Deep Learning) ( <code>.dlpk</code>) של הקלט.
+            </p>
+            <p>חבילת הלמידה העמוקה מורכבת מקובץ JSON של הגדרת מודל Esri ( <code>.emd</code>), קובץ המודל הבינארי של למידה עמוקה, וכאופציה, פונקציית Python של הרסטר לשימוש.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>ציין ארגומנטים למודל של למידה לעומק</h2></div>
+        <hr/>
+        <div>
+            <p>הארגומנטים של הפונקציה מוגדרים בייחוס קבוצת פונקציית הרסטר Python על ידי מודל הקלט. זה המקום שבו אתה מפרט פרמטרים וארגומנטים נוספים של למידה עמוקה עבור ניסויים ועידונים, כגון סף בר-סמך עבור התאמת הרגישות.
+            </p>
+            <p>השמות של הארגומנטים מאוכלסים על ידי הכלי מתוך קריאת מודול Python בשרת ניתוח הרסטר.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

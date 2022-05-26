@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>基于森林的分类与回归</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="基于森林的分类与回归工作流示意图"></h2>
+        <hr/>
+    <p>使用 Leo Breiman 随机森林算法（一种监督式机器学习方法）的改编版本创建模型并生成预测。可以针对分类变量（分类）和连续变量（回归）执行预测。解释变量是训练要素属性表中的字段。可以运行该工具生成模型以评估性能，或者生成模型并预测其他数据集的结果。
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>分析类型</h2></div>
+        <hr/>
+        <div>
+            <p>指定工具的操作模式。可以运行该工具训练模型以仅评估性能，或者训练模型并对要素进行预测。预测类型如下：
+                <ul>
+                    <li> <b>训练模型以评估模型性能</b> - 将对模型进行训练并拟合输入数据。在新的数据集上生成预测之前，可以使用此选项评估模型的精度。此选项的输出将是您的拟合训练数据的要素服务、模型诊断和变量重要性的可选表格。
+                    </li>
+                    <li> <b>训练模型并预测值</b> - 将针对要素生成预测或分类。必须为训练要素和要预测的要素提供解释变量。此选项的输出将是您的预测值的要素服务、模型诊断和变量重要性的可选表格。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>训练模型以评估模型性能</h2></div>
+        <hr/>
+        <div>
+            <p>如果您想要拟合模型并调查拟合，请使用此模式。
+            </p>
+            <p>使用此选项，将使用输入图层对模型进行训练。在新的数据集上生成预测之前，可以使用此选项评估模型的精度。此选项将在消息窗口中输出模型诊断，并将模型应用于训练数据。
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>训练模型并预测值</h2></div>
+        <hr/>
+        <div>
+            <p>如果您想要拟合模型，并将模型应用于数据集以生成预测，请使用此模式。
+            </p>
+            <p>将针对要素生成预测或分类。此选项的输出将是要素服务、模型诊断和变量重要性的可选表格。
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>选择训练图层</h2></div>
+        <hr/>
+        <div>
+            <p>包含要预测的变量和将用于生成预测的字段的要素图层。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>选择一个图层来预测值</h2></div>
+        <hr/>
+        <div>
+            <p>表示将进行预测的位置的要素图层。此要素图层还必须包含作为字段提供的任何解释变量，这些字段对应于训练要素中使用的字段。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>选择要预测的字段</h2></div>
+        <hr/>
+        <div>
+            <p>训练要素中的字段，其中包含要用于训练模型的值。该字段包含将用于在未知位置进行预测的变量的已知（训练）值。如果值的类型为分类（例如，Maple、Pine、Oak），请选中 <b>分类</b>复选框。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>选择一个或多个解释变量</h2></div>
+        <hr/>
+        <div>
+            <p>表示解释变量（字段）的一个或多个字段，可帮助预测要预测的变量的值或类别。对于任何表示类或类别（例如土地覆被或存在/不存在）的变量，请使用分类复选框。对于任何表示类或类别（例如土地覆被或存在/不存在）的变量，请指定变量为 true；如果变量为连续变量，请指定变量为 false。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>树数</h2></div>
+        <hr/>
+        <div>
+            <p>要在模型中创建的树的数量。增大树数通常将产生更加精确的模型预测，但是将增加模型计算的时间。默认树数为 100。
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>最小叶子大小</h2></div>
+        <hr/>
+        <div>
+            <p>保留叶子（即未进一步进行分割的树上的终端节点）所需的最小观测值数。回归的默认最小值为 5，分类的默认值为 1。对于非常大的数据，增大这些数值将减少工具的运行时间。
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>树最大深度</h2></div>
+        <hr/>
+        <div>
+            <p>对树进行的最大分割数。如果使用较大的最大深度，则将创建更多分割，这可能会增大过度拟合模型的可能性。默认值由数据驱动，并且取决于所创建的树数以及所包含的变量数。
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>每棵树的可用数据(%)</h2></div>
+        <hr/>
+        <div>
+            <p>指定用于每棵决策树的训练图层中要素的百分比。默认值为 100% 的数据。将根据指定数据的三分之二随机获取每棵树的样本。
+            </p>
+            <p>可以使用可用训练数据的随机样本或子集（大约三分之二）来创建森林中的每棵决策树。对每棵决策树使用较低百分比的输入数据可以提高针对大型数据集的工具速度。
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>随机采样变量数</h2></div>
+        <hr/>
+        <div>
+            <p>指定用于创建每棵决策树的解释变量数。
+            </p>
+            <p>可以使用指定解释变量的随机子集创建森林中的每棵决策树。增大每棵决策树中使用的变量数将增大过度拟合模型的可能性，尤其是存在一个或多个主导变量时更是如此。常用方法是：如果要预测的变量为数值，则使用解释变量总数的平方根；如果要预测的变量为分类变量，则将解释变量的总数除以 3。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>选择解释字段的匹配方式</h2></div>
+        <hr/>
+        <div>
+            <p>训练图层中的对应变量与预测图层中变量的匹配方式。表中将仅包含训练中使用的变量。
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>验证的运行次数</h2></div>
+        <hr/>
+        <div>
+            <p>指定要保留为验证测试数据集的训练图层中要素的百分比（介于 0% 和 50% 之间）。将在没有此随机数据子集的情况下对模型进行训练，并将这些要素的观测值与预测值进行比较。默认值为 10%。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将要求您提供其他名称。
+            </p>
+            <p>返回的结果将取决于分析类型。如果您使用训练以评估模型拟合，则结果中将包含拟合至模型的训练数据图层及评估模型拟合的结果信息。如果您使用训练并预测，则结果中将包含拟合至模型的训练数据图层、预测结果图层及评估模型拟合的结果信息。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉框，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

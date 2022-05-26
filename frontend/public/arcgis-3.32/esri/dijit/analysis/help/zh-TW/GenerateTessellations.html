@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>產生鑲嵌</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="產生鑲嵌"></h2>
+        <hr/>
+    <p>此工具會根據指定的形狀和大小，在研究區域上方產生鑲嵌。
+    </p>
+    <p>已針對此工具停用 <b>使用當前地圖範圍</b> 核取方塊，因為用來產生鑲嵌的範圍是由 <b>定義範圍</b>參數所控制。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>選擇形狀</h2></div>
+        <hr/>
+        <div>
+            <p>您要建立之鑲嵌的形狀或幾何。可用的形狀為 <code>正方形</code>、 <code>六邊形</code>、 <code>橫切六邊形</code>、 <code>三角形</code>或 <code>菱形</code>。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>定義研究區域</h2></div>
+        <hr/>
+        <div>
+            <p>鑲嵌將涵蓋的範圍或區域。可決定範圍，方法是使用目前的地圖範圍、現有圖層的範圍，或藉由互動方式繪製區域，以便將其作為範圍。
+            </p>
+            <p>如果已選擇圖徵圖層來決定範圍，將啟用「僅維持相交鑲嵌」選項。如果勾選，則只會在導出的鑲嵌圖層中，產生與指定範圍圖層中的圖層相交，或覆蓋該圖層的鑲嵌。
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>取消勾選
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="涵蓋完整範圍">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>勾選
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="圖徵涵蓋範圍">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>定義容器大小，方法是指定</h2></div>
+        <hr/>
+        <div>
+            <p>每個儲存格的大小。可藉由指定平方單位，或使用下列測量（其中 d = 距離）來計算距離，藉此決定儲存格大小： 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>正方形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="正方形鑲嵌">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>六角形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="六邊形鑲嵌">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>橫切六邊形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="橫切六邊形鑲嵌">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>三角形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="三角形鑲嵌">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>菱形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="菱形鑲嵌">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。如果該名稱的圖層已存在，則系統將要求您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculate Density</h2><p/>
+        <h2><img src="./images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Calculate Density"></h2>
+        <hr/>
+    <p>The Calculate Density tool creates a density map from point features by spreading known quantities of some phenomenon (represented as attributes of the points) across the map. The result is a layer of areas classified from least dense to most dense.   
+
+    </p>
+    <p>For point input, each point should represent the location of some event or incident, and the result layer represents a count of the incident per unit area.  A higher density value in a new location means that there are more points near that location.  In many cases, the result layer can be interpreted as a risk surface for future events. For example, if the input points represent locations of lightning strikes, the result layer can be interpreted as a risk surface for future lightning strikes.
+    </p>
+    <p>Other use cases of this tool include the following:
+        <ul>
+            <li>Creating crime-density maps to help police departments properly allocate resources to high crime areas.
+            </li>
+            <li>Calculating densities of hospitals within a county.  The result layer will show areas with high and low accessibility to hospitals, and this information can be used to decide where new hospitals should be built.
+            </li>
+            <li>Identifying areas that are at high risk of forest fires based on historical locations of forest fires.
+            </li>
+            <li>Locating communities that are far from major highways in order to plan where new roads should be constructed.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose a point layer from which to calculate density</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer on which the density will be calculated.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Choose one or more fields to calculate density on (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Provide  one or more fields specifying the number of incidents at each location.  For example, if you have points that represent cities, you 
+can use a field representing the population of the city as the count field, and the resulting population density layer will calculate larger population densities near cities with larger populations.
+            </p>
+            <p>The density for the count of points will always be calculated.   If no fields are selected, each location will be assumed to represent a single count.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Choose a bin shape</h2></div>
+        <hr/>
+        <div>
+            <p>The shape of bins that points are aggregated into and used for the density calculation.
+            </p>
+            <p>Analysis using square or hexagon bins requires a projected coordinate system. You can set the processing coordinate system in Analysis Environments. If your processing coordinate system is not set to a projected coordinate system, you will be prompted to set it when you run analysis .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Select the bin size for aggregation</h2></div>
+        <hr/>
+        <div>
+            <p>The size of the bins generated. For a square bin, the size represents the height of the square. For hexagon, the size represents the height of the hexagon (from parallel sides).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Select the density weighting to apply</h2></div>
+        <hr/>
+        <div>
+            <p>The type of weighting applied to the density calculation. There are two options:
+                <ul>
+                    <li> <b>Uniform</b>&mdash;This calculates a magnitude per area.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;Applies a kernel function to fit a smooth tapered surface to each point.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Select the neighborhood size</h2></div>
+        <hr/>
+        <div>
+            <p>The size of the area used to calculate the density. The neighborhood size must be larger than the bin size.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Choose the output units for density</h2></div>
+        <hr/>
+        <div>
+            <p>The desired output units of the density values. By default, this is set to square kilometers or square miles based on the default units specified in your profile. If density values are very small, you can increase the size of the area units (for example, square meters to square kilometers) to return larger values. The values only scale the result.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Calculate density using time steps (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>If time is enabled on the input point layer and it is of type instant, you can  analyze using time stepping.  There are three parameters you can set when you use time:
+                <ul>
+                    <li> <b>Time step interval</b>
+                    </li>
+                    <li> <b>How often to repeat the time step</b>
+                    </li>
+                    <li> <b>Time to align the time steps to</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>For example, if you have data that represents a year in time and you want to analyze it using weekly steps, set  <b>Time step interval</b> to <code>1 week</code>. 
+            </p>
+            <p>For example, if you have data that represents a year in time and you want to analyze it using the first week of the month, set  <b>Time step interval</b> to <code>1 week</code>, <b>How often to repeat the time step</b> to <code>1 month</code>, and <b>Time to align the time steps to</b> to <code>January 1, at 12:00 am</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Time step interval</h2></div>
+        <hr/>
+        <div>
+            <p>The interval of time used for generating time steps.  <b>Time step interval</b> can be used alone or with the <b>How often to repeat the time step</b> or <b>Time to align the time steps to</b> parameter.
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>How often to repeat the time step</h2></div>
+        <hr/>
+        <div>
+            <p> The step used for calculating a time step. <b>How often to repeat the time step</b> can be used alone, with <b>Time step interval</b>, with <b>Reference Time</b>, or with both <b>Time step interval</b> and <b>Time to align the time steps to</b>.
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Time to align time steps to</h2></div>
+        <hr/>
+        <div>
+            <p>The date and time used to align time slicing. Time stepping will start at and continue backward from this time. If no reference time is selected, time stepping will align to January 1st, 1970. 
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>This is a temporary parameter for prerelease  to set the processing spatial reference. Many big data tools require that a projected coordinate system is used as the spatial reference for processing. By default, the tool will use the input coordinate system but will fail if it's a geographic coordinate system. To set a projected coordinate system, enter the WKID. For example,  <b>Web Mercator</b> would be entered as <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choose data store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics results are stored to an data store and exposed as a feature layer in   Portal for ArcGIS. In most cases, results should be stored to the spatiotemporal data store and this is the default. In some cases, saving results to the  relational data store is a good option. The following are reasons why you may want to store results to the relational data store: 
+                <ul>
+                    <li>You can use results in portal-to-portal collaboration.
+                    </li>
+                    <li>You can enable sync capabilities with your results.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You should not use the relational data store if you expect your GeoAnalytics results to increase and need to take advantage of the spatiotemporal big data store's capabilities to handle large amounts of data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

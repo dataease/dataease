@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>ポイントの内挿 (Interpolate Points)</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="[ポイントの内挿 (Interpolate Points)] ツール"></h2>
+        <hr/>
+    <p>このツールを使用すると、一連のポイントからの計測値に基づいて、新しい場所の値を推定できます。このツールは、各ポイントの値を含むポイント データを取得して、推定値のラスターを返します。
+    </p>
+    <p>このツールは、次のような場合にも使用されます。
+
+        <ul>
+            <li>大気環境管理区域には、汚染度を計測するセンサーがあります。[ポイントの内挿] を使用すると、汚染リスクがあるがセンサーのない場所 (たとえば、学校や病院) の汚染度を推定できます。
+                
+
+            </li>
+            <li>個々の植物から収集したサンプルに基づいて、作物の重金属濃度を推定します。
+                
+
+            </li>
+            <li>土壌養分濃度 (窒素、リン、カリウムなど) や他の指標 (導電率など) を推定して、作物収穫量との関係を研究し、田畑の各場所の肥料の正確な量を規定します。
+                
+
+            </li>
+            <li>気象学的な応用として、温度、降水量、関連変数 (酸性雨など) の推定などに利用できます。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>既知の値が入力されたポイント レイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>値が計測されたポイントを含むポイント レイヤー。
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>内挿するフィールドを選択</h2></div>
+        <hr/>
+        <div>
+            <p>内挿する値を含むフィールドを選択します。このフィールドの値は数値でなければなりません。
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>最適化の対象</h2></div>
+        <hr/>
+        <div>
+            <p>速度と精度の優先度を選択します。
+            </p>
+            <p>推定の精度を上げると、計算時間が長くなります。このパラメーターを指定すると、計算の速度、結果の精度、またはこれら 2 つのバランスを最適化するために [ポイントの内挿] の他の複数のパラメーターのデフォルト値が変更されます。デフォルトでは、バランスの最適化が実行されます。
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>データを正規分布に変換</h2></div>
+        <hr/>
+        <div>
+            <p>データを正規分布に変換するかどうかを選択します。
+            </p>
+            <p>内挿は、データが正規 (釣鐘型) 分布に準拠するための最も正確な方法です。データが正規分布されない場合は、変換を実行する必要があります。
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>ローカル モデルのサイズ</h2></div>
+        <hr/>
+        <div>
+            <p>最終的な推定マップを作成するために組み合わせて使用されるローカル内挿モデルを構築することで、[ポイントの内挿] の正常な動作が確保されます。このパラメーターでは、各ローカル モデルに含めるポイントの数を制御します。値を小さくすると、よりローカルな結果が生成され、小規模なエフェクトを示すことができますが、計算がやや不安定になる場合があります。値を大きくすると、安定性は増しますが、一部のローカル エフェクトが失われる場合があります。
+            </p>
+            <p>このパラメーターの値の範囲は 30 ～ 500、標準値は 50 ～ 200 です。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>近傍数</h2></div>
+        <hr/>
+        <div>
+            <p>推定の計算は、近傍ポイントに基づいて行われます。このパラメーターでは、計算に使用されるポイントの数を制御します。通常、近傍の数を多くすると、生成される結果の精度は高くなりますが、計算にかかる時間が長くなります。
+            </p>
+            <p>このパラメーターの値の範囲は 1 ～ 64、標準値は 5 ～ 15 です。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>出力セル サイズ</h2></div>
+        <hr/>
+        <div>
+            <p>出力ラスターのセル サイズと単位。
+            </p>
+            <p>指定可能な単位は [フィート]、[マイル]、[メートル]、および [キロメートル] です。
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>推定エラーの出力</h2></div>
+        <hr/>
+        <div>
+            <p>推定値に関する標準誤差のラスターを作成するかどうかを選択します。
+            </p>
+            <p>標準誤差は、推定値の信頼性に関する情報を提供するため、有益です。おおよそ、実値は、95 パーセントの確率で推定値の 2 つの 標準誤差内に収まります。たとえば、新しい場所の推定値が 50、標準誤差が 5 であるとします。これは、このツールでは、該当する場所の実値が 50 であることが最良の推定になりますが、最小値として 40 または最大値として 60 の可能性もあることを意味します。妥当な値の範囲を計算するには、標準誤差に 2 を掛けて求められた値を推定値に足すと範囲の上限が算出され、推定値から引くと範囲の下限が算出されます。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

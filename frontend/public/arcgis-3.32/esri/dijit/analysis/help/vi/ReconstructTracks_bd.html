@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tái tạo Đường đi</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="T&aacute;i tạo Đường đi"></h2>
+        <hr/>
+    <p> C&ocirc;ng cụ n&agrave;y l&agrave;m việc với lớp đối tượng điểm hoặc v&ugrave;ng được k&iacute;ch hoạt th&ocirc;ng tin thời gian để thể hiện <code>thời điểm hiện tại</code>. Trước ti&ecirc;n, c&ocirc;ng cụ x&aacute;c định những đối tượng thuộc một đường đi bằng c&aacute;ch sử dụng một bộ nhận diện. Bằng c&aacute;ch sử dụng th&ocirc;ng tin thời gian tại mỗi vị tr&iacute;, c&aacute;c đường đi sẽ được sắp xếp theo tr&igrave;nh tự v&agrave; chuyển đổi th&agrave;nh một đường hoặc khu vực thể hiện đường đi của chuyển động theo thời gian. Đầu v&agrave;o c&oacute; thể được tạo v&ugrave;ng đệm bởi một trường, điều n&agrave;y sẽ tạo ra một khu vực ở mỗi vị tr&iacute;. C&aacute;c điểm đệm n&agrave;y hoặc khu vực đầu v&agrave;o, sau đ&oacute; sẽ được kết nối theo tr&igrave;nh tự để tạo ra đường đi theo dạng khu vực trong đ&oacute; chiều rộng thể hiện thuộc t&iacute;nh li&ecirc;n quan. Kết quả đường đi c&oacute; thời gian bắt đầu v&agrave; kết th&uacute;c, thể hiện đối tượng đầu v&agrave; cuối theo thời gian trong đường đi cho trước. Khi đ&atilde; tạo ra c&aacute;c đường đi, c&aacute;c số liệu thống k&ecirc; về đối tượng đầu v&agrave;o sẽ được t&iacute;nh to&aacute;n v&agrave; g&aacute;n cho đường đi đầu ra. Số liệu thống k&ecirc; cơ bản nhất l&agrave; số điểm trong một v&ugrave;ng, nhưng bạn cũng c&oacute; thể t&iacute;nh to&aacute;n những số liệu thống k&ecirc; kh&aacute;c.
+    </p>
+    <p>C&aacute;c đối tượng trong lớp k&iacute;ch hoạt thời gian c&oacute; thể được thể hiện theo một trong hai c&aacute;ch sau:
+        <ul>
+            <li>Tức th&igrave;&mdash;Một thời điểm
+            </li>
+            <li>Khoảng&mdash;Thời gian bắt đầu v&agrave; kết th&uacute;c
+            </li>
+        </ul>
+        
+    </p>
+    <p>V&iacute; dụ, giả sử bạn c&oacute; c&aacute;c gi&aacute; trị đo GPS của cơn b&atilde;o sau mỗi 10 ph&uacute;t. Mỗi gi&aacute; trị đo GPS ghi lại t&ecirc;n, vị tr&iacute; v&agrave; thời gian ghi cơn b&atilde;o cũng như tốc độ gi&oacute;. Với th&ocirc;ng tin n&agrave;y, bạn c&oacute; thể tạo đường đi cho mỗi cơn b&atilde;o bằng c&aacute;ch sử dụng t&ecirc;n để nhận dạng đường đi v&agrave; c&aacute;c đường đi cho mỗi cơn b&atilde;o sẽ được tạo. B&ecirc;n cạnh đ&oacute;, bạn c&oacute; thể t&iacute;nh to&aacute;n c&aacute;c số liệu thống k&ecirc; như tốc độ gi&oacute; trung b&igrave;nh, lớn nhất v&agrave; nhỏ nhất của mỗi cơn b&atilde;o, cũng như c&aacute;c gi&aacute; trị đo trong mỗi đường đi.
+    </p>
+    <p>Bằng c&aacute;ch sử dụng c&ugrave;ng v&iacute; dụ n&agrave;y, bạn c&oacute; thể tạo v&ugrave;ng đệm cho đường đi của m&igrave;nh theo tốc độ gi&oacute;. Điều n&agrave;y c&oacute; thể tạo v&ugrave;ng đệm cho mỗi gi&aacute; trị đo bằng trường tốc độ gi&oacute; tại điểm đ&oacute; v&agrave; kết nối c&aacute;c v&ugrave;ng được tạo v&ugrave;ng đệm lại với nhau, tạo ra một khu vực đại diện cho đường đi, cũng như những thay đổi về tốc độ gi&oacute; khi cơn b&atilde;o tiếp tục.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn đối tượng để tái tạo đường đi từ đó</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm hoặc khu vực sẽ được t&aacute;i tạo lại th&agrave;nh dạng đường. Lớp đầu v&agrave;o phải được bật th&ocirc;ng tin thời gian với c&aacute;c đối tượng thể hiện thời gian hiện thời. Lớp dữ liệu phải thuộc hệ tọa độ tham chiếu hoặc tham chiếu kh&ocirc;ng gian xử l&yacute; phải được thiết lập đến một hệ tọa độ tham chiếu th&ocirc;ng qua t&ugrave;y chọn  <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b> nếu v&ugrave;ng đệm được &aacute;p dụng.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Chọn một hoặc nhiều trường để xác định đường đi</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c trường thể hiện m&atilde; của đường đi. 
+            </p>
+            <p>V&iacute; dụ: nếu bạn đang t&aacute;i tạo đường đi của cơn b&atilde;o, bạn c&oacute; thể sử dụng t&ecirc;n cơn b&atilde;o l&agrave;m trường đường đi.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Chọn phương pháp được sử dụng để tái tạo đường đi</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p sử dụng để li&ecirc;n kết c&aacute;c đường đi v&agrave; tạo v&ugrave;ng đệm (nếu c&oacute;). Phương ph&aacute;p  <b>Phẳng</b> c&oacute; thể t&iacute;nh to&aacute;n kết quả nhanh hơn, nhưng sẽ kh&ocirc;ng bẻ đường đi xung quanh đường đổi ng&agrave;y quốc tế hoặc t&iacute;nh đến h&igrave;nh dạng thực tế của tr&aacute;i đất khi tạo v&ugrave;ng đệm. Phương ph&aacute;p <b>Trắc địa</b> sẽ bẻ đường đi xung quanh đường đổi ng&agrave;y nếu cần thiết v&agrave; &aacute;p dụng v&ugrave;ng đệm trắc địa để t&iacute;nh đến h&igrave;nh dạng tr&aacute;i đất.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Xây dựng biểu thức để tạo vùng đệm cho đối tượng đầu vào bằng (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Phương tr&igrave;nh được sử dụng để t&iacute;nh to&aacute;n khoảng c&aacute;ch v&ugrave;ng đệm xung quanh c&aacute;c đối tượng đầu v&agrave;o. C&oacute; thể tạo phương tr&igrave;nh n&agrave;y bằng c&aacute;ch sử dụng m&aacute;y t&iacute;nh to&aacute;n v&ugrave;ng đệm v&agrave; c&aacute;c ph&eacute;p to&aacute;n cơ bản như cộng, trừ, nh&acirc;n v&agrave; chia được hỗ trợ. C&aacute;c gi&aacute; trị được t&iacute;nh to&aacute;n bằng c&aacute;ch sử dụng hệ tọa độ ph&acirc;n t&iacute;ch. Lớp dữ liệu phải thuộc hệ tọa độ tham chiếu hoặc tham chiếu kh&ocirc;ng gian xử l&yacute; phải được thiết lập đến một hệ tọa độ tham chiếu th&ocirc;ng qua t&ugrave;y chọn  <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b> nếu v&ugrave;ng đệm được &aacute;p dụng.
+            </p>
+            <p>Một phương tr&igrave;nh như  <code>$feature.windspeed * 1000</code> c&oacute; thể &aacute;p dụng v&ugrave;ng đệm 1.000 nh&acirc;n với trường <i>windspeed</i>. Bạn c&oacute; thể sử dụng nhiều trường trong m&aacute;y t&iacute;nh v&ugrave;ng đệm.
+            </p>
+            <p> Bạn cũng c&oacute; thể x&aacute;c định một biểu thức nhận biết đường đi. V&iacute; dụ: bạn c&oacute; thể t&iacute;nh tổng gi&aacute; trị trường <i>windspeed</i> cho đối tượng hiện tại v&agrave; hai đối tượng trước đ&oacute; bằng một phương tr&igrave;nh dạng <code>$track.field(windspeed).history(-3)</code>. Tại mỗi vị tr&iacute;, tổng <i>windspeed</i> hiện tại, v&agrave; hai gi&aacute; trị đo trước đ&oacute; c&oacute; thể được t&iacute;nh v&agrave; tạo v&ugrave;ng đệm.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Chọn thời gian để phân chia đường đi bằng (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Thời gian được sử dụng để ph&acirc;n t&aacute;ch đường đi. Nếu c&aacute;c điểm hoặc v&ugrave;ng đầu v&agrave;o c&oacute; thời gian giữa ch&uacute;ng d&agrave;i hơn phần chia thời gian, ch&uacute;ng sẽ được ph&acirc;n t&aacute;ch th&agrave;nh c&aacute;c đường đi kh&aacute;c nhau.
+            </p>
+            <p>Nếu bạn chỉ định ra một thời gian v&agrave; một khoảng c&aacute;ch d&ugrave;ng để ph&acirc;n t&aacute;ch đường đi, th&igrave; đường đi sẽ được ph&acirc;n t&aacute;ch khi đ&aacute;p ứng một hoặc cả hai điều kiện tr&ecirc;n. 
+            </p>
+            <p>H&atilde;y tưởng tượng rằng bạn c&oacute; c&aacute;c đối tượng điểm đại diện cho c&aacute;c chuyến bay của m&aacute;y bay, trong đ&oacute; trường đường đi l&agrave; ID m&aacute;y bay. M&aacute;y bay n&agrave;y c&oacute; thể bay nhiều h&agrave;nh tr&igrave;nh v&agrave; cần được thể hiện dưới dạng một đường đi. Nếu bạn biết m&aacute;y bay c&oacute; một giờ nghỉ giữa c&aacute;c chuyến bay, bạn c&oacute; thể sử dụng  <code>1 giờ</code> l&agrave;m khoảng thời gian ph&acirc;n t&aacute;ch đường đi v&agrave; mỗi chuyến bay được chia th&agrave;nh đường đi ri&ecirc;ng của n&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Phân tách đường đi (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể ph&acirc;n t&aacute;ch đường đi bằng ba phương ph&aacute;p kh&aacute;c nhau. Sử dụng kết hợp của kh&ocirc;ng, tất cả hoặc một số phương ph&aacute;p ph&acirc;n t&aacute;ch. 
+            </p>
+            <p>C&oacute; thể ho&agrave;n th&agrave;nh việc ph&acirc;n t&aacute;ch theo c&aacute;c c&aacute;ch sau:
+                <ul>
+                    <li> <b>Dựa tr&ecirc;n khoảng c&aacute;ch giữa c&aacute;c đầu v&agrave;o</b>&mdash;Nếu c&aacute;c điểm hoặc v&ugrave;ng đầu v&agrave;o c&oacute; khoảng c&aacute;ch lớn hơn giữa ch&uacute;ng so với khoảng c&aacute;ch được chỉ định th&igrave; ch&uacute;ng sẽ được ph&acirc;n t&aacute;ch th&agrave;nh c&aacute;c đường đi kh&aacute;c nhau. V&iacute; dụ: nếu bạn đ&atilde; chỉ định khoảng c&aacute;ch 10 km, c&aacute;c điểm li&ecirc;n tiếp lớn hơn 10 km sẽ l&agrave; c&aacute;c đường đi ri&ecirc;ng.
+                    </li>
+                    <li> <b>Dựa tr&ecirc;n thời gian giữa c&aacute;c đầu v&agrave;o</b>&mdash;Nếu c&aacute;c điểm hoặc v&ugrave;ng đầu v&agrave;o c&oacute; thời gian d&agrave;i hơn giữa ch&uacute;ng so với phần chia thời gian th&igrave; ch&uacute;ng sẽ được ph&acirc;n t&aacute;ch th&agrave;nh c&aacute;c đường đi kh&aacute;c nhau. V&iacute; dụ: nếu bạn c&oacute; c&aacute;c đối tượng điểm đại diện cho c&aacute;c chuyến bay của m&aacute;y bay, trong đ&oacute; trường đường đi l&agrave; ID m&aacute;y bay. M&aacute;y bay n&agrave;y c&oacute; thể bay nhiều h&agrave;nh tr&igrave;nh v&agrave; cần được thể hiện dưới dạng một đường đi. Nếu bạn biết m&aacute;y bay c&oacute; một giờ nghỉ giữa c&aacute;c chuyến bay, bạn c&oacute; thể sử dụng <code>1 giờ</code> l&agrave;m khoảng thời gian ph&acirc;n t&aacute;ch đường đi v&agrave; mỗi chuyến bay được chia th&agrave;nh đường đi ri&ecirc;ng của n&oacute;.
+                    </li>
+                    <li> <b>Tại c&aacute;c khoảng thời gian x&aacute;c định</b>&mdash;Ph&acirc;n t&aacute;ch bằng c&aacute;ch sử dụng c&aacute;c khoảng thời gian định kỳ, được chỉ định bởi một khoảng thời gian v&agrave; thời gian tham chiếu. Nếu bạn kh&ocirc;ng x&aacute;c định thời gian tham chiếu th&igrave; hệ thống sẽ sử dụng ng&agrave;y 1 th&aacute;ng 1 năm 1970. V&iacute; dụ: nếu bạn chỉ định 1 năm với thời gian tham chiếu l&agrave; 10:00 ng&agrave;y 2 th&aacute;ng 2 năm 1990, bạn sẽ ph&acirc;n t&aacute;ch đường đi v&agrave;o l&uacute;c 10:00 ng&agrave;y 2 th&aacute;ng 2 năm 1990, l&uacute;c 10:00 ng&agrave;y 2 th&aacute;ng 2 năm 1991 v&agrave; tiếp tục với c&aacute;c khoảng thời gian một năm một.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nếu bạn chỉ định nhiều t&ugrave;y chọn ph&acirc;n t&aacute;ch th&igrave; đường đi sẽ được ph&acirc;n t&aacute;ch khi đ&aacute;p ứng một hoặc nhiều điều kiện. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Chọn khoảng cách dùng để chia đường đi (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Khoảng c&aacute;ch được sử dụng để ph&acirc;n t&aacute;ch đường đi. Nếu c&aacute;c điểm hoặc v&ugrave;ng đầu v&agrave;o c&oacute; khoảng c&aacute;ch lớn hơn giữa ch&uacute;ng so với khoảng c&aacute;ch cần ph&acirc;n t&aacute;ch, ch&uacute;ng sẽ được ph&acirc;n chia th&agrave;nh c&aacute;c đường đi kh&aacute;c nhau.
+            </p>
+            <p>Nếu bạn chỉ định ra một thời gian v&agrave; một khoảng c&aacute;ch d&ugrave;ng để ph&acirc;n t&aacute;ch đường đi, th&igrave; đường đi sẽ được ph&acirc;n t&aacute;ch khi đ&aacute;p ứng một hoặc cả hai điều kiện tr&ecirc;n. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Thêm số liệu thống kê (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p> Bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; về c&aacute;c đối tượng được tổng kết. Bạn c&oacute; thể t&iacute;nh to&aacute;n như sau tr&ecirc;n c&aacute;c trường số:
+                <ul>
+                    <li>Đếm&mdash;T&iacute;nh to&aacute;n số lượng gi&aacute; trị kh&ocirc;ng rỗng. N&oacute; c&oacute; thể được sử dụng tr&ecirc;n c&aacute;c trường số hoặc chuỗi. Số lượng của [rỗng 0, 2] l&agrave; 2.
+                    </li>
+                    <li>Tổng cộng&mdash;Tổng gi&aacute; trị số trong một trường Tổng cộng của [rỗng, krỗng, 3] l&agrave; 3.
+                    </li>
+                    <li>Trung b&igrave;nh&mdash;Trung b&igrave;nh của c&aacute;c gi&aacute; trị số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 1.
+                    </li>
+                    <li>Tối thiểu&mdash;Gi&aacute; trị tối thiểu của trường số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 0. 
+                    </li>
+                    <li>Tối đa&mdash;Gi&aacute; trị tối đa của trường số. Gi&aacute; trị tối đa của [0, 2, rỗng] l&agrave; 2.
+                    </li>
+                    <li>Phạm vi&mdash;Phạm vi của trường số Phạm vi n&agrave;y được t&iacute;nh to&aacute;n l&agrave; gi&aacute; trị tối đa trừ đi gi&aacute; trị tối thiểu. Phạm vi của [0, rỗng, 1] l&agrave; 1. Phạm vi của [rỗng, 4] l&agrave; 0.
+                    </li>
+                    <li>Biến số&mdash;Biến số của trường số trong đường đi. Biến số của [1] l&agrave; rỗng. Biến số của [null, 1,0,1,1] l&agrave; 0,25.
+                    </li>
+                    <li>Độ lệch chuẩn&mdash;Độ lệch chuẩn của một trường số. Độ lệch chuẩn của [1] l&agrave; rỗng. Độ lệch chuẩn của [null, 1,0,1,1] l&agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bạn c&oacute; thể t&iacute;nh to&aacute;n như sau tr&ecirc;n c&aacute;c trường chuỗi:
+                <ul>
+                    <li>Đếm&mdash;Số chuỗi kh&ocirc;ng rỗng.
+                    </li>
+                    <li>Bất kỳ&mdash;Số liệu thống k&ecirc; n&agrave;y l&agrave; mẫu ngẫu nhi&ecirc;n của một gi&aacute; trị chuỗi trong trường x&aacute;c định.
+                    </li>
+                </ul>
+                Tất cả số liệu thống k&ecirc; được t&iacute;nh to&aacute;n tr&ecirc;n c&aacute;c gi&aacute; trị kh&ocirc;ng rỗng. Lớp kết quả sẽ chứa một trường mới cho mỗi số liệu thống k&ecirc; được t&iacute;nh to&aacute;n. C&oacute; thể th&ecirc;m bất kỳ số liệu thống k&ecirc; n&agrave;o bằng c&aacute;ch chọn một thuộc t&iacute;nh v&agrave; số liệu thống k&ecirc;. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Chọn ArcGIS Data Store để lưu kết quả vào</h2></div>
+        <hr/>
+        <div>
+            <p>Kết quả GeoAnalytics được lưu trữ v&agrave;o một kho dữ liệu v&agrave; hiển thị như một lớp đối tượng trong  Portal for ArcGIS. Trong hầu hết c&aacute;c trường hợp, kết quả n&ecirc;n được lưu trong kho dữ liệu kh&ocirc;ng gian thời gian v&agrave; điều n&agrave;y l&agrave; mặc định. Trong một số trường hợp, việc lưu kết quả trong kho dữ liệu li&ecirc;n quan l&agrave; một lựa chọn tốt. Sau đ&acirc;y l&agrave; l&yacute; do bạn c&oacute; thể muốn lưu kết quả v&agrave;o kho dữ liệu li&ecirc;n quan: 
+                <ul>
+                    <li>Bạn c&oacute; thể sử dụng kết quả trong cổng th&ocirc;ng tin-cho-cộng t&aacute;c cổng th&ocirc;ng tin.
+                    </li>
+                    <li>Bạn c&oacute; thể bật t&iacute;nh năng đồng bộ với c&aacute;c kết quả của bạn
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bạn kh&ocirc;ng n&ecirc;n sử dụng kho dữ liệu li&ecirc;n quan nếu bạn mong đợi kết quả GeoAnalytics tăng v&agrave; cần tận dụng khả năng của kho dữ liệu lớn về kh&ocirc;ng gian thời gian để xử l&yacute; một lượng dữ liệu lớn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

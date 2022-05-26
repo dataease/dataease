@@ -1,0 +1,227 @@
+// Dijit widget common icons
+//
+// The 16 x 16px icons in these sprites are action and object type images which can be used in the following widgets: accordionContainer, menu, tab, titlepane, tree, and all button widgets and error validation contexts.
+//
+.dijitIconSave,
+.dijitIconPrint,
+.dijitIconCut,
+.dijitIconCopy,
+.dijitIconClear,
+.dijitIconDelete,
+.dijitIconUndo,
+.dijitIconEdit,
+.dijitIconNewTask,
+.dijitIconEditTask,
+.dijitIconEditProperty,
+.dijitIconTask,
+.dijitIconFilter,
+.dijitIconConfigure,
+.dijitIconSearch,
+.dijitIconApplication,
+.dijitIconBookmark,
+.dijitIconChart,
+.dijitIconConnector,
+.dijitIconDatabase,
+.dijitIconDocuments,
+.dijitIconMail,
+.dijitLeaf,
+.dijitIconFile,
+.dijitIconFunction,
+.dijitIconKey,
+.dijitIconPackage,
+.dijitIconSample,
+.dijitIconTable,
+.dijitIconUsers,
+.dijitFolderClosed,
+.dijitIconFolderClosed,
+.dijitFolderOpened,
+.dijitIconFolderOpen,
+.dijitIconError {
+  background-image: url($iconUrl + 'commonIconsObjActEnabled.png'); // Contains both object and action icons in a sprite image for the enabled state.
+  width: 16px;
+  height: 16px;
+}
+
+.dijitDisabled {
+  .dijitIconSave,
+  .dijitIconPrint,
+  .dijitIconCut,
+  .dijitIconCopy,
+  .dijitIconClear,
+  .dijitIconDelete,
+  .dijitIconUndo,
+  .dijitIconEdit,
+  .dijitIconNewTask,
+  .dijitIconEditTask,
+  .dijitIconEditProperty,
+  .dijitIconTask,
+  .dijitIconFilter,
+  .dijitIconConfigure,
+  .dijitIconSearch,
+  .dijitIconApplication,
+  .dijitIconBookmark,
+  .dijitIconChart,
+  .dijitIconConnector,
+  .dijitIconDatabase,
+  .dijitIconDocuments,
+  .dijitIconMail,
+  .dijitLeaf,
+  .dijitIconFile,
+  .dijitIconFunction,
+  .dijitIconKey,
+  .dijitIconPackage,
+  .dijitIconSample,
+  .dijitIconTable,
+  .dijitIconUsers,
+  .dijitFolderClosed,
+  .dijitIconFolderClosed,
+  .dijitFolderOpened,
+  .dijitIconFolderOpen,
+  .dijitIconError {
+    background-image: url($iconUrl + 'commonIconsObjActDisabled.png'); // Contains both object and action icons as a sprite image for the disabled state. These would be used by buttons and menus.
+  }
+}
+
+// Action icons
+.dijitIconSave {
+  background-position: 0;
+}
+
+.dijitIconPrint {
+  background-position: -16px;
+}
+
+.dijitIconCut {
+  background-position: -32px;
+}
+
+.dijitIconCopy {
+  background-position: -48px;
+}
+
+.dijitIconClear {
+  background-position: -64px;
+}
+
+.dijitIconDelete {
+  background-position: -80px;
+}
+
+.dijitIconUndo {
+  background-position: -96px;
+}
+
+.dijitIconEdit {
+  background-position: -112px;
+}
+
+.dijitIconNewTask {
+  background-position: -128px;
+}
+
+.dijitIconEditTask {
+  background-position: -144px;
+}
+
+.dijitIconEditProperty {
+  background-position: -160px;
+}
+
+.dijitIconTask {
+  background-position: -176px;
+}
+
+.dijitIconFilter {
+  background-position: -192px;
+}
+
+.dijitIconConfigure {
+  background-position: -208px;
+}
+
+.dijitIconSearch {
+  background-position: -224px;
+}
+
+.dijitIconError {
+  background-position: -496px;
+}
+
+// Object icons
+.dijitIconApplication {
+  background-position: -240px;
+}
+
+.dijitIconBookmark {
+  background-position: -256px;
+}
+
+.dijitIconChart {
+  background-position: -272px;
+}
+
+.dijitIconConnector {
+  background-position: -288px;
+}
+
+.dijitIconDatabase {
+  background-position: -304px;
+}
+
+.dijitIconDocuments {
+  background-position: -320px;
+}
+
+.dijitIconMail {
+  background-position: -336px;
+}
+
+.dijitIconFile,
+.dijitLeaf {
+  background-position: -352px;
+}
+
+.dijitIconFunction {
+  background-position: -368px;
+}
+
+.dijitIconKey {
+  background-position: -384px;
+}
+
+.dijitIconPackage {
+  background-position: -400px;
+}
+
+.dijitIconSample {
+  background-position: -416px;
+}
+
+.dijitIconTable {
+  background-position: -432px;
+}
+
+.dijitIconUsers {
+  background-position: -448px;
+}
+
+// Tree folder icons
+.dijitIconFolderClosed,
+.dijitFolderClosed {
+  background-position: -464px;
+}
+
+.dijitIconFolderOpen,
+.dijitFolderOpened {
+  background-position: -480px;
+}
+
+// Loading animation
+.dijitIconLoading {
+  background-image: url($image-loading-circular);
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+}
+

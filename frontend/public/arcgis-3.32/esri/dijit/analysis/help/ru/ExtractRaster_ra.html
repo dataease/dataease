@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Извлечь растр</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Инструмент портала Извлечь растр"></h2>
+        <hr/>
+    <p>Этот инструмент вырезает растр по границе, заданной либо как прямоугольная область, либо в соответствии с фигурой, обведенной на экране. Вы можете вырезать растр по текущему экстенту или по области изучения, заданной полигоном.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Выбрать входные данные для извлечения</h2></div>
+        <hr/>
+        <div>
+            <p>Входной слой для вырезания.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Задать вырезающую геометрию</h2></div>
+        <hr/>
+        <div>
+            <p>Выберите тип экстента, использующегося при вырезании геометрии слоя.
+
+                <ul>
+                    <li>Использовать текущий экстент &ndash; для вырезания слоя используется текущий экстент карты. Используется по умолчанию.
+                        
+
+                    </li>
+                    <li>Выберите область изучения &ndash; позволяет выбрать область в пределах экстента геометрии или вне ее. Если выбрана опция  <b>Данные внутри геометрии</b> изображение вне экстентов будет удалено. Если выбрана опция <b>Данные вне геометрии</b> изображение внутри экстентов будет удалено. Также можно задать вырезающую геометрию с помощью инструмента рисования.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Имя слоя, который будет добавлен в  <b>Мои ресурсы</b> и на карту. Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>Вы можете указать имя папки в  <b>Моих ресурсах</b>, где будет сохранен результат, с помощью ниспадающего списка <b>Сохранить результат в</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

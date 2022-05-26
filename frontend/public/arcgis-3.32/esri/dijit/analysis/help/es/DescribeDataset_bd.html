@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Describir dataset</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagrama del flujo de trabajo de Describir dataset"></h2>
+        <hr/>
+    <p>La herramienta Describir dataset proporciona una visi&oacute;n m&aacute;s detallada de su dataset. Antes de ejecutar an&aacute;lisis en grandes cantidades de datos, utilice esta herramienta para determinar qu&eacute; son sus datos de entrada y d&oacute;nde se encuentran. De forma predeterminada, el resultado ser&aacute; una cadena JSON que resume los descriptores clave de su capa de entrada y una tabla que detalla las estad&iacute;sticas de resumen de cada campo. 
+    </p>
+    <p>Si lo desea, puede crear capas de entidades de salida adicionales para describir a&uacute;n m&aacute;s sus datos. Las opciones son una capa de muestra o una capa de extensi&oacute;n. Puede elegir que se genere una o ambas.
+    </p>
+    <p>Por ejemplo, supongamos que tiene un recurso compartido de archivos de big data que contiene 15 datasets. Cada dataset tiene 10 millones de entidades de &aacute;rea que representan edificios y viviendas repartidos por distintas regiones de su pa&iacute;s. Se le asigna la tarea de analizar la regi&oacute;n C, pero desconoce el dataset que contiene dichas entidades. Para averiguar el dataset que debe utilizar, ejecute Describir dataset y opte por crear una capa de extensi&oacute;n para dar con el dataset que se encuentra en su regi&oacute;n de estudio.
+    </p>
+    <p>Pongamos otro ejemplo: imagine que se le asigna la tarea de completar un flujo de trabajo de an&aacute;lisis en un gran volumen de datos. Quiere probar el flujo de trabajo, pero tardar&iacute;a horas o incluso d&iacute;as con el dataset al completo. En lugar de emplear tiempo y recursos para ejecutar el an&aacute;lisis completo, cree una capa de muestra en la que probar de manera eficiente el flujo de trabajo completo.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir el dataset a describir</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que contiene las entidades tabulares, de &aacute;reas, l&iacute;neas o puntos que se van a describir, resumir y muestrear.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Comprender el dataset creando lo siguiente: (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Genera capas descriptivas adicionales para comprender mejor sus big data. Puede elegir que no se genere nada o una o ambas de las siguientes capas:
+            </p>
+            <ul>
+                <li> <b>Capa de extensi&oacute;n</b>: crea una entidad de &aacute;rea que representa la extensi&oacute;n de las entidades de entrada o el &aacute;rea de inter&eacute;s.
+                </li>
+                <li> <b>Capa de muestra</b>: crea una capa de subconjunto que contiene una cantidad especificada de entidades de entrada de su dataset o &aacute;rea de inter&eacute;s.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Capa de muestra</h2></div>
+        <hr/>
+        <div>
+            <p>Genera una capa que contiene un subconjunto de entidades de su capa de entrada. Si  <b>Capa de muestra</b> est&aacute; seleccionada, podr&aacute; especificar el n&uacute;mero de entidades que desea que se devuelvan en la capa de muestra.  De forma predeterminada, la capa de salida devolver&aacute; 100 entidades de muestra.
+            </p>
+            <p>El valor debe ser mayor que cero. Si especifica un n&uacute;mero mayor que el total de entidades, se devolver&aacute;n todas las entidades.
+            </p>
+            <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> est&aacute; seleccionada, la capa de muestra contendr&aacute; entidades dentro de la extensi&oacute;n del mapa.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Capa de extensión</h2></div>
+        <hr/>
+        <div>
+            <p>Genera una capa de entidades que contiene una sola entidad que representa la extensi&oacute;n de las entidades de entrada al seleccionar el bot&oacute;n  <b>Capa de extensi&oacute;n</b>. Est&aacute; seleccionada de forma predeterminada.
+            </p>
+            <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> est&aacute; seleccionada, la capa de extensi&oacute;n representar&aacute; la extensi&oacute;n visible del mapa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Escolher Melhores Instalações</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Escolher Melhores Instala&ccedil;&otilde;es"></h2>
+        <hr/>
+    <p>A op&ccedil;&atilde;o Escolher Melhores Instala&ccedil;&otilde;es permite a voc&ecirc; escolher os melhores locais para instala&ccedil;&otilde;es. A ferramenta aloca locais com demanda para as instala&ccedil;&otilde;es de uma maneira que atende a meta especificada.
+    </p>
+    <p>As instala&ccedil;&otilde;es representam locais que oferecem algum tipo de servi&ccedil;o, tais como, postos de bombeiros, escolas, bibliotecas, lojas ou centros de distribui&ccedil;&atilde;o. Os locais de demanda representam locais que t&ecirc;m demanda pelos servi&ccedil;os oferecidos pelas instala&ccedil;&otilde;es, como pontos de bloco do censo que resumem a popula&ccedil;&atilde;o em uma &aacute;rea fornecida.
+    </p>
+    <p>A ferramenta Escolher Melhores Instala&ccedil;&otilde;es pode ajudar voc&ecirc; a responder perguntas como
+        <ul>
+            <li>No caso de uma emerg&ecirc;ncia, como as casas podem ser atribu&iacute;das ao centro de resgate correto, quando a capacidade de leito for limitada e n&atilde;o deve ser excedida?
+            </li>
+            <li>Como voc&ecirc; pode atribuir vizinhan&ccedil;as para sua filial de biblioteca mais pr&oacute;xima e localizar o n&uacute;mero de patrocinadores potenciais que cada filial est&aacute; servindo? 
+            </li>
+            <li>Como voc&ecirc; pode localizar o melhor local para um centro de distribui&ccedil;&atilde;o de supermercados que minimiza o tempo de viagem global (e consequentemente o custo) para entrega de uma cadeia de lojas?
+            </li>
+            <li>Onde um novo parque estaria localizado para garantir o maior n&uacute;mero de residentes da cidade que moram dentro de uma caminhada de cinco minutos de um parque?
+            </li>
+            <li>Quais s&atilde;o os melhores locais para diversas lojas de animais em um munic&iacute;pio que 40 por cento dele t&ecirc;m animais de estima&ccedil;&atilde;o e estejam n&atilde;o mais do que uma viagem de carro de dez minutos de uma das lojas?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Meta</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique a meta que deve ser atendida ao alocar locais de demanda para instala&ccedil;&otilde;es.
+            </p>
+            <p>Com a ferramenta Escolher Melhores Instala&ccedil;&otilde;es voc&ecirc; pode especificar o tipo de problema que voc&ecirc; est&aacute; resolvendo&mdash;a Meta. A ferramenta &eacute; otimizada para fornecer uma solu&ccedil;&atilde;o para esta meta em particular. N&atilde;o importando a meta, essencialmente o mesmo m&eacute;todo subjacente &eacute; utilizado para alcan&ccedil;ar uma solu&ccedil;&atilde;o&mdash;a quantidade de demanda de um local de demanda fornecido &eacute; alocada para a instala&ccedil;&atilde;o mais pr&oacute;xima. As metas variam como a intera&ccedil;&atilde;o entre dist&acirc;ncia (ou tempo) e a demanda que &eacute; manipulada. A ferramenta considera ambas a dist&acirc;ncia/tempo do percurso e a quantidade de demanda e&mdash;em alguns casos&mdash;a capacidade das instala&ccedil;&otilde;es. Se uma meta favorece minimizar o tempo de percurso, por exemplo, a ferramenta ainda ir&aacute; secundariamente tentar maximizar a demanda que &eacute; alocada. Semelhantemente, se a meta for maximizar a demanda alocada, a ferramenta ir&aacute; minimizar o tempo de percurso (atribuindo locais de demanda para a instala&ccedil;&atilde;o mais pr&oacute;xima ao inv&eacute;s de apenas qualquer instala&ccedil;&atilde;o).
+            </p>
+            <p>Dependendo dos seus dados e das configura&ccedil;&otilde;es que voc&ecirc; utilizar, diferentes metas poder&atilde;o produzir os mesmo resultados ou semelhantes. Por&eacute;m, voc&ecirc; deve especificar a meta que &eacute; a mais apropriada para sua an&aacute;lise.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Alocar nas instalações existentes</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize esta meta se voc&ecirc; n&atilde;o desejar localizar novas instala&ccedil;&otilde;es e desejar atribuir a demanda para instala&ccedil;&otilde;es existentes que podem ter capacidade limitada ou ilimitada.    
+            </p>
+            <p>Esta meta atribui a demanda para instala&ccedil;&otilde;es baseada na capacidade da instala&ccedil;&atilde;o e na quantidade de demanda de uma &aacute;rea delimitadora. A demanda &eacute; alocada para a instala&ccedil;&atilde;o mais pr&oacute;xima at&eacute; que a capacidade dispon&iacute;vel seja atendida. Se voc&ecirc; especificar uma dist&acirc;ncia de viagem m&aacute;xima, quaisquer locais de demanda al&eacute;m da dist&acirc;ncia n&atilde;o ser&atilde;o atribu&iacute;dos para uma instala&ccedil;&atilde;o, mesmo que toda a demanda n&atilde;o tenha sido completamente alocada.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimizar viagem</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize esta meta se desejar localizar instala&ccedil;&otilde;es de modo que o tempo de percurso ou dist&acirc;ncia de percurso global, entre os locais de demanda e as instala&ccedil;&otilde;es seja minimizado.
+            </p>
+            <p>Esta meta &eacute; frequentemente aplic&aacute;vel quando h&aacute; viagem entre a instala&ccedil;&atilde;o e todos os locais de demanda de maneira regular. Voc&ecirc; utilizar&aacute; esta meta, por exemplo, para minimizar a dist&acirc;ncia total percorrida para o transporte de mercadorias a partir de centros de distribui&ccedil;&atilde;o at&eacute; as lojas, ou para selecionar um local para uma confer&ecirc;ncia de uma forma que minimiza o tempo de viagem para todos os participantes.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximizar cobertura</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize esta meta se desejar maximizar a quantidade de demanda coberta dentro de um tempo ou dist&acirc;ncia espec&iacute;fica das instala&ccedil;&otilde;es.    
+            </p>
+            <p>Esta meta escolhe as instala&ccedil;&otilde;es de modo que a quantidade m&aacute;xima de demanda seja alocada, com toda a demanda de cada local de demanda alocada para a &uacute;nica instala&ccedil;&atilde;o mais pr&oacute;xima a ela.
+            </p>
+            <p>Uma dist&acirc;ncia de percurso m&aacute;xima finita &eacute; exigida para esta meta; caso contr&aacute;rio, toda a demanda poder&aacute; ser atribu&iacute;da para uma &uacute;nica instala&ccedil;&atilde;o. Os locais de demanda que est&atilde;o al&eacute;m da dist&acirc;ncia ou tempo de qualquer uma das instala&ccedil;&otilde;es n&atilde;o ser&atilde;o alocados (isto mostrar&aacute; a voc&ecirc; onde a demanda n&atilde;o est&aacute; sendo atendida e onde as instala&ccedil;&otilde;es adicionais podem ser necess&aacute;rias).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximizar cobertura com capacidade</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize esta meta se desejar maximizar a quantidade de demanda coberta pelas instala&ccedil;&otilde;es, mas as instala&ccedil;&otilde;es t&ecirc;m capacidade limitada.    
+            </p>
+            <p>Esta meta escolhe as instala&ccedil;&otilde;es de modo que a quantidade m&aacute;xima de demanda seja alocada sem exceder a capacidade de qualquer instala&ccedil;&atilde;o. Todas as demandas de cada local de demanda s&atilde;o alocadas para a &uacute;nica instala&ccedil;&atilde;o mais pr&oacute;xima a ela que tem capacidade dispon&iacute;vel (isto &eacute;, se atribuir um local de demanda para uma instala&ccedil;&atilde;o exceder&aacute; a capacidade dispon&iacute;vel da instala&ccedil;&atilde;o, o local de demanda n&atilde;o ser&aacute; atribu&iacute;do, ao inv&eacute;s de atribuir uma parte da demanda).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Cobrir uma porcentagem da demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize esta meta se desejar localizar o n&uacute;mero m&iacute;nimo de instala&ccedil;&otilde;es que voc&ecirc; precisa para cobrir uma porcentagem de demanda fornecida.
+            </p>
+            <p>Esta meta escolhe o n&uacute;mero m&iacute;nimo de instala&ccedil;&otilde;es necess&aacute;rias para alcan&ccedil;ar a porcentagem de demanda especificada. Um local de demanda que est&aacute; dentro da dist&acirc;ncia de percurso m&aacute;xima de duas ou mais instala&ccedil;&otilde;es ter&aacute; sua demanda dividida proporcionalmente entre as instala&ccedil;&otilde;es baseado em sua dist&acirc;ncia de cada uma. Esta meta &eacute; frequentemente utilizada quando os usu&aacute;rios t&ecirc;m que escolher qual instala&ccedil;&atilde;o visitar e qual &eacute; assumida, em geral, eles visitar&atilde;o a instala&ccedil;&atilde;o mais pr&oacute;xima (todas as outras coisas sendo iguais).
+            </p>
+            <p>Diferentemente das outras metas que escolhem instala&ccedil;&otilde;es, na qual voc&ecirc; especifica quantas instala&ccedil;&otilde;es escolher, esta meta escolhe o n&uacute;mero de instala&ccedil;&otilde;es para voc&ecirc;, baseada na porcentagem de demanda que voc&ecirc; deseja atender. Ela assume que as instala&ccedil;&otilde;es n&atilde;o t&ecirc;m uma capacidade limitada.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Como outras ferramentas que envolvem viagem nas an&aacute;lises, voc&ecirc; pode especificar se a viagem &eacute; medida utilizando dist&acirc;ncia ou tempo e pode selecionar de v&aacute;rios modos de viagem, tais como, tempo de caminhada, tempo de percurso, dist&acirc;ncia de percurso rural e assim por diante. Os modos de viagem dispon&iacute;veis s&atilde;o determinados pelo administrador da sua organiza&ccedil;&atilde;o. Ao utilizar  <b>Tempo de Percurso</b>, <b>Tempo de Percurso em &Aacute;rea Rural</b>, ou <b>Tempo de Caminh&atilde;o</b>, voc&ecirc; pode opcionalmente incluir tr&aacute;fego para um dia da semana e hora do dia espec&iacute;fico.
+            </p>
+            <p> Para alocar locais de demanda para instala&ccedil;&otilde;es com precis&atilde;o, voc&ecirc; especifica se a viagem &eacute; a partir das instala&ccedil;&otilde;es at&eacute; os locais de demanda (de postos de bombeiros at&eacute; as casas, por exemplo) ou a partir de locais de demanda at&eacute; instala&ccedil;&otilde;es (como clientes para bibliotecas). A ferramenta Escolher Melhores Instala&ccedil;&otilde;es responder&aacute; pela dire&ccedil;&atilde;o do percurso em ruas de m&atilde;o &uacute;nica, se voc&ecirc; pode virar de uma rua para outra, se as intersec&ccedil;&otilde;es n&atilde;o s&atilde;o curvas &agrave; esquerda e assim por diante, dependendo se o percurso est&aacute; fora da instala&ccedil;&atilde;o at&eacute; os locais de demanda ou dentro dos locais de demanda at&eacute; as instala&ccedil;&otilde;es.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Camada dos Locais de Demanda</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto que representam os locais que t&ecirc;m demanda para servi&ccedil;os oferecidos pelas instala&ccedil;&otilde;es. A ferramenta atribui estes locais de demanda para instala&ccedil;&otilde;es apropriadas baseada na meta selecionada.
+            </p>
+            <p>Os locais de demanda t&ecirc;m uma quantidade de demanda associada. Utilize uma constante para especificar o valor se todos os locais de demanda tiverem a mesma demanda. Se a quantidade de demanda variar por locais de demanda, utilize um campo na Camada dos Locais de Demanda para especificar o valor para cada local de demanda.
+            </p>
+            <p>A demanda ser&aacute; alocada para instala&ccedil;&otilde;es at&eacute; que todas as demandas sejam alocadas, n&atilde;o importando a dist&acirc;ncia que os locais de demanda est&atilde;o a partir das instala&ccedil;&otilde;es. Voc&ecirc; pode atribuir uma dist&atilde;ncia de percurso m&aacute;xima para a Camada dos Locais de Demanda para criar um tempo ou dist&acirc;ncia limite&mdash;quaisquer locais de demanda al&eacute;m do valor limite n&atilde;o ser&atilde;o alocados. Utilize uma constante para especificar o valor se todos os locais de demanda tiverem a mesma dist&acirc;ncia de percurso m&aacute;xima. Se a dist&atilde;ncia de percurso m&aacute;xima variar por locais de demanda, utilize um campo na Camada dos Locais de Demanda para especificar o valor para cada local de demanda.
+            </p>
+            <p>Se o tipo de meta for  <b>Cobrir uma porcentagem da demanda</b>, voc&ecirc; precisar&aacute; especificar a porcentagem de demanda m&iacute;nima que voc&ecirc; deseja que capture as instala&ccedil;&otilde;es.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+            <p>A ferramenta suporta at&eacute; 10.000 fei&ccedil;&otilde;es na Camada dos Locais de Demanda.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Camada de Instalações Exigida</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto representando locais que atuam como instala&ccedil;&otilde;es fornecendo algum tipo de servi&ccedil;o. As instala&ccedil;&otilde;es exigidas normalmente representam locais que j&aacute; existem como comparadas &agrave;s instala&ccedil;&otilde;es de candidatos que normalmente representam os locais nos quais as novas instala&ccedil;&otilde;es ser&atilde;o constru&iacute;das ou posicionadas. Ao alocar locais de demanda, a ferramenta utiliza as instala&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es Exigida</b> antes de qualquer instala&ccedil;&otilde;es a partir da <b>Camada de Instala&ccedil;&otilde;es do Candidato</b>.
+            </p>
+            <p>As instala&ccedil;&otilde;es exigidas podem ter capacidade ilimitada (isto &eacute;, elas podem atender todas as demandas atribu&iacute;das a elas) ou podem ter capacidade limitada. Se todas as instala&ccedil;&otilde;es tiverem a mesma capacidade limitada (tal como o n&uacute;mero de casas que um posto de bombeiros pode servir&mdash;digamos, 4,000), especifique um valor constante. Se a capacidade variar entre as instala&ccedil;&otilde;es (tal como o n&uacute;mero de vagas dispon&iacute;veis para novatos em cada escola do segundo grau), especifique um campo contendo o valor de capacidade para cada instala&ccedil;&atilde;o.
+            </p>
+            <p>A ferramenta suporta at&eacute; 100 fei&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es Exigida</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Camada de Instalações do Candidato</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto representando locais que atuam como instala&ccedil;&otilde;es fornecendo algum tipo de servi&ccedil;o. As instala&ccedil;&otilde;es de candidato normalmente representam os locais nos quais as novas instala&ccedil;&otilde;es ser&atilde;o constru&iacute;das ou posicionadas como oposto &agrave;s instala&ccedil;&otilde;es exigidas que normalmente representam locais que j&aacute; existem.
+            </p>
+            <p>Dependendo da sua meta de an&aacute;lise, voc&ecirc; precisa especificar o n&uacute;mero de instala&ccedil;&otilde;es do candidato para escolher a partir do conjunto de candidatos. Se voc&ecirc; especificar ambas as instala&ccedil;&otilde;es do candidato e exigidas, a ferramenta utilizar&aacute; as instala&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es Exigida</b> antes de quaisquer instala&ccedil;&otilde;es da <b>Camada de Instala&ccedil;&otilde;es do Candidato</b>.
+            </p>
+            <p>As instala&ccedil;&otilde;es do candidato podem ter capacidade ilimitada (isto &eacute;, elas podem atender todas as demandas atribu&iacute;das a elas) ou podem ter capacidade limitada. Se todas as instala&ccedil;&otilde;es tiverem a mesma capacidade limitada (tal como o n&uacute;mero de casas que um posto de bombeiros pode servir&mdash;digamos, 4,000), especifique um valor constante. Se a capacidade variar entre as instala&ccedil;&otilde;es (tal como o n&uacute;mero de vagas dispon&iacute;veis para novatos em cada escola do segundo grau), especifique um campo contendo o valor de capacidade para cada instala&ccedil;&atilde;o.
+            </p>
+            <p>A ferramenta suporta at&eacute; 1.000 fei&ccedil;&otilde;es na  <b>Camada de Instala&ccedil;&otilde;es do Candidato</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selecionar camadas de barreira</h2></div>
+        <hr/>
+        <div>
+            <p> Uma ou mais fei&ccedil;&otilde;es que atuam como restri&ccedil;&otilde;es tempor&aacute;rias (barreiras) ao viajar nas ruas subjacentes. Voc&ecirc; pode especificar as barreiras utilizando fei&ccedil;&otilde;es de ponto, linha ou pol&iacute;gono.
+            </p>
+            <p>Uma barreira de ponto pode modelar uma &aacute;rvore ca&iacute;da, um acidente, uma linha el&eacute;trica ca&iacute;da ou qualquer coisa que bloqueie completamente o tr&aacute;fego em uma posi&ccedil;&atilde;o espec&iacute;fica da rua. A viagem &eacute; permitida na rua mas n&atilde;o pela barreira. Voc&ecirc; pode especificar at&eacute; 250 fei&ccedil;&otilde;es para atuar como barreiras de ponto.
+            </p>
+            <p>Uma barreira de linha pro&iacute;be a viaje em qualquer lugar que a barreira interseccionar as ruas. Por exemplo, uma parada ou protesto que bloqueia o tr&aacute;fego atrav&eacute;s de diversos segmentos de rua podem ser modelados com uma barreira de linha. Se o n&uacute;mero de fei&ccedil;&otilde;es de rua interseccionadas por todas as barreiras de linha exceder 500, a ferramenta retornar&aacute; um erro.
+            </p>
+            <p>Uma barreira de pol&iacute;gono pro&iacute;be a viaje em qualquer pol&iacute;gono que interseccionar as ruas. Um uso deste tipo de barreira &eacute; a modelagem de inunda&ccedil;&otilde;es que cobrem &aacute;reas da rede de ruas que impossibilitam a viagem nestas ruas. Se o n&uacute;mero de fei&ccedil;&otilde;es de rua interseccionadas por todas as barreiras de pol&iacute;gono exceder 2000, a ferramenta retornar&aacute; um erro.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>A camada resultante conter&aacute; uma camada para cada um dos seguintes: instala&ccedil;&otilde;es que t&ecirc;m demandas atribu&iacute;das a elas, locais de demanda que s&atilde;o alocadas para instala&ccedil;&otilde;es e linhas de aloca&ccedil;&atilde;o conectando os locais de demanda para suas instala&ccedil;&otilde;es atribu&iacute;das. As linhas de aloca&ccedil;&atilde;o s&atilde;o desenhadas como linhas retas; por&eacute;m, o tempo de percurso ou a dist&acirc;ncia de percurso entre a instala&ccedil;&atilde;o e o local de demanda &eacute; sempre baseado no modo de viagem que voc&ecirc; especifica e n&atilde;o utilizando as dist&acirc;ncias de linha reta.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

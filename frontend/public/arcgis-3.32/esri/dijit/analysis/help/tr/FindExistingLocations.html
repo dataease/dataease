@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Mevcut Konumları Bul</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Mevcut Konumları Bul"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, &ccedil;alışma alanınızda belirlediğiniz bir dizi kritere uygun mevcut detayları se&ccedil;er. Bu kriterler &ouml;znitelik sorgularını (&ouml;rneğin boş parseller) ve mekansal (&ouml;rneğin, bir nehre bir kilometre mesafedeki t&uuml;m parseller) sorguları temel alabilir. 
+    </p>
+    <p> <b>Ge&ccedil;erli harita kapsamını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita kapsamında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki detaylar analiz edilir.  İşaretli değilse t&uuml;m detaylar, ge&ccedil;erli harita kapsamının dışında olsa bile analiz edilecektir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Öznitelik ve mekansal sorgular kullanarak bulmak istediğiniz detayları içeren katman seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Aşağıda belirtilen &ouml;znitelik ve mekansal sorguların birleşimine g&ouml;re bulmak istediğiniz nokta, &ccedil;izgi veya alan katmanıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Detay bulmak için sorgu oluştur</h2></div>
+        <hr/>
+        <div>
+            <p>İfade tanımlamak i&ccedil;in  <b>İfade Ekle</b> d&uuml;ğmesine tıklayın.  Birden &ccedil;ok ifade ekleyebilirsiniz. İfadeleri girip <b>Analizi &Ccedil;alıştır</b> d&uuml;ğmesine bastıktan sonra, girdi katmanınızdaki detaylar her bir ifadeye g&ouml;re filtrelenir.  T&uuml;m ifadelerle eşleşen detaylar sonu&ccedil; katmanına yazılır.
+            </p>
+            <p>Oluşturabileceğiniz iki t&uuml;r temel ifade vardır; &ouml;znitelik ve mekansal. &Ouml;znitelik ifadeleri alan değerleri hakkındaki sorgulardır; &ouml;rneğin  <code>adın &lsquo;San Francisco&rsquo; olduğu yerler</code>.  D&ouml;rt t&uuml;r mekansal ifade vardır:
+                <ul>
+                    <li> <b>Belirli bir mesafe dahilinde</b>: Bir detay, başka bir katmanın detayının mesafesi dahilinde olmalıdır.  &Ouml;rneğin Los Angeles nehrine 500 metre mesafedeki parselleri bul.
+                    </li>
+                    <li> <b>T&uuml;m&uuml;yle i&ccedil;erir</b>: Detay başka katmandaki bir detayın t&uuml;m&uuml;n&uuml; i&ccedil;ermelidir.  &Ouml;rneğin, end&uuml;striyel kullanım alanları i&ccedil;indeki parselleri t&uuml;m&uuml;yle i&ccedil;eren boşaltma havzalarını bul. Parsellerin hi&ccedil;bir b&ouml;l&uuml;m&uuml; boşaltma havzası dışında olamaz.
+                    </li>
+                    <li> <b>T&uuml;m&uuml;yle i&ccedil;inde</b>: Detay t&uuml;m&uuml;yle başka bir katmanın detayı ile &ccedil;evrelenmelidir.  &Ouml;rneğin, t&uuml;m&uuml;yle bir şehrin sınırları i&ccedil;inde kalan okul b&ouml;lgelerini bulun. Okul b&ouml;lgesinin hi&ccedil;bir b&ouml;l&uuml;m&uuml; şehir sınırı dışında kalamaz.
+                    </li>
+                    <li> <b>Kesişir</b>: Detay, başka bir katmandaki detayın bir kısmını i&ccedil;erir.  &Ouml;rneğin nehirlerle kesişen parselleri bulun. Nehrin, parsel i&ccedil;inde ge&ccedil;en, parselin sınırına dokunan ya da parselle kesişen herhangi bir kısmı.
+                    </li>
+                    <li> <b>En yakın</b>: Detay başka bir katmandaki bir detaya en yakın olan olmalıdır. &Ouml;rneğin, her bir otele en yakın olan restoranı bulun.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Her mekansal ifadeye karşılık gelen bir olumsuzlama vardır; şunlar hari&ccedil;:  <b>en yakın</b>; <b>belirli bir mesafede değil</b>, <b>tamamen i&ccedil;ermiyor</b>, <b>t&uuml;m&uuml;yle i&ccedil;inde değil</b> ve <b>kesişmiyor</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

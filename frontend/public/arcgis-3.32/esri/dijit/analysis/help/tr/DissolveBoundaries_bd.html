@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sınırları Bütünleştir</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sınırları B&uuml;t&uuml;nleştir"></h2>
+        <hr/>
+    <p>&Ouml;rt&uuml;şen ya da ortak bir sınırı ya da &ouml;znitelik değerini paylaşan alanlar tek bir alan oluşturmak i&ccedil;in birleştirilir.
+    </p>
+    <p>Hangi sınırların birleştirileceğini bir alan belirleyerek denetleyebilirsiniz. &Ouml;rneğin, bir il&ccedil;eler katmanınız varsa ve her il&ccedil;enin bir  <pre>State_Name</pre> &ouml;zniteliği varsa, <pre>State_Name</pre> &ouml;zniteliğini kullanarak sınırları b&uuml;t&uuml;nleştirebilirsiniz. Aynı <pre>State_Name</pre> değerine sahip olan &uuml;lkeler birleştirilir. Sonu&ccedil; bir il&ccedil;e sınırları katmanıdır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Sınırları bütünleştirilecek alan katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>B&uuml;t&uuml;nleştirilecek olan katman i&ccedil;eren alan detayları. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Bütünleştirme yöntemini seç</h2></div>
+        <hr/>
+        <div>
+            <p>Alanları b&uuml;t&uuml;nleştirmek i&ccedil;in kullanılan y&ouml;ntemi belirtir.
+            </p>
+            <p>Alan detaylarını birleştirmek i&ccedil;in iki y&ouml;ntemden birini se&ccedil;ebilirsiniz:
+                <ul>
+                    <li> <b>&Ouml;rt&uuml;şen ya da bitişik alanlar</b>&mdash;Sınırları &ouml;rt&uuml;şen iki ya da daha fazla alan bir alan olarak birleştirilir. Ek olarak bitişik (yani ortak bir sınır paylaşan) alanlar bir alan olarak birleştirilir.
+                    </li>
+                    <li> <b>Aynı alan değerine sahip alanlar</b>&mdash;Aynı alan değerine sahip iki ya da daha fazla sayıda alan bir alan olarak birleştirilir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Çok parçalı detaylar oluştur</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ok par&ccedil;alı, birden fazla par&ccedil;aya sahip ancak bir &ouml;znitelik k&uuml;mesine referans verdiği i&ccedil;in tek bir detay olarak tanımlanan bir yer veya nesnenin temsilidir. &Ouml;rneğin, bir eyalet katmanında Hawaii &ccedil;ok par&ccedil;alı bir detay olarak d&uuml;ş&uuml;n&uuml;lebilir; &ccedil;&uuml;nk&uuml; ayrı ayrı geometrik par&ccedil;aları tek bir eyalet olarak sınıflandırılmıştır.
+            </p>
+            <p> <b>&Ccedil;ok Par&ccedil;alı Detaylar Oluştur</b> iki se&ccedil;enek sunar:
+                <ul>
+                    <li>Doğru (işaretli): &Ccedil;ıktı servisi &ccedil;ok par&ccedil;alı detaylar i&ccedil;erebilir.
+                    </li>
+                    <li>Yanlış (işaretli değil): &Ccedil;ıktı servisi sadece tek par&ccedil;a detaylar i&ccedil;erecek ve her par&ccedil;a i&ccedil;in ayrı detaylar oluşturulacaktır. Varsayılan değerdir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Alanlar birleştirildiğinde, bunların &ouml;znitelik değerlerini anlamlı istatistiklerle &ouml;zetleyebilirsiniz. &Ouml;rneğin il&ccedil;eler arasındaki sınırı  <pre>State_Name</pre>, &ouml;ğesine g&ouml;re birleştiriyorsanız ve her il&ccedil;enin bir <i>Population</i> alanı varsa, o il&ccedil;e i&ccedil;in <pre>Population</pre> toplamını hesaplayabilirsiniz.
+            </p>
+            <p> &Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Aşağıdakileri sayısal alanlarda hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdakileri dize alanlarında hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,82 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+  
+    <!-- frequency tab -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section" 
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.maintenance.section.frequency}'">
+    
+      <!-- update frequency -->
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'maintFreq',minOccurs:1,label:'${i18nArcGIS.codelist.MD_MaintenanceFrequenceCode}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'MaintFreqCd',minOccurs:1,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+            data-dojo-props="target:'value',minOccurs:1,showHeader:false">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+              data-dojo-props="codelistType:'MD_MaintenanceFrequenceCode'">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- custom frequency -->
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'usrDefFreq',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'duration',minOccurs:0,label:'${i18nArcGIS.maintenance.usrDefFreq}'">
+        </div>
+      </div>
+      
+      <!-- next update date -->
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'dateNext',minOccurs:0,label:'${i18nArcGIS.maintenance.dateNext}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+      </div>  
+    </div>
+    
+    <!-- scope tab -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section" 
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.maintenance.section.scope}'">
+    
+      <!-- update scope -->
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'maintScp',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.maintenance.maintScp}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'ScopeCd',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+            data-dojo-props="target:'value',minOccurs:0,showHeader:false">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+              data-dojo-props="codelistType:'MD_ScopeCode'">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- scope description -->
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'upScpDesc',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.maintenance.upScpDesc.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/maintenance/ScopeDscElements"></div>
+      </div>
+      
+    </div>
+    
+    <!-- note tab -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.maintenance.section.note}'">
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'maintNote',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.maintenance.maintNote}'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+      </div>
+    </div>  
+    
+    <!-- contact tab -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.contact.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'maintCont',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.maintenance.maintCont}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/ContactElements"></div>
+      </div>
+    </div>  
+    
+  </div>
+</div>

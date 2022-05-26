@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Creare cumpene de ape</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Creare cumpene de ape"></h2>
+        <hr/>
+    <p>Acest instrument stabileşte cumpăna de apă sau zona de contribuţie din amonte pentru fiecare strat tematic de intrare. 
+    </p>
+    <p>De exemplu, să presupunem că aveţi obiecte spaţiale punctuale reprezent&acirc;nd locaţii de contaminare prin intermediul apei şi doriţi să găsiţi sursele probabile de contaminare. &Icirc;ntruc&acirc;t sursa de contaminare trebuie să se afle pe undeva &icirc;n amontele cumpenei de ape a punctului, veţi folosi acest instrument pentru a defini cumpenele de ape care conţin sursele agentului contaminant.
+    </p>
+    <p>Locaţia punctelor dvs. de intrare este importantă.  Dacă acestea nu sunt situate precis pe o linie de drenaj, cumpenele de ape rezultate pot fi foarte mici şi inutile &icirc;n analiza dvs.  Funcţia  <b>Căutare distanţă p&acirc;nă la cel mai apropiat drenaj</b> poate fi utilizată pentru a ajusta locaţia punctelor dvs. de intrare, astfel &icirc;nc&acirc;t acestea să se situeze precis pe o linie de drenaj, &icirc;n scopul găsirii cumpenei de ape care se scurge &icirc;n punctul situat pe linia de drenaj.  Locaţiile ajustate utilizate pentru a găsi cumpenele de ape sunt scrise pe stratul tematic de ieşire &ndash; punctele de intrare nu sunt modificate.
+    </p>
+    <p>Rezultatul &icirc;l reprezintă un strat tematic cu grupuri, care conţine două straturi: cumpenele de ape şi punctele ajustate utilizate pentru a calcula cumpenele de ape.     
+    </p>
+    <p>Cumpenele de ape rezultate vor avea toate atributele punctelor de intrare, c&acirc;t şi următoarele atribute suplimentare:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Conține valoarea ID de la punctul de intrare.
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Conține suprafața &icirc;n kilometri pătrați a cumpenei de ape din amonte
+            </li>
+            <li> <i>Description</i> și <i>DataResolution</i>&mdash;Conține informații legate de datele hidrologice folosite pentru a calcula traiectoria
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi utilizate doar obiectele spaţiale din extinderea curentă a hărţii pentru a calcula cumpenele de ape.  Dacă nu se bifează, toate obiectele spaţiale din stratul tematic introdus vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Obiecte spaţiale punctuale ce vor fi utilizate pentru calculul cumpenelor de ape</h2></div>
+        <hr/>
+        <div>
+            <p>Cumpăna de apă (zona de contribuţie din amonte) va fi calculată pentru fiecare punct.  
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Căutarea distanţei până la cel mai apropiat drenaj</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă punctele dvs. de intrare sunt situate de-a lungul unei linii de drenaj, cumpenele de ape rezultate pot fi foarte mici şi aproape inutile pentru analiză, cum ar fi la stabilirea sursei de contaminare din amonte.  &Icirc;n majoritatea cazurilor, este de dorit ca punctul dvs. de intrare să se fixeze pe cea mai apropiată linie de drenaj, pentru a găsi cumpenele de ape care se scurg către un punct situat pe linia de drenaj.  Pentru a găsi cea mai apropiată linie de drenaj, specificaţi o distanţă de căutare.  Dacă nu specificaţi o distanţă de căutare, instrumentul va calcula şi va utiliza o distanţă de căutare conservatoare.  
+            </p>
+            <p>Pentru a utiliza locaţia exactă a punctului dvs. de intrare, specificaţi o distanţă de căutare egală cu zero.  
+            </p>
+            <p>&Icirc;n scopuri legate de analiză, liniile de drenaj au fost pre-calculate de Esri folosind modele hidrologice standard.  Dacă nu există o linie de drenaj &icirc;n intervalul distanţei de căutare, se utilizează locaţia care conţine cea mai ridicată acumulare de flux din cadrul distanţei de căutare.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+            <p> Rularea acestui instrument nu consumă credite.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

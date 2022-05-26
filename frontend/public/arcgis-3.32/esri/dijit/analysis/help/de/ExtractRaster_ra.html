@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Raster extrahieren</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Werkzeug &quot;Raster extrahieren&quot; f&uuml;r Portal"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug kann ein Raster auf eine Grenze zugeschnitten werden. Dies kann eine rechteckige Fl&auml;che sein oder eine Form, die Sie interaktiv auf dem Bildschirm definieren. Sie k&ouml;nnen das Raster auf die Ausdehnung der Fl&auml;che ausschneiden, die aktuell auf der Karte angezeigt wird, oder auf das Untersuchungsgebiet, das durch ein Polygon definiert wird.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zu extrahierende Eingabedaten auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der auszuschneidende Eingabe-Layer.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Ausschneidegeometrie festlegen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Ausdehnungstyp aus, der beim Ausschneiden der Geometrie des Layers verwendet werden soll:
+
+                <ul>
+                    <li>Aktuelle Ausdehnung verwenden: Die aktuelle Kartenausdehnung dient zum Ausschneiden des resultierenden Layers. Dies ist die Standardeinstellung.
+                        
+
+                    </li>
+                    <li>Untersuchungsgebiet ausw&auml;hlen: Mit dieser Option k&ouml;nnen Sie festlegen, ob das Ergebnis die Fl&auml;che innerhalb oder die Fl&auml;che au&szlig;erhalb der Geometrieausdehnung anzeigen soll. Wenn Sie die Option  <b>Daten innerhalb der Geometrie</b> ausw&auml;hlen, werden die Bilddaten au&szlig;erhalb der Ausdehnungen entfernt. Wenn Sie die Option <b>Daten au&szlig;erhalb der Geometrie</b> ausw&auml;hlen, werden die Bilddaten innerhalb der Ausdehnungen entfernt. Eine Geometrie zum Ausschneiden kann auch mit dem Zeichenwerkzeug definiert werden.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

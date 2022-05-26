@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Etsi äärihavaintoja</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Etsi &auml;&auml;rihavaintoja"></h2>
+        <hr/>
+    <p>Etsi &auml;&auml;rihavaintoja -toiminto m&auml;&auml;ritt&auml;&auml;, onko tietojen koordinaattikuviossa tilastollisesti merkitsevi&auml; &auml;&auml;rihavaintoja. 
+        <ul>
+            <li>Onko aineiston mallissa poikkeavia alueita (rikostapauksia, puita tai liikenneonnettomuuksia)?  Miten t&auml;st&auml; voi varmistua?
+            </li>
+            <li>Oletko l&ouml;yt&auml;nyt tilastollisesti merkitsev&auml;n &auml;&auml;rihavainnon vai kertooko kartta muuta, jos muuttaisit sen symbolien esitystapaa?
+            </li>
+        </ul>
+        Etsi &auml;&auml;rihavaintoja -toiminto auttaa vastaamaan n&auml;ihin kysymyksiin luotettavasti.
+    </p>
+    <p>Aina, kun tarkastelemme karttaa, silm&auml;t ja aivot alkavat luontaisesti etsi&auml; kuvioita tai malleja, vaikka niit&auml; ei olisi.  N&auml;in ollen voi olla vaikea tiet&auml;&auml;, ovatko aineiston mallit todellisten, ty&ouml;ss&auml; l&auml;pik&auml;ytyjen paikkatietoprosessien tuloksia vai vain sattuman aiheuttamia tuloksia. T&auml;st&auml; syyst&auml; tutkijat ja analyytikot k&auml;ytt&auml;v&auml;t tilastollisia malleja, kuten Etsi &auml;&auml;rihavaintoja (Anselin Local Moran's I), paikkatietomallien m&auml;&auml;ritt&auml;miseen. Kun l&ouml;yd&auml;t tilastollisesti merkitt&auml;vi&auml; &auml;&auml;rihavaintoja tai ryp&auml;it&auml; aineistosta, k&auml;yt&ouml;ss&auml;si on arvokasta tietoa. Tieto siit&auml;, miss&auml; ja milloin &auml;&auml;rihavaintoja tapahtuu, voi tarjota t&auml;rkeit&auml; vihjeit&auml; n&auml;kemi&auml;si malleja tukevista prosesseista. Seuraavaksi tutkitaan, miksi asiat ovat merkitt&auml;v&auml;sti toisenlaisia &auml;&auml;rihavaintoalueissa.  Esimerkiksi tieto siit&auml;, ett&auml; asuinalueiden murtovarkaita esiintyy huomattavasti enemm&auml;n tietyill&auml; alueilla, vaikka niiden ymp&auml;rill&auml; olisi alueita, joissa esiintyy v&auml;h&auml;n murtovarkaita, on t&auml;rke&auml;&auml;, jos haluat suunnitella tehokkaita suojautumisstrategioita, k&auml;ytt&auml;&auml; v&auml;h&auml;isi&auml; poliisin resursseja, aloittaa naapuruston vahtivuoro-ohjelmia, valtuuttaa tekij&ouml;it&auml; perusteelliseen rikostutkintaan tai tunnistaa mahdollisia ep&auml;iltyj&auml;.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valitse karttataso, jonka äärihavainnot lasketaan</h2></div>
+        <hr/>
+        <div>
+            <p>Piste- tai aluekarttataso, josta &auml;&auml;rihavainnot l&ouml;ytyv&auml;t. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Etsi äärihavaintoja kohteelle</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; analyysi vastaa seuraavaan kysymykseen: miss&auml; sijaitsevat aineistoni sijaintien &auml;&auml;rihavainnot?  
+            </p>
+            <p>Jos aineistosi sis&auml;lt&auml;&auml; pisteit&auml; ja valitset  <b>Pistem&auml;&auml;r&auml;t</b>-vaihtoehdon, ty&ouml;kalu arvioi pistekohteiden koordinaattiasettelun ja vastaa seuraavaan kysymykseen: miss&auml; kohdissa pisteet muodostavat odottamattomia klustereita tai hajoamisia?
+            </p>
+            <p>Jos valitset kent&auml;n, t&auml;m&auml; ty&ouml;kalu arvioi niiden arvojen koordinaattiasettelun, jotka liittyv&auml;t kuhunkin kohteeseen, ja vastaavat seuraaviin kysymyksiin: Miss&auml; on suurten arvojen ymp&auml;r&ouml;imi&auml; pieni&auml; arvoja? Miss&auml; on pienten arvojen ymp&auml;r&ouml;imi&auml; suuria arvoja?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Laske pisteet kohteessa</h2></div>
+        <hr/>
+        <div>
+            <p>Oletusarvon mukaan ohjelma laskee ty&ouml;kalun luoman vektoriruudukon pisteet pisteaineistosi perusteella. Voit vaihtoehtoisesti vastata seuraavaan kysymykseen laskemalla kuusikulmioruudukon pisteet tai m&auml;&auml;ritt&auml;m&auml;ll&auml; aluekarttatason (yleens&auml; hallintoalueita, kuten kuntien tai piirikuntien rajoja vastaava alue): onko sellaisia sijainteja, joihin liittyy tilastollisesti merkitsevi&auml; pienten tai suurten pisteiden m&auml;&auml;ri&auml; naapuriarvoihin verrattuna?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Määritä pisteiden mahdollinen sijainti</h2></div>
+        <hr/>
+        <div>
+            <p>Vastaa seuraavaan kysymykseen joko piirt&auml;m&auml;ll&auml; tai m&auml;&auml;ritt&auml;m&auml;ll&auml; karttataso, jossa tapaukset ovat mahdollisia: onko raja-alueilla sijainteja, joissa on odottamattoman pieni&auml; tai suuria pistekeskittymi&auml;?   
+            </p>
+            <p>Piirt&auml;m&auml;si aluekohteet tai m&auml;&auml;ritt&auml;m&auml;si aluetason kohteet m&auml;&auml;ritt&auml;v&auml;t, miss&auml; pisteet voivat esiinty&auml;. Voit piirt&auml;&auml; n&auml;m&auml; alueet napsauttamalla  <b>piirtopainiketta</b> ja napsauttamalla sitten kartan sijaintia. N&auml;in syntyy aluemuoto. Voit piirt&auml;&auml; muita alueita napsauttamalla piirtopainiketta uudelleen ja jatkaa napsauttamalla sen j&auml;lkeen kartan sijaintia.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Jakaja</h2></div>
+        <hr/>
+        <div>
+            <p>Toisinaan haluat ehk&auml; analysoida malleja, jotka ottavat huomioon taustalla olevat jakaumat. Jos pisteesi edustavat esimerkiksi rikoksia, arvon jakaminen kokonaisv&auml;est&ouml;m&auml;&auml;r&auml;ll&auml; antaisi tuloksesi analyysin rikosten m&auml;&auml;r&auml;st&auml; asukasta kohti eik&auml; varsinaisten rikosten m&auml;&auml;r&auml;st&auml;. Jakajana k&auml;ytett&auml;v&auml;n ominaisuustiedon valintaan viitataan normalisointina.
+            </p>
+            <p> Vaihtoehdon <i>Esri Population</i> valinta rikastaa kutakin aluekohdetta v&auml;est&ouml;tietoarvoilla, joita k&auml;ytet&auml;&auml;n edelleen jakajana k&auml;ytett&auml;v&auml;n&auml; ominaisuustietona. T&auml;m&auml; vaihtoehto kuluttaa krediittej&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimointiperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Voit optimoida nopeuden tai tarkkuuden mukaan.  
+            </p>
+            <p>T&auml;m&auml; ty&ouml;kalu k&auml;ytt&auml;&auml; permutaatioita sen m&auml;&auml;ritt&auml;miseen, miten paljon aineiston paikkatietomalli eroaa satunnaisarvosta.  Permutaatioiden lis&auml;&auml;minen lis&auml;&auml; tarkkuutta, mutta lis&auml;&auml; my&ouml;s k&auml;sittelyaikaa.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Ohita asetukset</h2></div>
+        <hr/>
+        <div>
+            <p>Ty&ouml;kalu l&ouml;yt&auml;&auml; optimaaliset oletusasetukset  <b>solun koolle</b> ja <b>et&auml;isyyskaistalle</b> aineiston ominaisuuksien perusteella. Jos tietty <b>solun koko</b> tai <b>et&auml;isyyskaista</b> on kuitenkin parempi analyysia ajatellen, voi ohittaa oletusarvot <b>Ohita asetukset</b> -vaihtoehdolla.
+            </p>
+            <p> <b>Ohita asetukset</b> -vaihtoehdosta on hy&ouml;ty&auml; my&ouml;s silloin, kun analysoit eri aineistoryhmi&auml;, jolloin voit s&auml;ilytt&auml;&auml; <b>et&auml;isyyskaistan</b> ja <b>solun koon</b> arvot yhten&auml;isin&auml; useiden aineistoryhmien v&auml;lill&auml;. Voit sen j&auml;lkeen verrata tuloksia (kuten ylipaino- ja diabeteslukuja tai jopa rikollisuuslukuja kahdelta eri vuodelta).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Solukoko</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden ruudukkosolujen koko, joita k&auml;ytet&auml;&auml;n niiden sis&auml;lt&auml;mien pisteiden laskentaan.  
+            </p>
+            <p>Kun k&auml;yt&auml;t kuusikulmioruudukkoa sen sis&auml;lt&auml;mien pisteiden laskentaan, t&auml;t&auml; et&auml;isyytt&auml; k&auml;ytet&auml;&auml;n kuusikulmioiden korkeutena.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Etäisyyskaista</h2></div>
+        <hr/>
+        <div>
+            <p>Kukin kohde analysoidaan niiden l&auml;hell&auml; olevien kohteiden kontekstissa, jotka sijaitsevat m&auml;&auml;ritt&auml;m&auml;ll&auml;si et&auml;isyydell&auml;. Ty&ouml;kalu laskee oletuset&auml;isyyden puolestasi, tai voit k&auml;ytt&auml;&auml; t&auml;t&auml; asetusta analyysin kannalta merkitt&auml;v&auml;n tietyn et&auml;isyyden m&auml;&auml;ritt&auml;miseen. 
+            </p>
+            <p>Jos tutkit esimerkiksi joukkoliikennemalleja ja tied&auml;t, ett&auml; keskim&auml;&auml;r&auml;inen ty&ouml;matka on esimerkiksi 15 mailia, voit k&auml;ytt&auml;&auml; 15 mailin et&auml;isyyskaistaa.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Anna sen tason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -alueelle ja lis&auml;t&auml;&auml;n karttaan. Tulostasossa n&auml;kyv&auml;t tilastollisesti merkitsev&auml;t pienten ja suurten arvojen &auml;&auml;rihavainnot. Jos tulostason nimi on jo k&auml;yt&ouml;ss&auml;, saat kehotuksen nimet&auml; tason uudelleen.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Punkt-Cluster suchen</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Punkt-Cluster suchen"></h2>
+        <hr/>
+    <p>Das Werkzeug  Punkt-Cluster suchen findet Cluster aus Punkt-Features im Datenrauschen des Umfelds basierend auf deren r&auml;umlicher Verteilung.
+    </p>
+    <p>Eine Nichtregierungsorganisation untersucht beispielsweise eine bestimmte durch Sch&auml;dlinge &uuml;bertragene Krankheit. Sie verf&uuml;gt &uuml;ber ein Punkt-Dataset, das Haushalte in einem Untersuchungsgebiet darstellt, von denen einige betroffen sind und andere nicht. Mithilfe des Werkzeugs  Punkt-Cluster suchen kann ein Analyst die Cluster betroffener Haushalte ermitteln, um einen Bereich besser aufzeigen und mit der Behandlung und Vernichtung krankheits&uuml;bertragender Erreger beginnen zu k&ouml;nnen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wählen Sie den Layer aus, für den nach Clustern gesucht wird.</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, in dem nach Clustern gesucht wird. Layer m&uuml;ssen sich in einem projizierten Raumbezug befinden oder einen Raumbezug f&uuml;r die Verarbeitung aufweisen, der unter  <b>Analyseumgebungen</b> auf ein projiziertes Koordinatensystem festgelegt wurde.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Zu verwendende Methode der Cluster-Bildung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Methode der Cluster-Bildung, mit der Cluster aus Punkt-Features vom Datenrauschen unterschieden werden. Sie k&ouml;nnen den Algorithmus &quot;Definierte Entfernung&quot; oder den Algorithmus &quot;Automatische Anpassung&quot; f&uuml;r die Cluster-Bildung verwenden.
+            </p>
+            <p>&quot;Definierte Entfernung (DBSCAN)&quot; verwendet einen angegebenen Suchbereich, um dichte Cluster vom schw&auml;cheren Rauschen zu trennen. &quot;Definierte Entfernung (DBSCAN)&quot; ist die schnellere Methode, sollte aber nur dann verwendet werden, wenn mit einem sehr klaren Suchbereich gearbeitet werden kann, anhand dessen sich alle m&ouml;glicherweise vorhandenen Cluster definieren lassen. &quot;Definierte Entfernung (DBSCAN)&quot; findet Cluster, die eine &auml;hnliche Dichte aufweisen.
+            </p>
+            <p>&quot;Automatische Anpassung (HDBSCAN)&quot; erfordert keine Angabe eines Suchbereichs, ist jedoch die zeitaufw&auml;ndigere Methode. &quot;Automatische Anpassung (HDBSCAN)&quot; findet &auml;hnlich wie &quot;Definierte Entfernung (DBSCAN)&quot; Cluster aus Punkten, verwendet jedoch unterschiedliche Suchbereiche, die Cluster mit variierender Dichte erm&ouml;glichen. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimale Anzahl von Punkten, die als Cluster gelten</h2></div>
+        <hr/>
+        <div>
+            <p>Dieser Parameter wird je nach ausgew&auml;hlter Methode der Cluster-Bildung auf unterschiedliche Weise verwendet:
+            </p>
+            <p>
+                <ul>
+                    <li>&quot;Definierte Entfernung (DBSCAN)&quot;: Legt die Anzahl der Features fest, die sich in einer bestimmten Entfernung von einem Punkt befinden m&uuml;ssen, damit dieser als Ausgangspunkt f&uuml;r die Cluster-Bildung verwendet werden kann. Die Entfernung wird mit dem Parameter  <b>Suchbereich begrenzen auf</b> definiert.
+                    </li>
+                    <li>Automatische Anpassung (HDBSCAN): Legt die Anzahl der Features fest, die sich in der Nachbarschaft jedes Punktes befinden (einschlie&szlig;lich des Punktes selbst), die beim Sch&auml;tzen der Dichte ber&uuml;cksichtigt werden. Diese Zahl entspricht gleichzeitig der beim Extrahieren von Clustern zul&auml;ssigen Mindestgr&ouml;&szlig;e f&uuml;r Cluster.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Suchbereich begrenzen auf</h2></div>
+        <hr/>
+        <div>
+            <p>Bei Verwendung der definierten Entfernung (DBSCAN) ist dieser Parameter die Entfernung, in der sich die  <b>Minimale Anzahl von Punkten, die als Cluster gelten</b> befinden muss. Dieser Parameter wird nicht verwendet, wenn die automatische Anpassung (HDBSCAN) als zu verwendende Methode der Cluster-Bildung ausgew&auml;hlt ist.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

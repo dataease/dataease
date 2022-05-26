@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>L'analyse raster vous permet d'analyser des jeux de donn&eacute;es raster volumineux &agrave; l'aide d' ArcGIS Image Server. Vous pouvez ainsi analyser plus rapidement un plus grand nombre de donn&eacute;es en tirant parti de la puissance du serveur. Les jeux d&rsquo;outils actuellement disponibles via l&rsquo;exp&eacute;rience utilisateur web de  Portal for ArcGIS sont  <b>Synth&eacute;tiser les donn&eacute;es</b>, <b>Analyser la r&eacute;partition spatiale</b>, <b>Utiliser la proximit&eacute;</b>, <b>Analyser l&rsquo;image</b>, <b>Analyser le MNT</b>, <b>G&eacute;rer les donn&eacute;es</b> et <b>Apprentissage profond</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Synthétiser les données</h2>
+        <hr/>
+        <p>Ce jeu d'outils contient un outil qui permet de calculer certaines statistiques d'une couche raster au sein des limites surfaciques que vous d&eacute;finissez. 
+            <ul>
+                <li> <b>Raster de synth&egrave;se &agrave; l'int&eacute;rieur</b> permet de calculer des statistiques pour les cellules raster qui se trouvent au sein des limites surfaciques d&eacute;finies.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raster de synthèse à l'intérieur</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Outil Raster de synth&egrave;se &agrave; l'int&eacute;rieur">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcule des r&eacute;sum&eacute;s statistiques pour les cellules raster au sein des surfaces d&eacute;finies.
+            </p>
+            <p>Voici quelques exemples&nbsp;: 
+
+                <ul>
+                    <li>Pour une couche de surfaces de bassin versant et une couche raster d'altitude, calculez la plage d'altitudes au sein de chaque bassin versant afin de d&eacute;terminer ceux qui contiennent le jaugeage de plus forte &eacute;nergie.
+                        
+
+                    </li>
+                    <li>Pour une couche d'unit&eacute;s de gestion administrative et une couche raster de cat&eacute;gories d'utilisation du sol, calculez la vari&eacute;t&eacute; de valeurs d'utilisation du sol au sein de chaque surface de gestion afin d'identifier celles qui demandent le plus de travail pour d&eacute;terminer un plan de gestion.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analyser la répartition spatiale</h2>
+        <hr/>
+        <p>Ces outils vous permettent d'identifier, de quantifier et de visualiser les mod&egrave;les spatiaux dans vos donn&eacute;es. 
+
+            <ul>
+                <li>L'outil  <b>Calculer la densit&eacute;</b> pr&eacute;l&egrave;ve des quantit&eacute;s connues de certains ph&eacute;nom&egrave;nes et cr&eacute;e une carte de densit&eacute; en r&eacute;partissant ces quantit&eacute;s sur la carte.
+                    
+
+                </li>
+                <li>L'outil  <b>Interpoler les points</b> permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures trouv&eacute;es dans une collection de points.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculer la densité</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Outil Calculer la densit&eacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'analyse de la densit&eacute; pr&eacute;l&egrave;ve des quantit&eacute;s connues de certains ph&eacute;nom&egrave;nes et cr&eacute;e une carte de densit&eacute; en r&eacute;partissant ces quantit&eacute;s sur la carte. Vous pouvez utiliser cet outil, par exemple, pour afficher les concentrations d'&eacute;clairs ou de tornades, l'acc&egrave;s aux centres de soins m&eacute;dicaux et les densit&eacute;s de population.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoler les points</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Outil Interpoler les points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil vous permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures trouv&eacute;es dans une collection de points. L'outil s&eacute;lectionne des donn&eacute;es ponctuelles avec des valeurs &agrave; chaque point et renvoie des zones class&eacute;es par valeurs pr&eacute;vues. Vous pouvez utiliser cet outil, par exemple, pour pr&eacute;voir les niveaux de pr&eacute;cipitations sur un bassin versant en fonction de mesures prises dans des pluviom&egrave;tres individuels.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Utiliser la proximité</h2>
+        <hr/>
+        <p>Ces outils vous aident &agrave; r&eacute;pondre &agrave; l'une des questions les plus fr&eacute;quentes en mati&egrave;re d'analyse spatiale : &quot;Qu'est-ce qui se trouve &agrave; proximit&eacute; de quoi&nbsp;?&quot;
+
+            <ul>
+                <li>L&rsquo;outil  <b>Calculate Distance (Calculer la distance)</b> calcule la distance euclidienne, la direction et l&rsquo;allocation &agrave; partir d&rsquo;une seule source ou d&rsquo;un ensemble de sources.
+                    
+
+                </li>
+                <li>L&rsquo;outil  <b>Determine Optimum Travel Cost Network (D&eacute;terminer le r&eacute;seau de co&ucirc;t de d&eacute;placement optimal)</b> calcule le r&eacute;seau de co&ucirc;t optimal &agrave; partir d&rsquo;un ensemble de r&eacute;gions en entr&eacute;e.
+                    
+
+                </li>
+                <li>L&rsquo;outil  <b>Determine Travel Cost Path As Polyline (D&eacute;terminer le chemin de co&ucirc;t de d&eacute;placement sous forme d&rsquo;une polyligne)</b> calcule le chemin de moindre co&ucirc;t sous forme d&rsquo;une polyligne entre les sources et les destinations connues.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculer la distance</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Calculer la distance">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcule la distance euclidienne, la direction et l&rsquo;allocation &agrave; partir d&rsquo;une seule source ou d&rsquo;un ensemble de sources. Vous pouvez utiliser cet outil pour d&eacute;terminer la distance d&rsquo;un emplacement par rapport &agrave; une route, un b&acirc;timent ou un parc. Vous pouvez &eacute;galement d&eacute;terminer la direction que vous devez prendre depuis un emplacement pour revenir le plus directement &agrave; une source. Vous pouvez voir pour chaque emplacement dans votre zone d&rsquo;&eacute;tude la source la plus proche.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Déterminer le réseau de coût de déplacement optimal</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Illustration de l&rsquo;outil D&eacute;terminer le r&eacute;seau de co&ucirc;t de d&eacute;placement optimal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcule le r&eacute;seau de co&ucirc;t optimal &agrave; partir d&rsquo;un ensemble de r&eacute;gions en entr&eacute;e.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Déterminer le chemin de coût de déplacement sous forme d’une polyligne</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Illustration de l&rsquo;outil D&eacute;terminer le chemin de co&ucirc;t de d&eacute;placement sous forme d&rsquo;une polyligne">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcule le chemin de moindre co&ucirc;t sous forme d&rsquo;une polyligne entre les sources et les destinations connues.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="regularsize">
+        <h2>Analyser l'image</h2>
+        <hr/>
+        <p>Les outils suivants vous aident &agrave; analyser les images. 
+            <ul>
+                <li> <b>Apply Raster Function Template (Appliquer le mod&egrave;le de fonction raster)</b> traite votre imagerie avec la cha&icirc;ne de fonctions, tel que sp&eacute;cifi&eacute; par le mod&egrave;le de fonction raster.
+                </li>
+                <li> <b>Surveiller la v&eacute;g&eacute;tation</b> d&eacute;tecte la v&eacute;g&eacute;tation au sein d'une image, en fonction d'op&eacute;rations arithm&eacute;tiques sur les canaux.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Appliquer un modèle de fonction raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Appliquer un mod&egrave;le de fonction raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Traite votre imagerie avec la cha&icirc;ne de fonctions, tel que sp&eacute;cifi&eacute; par le mod&egrave;le de fonction raster.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Surveiller la végétation</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Outil Surveiller la v&eacute;g&eacute;tation pour le portail">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>R&eacute;alise une op&eacute;ration arithm&eacute;tique sur les canaux d'une couche raster multicanal afin de r&eacute;v&eacute;ler des informations concernant la couverture v&eacute;g&eacute;tale de la zone d'&eacute;tude.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analyser le MNT</h2>
+        <hr/>
+        <p>Ces outils vous aident &agrave; analyser des surfaces raster. 
+            <ul>
+                <li>L'outil  <b>Calculer la pente</b> permet de calculer la d&eacute;clivit&eacute; du MNT.
+                    
+
+                </li>
+                <li>L'outil  <b>D&eacute;duire l'exposition</b> permet de calculer la direction de la pente la plus grande pour chaque emplacement.
+                    
+
+                </li>
+                <li>L'outil  <b>Cr&eacute;er un champ de vision</b> identifie ce qui est visible depuis un point quelconque du paysage.
+                    
+
+                </li>
+                <li>L&rsquo;outil  <b>Watershed (Bassins versants)</b> calcule la surface de captation au-dessus de l&rsquo;emplacement ou des emplacements identifi&eacute;s sur une surface.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculer la pente</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Outil Calculer la pente pour le portail">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifie une surface qui illustre la pente des donn&eacute;es d'altitude en entr&eacute;e. L'inclinaison repr&eacute;sente le taux de changement d'altitude pour chaque cellule du mod&egrave;le num&eacute;rique de terrain (MNT).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Déduire l'exposition</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Outil D&eacute;duire l'exposition pour le portail">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifie la direction de pente descendante du taux de variation maximal des valeurs de chaque cellule par rapport aux cellules voisines. L'exposition peut &ecirc;tre assimil&eacute;e &agrave; la direction de la pente.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Créer un champ de vision</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Outil Cr&eacute;er un champ de vision">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>D&eacute;termine quels emplacements d'une surface raster sont visibles depuis un ensemble de points d'observation.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Bassins versants</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="T&acirc;che Bassins versants">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>D&eacute;termine la surface de captation au-dessus d'un ensemble de cellules d'un raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Gérer les données</h2>
+        <hr/>
+        <p>Ces outils permettent de g&eacute;rer au quotidien les donn&eacute;es g&eacute;ographiques et de fusionner les donn&eacute;es avant leur analyse. 
+            <ul>
+                <li> <b>Extraire le raster</b> d&eacute;coupe des portions d'un jeu de donn&eacute;es raster pour l'analyser davantage.
+                    
+
+                </li>
+                <li> <b>Valeurs de classification</b> attribue diff&eacute;rentes valeurs aux cellules raster.
+                    
+
+                </li>
+                <li> <b>Convertir l'entit&eacute; en raster</b> rasterise des donn&eacute;es vectorielles.
+                    
+
+                </li>
+                <li> <b>Convertir le raster en entit&eacute;</b> vectorise des donn&eacute;es raster.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extraire le raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Outil Extraire le raster pour le portail">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extrait les cellules d'un raster en fonction de la valeur, de la forme ou de l'&eacute;tendue d'un jeu de donn&eacute;es diff&eacute;rent.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Valeurs de classification</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Outil Valeurs de classification pour le portail">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Transforme la valeur de cellule individuelle ou la plage de valeurs de cellules en nouvelles valeurs.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Convertir l’entité en raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Outil Convertir l'entit&eacute; en raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cr&eacute;e un nouveau jeu de donn&eacute;es raster &agrave; partir d'un jeu de donn&eacute;es d'entit&eacute; existant.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Convertir le raster en entité</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Outil Convertir le raster en entit&eacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cr&eacute;e un nouveau jeu de donn&eacute;es d'entit&eacute; &agrave; partir d'un jeu de donn&eacute;es raster existant.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Jeu d’outils Apprentissage profond</h2>
+        <hr/>
+        <p>Ces outils permettent de d&eacute;tecter les entit&eacute;s sp&eacute;cifiques sur une image ou de classifier les pixels dans un jeu de donn&eacute;es raster. L&rsquo;apprentissage profond est un type de m&eacute;thode d&rsquo;apprentissage automatique bas&eacute;e sur l&rsquo;intelligence artificielle qui d&eacute;tecte les images &agrave; l&rsquo;aide de plusieurs couches figurant dans des r&eacute;seaux neuronaux, chaque couche &eacute;tant capable d&rsquo;extraire une ou plusieurs entit&eacute;s uniques dans l&rsquo;image. Ces outils exploitent les mod&egrave;les qui ont &eacute;t&eacute; form&eacute;s &agrave; d&eacute;tecter des entit&eacute;s sp&eacute;cifiques dans les structures d&rsquo;apprentissage profond ind&eacute;pendantes (TensorFlow, CNTK et Keras, par exemple) et produisent des entit&eacute;s ou des cartes de classe.
+            <ul>
+                <li>L&rsquo;outil  <b>Classer des pixels &agrave; l&rsquo;aide d&rsquo;un outil d&rsquo;apprentissage profond</b> produit un raster class&eacute; &agrave; l&rsquo;aide d&rsquo;un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute;.
+                </li>
+                <li>L&rsquo;outil  <b>D&eacute;tecter des objets &agrave; l&rsquo;aide de l&rsquo;apprentissage profond</b> produit une classe d&rsquo;entit&eacute;s contenant les objets qu&rsquo;il d&eacute;tecte dans un raster en entr&eacute;e &agrave; l&rsquo;aide d&rsquo;un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute;.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classer des pixels à l’aide de l’apprentissage en profondeur</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Classer des pixels &agrave; l&rsquo;aide de l&rsquo;apprentissage profond">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ex&eacute;cute un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute; sur un raster en entr&eacute;e afin de g&eacute;n&eacute;rer un raster class&eacute;, une &eacute;tiquette de classe &eacute;tant attribu&eacute;e &agrave; chaque pixel valide.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Détecter des objets à l’aide de l’apprentissage en profondeur</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="D&eacute;tecter des objets &agrave; l&rsquo;aide de l&rsquo;apprentissage profond">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ex&eacute;cute un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute; sur un raster en entr&eacute;e afin de g&eacute;n&eacute;rer une classe d&rsquo;entit&eacute;s contenant les objets qu&rsquo;il trouve. Les entit&eacute;s peuvent correspondre &agrave; des emprises ou des polygones autour des objets trouv&eacute;s ou encore des points situ&eacute;s aux centres des objets.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Créer des bassins versants</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Cr&eacute;er des bassins versants"></h2>
+        <hr/>
+    <p>Cet outil d&eacute;termine le bassin versant, ou surface de captation en amont, de chaque point dans votre couche en entr&eacute;e. 
+    </p>
+    <p>Supposons par exemple que vous ayez des entit&eacute;s ponctuelles repr&eacute;sentant des emplacements de pollution de l&rsquo;eau et que vous souhaitiez trouver les sources de pollution probables. Puisque la source de la pollution doit se trouver quelque part dans le bassin versant en amont du point, cet outil vous permet de d&eacute;finir les bassins versants contenant les sources du polluant.
+    </p>
+    <p>La localisation de vos points en entr&eacute;e est importante.  S&rsquo;ils ne sont pas situ&eacute;s pr&eacute;cis&eacute;ment sur une ligne de drainage, les bassins versants r&eacute;sultants peuvent &ecirc;tre tr&egrave;s petits et ne pas s&rsquo;av&eacute;rer tr&egrave;s utiles dans le cadre de votre analyse. La fonction  <b>Chercher la distance par rapport au drainage le plus proche</b> permet d'ajuster l'emplacement de vos points en entr&eacute;e de sorte qu'ils tombent pr&eacute;cis&eacute;ment sur une ligne de drainage afin de trouver le bassin versant qui s'&eacute;coule dans le point situ&eacute; sur la ligne de drainage.  Les emplacements ajust&eacute;s utilis&eacute;s pour rechercher les bassins versants sont &eacute;crits dans la couche en sortie&nbsp;; vos points en entr&eacute;e ne sont pas modifi&eacute;s.
+    </p>
+    <p>Le r&eacute;sultat est un groupe de couches contenant deux couches&nbsp;: les bassins versants et les points ajust&eacute;s utilis&eacute;s pour calculer les bassins versants.     
+    </p>
+    <p>Les bassins versants r&eacute;sultants auront tous les attributs de vos points en entr&eacute;e ainsi que les attributs suppl&eacute;mentaires suivants&nbsp;:     
+        <ul>
+            <li> <i>PourPtID</i>&nbsp;: contient la valeur d&rsquo;ID provenant du point en entr&eacute;e
+            </li>
+            <li> <i>Area Square Kilometers</i>&nbsp;: contient la surface en kilom&egrave;tres carr&eacute;s du bassin versant en amont
+            </li>
+            <li> <i>Description</i> et <i>DataResolution</i>&nbsp;: contiennent des informations appartenant aux donn&eacute;es hydrologiques utilis&eacute;es pour calculer le parcours
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s visibles au sein de l'&eacute;tendue courante de la carte seront utilis&eacute;es pour calculer les bassins versants.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entités ponctuelles à utiliser pour calculer les bassins versants</h2></div>
+        <hr/>
+        <div>
+            <p>Un bassin versant (surface de captation en amont) sera calcul&eacute; pour chaque point.  
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Chercher la distance par rapport au drainage le plus proche</h2></div>
+        <hr/>
+        <div>
+            <p>Si vos points en entr&eacute;e sont situ&eacute;s &agrave; distance d'une ligne de drainage, les bassins versants r&eacute;sultants sont susceptibles d'&ecirc;tre tr&egrave;s petits et de ne pas s'av&eacute;rer tr&egrave;s utiles dans les analyses, par exemple pour d&eacute;terminer la source de pollution en amont.  Dans la plupart des cas, vous souhaiterez que votre point en entr&eacute;e effectue la capture sur la ligne de drainage la plus proche afin de trouver les bassins versants qui s'&eacute;coulent dans un point situ&eacute; sur la ligne de drainage.  Pour trouver la ligne de drainage la plus proche, sp&eacute;cifiez une distance de recherche. Si vous ne sp&eacute;cifiez aucune distance de recherche, l'outil calcule et utilise une distance de recherche standard.  
+            </p>
+            <p>Pour utiliser l'emplacement exact de votre point en entr&eacute;e, sp&eacute;cifiez une distance de recherche &eacute;gale &agrave; z&eacute;ro.  
+            </p>
+            <p>&Agrave; des fins d&rsquo;analyse, les lignes de drainage ont &eacute;t&eacute; pr&eacute;-calcul&eacute;es par Esri selon des mod&egrave;les hydrologiques standard. Si aucune ligne de drainage ne se trouve au sein de la distance de recherche, l'emplacement contenant la plus forte accumulation de flux dans la distance de recherche est utilis&eacute;.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+            <p> L&rsquo;ex&eacute;cution de cet outil n&rsquo;entra&icirc;ne aucune consommation de cr&eacute;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>Caseta de instrumente Analiză obiecte spaţiale conţine o serie de instrumente pe care le puteţi accesa şi utiliza.  Aceste activităţi sunt aranjate mai jos &icirc;n categorii; categoriile sunt pur şi simplu grupări logice şi nu afectează &icirc;n niciun fel modul &icirc;n care accesaţi sau utilizaţi operaţiunile.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Sumarizare date</h2>
+        <hr/>
+        <p>Aceste instrumente calculează numărul total, lungimile, suprafețele și statistici descriptive de bază ale obiectelor spațiale și atributelor lor din suprafețe sau din apropierea altor obiecte spațiale.
+            <ul>
+                <li> <b>&Icirc;nsumare puncte</b> calculează statistici despre punctele care se &icirc;ncadrează &icirc;n suprafețe specificate.
+                </li>
+                <li> <b>Unire obiecte spațiale</b> transferă atribute dintr-un obiect spațial sau tabel &icirc;n altul pe baza relațiilor spațiale și de atribute.
+                </li>
+                <li> <b>Rezumare &icirc;n apropiere</b> calculează statistici privind obiectele spațiale și atributele acestora care se situează &icirc;ntr-o anumită distanță.
+                </li>
+                <li> <b>Sumarizare &icirc;n interior</b> calculează statistici privind obiectele spațiale și atributele din zonă care se suprapun reciproc.
+                </li>
+                <li> <b>Centru de rezumare și dispersare</b> calculează obiectele spațiale centrale și distribuirile direcționale.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Însumare puncte</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="&Icirc;nsumare puncte">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Utiliz&acirc;nd un strat tematic de obiecte spațiale punct și un strat tematic de obiecte spațiale suprafață, acest instrument determină ce puncte se &icirc;ncadrează &icirc;n fiecare suprafață și calculează statistici despre toate punctele din fiecare suprafață. De exemplu:
+                <ul>
+                    <li>Se dau locațiile punctuale ale infracțiunilor. Aflați numărul de infracțiuni pe județ sau pe altă unitate administrativă.
+                    </li>
+                    <li>Găsiți cele mai mari și cele mai mici venituri pentru locațiile aflate &icirc;n franciză, &icirc;n funcție de stat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Unire obiecte spațiale</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Unire obiecte spațiale">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Unire obiecte spațiale transferă atribute dintr-un obiect spațial sau tabel &icirc;n altul pe baza relațiilor spațiale și de atribute. De exemplu:
+                <ul>
+                    <li>Anexați datelor dvs. despre incidente informații demografice sau privind granițele comune.
+                    </li>
+                    <li>Identificați centrele aflate cel mai aproape de o locație cunoscută.
+                    </li>
+                    <li>Determinați numărul de locuințe aflate &icirc;n zone expuse riscului de inundație.
+                    </li>
+                    <li>Identificați habitatele comune mai multor specii diferite de animale sălbatice.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summarize Nearby</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Rezumat &icirc;n apropiere">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Găsește obiecte spațiale care se află pe o anumită rază față de obiecte spațiale din stratul tematic de intrare.   Distanța poate fi măsurată de-a lungul liniilor drepte sau ca trasee viabile pentru un mod de deplasare.  Apoi sunt calculate statistici pentru obiectele spațiale din apropiere. De exemplu:
+                <ul>
+                    <li>Calculați populația totală pe o rază de cinci minute &icirc;n jurul unei noi locații de magazin propuse.
+                    </li>
+                    <li>Calculați numărul de rampe de acces la autostradă pe o rază de cinci minute &icirc;n jurul unei noi locații de magazin propuse, pentru a evalua accesibilitatea magazinului.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rezumat în interior</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Rezumat &icirc;n">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Găsește suprafețe (și porțiuni de suprafețe) care se suprapun peste două straturi tematice și calculează statistici referitoare la suprapunere. De exemplu:
+                <ul>
+                    <li>Av&acirc;nd un strat tematic de zone cumpănă de ape și un strat tematic de zone cu terenuri utilizate clasificate &icirc;n funcție de tipul utilizării, calculați suprafața totală pentru fiecare tip de utilizare a terenului aferent fiecărei cumpene de ape. 
+                    </li>
+                    <li>Av&acirc;nd un strat tematic de parcele dintr-un județ și un strat tematic de limite ale localităților, rezumați valoarea medie a parcelelor libere din fiecare localitate.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Centru de rezumare și dispersare</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Centru de rezumare și dispersare">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Acest instrument folosește obiectele spațiale de tip punct pentru a calcula obiectul spațial central, centrul mediu, centrul median sau elipsa (distribuția). De exemplu:
+                <ul>
+                    <li>Av&acirc;nd un strat tematic de centre de greutate ale unui grup de blocuri, obiectul spațial central ponderat după populație poate fi utilizat pentru a identifica partea din oraș care este cea mai accesibilă pentru un centru de artele spectacolului.
+                    </li>
+                    <li>Av&acirc;nd un strat tematic cu apariții ale elanilor &icirc;ntr-un parc pe mai mulți ani, centrul mediu poate fi folosit pentru a vedea unde se adună elanii vara și iarna.
+                    </li>
+                    <li>Av&acirc;nd un strat tematic de incendii, centrul mediu poate fi folosit pentru a măsura tendința centrală a incendiilor fără a fi afectat de elementele periferice.
+                    </li>
+                    <li>Av&acirc;nd un strat tematic de probe de puțuri de apă freatică, o elipsă poate fi folosită pentru a stabili cum se &icirc;mprăștie un agent de contaminare.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Îmbogăţire date</h2>
+        <hr/>
+        <p>Aceste instrumente vă ajută să exploraţi caracterul suprafeţelor. Pentru suprafeţele alese, sunt returnate date şi statistici demografice detaliate. 
+            <ul>
+                <li> <b>&Icirc;mbogăţire obiecte spaţiale</b> preia informaţii despre persoane, locuri şi companii dintr-o anumită zonă sau de pe o rază &icirc;n ore de condus sau o rază spaţială faţă de o locaţie.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Îmbogăţire strat tematic</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="&Icirc;mbogăţire strat tematic">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Preia informaţii despre persoane, locuri şi companii dintr-o anumită zonă sau de pe o rază &icirc;n ore de condus sau o rază spaţială faţă de o locaţie.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Găsire locaţii</h2>
+        <hr/>
+        <p>Aceste instrumente sunt folosite pentru a identifica sau crea obiecte spaţiale care &icirc;ndeplinesc criteriile specificate.  Tipul criteriilor depinde de instrumentul folosit; de exemplu, criteriile se pot baza pe interogări spaţiale sau de atribute, suprafeţe vizibile de la o &icirc;nălţime specificată, zone din aval pentru puncte specifice de scurgere sau timpul de deplasare &icirc;n condiţii  specifice de trafic.
+            <ul>
+                <li> <b>Selectare cele mai bune centre</b> selectează cele mai bune locaţii pentru centre prin alocarea locaţiilor care au cerere pentru aceste centre &icirc;ntr-un mod care satisface un scop propus.
+                </li>
+                <li> <b>Creare rază vizuală</b> creează zone care sunt vizibile &icirc;n funcţie de locaţiile pe care le specificaţi.
+                </li>
+                <li> <b>Creare cumpene de ape</b> creează zone de captare &icirc;n funcţie de locaţiile pe care le specificaţi.
+                </li>
+                <li> <b>Derivare locaţii noi</b> creează suprafeţe noi din locaţii din suprafaţa dvs. de studiu care &icirc;ndeplinesc o serie de criterii.
+                </li>
+                <li> <b>Găsire Centre de Greutate</b> găsește centrul reprezentativ (centrul de greutate) pentru obiectele spațiale introduse.
+                </li>
+                <li> <b>Găsire locaţii existente</b> caută suprafeţele existente &icirc;ntr-un strat tematic care &icirc;ndeplinesc o serie de criterii.
+                </li>
+                <li> <b>Găsire locaţii similare</b> găseşte locaţiile cele mai asemănătoare cu una sau mai multe locaţii de referinţă pe baza criteriilor specificate de dvs.
+                </li>
+                <li class="PortalOnly"> <b>Locaţii geocodificate din tabel</b> converteşte adrese dintr-un tabel &icirc;n coordonate. 
+                </li>
+                <li> <b>Traiectorie &icirc;n aval</b> stabileşte traseele de scurgere pe direcţia aval dinspre locaţiile pe care le specificaţi.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Selectare cele mai bune centre</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Selectare cele mai bune centre">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selectează cele mai bune locaţii pentru centre prin alocarea locaţiilor care au cerere pentru aceste centre &icirc;ntr-un mod care satisface un scop propus.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Creare rază vizuală</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Creare rază vizuală">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creează zone care sunt vizibile &icirc;n funcţie de locaţiile pe care le specificaţi.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Creare cumpene de ape</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Creare cumpene de ape">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creează zone de captare &icirc;n funcţie de locaţiile pe care le specificaţi.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Derivare locaţii noi</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Derivare locaţii noi">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selectează obiecte spaţiale noi din suprafaţa dvs. de studiu, care &icirc;ndeplinesc o serie de criterii specificate de dvs. Aceste criterii pot fi bazate pe interogări de atribute (de exemplu, parcele vacante) și interogări spațiale (de exemplu, pe o rază de o milă față de un r&acirc;u). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Centroids</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Find Centroids">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Găseşte centrul reprezentativ (centrul de greutate) pentru ofiecare multipunct, linie sau suprafaţă
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsire locaţii existente</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Găsire locaţii existente">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selectează obiecte spaţiale existente &icirc;n suprafaţa dvs. de studiu, care &icirc;ndeplinesc o serie de criterii specificate de dvs. Aceste criterii pot fi bazate pe interogări de atribute (de exemplu, parcele vacante) și interogări spațiale (de exemplu, pe o rază de o milă față de un r&acirc;u). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Locaţii geocodificate din tabel</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Locaţii geocodificate din tabel">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Converteşte adrese &icirc;n coordonate. Utilizaţi acest instrument &icirc;ntr-o foaie de calcul Excel sau &icirc;ntr-un fişier CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsire locaţii similare</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Găsire locaţii similare">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Găseşte locaţiile cele mai asemănătoare cu una sau mai multe locaţii de referinţă pe baza criteriilor specificate de dvs.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Urmărire în aval</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Urmărire &icirc;n aval">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Stabileşte traseele de scurgere pe direcţia aval dinspre locaţiile pe care le specificaţi.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analiză tendinţe</h2>
+        <hr/>
+        <p>Aceste instrumente vă ajută să identificaţi, cuantificaţi şi vizualizaţi modele spaţiale din datele dvs.  
+            <ul>
+                <li> <b>Calcul densitate</b> ia cantităţi cunoscute ale unui fenomen şi le răsp&acirc;ndeşte pe hartă.
+                </li>
+                <li> <b>Găsire puncte de interes</b> identifică grupări semnificative statistic din modelul spaţial al datelor dvs.
+                </li>
+                <li>Instrumentul  <b>Găsire valori excepţionale</b> va determina dacă există valori excepţionale semnificative din punct de vedere statistic &icirc;n modelul spaţial al datelor dvs.
+                </li>
+                <li> <b>Instrumentul Găsiți fascicule de puncte</b> găsește fascicule de obiecte spaţiale de tip punct &icirc;n zgomotul &icirc;nconjurător pe baza distribuției lor spațiale.
+                </li>
+                <li> <b>Interpolare puncte</b> prezice valori &icirc;n locaţii noi pe baza măsurătorilor găsite &icirc;ntr-o colecţie de puncte.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcul densitate</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calcul densitate">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Analiza densităţii ia cantităţi cunoscute ale unui fenomen şi le răsp&acirc;ndeşte pe hartă. Puteţi utiliza acest instrument, de exemplu, pentru a afişa concentraţiile de fulgere şi tornade, accesul la instituţii de sănătate, c&acirc;t şi densităţile populaţiei.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsire puncte de interes</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Găsire hot spoturi">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Acest instrument creează o hartă care prezintă toate grupările spaţiale semnificative statistic, prezente &icirc;n datele dvs. Utilizaţi acest instrument pentru a evidenţia puncte de interes (roşii) şi puncte lipsite de interes (albastre) neaşteptate cuprinz&acirc;nd, de exemplu, valori mari şi mici de locuinţe, densităţi de criminalitate, decese &icirc;n accidente rutiere, şomaj sau biodiversitate.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsire valori excepţionale</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Găsire valori excepţionale">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Acest instrument creează o hartă care prezintă toate grupările şi valorile spaţiale excepţionale semnificative statistic, prezente &icirc;n datele dvs. Utilizaţi acest instrument pentru a identifica obiectele spaţiale ale căror valori sunt semnificativ diferite de cele ale obiectelor &icirc;nvecinate.  Puteţi utiliza acest instrument, de exemplu, pentru a găsi anomaliile din modelele de cheltuieli, a determina unde există cele mai clare graniţe &icirc;ntre bunăstare şi sărăcie &icirc;ntr-o zonă studiată sau a determina dacă există judeţe din Rom&acirc;nia &icirc;n care speranţa de viaţă este neobişnuit de scăzută &icirc;n comparaţie cu judeţele &icirc;nvecinate.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsiți fascicule de puncte</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Găsiți fascicule de puncte">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Acest instrument detectează zonele &icirc;n care sunt concentrate punctele și unde sunt separate prin zone goale sau rare. Punctele care nu sunt parte din fascicul sunt etichetate ca zgomot.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolare puncte</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpolare puncte">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Acest instrument vă permite să preziceţi valori &icirc;n locaţii noi pe baza măsurătorilor găsite &icirc;ntr-o colecţie de puncte. Instrumentul ia date punctuale cu valori &icirc;n fiecare punct şi returnează suprafeţe clasificate &icirc;n funcţie de valorile prezise. Puteţi utiliza acest instrument, de exemplu, pentru a prezice nivelurile precipitaţiilor dintr-un bazin hidrografic pe baza măsurătorilor efectuate &icirc;n staţii individuale.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Utilizare proximitate</h2>
+        <hr/>
+        <p>  Aceste instrumente vă ajută să răspundeţi la una din cele mai frecvente &icirc;ntrebări puse &icirc;n analiza spaţială: &bdquo;Ce se află aproape de ce?&rdquo;
+            <ul>
+                <li> <b>Conectare origini la destinaţii</b> măsoară durata de călătorie sau distanţa dintre perechi de puncte.
+                </li>
+                <li> <b>Creare buffere</b> creează suprafeţe cu distanţă egală faţă de obiecte spaţiale.
+                </li>
+                <li> <b>Creare suprafeţe pentru timpul de deplasare auto</b> găseşte suprafeţele din jurul locaţiilor la care se poate ajunge &icirc;ntr-un interval de timp dat.
+                </li>
+                <li> <b>Găsire cel mai apropiat</b> se foloseşte pentru identificarea acelor locuri care se află cel mai aproape de locaţii cunoscute.
+                </li>
+                <li> <b>Planificare rute</b> se foloseşte pentru a stabili cea mai bună modalitate de a direcţiona o flotă de vehicule pe o rută cu multe opriri.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Conectare origini cu destinații</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Conectare origini cu destinații">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Conectare origini la destinaţii măsoară durata de călătorie sau distanţa dintre perechi de puncte. Instrumentul poate raporta distanţe &icirc;n linie dreaptă, distanţe pe drum sau durate de călătorie. Prin utilizarea instrumentului puteţi realiza următoarele:
+            </p>
+            <p>
+                <ul>
+                    <li>Puteţi calcula distanţa sau timpul total pentru călătoriile de acasă la serviciu ale navetiştilor.
+                    </li>
+                    <li>Puteţi măsura c&acirc;t de departe călătoresc clienţii pentru a ajunge la magazinele dvs. să utilizaţi aceste informaţii pentru a defini anvergura pieţei, &icirc;n special atunci c&acirc;nd vizaţi anumite pieţe prin campanii publicitare sau atunci c&acirc;nd alegeţi locaţii pentru magazine noi;
+                    </li>
+                    <li>să calculaţi consumul estimat pentru călătoriile efectuate de flota dvs. de vehicule. După aceea, executaţi instrumentul Rezumare &icirc;n interior pentru a raporta consumul &icirc;n funcţie de stat sau altă regiune.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dvs. introduceţi punctele de plecare şi de sosire, iar instrumentul va realiza un strat tematic care conţine liniile rutelor (inclusiv măsurătorile) &icirc;ntre perechile de origini şi destinaţii.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Creare buffere</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Creare buffere">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Un buffer este o suprafaţă care acoperă o anumită distanţă faţă de un obiect spaţial punct, linie sau suprafaţă. 
+            </p>
+            <p>De regulă, bufferele sunt utilizate pentru a crea zone care pot fi analizate mai amănunţit cu ajutorul altor instrumente, precum Suprapunere straturi tematice. De exemplu, dacă se pune &icirc;ntrebarea &bdquo;Ce clădiri se găsesc pe o rază de un kilometru &icirc;n jurul şcolii?&rdquo;, răspunsul poate fi găsit prin crearea unui buffer de un kilometru &icirc;n jurul şcolii şi suprapunerea bufferului cu stratul tematic ce conţine amprente de clădiri. Rezultatul final este un strat tematic cu acele clădiri aflate pe o rază de un kilometru &icirc;n jurul şcolii.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Creare suprafețe pentru timpul de condus</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Creare suprafețe pentru timpul de condus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zona timpului de deplasare cu autoturismul sau camionul este o zonă la care se poate ajunge &icirc;ntr-un interval specificat de timp de conducere sau care se află la o anumită distanţă de conducere. Zonele timpului de deplasare cu autoturismul sau camionul vă pot ajuta să răspundeţi la &icirc;ntrebări precum:
+                <ul>
+                    <li>P&acirc;nă unde pot ajunge de aici &icirc;n 30 de minute de cu maşina?
+                    </li>
+                    <li>P&acirc;nă unde pot ajunge de aici &icirc;n 30 de minute cu maşina, la 6:00 p.m. c&acirc;nd este ora de v&acirc;rf?
+                    </li>
+                    <li>La ce zone din oraş pot ajunge pompierii &icirc;n cinci minute? Cum s-ar &icirc;mbunătăţi răspunsul pompierilor prin construirea unei noi staţii de pompieri aici?
+                    </li>
+                    <li>Ce suprafeţe de piaţă acoperă afacerea mea? Ce suprafeţe se află pe o rază de 10 kilometri faţă de magazinele mele?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Găsire cele mai apropiate</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Găsire cele mai apropiate">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Măsoară costul deplasării &icirc;ntre incidente şi facilităţi şi determină care sunt mai apropiate. Rezultatul este un strat tematic care arată cele mai bune rute &icirc;ntre incidente şi facilităţi, &icirc;mpreună cu costurile de deplasare (timp şi distanţă) pentru fiecare rută. De exemplu, puteţi utiliza acest instrument pentru a găsi cel mai apropiat spital faţă de un accident sau cel mai apropiat ATM faţă de locaţia dvs. curentă.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planificare rute</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planificaţi rute">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dvs. introduceţi un număr de opriri şi un număr de vehicule care pot ajunge la opririle respective, iar funcţia Planificare rute stabileşte cea mai bună modalitate de a aloca opririle vehiculelor şi de a direcţiona vehiculele către aceste opriri.
+            </p>
+            <p>Utilizaţi acest instrument pentru a planifica activitatea pentru o echipă mobilă de inspectori, evaluatori, furnizori interni de servicii de asistenţă şi alte persoane. De asemenea, instrumentul vă poate ajuta să ridicaţi obiecte din locaţii aflate la distanţă sau să oferiţi servicii de transport unor persoane.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Administrați date</h2>
+        <hr/>
+        <p>Aceste instrumente sunt utilizate at&acirc;t pentru administrarea de zi cu zi a datelor geografice, c&acirc;t şi pentru combinarea datelor &icirc;nainte de analiză.  
+            <ul>
+                <li> <b>Dizolvare graniţe</b> unifică suprafeţe care au graniţe comune şi o valoare de atribut comună.
+                </li>
+                <li> <b>Extragere date</b> creează seturi de date noi prin extragerea de obiecte spaţial din datele dvs. existente.
+                </li>
+                <li> <b>Generare teselări</b> creează teselări &icirc;n funcție de extinderea datelor dvs.
+                </li>
+                <li> <b>Unificare straturi tematice</b> copiază toate obiectele spaţiale din două sau mai multe straturi tematice existente &icirc;ntr-un strat tematic nou.
+                </li>
+                <li> <b>Suprapunere straturi tematice</b> combină două sau mai multe straturi tematice &icirc;ntr-un singur strat tematic. Puteţi considera suprapunerea ca o asociere &icirc;ntre o serie de hărţi şi creare a unei singure hărţi care să conţină toate informaţiile din set.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dizolvare graniţe</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dizolvare graniţe">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Suprafeţele care se suprapun sau &icirc;mpărtăşesc o graniţă comună sunt unificate pentru a forma o singură suprafaţă.    
+            </p>
+            <p>Puteţi controla ce graniţe urmează să fie unificate specific&acirc;nd un c&acirc;mp. De exemplu, dacă aveți un strat tematic cu unități teritoriale, și fiecare unitate teritorială are un atribut  <i>State_Name</i>, puteți dizolva granițele folosind atributul <i>State_Name</i>.  Unităţile teritoriale adiacente vor fi unificate dacă au aceeaşi valoare pentru <i>State_Name</i>.  Rezultatul final este un strat tematic cu graniţe statale.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extragere date</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extragere date">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creează un fişier zip, CSV sau KMZ de date din straturile dvs. tematice şi o suprafaţă de interes pe care o specificaţi.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generați teselări</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Generați teselări">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Se generează teselări pe o zonă studiată pe baza formei și mărimii specificate.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Unificare straturi tematice</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Unificare straturi tematice">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copiază obiecte spaţiale din unul sau mai multe straturi tematice existente &icirc;ntr-un strat tematic nou, de exemplu:
+                <ul>
+                    <li>Am trei straturi tematice pentru Anglia, Ţara Galilor şi Scoţia şi doresc un singur strat tematic al Marii Britanii. 
+                    </li>
+                    <li>Am 12 straturi tematice şi fiecare conţine informaţii despre parcele pentru diviziuni teritoriale &icirc;nvecinate. Vreau să le &icirc;mbin &icirc;ntr-un singur strat tematic, păstr&acirc;nd doar atributele care au acelaşi nume şi acelaşi tip &icirc;n cele 12 straturi tematice de intrare.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Suprapunere straturi tematice</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Suprapunere straturi tematice">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Suprapunerea combină două sau mai multe straturi tematice &icirc;ntr-un singur strat tematic. Puteţi considera suprapunerea ca o asociere &icirc;ntre o serie de hărţi şi creare unei singure hărţi care să conţină toate informaţiile din set, de exemplu:
+                <ul>
+                    <li>Ce parcele se află &icirc;n lunca de 100 de ani? (&bdquo;&Icirc;n&rdquo; este doar un alt mod de a spune &bdquo;Pe&rdquo;.)
+                          
+                    </li>
+                    <li>Ce drumuri se află &icirc;n ce judeţe?
+                    </li>
+                    <li>Ce utilizare a terenului se află pe ce tip de sol?
+                         
+                    </li>
+                    <li>Ce puţuri există &icirc;n baze militare abandonate?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

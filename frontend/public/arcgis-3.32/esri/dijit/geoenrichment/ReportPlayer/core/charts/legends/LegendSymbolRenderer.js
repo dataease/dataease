@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/legends/LegendSymbolRenderer",["dojo/dom-class","dojo/dom-construct","esri/dijit/geoenrichment/utils/ColorUtil","esri/dijit/geoenrichment/utils/ShapeUtil","./ChartLegendSymbols"],function(e,f,g,h,l){return{renderSymbol:function(a){var b=f.create("div",{"class":"dijitInline esriGEReportPlayerChartLegendSymbol"}),c=a.stroke&&g.toCSSColor(a.stroke),d=a.fill&&g.toCSSColor(a.fill);if(a.marker&&!a.customSymbol){e.add(b,"isSVGSymbol");var k=h.createSVGNode({xmin:0,
+ymin:0,width:6,height:6},{width:(a.width||8)+"px",height:(a.height||8)+"px",overflow:"visible"});k.appendChild(h.createPathNode(a.marker,{borderColor:c||"transparent",borderWidth:1,fillColor:d||"transparent"}));f.place(k,b)}else e.add(b,(a.customSymbol||a.defaultSymbol||l.SQUARE).toLowerCase()),d&&(b.style.backgroundColor=d),c&&(b.style.border="1px solid "+c);return b}}});

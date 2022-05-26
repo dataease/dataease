@@ -1,0 +1,22 @@
+{
+	"name": "dojox",
+	"version": "1.14.2",
+	"directories": {
+		"lib": "."
+	},
+	"main": "main",
+	"dependencies": {
+		"dojo": "1.14.2",
+		"dijit": "1.14.2"
+	},
+	"description": "Dojo eXtensions, a rollup of many useful sub-projects and varying states of maturity – from very stable and robust, to alpha and experimental. See individual projects contain README files for details.",
+	"license" : "BSD-3-Clause OR AFL-2.1",
+	"bugs": "http://bugs.dojotoolkit.org/",
+	"keywords": [ "JavaScript", "Dojo", "Toolkit", "DojoX" ],
+	"homepage": "http://dojotoolkit.org/",
+        "repository": {
+                "type": "git",
+                "url": "https://github.com/dojo/dojox.git"
+        },
+	"dojoBuild": "dojox.profile.js"
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buat Multi-Variable Grid</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagram alur kerja Tambahkan Data"></h2>
+        <hr/>
+    <p>Alat Buat Multi-Variable Grid bekerja dengan satu atau lebih layer fitur titik, garis, atau poligon. Alat ini menghasilkan kotak persegi atau tempat penyimpanan heksagonal dan menghitung nilai untuk setiap kotak berdasarkan kedekatan setiap layer input. Nilai-nilai ini dapat mencakup variabel-variabel berikut: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Jarak ke Terdekat</b>&mdash;Jarak dari setiap bin ke fitur terdekat
+            </li>
+            <li> <b>Atribut Terdekat</b>&mdash;Nilai kolom dari fitur yang terdekat ke setiap bin
+            </li>
+            <li> <b>Ringkasan Di Sekitar</b>&mdash;Spesifikasi khusus dari semua fitur dalam jarak setiap bin
+            </li>
+            <li> <b>Ringkasan Perpotongan</b>&mdash;Statistik spesifik dari semua fitur yang memotong setiap bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hanya variabel yang Anda tentukan yang akan dimasukkan dalam layer hasil. Variabel-variabel ini dapat membantu Anda memahami kedekatan dan distribusi data Anda. Hasilnya dapat membantu Anda mulai menjawab pertanyaan seperti berikut:
+        <ul>
+            <li>Mengingat beberapa layer infrastruktur transportasi umum, bagian kota mana yang paling tidak dapat diakses oleh transportasi umum?
+            </li>
+            <li>Dengan adanya layer saluran air, seperti danau dan sungai, apa nama badan air yang paling dekat dengan masing-masing lokasi di AS?
+            </li>
+            <li>Diberikan layer pendapatan rumah tangga, di mana di AS adalah variasi pendapatan di sekitar 50 mil yang terbesar?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Pilih jenis bin yang akan digunakan untuk membangun grid multi-variable</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Jenis dan ukuran bin yang akan digunakan untuk membuat grid multi-variable. Untuk opsi  <b>Persegi</b>, jumlah dan unit yang ditentukan menentukan tinggi dan panjang kotak. Untuk opsi <b>Heksagon</b>, jumlah dan unit yang ditentukan menentukan jarak antara sisi paralel.
+            </p>
+            <p>Analisis ini menggunakan bin dan memerlukan sistem koordinat terproyeksi. Anda dapat menetapkan  <b>Sistem koordinat pemrosesan</b> dalam <b>Lingkungan Analisis</b>. Jika sistem koordinat pemrosesan Anda tidak ditetapkan ke sistem koordinat terproyeksi, Anda akan diminta untuk menetapkannya saat Anda <b>Jalankan Analisis</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Pilih layer input dan variabel yang ingin Anda sertakan dalam kisi</h2></div>
+        <hr/>
+        <div>
+            <p>Klik tombol tambah ( <b>+</b>) untuk membuka jendela <b>Tambahkan Variabel</b> dan tambahkan layer ke analisis Anda. Di jendela <b>Tambahkan Variabel</b>, pilih layer input dan konfigurasikan variabel yang ingin Anda hitung untuk layer input tersebut.
+            </p>
+            <p>Setelah Anda memilih dan mengkonfigurasi variabel yang ingin Anda hitung, layer akan terdaftar di jendela alat dengan layer terpilih lainnya. Klik tombol edit untuk layer apa saja untuk membuka jendela  <b>Tambahkan Variabel</b> dan melihat semua variabel yang dikonfigurasi untuk layer itu. Klik tombol hapus untuk setiap layer untuk menghapus layer itu dan semua variabel terkait dari analisis.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Tambahkan Variabel</h2></div>
+        <hr/>
+        <div>
+            <p>Jendela ini memungkinkan Anda memilih layer input dan mengonfigurasi variabel yang ingin Anda hitung untuk layer input tersebut. Untuk memulai, gunakan menu drop-down  <b>Pilih layer input</b> untuk memilih titik, poligon, atau layer garis yang ingin Anda tambahkan ke analisis Anda.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+            <p>Setelah Anda memilih layer input, klik tombol  <b>Tambahkan variabel</b> untuk membuka variabel baru untuk diedit. Anda harus memberikan nama unik untuk setiap variabel. Ini akan menjadi nama kolom yang dibuat di tabel atribut dari layer hasil.
+            </p>
+            <p>Gunakan menu drop-down untuk memilih jenis variabel yang akan ditambahkan. Setiap jenis variabel harus dikonfigurasi dengan satu set parameter yang unik, dan semua parameter diperlukan.
+            </p>
+            <p>Setelah Anda menambahkan semua variabel yang diinginkan untuk layer yang dipilih, klik tombol  <b>Tambah</b> untuk menyimpan variabel.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

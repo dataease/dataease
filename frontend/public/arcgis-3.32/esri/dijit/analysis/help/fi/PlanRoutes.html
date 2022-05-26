@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Suunnittele reitit</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Suunnittele reitit"></h2>
+        <hr/>
+    <p>Suunnittele reitit -toiminto m&auml;&auml;ritt&auml;&auml;, miten voit jakaa teht&auml;vi&auml; tehokkaasti liikkuvalle ty&ouml;voimalle.
+    </p>
+    <p>Ty&ouml;kalulle m&auml;&auml;ritet&auml;&auml;n pys&auml;hdyspaikat ja pys&auml;hdyspaikoissa k&auml;yvien ajoneuvojen m&auml;&auml;r&auml;. Ty&ouml;kalu liitt&auml;&auml; pys&auml;hdykset ajoneuvoihin ja palauttaa reitit, joissa n&auml;kyy, miten kukin ajoneuvo saavuttaa sille liitetyt pys&auml;hdykset lyhimm&auml;ss&auml; ajassa.
+    </p>
+    <p>Suunnittele reitit -ty&ouml;kalun avulla liikkuva ty&ouml;voima saavuttaa useampia ty&ouml;pisteit&auml; lyhemm&auml;ss&auml; ajassa, mik&auml; lis&auml;&auml; tuottavuutta ja parantaa asiakaspalvelua.
+        <ul>
+            <li>Tutki koteja, ravintoloita tai rakennusty&ouml;maita
+                
+
+            </li>
+            <li>Tarjoa korjaus- tai asennuspalveluja tai teknisi&auml; palveluja
+            </li>
+            <li>Toimita kohteita ja pieni&auml; paketteja
+            </li>
+            <li>Tee myyntik&auml;yntej&auml;
+            </li>
+            <li>Kuljeta ihmisi&auml; kodeista tapahtumaan
+            </li>
+        </ul>
+        
+    </p>
+    <p>Suunnittele reitit &ndash;ty&ouml;kalun tuloksena on karttataso, joka n&auml;ytt&auml;&auml; lyhimm&auml;t reitit pys&auml;hdyspaikkojen v&auml;lill&auml; sek&auml; reitteihin liitetyt pys&auml;hdyspaikat. Tuloksena syntyv&auml; karttataso n&auml;ytt&auml;&auml; my&ouml;s kaikki pys&auml;hdyspaikat, joita ei saavutettu annettujen parametriasetusten takia, sek&auml; ohjekarttatason, joka sis&auml;lt&auml;&auml; kunkin reitin matkasuunnitelman. 
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, analyysi k&auml;ytt&auml;&auml; vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevia kohteita. Jos toimintoa ei ole valittu, huomioon otetaan kaikki sy&ouml;tekarttatason kohteet &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Valitse pistekarttataso, joka esittää pysähdyspaikat</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse niiden pisteiden karttataso, joiden kautta reitin (tai ajoneuvojen) tulisi kulkea. N&auml;ist&auml; pisteist&auml; tulee tulosaineiston m&auml;&auml;ritettyj&auml; tai m&auml;&auml;ritt&auml;m&auml;tt&ouml;mi&auml; pys&auml;hdyksi&auml;. 
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+            <p>Ty&ouml;kalu tukee jopa 2&nbsp;000 l&auml;ht&ouml;aineistokohdetta. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Reittien matkustustapa</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse matkustustapa. Tuloksena syntyv&auml;t reitit kulkevat teit&auml; tai kevyen liikenteen v&auml;yli&auml; pitkin ja noudattavat asianmukaisia s&auml;&auml;nt&ouml;j&auml;, kuten yksisuuntaisia katuja ja auto- ja rekkaliikenteen k&auml;&auml;ntymissuuntakieltoja. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Reitit alkavat pysähdyksistä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, mist&auml; ja milloin ajoneuvot aloittavat reittins&auml;.
+            </p>
+            <p>Suunnittele reitit -ty&ouml;kalun avulla voit m&auml;&auml;ritt&auml;&auml; ajoneuvoille useita aloitussijainteja.
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t yhden pisteen sijainnin, kaikki ajoneuvot l&auml;htev&auml;t kyseisest&auml; pisteest&auml; riippumatta siit&auml;, onko ajoneuvoja yksi vai useita. Voit valita pistekarttatason, jossa on yksi piste, tai lis&auml;t&auml; pisteen karttaan valitsemalla vaihtoehdon  <b>Lis&auml;&auml; piste karttaan</b>, napsauttamalla muokkauspainiketta ja napsauttamalla karttaa. 
+            </p>
+            <p>Kun m&auml;&auml;rit&auml;t useita sijainteja, kullekin ajoneuvolle on m&auml;&auml;ritett&auml;v&auml; oma piste. Ajoneuvojen m&auml;&auml;r&auml;n on vastattava karttatason pisteiden m&auml;&auml;r&auml;&auml;. Valitse useita pisteit&auml; sis&auml;lt&auml;v&auml; karttataso, ja m&auml;&auml;rit&auml; kentt&auml;, joka m&auml;&auml;ritt&auml;&auml; yksil&ouml;llisesti avattavan  <b>Reitin tunnus -kentt&auml;</b> -luettelon yksitt&auml;iset reitit, ajoneuvot tai kuljettajat.
+            </p>
+            <p>Aloitusaika on sama kaikilla reiteill&auml;. Aloitusajan aikavy&ouml;hyke on sama kuin aloituspisteen tai -pisteiden sijainnin aikavy&ouml;hyke, joten varmista, ett&auml; antamasi aika on paikallista aikaa. Oletetaan esimerkiksi, ett&auml; olet Tyynenmeren normaaliajassa (PST, UTC-8) ja reititett&auml;v&auml;t ajoneuvot sijaitsevat Kalliovuorten normaaliajassa (MNT, UTC-7). Jos kello on t&auml;ll&auml; hetkell&auml; 9.30 Tyynenmeren normaaliajassa (10.30 Kalliovuorten normaaliajassa) ja ajoneuvojen on aloitettava reittins&auml; 30 minuutin kuluessa, m&auml;&auml;rit&auml; aloitusajaksi klo 11.00. 
+            </p>
+            <p>Jos ajoneuvot l&auml;htev&auml;t liikkeelle eri aikavy&ouml;hykkeilt&auml;, aloitusaika ei voi olla samanaikainen, vaan ajoneuvot l&auml;htev&auml;t liikkeelle eri aikaan. Jos esimerkiksi yksi reitti alkaa Tyynenmeren normaaliajassa (PST) olevasta pisteest&auml; ja toinen reitti alkaa Kalliovuorten normaaliajassa (MST) olevasta pisteest&auml; ja jos m&auml;&auml;rit&auml;t aloitusajaksi klo 11.00, Tyynenmeren normaaliajassa oleva reitti alkaa klo 11.00 PST ja Kalliovuorten normaaliajassa oleva reitti alkaa klo 11.00 MST eli tunnin aikaerolla.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Reitit päättyvät pysähdyksiin</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, mihin ajoneuvot p&auml;&auml;tt&auml;v&auml;t reittins&auml;.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; reitit p&auml;&auml;ttym&auml;&auml;n johonkin kolmesta sijainnista: 
+                <ul>
+                    <li>samaan sijaintiin, josta reitit alkoivat, riippumatta siit&auml;, ovatko reitit alkaneet yhdest&auml; vai useammasta sijainnista
+                    </li>
+                    <li>yhteen sijaintiin
+                    </li>
+                    <li>useaan sijaintiin &ndash; toisin sanoen yksi p&auml;&auml;tepiste kullekin reitille
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Valitse  <b>Palaa alkuun</b>, jos ajoneuvot aloittavat ja p&auml;&auml;tt&auml;v&auml;t reittins&auml; samassa sijainnissa.
+            </p>
+            <p>Jos haluat reititt&auml;&auml; kaikki ajoneuvot yleiseen p&auml;&auml;tepisteeseen, joka on muu kuin aloituspiste, poista valinta  <b>Palaa alkuun</b> ja lis&auml;&auml; piste karttaan tai valitse karttataso, joka sis&auml;lt&auml;&auml; t&auml;sm&auml;lleen yhden pisteen.
+            </p>
+            <p>Jos haluat, ett&auml; reitit p&auml;&auml;ttyv&auml;t yksil&ouml;llisiin sijainteihin, poista valinta  <b>Palaa alkuun</b> ja valitse karttataso, joka sis&auml;lt&auml;&auml; useita pisteit&auml;. Ajoneuvojen m&auml;&auml;r&auml;n on vastattava valitun karttatason pisteiden m&auml;&auml;r&auml;&auml;. Valitse avattavasta <b>Reitin tunnus -kentt&auml;</b> -luettelosta kentt&auml;, joka m&auml;&auml;ritt&auml;&auml; yksil&ouml;llisesti yksitt&auml;iset reitit, ajoneuvot tai kuljettajat. Jos ajoneuvot l&auml;htev&auml;t liikkeelle useasta sijainnista ja lopettavat useaan sijaintiin, aloitus- ja lopetuskarttatasoille valittujen reittien tunnusten on vastattava toisiaan.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Valitse esteiden karttatasot</h2></div>
+        <hr/>
+        <div>
+            <p> V&auml;hint&auml;&auml;n yksi kohde, joka toimii tilap&auml;isen&auml; rajoitteena (esteen&auml;) liikuttaessa taustalla olevilla kaduilla. Voit m&auml;&auml;ritt&auml;&auml; esteet k&auml;ytt&auml;m&auml;ll&auml; piste-, viiva- tai aluekohteita.
+            </p>
+            <p>Piste-este voi mallintaa kaatunutta puuta, onnettomuutta, katkennutta s&auml;hk&ouml;linjaa tai mit&auml; tahansa, joka katkaisee liikenteen tietyss&auml; kohdassa kadulla. Liikkuminen on sallittu kadulla, mutta ei esteen kohdalla. Voit m&auml;&auml;ritt&auml;&auml; enint&auml;&auml;n 250 piste-esteen&auml; toimivaa kohdetta.
+            </p>
+            <p>Viivaeste est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa este riste&auml;&auml; katujen kanssa. Esimerkiksi paraatia tai mielenosoitusta, joka est&auml;&auml; liikenteen usealla katuosuudella, voidaan mallintaa viivaesteell&auml;. Jos kaikkien viivaesteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 500, ty&ouml;kalu palauttaa virheen.
+            </p>
+            <p>Alue-este est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa alue riste&auml;&auml; katujen kanssa. T&auml;m&auml;ntyyppist&auml; estett&auml; voi k&auml;ytt&auml;&auml; esimerkiksi sellaisten katuverkoston kattavien tulvien mallintamiseen, jotka tekev&auml;t liikkumisen kaduilla mahdottomaksi. Jos kaikkien alue-esteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 2 000, ty&ouml;kalu palauttaa virheen.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Ajoneuvojen enimmäismäärä reitillä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; pys&auml;hdyspaikoissa k&auml;yvien ajoneuvojen m&auml;&auml;r&auml;. Ty&ouml;kalu tukee jopa  100 ajoneuvoa. 
+            </p>
+            <p>Ty&ouml;kalu voi l&ouml;yt&auml;&auml; ratkaisun, jossa k&auml;ytet&auml;&auml;n t&auml;ss&auml; m&auml;&auml;ritt&auml;m&auml;&auml;si lukua v&auml;hemm&auml;n ajoneuvoja pys&auml;hdysten kokonaism&auml;&auml;r&auml;n, m&auml;&auml;ritt&auml;m&auml;si ajoneuvokohtaisen pys&auml;hdysm&auml;&auml;r&auml;n, pys&auml;hdysten v&auml;lisen et&auml;isyyden, kullakin pys&auml;hdyspaikalla vietetyn ajan ja ajoneuvokohtaiselle reitin kokonaisajalle m&auml;&auml;ritetyn rajoituksen mukaan.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Pysähdysten enimmäismäärä ajoneuvoa kohti</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on toinen kahdesta parametrista, jotka tasapainottavat reittien v&auml;list&auml; kokonaiskuormitusta. Voit m&auml;&auml;ritt&auml;&auml; arvoksi 1 -  200. 
+            </p>
+            <p>Pienent&auml;m&auml;ll&auml; kullekin ajoneuvolle liitett&auml;v&auml;&auml; pys&auml;hdysten enimm&auml;ism&auml;&auml;r&auml; ajoneuvoille liitet&auml;&auml;n todenn&auml;k&ouml;isemmin sama m&auml;&auml;r&auml; pys&auml;hdyksi&auml;. N&auml;in voit tasapainottaa kuljettajien v&auml;list&auml; kuormitusta. Haittana voi kuitenkin olla se, ett&auml; tuloksena on ratkaisu, joka ei ole niin tehokas.
+            </p>
+            <p>Lis&auml;&auml;m&auml;ll&auml; ajoneuvokohtaista pys&auml;hdysten m&auml;&auml;r&auml;&auml; ty&ouml;kalulla on enemm&auml;n vapauksia etsi&auml; tehokkaampia ratkaisuja. Kuormitus saattaa kuitenkin jakaantua ep&auml;tasaisesti kuljettajien ja ajoneuvojen v&auml;lill&auml;. Huomaa, ett&auml; voit tasapainottaa kuormituksia ajan mukaan pys&auml;hdysten m&auml;&auml;r&auml;n sijasta m&auml;&auml;ritt&auml;m&auml;ll&auml; arvon  <b>Rajoita ajoneuvokohtaista reitin kokonaisaikaa</b> -parametrille.
+            </p>
+            <p>Seuraavat esimerkit kuvaavat ajoneuvokohtaisen pys&auml;hdysten enimm&auml;ism&auml;&auml;r&auml;n tai reitin kokonaisajan rajoituksen vaikutuksia. Kaikissa esimerkeiss&auml; on kuusi pys&auml;hdyst&auml; ja kaksi reitti&auml;, jotka alkavat samasta sijainnista.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Tasapainotetut pys&auml;hdykset ja matkustusajat">
+                </td>
+                <td>
+                    <p>Tasapainotetut matkustusajat ja pys&auml;hdykset reitti&auml; kohti:
+                    </p>
+                    <p>Pys&auml;hdykset ovat jokseenkin tasaisin v&auml;limatkoin, joten ajoneuvokohtaisten pys&auml;hdysten enimm&auml;ism&auml;&auml;r&auml;n m&auml;&auml;ritys kuormituksen tasaamiseksi johtaa reitteihin, jotka ovat kestoltaan suurin piirtein yht&auml; pitki&auml;.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Reittiajat, joita ei ole tasapainotettu">
+                </td>
+                <td>
+                    <p>Tasapainotetut pys&auml;hdykset, mutta matkustusaikoja ei ole tasapainotettu:
+                    </p>
+                    <p>Viisi kuudesta pys&auml;hdyksest&auml; on sijoitettu l&auml;helle aloitussijaintia, mutta yksi pys&auml;hdys on sijoitettu kauemmaksi muista ja sen saavuttaminen edellytt&auml;&auml; paljon pidemp&auml;&auml; ajoa. Pys&auml;hdysten jakaminen tasaisesti kahden reitin v&auml;lille aiheuttaa sen, ett&auml; matkustusajat eiv&auml;t ole tasapainossa.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Tasapainotetut matkustusajat">
+                </td>
+                <td>
+                    <p>Pys&auml;hdykset, joita ei ole tasapainotettu, mutta matkustusajat on tasapainotettu:
+                    </p>
+                    <p>Pys&auml;hdykset ovat samoissa sijainneissa kuin edellisess&auml; kuvassa, mutta lis&auml;&auml;m&auml;ll&auml; reittikohtaisten pys&auml;hdysten enimm&auml;ism&auml;&auml;r&auml;&auml; ja rajoittamalla ajoneuvokohtaista kokonaismatkustusaikaa matkustusajat tasapainottuvat.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Kullakin pysähdyspaikalla vietetty aika</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; kullakin pys&auml;hdyspaikalla vietetty odotettu keskim&auml;&auml;r&auml;inen palveluaika. Jos m&auml;&auml;rit&auml;t esimerkiksi ty&ouml;p&auml;iv&auml;n aikataulua tarkastajille ja keskim&auml;&auml;r&auml;inen tarkastusaika on 45 minuuttia, kirjoita  <code>45</code>.
+            </p>
+            <p>Palveluajan oletetaan olevan sama kaikilla pys&auml;hdyspaikoilla.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Rajoita ajoneuvokohtaista reitin kokonaisaikaa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; reitin enimm&auml;iskestoaika alusta loppuun. T&auml;m&auml; sis&auml;lt&auml;&auml; odotetun matkustusajan ja reitin kullakin pys&auml;hdyspaikalla kuluneen palveluajan. Jos kuljettajat eiv&auml;t saa ty&ouml;skennell&auml; p&auml;iv&auml;n aikana annettua aikaa pidemp&auml;&auml;n, esimerkiksi kahdeksaa tuntia pidemp&auml;&auml;n, voit m&auml;&auml;ritt&auml;&auml; rajoituksen t&auml;ss&auml;.
+            </p>
+            <p>Lis&auml;tietoja kuormituksen tasauksesta on kohdan  <b>Pys&auml;hdysten enimm&auml;ism&auml;&auml;r&auml; ajoneuvoa kohti</b> ohjeessa.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen kohdekarttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Jos kohdekarttataso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi. Kohdekarttataso sis&auml;lt&auml;&auml; karttatason kullekin seuraavista: reitit, m&auml;&auml;ritetyt pys&auml;hdyspaikat ja m&auml;&auml;ritt&auml;m&auml;tt&ouml;m&auml;t pys&auml;hdyspaikat, jos joitakin sy&ouml;teaineiston pys&auml;hdyspaikkoja ei voi liitt&auml;&auml; yhteenk&auml;&auml;n reittiin.
+            </p>
+            <p>Jos valitset  <b>Sis&auml;llyt&auml; reittikarttatasot</b> -vaihtoehdon, kukin tulosten reitti tallennetaan my&ouml;s reittikarttatasona. Reittikarttataso sis&auml;lt&auml;&auml; kaikki tietyn reitin tiedot, kuten reittiin m&auml;&auml;ritetyt pys&auml;hdykset sek&auml; matkustussuunnat. Reittikarttatasojen luonnista on hy&ouml;ty&auml;, jos haluat jakaa yksitt&auml;iset reitit organisaatiosi muiden j&auml;senten kanssa tai muokata reittej&auml; k&auml;ytt&auml;m&auml;ll&auml; kartankatseluohjelman <b>Reittiohjeet</b>-painiketta. Reittikarttatasot k&auml;ytt&auml;v&auml;t kohdekarttatasolle m&auml;&auml;ritetty&auml; nime&auml; etuliitteen&auml; ja reitin nime&auml;, joka on luotu analyysin aikana. N&auml;in saadaan aikaan yksil&ouml;llinen nimi kullekin reittikarttatasolle.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon kohdekarttataso ja reittikarttatasot (jos sellaiset luodaan) tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

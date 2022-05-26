@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Calcula la distància</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calcula la dist&agrave;ncia"></h2>
+        <hr/>
+    <p>Aquesta eina calcula la dist&agrave;ncia euclidiana, la direcci&oacute; i l'assignaci&oacute; des d'un origen &uacute;nic o un conjunt d'or&iacute;gens.
+    </p>
+    <p>Les aplicacions d'exemple inclouen respondre preguntes com ara:
+
+        <ul>
+            <li>Quina &eacute;s la dist&agrave;ncia a la localitat m&eacute;s propera?
+                
+
+            </li>
+            <li>Quina &eacute;s la dist&agrave;ncia a la carretera m&eacute;s propera?
+                
+
+            </li>
+            <li>Quina &eacute;s la dist&agrave;ncia a la font d'aigua m&eacute;s propera?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats de la capa d'entrada que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de visualitzaci&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Trieu la capa d'ubicació de ràster o entitat per calcular la distància</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que defineix els or&iacute;gens als quals es calcular&agrave; la dist&agrave;ncia. La capa pot ser un servei d'imatges o un servei d'entitats.
+            </p>
+            <p>Per a un servei d'imatges, el tipus d'entrada pot ser un enter o un punt flotant.
+            </p>
+            <p>Per a un servei d'entitats, l'entrada pot ser un punt, una l&iacute;nia o un pol&iacute;gon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distància màxima que es calcularà</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia m&agrave;xima que es calcular&agrave;. Per exemple, si proporcioneu un valor de 10.000 metres, la dist&agrave;ncia euclidiana es calcular&agrave; des de les ubicacions d'origen fins a aquest valor (dist&agrave;ncia).
+            </p>
+            <p>Si no es proporciona cap valor, la dist&agrave;ncia es calcular&agrave; fins a l'extensi&oacute; definida.
+            </p>
+            <p>Les unitats disponibles s&oacute;n quil&ograve;metres, metres, milles i peus.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Mida de la cel·la de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Mida i unitat de la cel&middot;la dels r&agrave;sters de sortida.
+            </p>
+            <p>Les unitats poden ser quil&ograve;metres, metres, milles o peus.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nom de la capa de distància de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nom de la capa de direcció de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b>. Heu de proporcionar un nom que no existeixi a <b>El meu contingut</b>.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nom de la capa d'assignació de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b>. Heu de proporcionar un nom que no existeixi a <b>El meu contingut</b>.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Trieu el camp d'assignació</h2></div>
+        <hr/>
+        <div>
+            <p>Camp de la capa d'origen d'entrada que cont&eacute; els valors que defineixen cada origen. Pot ser un enter o un camp de cadena del dataset d'origen.
+            </p>
+            <p>El valor per defecte &eacute;s  <i>Value</i>. Si s'utilitza un servei d'entitats i no hi ha cap camp <i>Value</i> disponible, s'utilitzar&agrave; el primer enter o camp de cadena disponible. Si no existeix cap camp v&agrave;lid, s'utilitzar&agrave; el camp ObjectID (per exemple, OID o FID, segons el tipus d'entrada d'entitat).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

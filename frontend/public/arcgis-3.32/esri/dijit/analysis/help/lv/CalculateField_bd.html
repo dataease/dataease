@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aprēķināt lauku</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Aprēķināt lauku"></h2>
+        <hr/>
+    <p> &Scaron;is rīks strādā ar ievades slāni, lai aprēķinātu jauna vai eso&scaron;a lauka vērtības. Izveidojiet Arcade izteiksmi, lai aprēķinātu vērtības funkciju apkopo&scaron;anai. Ja jūsu datiem ir iespējota laika funkcija un laika tips, varat papildus izveidot izteiksmes, kuras fiksē mar&scaron;rutu.
+    </p>
+    <p>Piemēram, pieņemsim, ka vēlaties modificēt eso&scaron;u lauku ar nosaukumu  <i>TotalSales</i>. Jūs vēlaties, lai lauku raksturo kopējais pārdo&scaron;anas apjoms 2016.&nbsp;un 2017.&nbsp;gadā. Izmantojot &scaron;os laukus izteiksmē, varat aprēķināt lauka vērtību kā <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Izmantosim citu piemēru. Pieņemsim, ka jums ir GPS mērījumi, kas reģistrē atra&scaron;anās vietu, laiku, autobusa ID un autobusu ātrumu pilsētā. Vēlamies izveidot jaunu lauku ar nosaukumu  <i>SpeedFrom3</i> , kurā katrai funkcijai tiek noteikts vidējais pēdējo 3 reģistrēto GPS mērījumu ātrums. Lai veiktu &scaron;o aprēķinu, mēs lietosim mar&scaron;rutu atpazīsto&scaron;u aprēķinu, kur mar&scaron;ruts ir autobuss, ko apzīmē autobusa ID Aprēķins, kas nosaka vidējo iepriek&scaron;ējo trīs laika posmu ātrumu un pa&scaron;reizējo laika posmu, ir <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, lai aprēķinātu lauka vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti, līnijas, laukumi vai tabula, kurā būs aprēķinātās lauka vērtības.  
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Aprēķināt lauka vērtības laukam</h2></div>
+        <hr/>
+        <div>
+            <p>Jaunais vai eso&scaron;ais lauks, kuram ir &scaron;ī lauka aprēķinātās vērtības un datu veids. Ja aprēķināt jau eso&scaron;a lauka vērtības, datu veids nav jāpielāgo. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Izveidojiet izteiksmi, lai aprēķinātu lauka vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Pievienojiet izteiksmi, izmantojot izteiksmes veidotāju lauka vērtību aprēķinā&scaron;anai. 
+            </p>
+            <p>Piemēram, pieņemsim, ka vēlaties pievienot lauka vērtības ar nosaukumiem  <i>income</i>  un <i>bonus</i>. Lai to izdarītu, pievienojiet izteiksmi <code>$feature[&quot;income&quot;]&nbsp;+&nbsp;$feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Izteiksme ir saistīta ar maršrutu</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet, vai izteiksme ir saistīta ar mar&scaron;rutu. Izteiksme, kas saistīta ar mar&scaron;rutu, ietvers &scaron;ādu formatējumu:  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Ar mar&scaron;rutu saistītās izteiksmēs nepiecie&scaron;ami lauki, lai apzīmētu atsevi&scaron;ķus mar&scaron;rutus. Mar&scaron;rutus var izveidot no punktiem, līnijām, laukumiem vai tabulām, un tiem nepiecie&scaron;ams, lai ievadē ir mar&scaron;ruta noteicējs, un datiem ir iespējota laika funkcija, pamatojoties uz laika mirkli.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizēt datus ar laika intervāliem</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet, vai vēlaties aprēķināt ierakstu vērtības, izmantojot laika intervālus, kas segmentēs datus analīzei. Ja izmantojat laika intervālus, ir jāiestata vajadzīgais laika intervāls un pēc izvēles jānorāda atsauces laiks. Ja nenorādāt atsauces laiku, tiks izmantots 1970. gada 1. janvāris. 
+            </p>
+            <p>Piemēram, ja iestatāt laika robežu 1 diena, sākot ar 9:00 no rīta 1990. gada 1. janvārī, tad katra ieraksta vērtība tiks saīsināta 9:00 no rīta katrai dienai un analizēta &scaron;ajā segmentā. 
+            </p>
+            <p>Laika intervālu izmanto&scaron;ana ir ātrs veids, kā paātrināt skaitļo&scaron;anas laiku, jo tas ātri rada īsākos mar&scaron;rutus analīzei. Ja analīzei ir lietderīgi sadalīt ar atkārtotiem intervāliem, tas ir ieteicams lielai datu apstrādei.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

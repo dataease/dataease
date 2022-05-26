@@ -1,0 +1,30 @@
+{
+	envelope: "URL",
+	transport: "JSONP",
+	callbackParamName: "callback",
+	services: {
+		get: {
+			target: "http://api.dojotoolkit.org/jsdoc/jsonp",
+			parameters: [
+				{ name: "name", type: "string", optional: false },
+				{ name: "exact", type: "boolean", optional: true },
+				{ name: "recursion", type: "boolean", optional: true },
+				{ name: "resource", type: "string", optional: true },
+				{ name: "project", type: "string", optional: true },
+				{ name: "version", type: "string", optional: true },
+				{ name: "attributes", type: "array", optional: true }
+			]
+		},
+		batch: {
+			target: "http://api.dojotoolkit.org/jsdoc/jsonp/batch",
+			parameters: [
+				{ name: "names", type: "array", optional: false },
+				{ name: "exact", type: "boolean", optional: true },
+				{ name: "recursion", type: "boolean", optional: true },
+				{ name: "project", type: "string", optional: true },
+				{ name: "version", type: "string", optional: true },
+				{ name: "attributes", type: "array", optional: false }
+			]
+		}
+	}
+}

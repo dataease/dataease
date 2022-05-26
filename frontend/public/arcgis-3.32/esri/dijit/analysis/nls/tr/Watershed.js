@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/tr/Watershed",{inputLayerLabel:"Ak\u0131\u015f y\u00f6n\u00fc katman\u0131n\u0131 se\u00e7in",pourPointLayerLabel:"Ak\u0131\u015f noktas\u0131 raster\u0131 veya detay katman\u0131n\u0131 se\u00e7in",pourPointField:"Ak\u0131\u015f noktas\u0131 raster\u0131n\u0131 se\u00e7in",resultLayerName:"Sonu\u00e7 katman\u0131 ad\u0131",outputLayerName:"${Layername} katman\u0131n\u0131n su havzas\u0131",itemDescription:"Detay katman\u0131, ${layerName} \u00fczerinde Merkez ve Da\u011f\u0131l\u0131m\u0131 \u00d6zetle \u00e7al\u0131\u015ft\u0131r\u0131larak olu\u015fturuldu. ",
+itemTags:"Analiz Sonucu, Su Havzas\u0131, ${layername}, ${fieldname}",itemSnippet:"Detay katman\u0131 Bo\u015faltma Havzas\u0131ndan olu\u015fturuldu."});

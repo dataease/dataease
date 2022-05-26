@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/SummarizeCenterAndDispersion",{inputLayerLabel:"Valige kirjeldatav kiht",summaryTypes:"Kokkuv\u00f5tte t\u00fc\u00fcbid",centralFeature:"Tsentraalobjekt",meanCenter:"Tsentraalpunkt",medianCenter:"Tsentraalpunkt",ellipse:"Ellips",weightBy:"Kaalu alusel (valikuline)",groupBy:"R\u00fchmitamise alusel (valikuline)",resultLayerName:"Tulemkihi nimi",outputLayerName:"Kirjelda kihi ${layerName} jaotust",none:"Puudub",itemDescription:"Objektikiht loodi kihi ${layerName}\u00a0tsentri summeerimise ja dispersioon abil. ",
+itemTags:"Anal\u00fc\u00fcsitulemus, keskme ja hajutatuse summeerimine, ${layerName}",itemSnippet:"Objektikiht loodi tsentri summeerimise ja dispersiooni abil."});

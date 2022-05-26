@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Wybierz najlepsze placówki</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Wybierz najlepsze plac&oacute;wki"></h2>
+        <hr/>
+    <p>Narzędzie Wybierz najlepsze plac&oacute;wki pozwala wybrać najlepsze lokalizacje dla plac&oacute;wek. Przydziela ono lokalizacje z zapotrzebowaniem do plac&oacute;wek w spos&oacute;b spełniający podany cel.
+    </p>
+    <p>Plac&oacute;wki to lokalizacje świadczące określone usługi, na przykład posterunki straży pożarnej, szkoły, biblioteki, sklepy lub centra dystrybucji. Lokalizacje zapotrzebowania to lokalizacje, w kt&oacute;rych występuje zapotrzebowanie na usługi oferowane przez plac&oacute;wki, na przykład punkty blok&oacute;w spisowych podsumowujące populację w danym obszarze.
+    </p>
+    <p>Narzędzie Wybierz najlepsze plac&oacute;wki może pom&oacute;c odpowiedzieć na następujące pytania
+        <ul>
+            <li>Jak, w razie niebezpieczeństwa, przypisywać gospodarstwa domowe do właściwych centr&oacute;w ratunkowych, jeśli liczba ł&oacute;żek w tych centrach jest ograniczona i nie należy jej przekraczać?
+            </li>
+            <li>Jak przypisać osoby z okolicy do najbliższej filii biblioteki oraz znajdować liczbę potencjalnych stałych klient&oacute;w, kt&oacute;rych może obsłużyć dana filia? 
+            </li>
+            <li>Jak znaleźć najlepszą lokalizację dla centrum dystrybucyjnego branży spożywczej, kt&oacute;ra zminimalizuje og&oacute;lny czas dojazdu (a tym samym koszty) dostawy towar&oacute;w do sieci sklep&oacute;w spożywczych?
+            </li>
+            <li>Gdzie należy zlokalizować nowy park, aby jak największa liczba mieszkańc&oacute;w miała do niego nie dalej niż pięć minut spacerem?
+            </li>
+            <li>Jakie są najlepsze lokalizacje dla kilku sklep&oacute;w zoologicznych w powiecie, aby 40 procent właścicieli zwierząt domowych w tym powiecie mieszkało nie dalej niż dziesięć minut jazdy samochodem od najbliższego sklepu?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cel</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj cel, kt&oacute;ry zostanie zrealizowany po przydzieleniu lokalizacji zapotrzebowania do plac&oacute;wek.
+            </p>
+            <p>Dzięki narzędziu Wybierz najlepsze plac&oacute;wki można podać typ rozwiązywanego problemu &mdash; Cel. Narzędzie jest zoptymalizowane pod kątem podania rozwiązania dla tego konkretnego celu. Niezależnie od celu, do uzyskania rozwiązania jest używana w zasadzie ta sama bazowa metoda &mdash; wartość zapotrzebowania z danej lokalizacji zapotrzebowania jest przypisywana do najbliższej plac&oacute;wki. Cele zmieniają spos&oacute;b obsługi wzajemnego powiązania odległości (lub czasu) i zapotrzebowania. Narzędzie uwzględnia zar&oacute;wno odległość/czas dojazdu, jak i wartość zapotrzebowania oraz &mdash; w niekt&oacute;rych przypadkach &mdash; możliwości plac&oacute;wki. Jeśli cel preferuje na przykład minimalizację czasu dojazdu, narzędzie będzie także, choć z niższym priorytetem, dążyło do zmaksymalizowania przydzielonego zapotrzebowania. Podobnie jeśli celem jest maksymalizacja przydzielonego zapotrzebowania, narzędzie zrobi to, minimalizując jednocześnie czas dojazdu (przez przypisanie lokalizacji zapotrzebowania do najbliższej plac&oacute;wki, a nie do kt&oacute;rejkolwiek plac&oacute;wki).
+            </p>
+            <p>Zależnie od danych i używanych ustawień r&oacute;żne cele mogą generować takie same lub podobne wyniki. Należy jednak podać cel, kt&oacute;ry jest najbardziej odpowiedni dla przeprowadzonej analizy.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Przydziel do istniejących placówek</h2></div>
+        <hr/>
+        <div>
+            <p>Użyj tego celu, jeśli nie chcesz lokalizować nowych plac&oacute;wek, tylko przypisać zapotrzebowanie do istniejących plac&oacute;wek, kt&oacute;re mogą mieć ograniczone lub nieograniczone możliwości.    
+            </p>
+            <p>Ten cel przypisuje zapotrzebowanie do plac&oacute;wek na podstawie możliwości plac&oacute;wki i wartości zapotrzebowania z otaczającego obszaru. Zapotrzebowanie jest przydzielane do najbliższej plac&oacute;wki, aż do wyczerpania dostępnych możliwości. Jeśli podasz maksymalny zakres podr&oacute;ży, żadne lokalizacje zapotrzebowania spoza tego zasięgu nie zostaną przypisane do plac&oacute;wki, nawet jeśli całe zapotrzebowanie nie zostało całkowicie przydzielone.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimalizuj dojazd</h2></div>
+        <hr/>
+        <div>
+            <p>Użyj tego celu, jeśli chcesz zlokalizować plac&oacute;wki w taki spos&oacute;b, aby czas dojazdu lub odległość dojazdu między lokalizacjami zapotrzebowania i plac&oacute;wkami była minimalizowana.
+            </p>
+            <p>Ten cel jest często stosowany w przypadkach, gdy odległość między plac&oacute;wką i wszystkimi lokalizacjami zapotrzebowania jest pokonywana regularnie. Można go użyć na przykład do minimalizacji og&oacute;lnego dystansu pokonywanego podczas przewożenia towar&oacute;w z centrum dystrybucyjnego do sklep&oacute;w lub do wyboru miejsca na konferencję w taki spos&oacute;b, aby zminimalizować czas dojazdu wszystkich uczestnik&oacute;w.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksymalizuj pokrycie</h2></div>
+        <hr/>
+        <div>
+            <p>Użyj tego celu, aby zmaksymalizować wartość zapotrzebowania pokrywaną w ramach określonego czasu lub odległości dojazdu do plac&oacute;wki.    
+            </p>
+            <p>Dla tego celu plac&oacute;wki są lokalizowane w taki spos&oacute;b, aby przydzielić maksymalną wartość zapotrzebowania, a całkowite zapotrzebowanie z każdej lokalizacji zapotrzebowania było przydzielone do jednej plac&oacute;wki, kt&oacute;ra znajduje się najbliżej.
+            </p>
+            <p>Dla tego celu konieczne jest ograniczenie maksymalnego zasięgu dojazdu; w przeciwnym razie całe zapotrzebowanie mogłoby zostać przypisane do jednej plac&oacute;wki. Lokalizacje zapotrzebowania, dla kt&oacute;rych odległość lub czas dojazdu do plac&oacute;wki przekracza ustawioną wartość, nie będą przydzielane (z tej analizy można się dowiedzieć, gdzie zapotrzebowanie nie zostało zaspokojone i gdzie mogą być potrzebne dodatkowe plac&oacute;wki).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksymalizuj pokrycie według możliwości</h2></div>
+        <hr/>
+        <div>
+            <p>Użyj tego celu, aby zmaksymalizować wartość zapotrzebowania pokrywaną przez plac&oacute;wki o ograniczonych możliwościach.    
+            </p>
+            <p>Ten cel wybiera plac&oacute;wki, dla kt&oacute;rych przydzielono maksymalną wartość zapotrzebowania bez przekraczania możliwości kt&oacute;rejkolwiek plac&oacute;wki. Całe zapotrzebowanie z każdej lokalizacji zapotrzebowania jest przydzielane do jednej plac&oacute;wki, kt&oacute;ra znajduje się najbliżej i ma dostępne możliwości (to znaczy, że w przypadku gdyby przypisanie popytu do plac&oacute;wki przekroczyło jej możliwości, dana lokalizacja zapotrzebowania nie zostanie przypisana wcale, a nie będzie przypisywana w możliwej części).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Pokryj procent zapotrzebowania</h2></div>
+        <hr/>
+        <div>
+            <p>Użyj tego celu, jeśli chcesz znaleźć minimalną liczbę plac&oacute;wek potrzebnych do pokrycia określonego procentu zapotrzebowania.
+            </p>
+            <p>Ten cel wybiera minimalną liczbę plac&oacute;wek potrzebnych do pokrycia określonego procentu zapotrzebowania. W przypadku lokalizacji zapotrzebowania znajdujących się w maksymalnym zakresie dojazdu od dw&oacute;ch lub większej liczby plac&oacute;wek, zapotrzebowanie z tej lokalizacji zostanie podzielone na plac&oacute;wki proporcjonalnie do odległości od każdej z nich. Ten cel jest często używany, gdy mieszkańcy mają wyb&oacute;r, z kt&oacute;rej plac&oacute;wki skorzystać i zakłada się, że w og&oacute;lności odwiedzą oni najbliższą plac&oacute;wkę (traktując wszystkie inne atrybuty jako r&oacute;wne).
+            </p>
+            <p>W przeciwieństwie do innych cel&oacute;w, w kt&oacute;rych użytkownik podaje liczbę plac&oacute;wek do wyboru, ten cel sam wybiera liczbę plac&oacute;wek na podstawie procentu zapotrzebowania, kt&oacute;ry ma zostać pokryty. W tym celu zakłada się, że plac&oacute;wki mają nieograniczone możliwości.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Zmierz</h2></div>
+        <hr/>
+        <div>
+            <p>Podobnie jak w przypadku innych narzędzi, kt&oacute;re uwzględniają dojazdy w analizach, można podać, czy dojazd jest mierzony w jednostkach odległości czy czasu oraz wybrać jeden z tryb&oacute;w dojazdu, takich jak spacer pieszo, czas jazdy samochodem, czas jazdy w obszarach wiejskich itd. Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji. Podczas korzystania z narzędzi  <b>Czas jazdy</b>, <b>Czas jazdy w obszarach wiejskich</b> lub <b>Czas przejazdu samochodem ciężarowym</b> można opcjonalnie uwzględnić natężenie ruchu w konkretnym dniu tygodnia oraz dla konkretnej pory dnia.
+            </p>
+            <p> Aby dokładnie przydzielić lokalizacje zapotrzebowania do plac&oacute;wek, należy podać, czy dojazd odbywa się z plac&oacute;wki do lokalizacji zapotrzebowania (na przykład z posterunku straży pożarnej do domu) albo z lokalizacji zapotrzebowania do plac&oacute;wki (jak w przypadku stałych klient&oacute;w bibliotek). Narzędzie Wybierz najlepszą plac&oacute;wkę uwzględni kierunek dojazdu na ulicach jednokierunkowych, możliwość skrętu z jednej ulicy w inną, zakazy skręt&oacute;w w lewo na skrzyżowaniach i tym podobne, zależnie od tego, czy dojazd odbywa się od plac&oacute;wki do lokalizacji zapotrzebowania, czy z lokalizacji zapotrzebowania do plac&oacute;wek.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Warstwa lokalizacji zapotrzebowania</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe reprezentujące lokalizacje z zapotrzebowaniem na usługi oferowane przez plac&oacute;wki. Narzędzie przypisuje te lokalizacje zapotrzebowania do odpowiednich plac&oacute;wek na podstawie wybranego celu.
+            </p>
+            <p>Z lokalizacjami zapotrzebowania są powiązane wartości zapotrzebowania. Użyj stałej wartości, jeśli wszystkie lokalizacje mają takie samo zapotrzebowanie. Jeśli wartość zapotrzebowania r&oacute;żni się w poszczeg&oacute;lnych lokalizacjach, użyj pola w warstwie lokalizacji zapotrzebowania, aby podać wartość dla każdej lokalizacji zapotrzebowania.
+            </p>
+            <p>Zapotrzebowanie będzie przydzielane do plac&oacute;wek, dop&oacute;ki nie zostanie rozdzielone w całości, niezależnie od odległości lokalizacji zapotrzebowania od plac&oacute;wek. Warstwie lokalizacji zapotrzebowania można przypisać maksymalny zasięg lub czas dojazdu w celu wyznaczenia odległości maksymalnej &mdash; żadne lokalizacje znajdujące się dalej od plac&oacute;wek nie zostaną przydzielone. Użyj stałej wartości, jeśli wszystkie lokalizacje mają taki sam maksymalny zasięg dojazdu. Jeśli maksymalny zasięg dojazdu r&oacute;żni się w poszczeg&oacute;lnych lokalizacjach zapotrzebowania, użyj pola w warstwie lokalizacji zapotrzebowania, aby podać wartość dla każdej lokalizacji zapotrzebowania.
+            </p>
+            <p>Jeśli typ celu to  <b>Pokryj procent zapotrzebowania</b>, należy podać minimalny procent zapotrzebowania, kt&oacute;ry ma przechwytywać plac&oacute;wka.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+            <p>Narzędzie jest w&nbsp;stanie obsłużyć do 10&nbsp;000 obiekt&oacute;w w warstwie lokalizacji zapotrzebowania.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Warstwa wymaganych placówek</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe reprezentujące lokalizacje, kt&oacute;re działają jako plac&oacute;wki i świadczą pewne rodzaje usług. Wymagane plac&oacute;wki reprezentują zwykle lokalizacje już istniejące, w przeciwieństwie do potencjalnych plac&oacute;wek, reprezentujących lokalizacje, w kt&oacute;rych nowe plac&oacute;wki zostaną zbudowane lub rozmieszczone. Podczas przydzielania lokalizacji zapotrzebowania narzędzie używa najpierw plac&oacute;wek z warstwy  <b>Warstwa wymaganych plac&oacute;wek</b>, a następnie plac&oacute;wek z warstwy <b>Warstwa potencjalnych plac&oacute;wek</b>.
+            </p>
+            <p>Możliwości wymaganych plac&oacute;wek mogą być nieograniczone (plac&oacute;wka może zaspokoić całe przypisane zapotrzebowanie) lub ograniczone. Jeśli wszystkie plac&oacute;wki mają te same ograniczone możliwości (na przykład liczbę gospodarstw domowych obsługiwanych przez posterunek straży pożarnej &mdash; przyjmijmy 4000), to należy podać stałą wartość. Jeśli możliwości poszczeg&oacute;lnych plac&oacute;wek są r&oacute;żne (na przykład liczba miejsc dostępnych dla student&oacute;w pierwszego roku w każdej szkole wyższej), to należy podać pole zawierające liczbową wartość możliwości dla każdej plac&oacute;wki.
+            </p>
+            <p>Narzędzie obsługuje do 100 obiekt&oacute;w w  <b>Warstwie wymaganych plac&oacute;wek</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Warstwa potencjalnych placówek</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe reprezentujące lokalizacje, kt&oacute;re działają jako plac&oacute;wki i świadczą pewne rodzaje usług. Potencjalne plac&oacute;wki reprezentują zwykle lokalizacje, w kt&oacute;rych nowe plac&oacute;wki mają zostać zbudowane lub rozmieszczone, w przeciwieństwie do plac&oacute;wek wymaganych reprezentujących zazwyczaj lokalizacje, w kt&oacute;rych już istnieją plac&oacute;wki.
+            </p>
+            <p>Zależnie od celu analizy, należy podać liczbę plac&oacute;wek potencjalnych, kt&oacute;re mogą być wybierane ze zbioru plac&oacute;wek potencjalnych. Jeśli zostaną podane zar&oacute;wno plac&oacute;wki wymagane, jak i potencjalne, narzędzie używa najpierw plac&oacute;wek z  <b>Warstwy wymaganych plac&oacute;wek</b>, a następnie plac&oacute;wek z <b>Warstwy potencjalnych plac&oacute;wek</b>.
+            </p>
+            <p>Możliwości potencjalnych plac&oacute;wek mogą być nieograniczone (plac&oacute;wka może zaspokoić całe przypisane zapotrzebowanie) lub ograniczone. Jeśli wszystkie plac&oacute;wki mają te same ograniczone możliwości (na przykład liczbę gospodarstw domowych obsługiwanych przez posterunek straży pożarnej &mdash; przyjmijmy 4000), to należy podać stałą wartość. Jeśli możliwości poszczeg&oacute;lnych plac&oacute;wek są r&oacute;żne (na przykład liczba miejsc dostępnych dla student&oacute;w pierwszego roku w każdej szkole wyższej), to należy podać pole zawierające liczbową wartość możliwości dla każdej plac&oacute;wki.
+            </p>
+            <p>Narzędzie obsługuje do 1000 obiekt&oacute;w w  <b>Warstwie potencjalnych plac&oacute;wek</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Wybierz warstwy barier</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden lub większa liczba obiekt&oacute;w, kt&oacute;re pełnią rolę ograniczeń tymczasowych (innymi słowy barier) utrudniających podr&oacute;żowanie po ulicach, na kt&oacute;rych się znajdują. Bariery można definiować przy użyciu obiekt&oacute;w punktowych, liniowych lub poligonowych.
+            </p>
+            <p>Bariera punktowa może modelować powalone drzewo, wypadek, zerwaną linię energetyczną lub inny obiekt, kt&oacute;ry całkowicie blokuje ruch drogowy w określonej pozycji wzdłuż ulicy. Na tej ulicy ruch drogowy jest dozwolony, ale jest blokowany przez barierę. Można zdefiniować do 250 obiekt&oacute;w pełniących rolę barier punktowych.
+            </p>
+            <p>Bariery liniowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie przecinają się z ulicą. Przy użyciu bariery liniowej można na przykład modelować paradę lub marsz protestacyjny, kt&oacute;ry blokuje ruch drogowy na kilku odcinkach ulic. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery liniowe przekracza 500, narzędzie zwraca błąd.
+            </p>
+            <p>Bariery poligonowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie poligon przecina się z ulicą. Przy użyciu barier tego typu można na przykład modelować powodzie występujące na obszarach sieci ulicznej, kt&oacute;re uniemożliwią ruch drogowy w danym rejonie. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery poligonowe przekracza 2000, narzędzie zwraca błąd.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Warstwa wynik&oacute;w będzie zawierać następujące warstwy: plac&oacute;wki z przypisanym zapotrzebowaniem, lokalizacje zapotrzebowania przydzielone do plac&oacute;wek i linie przydziału łączące lokalizacje zapotrzebowania z przypisanymi plac&oacute;wkami. Linie przydziału są rysowane jako linie proste; jednak czas dojazdu lub odległość dojazdu między plac&oacute;wką i lokalizacjami zapotrzebowania jest zawsze oparta na podanym trybie dojazdu i w obliczeniach nie używa się odległości w linii prostej.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

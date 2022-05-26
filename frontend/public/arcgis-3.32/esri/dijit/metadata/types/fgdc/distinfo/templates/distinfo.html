@@ -1,0 +1,93 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'distinfo',minOccurs:0,maxOccurs:'unbounded',
+      label:'${i18nFgdc.distinfo.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,
+          label:'${i18nFgdc.distinfo.section.distributor}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'distrib',showHeader:false,
+            label:'${i18nFgdc.distinfo.distrib}'">
+          <div data-dojo-type="esri/dijit/metadata/types/fgdc/cntinfo/cntinfo"></div>
+        </div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,
+          label:'${i18nFgdc.distinfo.section.description}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'resdesc',minOccurs:0,preferOpen:true,
+            label:'${i18nFgdc.distinfo.resdesc.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputSelectOne">
+            <div data-dojo-type="esri/dijit/metadata/form/Options">
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'',value:''"></div>
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.liveData}',value:'Live Data and Maps'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.downloadableData}',value:'Downloadable Data'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.offlineData}',value:'Offline Data'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.staticMapImages}',value:'Static Map Images'"></div>                  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.sDocument}',value:'Other Documents'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.application}',value:'Applications'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.geographicService}',value:'Geographic Services'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.clearingHouse}',value:'Clearinghouses'"></div>  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.mapFiles}',value:'Map Files'"></div>                  
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.distinfo.resdesc.geographicActivies}',value:'Geographic Activities'"></div>                                                          
+              <div data-dojo-type="esri/dijit/metadata/form/Option"
+                data-dojo-props="label:'${i18nFgdc.alternates.other}',value:'_other',isOther:true"></div>  
+            </div>            
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'distliab',
+            label:'${i18nFgdc.distinfo.distliab}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,
+          label:'${i18nFgdc.distinfo.section.orderProcess}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'custom',minOccurs:0,
+            label:'${i18nFgdc.distinfo.custom}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,
+          label:'${i18nFgdc.distinfo.section.prerequisites}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'techpreq',minOccurs:0,
+            label:'${i18nFgdc.distinfo.techpreq}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,
+          label:'${i18nFgdc.distinfo.section.availability}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'availabl',minOccurs:0,
+            label:'${i18nFgdc.distinfo.availabl}'">
+          <div data-dojo-type="esri/dijit/metadata/types/fgdc/timeinfo/timeinfo"></div>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+  
+</div>

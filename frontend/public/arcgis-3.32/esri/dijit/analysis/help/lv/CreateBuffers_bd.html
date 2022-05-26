@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izveidot buferus</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Izveidot buferus"></h2>
+        <hr/>
+    <p>Buferis ir zona, kas aptver noteiktu attālumu no kāda punkta, līnijas vai laukuma elementa. 
+    </p>
+    <p>Buferi parasti izmanto, lai radītu zonas, kuras varēs turpināt analizēt, izmantojot citus instrumentus. Piemēram, ja jautājums ir &bdquo;Kuras ēkas atrodas 1&nbsp;kilometra attālumā no skolas?&rdquo;, atbildi var atrast, izveidojot 1&nbsp;km buferi ap skolu un pārklājot ar buferi slāni, kas satur ēkas. Gala rezultāts ir &scaron;o ēku slānis 1&nbsp;kilometra attālumā no skolas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties slāni, kuram lietot buferzonu</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu, līniju vai laukuma elementi, kam pielietot buferzonu Ievades  slāņiem ir jābūt plānotajā koordinātu sistēmā, vai apstrādes telpiskā atskaite ir jāiestata uz plānoto koordinātu sistēmu, izmantojot  <b>Analīzes darba vidi</b>.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Izvēlēties lietojamā bufera veidu</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades elementu bufera izmēru var norādīt trijos veidos: 
+                <ul>
+                    <li>Norādīt attālumu, kas tiek lietots visiem elementiem.
+                    </li>
+                    <li>Norādīt ievades slāņa lauku, kas ietver attāluma vērtību. Varat izmantot teksta lauku vai skaitļu lauku. Ja nav definēta lineārā mērvienība, tiks izmantotas telpiskās atskaites mērvienības. Izmantojot ģeogrāfisko koordinātu sistēmu, tiks pieņemts, ka laukā bez norādītām mērvienībām, tiks izmantoti metri. 
+                    </li>
+                    <li>Izveidot izteiksmi ar vairākiem laukiem un matemātiskajiem operatoriem. Piemēram: lai izveidotu buferzonu, kas 10&nbsp;reizes lielāka par lauka  <i>wind_speed</i> vērtību, pievienojiet izteiksmi <i>$feature[&quot;wind_speed&quot;]&nbsp;&times;&nbsp;10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Izvēlēties buferzonas metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Varat izvēlēties  <b>Plaknes</b> metodi vai <b>Ģeodēzisko</b> metodi. <b>Plaknes</b> metode var būt ātrāka un ir piemērota projekcijas datu lokālajai analīzei. <b>Ģeodēziskā</b> metode ir piemērota lielām teritorijām un jebkurai ģeogrāfiskajai koordinātu sistēmai.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Izvēlēties izšķīdināšanas metodes veidu</h2></div>
+        <hr/>
+        <div>
+            <p>Opcijas robežu iz&scaron;ķīdinā&scaron;anas metodes norādī&scaron;anai. Ja izvēlēta teritoriju sapludinā&scaron;anas metode, tiks piedāvāta opcija izveidot vairākdaļu vai viendaļīgas teritorijas, un varēsit aprēķināt statistiku, pamatojoties uz pieejamajiem laukiem.
+                <ul>
+                    <li> <b>Visi</b> -tiks iz&scaron;ķīdināti visi teritorijas elementi. Ja ir atļauti vairākdaļu elementi, visi teritorijas elementi tiks sapludināti vienā elementā. Ja vairākdaļu iespēja nav atļauta, tiks sapludināti teritoriju elementi, kas pieskaras vai pārklājas.
+                    </li>
+                    <li> <b>Lauki</b> -tiks sapludināti teritoriju elementi, kam kopīgs norādītais lauks vai lauku kombinācija. Ja ir atļauti vairākdaļu elementi, visi teritorijas elementi, kam kopīgs lauks, tiks sapludināti vienā elementā. Ja vairākdaļu iespēja nav atļauta, tiks sapludināti elementi ar vienādu lauka vērtību, kas,kas pieskaras vai pārklājas.
+                    </li>
+                    <li> <b>Neviens</b>- teritoriju elementi netiks sapludināti. Tā ir noklusējuma vērtība.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Atļaut vairākdaļu elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Opcija norādīt, vai rezultātu veidos viendaļīgi vai vairākdaļu elementi. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Atzīmēta- jūsu analīzes rezultātos būs ietverti vairākdaļu elementi.   
+                    </li>
+                    <li>Neatzīmēta- jūsu analīzes rezultātos būs ietverti viendaļīgi elementi. &Scaron;ī ir noklusējuma opcija.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p> Varat aprēķināt apkopoto elementu statistikuJūs varat aprēķināt tālāk norādītās vērtības ciparu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jūs varat aprēķināt tālāk norādītās vērtības virkņu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlieties ArcGIS datu krātuvi, kur saglabāt rezultātus</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot tad, ja ir sagaidām GeoAnalytics rezultātu apjoma palielinā&scaron;anās, kā arī tad, ja ir nepiecie&scaron;ams izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

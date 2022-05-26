@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dodaj podatke</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Dijagram toka posla &bdquo;Dodaj podatke&ldquo;"></h2>
+        <hr/>
+    <p>Ova alatka dodaje podatke već postojećem hostovanom sloju geoobjekata. &bdquo;Dodaj podatke&ldquo; modifikuje prvobitni ulazni sloj i ne generi&scaron;e novi izlazni sloj. Polja možete da podudarate na osnovu naziva ili tipa polja, ili možete da primenite naprednije metode podudaranja.
+    </p>
+    <p>Slede neki primeri: 
+        <ul>
+            <li>Vi ste zaposleni u velikoj osiguravajućoj kompaniji koja generi&scaron;e zapise o prodaju na mesečnom nivou. Za godi&scaron;nji izve&scaron;taj mesečni podaci moraju da budu sastavljeni za analizu. Da biste pokrenuli analizu prodaje, možete da iskoristite opciju &bdquo;Dodaj podatke&ldquo; da biste ažurirali sloj &bdquo;Godi&scaron;nji izve&scaron;taj za 2018.&ldquo; kada mesečne cifre postanu dostupne. Po&scaron;to znate da va&scaron;a organizacija održava konzistentnu &scaron;emu svakog meseca, možete da koristite podrazumevano mapiranje polja kako biste efikasno dodali geoobjekte na osnovu naziva i tipa polja.
+            </li>
+            <li>Svaka od deset grupa za za&scaron;titu životne sredine prikupila je stotine hiljada klimatskih merenja u okviru svoje nadležnosti. Ove organizacije žele da sastave svoje podatke kako bi bolje razumeli regionalne i globalne obrasce. Svaka organizacija određuje &scaron;emu za svoj skup podataka. Svaka je navela različite nazive polja za podatke o temperaturi i brzini vetra. Ako se uzmu u obzir razlike u nazivima polja između skupova podataka,  mapiranje polja može da bude iskori&scaron;ćeno za obja&scaron;njenje kako da se dodaju merenja temperature i brzine vetra u odgovarajuća polja.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj na koji se dodaje</h2></div>
+        <hr/>
+        <div>
+            <p>Tabelarni, tačkasti, linijski ili poligonalni geoobjekti kojima će podaci biti dodati.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Sloj na koji dodajete će biti izmenjen tokom izvr&scaron;avanja alatke. Pre nastavka, uverite se da želite da izmenite ovaj sloj.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili hostovani sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Odaberite sloj na koji se dodaje</h2></div>
+        <hr/>
+        <div>
+            <p>Tabelarni, tačkasti, linijski ili poligonalni geoobjekti koji se dodaju u ulazni sloj.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Dodajte sve geoobjekte ili definišite podskup (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Prepoznaje podatke koji se dodaju. Ovaj parametar je opcioni.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Odaberite kako se dodaju polja (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi kako se dodaju dodatna polja sloja u ulazni sloj. Prema podrazumevanim postavkama, sva podudarajuća ulazna i dodatna polja će biti dodata. Polja se podudaraju ako imaju isti naziv polja i isti tip polja. Opciono, možete da izaberete kako se polja podudaraju ili da izračunate Arcade izraze za popunjavanje vrednosti polja.
+            </p>
+            <p>Na primer, imate ulazni sloj sa  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> poljima i dodati sloj sa <i>field_string</i>, <i>field_number</i> i <i>MY_DATE_FIELD</i> poljima.
+                <ul>
+                    <li>Prema podrazumevanim postavkama, alatka će podudarati  <i>field_number</i> u ulaznom sloju sa <i>field_number</i> u dodatom sloju, i <i>field_string</i> u ulaznom sloju sa <i>field_string</i> u dodatom sloju.
+                    </li>
+                    <li>Prema podrazumevanim postavkama, ulazni sloj <i>date_field</i> i <i>unused_field</i> polja će biti popunjena vrednostima <i>null</i> jer nemaju podudarajuće polje u dodatom sloju.
+                    </li>
+                    <li>Opciono, možete da dodate vrednosti u polja za koja nema automatskog podudaranja prema podrazumevanim vrednostima. Na primer,  <i>date_field</i> u ulaznom polju može da se podudari sa dodatim poljem <i>MY_DATE_FIELD</i>. Da biste ovo uradili, koristite padajući meni pored <i>date_field</i> u prvoj koloni i selektujte <i>MY_DATE_FIELD</i> iz padajućeg menija u drugoj koloni.
+                    </li>
+                </ul>
+                 Kao jo&scaron; jedan primer, ulazni sloj ima numerička polja <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, i <i>my_Average</i>, i dodati sloj ima numerička polja <i>value_1</i>, <i>value_2</i> i <i>value_3</i>.
+                <ul>
+                    <li>Podrazumevano,  <i>value_1</i>, <i>value_2</i> i <i>value_3</i> će imati podudaranja i biće dodata.
+                    </li>
+                    <li>Osim podrazumevanih postavki, vrednosti se mogu izračunati za  <i>my_Average</i> polje. Uradite to koristeći vi&scaron;e polja i matematičkih operacije selektovanjem opcije <b>Izraz</b> iz padajućeg menija u koloni pored <i>my_Average</i> i izradom prilagođenog Arcade izraza kao &scaron;to je <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

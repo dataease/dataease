@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Resumir centro y dispersión</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Resumir centro y dispersi&oacute;n"></h2>
+        <hr/>
+    <p>Esta herramienta busca entidades centrales y distribuciones direccionales.
+Puede usarse para responder a preguntas tales como:
+        <ul>
+            <li>&iquest;D&oacute;nde est&aacute; el centro?
+            </li>
+            <li>&iquest;Qu&eacute; entidad es la m&aacute;s accesible desde el resto de entidades?
+            </li>
+            <li>&iquest;Cu&aacute;n dispersas, compactas o integradas est&aacute;n las entidades?
+            </li>
+            <li>&iquest;Hay tendencias direccionales?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n las entidades de la capa de entrada que est&aacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Elegir una capa que se desea describir</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos, l&iacute;neas o &aacute;rea que se utilizar&aacute; para buscar entidades centrales y distribuciones direccionales.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Tipos de resúmenes</h2></div>
+        <hr/>
+        <div>
+            <p>El m&eacute;todo para resumir el centro y la dispersi&oacute;n. 
+            </p>
+            <ul>
+                <li>Entidad central: identifica la entidad ubicada m&aacute;s cerca del centro en un dataset.
+                </li>
+                <li>Centro medio: identifica el centro geogr&aacute;fico (o el centro de concentraci&oacute;n) de un grupo de entidades.
+                </li>
+                <li>Centro mediano: identifica la ubicaci&oacute;n que minimiza la distancia euclidiana total a las entidades de un dataset.
+                </li>
+                <li>Elipse: crea elipses de desviaci&oacute;n est&aacute;ndar para resumir las caracter&iacute;sticas espaciales de las entidades geogr&aacute;ficas: tendencia central, dispersi&oacute;n y tendencias direccionales. Las elipses pueden ser desviaciones est&aacute;ndar de tama&ntilde;o 1, 2 o 3.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Ponderar por (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>El campo que se utiliza para pesar las ubicaciones de acuerdo con la importancia relativa. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Agrupar por (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>El campo que se utiliza para agrupar entidades para c&oacute;mputos separados de entidades centrales o de dispersi&oacute;n. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

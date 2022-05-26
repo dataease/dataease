@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Obogati iz viševarijabilne mreže</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Obogati iz vi&scaron;evarijabilne mreže"></h2>
+        <hr/>
+    <p>Alat  Obogati iz vi&scaron;evarijabilne mreže učinkovito pridružuje atribute iz vi&scaron;evarijabilne mreže u točkasti sloj.
+    </p>
+    <p>Vi&scaron;evarijabilna mreža jest bilo koji sloj stvoren pomoću alata Izradi vi&scaron;evarijabilnu mrežu, koji prikuplja atribute iz vi&scaron;e slojeva u jednu mrežu poligona. Upotreba vi&scaron;evarijabilne mreže za obogaćivanje omogućuje vam brzo dodavanje velikih i raznolikih zbirki informacija u točkaste podatke za upotrebu u daljnjoj prostornoj analizi.
+    </p>
+    <p>Na primjer, pretpostavimo da ste dobili sloj novih kriminalnih događaja koji su se dogodili u pro&scaron;loj godini u cijelom gradu. Želite modelirati odnose između učestalosti kriminala i raznih demografskih, ekonomskih i geografskih čimbenika. Imate pristup podacima koji opisuju te faktore, ali su pohranjeni u pet različitih slojeva s različitim vrstama geometrije. Pored toga, neki su slojevi pohranjenu u dijeljenju datoteka velikih podataka dok su drugi pohranjeni kao usluge geoobjekata. Stvaranjem vi&scaron;evarijabilne mreže za pohranu tih informacija i zatim pridruživanjem mreže podacima o kriminalnim događajima alatom  Obogati iz vi&scaron;evarijabilne mreže, možete učinkovito pridružiti &scaron;irok izbor atributa svojem točkastom sloj sa samo dva pokretanja alata. Zatim možete upotrijebiti pridružene atribute kao varijable za obja&scaron;njenje i početi graditi model učestalosti kriminala sa slojem rezultata.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Odaberite točkaste geoobjekte za obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti koji će se obogatiti vi&scaron;evarijabilnom mrežom.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Odaberite viševarijabilnu mrežu za obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj vi&scaron;evarijabilne mreže koji sadrži atribute koji će se pridružiti ulaznim točkastim geoobjektima. Sloj mora biti izrađen alatom Izradi vi&scaron;evarijabilnu mrežu i mora biti hostirani sloj geoobjekata. Slojevi vi&scaron;evarijabilne mreže pohranjeni u dijeljenju datoteka velikih podataka nisu podržani kao ulazne vrijednosti alata.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Odaberite varijable koje će se dodati</h2></div>
+        <hr/>
+        <div>
+            <p>Atributi u sloju vi&scaron;evarijabilne mreže koji će se pridružiti ulaznim točkastim geoobjektima kad god točkasti geoobjekti presijecaju mrežu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

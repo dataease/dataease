@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extrair Dados</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extrair Dados"></h2>
+        <hr/>
+    <p>Com esta ferramenta, voc&ecirc; pode selecionar e baixar dados para uma &aacute;rea de interesse espec&iacute;fica. As camadas que voc&ecirc; selecionar ser&atilde;o adicionadas no arquivo ZIP, CSV ou KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Camadas para Extrair</h2></div>
+        <hr/>
+        <div>
+            <p>Estas s&atilde;o as camadas na sua &aacute;rea de controle das quais voc&ecirc; pode extrair fei&ccedil;&otilde;es. As camadas que est&atilde;o selecionadas s&atilde;o extra&iacute;das e inclu&iacute;das no arquivo ZIP ou CSV resultante.
+            </p>
+            <p>Para uma camada aparecer na lista de camadas pra extrair, voc&ecirc; deve ser propriet&aacute;rio dos dados ou o propriet&aacute;rio dos dados deve habilitar a exporta&ccedil;&atilde;o dos dados. Para habilitar a exporta&ccedil;&atilde;o dos dados de sua propriedade: 
+                <ul>
+                    <li>Abra a descri&ccedil;&atilde;o de item dos dados.
+                    </li>
+                    <li>Clique na guia  <b>Configura&ccedil;&otilde;es</b>.
+                    </li>
+                    <li>Role para baixo at&eacute; a se&ccedil;&atilde;o  <b>Exportar Dados</b>.
+                    </li>
+                    <li>Marque  <b>Permitir aos outros exportar para diferentes formatos</b>.  Clique em <b>Salvar</b> ao finalizar.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se a sua camada de an&aacute;lise tiver anexos, note que os anexos ser&atilde;o extra&iacute;dos somente se o formato dos dados de sa&iacute;da for um arquivo geodatabase e as  <b>fei&ccedil;&otilde;es de Recorte</b> estiverem desmarcadas.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Área de estudo</h2></div>
+        <hr/>
+        <div>
+            <p>A &aacute;rea que define quais fei&ccedil;&otilde;es ser&atilde;o inclu&iacute;das no arquivo ZIP ou CSV de sa&iacute;da. Voc&ecirc; pode escolher do seguinte:
+                <ul>
+                    <li>A extens&atilde;o vis&iacute;vel atual do seu mapa ( <b>Mesmo da Visualiza&ccedil;&atilde;o</b>).
+                    </li>
+                    <li>Uma das camadas na sua &aacute;rea de controle. Se a camada selecionada for uma fei&ccedil;&atilde;o de ponto ou linha, a extens&atilde;o da camada ser&aacute; utilizada como &aacute;rea de estudo.
+                    </li>
+                    <li>Desenhe uma &aacute;rea para definir a &aacute;rea de estudo.
+                    </li>
+                </ul>
+                 Todas as fei&ccedil;&otilde;es completamente dentro da extens&atilde;o de mapa ser&atilde;o extra&iacute;das. Para fei&ccedil;&otilde;es que cruzam ou interseccionam o limite da extens&atilde;o do mapa, mas n&atilde;o est&atilde;o completamente dentro da extens&atilde;o, voc&ecirc; tem duas op&ccedil;&otilde;es:
+                <ul>
+                    <li> <b>Selecionar fei&ccedil;&otilde;es</b>&mdash;Fei&ccedil;&otilde;es inteiras que cruzam o limite da &aacute;rea de estudo ser&atilde;o extra&iacute;das.
+                    </li>
+                    <li> <b>Recortar fei&ccedil;&otilde;es</b>&mdash;Somente as por&ccedil;&otilde;es de fei&ccedil;&otilde;es que est&atilde;o dentro da &aacute;rea de estudo ser&atilde;o extra&iacute;das.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Formato dos dados de saída</h2></div>
+        <hr/>
+        <div>
+            <p>O formato dos dados que ser&atilde;o extra&iacute;dos. Ao exportar fei&ccedil;&otilde;es de &aacute;rea ou linha para arquivos CSV, somente atributos n&atilde;o espaciais s&atilde;o extra&iacute;dos. Ao exportar fei&ccedil;&otilde;es de ponto, ambos os atributos espaciais e n&atilde;o espaciais s&atilde;o extra&iacute;dos.  
+            </p>
+            <p>Os dados extra&iacute;dos utilizar&atilde;o a proje&ccedil;&atilde;o Web Mercator 1984. Para arquivos CSV, campo  <i>Lat</i> e <i>Long</i> ser&atilde;o anexados aos dados com coordenadas em Web Mercator 1984.
+            </p> 
+            <p>Os seguintes formatos de sa&iacute;das s&atilde;o suportados:
+                <ul>
+                    <li>Valores separados por v&iacute;rgula (CSV)&mdash; <code>.csv</code> ou <code>.zip</code>
+                    </li>
+                    <li>Arquivo geodatabase&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> ou <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome do arquivo de saída</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome do item que ser&aacute; adicionado em  <b>Meu Conte&uacute;do</b>. O nome do item &eacute; baseado no <b>Formato dos dados de sa&iacute;da</b> escolhido.     Se o item j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

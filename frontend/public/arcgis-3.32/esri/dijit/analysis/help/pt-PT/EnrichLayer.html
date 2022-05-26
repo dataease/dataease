@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Melhorar Camada</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enriquecer Camada"></h2>
+        <hr/>
+    <p>Esta ferramenta melhora os seus dados, obtendo dados sobre as pessoas, lugares e empresas que cercam as localiza&ccedil;&otilde;es dos seus dados e permite que responda a novas quest&otilde;es que n&atilde;o pode responder unicamente com mapas. Por exemplo: Que tipo de pessoas vivem aqui? O que as pessoas gostam de fazer nesta &aacute;rea? Quais s&atilde;o os seus h&aacute;bitos e estilos de vida? Que tipo de empresas existem nesta &aacute;rea?
+    </p>
+    <p>O resultado ser&aacute; uma nova camada que cont&eacute;m todas as informa&ccedil;&otilde;es demogr&aacute;ficas e geogr&aacute;ficas do dados. Esta nova informa&ccedil;&atilde;o &eacute; adicionada atrav&eacute;s de campos na tabela.
+    </p>
+    <p>Se  <b>Use uma extens&atilde;o de mapa actual</b> est&aacute; validado, apenas elementos na camada de entrada vis&iacute;vel dentro da extens&atilde;o de mapa actual ser&atilde;o enriquecidos.  Se n&atilde;o estiver validado, todos os elementos na camada de entrada ser&atilde;o enriquecidos, mesmo que estejam fora da extens&atilde;o de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada para enriquecer com novos dados</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto, linha, ou &aacute;rea da camada que ser&atilde;o enriquecidos com novos dados de atributos. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variáveis ​​de enriquecimento</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Clique em  <b>Seleccionar Vari&aacute;veis</b> ​​para abrir o <b>Browser de Dados</b>.  O <b>Browser de dados</b> ajuda-o a encontrar e seleccionar vari&aacute;veis ​​de enriquecimento individualmente ou em colec&ccedil;&otilde;es.
+            </p>
+            <p>A regi&atilde;o &eacute; automaticamente seleccionada com base nos seus dados. Pode escolher uma regi&atilde;o diferente se os seus dados abrangerem mais de que um pa&iacute;s. 
+            </p>
+            <p>As vari&aacute;veis ​​de enriquecimento s&atilde;o organizadas em colec&ccedil;&otilde;es de dados para facilitar o acesso. Quando selecciona uma coleta de dados, o browser mostra algumas das vari&aacute;veis ​​de enriquecimento mais populares nessa colec&ccedil;&atilde;o. Sob  <b>Continuar a Navegar</b>, tamb&eacute;m mostra categorias dentro da colec&ccedil;&atilde;o.  Dentro de cada categoria pode seleccionar sub-categorias inteiras ou furar uma sub-categoria e seleccionar as vari&aacute;veis ​​de enriquecimento individuais. Tamb&eacute;m pode usar a caixa de busca para encontrar uma vari&aacute;vel espec&iacute;fica dentro de uma categoria.
+            </p>
+            <p>Ao seleccionar as vari&aacute;veis ​​a incluir para enriquecimento, elas s&atilde;o adicionadas ao carrinho de compras localizado no canto do  <b>Browser de Dados</b>.  Utilize este carrinho de compras para manter o controlo do n&uacute;mero de vari&aacute;veis ​​que seleccionou.
+            </p>
+            <p>Cada vari&aacute;vel seleccionada ser&aacute; adicionada como um campo na sua camada de resultado.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definir áreas para enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>Defina a &aacute;rea em torno de seus pontos de entrada ou de linhas que ser&atilde;o enriquecidos usando quer seja um modo de viagem seleccionado quer seja uma dist&acirc;ncia em linha reta. Para uma dist&acirc;ncia em linha recta, digite um valor at&eacute; 1000 milhas (1609 km). Modos de viagem s&oacute; podem ser usados quando a sua camada de entrada cont&eacute;m pontos. Os modos de viagem dispon&iacute;veis s&atilde;o definidos pelo administrador da sua organiza&ccedil;&atilde;o. Ao utilizar um dos modos de viagem, as medi&ccedil;&otilde;es s&atilde;o feitas ao longo de estradas ou cal&ccedil;adas, e honram as regras aplic&aacute;veis, como ruas de sentido &uacute;nico, invers&otilde;es de marcha ilegais, e assim por diante. Depois de escolher o seu modo e medida, introduza uma dura&ccedil;&atilde;o ou dist&acirc;ncia de, at&eacute; 5 horas (300 minutos) ou 300 milhas (482,8 quil&oacute;metros).
+            </p>
+            <p>Se  <b>Devolve resultado como &aacute;reas delimitadoras</b> est&aacute; validado, o resultado devolvido ser&atilde;o elementos de &aacute;rea conforme definido pelos valores de tempo ou de dist&acirc;ncia acima.  Se desmarcado, o resultado devolvido ser&atilde;o elementos ponto.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

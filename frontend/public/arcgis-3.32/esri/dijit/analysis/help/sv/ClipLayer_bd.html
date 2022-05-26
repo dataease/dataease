@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Klipplager</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="Klipplager"></h2>
+        <hr/>
+    <p>Verktyget Klipplager extraherar indatapunkt-, linje- eller omr&aring;desgeoobjekt som &ouml;verlappar klippomr&aring;dena. Utdata &auml;r en delm&auml;ngd av dina indata baserat p&aring; omr&aring;dena av intresse. H&auml;r f&ouml;ljer exempel p&aring; verktygets anv&auml;ndningsomr&aring;den:
+        <ul>
+            <li>Vilka st&ouml;rre floder finns i staten Nebraska?
+                  
+            </li>
+            <li>Vilka hus befinner sig inom en &ouml;versv&auml;mningszon vid kusten?
+            </li>
+            <li>Vilka orkaner n&aring;dde land under 2011?
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj geoobjekt att klippa</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;deslager som ska klippas. Du kommer att skapa en delm&auml;ngd av dessa geoobjekt.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>Välj område att klippa till</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;deslagret som du ska klippa indatalagergeoobjekt till.  Dessa omr&aring;den best&auml;mmer gr&auml;nser f&ouml;r delm&auml;ngder.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

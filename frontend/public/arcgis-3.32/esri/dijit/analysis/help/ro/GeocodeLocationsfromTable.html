@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Locaţii geocodificate din tabel</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Locaţii geocodificate din tabel"></h2>
+        <hr/>
+    <p>Geocodificarea este o modalitate de a converti adresele &icirc;n coordonate. Acest instrument converteşte adrese dintr-un tabel, fişier CSV sau fişier Excel &icirc;ntr-un strat tematic de obiecte spaţiale sau un fişier de ieşire cu coordonatele sub formă de coloane suplimentare.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Alegeţi un tabel de intrare</h2></div>
+        <hr/>
+        <div>
+            <p>Tabelul de intrare cu adresele care vor fi geocodificate. Intrarea trebuie să fie un tabel, un fişier CSV sau un fişier Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Alegeţi un localizator</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi un serviciu de localizator pentru geocodificare. Dacă serviciul localizatorului pe care doriţi să &icirc;l utilizaţi nu este &icirc;n meniul vertical, contactaţi administratorul şi solicitaţi-i să configureze serviciul localizatorului pentru geocodificare &icirc;n loturi.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Ţară</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă toate adresele dvs. sunt dintr-o singură ţară, selectaţi respectiva ţară pentru a vă asigura că obţineţi cele mai precise rezultate. &Icirc;n caz contrar, lăsaţi acest parametru gol.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Selectare câmpuri date</h2></div>
+        <hr/>
+        <div>
+            <p>Serviciul localizatorului aşteaptă anumite c&acirc;mpuri &icirc;n date, cum ar fi adresa, localitatea, statul şi codul poştal. Potriviţi c&acirc;mpurile de date din fişierul sau tabelul de intrare cu c&acirc;mpurile pe care le aşteaptă localizatorul folosind casetele verticale. Cu c&acirc;t cartografiaţi mai multe c&acirc;mpuri, cu at&acirc;t rezultatele vor fi mai exacte. Dacă tabelul de intrare are toate datele &icirc;ntr-o coloană, selectaţi  <b>C&acirc;mp unic</b> şi alegeţi un c&acirc;mp de date din meniul vertical. Altfel, selectaţi <b>C&acirc;mpuri multiple</b> şi cartografiaţi c&acirc;mpurile corespunzătoare ale localizatorului la coloanele cu c&acirc;mpuri multiple din tabel.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Alegeţi un format de ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Formataţi rezultatele de ieşire. Dacă alegeţi să creaţi un serviciu de obiecte spaţiale, adresele din tabelul de intrare vor fi adăugate la hartă ca strat tematic de obiecte spaţiale punctuale. Opţiunile CSV şi XLS adaugă fişierele cu rezultatele lucrării de geocodificare la  <b>Resursele mele</b> atunci c&acirc;nd lucrarea este finalizată.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume rezultat de ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

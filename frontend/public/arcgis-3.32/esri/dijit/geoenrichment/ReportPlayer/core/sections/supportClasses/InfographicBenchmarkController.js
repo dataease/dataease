@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/sections/supportClasses/InfographicBenchmarkController",["dojo/_base/declare","esri/dijit/geoenrichment/utils/ColorUtil"],function(f,c){return f(null,{isVariableInShape:!1,iconTableIndex:-1,descTableIndex:-1,backgroundColor:null,_section:null,setSection:function(b){this._section=b},getIconTable:function(){return this._section.getTables()[this.iconTableIndex]},getOutsideShapeTextColor:function(){var b=[],a=this.getIconTable().getFirstCell().content;
+a.isShape&&(a=a.getShapeStyle(),a.fillColor&&(void 0===a.fillAlpha||.05<a.fillAlpha)&&b.push(a.fillColor),a.borderColor&&0<a.borderWidth&&(void 0===a.borderAlpha||.1<a.borderAlpha)&&b.push(a.borderColor));b.push(this._section.viewModel.getStaticInfographicDefaultStyles().variableLabelStyle.color);var a=this._section.viewModel.getDocumentDefaultStyles(),d;[this.backgroundColor,a.backgroundColor].some(function(a){if(a&&!c.isTransparent(a))return d=a,!0});var e;b.some(function(a){if(a&&!c.isTransparent(a)&&
+!c.colorsEqual(a,d))return e=a,!0});return e||a.color}})});

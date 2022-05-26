@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumuoti rastrą viduje</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Įrankis Sumuoti rastrą viduje"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis susumuoja pirmajame įvesties sluoksnyje apibrėžto ploto (zonų) rastrą.
+    </p>
+    <p>Taikymo pavyzdžiai:
+    </p>
+    <p>
+        <ul>
+            <li>Suskaičiuoti kiekvienos žemėnaudos dalį procentais upės baseine.
+                
+
+            </li>
+            <li>Turint sklypų ir savivaldybių sluoksnius, apskaičiuoti neužstatytų sklypų kiekvienos savivaldybės ribose skaičių.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojami tik į esamo žemėlapio aprėptį patenkantys įvesties ir sumuojamo sluoksnio elementai.  Jei nepažymėta, bus analizuojami visi abiejų sluoksnių (įvesties sluoksnio ir sumuojamo sluoksnio) elementai, net jei jie nepatenka į esamo žemėlapio aprėpties ribas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Pasirinkite plotinį sluoksnį, kurio apibrėžtose ribose sumuoti rastro sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Sumuojamų plotų arba zonų ribas apibrėžiantis sluoksnis.
+            </p>
+            <p>Sluoksnį gali sudaryti rastriniai arba elementų duomenys. Rastro atveju zonas apibrėžia visos įvesties vietos, turinčios tą pačią gardelės reik&scaron;mę. Plotai neprivalo susisiekti.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Pasirinkite lauką, kad apibrėžtumėte ribas</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is sluoksnio atributas naudojamas plotų riboms apibrėžti.
+            </p>
+            <p>Pavyzdžiui, pirmasis įvesčių sluoksnis apibrėžia valdomų vienetų ribas, su atributais, nurodančiais regioną, rajoną ir kiekvieno vieneto sklypo ID. Taip pat turite rastrų sluoksnį, apibrėžiantį kiekvienos vietos biologinės įvairovės rodiklį. Galite pasirinktame lauke apskaičiuoti vidutinę biologinę įvairovę vietiniu, rajono arba regioniniu lygmeniu.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Pasirinkite rastrinį sluoksnį sumavimui</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;io sluoksnio rastro gardelės bus sumuojamos pagal plotus (zonas), kurios yra viduje.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Pasirinkite norimus skaičiuoti statistinius duomenis</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkę sumuojamą sluoksnį, taip pat galite apskaičiuoti bet kurių ta&scaron;kų, linijų ar plotų įvesties ploto sluoksnyje skaitinių atributų statistinius rodiklius.
+            </p>
+            <p>Kai pasirinktas laukas yra sveikasis skaičius, galima apskaičiuoti &scaron;iuos statistinius duomenis: vidurkį, daugumą, maksimumą, medianą, minimumą, mažumą, imtį, standartinį nuokrypį, sumą ir dispersiją.
+            </p>
+            <p>Jeigu lauką sudaro slankiojo kablelio skaičius, galima apskaičiuoti vidurkį, maksimumą, minimumą, imtį, standartinį nuokrypį ir sumą.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Nepaisyti trūkstamų reikšmių skaičiuojant</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkus nepaisyti trūkstamų reik&scaron;mių, ploto i&scaron;vesties reik&scaron;mei apskaičiuoti bus naudojamos tik sumuojamo sluoksnio reik&scaron;mę turinčios gardelės. Prie&scaron;ingu atveju, jeigu plote yra trūkstamų reik&scaron;mių, laikoma, kad nepakanka informacijos visų zonos gardelių statistiniams skaičiavimams atlikti ir i&scaron;vestyje plotui priskiriama nulinė (NoData) reik&scaron;mė.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

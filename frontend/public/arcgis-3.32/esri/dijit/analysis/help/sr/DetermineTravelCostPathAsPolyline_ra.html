@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Odredite stazu troškova putovanja kao polilinije</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Ilustracija Alatke za određivanje staze tro&scaron;kova putovanja kao polilinije"></h2>
+        <hr/>
+    <p>Ova alatka izračunava najmanji tro&scaron;ak staze polilinije između izvora i poznatih odredi&scaron;ta.
+    </p>
+    <p>Primeri primene obuhvataju sledeće:
+        <ul>
+            <li>Pronalazak najbolje rute za novu putanju u smislu tro&scaron;kova izgradnje.
+                
+
+            </li>
+            <li>Prepoznavanje putanje od nekoliko prigradskih lokacija (izvori) do najbližeg tržnog centra (odredi&scaron;te).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirane samo one lokacije u ulaznim slojevima koje su vidljive unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se sve lokacije u oba ulazna sloja, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Odaberite raster ili sloj izvora geoobjekata da biste utvrdili staze od</h2></div>
+        <hr/>
+        <div>
+            <p>Servis snimaka ili servis geoobjekata koji prepoznaje ćelije od kojih se utvrđuje putanja najnižeg tro&scaron;ka do odredi&scaron;ta koje je najjeftinije.
+            </p>
+            <p>Ako je ulaz servis snimka, ulaz se sastoji od ćelija koje imaju važeće vrednosti (nula je važeća vrednost) i preostale ćelije moraju da imaju dodeljeno NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Odaberite rasterski sloj troškova putovanja</h2></div>
+        <hr/>
+        <div>
+            <p>Raster koji defini&scaron;e impedancu ili tro&scaron;ak za pomeranje planimetrije kroz svaku ćeliju.
+            </p>
+            <p>Vrednost na lokaciji svake ćelije predstavlja rastojanje tro&scaron;ak-po-jedinici za pomeranje kroz ćeliju. Svaka vrednost lokacije ćelije se množi sa rezolucijom ćelije dok se takođe kompenzuje dijagonalni pokret za zadržavanje ukupnog tro&scaron;ka prolaska kroz ćeliju.
+            </p>
+            <p>Vrednosti rastera tro&scaron;kova mogu da budu ceo broj ili plutajući zarez, ali ne mogu da budu negativna ili nulta vrednost (ne možete da imate negativan ili nulti tro&scaron;ak).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Raster ili geoobjekti ulaznog odredišta</h2></div>
+        <hr/>
+        <div>
+            <p>Ulaz koji defini&scaron;e odredi&scaron;ta koja se koriste za izračunavanje rastojanja. Sloj može da bude raster ili geoobjekat.
+            </p>
+            <p>Ako je ulaz servis snimka, ulaz se sastoji od ćelija koje imaju važeće vrednosti (nula je važeća vrednost) i preostale ćelije moraju da imaju dodeljeno NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Naziv sloja sa rezultatima polilinije</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Odaberite tip putanja za određivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Defini&scaron;e način na koji će vrednosti i zone podataka ulaznih odredi&scaron;ta biti protumačene u izračunavanjima tro&scaron;kova putanja.
+            </p>
+            <ul>
+                <li>Najbolja pojedinačna&mdash;za sve ćelije ili lokacije na podacima ulaznih odredi&scaron;ta, najjeftinija putanja se izvodi iz lokacije sa najnižom vredno&scaron;ću od putanja najnižih tro&scaron;kova do izvorne lokacije. Ovo je podrazumevano
+                    
+
+                </li>
+                <li>Do svake ćelije&mdash;za svaku ćeliju ili lokaciju sa validnim vrednostima na podacima ulaznih odredi&scaron;ta, putanja najnižih tro&scaron;kova se određuje i čuva na izlaznom servisu geoobjekata. Uz ovu opciju, svaka ćelija podataka ulaznih odredi&scaron;ta se posebno tretira i putanja sa najnižim tro&scaron;kovima se određuje za svaku iz ćelije.
+                    
+
+                </li>
+                <li>Do svake zone&mdash;za zonu na podacima ulaznih odredi&scaron;ta, putanja najnižih tro&scaron;kova se određuje i čuva na izlaznom servisu geoobjekata. Uz ovu opciju, putanja sa najnižim tro&scaron;kovima za svaku zonu počinje u ćeliji ili lokaciji sa rastojanjem najnižeg tro&scaron;ka ponderisanim u zoni.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

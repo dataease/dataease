@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoloi pisteet</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Interpoloi pisteet -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voit ennustaa uusien sijaintien arvoja perustuen mittauksiin kokoelmasta pisteit&auml;. Ty&ouml;kalu k&auml;ytt&auml;&auml; pistetietoja ja jokaisen pisteen arvoja ja palauttaa niiden avulla ennustettujen arvojen rasterin.
+    </p>
+    <p>Ty&ouml;kalua voi k&auml;ytt&auml;&auml; my&ouml;s esimerkiksi seuraaviin tarkoituksiin:
+
+        <ul>
+            <li>Ilmanlaadun valvonta-alueella on antureita, jotka mittaavat saastetasoja. Interpoloi pisteet -ty&ouml;kalua voidaan k&auml;ytt&auml;&auml; saatetasojen ennustamiseen sijainneissa, joihin antureita ei ole sijoitettu. T&auml;llaisia sijainteja voivat olla esimerkiksi koulut, sairaat ja muut riskiv&auml;est&ouml;jen sijainnit.
+                
+
+            </li>
+            <li>Ennusta raskasmetallipitoisuuksia viljakasveissa yksitt&auml;isist&auml; kasveista otettujen n&auml;ytteiden perusteella.
+                
+
+            </li>
+            <li>Ennusta maaper&auml;n ravinnepitoisuuksia (typpi, fosfori, kalium jne.) ja muita indikaattoreita (kuten s&auml;hk&ouml;njohtavuutta) tutkittaessa niiden suhdetta satoon ja m&auml;&auml;ritett&auml;ess&auml; tarkkoja lannoitem&auml;&auml;ri&auml; pellon kullekin alueelle.
+                
+
+            </li>
+            <li>Ilmatieteelliset sovellukset, joihin sis&auml;ltyy l&auml;mp&ouml;tilojen, sadem&auml;&auml;rien ja niihin liittyvien muuttujien (kuten happosateen) ennustamista.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Valitse pistekarttataso, joka sisältää tunnettujen arvojen sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekerros, joka sis&auml;lt&auml;&auml; pisteet, joiden arvot on mitattu.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Valitse interpolointikenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse kentt&auml;, jonka arvot haluat interpoloida. Kent&auml;n arvon pit&auml;&auml; olla numero.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimointiperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, suositko nopeutta vai tarkkuutta.
+            </p>
+            <p>Tarkkojen ennusteiden laskeminen kest&auml;&auml; kauemmin. T&auml;m&auml; parametri muuttaa useiden muiden Interpoloi pisteet -parametrien oletusarvoja, jotta voidaan optimoida laskennan nopeus, tulosten tarkkuus tai kumpikin. Ty&ouml;kalu optimoi oletusarvoisesti kummankin.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Muunna tiedot normaalijakaumaksi</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, muunnetaanko tiedot normaalijakaumaa vastaaviksi.
+            </p>
+            <p>Interpolointi on kaikkein tarkinta tiedoille, jotka noudattavat normaalia (kellon muotoista) jakaumaa. Jos tietosi eiv&auml;t vastaa normaalijakaumaa, sinun on muunnettava tiedot.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Paikallisten mallien koko</h2></div>
+        <hr/>
+        <div>
+            <p>Interpoloi pisteet toimii siten, ett&auml; se luo paikalliset interpolointimallit, jotka sekoitetaan yhteen niin, ett&auml; saadaan lopullinen ennustekartta. T&auml;m&auml; parametri m&auml;&auml;r&auml;&auml;, miten monta pistett&auml; kuhunkin paikalliseen malliin sis&auml;ltyy. Pienemm&auml;t arvot tekev&auml;t tuloksista paikallisempia ja voivat tuoda esiin pienen mittakaavan vaikutuksia, mutta ne voivat heikent&auml;&auml; hiukan laskelmien vakautta. Suuremmat arvot ovat vakaampia, mutta osa paikallisista vaikutuksista voi puuttua.
+            </p>
+            <p>Arvo voi olla 30&ndash;500, mutta tyypilliset arvot ovat 50&ndash;200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Naapurien määrä</h2></div>
+        <hr/>
+        <div>
+            <p>Ennusteet lasketaan vierekk&auml;isten pisteiden perusteella. T&auml;m&auml; parametri m&auml;&auml;r&auml;&auml;, miten montaa pistett&auml; laskennassa k&auml;ytet&auml;&auml;n. Suuremman vierekk&auml;isten pisteiden m&auml;&auml;r&auml;n k&auml;ytt&auml;minen tekee yleens&auml; tuloksista tarkempia, mutta se pident&auml;&auml; tulosten laskemiseen tarvittavaa aikaa.
+            </p>
+            <p>T&auml;m&auml; arvo voi olla 1&ndash;64, mutta tyypilliset arvot ovat 5&ndash;15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tulosaineiston solukoko</h2></div>
+        <hr/>
+        <div>
+            <p>Tulosaineiston rasterien solun koko ja yksikk&ouml;.
+            </p>
+            <p>K&auml;ytett&auml;viss&auml; olevat yksik&ouml;t ovat jalka, maili, metri ja kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Tulosaineiston ennustevirhe</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, haluatko luoda keskivirheiden rasterin ennustetuille arvoille.
+            </p>
+            <p>Keskivirheet ovat hy&ouml;dyllisi&auml;, koska ne antavat tietoja ennustettujen arvojen luotettavuudesta. Hyv&auml; muistis&auml;&auml;nt&ouml; on, ett&auml; oikea arvo sijoittuu ennustetun arvon kahden keskivirheen v&auml;liin 95 prosentin todenn&auml;k&ouml;isyydell&auml;. Oletetaan, ett&auml; uuden sijainnin ennustettu arvo on 50 ja keskivirhe 5. T&auml;m&auml; tarkoittaa, ett&auml; ty&ouml;kalu ennustaa oikean arvon olevan 50 kyseisess&auml; sijainnissa, mutta arvo voisi perustellusti olla matalimmillaan 40 tai korkeimmillaan 60. Voit laskea luottamusv&auml;lin kertomalla keskivirheen ensin kahdella. Kun lis&auml;&auml;t t&auml;m&auml;n arvon ennustettuun arvoon, saat alueen yl&auml;rajan, ja kun v&auml;henn&auml;t arvon ennustetusta arvosta, saat alueen alarajan.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

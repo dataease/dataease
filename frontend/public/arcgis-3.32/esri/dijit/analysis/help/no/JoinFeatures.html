@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Koble geoobjekter</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Koble geoobjekter"></h2>
+        <hr/>
+    <p>Funksjonen Koble geoobjekter fungerer med to lag og f&oslash;yer sammen attributter fra ett geoobjekt til et annet p&aring; bakgrunn av romlige og attributtmessige forhold. Verkt&oslash;yet fastsetter alle inndatageoobjekter som oppfyller de angitte betingelsene og kobler laget til m&aring;llaget. 
+    </p>
+    <p>Koble geoobjekter kan brukes p&aring; punkter, linjer, polygoner og tabeller. En geografisk kobling krever at dataene har en geometri. 
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene som vises i gjeldende kartutstrekning som blir analysert.  Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjekter i b&aring;de m&aring;llaget og det koblede laget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Velg mållag</h2></div>
+        <hr/>
+        <div>
+            <p>M&aring;llaget vil f&aring; attributter fra koblingslaget lagt til i tabellen.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Velg laget som skal knyttes til mållaget</h2></div>
+        <hr/>
+        <div>
+            <p>Koblingslaget med attributtene som skal legges til i m&aring;llaget.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Velg typen(e) tilknytning</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan legge til en geografisk kobling, en attributtkobling eller en kombinasjon av de to. 
+                <ul>
+                    <li> <b>Romlig</b> &ndash; Bruker et bestemt romlig forhold til &aring; koble geoobjekter. Dette krever at begge lag har en geometri.
+                    </li>
+                    <li> <b>Attributt</b> &ndash; Kobler geoobjekter p&aring; bakgrunn av p&aring; like felt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Velg en romlig relasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Det romlige forholdet som avgj&oslash;r om geoobjektene skal kobles med hverandre. De tilgjengelige forholdene vil avhenge av typen geometri (punkt, linje, polygoner) som brukes som inndatageoobjekt. De tilgjengelige forholdene omfatter f&oslash;lgende:
+                <ul>
+                    <li> <b>Identisk med</b> &ndash; Geoobjektene i m&aring;llaget matches hvis de er identiske med geoobjekter i koblingslaget.
+                    </li>
+                    <li> <b>Krysser</b> &ndash; Geoobjektene i m&aring;llaget matches hvis de krysser geoobjekter i koblingslaget.
+                    </li>
+                    <li> <b>Omfatter hele</b> &ndash; Geoobjektene matches hvis geoobjektene i m&aring;llaget omfatter geoobjekter i koblingslaget fullstendig.
+                    </li>
+                    <li> <b>Helt innenfor</b> &ndash; Geoobjektene matches hvis geoobjektene i m&aring;llaget er helt innenfor geoobjekter i koblingslaget.
+                    </li>
+                    <li> <b>Innenfor en avstand p&aring;</b> &ndash; Geoobjektene i m&aring;llaget matches hvis de er innenfor en bestemt avstand fra geoobjekter i koblingslaget.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Koble attributt</h2></div>
+        <hr/>
+        <div>
+            <p>Attributtforholdet som vil avgj&oslash;re om geoobjektene skal kobles med hverandre. Geoobjekter matches n&aring;r feltverdiene i koblingslaget er lik feltverdiene i m&aring;llaget. 
+            </p>
+            <p>La oss for eksempel si at vi har et landsdekkende geografisk lag med boligadresser (inkludert et felt med navnet  <i>ZIP</i>) og et tabellbasert helsedatasett fordelt p&aring; postnummer (inkludert et felt med navnet <i>HEALTHZIP</i>). Du kan knytte helsedatasettet til boligdataene ved &aring; matche feltet <i>ZIP</i> med <i>HEALTHZIP</i>, noe som gir et lag med boliger med tilh&oslash;rende helsedata.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Velg koblingsoperasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Fastsetter hvordan koblinger mellom m&aring;l- og koblingslagene blir h&aring;ndtert hvis flere geoobjekter i m&aring;llaget viser seg &aring; ha det samme forholdet til m&aring;llaget. Det er to koblingsoperasjoner &aring; velge mellom:
+                <ul>
+                    <li> <b>Koble en til en</b> &ndash;&nbsp;Dette alternativet kobler geoobjektene i m&aring;llaget til ett enkelt geoobjekt i koblingslaget. M&aring;ten geoobjekter kobles sammen p&aring;, bestemmes av parameteren <b>Legg til statistikk</b> eller parameteren <b>Angi hvilken post som skal beholdes</b>. Hvis <b>Legg til statistikk</b> brukes, blir alle samsvarende koblede geoobjekter summert til hvert geoobjekt i m&aring;llaget. Antallet koblede geoobjekter legges til som standard.Hvis <b>Angi hvilken post som skal beholdes</b>
+brukes, kan du velge enten &aring; bruke den f&oslash;rste samsvarende posten (standard) eller &aring; beholde en samsvarende post basert p&aring; et uttrykk. Et uttrykk kan bruke enten et numerisk felt
+(alternativ for st&oslash;rste eller minste post) eller et datofelt (alternativ for nyeste eller eldste).
+                    </li>
+                    <li> <b>Koble en til mange</b> &ndash; Dette alternativet kobler alle samsvarende geoobjekter i koblingslaget til m&aring;llaget.  Det resulterende laget inneholder flere poster av geoobjektet.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anta for eksempel at du &oslash;nsker &aring; finne supermarkeder innen 5 kilometer fra Bondens marked.   I dette tilfellet har laget som det skal kobles til, ett enkelt geoobjekt som representerer Bondens marked, og geoobjektene som skal f&oslash;yes til representerer de lokale dagligvarebutikkene som har attributter som samlet &aring;rlig omsetning. Ved hjelp av verkt&oslash;yet  <b>Koble geoobjekter</b> finner du ut at fem dagligvarebutikker oppfyller dette kriteriet. Hvis du spesifiserer en koblingsoperasjon som <b>Koble en til mange</b>, vil du ende opp med fem geoobjekter i resultatet, der hver rad representerer Bondens marked og et supermarked. Hvis du spesifiserer et <b>Koble en til en</b>-forhold og velger en statistikk, ender du opp med ett geoobjekt som representerer Bondens marked og den oppsummerte informasjonen fra supermarkedene, f.eks. antallet (5), og annen statistikk som summen av &aring;rlig omsetning.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Legg til statistikk (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis alternativet for &aring;  <b>koble en til en</b> er valgt, kan du for numeriske felt summere og beregne statistikk p&aring; dine koblede geoobjekter. Som standard blir antallet samsvarende koblede geoobjekter beregnet og lagt til i resultatlaget. Hvis du lar v&aelig;re &aring; legge til mer statistikk, blir det f&oslash;rste samsvarende geoobjekt i koblingslaget koblet til det f&oslash;rste samsvarende geoobjektet i m&aring;llaget. Du kan ogs&aring; beregne ett eller flere av f&oslash;lgende:
+            </p>
+            <ul>
+                <li>Sum
+                </li>
+                <li>Minimum
+                </li>
+                <li>Maksimum
+                </li>
+                <li>Gjennomsnitt
+                </li>
+                <li>Standardavvik
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Opprett resultater som hostet geoobjektlagvisning</h2></div>
+        <hr/>
+        <div>
+            <p> N&aring;r du oppretter resultatene som en hosted geoobjektlagvisning, oppdateres dataene n&aring;r kildedataene endres. Hostede geoobjektlagvisninger som inneholder tilknytninger, vil v&aelig;re skivebeskyttet og bruker ikke credits til analyse og lagring.
+            </p>
+            <p>Du kan opprette en hostet geoobjektlagvisning fra analyseresultatene hvis alle f&oslash;lgende betingelser er oppfylt:
+                <ul>
+                    <li>Du eier begge lagene.
+                    </li>
+                    <li>Begge lagene er hostede geoobjektlag.
+                    </li>
+                    <li>Du foretar en attributtbasert kobling.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Detayları Birleştir</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Detayları Birleştir"></h2>
+        <hr/>
+    <p>Detayları Birleştir aracı iki katmanla &ccedil;alışır. Detayları Birleştir; mekansal, zamansal ve &ouml;znitelik ilişkilerine veya bunların birleşimlerine bağlı olarak bir detaydan gelen &ouml;znitelikleri bir diğer detayla birleştirir. Ara&ccedil; belirtilen birleşme koşullarını karşılayan t&uuml;m girdi detaylarını belirler ve ikinci girdi katmanını birinciyle birleştirir. İsteğe bağlı olarak t&uuml;m detayları eşleşen detaylarla birleştirebilir veya eşleşen detayları &ouml;zetleyebilirsiniz.
+    </p>
+    <p>Detayları Birleştir noktalara, &ccedil;izgilere, alanlara ve tablolara uygulanabilir. Zamansal birleştirme girdi verilerinizin zamana duyarlı olmasını gerektirirken, mekansal birleştirme verilerinizin bir geometrisi olmasını gerektirir. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Hedef katman seç</h2></div>
+        <hr/>
+        <div>
+            <p>Birleşim katmanından alacağı &ouml;znitelikleri kendi tablosuna ekleyecek olan katman.
+            </p>
+            <p> <b>Yakın</b> mekansal ilişkisini kullanan analiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir. <b>İşlem koordinat sistemini</b> <b>Analiz Ortamları</b> i&ccedil;inden ayarlayabilirsiniz. 
+ İşlem koordinat sisteminiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemine ayarlanmamış ise, <b>Analizi &Ccedil;alıştır</b> dığınızda bu ayarlamayı yapmanız istenir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Hedef katmanla birleştirilecek katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;znitelikleri i&ccedil;eren ve hedef katmana eklenecek olan birleşim katmanı.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Birleştirme işlemini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Birden &ccedil;ok birleştirme detayının birleştirilen katmanla aynı ilişkiye sahip olması durumunda hedef ve birleşim katmanları arasında birleştirmelerin nasıl yapılacağını belirler. Se&ccedil;im yapabileceğiniz iki birleştirme işlemi vardır:
+                <ul>
+                    <li> <b>Bire bir birleştir</b>; bu se&ccedil;enek katılan her detayla eşleşen t&uuml;m detayları &ouml;zetler.
+                    </li>
+                    <li> <b>Bire &ccedil;ok birleştir</b>; bu se&ccedil;enek eşleşen t&uuml;m detayları ilgili katmana birleştirir.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Ouml;rneğin, &uuml;retici pazarına 2 km uzaklıktaki s&uuml;permarketleri bulmak istediğinizi varsayalım. Bu durumda, hedef katmanda &ccedil;ift&ccedil;i pazarını temsil eden bir tek detay bulunur; ve birleşim katmanı yerel s&uuml;permarketleri temsil eder ve toplam yıllık satışlar gibi &ouml;zniteliklere sahiptir. Detayları Birleştir aracını kullanarak &ouml;l&ccedil;&uuml;tleri karşılayan beş s&uuml;permarket bulursunuz.  <b>Bire &ccedil;ok birleştir</b> birleşim t&uuml;r&uuml;n&uuml; belirlediyseniz, sonu&ccedil;ta her satırın bir &uuml;retici pazarıyla bir s&uuml;permarketi g&ouml;sterdiği beş detay elde edilir. <b>Bire bir birleştir</b> ilişkisini belirttiyseniz, &ccedil;ift&ccedil;i pazarını g&ouml;steren bir detay ile s&uuml;permarketlerden gelen sayı (2) gibi &ouml;zetlenmiş bilgiler ve toplam yıllık satış gibi diğer istatistikler elde edilir.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Bir ya da birkaç birleşim seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Kullanılan birleşim se&ccedil;eneğini belirtir. Aşağıdaki birleşim t&uuml;rlerinden birini, ikisini veya &uuml;&ccedil;&uuml;n&uuml; uygulayabilirsiniz: 
+                <ul>
+                    <li> <b>Mekansal</b>; detayları birleştirmek i&ccedil;in belirtilen bir mekansal ilişkiyi kullanır. Bu, her iki katmanın da bir geometrisi olmasını gerektirir.
+                    </li>
+                    <li> <b>Zamansal</b>; detayları birleştirmek i&ccedil;in bir zamansal ilişki kullanır. Bu, her iki katmanda zamanın etkinleştirilmiş olmasını gerektirir.
+                    </li>
+                    <li> <b>&Ouml;znitelik</b> eşit alanlara g&ouml;re detayları birleştirir.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Bir mekansal ilişki seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Detayların birbirine birleştirilip birleştirilmeyeceğini belirleyen mekansal ilişki. Aşağıdaki kullanılabilir ilişkiler, girdi detayları olarak kullanılan geometri t&uuml;r&uuml;ne (nokta, &ccedil;oklu &ccedil;izgi, &ccedil;okgen) bağlıdır:
+                <ul>
+                    <li> <b>Kesişir</b>&mdash;Birbirlerini kesiyorlarsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Eşittir</b>; aynı geometriye sahiplerse, detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Yakınında</b>; birbirlerinden belirtilen bir mesafe kadar uzakta olan detaylar eşleştirilir. Hedef katman izd&uuml;ş&uuml;mlenmiş bir koordinat sisteminde olmalıdır veya bir mekansal <b>Yakın</b> ilişkisi kullanılıyorsa, işlemci mekansal referans <b>Analiz Ortamları</b> kullanılarak izd&uuml;ş&uuml;mlenmiş bir koordinat sistemine ayarlanmalıdır.
+                    </li>
+                    <li> <b>İ&ccedil;erir</b>&mdash;Hedef katman katılımcı detaylar i&ccedil;inde bulunuyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>İ&ccedil;inde</b>&mdash;Hedef katman katılımcı detaylar i&ccedil;indeyse detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Dokunur</b>&mdash;Hedef detaya dokunan bir sınıra sahip olan detaylar eşleştirilir.
+                    </li>
+                    <li> <b>&Ccedil;apraz Keser</b>; &Ccedil;apraz kesen bir ana hatta sahip detaylar eşleştirilir.
+                    </li>
+                    <li> <b>&Ouml;rt&uuml;ş&uuml;r</b>; birbiriyle &ouml;rt&uuml;şen detaylar birleştirilir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Bir mekansal yakınlık ilişkisine uygulanan yarı&ccedil;apı belirtir.
+            </p>
+            <p>&Ouml;rneğin, bir n&uuml;kleer santrali temsil eden bir veri k&uuml;meniz ve konutları temsil eden bir veri k&uuml;meniz varsa, n&uuml;kleer santralin 1 kilometre yakınındaki evleri bulmak i&ccedil;in yakın mekansal mesafeyi 1 km olarak ayarlayabilirsiniz.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Zaman ilişkisi seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Detayların birbirine birleştirilip birleştirilmeyeceğini belirleyen zamansal ilişki. Bu se&ccedil;enek yalnızca her iki katmanda da zaman etkinleştirilmişse kullanılabilir ve kullanılabilir ilişkiler girdi detayları i&ccedil;in kullanılan zaman t&uuml;r&uuml;ne (anlık veya aralıklı) bağlı olur. Kullanılabilir zamansal ilişkiler aşağıdaki gibidir:
+                <ul>
+                    <li> <b>Karşılar</b>&mdash;İlk detay ikincisini karşılıyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Karşılanır</b>&mdash;İlk detay ikinci tarafından karşılanıyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>&Ouml;rt&uuml;şen</b>&mdash;İlk detay ikinciyle &ouml;rt&uuml;ş&uuml;yorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>&Ouml;rt&uuml;şt&uuml;ren</b>&mdash;İkinci detay ilkiyle &ouml;rt&uuml;ş&uuml;yorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Sırasında</b>&mdash;İlk detay ikinci sırasında ger&ccedil;ekleşiyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>İ&ccedil;erir</b>&mdash;İlk detay ikincisini kapsıyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Eşittir</b>&mdash;İlk detay ikinciye eşitse detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Bitirir</b>&mdash;İlk detay ikinciyi bitirirse detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Bitirilir</b>&mdash;İlk detay ikinci tarafından bitirilirse detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Başlatır</b>&mdash;İlk detay ikinciyi başlatırsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Başlatılır</b>&mdash;İlk detay ikinci tarafından başlatılırsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Kesişir</b>&mdash; Zamanlar en az bir kez kesişiyorsa detaylar eşleştirilir.
+                    </li>
+                    <li> <b>Yakınında</b>; belirtilen bir zaman s&uuml;resince birbirlerinin yakınında olan detaylar birleştirilir.
+                    </li>
+                    <li> <b>Hemen &Ouml;nce</b>&mdash;İlk detay ikinciden &ouml;nceyse ve belirtilen s&uuml;re i&ccedil;indeyse detaylar birleştirilir.
+                    </li>
+                    <li> <b>Hemen Sonra</b>&mdash;İlk detay ikinciden sonraysa ve belirtilen s&uuml;re i&ccedil;indeyse detaylar birleştirilir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Bir zamansal yakınlık ilişkisine uygulanan zamansal yarı&ccedil;apı belirtir. Bir zamansal yakın ilişki şunları i&ccedil;erir:  <b>Yakın</b>, <b>Hemen &Ouml;nce</b> ve <b>Hemen Sonra</b>.
+            </p>
+            <p>&Ouml;rneğin, tekne etkinliklerini yansıtan bir katmanınız ve fırtına i&ccedil;in GPS izlerini i&ccedil;eren bir başka katmanınız var; bu durumda fırtına izlerine belirli bir mesafede olan tekne etkinliklerini hem alan (1 kilometre) hem de zaman (5 saat) olarak inceleyebilirsiniz. Bu, sonu&ccedil;ta alan ve zaman olarak yakın olduğundan fırtınalara katılan tekne etkinliklerini verebilir.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Eşleşecek alanları seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Bir katmandaki alan değerlerini bir başka katmandaki alan değerleriyle eşleştirir. 
+            </p>
+            <p>&Ouml;rneğin, elinizde &uuml;lke &ccedil;apında mesken adreslerinin coğrafi katmanı (bir  <i>ZIP</i>alanı da dahil olmak &uuml;zere) ve ZIP kodlarına g&ouml;re n&uuml;fus sağlık bilgilerinin &ccedil;izelgelenmiş veri k&uuml;mesi ( <i>HEALTHZIP</i> adlı bir dosya) mevcut; bu durumda sağlık veri k&uuml;mesini mesken verilerine birleştirmek i&ccedil;in <i>ZIP</i> alanını <i>HEALTHZIP</i> alanıyla eşleştirebilirsiniz. Bu da sonu&ccedil; olarak ilgili sağlık verilerine sahip olan bir meskenler katmanını verecektir.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Birleştirme işlemi  <b>Bire bir birleştir</b> olduğunda birleştirilen detaylarınızdaki istatistikleri hesaplar. T&uuml;m istatistikler varsayılan olarak hesaplanacaktır.
+            </p>
+            <p>&Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Sayısal alanlarda aşağıdakileri hesaplayabilirsiniz: 
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dize alanlarında aşağıdakileri hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir.
+            </p>
+            <p>T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Detay birleştirmek için kullanılacak bir ifade oluşturun (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Belirtilen alanlar i&ccedil;in bir koşul uygular. Yalnızca bu koşulları karşılayan alanlara sahip detaylar birleştirilir.
+            </p>
+            <p>&Ouml;rneğin, yalnızca  <i>health_spending</i> değerinin <i>income</i> &ouml;gesinin y&uuml;zde 20&rsquo;sinden daha b&uuml;y&uuml;k olduğu detaylara sahip bir veri k&uuml;mesi i&ccedil;in birleştirme uygulamak istiyorsunuz, bu durumda <code>$target[&rdquo;health_spending&rdquo;] &gt; ($join[&rdquo;income&rdquo;] * .20)</code> birleştirme koşulunu, ilk veri k&uuml;mesindeki <i>health_spending</i> (veri k&uuml;mesi detaylarının i&ccedil;inde birleştirileceği) alanını ve ikinci veri k&uuml;mesindeki <i>income</i> alanını (birleştirilecek veri k&uuml;mesi) kullanarak uygulayın.
+            </p>
+            <p>Birleştirme koşulları, ifade hesaplayıcı kullanılarak uygulanabilir.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Veri deposu seç</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

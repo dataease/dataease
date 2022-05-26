@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Watershed</h2><p/>
+        <h2><img src="./images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Watershed task"></h2>
+        <hr/>
+    <p>This tool determines the contributing area above a set of cells in a raster.
+    </p>
+    <p>A watershed is the upslope area that contributes flow&mdash;generally water&mdash;to a common outlet as concentrated drainage. It can be part of a larger watershed and can also contain smaller watersheds, called subbasins.
+    </p>
+    <p>The value of each watershed will be taken from the value of the source in the input raster or feature pour point layer. When the pour point is a raster dataset, the cell values are used by default. When the pour point is a point feature dataset, the values will come from the specified field.
+    </p>
+    <p>The Watershed tool only supports a D8 input flow direction raster layer.
+    </p>
+    <p>When specifying the input pour point locations as feature data, the default field will be the first available valid field. If no valid fields exist, the ObjectID field (for example, OID or FID) will be the default.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Choose flow direction layer</h2></div>
+        <hr/>
+        <div>
+            <p>The input raster that shows the direction of flow out of each cell.
+            </p>
+            <p>The flow direction raster can be created using the Flow Direction tool or the FlowDirection task in the RasterAnalysisTools service, run using the default flow direction type  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Specify input pour point locations</h2></div>
+        <hr/>
+        <div>
+            <p>The input pour point locations.
+            </p>
+            <p>For a raster, this represents cells above which the contributing area, or catchment, will be determined. All cells that are not NoData will be used as source cells. For a point input, this represents locations above which the contributing area, or catchment, will be determined.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Choose pour point field</h2></div>
+        <hr/>
+        <div>
+            <p>The field used to assign values to the pour point locations.
+            </p>
+            <p>If the input pour point layer is a raster, Value is used. If it is feature, a numeric field is used. If the field contains floating-point values, they will be truncated into integers.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

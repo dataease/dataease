@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  // YF TODO: (doc)
+-->
+<snippets>
+  <snippet name="thinLineParams">
+     <![CDATA[
+    float thinLineHalfWidth = 1.0; // meaning that a 2 pixels line width is considered a thin line
+    float thinLineWidthFactor = 1.1;
+     ]]>
+  </snippet>
+
+  <snippet name="lineVVUniformsVS">
+    <![CDATA[
+  #if defined(VV_COLOR) || defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE) || defined(VV_OPACITY)
+    attribute vec3 a_vv;
+  #endif // VV_COLOR || VV_SIZE_MIN_MAX_VALUE || VV_SIZE_SCALE_STOPS || VV_SIZE_FIELD_STOPS || VV_SIZE_UNIT_VALUE || VV_OPACITY
+
+  #ifdef VV_COLOR
+    uniform float u_vvColorValues[8];
+    uniform vec4 u_vvColors[8];
+  #endif // VV_COLOR
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    uniform vec4 u_vvSizeMinMaxValue;
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_SCALE_STOPS
+    uniform float u_vvSizeScaleStopsValue;
+  #endif
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    uniform float u_vvSizeFieldStopsValues[6];
+    uniform float u_vvSizeFieldStopsSizes[6];
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    uniform float u_vvSizeUnitValueWorldToPixelsRatio;
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    uniform float u_vvOpacityValues[8];
+    uniform float u_vvOpacities[8];
+  #endif // VV_OPACITY
+    ]]>
+  </snippet>
+
+  <snippet name="lineVVFunctions">
+    <![CDATA[
+    bool isNan(float val) {
+      return !( val < 0.0 || 0.0 < val || val == 0.0 );
+    }
+    
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    float getVVMinMaxSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) { 
+        return fallback;
+      }
+
+      float f = (sizeValue - u_vvSizeMinMaxValue.x) / (u_vvSizeMinMaxValue.y - u_vvSizeMinMaxValue.x);
+      return clamp(mix(u_vvSizeMinMaxValue.z, u_vvSizeMinMaxValue.w, f), u_vvSizeMinMaxValue.z, u_vvSizeMinMaxValue.w);
+    }
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    const int VV_SIZE_N = 6;
+    float getVVStopsSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) { 
+        return fallback;
+      }
+
+      if (sizeValue <= u_vvSizeFieldStopsValues[0]) {
+        return u_vvSizeFieldStopsSizes[0];
+      }
+
+      for (int i = 1; i < VV_SIZE_N; ++i) {
+        if (u_vvSizeFieldStopsValues[i] >= sizeValue) {
+          float f = (sizeValue - u_vvSizeFieldStopsValues[i-1]) / (u_vvSizeFieldStopsValues[i] - u_vvSizeFieldStopsValues[i-1]);
+          return mix(u_vvSizeFieldStopsSizes[i-1], u_vvSizeFieldStopsSizes[i], f);
+        }
+      }
+
+      return u_vvSizeFieldStopsSizes[VV_SIZE_N - 1];
+    }
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    float getVVUnitValue(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) { 
+        return fallback;
+      }
+
+      return u_vvSizeUnitValueWorldToPixelsRatio * sizeValue;
+    }
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    const int VV_OPACITY_N = 8;
+    float getVVOpacity(float opacityValue) {
+      if (isNan(opacityValue)) { 
+        return 1.0;
+      }
+
+      if (opacityValue <= u_vvOpacityValues[0]) {
+        return u_vvOpacities[0];
+      }
+
+      for (int i = 1; i < VV_OPACITY_N; ++i) {
+        if (u_vvOpacityValues[i] >= opacityValue) {
+          float f = (opacityValue - u_vvOpacityValues[i-1]) / (u_vvOpacityValues[i] - u_vvOpacityValues[i-1]);
+          return mix(u_vvOpacities[i-1], u_vvOpacities[i], f);
+        }
+      }
+
+      return u_vvOpacities[VV_OPACITY_N - 1];
+    }
+  #endif // VV_OPACITY
+
+  #ifdef VV_COLOR
+    const int VV_COLOR_N = 8;
+
+    vec4 getVVColor(float colorValue, vec4 fallback) {
+      if (isNan(colorValue)) { 
+        return fallback;
+      }
+
+      if (colorValue <= u_vvColorValues[0]) {
+        return u_vvColors[0];
+      }
+
+      for (int i = 1; i < VV_COLOR_N; ++i) {
+        if (u_vvColorValues[i] >= colorValue) {
+          float f = (colorValue - u_vvColorValues[i-1]) / (u_vvColorValues[i] - u_vvColorValues[i-1]);
+          return mix(u_vvColors[i-1], u_vvColors[i], f);
+        }
+      }
+
+      return u_vvColors[VV_COLOR_N - 1];
+    }
+  #endif // VV_COLOR
+    ]]>
+  </snippet>
+
+  <snippet name="lineVS">
+    <![CDATA[
+     precision mediump float;
+
+     attribute vec2 a_pos;
+     attribute vec4 a_id;
+     attribute vec4 a_color;
+     attribute vec4 a_offsetAndNormal;
+     attribute vec2 a_accumulatedDistanceAndHalfWidth;
+     attribute vec4 a_tlbr;
+     attribute vec4 a_segmentDirection;
+
+     // the relative transformation of a vertex given in tile coordinates to a relative normalized coordinate
+     // relative to the tile's upper left corner
+     // the extrusion vector.
+     uniform highp mat4 u_transformMatrix;
+     // the extrude matrix which is responsible for the 'anti-zoom' as well as the rotation
+     uniform highp mat4 u_extrudeMatrix;
+     // u_normalized_origin is the tile's upper left corner given in normalized coordinates
+     uniform highp vec2 u_normalized_origin;
+     uniform lowp float u_opacity; // the layer's opacity
+     uniform mediump float u_zoomFactor;
+     uniform mediump float u_antialiasing;
+
+     // the interpolated normal to the line. the information is packed into the two LSBs of the vertex coordinate
+     varying mediump vec2 v_normal;
+     varying mediump float v_lineHalfWidth;
+     varying lowp vec4 v_color;
+     varying lowp float v_transparency;
+
+     const float scale = 1.0 / 31.0;
+#ifdef SDF
+     const float widthFactor = 2.0;
+#else
+     const float widthFactor = 1.0;
+#endif
+
+
+#ifdef PATTERN
+     uniform mediump vec2 u_mosaicSize;
+
+     varying mediump vec4 v_tlbr; // normalized pattern coordinates [0, 1]
+     varying mediump vec2 v_patternSize;
+#endif // PATTERN
+
+// we need to accumulated distance only if it is a pattern or an SDF line
+#if defined(PATTERN) || defined(SDF)
+     varying highp float v_accumulatedDistance;
+#endif // PATTERN SDF
+
+#ifdef ID
+     varying highp vec4 v_id;
+#endif // ID
+
+     // import the VV inputs and functions (they are #ifdefed, so if the proper #define is not set it will end-up being a no-op)
+     $lineVVUniformsVS
+     $lineVVFunctions
+
+     void main()
+     {
+     // size VV block
+#if defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+#ifdef VV_SIZE_MIN_MAX_VALUE
+       mediump float lineHalfWidth = 0.5 * getVVMinMaxSize(a_vv.x, 2.0 * a_accumulatedDistanceAndHalfWidth.y * scale);
+#endif // VV_SIZE_MIN_MAX_VALUE
+
+#ifdef VV_SIZE_SCALE_STOPS
+       mediump float lineHalfWidth = 0.5 * u_vvSizeScaleStopsValue;
+#endif // VV_SIZE_SCALE_STOPS
+
+#ifdef VV_SIZE_FIELD_STOPS
+       mediump float lineHalfWidth = 0.5 * getVVStopsSize(a_vv.x, 2.0 * a_accumulatedDistanceAndHalfWidth.y * scale);
+#endif // VV_SIZE_FIELD_STOPS
+
+#ifdef VV_SIZE_UNIT_VALUE
+       mediump float lineHalfWidth = 0.5 * getVVUnitValue(a_vv.x, 2.0 * a_accumulatedDistanceAndHalfWidth.y * scale);
+#endif // VV_SIZE_UNIT_VALUE
+
+#else // no VV
+       mediump float lineHalfWidth = a_accumulatedDistanceAndHalfWidth.y * scale;
+#endif // defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+#ifdef VV_OPACITY
+      v_transparency = u_opacity * getVVOpacity(a_vv.z);
+#else
+      v_transparency = u_opacity;
+#endif // VV_OPACITY
+
+#ifdef VV_COLOR
+      v_color = getVVColor(a_vv.y, a_color);
+#else
+      v_color = a_color;
+#endif // VV_COLOR
+
+       // make sure to clip the vertices in case that the width of the line is 0 (or negative)
+       float z = 2.0 * step(lineHalfWidth, 0.0);
+
+       // add an antialiasing distance. We use 0.2 rather than 0.5 in order to match the SVG renderer
+       // also limit the total line width to 1.3 pixels. Below this value lines don't look good compared to the SVG renderer
+       lineHalfWidth = max(lineHalfWidth, 0.45) + 0.2 * u_antialiasing;
+
+       // include the thin line parameters (thinLineHalfWidth and thinLineWidthFactor)
+       $thinLineParams
+       // for now assume that a thin line is a line which is under 2 pixels (1 pixels on either sides of the centerline)
+       // in practice, a thin line is a line who's half width vary from 0.45px to the value of thinLineHalfWidth, as the value
+       // is claped in line 221 above
+       mediump float thinLineFactor = max(thinLineWidthFactor * step(lineHalfWidth, thinLineHalfWidth), 1.0);
+
+       v_lineHalfWidth = lineHalfWidth;
+
+       // calculate the relative distance from the centerline to the edge of the line. Since offset is given in integers (for the
+       // sake of using less attribute memory, we need to scale it back to the original range of ~ [0, 1])
+       // in a case of a thin line we move each vertex twice as far
+       mediump vec2 dist = thinLineFactor * widthFactor * lineHalfWidth * a_offsetAndNormal.xy * scale;
+
+       // transform the vertex
+       gl_Position = vec4(u_normalized_origin, 0.0, 0.0) + u_transformMatrix * vec4(a_pos, z, 1.0) + u_extrudeMatrix * vec4(dist, 0.0, 0.0);
+       v_normal = a_offsetAndNormal.zw * scale;
+
+#if defined(PATTERN) || defined(SDF)
+       v_accumulatedDistance = a_accumulatedDistanceAndHalfWidth.x + dot(scale * a_segmentDirection.xy, dist / u_zoomFactor);
+#endif // PATTERN || SDF
+
+#ifdef PATTERN
+      v_tlbr = vec4(a_tlbr.x / u_mosaicSize.x, a_tlbr.y / u_mosaicSize.y, a_tlbr.z / u_mosaicSize.x, a_tlbr.w / u_mosaicSize.y);
+      v_patternSize = vec2(a_tlbr.z - a_tlbr.x, a_tlbr.w - a_tlbr.y);
+#endif // PATTERN
+
+#ifdef ID
+      v_id = a_id;
+#endif // ID
+     }
+    ]]>
+  </snippet>
+
+  <snippet name="lineFS">
+    <![CDATA[
+       precision lowp float;
+
+       uniform lowp float u_blur;
+       uniform mediump float u_antialiasing;
+
+       varying mediump vec2 v_normal;
+       varying mediump float v_lineHalfWidth;
+       varying lowp vec4 v_color;
+       varying lowp float v_transparency;
+
+#if defined(PATTERN) || defined(SDF)
+      uniform sampler2D u_texture;
+      uniform mediump float u_zoomFactor;
+
+      varying mediump vec4 v_tlbr; // normalized pattern coordinates [0, 1]
+      varying mediump vec2 v_patternSize;
+      varying highp float v_accumulatedDistance;
+#endif // PATTERN SDF
+
+#ifdef SDF
+      const float sdfPatternHalfWidth = 15.5; // YF: assumed that the width will be set to 31
+     const float widthFactor = 2.0;
+
+    // Factors to convert rgba back to float
+    const vec4 rgba2float_factors = vec4(
+        255.0 / (256.0),
+        255.0 / (256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0 * 256.0)
+      );
+
+    float rgba2float(vec4 rgba) {
+      // Convert components from 0->1 back to 0->255 and then
+      // add the components together with their corresponding
+      // fixed point factors, i.e. (256^1, 256^2, 256^3, 256^4)
+      return dot(rgba, rgba2float_factors);
+    }
+#endif // SDF
+
+#ifdef ID
+     varying highp vec4 v_id;
+#endif // ID
+
+       void main()
+       {
+         // include the thin line parameters (thinLineHalfWidth and thinLineWidthFactor)
+         $thinLineParams
+
+         // for now assume that a thin line is a line which is under 2 pixels (1 pixels on either sides of the centerline)
+         mediump float thinLineFactor = max(thinLineWidthFactor * step(v_lineHalfWidth, thinLineHalfWidth), 1.0);
+
+         // dist represent the distance of the fragment from the line. 1.0 or -1.0 will be the values on the edge of the line,
+         // and any value in between will be inside the line (the sign represent the direction - right or left).
+         // since u_linewidth.s (half line width) is represented in pixels, dist is also given in pixels
+         mediump float fragDist = length(v_normal) * v_lineHalfWidth;
+
+         // calculate the alpha given the difference between the line-width and the distance of the fragment from the center-line.
+         // when it is a thin line then use a slightly shallower slope in order to add more feathering
+         lowp float alpha = clamp(thinLineFactor * (v_lineHalfWidth - fragDist) / (u_blur + thinLineFactor - 1.0), 0.0, 1.0);
+
+#if defined(SDF)
+         mediump float lineHalfWidth = widthFactor * v_lineHalfWidth;
+         mediump float lineWidthRatio = lineHalfWidth / sdfPatternHalfWidth;
+         mediump float relativeTexX = mod((u_zoomFactor * v_accumulatedDistance + v_normal.x * lineHalfWidth) / (lineWidthRatio * v_patternSize.x), 1.0);
+         mediump float relativeTexY = 0.5 + 0.5 * v_normal.y;
+
+          // claculate the actual texture coordinates by interpolating between the TL/BR pattern coordinates
+         mediump vec2 texCoord = mix(v_tlbr.xy, v_tlbr.zw, vec2(relativeTexX, relativeTexY));
+
+         // calculate the distance from the edge [-0.5, 0.5]
+         mediump float d = rgba2float(texture2D(u_texture, texCoord)) - 0.5;
+
+         // the distance is a proportional to the line width
+         float dist = d * lineHalfWidth;
+
+         lowp vec4 fillPixelColor = v_transparency * alpha * clamp(0.5 - dist, 0.0, 1.0) * v_color;
+        gl_FragColor = fillPixelColor;
+#elif defined(PATTERN)
+         // we need to calculate the relative portion of the line texture along the line given the accumulated distance along the line
+         // The computed value should is anumber btween 0 and 1 which will later be used to interpolate btween the BR and TL values
+         mediump float relativeTexX = mod((u_zoomFactor * v_accumulatedDistance + v_normal.x * v_lineHalfWidth) / v_patternSize.x, 1.0);
+
+         // in order to calculate the texture coordinates prependicular to the line (Y axis), we use the interpolated normal values
+         // which range from -1.0 to 1.0. On the line's centerline, the value of the interpolated normal is 0.0, however the relative
+         // texture value shpould be 0.5 (given that at the bottom of the line, the texture coordinate must be equal to 0.0)
+         // (TL) ---------------------------      --> left edge of line. Interpolatedf normal is 1.0
+         //              | -> line-width / 2
+         //      - - - - - - - - - - - - - -
+         //              | -> line-width / 2
+         //      ---------------------------- (BR)--> right edge of line. Interpolatedf normal is -1.0
+
+         mediump float relativeTexY = 0.5 + (v_normal.y * v_lineHalfWidth / v_patternSize.y);
+
+         // claculate the actual texture coordinates by interpolating between the TL/BR pattern coordinates
+         mediump vec2 texCoord = mix(v_tlbr.xy, v_tlbr.zw, vec2(relativeTexX, relativeTexY));
+
+         // get the color from the texture
+         lowp vec4 color = texture2D(u_texture, texCoord);
+
+         gl_FragColor = v_transparency * alpha * v_color * color;
+#else // solid line (no texture, no pattern)
+         // output the fragment color
+         gl_FragColor = v_transparency * alpha * v_color;
+#endif // SDF
+
+#ifdef HIGHLIGHT
+         gl_FragColor.a = step(1.0 / 255.0, gl_FragColor.a);
+#endif // HIGHLIGHT
+
+ #ifdef ID
+         if (gl_FragColor.a < 1.0 / 255.0) {
+           discard;
+         }
+         gl_FragColor = v_id;
+ #endif // ID
+       }
+    ]]>
+  </snippet>
+
+</snippets>

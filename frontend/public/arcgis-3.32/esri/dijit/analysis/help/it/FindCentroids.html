@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Trova Centroidi</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Trova Centroidi"></h2>
+        <hr/>
+    <p>Questo strumento funziona con un layer di feature multipuntuale, lineare o areale per determinare il centro rappresentativo di ogni feature.
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzate solo le feature nel layer di input multipuntuale, lineare o areale visibile nell&rsquo;estensione mappa corrente. Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere il layer le cui feature saranno utilizzate per generare i centroidi</h2></div>
+        <hr/>
+        <div>
+            <p> Il layer multipuntuale, lineare o areale che verr&agrave; utilizzato per trovare i centroidi.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Mostrami posizioni di output</h2></div>
+        <hr/>
+        <div>
+            <p> Quando viene selezionato per default <b>nel vero centroide</b> l&rsquo;output restituir&agrave; la posizione reale del centroide per ogni feature di input. I centroidi saranno posizionati nella seguente maniera:
+                <ul>
+                    <li>Feature multipuntuali&mdash;Il centroide di output sar&agrave; posizionato sulle coordinate medie di x ed y di tutti i punti della feature multipuntuale.
+                    </li>
+                    <li>Feature lineari&mdash;Il centroide di output sar&agrave; posizionato sulle coordinate medie ponderate x ed y dei mezzi punti di tutti segmenti di linea della feature lineare. Il peso &egrave; basato sulla lunghezza del segmento.
+                    </li>
+                    <li>Feature areale - Il centroide di output sar&agrave; posizionato nel centro dell&rsquo;area.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se l&rsquo;opzione  <b>contenuti da feature di input</b> &egrave; selezionata, le feature puntuali di output saranno contenute entro o dentro ogni feature di input. Le feature puntuali risultanti appariranno come segue:
+                <ul>
+                    <li>Feature multipuntuali - Il centroide di output coincider&agrave; con uno dei punti del gruppo multipuntuale.
+                    </li>
+                    <li>Feature lineari&mdash;Il centroide di output sar&agrave; sulla linea. Se la linea &egrave; curva, l&rsquo;output sar&agrave; al centro della linea. 
+                    </li>
+                    <li>Feature areali&mdash;Il punto di output sar&agrave; dentro l&rsquo;area della feature.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

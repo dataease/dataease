@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/ClassifyObjectsUsingDeepLearning",{toolDefine:"Classificar Objetos Utilizando Aprendizagem Profunda",inputFeaturesLabel:"Escolher uma feature layer para objetos (opcional)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Escolher modelo de aprendizagem profunda utilizado para classificar objetos",modelArgsLabel:"Especificar argumentos do modelo de aprendizagem profunda",classLabelFieldLabel:"Definir o nome de campo da class label (opcional)",processingModeLabel:"Modo de processamento",
+processAsMosaicLabel:"Processar como imagem em mosaico",processAsItemsLabel:"Processar todos os itens de raster separadamente",queryModelArgsMsg:"A consultar argumentos do modelo...",valueLabel:"Valor",nameLabel:"Nome",analysisLayerLabel:"Escolher imagem utilizada para classificar objetos",itemDescription:"Servi\u00e7o de Imagem de An\u00e1lise gerado a partir de Classificar Objetos Utilizando Aprendizagem Profunda",itemTags:"Resultado de An\u00e1lise Raster, Classificar Objetos Utilizando Aprendizagem Profunda, ${layername}",
+itemSnippet:"Servi\u00e7o de Imagem de An\u00e1lise gerado a partir de Classificar Objetos Utilizando Aprendizagem Profunda"});

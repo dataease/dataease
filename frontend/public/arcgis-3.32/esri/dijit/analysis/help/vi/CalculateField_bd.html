@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tính toán Trường dữ liệu</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="T&iacute;nh to&aacute;n Trường dữ liệu"></h2>
+        <hr/>
+    <p> C&ocirc;ng cụ n&agrave;y hoạt động với một lớp đầu v&agrave;o để t&iacute;nh to&aacute;n gi&aacute; trị cho trường mới hoặc trường hiện c&oacute;. X&acirc;y dựng một biểu thức Arcade nhằm t&iacute;nh to&aacute;n gi&aacute; trị cho c&aacute;c đối tượng theo đ&oacute;. Nếu dữ liệu của bạn được k&iacute;ch hoạt th&ocirc;ng tin thời gian v&agrave; thuộc loại thời gian hiện tại, bạn c&oacute; thể t&ugrave;y chọn x&acirc;y dựng biểu thức theo d&otilde;i đường đi.
+    </p>
+    <p>V&iacute; dụ: giả sử bạn muốn sửa trường hiện tại c&oacute; t&ecirc;n  <i>TotalSales</i>. Bạn muốn trường n&agrave;y thể hiện tổng doanh thu trong năm 2016 v&agrave; 2017. Sử dụng c&aacute;c trường n&agrave;y trong biểu thức, bạn t&iacute;nh gi&aacute; trị trường l&agrave; <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Sử dụng v&iacute; dụ kh&aacute;c, giả sử bạn c&oacute; c&aacute;c gi&aacute; trị đo GPS ghi lại địa điểm, thời gian, ID xe bu&yacute;t v&agrave; tốc độ của xe bu&yacute;t trong th&agrave;nh phố. Ch&uacute;ng ta muốn tạo một trường mới c&oacute; t&ecirc;n  <i>SpeedFrom3</i>, trường n&agrave;y t&iacute;nh trung b&igrave;nh tốc độ của 3 gi&aacute; trị đo GPS được ghi lại gần nhất cho mỗi đối tượng. Đối với ph&eacute;p t&iacute;nh n&agrave;y, ch&uacute;ng ta sẽ sử dụng ph&eacute;p t&iacute;nh theo d&otilde;i đường đi, v&agrave; xe bu&yacute;t sẽ l&agrave; phương tiện được theo d&otilde;i th&ocirc;ng qua ID của xe bu&yacute;t. Ph&eacute;p t&iacute;nh để x&aacute;c định tốc độ trung b&igrave;nh của 3 bước thời gian trước đ&oacute; v&agrave; bước thời gian hiện tại l&agrave; <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp để tính toán giá trị trường cho</h2></div>
+        <hr/>
+        <div>
+            <p>Dữ liệu điểm, đường, v&ugrave;ng hoặc bảng sẽ c&oacute; trường được t&iacute;nh to&aacute;n.  
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Tính toán giá trị trường cho trường</h2></div>
+        <hr/>
+        <div>
+            <p>Trường mới hoặc trường hiện tại sẽ c&oacute; gi&aacute; trị được t&iacute;nh to&aacute;n v&agrave; c&oacute; kiểu dữ liệu của trường đ&oacute;. Nếu bạn đang t&iacute;nh to&aacute;n gi&aacute; trị tr&ecirc;n một trường đ&atilde; tồn tại, th&igrave; kiểu dữ liệu kh&ocirc;ng cần tr&ugrave;ng khớp với nhau. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Xây dựng biểu thức để tính toán các giá trị trường</h2></div>
+        <hr/>
+        <div>
+            <p>Th&ecirc;m v&agrave;o một biểu thức sử dụng tr&igrave;nh x&acirc;y dựng biểu thức để t&iacute;nh to&aacute;n gi&aacute; trị trường. 
+            </p>
+            <p>V&iacute; dụ: giả sử ch&uacute;ng ta muốn th&ecirc;m gi&aacute; trị của trường c&oacute; t&ecirc;n  <i>income</i>  v&agrave; <i>bonus</i>. Để tiến h&agrave;nh, h&atilde;y th&ecirc;m biểu thức <code>$đối tượng[&quot;thu nhập&quot;] + $đối tượng[&quot;tiền thưởng&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Biểu thức là theo dõi đường đi</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định liệu biểu thức của bạn c&oacute; phải l&agrave; theo d&otilde;i đường đi kh&ocirc;ng. Biểu thức nhận biết đường đi c&oacute; định dạng như l&agrave;       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Biểu thức nhận biết đường đi cần c&oacute; c&aacute;c trường để x&aacute;c định c&aacute;c đường đi ri&ecirc;ng lẻ. Đường đi c&oacute; thể bao gồm điểm, đường, v&ugrave;ng hoặc bảng v&agrave; chỉ y&ecirc;u cầu đầu v&agrave;o c&oacute; m&atilde; của đường đi v&agrave; dữ liệu được k&iacute;ch hoạt th&ocirc;ng tin thời gian thuộc loại thời gian hiện tại.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Phân tích dữ liệu với các khoảng thời gian</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định xem bạn c&oacute; muốn t&iacute;nh to&aacute;n gi&aacute; trị cho đường đi của m&igrave;nh bằng c&aacute;ch sử dụng khoảng thời gian cho ph&eacute;p ph&acirc;n đoạn th&ocirc;ng tin đầu v&agrave;o của bạn cho ph&acirc;n t&iacute;ch. Nếu sử dụng c&aacute;c khoảng thời gian, bạn phải thiết lập khoảng thời gian bạn muốn sử dụng v&agrave; t&ugrave;y &yacute; thiết lập thời gian tham chiếu. Nếu bạn kh&ocirc;ng đặt thời gian tham chiếu th&igrave; hệ thống sẽ sử dụng ng&agrave;y 1 th&aacute;ng 1 năm 1970. 
+            </p>
+            <p>V&iacute; dụ: nếu bạn đặt giới hạn thời gian l&agrave; 1 ng&agrave;y, bắt đầu l&uacute;c 9:00 s&aacute;ng ng&agrave;y 1 th&aacute;ng 1 năm 1990 th&igrave; mỗi đường đi sẽ được cắt ngắn v&agrave;o l&uacute;c 9:00 s&aacute;ng h&agrave;ng ng&agrave;y v&agrave; được ph&acirc;n t&iacute;ch trong khoảng đ&oacute;. 
+            </p>
+            <p>Sử dụng c&aacute;c khoảng thời gian l&agrave; c&aacute;ch nhanh để tăng tốc thời gian t&iacute;nh to&aacute;n, v&igrave; n&oacute; nhanh ch&oacute;ng tạo ra c&aacute;c đường đi nhỏ hơn cho ph&acirc;n t&iacute;ch. Nếu ph&acirc;n t&iacute;ch của bạn c&oacute; thể &aacute;p dụng chia t&aacute;ch khoảng thời gian định kỳ th&igrave; bạn n&ecirc;n d&ugrave;ng chức năng đ&oacute; cho việc xử l&yacute; dữ liệu lớn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

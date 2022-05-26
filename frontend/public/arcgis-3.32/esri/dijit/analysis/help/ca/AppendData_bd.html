@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Afegeix dades</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagrama del flux de treball Afegeix dades"></h2>
+        <hr/>
+    <p>Aquesta eina afegeix dades a una capa d'entitats allotjades existent. Afegeix dades modifica la capa d'entrada original i no genera una nova capa de sortida. Podeu fer coincidir el camps segons el nom i el tipus de camp, o b&eacute; podeu aplicar m&egrave;todes de coincid&egrave;ncia m&eacute;s avan&ccedil;ats.
+    </p>
+    <p>A continuaci&oacute; s'indiquen alguns exemples: 
+        <ul>
+            <li>Sou empleat de una gran companyia d'assegurances que genera registres de vendes mensualment. Per a l'informe anual, s'han de compilar dades mensuals per fer an&agrave;lisis.  Per iniciar les an&agrave;lisis de vendes, podeu utilitzar Afegeix dades per actualitzar la capa AnnualReport_2018 quan els n&uacute;meros mensuals estiguin disponibles. Com que sabeu que la vostra organitzaci&oacute; mant&eacute; un esquema mensual coherent, podeu utilitzar el m&egrave;tode d'assignaci&oacute; de camps per defecte per afegir entitats de manera eficient segons el nom i el tipus de camp.
+            </li>
+            <li>Deu grups mediambientals recopilen cadascun centenars de milers de mesures climatol&ograve;giques dins de la seva jurisdicci&oacute;.  Aquestes organitzacions volen compilar les seves dades per comprendre millor els patrons regionals i globals. Cada organitzaci&oacute; determina l'esquema del seu dataset. Cadascuna ha especificat noms de camps diferents per a les dades de temperatura i de velocitat del vent.  Ateses les difer&egrave;ncies dels noms de camps entre els datasets, l'assignaci&oacute; de camps es pot utilitzar per especificar com afegir mesures de temperatura i velocitat del vent als camps respectius.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa a la qual afegir-ho</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de taules, punts, l&iacute;nies o pol&iacute;gons a les quals s'afegiran les dades.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>La capa a la qual ho afegiu es modificar&agrave; durant l'execuci&oacute; de l'eina. Abans de continuar, assegureu-vos que voleu modificar aquesta capa.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats allotjades.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Trieu una capa per afegir</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de taules, punts, l&iacute;nies o pol&iacute;gons que s'afegiran a la capa d'entrada.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Afegiu totes les entitats o definiu un subconjunt (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifica les entitats que s'afegiran. Aquest par&agrave;metre &eacute;s opcional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Trieu com afegir els camps (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica com s'afegeixen els camps de capa a la capa d'entrada. Per defecte, s'afegiran tots els camps d'entrada i addici&oacute; coincidents. Els camps s&oacute;n una coincid&egrave;ncia si tenen el mateix nom i el mateix tipus de camp. De manera opcional, podeu triar com es fan coincidir els camps, o b&eacute; calcular expressions de l'Arcade per emplenar els valors dels camps.
+            </p>
+            <p>Per exemple, teniu una capa d'entrada amb els camps  <i>field_number</i>, <i>field_string</i>, <i>date_field</i> i <i>unused_field</i>, i una capa per afegir amb els camps <i>field_string</i>, <i>field_number</i> i <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Per defecte, l'eina far&agrave; coincidir  <i>field_number</i> de la capa d'entrada amb <i>field_number</i> de la capa per afegir, aix&iacute; com <i>field_string</i> de la capa d'entrada amb <i>field_string</i> de la capa per afegir.
+                    </li>
+                    <li>Per defecte, els camps  <i>date_field</i> i <i>unused_field</i> de la capa d'entrada s'emplenaran amb valors de <i>null</i>, perqu&egrave; no tenen cap camp coincident a la capa per afegir.
+                    </li>
+                    <li>De manera opcional, podeu afegir valors als camps que no s'han fet coincidir autom&agrave;ticament per defecte. Per exemple,  <i>date_field</i> de la capa d'entrada es pot fer coincidir amb el camp per afegir <i>MY_DATE_FIELD</i>. Per fer-ho, utilitzeu el men&uacute; desplegable de <i>date_field</i> de la primera columna i seleccioneu <i>MY_DATE_FIELD</i> al men&uacute; desplegable de la segona columna.
+                    </li>
+                </ul>
+                 Un altre exemple: una capa d'entrada t&eacute; els camps num&egrave;rics <i>value_1</i>, <i>value_2</i>, <i>value_3</i> i <i>my_Average</i>, i una capa per afegir t&eacute; els camps num&egrave;rics <i>value_1</i>, <i>value_2</i> i <i>value_3</i>.
+                <ul>
+                    <li>Per defecte,  <i>value_1</i>, <i>value_2</i> i <i>value_3</i> es faran coincidir i s'afegiran.
+                    </li>
+                    <li>A m&eacute;s del comportament per defecte, es poden calcular els valors del camp  <i>my_Average</i>. Per fer-ho amb diversos camps i operacions matem&agrave;tiques, seleccioneu l'opci&oacute; del men&uacute; desplegable <b>Expressi&oacute;</b> de la columna al costat de <i>my_Average</i> i creeu una expressi&oacute; de l'Arcade personalitzada, com ara <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

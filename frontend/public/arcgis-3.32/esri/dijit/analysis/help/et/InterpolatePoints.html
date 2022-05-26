@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoleeri punktid</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoleeri punktid"></h2>
+        <hr/>
+    <p>   T&ouml;&ouml;riist Interpoleeri punktid v&otilde;imaldab ennustada uute asukohtade v&auml;&auml;rtusi punktikogumike m&otilde;&otilde;tmiste p&otilde;hjal. T&ouml;&ouml;riist kogub igas punktis v&auml;&auml;rtustega punktandmeid ja tagastab prognoositavate v&auml;&auml;rtuste j&auml;rgi liigitatud alad. N&auml;ited:
+        <ul>
+            <li>Keskkonnaagentuuril on sensorid, mis m&otilde;&otilde;davad saaste taset. T&ouml;&ouml;riista Interpoleeri punktid saab kasutada saastetaseme ennustamiseks asukohtades, kus sensoreid pole &ndash; n&auml;iteks koolides v&otilde;i haiglates.
+            </li>
+            <li>Saate ennustada raskmetallide kontsentratsiooni p&otilde;llusaagis &uuml;ksikutest taimedest v&otilde;etud proovide alusel.
+            </li>
+            <li>Saate ennustada mulla toitainete (nt l&auml;mmastik, fosfor, kaalium jne) ja muude n&auml;itajate (nt elektrijuhtivus) taset, et uurida nende seost saagikusega ja anda iga asukoha jaoks p&otilde;llul t&auml;pse hulga v&auml;etist. 
+            </li>
+            <li>Meteoroloogiliste rakenduste hulka kuuluvad temperatuuri, sademete ja nendega seotud muutujate (nt happevihm) ennustamine. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali tuntud väärtustega asukohti sisaldav punktikiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punktikiht, mida kasutatakse interpoleerimise alusena.  
+
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Vali väli interpoleerimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige v&auml;&auml;rtusi sisaldav v&auml;li, mida soovite interpoleerida.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimeeri järgmise jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kas eelistate kiirust v&otilde;i t&auml;psust. T&auml;psemate ennustuste arvutamine v&otilde;tab kauem aega.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Väljundi ennustusvead</h2></div>
+        <hr/>
+        <div>
+            <p> Kui see ruut on m&auml;rgitud, luuakse interpolatsiooni ennustuste kohta standardvigade kiht.  V&auml;ljundkihi nimeks on tulemkihi nimi, millele on lisatud viide Vead.
+            </p>
+            <p>Standardvead on kasulikud, sest annavad teavet ennustatud v&auml;&auml;rtuste usaldusv&auml;&auml;rsuse kohta. Lihtsa rusikareegli j&auml;rgi j&auml;&auml;b tegelik v&auml;&auml;rtus 95% juhtudest ennustatud v&auml;&auml;rtusest kuni kahe standardvea piiresse. Oletame n&auml;iteks, et uus asukoht saab eeldatavaks v&auml;&auml;rtuseks 50 standardveaga 5.  See t&auml;hendab, et t&ouml;&ouml;riista parima hinnangu j&auml;rgi on selle asukoha tegelik v&auml;&auml;rtus 50, kuid see v&otilde;ib olla minimaalselt ka 40 v&otilde;i maksimaalselt 60.  P&otilde;hjendatud v&auml;&auml;rtuste vahemiku arvutamiseks korrutage standardviga kahega ning vahemiku &uuml;lemise piiri saamiseks liitke see v&auml;&auml;rtus ennustatud v&auml;&auml;rtusele ning alumise piiri saamiseks lahutage see v&auml;&auml;rtus ennustatud v&auml;&auml;rtusest.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Rühmitamine</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kuidas ennustatud v&auml;&auml;rtused aladeks liigitatakse.
+                <ul>
+                    <li>Geomeetriline intervall &ndash; alad p&otilde;hinevad geomeetrilise jadaga klassi intervallidel. See meetod tagab, et iga klassi ulatuses on umbes sama palju v&auml;&auml;rtusi ning intervallide muutumine on &uuml;htlane.
+                    </li>
+                    <li>V&otilde;rdne intervall &ndash; alad luuakse nii, et iga ala ennustatud v&auml;&auml;rtuste ulatus on v&otilde;rdne.
+                    </li>
+                    <li>V&otilde;rdne ala &ndash; alad luuakse nii, et iga ala andmev&auml;&auml;rtuste arv on v&otilde;rdne. Kui andmetes on n&auml;iteks enam suuri v&auml;&auml;rtusi, luuakse rohkem suure v&auml;&auml;rtusega alasid.
+                    </li>
+                    <li>Manuaalne &ndash; selle valiku abil saate v&auml;&auml;rtuste vahemiku alade jaoks ise m&auml;&auml;rata. Need v&auml;&auml;rtused sisestatakse allpool parameetrisse  <b>Klassi vahemike v&auml;&auml;rtused</b>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Klasside arv</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab klasside arvu (prognoositavate v&auml;&auml;rtuste ulatuse) tulemkihis. Iga klass m&auml;&auml;ratleb alade piiri. Nende klasside v&auml;&auml;rtused m&auml;&auml;ratakse &uuml;laloleva parameetri 
+ <b>Liigita j&auml;rgmise j&auml;rgi</b> abil.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Klassivahemike väärtused</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage soovitud klassi v&auml;&auml;rtused, eraldades need t&uuml;hikutega. Kui soovite n&auml;iteks, et klassi &uuml;leminekud toimuksid v&auml;&auml;rtuste 1.5, 3 ja 7 juures, sisestage  <code>1.5 3 7</code>.  Need v&auml;&auml;rtused m&auml;&auml;ravad iga klassi &uuml;lempiiri, nii et klasside arv on v&otilde;rdne sisestatud v&auml;&auml;rtuste arvuga. Alasid ei looda asukohtades, mille tulevased v&auml;&auml;rtused &uuml;letavad sisestatud vahemiku suurima v&auml;&auml;rtuse. Peate sisestama v&auml;hemalt kaks ja mitte rohkem kui 32 v&auml;&auml;rtust.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Lõika tulemus</h2></div>
+        <hr/>
+        <div>
+            <p>Joonistage v&otilde;i sisestage kiht, mis m&auml;&auml;rab ala, kuhu soovite tulemi joonistada. Kui interpoleerite n&auml;iteks j&auml;rve saastatuse m&otilde;&otilde;tmisi, saate selles parameetris kasutada j&auml;rve piiri ja v&auml;ljund genereeritakse siis vaid j&auml;rve piiridesse.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Ennusta nendes asukohtades</h2></div>
+        <hr/>
+        <div>
+            <p>Joonistage v&otilde;i sisestage kiht, mis m&auml;&auml;rab ennustatud v&auml;&auml;rtuste arvutamiseks punktide asukohad. Nii saate teha ennustusi kindlates huvikohtades. Kui sisendkiht kujutab n&auml;iteks saastetaseme m&otilde;&otilde;tmisi, saate seda parameetrit kasutada saastetaseme ennustamiseks asukohtades, mille liikmed kuuluvad riskir&uuml;hma (nt koolid ja/v&otilde;i haiglad).  Seej&auml;rel saate seda teavet kasutada nendes asukohtades tervishoiuametnikele n&otilde;uannete andmiseks.
+            </p>
+            <p>Kui valik on kasutusel, loob see t&ouml;&ouml;riist m&auml;&auml;ratud asukohtades ennustuste v&auml;ljundi kihi. V&auml;ljundkihi nimeks on tulemkihi nimi, millele on lisatud viide Punktid.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

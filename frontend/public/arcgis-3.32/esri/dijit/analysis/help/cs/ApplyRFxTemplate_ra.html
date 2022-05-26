@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Použít šablonu rastrových funkcí (Apply Raster Function Template)</h2><p/>
+        <h2><img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" alt="Použ&iacute;t &scaron;ablonu rastrov&yacute;ch funkc&iacute;"></h2>
+        <hr/>
+    <p> 
+    </p>
+    <p>Tento n&aacute;stroj zpracuje v&aacute;&scaron; obr&aacute;zek pomoc&iacute; funkce, nebo sledu funkc&iacute;, dle specifikace v &scaron;abloně rastrov&yacute;ch funkc&iacute;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="rfxTemplateInputs">
+        <div><h2>Vstupy</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupy v&aacute;m umožn&iacute; vybrat vrstvy, kter&eacute; chcete zpracovat, a nastavit ve&scaron;ker&eacute; parametry spojen&eacute; s rastrov&yacute;mi funkcemi ve sledu pro zpracov&aacute;n&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/ClassifyObjectsUsingDeepLearning",{toolDefine:"Klasifikuj objekte pomo\u0107u detaljnog u\u010denja",inputFeaturesLabel:"Izaberite sloj funkcija za objekte (opcionalno)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Izaberite dubinski model za u\u010denje da biste klasifikovali objekte",modelArgsLabel:"Navedite argumente modela detaljnog u\u010denja",classLabelFieldLabel:"Defini\u0161ite naziv polja za oznaku klase (opcionalno)",processingModeLabel:"Re\u017eim obrade",
+processAsMosaicLabel:"Obrada kao mozai\u010dki snimak",processAsItemsLabel:"Obrada svih stavki rastera odvojeno",queryModelArgsMsg:"Izvr\u0161avanje upita za argumente modela...",valueLabel:"Vrednost",nameLabel:"Naziv",analysisLayerLabel:"Izaberite upotrebljeni snimak za klasifikaciju objekata",itemDescription:"Servis za analizu snimaka generisan iz Klasifikacije objekata pomo\u0107u dubinskog u\u010denja",itemTags:"Rezultat rasterske analize, klasifikacija objekata pomo\u0107u dubinskog u\u010denja, ${layername}",
+itemSnippet:"Servis za analizu snimka generisan iz Klasifikacije objekata kori\u0161\u0107enjem dubinskog u\u010denja"});

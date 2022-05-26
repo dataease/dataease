@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Liên kết Đối tượng</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Li&ecirc;n kết Đối tượng"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ Li&ecirc;n Kết Đối tượng hoạt động với hai lớp dữ liệu. C&ocirc;ng cụ li&ecirc;n kết hỗ trợ kết nối th&ocirc;ng tin thuộc t&iacute;nh của một đối tượng với c&aacute;c đối tượng kh&aacute;c dựa tr&ecirc;n mối quan hệ kh&ocirc;ng gian, thời gian v&agrave; thuộc t&iacute;nh hoặc c&oacute; thể kết hợp cả ba mối quan hệ tr&ecirc;n. C&ocirc;ng cụ n&agrave;y x&aacute;c định tất cả c&aacute;c đối tượng đầu v&agrave;o đ&aacute;p ứng c&aacute;c điều kiện li&ecirc;n kết cụ thể v&agrave; li&ecirc;n kết lớp đầu v&agrave;o thứ hai với thứ nhất. Bạn c&oacute; thể t&ugrave;y &yacute; li&ecirc;n kết tất cả c&aacute;c đối tượng với đối tượng khớp hoặc tổng kết c&aacute;c đối tượng khớp.
+    </p>
+    <p>Li&ecirc;n kết Đối tượng c&oacute; thể được &aacute;p dụng với c&aacute;c điểm, đường, khu vực v&agrave; bảng. Li&ecirc;n kết thời gian đ&ograve;i hỏi dữ liệu đầu v&agrave;o của bạn được k&iacute;ch hoạt về thời gian, v&agrave; li&ecirc;n kết kh&ocirc;ng gian đ&ograve;i hỏi dữ liệu của bạn c&oacute; h&igrave;nh học. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Chọn lớp được nối</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp dữ liệu sẽ c&oacute; c&aacute;c thuộc t&iacute;nh từ lớp li&ecirc;n kết được nối v&agrave;o bảng của n&oacute;.
+            </p>
+            <p>Ph&acirc;n t&iacute;ch bằng c&aacute;ch sử dụng mối quan hệ kh&ocirc;ng gian  <b>Gần</b> phải c&oacute; hệ tọa độ tham chiếu. Bạn c&oacute; thể thiết lập <b>Hệ tọa độ xử l&yacute;</b> trong <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b>. Nếu hệ tọa độ xử l&yacute; của bạn kh&ocirc;ng thiết lập hệ tọa độ tham chiếu, bạn sẽ được y&ecirc;u cầu thiết lập khi bạn <b>Chạy Ph&acirc;n t&iacute;ch</b> .
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Chọn lớp để liên kết với lớp mục tiêu</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp li&ecirc;n kết c&oacute; c&aacute;c thuộc t&iacute;nh sẽ được th&ecirc;m v&agrave;o lớp đ&iacute;ch.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Chọn hoạt động liên kết</h2></div>
+        <hr/>
+        <div>
+            <p>Việc x&aacute;c định c&aacute;ch thức kết nối giữa lớp mục ti&ecirc;u v&agrave; lớp kết nối sẽ được xử l&yacute; ở đầu ra nếu ph&aacute;t hiện c&oacute; nhiều đối tượng kết nối c&oacute; c&ugrave;ng một mối quan hệ với lớp được nối. C&oacute; hai hoạt động li&ecirc;n kết để chọn:
+                <ul>
+                    <li> <b>Kết nối một - một</b>&mdash;T&ugrave;y chọn n&agrave;y sẽ tổng hợp tất cả c&aacute;c đối tượng ph&ugrave; hợp với mỗi đối tượng được kết nối.
+                    </li>
+                    <li> <b>Kết nối một - nhiều</b>&mdash;T&ugrave;y chọn n&agrave;y sẽ kết nối tất cả c&aacute;c đối tượng ph&ugrave; hợp với lớp kết nối.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>V&iacute; dụ: giả sử bạn muốn t&igrave;m kiếm c&aacute;c si&ecirc;u thị trong v&ograve;ng b&aacute;n k&iacute;nh 2 km từ chợ n&ocirc;ng sản. Trong trường hợp n&agrave;y, lớp mục ti&ecirc;u c&oacute; một đối tượng đại diện cho chợ n&ocirc;ng sản, v&agrave; lớp li&ecirc;n kết đại diện cho c&aacute;c cửa h&agrave;ng tạp h&oacute;a địa phương v&agrave; c&oacute; c&aacute;c thuộc t&iacute;nh như tổng doanh thu h&agrave;ng năm. Bằng c&aacute;ch sử dụng c&ocirc;ng cụ Li&ecirc;n kết Đối tượng, bạn t&igrave;m thấy năm cửa h&agrave;ng tạp h&oacute;a đ&aacute;p ứng ti&ecirc;u ch&iacute; n&agrave;y. Nếu bạn x&aacute;c định loại li&ecirc;n kết l&agrave;  <b>một - nhiều</b>, kết quả bạn sẽ c&oacute; năm đối tượng, mỗi đối tượng đại diện cho một si&ecirc;u thị v&agrave; c&aacute;c chợ n&ocirc;ng sản li&ecirc;n kết với n&oacute;. Nếu bạn đ&atilde; x&aacute;c định loại li&ecirc;n kết l&agrave; <b>một - một</b>, kết quả bạn c&oacute; l&agrave; một đối tượng đại diện cho chợ n&ocirc;ng sản v&agrave; th&ocirc;ng tin tổng hợp từ c&aacute;c si&ecirc;u thị, chẳng hạn như số lượng (2) v&agrave; những số liệu thống k&ecirc; kh&aacute;c như tổng doanh thu h&agrave;ng năm.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Chọn một hoặc nhiều liên kết</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định t&ugrave;y chọn li&ecirc;n kết được sử dụng. Bạn c&oacute; thể &aacute;p dụng một, hai, hoặc ba loại li&ecirc;n kết sau đ&acirc;y: 
+                <ul>
+                    <li> <b>Kh&ocirc;ng gian</b>&mdash;Sử dụng mối quan hệ kh&ocirc;ng gian cụ thể để li&ecirc;n kết c&aacute;c đối tượng. Điều n&agrave;y y&ecirc;u cầu cả hai lớp phải c&oacute; th&ocirc;ng tin h&igrave;nh học.
+                    </li>
+                    <li> <b>Thời gian</b>&mdash;Sử dụng mối quan hệ thời gian để li&ecirc;n kết c&aacute;c đối tượng. Điều n&agrave;y đ&ograve;i hỏi k&iacute;ch hoạt thời gian ở cả hai lớp.
+                    </li>
+                    <li> <b>Thuộc t&iacute;nh</b>&mdash;Li&ecirc;n kết c&aacute;c đối tượng dựa tr&ecirc;n c&aacute;c trường tương ứng.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Chọn một mối quan hệ không gian</h2></div>
+        <hr/>
+        <div>
+            <p>Mối quan hệ kh&ocirc;ng gian sẽ x&aacute;c định xem đối tượng c&oacute; được li&ecirc;n kết với nhau kh&ocirc;ng. C&aacute;c mối quan hệ khả dụng sau đ&acirc;y t&ugrave;y thuộc v&agrave;o loại h&igrave;nh học (điểm, đường, đa gi&aacute;c) sẽ được sử dụng l&agrave;m c&aacute;c đối tượng đầu v&agrave;o:
+                <ul>
+                    <li> <b>Giao cắt</b>&mdash;Đối tượng sẽ được khớp nếu ch&uacute;ng giao cắt với nhau.
+                    </li>
+                    <li> <b>Bằng nhau</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu ch&uacute;ng c&oacute; c&ugrave;ng h&igrave;nh học.
+                    </li>
+                    <li> <b>Gần</b>&mdash;C&aacute;c đối tượng sẽ khớp với nhau nếu ch&uacute;ng c&ugrave;ng nằm trong một khoảng c&aacute;ch nhất định. Nếu mối quan hệ kh&ocirc;ng gian <b>Gần</b> được sử dụng th&igrave; lớp mục ti&ecirc;u phải thuộc hệ tọa độ tham chiếu hoặc tham chiếu kh&ocirc;ng gian đang xử l&yacute; phải được thiết lập đến một hệ tọa độ tham chiếu th&ocirc;ng qua t&ugrave;y chọn <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b>.
+                    </li>
+                    <li> <b>Bao gồm</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu lớp mục ti&ecirc;u được bao gồm trong c&aacute;c đối tượng li&ecirc;n kết.
+                    </li>
+                    <li> <b>Trong phạm vi</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu lớp mục ti&ecirc;u nằm trong phạm vi c&aacute;c đối tượng li&ecirc;n kết.
+                    </li>
+                    <li> <b>Tiếp x&uacute;c</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu ch&uacute;ng c&oacute; ranh giới chạm với đối tượng mục ti&ecirc;u.
+                    </li>
+                    <li> <b>Giao nhau</b>&mdash;C&aacute;c đối tượng sẽ được kết nối nếu ch&uacute;ng c&oacute; đường viền giao nhau.
+                    </li>
+                    <li> <b>Chồng lắp</b>&mdash;C&aacute;c đối tượng sẽ được li&ecirc;n kết nếu ch&uacute;ng chồng lắp với nhau.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> X&aacute;c định b&aacute;n k&iacute;nh được &aacute;p dụng cho mối quan hệ kh&ocirc;ng gian gần.
+            </p>
+            <p>V&iacute; dụ: nếu bạn c&oacute; một bộ dữ liệu đại diện cho một nh&agrave; m&aacute;y hạt nh&acirc;n v&agrave; một bộ dữ liệu đại diện cho nh&agrave; ở, bạn c&oacute; thể thiết lập khoảng c&aacute;ch nearSpatial 1 km để t&igrave;m c&aacute;c ng&ocirc;i nh&agrave; trong v&ograve;ng 1 km t&iacute;nh từ nh&agrave; m&aacute;y hạt nh&acirc;n.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Chọn một mối quan hệ theo thời gian</h2></div>
+        <hr/>
+        <div>
+            <p>Mối quan hệ thời gian sẽ x&aacute;c định xem đối tượng c&oacute; được li&ecirc;n kết với nhau kh&ocirc;ng. Lựa chọn n&agrave;y chỉ c&oacute; nếu thời gian được k&iacute;ch hoạt ở cả hai lớp v&agrave; mối quan hệ sẵn c&oacute; t&ugrave;y thuộc v&agrave;o loại thời gian (chốc l&aacute;t hay khoảng thời gian) được sử dụng cho c&aacute;c đối tượng đầu v&agrave;o. C&aacute;c mối quan hệ thời gian sẵn c&oacute; như sau:
+                <ul>
+                    <li> <b>Gặp</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n gặp đối tượng thứ hai.
+                    </li>
+                    <li> <b>Gặp bởi</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n được đối tượng thứ hai gặp.
+                    </li>
+                    <li> <b>Chồng lắp</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n chồng lắp đối tượng thứ hai.
+                    </li>
+                    <li> <b>Chồng lắp bởi</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n bị chồng lắp bởi đối tượng thứ hai.
+                    </li>
+                    <li> <b>Trong suốt</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n l&agrave; trong suốt đối tượng thứ hai.
+                    </li>
+                    <li> <b>Bao gồm</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n bao gồm đối tượng thứ hai.
+                    </li>
+                    <li> <b>Bằng</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n bằng đối tượng thứ hai.
+                    </li>
+                    <li> <b>Ho&agrave;n th&agrave;nh</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n ho&agrave;n th&agrave;nh đối tượng thứ hai.
+                    </li>
+                    <li> <b>Ho&agrave;n th&agrave;nh bởi</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n được ho&agrave;n th&agrave;nh bởi đối tượng thứ hai.
+                    </li>
+                    <li> <b>Bắt đầu</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n l&agrave;m bắt đầu đối tượng thứ hai.
+                    </li>
+                    <li> <b>Bắt đầu bởi</b>&mdash;C&aacute;c đối tượng sẽ được khớp nếu đối tượng đầu ti&ecirc;n được bắt đầu bởi đối tượng thứ hai.
+                    </li>
+                    <li> <b>Giao cắt</b>&mdash;C&aacute;c đối tượng được khớp nếu thời gian ho&agrave;n to&agrave;n tr&ugrave;ng khớp với nhau.
+                    </li>
+                    <li> <b>Gần</b>&mdash;C&aacute;c đối tượng sẽ được kết nối nếu ch&uacute;ng ở gần nhau, được x&aacute;c định theo một thời gian cụ thể.
+                    </li>
+                    <li> <b>Gần trước</b>&mdash;C&aacute;c đối tượng được kết nối nếu đối tượng đầu ti&ecirc;n trước đối tượng thứ hai v&agrave; trong khoảng thời gian cụ thể.
+                    </li>
+                    <li> <b>Gần sau</b>&mdash;C&aacute;c đối tượng được kết nối nếu đối tượng đầu ti&ecirc;n sau đối tượng thứ hai v&agrave; trong khoảng thời gian cụ thể.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>X&aacute;c định b&aacute;n k&iacute;nh thời gian được &aacute;p dụng cho mối quan hệ thời gian gần. Một mối quan hệ thời gian gần bao gồm  <b>Gần</b>, <b>Gần trước</b>, v&agrave; <b>Gần sau</b>.
+            </p>
+            <p>V&iacute; dụ: nếu bạn c&oacute; một lớp c&aacute;c vụ tai nạn ch&egrave;o thuyền v&agrave; một lớp đường đi GPS của một cơn b&atilde;o, bạn c&oacute; thể t&igrave;m kiếm c&aacute;c vụ tai nạn ch&egrave;o thuyền trong khoảng c&aacute;ch cụ thể của đường đi của cơn b&atilde;o trong cả kh&ocirc;ng gian (1 km) v&agrave; thời gian(5 giờ). Kết quả sẽ l&agrave; c&aacute;c sự cố được li&ecirc;n kết với cơn b&atilde;o khi ch&uacute;ng xảy ra gần nhau theo cả kh&ocirc;ng gian v&agrave; thời gian.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Chọn các trường để so khớp</h2></div>
+        <hr/>
+        <div>
+            <p>So khớp c&aacute;c gi&aacute; trị trong một trường từ một lớp n&agrave;y với c&aacute;c gi&aacute; trị trong một trường ở một lớp kh&aacute;c. 
+            </p>
+            <p>V&iacute; dụ: nếu bạn c&oacute; một lớp địa l&yacute; to&agrave;n quốc gồm c&aacute;c địa chỉ cư tr&uacute; (bao gồm một trường  <i>ZIP</i>) v&agrave; một bộ dữ liệu dạng bảng về sức khỏe nh&acirc;n khẩu theo M&atilde; ZIP (một trường c&oacute; t&ecirc;n <i>HEALTHZIP</i>), bạn c&oacute; thể kết nối bộ dữ liệu sức khỏe với dữ liệu cư tr&uacute; bằng c&aacute;ch so khớp trường <i>ZIP</i> với trường <i>HEALTHZIP</i>. Thao t&aacute;c n&agrave;y sẽ cho kết quả l&agrave; một lớp nh&agrave; ở c&oacute; dữ liệu về sức khỏe tương ứng.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Thêm số liệu thống kê (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>T&iacute;nh to&aacute;n số liệu thống k&ecirc; tr&ecirc;n c&aacute;c đối tượng được kết nối nếu hoạt động kết nối l&agrave;  <b>Kết nối một - một</b>. Tất cả số liệu thống k&ecirc; sẽ được t&iacute;nh to&aacute;n theo mặc định.
+            </p>
+            <p>Bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; tr&ecirc;n c&aacute;c đối tượng được tổng hợp. Tr&ecirc;n c&aacute;c trường dạng số, bạn c&oacute; thể t&iacute;nh to&aacute;n nội dung sau: 
+                <ul>
+                    <li>Đếm&mdash;T&iacute;nh to&aacute;n số lượng gi&aacute; trị kh&ocirc;ng rỗng. N&oacute; c&oacute; thể được sử dụng tr&ecirc;n c&aacute;c trường số hoặc chuỗi. Số lượng của [rỗng 0, 2] l&agrave; 2.
+                    </li>
+                    <li>Tổng cộng&mdash;Tổng gi&aacute; trị số trong một trường Tổng cộng của [rỗng, krỗng, 3] l&agrave; 3.
+                    </li>
+                    <li>Trung b&igrave;nh&mdash;Trung b&igrave;nh của c&aacute;c gi&aacute; trị số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 1.
+                    </li>
+                    <li>Tối thiểu&mdash;Gi&aacute; trị tối thiểu của trường số. Trung b&igrave;nh của [0, 2, rỗng] l&agrave; 0. 
+                    </li>
+                    <li>Tối đa&mdash;Gi&aacute; trị tối đa của trường số. Gi&aacute; trị tối đa của [0, 2, rỗng] l&agrave; 2.
+                    </li>
+                    <li>Phạm vi&mdash;Phạm vi của trường số Phạm vi n&agrave;y được t&iacute;nh to&aacute;n l&agrave; gi&aacute; trị tối đa trừ đi gi&aacute; trị tối thiểu. Phạm vi của [0, rỗng, 1] l&agrave; 1. Phạm vi của [rỗng, 4] l&agrave; 0.
+                    </li>
+                    <li>Biến số&mdash;Biến số của trường số trong đường đi. Biến số của [1] l&agrave; rỗng. Biến số của [null, 1,0,1,1] l&agrave; 0,25.
+                    </li>
+                    <li>Độ lệch chuẩn&mdash;Độ lệch chuẩn của một trường số. Độ lệch chuẩn của [1] l&agrave; rỗng. Độ lệch chuẩn của [null, 1,0,1,1] l&agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tr&ecirc;n c&aacute;c trường chuỗi, bạn c&oacute; thể t&iacute;nh to&aacute;n nội dung sau:
+                <ul>
+                    <li>Đếm&mdash;Số chuỗi kh&ocirc;ng rỗng.
+                    </li>
+                    <li>Bất kỳ&mdash;Số liệu thống k&ecirc; n&agrave;y l&agrave; mẫu ngẫu nhi&ecirc;n của một gi&aacute; trị chuỗi trong trường x&aacute;c định.
+                    </li>
+                </ul>
+                Tất cả số liệu thống k&ecirc; được t&iacute;nh to&aacute;n tr&ecirc;n c&aacute;c gi&aacute; trị kh&ocirc;ng rỗng. Lớp kết quả sẽ chứa một trường mới cho mỗi số liệu thống k&ecirc; được t&iacute;nh to&aacute;n. C&oacute; thể th&ecirc;m bất kỳ số liệu thống k&ecirc; n&agrave;o bằng c&aacute;ch chọn một thuộc t&iacute;nh v&agrave; số liệu thống k&ecirc;.
+            </p>
+            <p>Tất cả số liệu thống k&ecirc; được t&iacute;nh to&aacute;n tr&ecirc;n c&aacute;c gi&aacute; trị kh&ocirc;ng rỗng. Lớp kết quả sẽ chứa một trường mới cho mỗi số liệu thống k&ecirc; được t&iacute;nh to&aacute;n. C&oacute; thể th&ecirc;m bất kỳ số liệu thống k&ecirc; n&agrave;o bằng c&aacute;ch chọn một thuộc t&iacute;nh v&agrave; một số liệu thống k&ecirc;.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Tạo biểu thức để liên kết đối tượng theo (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>&Aacute;p dụng điều kiện với c&aacute;c trường cụ thể. Chỉ những đối tượng c&oacute; trường đ&aacute;p ứng c&aacute;c điều kiện n&agrave;y mới được kết nối.
+            </p>
+            <p>V&iacute; dụ: nếu bạn muốn &aacute;p dụng một ph&eacute;p kết nối cho một bộ dữ liệu chỉ cho c&aacute;c đối tượng c&oacute;  <i>health_spending</i>  lớn hơn 20 % của <i>income</i>,  h&atilde;y &aacute;p dụng một điều kiện kết nối l&agrave; <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> sử dụng trường <i>health_spending</i> từ bộ dữ liệu đầu ti&ecirc;n (c&aacute;c đối tượng của bộ dữ liệu được kết nối v&agrave;o) v&agrave; trường <i>income</i> từ bộ dữ liệu thứ hai (bộ dữ liệu đang được nối).
+            </p>
+            <p>C&aacute;c điều kiện li&ecirc;n kết c&oacute; thể được &aacute;p dụng bằng t&iacute;nh to&aacute;n biểu thức.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Chọn kho dữ liệu</h2></div>
+        <hr/>
+        <div>
+            <p>Kết quả GeoAnalytics được lưu trữ v&agrave;o một kho dữ liệu v&agrave; hiển thị như một lớp đối tượng trong  Portal for ArcGIS. Trong hầu hết c&aacute;c trường hợp, kết quả n&ecirc;n được lưu trong kho dữ liệu kh&ocirc;ng gian thời gian v&agrave; điều n&agrave;y l&agrave; mặc định. Trong một số trường hợp, việc lưu kết quả trong kho dữ liệu li&ecirc;n quan l&agrave; một lựa chọn tốt. Sau đ&acirc;y l&agrave; l&yacute; do bạn c&oacute; thể muốn lưu kết quả v&agrave;o kho dữ liệu li&ecirc;n quan: 
+                <ul>
+                    <li>Bạn c&oacute; thể sử dụng kết quả trong cổng th&ocirc;ng tin-cho-cộng t&aacute;c cổng th&ocirc;ng tin.
+                    </li>
+                    <li>Bạn c&oacute; thể bật t&iacute;nh năng đồng bộ với c&aacute;c kết quả của bạn
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bạn kh&ocirc;ng n&ecirc;n sử dụng kho dữ liệu li&ecirc;n quan nếu bạn mong đợi kết quả GeoAnalytics tăng v&agrave; cần tận dụng khả năng của kho dữ liệu lớn về kh&ocirc;ng gian thời gian để xử l&yacute; một lượng dữ liệu lớn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

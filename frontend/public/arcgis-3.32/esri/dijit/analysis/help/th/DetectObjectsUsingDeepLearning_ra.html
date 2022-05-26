@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ตรวจหาวัตถุโดยใช้การเรียนรู้เชิงลึก</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="ตรวจหาวัตถุโดยใช้การเรียนรู้เชิงลึก"></h2>
+        <hr/>
+    <p>เครื่องมือนี้สั่งงานโมเดลการเรียนรู้เชิงลึกที่ได้รับการฝึกบนแรสเตอร์อินพุตเพื่อสร้างคลาสคุณลักษณะที่มีวัตถุที่พบ ฟีเจอร์ดังกล่าวอาจเป็นกล่องตีกรอบหรือรูปหลายเหลี่ยมรอบวัตถุที่พบหรือชี้ไปที่กึ่งกลางของวัตถุ
+    </p>
+    <p>ถ้าเลือก  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> จะมีการวิเคราะห์เฉพาะพื้นที่แรสเตอร์ที่มองเห็นได้ภายในขอบเขตแผนที่ปัจจุบัน ถ้าไม่ได้เลือก แรสเตอร์ทั้งหมดจะถูกนำไปวิเคราะห์ แม้ว่าจะอยู่นอกเหนือขอบเขตแผนที่ปัจจุบันอยู่ก็ตาม
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>เลือกภาพที่จะใช้ตรวจหาวัตถุ</h2></div>
+        <hr/>
+        <div>
+            <p>ภาพอินพุตที่ใช้ตรวจหาวัตถุ
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>เลือกแบบจำลองการเรียนรู้เชิงลึกที่ใช้ตรวจหาวัตถุ</h2></div>
+        <hr/>
+        <div>
+            <p>รายการอินพุตแพ็คเกจการเรียนรู้( <code>.dlpk</code>) เชิงลึก
+            </p>
+            <p>แพ็คเกจการเรียนรู้เชิงลึกประกอบด้วยไฟล์ JSON ค่าคุณสมบัติโมเดล Esri ( <code>.emd</code>) ไฟล์โมเดลไบนารี่การเรียนรู้เชิงลึก และอีกทางเลือกหนึ่ง ฟังก์ชั่นแรสเตอร์ Python ที่จะใช้
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>ระบุอาร์กิวเมนต์แบบจำลองการเรียนรู้เชิงลึก</h2></div>
+        <hr/>
+        <div>
+            <p>คำสั่งฟังก์ชันถูกกำหนดไว้ในคลาสฟังก์ชันแรสเตอร์ Python ที่อ้างอิงโดยโมเดลอินพุต นี่คือที่ที่คุณแสดงค่าพารามิเตอร์และคำสั่งการเรียนรู้เชิงลึกเพิ่มเติมสำหรับการทดลองและการปรับแต่ง เช่น เกณฑ์ความเชื่อมั่นสำหรับการปรับความไวตอบสนอง
+            </p>
+            <p>ชื่อของคำสั่งถูกเติมด้วยเครื่องมือจากการอ่านโมดูล Python บนเซิร์ฟเวอร์การวิเคราะห์แรสเตอร์
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>ลบฟีเจอร์ที่ซ้ำออกจากผลลัพธ์ (ตัวเลือก)</h2></div>
+        <hr/>
+        <div>
+            <p>ทำการยกเลิกค่าที่ไม่ใช่ค่าสูงสุดในกรณีที่มีการระบุว่าวัตถุซ้ำกัน และฟีเจอร์ที่ซ้ำกันที่มีค่าความเชื่อมั่นต่ำจะถูกนำออกไป 
+                <ul>
+                    <li>ไม่ได้เลือก&mdash;วัตถุทั้งหมดที่ถูกตรวจพบจะอยู่ในกลุ่มฟีเจอร์ผลลัพธ์ นี้คือค่าตั้งต้น
+                        
+
+                    </li>
+                    <li>เลือกไว้&mdash;นำวัตถุซ้ำซี่งตรวจพบออกไป
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>ฟิลด์คะแนนความเชื่อมั่น</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์ในบริการฟีเจอร์ที่ประกอบไปด้วยคะแนนความเชื่อมั่นเป็นผลลัพธ์ตามวิธีการตรวจหาวัตถุ
+            </p>
+            <p>ต้องมีพารามิเตอร์นี้เมื่อคุณเลือกพารามิเตอร์  <b>การยกเลิกค่าที่ไม่ใช่ค่าสูงสุด</b>
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>ฟิลด์ค่ากลุ่ม</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์ค่ากลุ่มในบริการฟีเจอร์ผลลัพธ์ หากไม่ได้ระบุ เครื่องมือจะใช้ฟิลด์ค่ากลุ่มมาตรฐาน  <i>Classvalue</i> และ <i>Value</i> หากไม่มีฟิลด์เหล่านี้อยู่ ฟีเจอร์ทั้งหมดจะถูกจัดเป็นกลุ่มวัตถุเดียวกัน
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>อัตราส่วนการซ้อนทับสูงสุด</h2></div>
+        <hr/>
+        <div>
+            <p>อัตราส่วนการซ้อนทับสูงสุดสำหรับฟีเจอร์การซ้อนทับสองฟีเจอร์ ซึ่งถูกกำหนดเป็นอัตราส่วนของพื้นที่การตัดเหนือพื้นที่ที่รวมกัน ค่าเริ่มต้นคือ 0
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

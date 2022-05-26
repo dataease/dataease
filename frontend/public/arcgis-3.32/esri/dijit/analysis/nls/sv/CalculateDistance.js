@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sv/CalculateDistance",{inputLayerLabel:"V\u00e4lj raster eller geoobjektplatslager f\u00f6r att ber\u00e4kna avst\u00e5ndet till",inputRaster:"V\u00e4lj raster eller geoobjektlager som ska utg\u00f6ra barri\u00e4rer (valfritt)",maxDistanceLabel:"Maximalt avst\u00e5nd att ber\u00e4kna (valfritt)",outputCellSize:"Utdatacellstorlek (valfritt)",distanceMethod:"Avst\u00e5ndsmetod",resultDistLayerName:"Resultatavst\u00e5ndslagrets namn",resultDirectionLayerName:"Resultatriktningslagrets namn (valfritt)",
+resultAllocationLayerName:"Resultattilldelningslagrets namn (valfritt)",outputBackDirectionName:"Riktningslagrets namn f\u00f6r resultat tillbaka (valfritt)",outputLayerName:"Ber\u00e4knat avst\u00e5nd f\u00f6r ${layername}",allocationFieldLabel:"V\u00e4lj tilldelningsf\u00e4lt (valfritt)",itemDescription:"Geoobjektlager som genererats genom k\u00f6rning av Ber\u00e4kna avst\u00e5nd p\u00e5 ${layerName}. ",itemTags:"Analysresultat, Ber\u00e4knat avst\u00e5nd, ${layername}, ${fieldname}",itemSnippet:"Geoobjektlager som genererats av Ber\u00e4kna avst\u00e5nd.",
+planar:"Plan",geodesic:"Geodetisk",selectDistance:"-- v\u00e4lj --"});

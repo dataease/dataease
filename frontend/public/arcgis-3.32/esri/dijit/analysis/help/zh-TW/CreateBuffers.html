@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>建立緩衝區</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="建立緩衝區"></h2>
+        <hr/>
+    <p>緩衝區是以點、線或區域圖徵為起點並涵蓋已知距離的區域。
+    </p>
+    <p>緩衝區通常用於建立區域，以便使用如「疊加圖層」等工具進行深入分析。例如，假設問題是「在距學校一英里的範圍內存在哪些建築物？」，則透過在學校周圍建立一個一英里的緩衝區，並使用「叠加圖層」工具將緩衝區與包含建築物覆蓋區的圖層相叠加即可找到答案。最終結果是一個包含學校一英里範圍內建築物的圖層。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅對目前地圖範圍中可見的圖徵建立緩衝區。如果未勾選，則將對輸入圖層中的所有圖徵建立緩衝區，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇包含要執行緩衝的圖徵的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將用於執行緩衝的點圖徵、線圖徵或區域圖徵。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>輸入緩衝距離</h2></div>
+        <hr/>
+        <div>
+            <p>可以輸入單個距離值或使用空格分開的多個距離值。透過按一下 <b>欄位</b>，也可以指定包含距離值的輸入圖層屬性。
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>選項</h2></div>
+        <hr/>
+        <div>
+            <p>選擇重疊緩衝區的處理方式。對於某個緩衝區上方的任意緩衝區，公共區域可保持不變（重叠）或進行組合（融合）。使用 <b>融合</b>時，會將所有緩衝區一起融合至單一的多組件圖徵，從而移除任何重疊處。
+            </p>  
+            <p> 當使用多個距離時，可選擇以何種方式來表現相對於上一緩衝距離的距離；例如，如果距離是 10 和 14：
+                <ul>
+                    <li>選擇 <b>圓環</b>產生的結果是 0 到 10 和 10 到 14 兩個緩衝區。
+                    </li>
+                    <li>選擇 <b>圓盤</b>產生的結果是 0 到 10 和 0 到 14 兩個緩衝區。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>選項</h2></div>
+        <hr/>
+        <div>
+            <p>選擇重疊緩衝區的處理方式。對於某個緩衝區上方的任意緩衝區，公共區域可保持不變（重叠）或進行組合（融合）。使用 <b>融合</b>時，會將所有緩衝區一起融合至單一的多組件圖徵，從而移除任何重疊處。
+            </p>
+            <p>在區域圖徵周圍建立單個緩衝區（輸入一個距離）時，可選擇在結果緩衝區內是否包含執行緩衝的圖徵。
+            </p>
+            <p>當使用多個距離時，可選擇以何種方式來表現相對於上一緩衝距離的距離；例如，如果距離是 10 和 14：
+                <ul>
+                    <li>選擇 <b>圓環</b>產生的結果是 0 到 10 和 10 到 14 兩個緩衝區。
+                    </li>
+                    <li>選擇 <b>圓盤</b>產生的結果是 0 到 10 和 0 到 14 兩個緩衝區。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>選項</h2></div>
+        <hr/>
+        <div>
+            <p>選擇重疊緩衝區的處理方式。對於某個緩衝區上方的任意緩衝區，公共區域可保持不變（重叠）或進行組合（融合）。使用 <b>融合</b>時，會將所有緩衝區一起融合至單一的多組件圖徵，從而移除任何重疊處。
+            </p>
+            <p>在線周圍建立單個緩衝區（輸入一個距離）時，可選擇要對線的哪一側進行緩衝。通常，同時選擇兩側。左側和右側的確定猶如從該線的第一個 x,y 座標（起點座標）步行至最後一個 x,y 座標（終點座標）。選擇左側或右側通常意味著您知道線圖徵是在特定的方向進行建立和存儲（例如，河流網絡的上游或下游）。在線的兩端，緩衝區可以是圓的（圓形）或者直的（平面）。
+            </p>
+            <p>當建立多個緩衝區（多個距離）時，可選擇以何種方式來表現相對於上一緩衝距離的距離；例如，如果距離是 10 和 14：
+                <ul>
+                    <li>選擇 <b>圓環</b>產生的結果是 0 到 10 和 10 到 14 兩個緩衝區。
+                    </li>
+                    <li>選擇 <b>圓盤</b>產生的結果是 0 到 10 和 0 到 14 兩個緩衝區。
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>選項</h2></div>
+        <hr/>
+        <div>
+            <p>選擇緩衝層後，可以選擇處理重疊緩衝區的方式。對於某個緩衝區上方的任意緩衝區，公共區域可保持不變（重叠）或進行組合（融合）。使用 <b>融合</b>時，會將所有緩衝區一起融合至單一的多組件圖徵，從而移除任何重疊處。此外，您可以指定代表多個距離的方式。若圖層包含線圖徵，可以選擇要對線的哪一側進行緩衝。若圖層包含區域圖徵，可以選擇結果緩衝要包含或排除欲緩衝的圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

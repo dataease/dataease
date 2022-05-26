@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir Atributos</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Resumir Atributos diagrama"></h2>
+        <hr/>
+    <p> Esta ferramenta resume valores num ou mais campos e calcula estat&iacute;sticas referentes aos mesmos. A estat&iacute;stica mais b&aacute;sica &eacute; a contagem de elementos que foram resumidos em conjunto, mas tamb&eacute;m pode calcular estat&iacute;sticas mais avan&ccedil;adas.
+    </p>
+    <p>Por exemplo, suponha que tem elementos de ponto de localiza&ccedil;&otilde;es de lojas com um campo que representa o  <i>DISTRICT_MANAGER_NAME</i>, e pretende resumir vendas de caf&eacute; por gerente. Pode especificar o campo <i>DISTRICT_MANAGER_NAME</i> como o campo no qual dissolver, e todas as linhas de dados que representam gerentes individuais ser&atilde;o resumidas. Isto significa que todas as localiza&ccedil;&otilde;es de lojas que s&atilde;o geridas pelo <pre>Manager1</pre> ser&atilde;o resumidas numa &uacute;nica linha, com estat&iacute;sticas resumidas calculadas. Nesta inst&acirc;ncia, estat&iacute;sticas como a contagem do n&uacute;mero de lojas e a soma de <i>TOTAL_SALES</i>  para todas as lojas que o <pre>Manager1</pre> gere ser&atilde;o calculadas, bem como para qualquer outro gerente listado no campo <i>DISTRICT_MANAGER_NAME</i> .
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher a entrada a resumir</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que cont&eacute;m os campos que ser&atilde;o resumidos.  
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Selecionarcomo resumir os dados</h2></div>
+        <hr/>
+        <div>
+            <p>Existem duas formas de resumir os seus dados:
+                <ul>
+                    <li> <b>Todos os elementos num &uacute;nico elemento</b>&mdash;Calcula estat&iacute;sticas em todos os elementos.
+                    </li>
+                    <li> <b>Por campos</b>&mdash;Agrupa elementos por valores like em campos especificados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por exemplo, suponha que tem um conjunto de dados de &aacute;rvores que incluiu campos de  <i>treetype</i> com valores <code>&Aacute;cer</code>, <code>Abeto</code> e <code>Pinheiro</code>,  e um campo <i>treeheight</i>, e est&aacute; interessado em encontrar a <i>treeheight</i>m&eacute;dia. Se resumir todos os elementos num &uacute;nico elemento, encontrar&aacute; a altura m&eacute;dia de &aacute;rvores de todas as &aacute;rvores, que resultar&aacute; num valor m&eacute;dio. Se resumiu a partir do campo <i>treeheight</i>, ir&aacute; obter uma m&eacute;dia para &aacute;cer, uma m&eacute;dia para abetos, e uma m&eacute;dia para pinheiros.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Pode calcular estat&iacute;sticas em elementos que se encontram resumidos. Pode calcular os seguintes em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores n&atilde;o-nulos. Pode ser utilizado em campos num&eacute;ricos ou em strings. A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma dos valores num&eacute;ricos num campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;o valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;o valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Intervalo&mdash;o intervalo de um campo num&eacute;rico. Este &eacute; calculado subtraindo os valores m&iacute;nimos ao valor m&aacute;ximo. O intervalo de [0, null, 1] &eacute; 1. O intervalo de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;a vari&acirc;ncia de um campo num&eacute;rico num trilho. A vari&acirc;ncia de [1] &eacute; null. A vari&acirc;ncia de [null, 1,0,1] &eacute; 0.25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; null. O desvio padr&atilde;o de [null, 1,0,1,1] &eacute; 0.5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pode calcular os seguintes em campos de string:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings n&atilde;o-nulas.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em campos que n&atilde;o s&atilde;o nulos. A camada resultante ir&aacute; conter um novo campo por cada estat&iacute;stica calculada. &Eacute; poss&iacute;vel adicionar qualquer n&uacute;mero de estat&iacute;sticas, selecionando um atributo e uma estat&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selecionar armazenamento de dados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados de GeoAnalytics s&atilde;o guardados num armazenamento de dados e expostos como uma camada de elementos em   Portal for ArcGIS. Na maioria dos casos, os resultados dever&atilde;o ser armazenados num armazenamento de dados espaciotemporal, sendo este o comportamento predefinido. Em alguns casos, ser&aacute; uma boa op&ccedil;&atilde;o guardar os resultados no armazenamento de dados relacional. As seguintes s&atilde;o raz&otilde;es que justificam o armazenamento de resultados no armazenamento de dados relacional. 
+                <ul>
+                    <li>Pode utilizar resultados em colabora&ccedil;&atilde;o portal-to-portal.
+                    </li>
+                    <li>Pode ativar funcionalidades de sincroniza&ccedil;&atilde;o com os seus resultados
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

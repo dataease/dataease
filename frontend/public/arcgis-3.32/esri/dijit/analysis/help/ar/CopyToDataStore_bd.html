@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>نسخ إلى مخزن البيانات</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="نسخ إلى مخزن البيانات"></h2>
+        <hr/>
+    <p>سوف تأخذ هذه الأداة طبقة الإدخال ونسخها في مخزن البيانات. يمكنك نسخ النتائج إلى  ArcGIS Data Store (مخزن البيانات الضخمة للموضع المكاني والزماني أو الارتباطي) وسيتم إنشاء طبقة في بوابتك أو يمكنك بالطبع نسخ النتائج إلى ملف بيانات ضخمة. 
+    </p>
+    <p>على سبيل المثال، يمكنك نسخ المعالم التي يتم تخزينها في  <code>مشاركة ملف بيانات كبير</code> إلى <code>مخزن البيانات الارتباطي</code> وحدد فقط المعالم ضمن نطاق الخريطة الحالي التي يتم نسخها. سيقوم هذا بإنشاء خدمة معالم مستضافة مع هذه المعالم فقط التي كانت تقع ضمن نطاق الخريطة المحدد.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر الطبقة المُراد نسخها</h2></div>
+        <hr/>
+        <div>
+            <p>الطبقة أو الجدول الذي يتم نسخه. 
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>قد تستخدم كل المعالم أو تُجري تحديدًا (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>اختياريًا، استخدم زر التحديد لتحديد المواقع ليتم نسخها.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>اختيار مخزن البيانات للنسخ إليه</h2></div>
+        <hr/>
+        <div>
+            <p>مخزن البيانات الذي سيتم نسخ الطبقة عليه. سوف تتجاوز هذه المعلمة التحديد في  <b>بيئات التحليل</b>. تتوفر الخيارات التالية:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>الموضع الزماني والمكاني</b>&mdash;هذا هو الوضع الافتراضي.
+                            </li>
+                            <li> <b>ارتباطي</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>قوالب إخراج مشاركة ملف البيانات الضخمة</b>
+                        <ul>
+                            <li>قائمة بقوالب مشاركة ملف البيانات الضخمة المتوفرة بتنسيق  <b>bigDataFileShareName-templateName</b>. يجب تكوين قوالب مشاركات ملف البيانات الضخمة قبل تشغيل الأداة.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم إنشاء اسم الطبقة في المحتوى. إذا كنت تقوم بالكتابة إلى ArcGIS Data Store، سيتم حفظ نتائجك في  <b>محتواي</b> وإضافته إلى الخريطة. إذا كنت تقوم بالكتابة إلى مشاركة ملف بيانات ضخمة، ستخزن نتائجك في مشاركة ملف البيانات الضخمة وإضافتها إلى البيان الخاص بها. لن تتم إضافتها إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجِدَت الطبقة بالفعل، ستفشل الأداة.
+            </p>
+            <p>عند الكتابة إلى  ArcGIS Data Store (مخزن بيانات ضخمة للموضع المكاني والزماني أو ارتباطية) باستخدام مربع السهم المنسدل  <b>حفظ النتائج في</b>، يمكن تحديد اسم المجلد في <b>محتواي</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

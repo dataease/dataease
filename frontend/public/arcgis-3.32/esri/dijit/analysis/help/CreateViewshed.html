@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Create Viewshed</h2><p/>
+        <h2><img src="./images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Create Viewshed"></h2>
+        <hr/>
+    <p>The Create Viewshed tool creates areas where
+an observer can see objects on the ground. The input observer
+points can represent either observers (such as people on the ground
+or lookouts in a fire tower) or observed objects (such as wind
+turbines, water towers, vehicles, or other people). The result areas are those areas where the observers
+can see the observed objects and vice versa: the observed objects
+can see the observers.
+    </p>
+    <p>Both the
+observers and the observed objects  can have a height above ground, and these heights are used in determining visibility.
+For example, a viewshed computed for 400-foot wind turbines and six-foot people standing on the ground will typically be larger  than a viewshed computed for 200-foot turbines and six-foot people.
+    </p>
+    <p>Note that the computation of the viewshed does
+not account for obstructions such as trees or buildings. You can
+think of the computation as occurring on bare ground devoid of
+anything but the observer and observed objects.
+    </p>
+    <p>The  result layer contains   area features representing visible areas. The  <i>Frequency</i> field  records the number of observer points that can see each area. For example, if you have five input points, each  representing a fire lookout tower, the <i>Frequency</i> field will have values between one and five; areas with a value of one can only be seen by one tower, and areas with a value of five can be seen by all towers. The result layer also contains the <i>DEMResolution</i> field, which records the resolution  of the digital elevation model (DEM) used to create the viewsheds.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the observer points that are visible within the current map extent will be analyzed.  If unchecked, all observer points in the input  layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Point features that represent observer locations</h2></div>
+        <hr/>
+        <div>
+            <p>The point features to use as the observer locations.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Height of observer locations</h2></div>
+        <hr/>
+        <div>
+            <p>This is the height above ground of your observer locations.    The default is approximately the average height of a person.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Height of other objects on the ground</h2></div>
+        <hr/>
+        <div>
+            <p>This is the height of  structures or people on the ground used to establish visibility. The result viewshed are those areas where an observer point can see these other objects.  The converse is also true; the other objects can see an observer point. 
+            </p>
+            <p>
+                <ul>
+                    <li>If your observer points represent wind turbines and you want to determine where people standing on the ground can see the turbines, enter the average height of a person (approximately 6 feet).  The result is those areas where a person standing on the ground can see the wind turbines.
+                    </li>
+                    <li>If your observer points represent fire lookout towers and you want to determine which lookout towers can see a smoke plume 20 feet high or higher, enter 20 feet for the height.  The result is those areas where a fire lookout tower can see a smoke plume at least 20 feet high.
+                    </li>
+                    <li>If your observer points represent scenic overlooks along roads and trails and you want to determine where wind turbines 400 feet high or higher can be seen, enter 400 feet for the height.  The result is those areas where a person standing at a scenic overlook can see a wind turbine at least 400 feet high.
+                    </li>
+                    <li>If your observer points represent scenic overlooks and you want to determine how much area on the ground people standing at the overlook can see, enter zero.  The result is those areas that can be seen from the scenic overlook.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maximum viewing distance</h2></div>
+        <hr/>
+        <div>
+            <p>This is a cutoff distance where the computation of visible areas stops. Beyond this distance, it is unknown whether the observer points and the other objects  can see each other. Large values increase computation time. The maximum allowed value is 31 miles (50 kilometers).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+            <p> Running this tool does not consume credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punkte interpolieren</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Punkte interpolieren (Werkzeug)"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug k&ouml;nnen Sie Werte an neuen Positionen basierend auf Messwerten aus einer Sammlung von Punkten vorhersagen. Das Werkzeug verwendet Punktdaten mit Werten an jedem Punkt und gibt ein Raster von vorhergesagten Werten zur&uuml;ck.
+    </p>
+    <p>Nachfolgend finden Sie weitere Anwendungsf&auml;lle dieses Werkzeugs:
+
+        <ul>
+            <li>In einem Luft-Qualit&auml;tsmanagement-Bezirk befinden sich Sensoren zur Messung des Verschmutzungsgrades. Mit dem Werkzeug &quot;Punkte interpolieren&quot; kann der Verschmutzungsgrad an Standorten vorhergesagt werden, an denen keine Sensoren vorhanden sind, z. B. an Standorten von Risikogruppen, wie Schulen oder Krankenh&auml;user.
+                
+
+            </li>
+            <li>Treffen Sie Vorhersagen zu Schwermetallkonzentrationen in bestimmten Pflanzenarten basierend auf Proben einzelner Pflanzen.
+                
+
+            </li>
+            <li>Sagen Sie den N&auml;hrstoffgehalt in B&ouml;den (Stickstoff, Phosphor, Kalium usw.) sowie andere Indikatoren (z. B. elektrische Leitf&auml;higkeit) voraus, um deren Beziehung zum Ernteertrag zu untersuchen und genaue Dosierungen von D&uuml;ngemitteln f&uuml;r jedes Gebiet vor Ort vorzuschreiben.
+                
+
+            </li>
+            <li>Meteorologische Anwendungen beinhalten die Vorhersage von Temperaturen, Niederschlag und damit verkn&uuml;pften Variablen (wie saurer Regen).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Punkt-Layer auswählen, der Positionen mit bekannten Werten enthält</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer mit den Punkten, an denen die Werte gemessen wurden.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Zu interpolierendes Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie das Feld mit den Werten, die interpoliert werden sollen. Das Feld muss numerisch sein.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimieren für</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie Ihre Pr&auml;ferenz f&uuml;r Geschwindigkeit im Vergleich zu Genauigkeit fest.
+            </p>
+            <p>Die Berechnung pr&auml;ziserer Vorhersagen nimmt mehr Zeit in Anspruch. Dieser Parameter ver&auml;ndert die Standardwerte mehrerer anderer Parameter f&uuml;r das Werkzeug &quot;Punkte interpolieren&quot;, um die Berechnungsgeschwindigkeit oder die Ergebnisgenauigkeit zu optimieren bzw. ein ausgewogenes Verh&auml;ltnis beider Ziele zu erreichen. Standardm&auml;&szlig;ig wird im Hinblick auf ein ausgewogenes Verh&auml;ltnis optimiert.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Daten in Normalverteilung transformieren</h2></div>
+        <hr/>
+        <div>
+            <p>Entscheiden Sie, ob die Daten in Normalverteilung transformiert werden sollen.
+            </p>
+            <p>Die Interpolation ist am genauesten f&uuml;r Daten in (glockenf&ouml;rmiger) Normalverteilung. Falls Ihre Daten nicht in Normalverteilung vorliegen, sollten Sie eine Transformation durchf&uuml;hren.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Größe lokaler Modelle</h2></div>
+        <hr/>
+        <div>
+            <p>Beim Interpolieren von Punkten werden lokale Interpolationsmodelle erstellt und so lange kombiniert, bis die endg&uuml;ltige Vorhersagekarte entsteht. Dieser Parameter steuert, wie viele Punkte in jedem lokalen Modell enthalten sein sollen. Je kleiner die Werte, umso lokaler sind die Ergebnisse. Auch geringf&uuml;gige Effekte k&ouml;nnen aufgezeigt werden. Andererseits ist eine gewisse Instabilit&auml;t bei der Berechnung m&ouml;glich. Gr&ouml;&szlig;ere Werte sind stabiler, allerdings werden manche lokale Effekte m&ouml;glicherweise &uuml;bersehen.
+            </p>
+            <p>Der Wert kann zwischen 30 und 500 liegen. &Uuml;blich sind Werte zwischen 50 und 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Anzahl der Nachbarn</h2></div>
+        <hr/>
+        <div>
+            <p>Die Vorhersageberechnung basiert auf benachbarten Punkten. Dieser Parameter steuert, wie viele Punkte in der Berechnung verwendet werden. Eine gr&ouml;&szlig;ere Anzahl von benachbarten Punkten liefert in der Regel genauere Ergebnisse. Allerdings dauern die Berechnungen l&auml;nger.
+            </p>
+            <p>Dieser Wert kann zwischen 1 und 64 liegen. &Uuml;blich sind Werte zwischen 5 und 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ausgabe-Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die Zellengr&ouml;&szlig;e und Einheit f&uuml;r die Ausgabe-Raster.
+            </p>
+            <p>Die verf&uuml;gbaren Einheiten lauten Fu&szlig;, Meilen, Meter und Kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Ausgabe für Vorhersagefehler</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob Sie ein Raster mit den Standardfehlern f&uuml;r die vorhergesagten Werte erstellen m&ouml;chten.
+            </p>
+            <p>Standardfehler sind hilfreich, da sie Informationen zur Zuverl&auml;ssigkeit der vorhergesagten Werte liefern. Eine einfache Faustregel besagt, dass der tats&auml;chliche Wert in 95% der F&auml;lle innerhalb von zwei Standardfehlern um den vorhergesagten Wert liegt. Nehmen Sie beispielsweise an, dass f&uuml;r eine neue Position ein Wert von 50 mit einem Standardfehler von 5 vorhergesagt wird. Dies bedeutet, dass die bestm&ouml;gliche Vorhersage des Werkzeugs f&uuml;r den wahren Wert an dieser Position 50 ist, er aber durchaus Werte zwischen 40 und 60 aufweisen k&ouml;nnte. Um diesen Bereich sinnvoller Werte zu berechnen, multiplizieren Sie den Standardfehler mit 2, addieren Sie diesen Wert mit dem vorhergesagten Wert, um den oberen Grenzwert des Bereichs zu erhalten, und subtrahieren Sie ihn vom vorhergesagten Wert, um den unteren Grenzwert zu berechnen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

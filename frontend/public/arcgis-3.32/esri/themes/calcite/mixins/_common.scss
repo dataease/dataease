@@ -1,0 +1,52 @@
+// Right to Left & Left to Right
+@mixin bidi-style($prop, $value, $inverse-prop, $inverse-value) {
+  #{$prop}: $value;
+  html.esriRtl &,
+  html[dir="rtl"] & {
+    #{$inverse-prop}: $inverse-value;
+  }
+}
+
+@mixin bidi-value($prop, $ltr, $rtl) {
+  @include bidi-style($prop, $ltr, $prop, $rtl);
+}
+
+@mixin calcite-box-shadow-base() {
+  @include box-shadow (0px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+@mixin calcite-box-shadow-dropdown() {
+  @include box-shadow (0 1px 3px -1px rgba(0, 0, 0, 0.2), 0 5px 6px -3px rgba(0, 0, 0, 0.1));
+}
+
+@mixin calcite-box-shadow-accordion() {
+  @include box-shadow (0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+@mixin calcite-box-shadow-dnd() {
+  @include box-shadow (0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+@mixin calcite-box-shadow-esri() {
+  @include box-shadow (0 1px 4px rgba(0, 0, 0, 0.3));
+}
+
+@mixin nav-divider($color: #e5e5e5) {
+  height: 1px;
+  margin: (($line-height-computed / 2) - 1) 0;
+  overflow: hidden;
+  background-color: $color;
+}
+
+@mixin scollbar($color: $Calcite_Gray_700) {
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 8px;
+    background-color: rgba($color,0.1);
+    margin: 0
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background-color: rgba($color,0.5)
+  }
+}

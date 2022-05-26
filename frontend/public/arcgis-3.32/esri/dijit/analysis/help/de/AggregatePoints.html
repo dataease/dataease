@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punkte aggregieren</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Punkte aggregieren"></h2>
+        <hr/>
+    <p>Dieses Werkzeug kann mit einem Punkt-Feature-Layer und einem Fl&auml;chen-Feature-Layer verwendet werden. Es ermittelt zun&auml;chst, welche Punkte in den einzelnen Fl&auml;chen liegen. Nachdem diese r&auml;umliche Beziehung der Punkte in diesen Fl&auml;chen bestimmt wurde, werden Statistiken zu allen Punkten in der Fl&auml;che berechnet und der Fl&auml;che zugewiesen. Die einfachste Statistik ist die Anzahl der Punkte innerhalb der Fl&auml;che. Sie k&ouml;nnen jedoch auch andere Statistiken abrufen. 
+    </p>
+    <p>Angenommen, Sie verf&uuml;gen &uuml;ber Punkt-Features f&uuml;r Caf&eacute;standorte und Fl&auml;chen-Features f&uuml;r Landkreise und Sie m&ouml;chten die Umsatzzahlen der Caf&eacute;s nach Landkreis zusammenfassen. Angenommen, die Caf&eacute;s weisen das Attribut  <i>TOTAL_SALES</i> auf, dann k&ouml;nnen Sie f&uuml;r die einzelnen Landkreise entweder die Gesamtsumme f&uuml;r <i>TOTAL_SALES</i>, den Minimal- bzw. Maximalwert f&uuml;r <i>TOTAL_SALES</i> oder die Standardabweichung f&uuml;r den Gesamtumsatz abrufen.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabepunkt-Layer und im Fl&auml;chen-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabepunkt-Layer und im Fl&auml;chen-Layer analysiert, wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Layer auswählen, der Punkte enthält, die in Flächen aggregiert werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer wird in die Fl&auml;chen aggregiert.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Layer auswählen, der Aggregationsflächen enthält</h2></div>
+        <hr/>
+        <div>
+            <p>Der Fl&auml;chen-Layer, zu dem die Punkte aggregiert werden. Alle Punkte, die innerhalb der Grenzen von Fl&auml;chen in diesem Layer liegen, werden gez&auml;hlt und optional anhand der von Ihnen ausgew&auml;hlten Statistiken zusammengefasst.  
+            </p>
+            <p>Sie k&ouml;nnen zwischen einem Fl&auml;chen-Layer, den Sie bereitstellen, oder zwischen Abschnitten ausw&auml;hlen, die beim Ausf&uuml;hren des Werkzeugs erstellt werden. Beim Erstellen von Abschnitten geben die f&uuml;r  <b>Quadrat</b> angegebene Zahl und die Einheiten die H&ouml;he und Breite des Quadrats. Bei <b>Hexagon</b> wird anhand der angegebenen Zahl und der Einheiten die Entfernung zwischen parallelen Seiten festgelegt.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Flächen ohne Punkte beibehalten</h2></div>
+        <hr/>
+        <div>
+            <p>Legt fest, ob Fl&auml;chen, die keine Punkte aufweisen, im Ergebnis-Layer angezeigt werden. Wenn diese Option deaktiviert ist, werden Fl&auml;chen ohne Punkte nicht im Ergebnis angezeigt. Wenn diese Option aktiviert ist, werden Fl&auml;chen ohne Punkte im Ergebnis angezeigt.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Statistiken hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen Statistiken zu Attributen des Eingabe-Punkt-Layers wie &quot;Summe&quot;, &quot;Durchschnitt&quot;, &quot;Minimum&quot;, &quot;Maximum&quot; und &quot;Standardabweichung&quot; berechnen. Der Ergebnis-Layer enth&auml;lt f&uuml;r jede berechnete Statistik ein neues Attribut. Jede Anzahl von Statistiken kann durch Auswahl eines Attributs und einer Statistik ausgew&auml;hlt werden (es wird ein neues Dropdown-Feld angezeigt).
+ 
+            </p>
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Feld für die Gruppierung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen statistische Gruppen mithilfe eines Attributs im Eingabepunkt-Layer erstellen.    Wenn Sie beispielsweise Straftaten an Nachbarschaftsgrenzen aggregieren, haben Sie m&ouml;glicherweise das Attribut <i>Crime_type</i> mit f&uuml;nf verschiedenen Arten von Straftaten angelegt. Jede Art von Straftat bildet eine Gruppe und die Statistiken, die Sie ausw&auml;hlen, werden f&uuml;r jeden Einzelwert von <i>Crime_type</i> berechnet. Die Statistik f&uuml;r jede Gruppe und die Anzahl der Punkte werden im Pop-up des Ergebnis-Layers angezeigt. Wenn Sie ein Gruppierungsattribut ausw&auml;hlen, werden zwei Ergebnisse erstellt: der Ergebnis-Layer und eine Ergebnistabelle mit den Statistiken f&uuml;r jede Einzelgruppe.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheit, Mehrheit hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. Wenn Sie ermitteln m&ouml;chten, welche Attributwerte in jeder Gruppe die Minderheit (geringste Dominanz) oder die Mehrheit (h&ouml;chste Dominanz) innerhalb jeder Grenze ausmachen, w&auml;hlen Sie  <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> aus.   Wenn Sie die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei neue Felder hinzugef&uuml;gt.   Wenn Sie <b>Prozents&auml;tze hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+            <p>Wenn Sie beispielsweise Stadtplaner sind und ermitteln m&ouml;chten, welche Baumarten in s&auml;mtlichen Stadtparks in der Minderheit und welche in der Mehrheit sind, aggregieren Sie die Baumdaten mit Ihren Parkfl&auml;chen, und aktivieren Sie diese Option.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Prozentsätze hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. W&auml;hlen Sie  <b>Prozents&auml;tze hinzuf&uuml;gen</b> aus, wenn Sie den Prozentsatz jedes Attributwertes innerhalb einer Gruppe ermitteln m&ouml;chten.  Der Ergebnistabelle wird ein neues Feld hinzugef&uuml;gt, das die Prozents&auml;tze jedes Attributwertes innerhalb jeder Gruppe enth&auml;lt. Wenn die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ebenfalls aktiviert ist, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>밀도 계산(Calculate Density)</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="밀도 계산 도구"></h2>
+        <hr/>
+    <p>이 도구는 포인트 또는 라인 피처를 가지고 맵 전반에 알려져 있는 일부 현상(포인트 또는 라인 속성으로 표시됨)을 분산하여 밀도 맵을 생성합니다. 가장 낮은 밀도에서 가장 높은 밀도로 분류된 영역 레이어가 결과로 나옵니다.
+    </p>
+    <p>포인트 입력의 경우 각 포인트는 일부 이벤트 또는 인시던트의 위치를 표시해야 하며, 결과 레이어는 단위 면적당 인시던트 횟수를 표시합니다. 새 위치의 큰 밀도 값은 해당 위치 근처에 더 많은 포인트가 있음을 나타냅니다. 대부분의 경우 결과 레이어는 향후 이벤트에 대한 위험 표면으로 해석할 수 있습니다. 예를 들어 입력 포인트가 낙뢰의 위치를 표시하는 경우 결과 레이어는 향후 낙뢰에 대한 위험 표면으로 해석할 수 있습니다.
+    </p>
+    <p>라인 입력의 경우 라인 밀도 표면은 각 위치 근처에 있는 전체 라인을 표시합니다. 계산된 밀도 값의 단위는 단위 면적당 라인의 길이입니다. 예를 들어 라인이 강을 표시하는 경우 결과 레이어는 검색 반경 내에 있는 강의 전체 길이를 표시하게 됩니다. 이 결과는 동물이 서식하기에 쾌적한 지역을 식별하는 데 사용할 수 있습니다.
+    </p>
+    <p>이 도구의 기타 이용 사례:
+
+        <ul>
+            <li>경찰이 범죄율이 높은 지역에 리소스를 제대로 할당할 수 있도록 범죄 밀도 맵을 생성합니다.
+                
+ 
+            </li>
+            <li>구/군 내의 병원 밀도를 계산합니다.  결과 레이어가 병원에 대한 높고 낮은 접근성을 지역에 표시하며 신규 병원 건설 장소를 결정하는 데 이 정보를 사용할 수 있습니다.
+                
+ 
+            </li>
+            <li>과거 산불이 발생한 위치를 기반으로 산불 발생 위험도가 높은 지역을 식별합니다.
+                
+ 
+            </li>
+            <li>새 도로 건설 장소를 계획하기 위해 주요 고속도로에서 멀리 있는 커뮤니티를 찾습니다.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>밀도를 계산할 포인트 또는 라인 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 레이어를 계산하는 데 사용할 입력 포인트 또는 라인 레이어입니다.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>개수 필드 사용</h2></div>
+        <hr/>
+        <div>
+            <p>각 위치에서 인시던트의 수를 지정하는 필드를 제공합니다. 예를 들어 도시를 표시하는 포인트가 있는 경우 개수 필드처럼 도시 인구를 표시하는 필드를 사용할 수 있으며, 결과 인구 밀도 레이어는 더 많은 인구가 있는 도시 근처에서 더 높은 인구 밀도를 계산합니다.
+            </p>
+            <p>기본 선택값인  <b>없음</b>을 사용하는 경우 각 위치는 단일 개수를 표시하는 것으로 간주합니다.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>검색 거리</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 값을 계산하는 경우 포인트 또는 라인 피처를 찾도록 검색할 범위를 지정하는 거리를 입력합니다. 예를 들어 검색 거리를 10,000미터로 입력하는 경우 결과 레이어의 특정 위치에서의 밀도는 해당 위치의 10,000미터 이내에 있는 피처를 기반으로 계산됩니다. 10,000미터 이내에 인시던트가 없는 위치에는 밀도 값 0이 제공됩니다.
+            </p>
+            <p>거리가 제공되지 않는 경우 입력 피처의 위치 및 개수 필드의 값(개수 필드가 제공된 경우)을 기반으로 한 기본값이 계산됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>결과 면적 단위</h2></div>
+        <hr/>
+        <div>
+            <p>결과 면적 단위를 지정합니다. 밀도는 개수를 면적으로 나눈 것이므로 이 매개변수에서 밀도 계산 면적의 단위를 지정합니다.
+            </p>
+            <p>사용 가능한 면적 단위는 제곱마일(mi&sup2;), 제곱피트(ft&sup2;), 제곱미터(m&sup2;), 제곱킬로미터(km&sup2;)입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>결과 셀 크기</h2></div>
+        <hr/>
+        <div>
+            <p>결과 래스터의 셀 크기와 단위입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

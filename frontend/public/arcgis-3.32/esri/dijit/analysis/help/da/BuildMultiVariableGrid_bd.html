@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opret multivariabel-gitter</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Tilknyt data-workflow-diagram"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet Opret multivariabel-gitter fungerer med et eller flere lag af punkter, linjer eller polygon-objekter. V&aelig;rkt&oslash;jet genererer et gitter med kvadratiske eller sekskantede beholdere og beregner v&aelig;rdier for hver beholder baseret p&aring; n&aelig;rheden af hvert inputslag. Disse v&aelig;rdier kan indeholde f&oslash;lgende variabler: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Afstand til n&aelig;rmeste</b> - Afstanden fra hver beholder til det n&aelig;rmeste objekt
+            </li>
+            <li> <b>Attribut for n&aelig;rmeste</b> - En feltv&aelig;rdi for det objekt, der er n&aelig;rmest hver beholder
+            </li>
+            <li> <b>Resum&eacute; af i n&aelig;rheden</b> - En angivet statistik for alle objekter inden for en afstand af hver beholder
+            </li>
+            <li> <b>Resum&eacute; af gennemsk&aelig;ring</b> - En angivet statistik for alle objekter, der gennemsk&aelig;rer hver beholder
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kun variabler, du angiver, bliver inkluderet i resultatlaget. Disse variabler kan hj&aelig;lpe dig med at forst&aring; n&aelig;rheden og fordelingen af ​​dine data. Resultaterne kan bidrage til at besvare sp&oslash;rgsm&aring;l som:
+        <ul>
+            <li>Ved flere lag af offentlig transportinfrastruktur, hvilken del af byen er s&aring; mindst tilg&aelig;ngelig med offentlig transport?
+            </li>
+            <li>Ved lag af vandveje, s&aring;som s&oslash;er og floder, hvad hedder vandlegemet t&aelig;ttest p&aring; hvert sted i USA?
+            </li>
+            <li>Ved et lag af husstandsindkomst, hvor i USA er variationen af ​​indkomst i de omkringliggende 50 miles st&oslash;rst?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Vælg den type beholdere, der skal bruges til at oprette multi-variabel-gitteret</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Typen og st&oslash;rrelsen af ​​beholdere, der bliver brugt til at oprette multi-variabel-gitteret. For indstillingen  <b>Kvadratiske</b> bestemmer antallet og de angivne enheder h&oslash;jden og l&aelig;ngden p&aring; kvadratet. For indstillingen <b>Sekskantede</b> bestemmer antallet og de angivne enheder afstanden mellem de parallelle sider.
+            </p>
+            <p>Denne analyse benytter beholdere og kr&aelig;ver et projiceret koordinatsystem. Du kan indstille  <b>koordinatsystem til behandling</b> i <b>Analysemilj&oslash;erne</b>. Hvis dit koordinatsystem til behandling ikke er indstillet til et projiceret koordinatsystem, vil du blive bedt om at indstille det, n&aring;r du benytter funktionen <b>K&oslash;r analyse</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Vælg de inputlag og variabler, som du vil medtage i gitteret</h2></div>
+        <hr/>
+        <div>
+            <p>Klik p&aring; tilf&oslash;jelsesknappen ( <b>+</b>) for at &aring;bne vinduet <b>Tilf&oslash;j variabler</b> og tilf&oslash;je et lag til din analyse. I vinduet <b>Tilf&oslash;j variabler</b> kan du v&aelig;lge et inputlag og konfigurere de variabler, du vil beregne for det p&aring; g&aelig;ldende inputlag
+            </p>
+            <p>N&aring;r du har valgt og konfigureret de variabler, du vil beregne, vises laget i v&aelig;rkt&oslash;jsvinduet sammen med andre valgte lag. Klik p&aring; redigeringsknappen for hvert lag for at &aring;bne vinduet  <b>Tilf&oslash;j variabler</b> og f&aring; vist alle variabler, der er konfigureret for det p&aring;g&aelig;ldende lag. Klik p&aring; sletteknappen for et lag for at fjerne det p&aring;g&aelig;ldende lag og alle relaterede variabler fra analysen.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Tilføj variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Dette vindue giver dig mulighed for at v&aelig;lge et inputlag og konfigurere de variabler, du vil beregne for det p&aring;g&aelig;ldende inputlag. Start med at bruge rullemenuen   <b>V&aelig;lg et inputlag</b> til at v&aelig;lge det punkt, den polygon eller det linjelag, du vil tilf&oslash;je til din analyse.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+            <p>N&aring;r du har valgt et inputlag, skal du klikke p&aring; knappen <b>Tilf&oslash;j en variabel</b> for at &aring;bne en ny variabel til redigering. Du skal angive et unikt navn til hver variabel. Det bliver navnet p&aring; det felt, der oprettes i attributtabellen i resultatlaget.
+            </p>
+            <p>Brug rullemenuen til at v&aelig;lge den type variabel, der skal tilf&oslash;jes. Hver variabel-type skal konfigureres med et unikt s&aelig;t parametre, og alle parametre er p&aring;kr&aelig;vet.
+            </p>
+            <p>N&aring;r du har tilf&oslash;jet alle &oslash;nskede variabler for det valgte lag, skal du klikke p&aring; knappen  <b>Tilf&oslash;j</b> for at gemme variablerne.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Completare date</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagrama fluxului de lucru Completare date"></h2>
+        <hr/>
+    <p>Acest instrument completează date pe un strat tematic existent de obiecte spaţiale găzduite. Completare Date modifică stratul tematic de intrare original și nu generează un nou strat tematic de ieșire. Puteți corela c&acirc;mpuri pe baza denumirii c&acirc;mpului și tipului c&acirc;mpului, sau puteți aplica metode de corelare mai avansate.
+    </p>
+    <p>C&acirc;teva exemple: 
+        <ul>
+            <li>Sunteți angajatul unei mari societăți de asigurări care produce lunar rapoarte de v&acirc;nzări. Pentru raportul dvs. anual, datele lunare trebuie compilate spre analiză.  Pentru a &icirc;ncepe analiza v&acirc;nzărilor, puteți profita de Completare Date pentru a vă actualiza stratul tematic AnnualReport_2018 după ce valorile lunare devin disponibile. Știind că organizația dvs. utilizează o schemă constantă &icirc;n fiecare lună, puteți folosi metoda implicită de cartografiere &icirc;n c&acirc;mp pentru completarea eficientă a obiectelor spațiale pe baza denumirii și tipului de c&acirc;mp.
+            </li>
+            <li>Zece grupuri de mediu colectează fiecare sute de mii de măsurători climatice din jurisdicțiile lor.  Aceste organizații vor să &icirc;și compileze datele pentru a &icirc;nțelege mai bine modelele regionale și globale. Fiecare organizație &icirc;și stabilește schema pentru setul lor de date. Fiecare a specifcat diverse denumiri de c&acirc;mpuri pentru datele privind temperatura și viteza v&acirc;ntului.  Av&acirc;nd &icirc;n vedere diferențele de nume dintre seturile de date, cartografierea &icirc;n c&acirc;mp poate fi utilizată pentru a specifica modalitatea de completare a măsurătorilor temperaturii și vitezei v&acirc;ntului &icirc;n c&acirc;mpurile lor.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeți strat tematic pe care să adăugați</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale tabel, punct, linie sau poligon pe care vor fi completate datele.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Stratul tematic pe care completați va fi modificat &icirc;n timpul executării instrumentului. &Icirc;nainte de a proceda, asigurați-vă că doriți să modificați acest strat tematic.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic cu obiecte spaţiale găzduit.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Alegeți strat tematic pe care să adăugați</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale tabel, punct, linie sau poligon de completat pe stratul tematic de intrare.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Adăugați toate caracteristicile sau definiți un subset (opțional)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifică obiectele spațiale de completat. Acest parametru este opţional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Alegeți modul de adăugare a câmpurilor (opțional)</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică modul de completare pe stratul tematic de intrare al c&acirc;mpurilor de completare a straturilor tematice. &Icirc;n mod implicit, toate c&acirc;mpurile de intrare și completare corelate vor fi completate. C&acirc;mpurile corespund dacă au aceeași denumire de c&acirc;mp și tip de c&acirc;mp. &Icirc;n mod opțional, puteți alege corelarea c&acirc;mpurilor, sau calcularea expresiilor Arcadă pentru popularea valorilor c&acirc;mpurilor.
+            </p>
+            <p>De exemplu, aveți un strat tematic de intrare cu c&acirc;mpuri  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> și un strat tematic de completare cu <i>field_string</i>, <i>field_number</i>, și c&acirc;mpuri <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>&Icirc;n mod implicit, instrumentul va corela  <i>field_number</i> &icirc;n stratul tematic de intrare cu <i>field_number</i> &icirc;n stratul tematic de completare, și <i>field_string</i> &icirc;n stratul tematic de intrare cu <i>field_string</i> &icirc;n stratul tematic de completare.
+                    </li>
+                    <li>&Icirc;n mod implicit, stratul tematic de intrare  <i>date_field</i> și c&acirc;mpurile <i>unused_field</i> vor fi populate cu valori de <i>null</i> deoarece nu au c&acirc;mpuri corespondente &icirc;n stratul de completare.
+                    </li>
+                    <li>&Icirc;n mod opțional, puteți completa valori &icirc;n c&acirc;mpuri care nu au fost corelate &icirc;n mod automat &icirc;n mod implicit. De exemplu,  <i>date_field</i> &icirc;n stratul tematic de intrare se pot corela cu c&acirc;mpul de completare <i>MY_DATE_FIELD</i>. Pentru acest lucru, folosiți textul din meniul vertical de l&acirc;ngă <i>date_field</i> din prima coloană și selectați <i>MY_DATE_FIELD</i> din meniul vertical din a doua coloană.
+                    </li>
+                </ul>
+                 Ca un alt exemplu, un strat tematic de intrare are c&acirc;mpuri numerice <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, și <i>my_Average</i>, și un strat tematic de completare are c&acirc;mpuri numerice <i>value_1</i>, <i>value_2</i>, și <i>value_3</i>.
+                <ul>
+                    <li>&Icirc;n mod implicit,  <i>value_1</i>, <i>value_2</i>, și <i>value_3</i> vor fi corelate și completate.
+                    </li>
+                    <li>&Icirc;n plus față de comportamentul implicit, valorile pot fi calculate pentru c&acirc;mpul  <i>my_Average</i>. Faceți acest lucru folosind c&acirc;mpuri multiple și operații matematice prin selectarea opțiunii verticale <b>Expresie</b> din coloana de l&acirc;ngă <i>my_Average</i> și construiți o expresie personalizată Arcade cum ar fi <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

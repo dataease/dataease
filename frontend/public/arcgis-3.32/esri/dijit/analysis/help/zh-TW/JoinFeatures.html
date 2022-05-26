@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>加入圖徵</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="加入圖徵"></h2>
+        <hr/>
+    <p>「加入圖徵」使用兩個圖層，並根據空間和屬性關係，將屬性從一個圖徵新增至另一個。此工具可判斷符合指定的加入條件的所有輸入圖徵，並將加入圖層附加至目標圖層。
+    </p>
+    <p>「加入圖徵」可套用至點、線、區域和表格。空間加入需要資料具有幾何。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍內可見的圖徵。如果未勾選，則會對目標圖層和加入圖層內的所有圖徵進行分析，包括超出當前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>選擇目標圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將具有來自附加至其表格之加入圖層屬性的目標圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>選擇要結合目標圖層的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>包含將附加至目標圖層之屬性的加入圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>選擇結合的類型</h2></div>
+        <hr/>
+        <div>
+            <p>您可以套用空間加入、屬性加入，或結合前二者。
+                <ul>
+                    <li> <b>空間</b> - 針對加入圖徵使用指定的空間關係。這需要兩個具有幾何的圖層。
+                    </li>
+                    <li> <b>屬性</b> - 根據相等欄位加入圖徵。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>選擇空間關係</h2></div>
+        <hr/>
+        <div>
+            <p>將決定圖徵是否彼此加入其中的空間關係。可用的關係將取決於正在作為輸入圖徵的幾何類型（點、線、區域）。可用的關係包含：
+                <ul>
+                    <li> <b>一致</b> - 若目標圖層中的圖徵與加入圖層中的圖徵一致，前者即符合。
+                    </li>
+                    <li> <b>相交</b> - 若目標圖層中的圖徵與加入圖層中的圖徵相交，前者即符合。
+                    </li>
+                    <li> <b>完全包含</b> - 若目標圖層中的圖徵完全包含加入圖層中的圖徵，前者即符合。
+                    </li>
+                    <li> <b>完全在其他圖徵範圍內</b> - 若目標圖層中的圖徵完全位於加入圖層的圖徵內，前者即符合。
+                    </li>
+                    <li> <b>在一距離範圍內</b> - 若目標圖層中的圖徵位於加入圖層中圖徵的指定距離內，前者即符合。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>屬性加入</h2></div>
+        <hr/>
+        <div>
+            <p>將決定圖徵是否彼此加入其中的屬性關係。當加入圖層中的欄位值等於目標圖層中的欄位值，圖徵即符合。
+            </p>
+            <p>例如，假設我們擁有一個居住地址（包含  <i>ZIP</i> 欄位）的全郡地理圖層，以及按郵遞區號（包含名為 <i>HEALTHZIP</i> 的欄位）排列的健康人口統計的表列資料集。您可以比對欄位 <i>ZIP</i> 與 <i>HEALTHZIP</i>，藉此將健康資料集加入到住宅資料，以便獲得包含對應健康資料的住宅圖層。
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>選擇結合操作</h2></div>
+        <hr/>
+        <div>
+            <p>當加入圖層中的多個圖徵與目標圖層具有相同的關係時，決定如何處理目標與加入圖層之間的加入。以下是兩個可選擇的加入操作：
+                <ul>
+                    <li> <b>將一個加入到另一個</b> - 此選項會將目標圖層中的圖徵，新增至加入圖層中的單一圖徵。圖徵的加入方式則取決於 <b>新增統計資料</b>參數或 <b>定義保留哪個記錄</b>參數。如果使用 <b>新增統計資料</b>，會將符合的所有加入圖徵摘要到目標圖層中的每個圖徵。預設會新增加入的圖徵計數。如果使用 <b>定義保留哪個記錄</b>，您可以選擇保留第一筆符合的記錄（預設值），或根據表達式保留符合的記錄。表達式可使用數值欄位（最大或最小記錄的選項）或日期欄位（最新或最舊的選項）。
+                    </li>
+                    <li> <b>將一個加入到多個</b> - 此選項會將加入圖層中所有符合的圖徵加入到目標圖層。結果圖層將包含目標圖徵的多筆記錄。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>例如，假設您要尋找離農夫市集 5 公里內的超市。在此情況中，正在加入到的圖層具有表示農夫市集的單一圖徵，而加入圖徵則表示當地的雜貨店，這些雜貨店具有年度總銷售額之類的屬性。藉助 <b>加入圖徵</b>工具，您找到五家符合該條件的雜貨店。如果您指定 <b>將一個加入到多個</b>的加入操作，您最終將得到五個圖徵的結果，每列則表示一間農夫市集和超市。如果您指定 <b>將一個加入到另一個</b>關係並選擇統計資料，您最終會得到一個表示農夫市集的圖徵、來自超市的摘要資訊（例如計數 (5)）及其他選用的統計資料（例如年度總銷售額）。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>新增統計資料 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>如果選擇 <b>將一個加入到另一個</b>選項，您可以針對數值欄位，在加入的圖徵上摘要和計算統計資料。預設情況下，將計算符合的加入圖徵計數並新增至結果圖層。如果選擇不新增其他統計資料，會將加入圖層中的第一個符合圖徵，加入到目標圖層中的第一個符合圖徵。您可以計算下列一或多個選項：
+            </p>
+            <ul>
+                <li>總和
+                </li>
+                <li>最小值
+                </li>
+                <li>最大值
+                </li>
+                <li>平均值
+                </li>
+                <li>標準差
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>建立結果以作為託管圖徵圖層視圖</h2></div>
+        <hr/>
+        <div>
+            <p> 將結果儲存為託管圖徵圖層視圖，可隨著來源資料的變更將資料更新為最新狀態。託管圖徵圖層視圖包含的聯結是唯讀模式，分析和儲存不使用點數。
+            </p>
+            <p>若符合下列所有條件，您可以從分析結果中建立託管圖徵圖層視圖：
+                <ul>
+                    <li>您是兩個圖層的擁有者。
+                    </li>
+                    <li>兩個圖層都是託管圖徵圖層。
+                    </li>
+                    <li>您正在執行屬性型加入。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/LayerProjectionUtil",["esri/dijit/geoenrichment/promise/all","./ProjectionUtil"],function(g,f){function h(a,b){a.graphics&&a.graphics.filter(function(a){return!a.geometry||!a.geometry.spatialReference}).forEach(function(b){a.remove(b)});var c=a.graphics&&a.graphics.filter(function(a){return a.geometry.spatialReference.wkid!==b.wkid});if(b&&c&&c.length){var d=c.map(function(a){return a.geometry});console.log("ProjectionUtil: projecting layer graphics from "+d[0].spatialReference.wkid+
+" to "+b.wkid+". Num: "+d.length);return f.projectGeometries(d,b).then(function(b){var e=[];c.forEach(function(a,c){a.setGeometry(b[c]);a.geometry||e.push(a)});e.forEach(function(b){a.remove(b)});console.log("ProjectionUtil: projected graphics: "+(d.length-e.length))})}}function k(a,b){b&&(a.spatialReference=b)}return{projectLayer:function(a,b){b=f.getSpatialReference(b);return g([h(a,b),k(a,b)]).then(function(){return a})}}});

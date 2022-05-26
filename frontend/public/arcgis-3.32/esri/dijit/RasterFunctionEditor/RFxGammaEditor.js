@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/RasterFunctionEditor/RFxGammaEditor","dojo/_base/declare dojo/_base/lang dojo/_base/array dojo/has ../../kernel ./RFxArgSlider".split(" "),function(d,e,k,f,g,h){d=d("RFxGammaSlider",[h],{min:-1,max:10,value:1,constructor:function(c){var a;this.inherited(arguments);e.mixin(this,c);if(a=this.inputArgs&&this.inputArgs.Gamma)this.gammaArg=a,this.label=a.name,this.value=a.value&&a.value[0]||this.value},_setValueAttr:function(c){var a=[];this.value=c;if(this.inputArgs&&this.inputArgs.Raster)var b=
+this.inputArgs.Raster.input,b=(b=b.store&&b.store.get(b.value))&&b.bandCount;if(b)for(;b--;)a.push(c);else a=[c];this.gammaArg&&(this.gammaArg.value=a)}});f("extend-esri")&&e.setObject("dijit.RasterFunctionEditor.RFxGammaEditor",d,g);return d});

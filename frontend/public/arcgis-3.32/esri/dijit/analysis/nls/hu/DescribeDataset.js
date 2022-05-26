@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/hu/DescribeDataset",{inputLayerLabel:"V\u00e1lassza ki a le\u00edrand\u00f3 adathalmazt",describeDataLabel:"Adatok \u00e9rtelmez\u00e9se k\u00f6vetkez\u0151 l\u00e9trehoz\u00e1s\u00e1val (opcion\u00e1lis):",sampleLayer:"Mintar\u00e9teg",extentLayer:"Kiterjed\u00e9si r\u00e9teg",noOfFeaturesLabel:"Felvenni k\u00edv\u00e1nt vektoros elemek sz\u00e1ma",outputLayerName:"Eredm\u00e9nyr\u00e9teg neve",resultName:"Adja meg a(z) ${layername} adatainak le\u00edr\u00e1s\u00e1t",
+itemDescription:"Az Adathalmaz le\u00edr\u00e1sa f\u00fcggv\u00e9ny ${layerName} r\u00e9tegen v\u00e9grehajtott futtat\u00e1s\u00e1b\u00f3l l\u00e9trehozott vektoros r\u00e9teg. ",itemTags:"Elemz\u00e9s v\u00e9geredm\u00e9nye, Adathalmaz le\u00edr\u00e1sa, ${layerName}",itemSnippet:"Az adathalmaz le\u00edr\u00e1sa alapj\u00e1n l\u00e9trehozott vektoros r\u00e9teg."});

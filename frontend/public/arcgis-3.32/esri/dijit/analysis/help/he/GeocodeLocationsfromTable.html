@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>עיגון כתובות מיקומים מטבלה</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="עיגון כתובות מיקומים מטבלה"></h2>
+        <hr/>
+    <p>עיגון כתובות (geocoding) זו דרך להמיר כתובות לקואורדינטות. כלי זה ממיר כתובות מטבלה, קובץ CSV או קובץ Excel לשכבת ישויות או לקובץ פלט עם קואורדינטות כעמודות נוספות.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>בחר טבלת קלט</h2></div>
+        <hr/>
+        <div>
+            <p>טבלת הקלט עם הכתובות לעיגון. הקלט חייב להיות טבלה, קובץ CSV או קובץ Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>בחר מגדיר עיגון כתובות</h2></div>
+        <hr/>
+        <div>
+            <p>בחר שירות מגדיר עיגון כתובות לביצוע עיגון כתובות לפיו. אם שירות מגדיר עיגון הכתובות הרצוי לא מופיע בתפריט הנפתח, פנה למנהל המערכת שלך כדי להוסיף את מדריך עיגון הכתובות לצורך עיגון כתובות באצווה.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>ארץ</h2></div>
+        <hr/>
+        <div>
+            <p>אם כל הכתובות שלך הן מארץ אחת, בחר ארץ זו כדי להבטיח דיוק מרבי של התוצאות. אחרת, השאר פרמטר זה ריק.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>בחר שדות נתונים</h2></div>
+        <hr/>
+        <div>
+            <p>שירות מגדיר עיגון הכתובות מצפה לשדות מסוימים בנתונים, כגון כתובת, עיר, מדינה ומיקוד. התאם את שדות הנתונים בקובץ הקלט או בטבלה לשדות שלהם מצפה מגדיר עיגון הכתובות, בעזרת התיבות הנפתחות. ככל שתמפה יותר שדות, כך התוצאות יהיו מדויקות יותר. אם טבלת הקלט מכילה את כל הנתונים בעמודה אחת, בחר  <b>שדה בודד</b> ובחר שדה נתונים מהתפריט הנפתח. אחרת, בחר באפשרות <b>שדות מרובים</b> ומפֵּה את השדות המתאימים במגדיר עיגון הכתובות לעמודות השדות המרובים בטבלה שלך.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>בחר פורמט פלט</h2></div>
+        <hr/>
+        <div>
+            <p>הפורמט של תוצאות הפלט. אם תבחר ליצור שירות ישויות, הכתובות מטבלת הקלט יתווספו למפה כשכבה של ישויות נקודה. האפשרות CSV ו-XLS מוסיפות קבצים עם תוצאות משימת עיגון הכתובות ל <b>התוכן שלי</b> בעת השלמת המשימה.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם תוצאת הפלט</h2></div>
+        <hr/>
+        <div>
+            <p>זהו השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התפריט הנפתח  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

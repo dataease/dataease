@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/renderers/ColormapRenderer","dojo/_base/declare dojo/_base/array dojo/_base/lang dojo/has ../kernel ../lang ../symbols/jsonUtils ./Renderer ./arcadeUtils".split(" "),function(a,f,b,c,d,g,h,e,k){a=a(e,{declaredClass:"esri.renderer.ColormapRenderer",constructor:function(a){this.colormap=a&&a.colormap},toJson:function(){return{type:"colormap",colormap:this.colormap}}});c("extend-esri")&&b.setObject("renderer.ColormapRenderer",a,d);return a});

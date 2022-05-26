@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Rechercher des agrégats de points</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Find Point Clusters (Rechercher des agr&eacute;gats de points)"></h2>
+        <hr/>
+    <p>L&rsquo;outil  Rechercher des agr&eacute;gats de points d&eacute;tecte les agr&eacute;gats d&rsquo;entit&eacute;s ponctuelles dans le bruit environnant en se basant sur leur distribution spatiale.
+    </p>
+    <p>Par exemple, une organisation non gouvernementale &eacute;tudie une maladie parasitaire particuli&egrave;re. Vous disposez d&rsquo;un jeu de donn&eacute;es ponctuelles repr&eacute;sentant les m&eacute;nages dans votre zone d&rsquo;&eacute;tude, certains d&rsquo;entre eux &eacute;tant touch&eacute;s, et d&rsquo;autres non. En utilisant l&rsquo;outil  Rechercher des agr&eacute;gats de points, un analyste peut d&eacute;terminer les agr&eacute;gats de m&eacute;nages infest&eacute;s pour vous aider &agrave; localiser la zone o&ugrave; commencer le traitement et exterminer les parasites.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche pour laquelle les agrégats seront identifiés</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de points contenant les agr&eacute;gats. Les couches doivent se trouver dans une r&eacute;f&eacute;rence spatiale projet&eacute;e ou disposer d&rsquo;une r&eacute;f&eacute;rence spatiale projet&eacute;e d&eacute;finie sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es &agrave; l&rsquo;aide de l&rsquo;option  <b>Analysis Environments (Environnements d&rsquo;analyse)</b>.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Choisissez la méthode d’agrégation à utiliser</h2></div>
+        <hr/>
+        <div>
+            <p>Indique la m&eacute;thode d&rsquo;agr&eacute;gation utilis&eacute;e pour distinguer les agr&eacute;gats d&rsquo;entit&eacute;s ponctuelles du bruit environnant. Vous pouvez choisir d&rsquo;utiliser une distance d&eacute;finie ou un algorithme d&rsquo;agr&eacute;gation qui s&rsquo;ajuste automatiquement.
+            </p>
+            <p>La m&eacute;thode de distance d&eacute;finie (DBSCAN) utilise la plage de recherche sp&eacute;cifi&eacute;e pour s&eacute;parer les agr&eacute;gats denses du bruit plus clairsem&eacute;. La m&eacute;thode de distance d&eacute;finie (DBSCAN) est plus rapide, mais elle n&rsquo;est appropri&eacute;e que s&rsquo;il existe une distance de recherche &eacute;vidente qui s&rsquo;applique bien &agrave; tous les agr&eacute;gats potentiels. La distance d&eacute;finie (DBSCAN) recherche les agr&eacute;gats poss&eacute;dant des densit&eacute;s analogues.
+            </p>
+            <p>Il n&rsquo;est pas n&eacute;cessaire d&rsquo;indiquer une plage de recherche pour la m&eacute;thode d&rsquo;ajustement automatique (HDBSCAN), mais cette m&eacute;thode est plus chronophage. La m&eacute;thode d&rsquo;ajustement automatique (HDBSCAN) recherche des agr&eacute;gats de points similaires &agrave; la m&eacute;thode de distance d&eacute;finie (DBSCAN), mais utilise des plages de recherche vari&eacute;es autorisant des agr&eacute;gats de densit&eacute;s variables. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Nombre minimal de points à considérer comme agrégat</h2></div>
+        <hr/>
+        <div>
+            <p>Ce param&egrave;tre est utilis&eacute; diff&eacute;remment selon la m&eacute;thode d&rsquo;agr&eacute;gation choisie&nbsp;:
+            </p>
+            <p>
+                <ul>
+                    <li>Distance d&eacute;finie (DBSCAN)&nbsp;: sp&eacute;cifie le nombre d&rsquo;entit&eacute;s devant figurer &agrave; une certaine distance d&rsquo;un point pour que ce point commence de former un agr&eacute;gat. La distance est d&eacute;finie &agrave; l&rsquo;aide du param&egrave;tre  <b>Limit the search range to (Limiter la plage de recherche &agrave;)</b>.
+                    </li>
+                    <li>Ajustement automatique (HDBSCAN)&nbsp;: sp&eacute;cifie le nombre d&rsquo;entit&eacute;s au voisinage de chaque point (point y compris) &agrave; consid&eacute;rer lors de l&rsquo;estimation de la densit&eacute;. Ce nombre correspond &eacute;galement &agrave; la taille minimale autoris&eacute;e pour un agr&eacute;gat lors de l&rsquo;extraction des agr&eacute;gats.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limiter la plage de recherche à</h2></div>
+        <hr/>
+        <div>
+            <p>Lors de l&rsquo;utilisation de la m&eacute;thode bas&eacute;e sur la distance d&eacute;finie (DBSCAN), ce param&egrave;tre d&eacute;signe la distance au sein de laquelle le param&egrave;tre  <b>Minimum number of points to be considered a cluster (Nombre minimal de points &agrave; consid&eacute;rer comme agr&eacute;gat)</b> doit figurer. Ce param&egrave;tre n&rsquo;est pas utilis&eacute; lorsque l&rsquo;ajustement automatique (HDBSCAN) est choisi comme m&eacute;thode d&rsquo;agr&eacute;gation.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

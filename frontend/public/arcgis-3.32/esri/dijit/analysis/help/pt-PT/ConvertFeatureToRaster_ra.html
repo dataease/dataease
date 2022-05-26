@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Converter Elemento para Raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Ferramenta Converter Elemento para Raster"></h2>
+        <hr/>
+    <p>Esta ferramenta converte elementos para um conjunto de dados raster.
+    </p>
+    <p>Qualquer classe de elementos que contenha elementos de ponto, linha ou pol&iacute;gono pode ser convertida para um conjunto de dados raster.
+    </p>
+    <p>O centro da c&eacute;lula &eacute; utilizado para determinar o valor do pixel de raster de sa&iacute;da.
+    </p>
+    <p>O tipo de campo de entrada determina o tipo de raster de sa&iacute;da. Caso o campo seja inteiro, o raster de sa&iacute;da ser&aacute; inteiro; caso seja um ponto flutuante, a sa&iacute;da ser&aacute; um ponto flutuante.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar camada de elementos para converter</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de elementos de entrada a converter para um conjunto de dado raster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Escolher campo</h2></div>
+        <hr/>
+        <div>
+            <p>Selecione o campo que ser&aacute; utilizado para atribuir valores ao raster de sa&iacute;da.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamanho de célula de saída</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho da c&eacute;lula e unidade para os rasters de sa&iacute;da.
+            </p>
+            <p>As unidades dispon&iacute;veis s&atilde;o Milhas, P&eacute;s, Quil&oacute;metros e Metros. A predefini&ccedil;&atilde;o &eacute; P&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

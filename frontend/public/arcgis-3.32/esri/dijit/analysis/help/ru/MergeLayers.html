@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Слияние слоев</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Слияние слоев"></h2>
+        <hr/>
+    <p>Этот инструмент копирует объекты из двух слоев в новый слой. Объединяемые слои должны содержать объекты одного типа (полигоны, линии или точки). Способом объединения и копирования полей можно управлять. Пример:
+        <ul>
+            <li>У вас имеется три слоя: Англия, Уэльс и Шотландия, а вы хотите создать один слой - Великобритания. 
+            </li>
+            <li>У вас есть 12 слоев, каждый из которых содержит информацию о земельных участках в смежных районах. Я хочу объединить их в один слой, сохранив только поля с одинаковыми названиями и типами из всех 12 слоев.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Если опция  <b>Использовать текущий экстент карты</b> включена, объединяются только те объекты, которые отображаются в текущем экстенте.  Если опция отключена, будут объединены все объекты обоих слоев, даже если они находятся вне текущего экстента карты.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Выбрать слой</h2></div>
+        <hr/>
+        <div>
+            <p>Точечные, линейные или площадные объекты, для которых будет выполнено слияние со слоем, указанным ниже. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Выберите слой для слияния</h2></div>
+        <hr/>
+        <div>
+            <p>Выберите слой для слияния с первым слоем.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Обновить объединенные поля</h2></div>
+        <hr/>
+        <div>
+            <p>По умолчанию, все поля обоих слоев переносятся в выходные данные. Вы можете управлять способом переноса полей, используя следующие опции:
+                <ul>
+                    <li> <b>Переименовать</b> &ndash; поле в выходных данных будет переименовано.
+                    </li>
+                    <li> <b>Удалить</b> &ndash; поле будет удалено из выходных данных.
+                    </li>
+                    <li> <b>Сопоставить</b> &ndash; имена полей приведены в соответствие друг другу.  Значения поля из слоя для объединения будут скопированы в соответствующие выходные поля.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Если оба слоя содержат поле с идентичным именем и типом данных, содержимое этих полей будет объединено в одно поле с тем же именем. Это не применимо к полям, где используется  <b>Сопоставление</b> в параметре <b>Обновить объединенные поля</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Это имя слоя, который будет создан в разделе  <b>Мои ресурсы</b> и добавлен на карту.  Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>С помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

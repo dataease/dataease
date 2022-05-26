@@ -1,0 +1,501 @@
+Rule	Arg	1930	only	-	Dec	 1	0:00	1:00	S
+Rule	Arg	1931	only	-	Apr	 1	0:00	0	-
+Rule	Arg	1931	only	-	Oct	15	0:00	1:00	S
+Rule	Arg	1932	1940	-	Mar	 1	0:00	0	-
+Rule	Arg	1932	1939	-	Nov	 1	0:00	1:00	S
+Rule	Arg	1940	only	-	Jul	 1	0:00	1:00	S
+Rule	Arg	1941	only	-	Jun	15	0:00	0	-
+Rule	Arg	1941	only	-	Oct	15	0:00	1:00	S
+Rule	Arg	1943	only	-	Aug	 1	0:00	0	-
+Rule	Arg	1943	only	-	Oct	15	0:00	1:00	S
+Rule	Arg	1946	only	-	Mar	 1	0:00	0	-
+Rule	Arg	1946	only	-	Oct	 1	0:00	1:00	S
+Rule	Arg	1963	only	-	Oct	 1	0:00	0	-
+Rule	Arg	1963	only	-	Dec	15	0:00	1:00	S
+Rule	Arg	1964	1966	-	Mar	 1	0:00	0	-
+Rule	Arg	1964	1966	-	Oct	15	0:00	1:00	S
+Rule	Arg	1967	only	-	Apr	 2	0:00	0	-
+Rule	Arg	1967	1968	-	Oct	Sun>=1	0:00	1:00	S
+Rule	Arg	1968	1969	-	Apr	Sun>=1	0:00	0	-
+Rule	Arg	1974	only	-	Jan	23	0:00	1:00	S
+Rule	Arg	1974	only	-	May	 1	0:00	0	-
+Rule	Arg	1988	only	-	Dec	 1	0:00	1:00	S
+Rule	Arg	1989	1993	-	Mar	Sun>=1	0:00	0	-
+Rule	Arg	1989	1992	-	Oct	Sun>=15	0:00	1:00	S
+Rule	Arg	1999	only	-	Oct	Sun>=1	0:00	1:00	S
+Rule	Arg	2000	only	-	Mar	3	0:00	0	-
+Rule	Arg	2007	only	-	Dec	30	0:00	1:00	S
+Rule	Arg	2008	max	-	Mar	Sun>=15	0:00	0	-
+Rule	Arg	2008	max	-	Oct	Sun>=15	0:00	1:00	S
+ 
+Zone America/Argentina/Buenos_Aires -3:53:48 - LMT 1894 Oct 31
+			-4:16:48 -	CMT	1920 May # Cordoba Mean Time
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	Arg	AR%sT
+Zone America/Argentina/Cordoba -4:16:48 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  3
+			-4:00	-	WART	1991 Oct 20
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	Arg	AR%sT
+Zone America/Argentina/Salta -4:21:40 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  3
+			-4:00	-	WART	1991 Oct 20
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/Tucuman -4:20:52 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  3
+			-4:00	-	WART	1991 Oct 20
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 Jun  1
+			-4:00	-	WART	2004 Jun 13
+			-3:00	Arg	AR%sT
+Zone America/Argentina/La_Rioja -4:27:24 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  1
+			-4:00	-	WART	1991 May  7
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 Jun  1
+			-4:00	-	WART	2004 Jun 20
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/San_Juan -4:34:04 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  1
+			-4:00	-	WART	1991 May  7
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 May 31
+			-4:00	-	WART	2004 Jul 25
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/Jujuy -4:21:12 -	LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1990 Mar  4
+			-4:00	-	WART	1990 Oct 28
+			-4:00	1:00	WARST	1991 Mar 17
+			-4:00	-	WART	1991 Oct  6
+			-3:00	1:00	ARST	1992
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/Catamarca -4:23:08 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1991 Mar  3
+			-4:00	-	WART	1991 Oct 20
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 Jun  1
+			-4:00	-	WART	2004 Jun 20
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/Mendoza -4:35:16 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1990 Mar  4
+			-4:00	-	WART	1990 Oct 15
+			-4:00	1:00	WARST	1991 Mar  1
+			-4:00	-	WART	1991 Oct 15
+			-4:00	1:00	WARST	1992 Mar  1
+			-4:00	-	WART	1992 Oct 18
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 May 23
+			-4:00	-	WART	2004 Sep 26
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/San_Luis -4:25:24 - LMT	1894 Oct 31
+			-4:16:48 -	CMT	1920 May
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1990
+			-3:00	1:00	ARST	1990 Mar 14
+			-4:00	-	WART	1990 Oct 15
+			-4:00	1:00	WARST	1991 Mar  1
+			-4:00	-	WART	1991 Jun  1
+			-3:00	-	ART	1999 Oct  3
+			-4:00	1:00	WARST	2000 Mar  3
+			-3:00	-	ART	2004 May 31
+			-4:00	-	WART	2004 Jul 25
+			-3:00	Arg	AR%sT	2008 Jan 21
+			-3:00	-	ART	2009 Mar 15
+			-4:00	Arg	WAR%sT
+Zone America/Argentina/Rio_Gallegos -4:36:52 - LMT 1894 Oct 31
+			-4:16:48 -	CMT	1920 May # Cordoba Mean Time
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 Jun  1
+			-4:00	-	WART	2004 Jun 20
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone America/Argentina/Ushuaia -4:33:12 - LMT 1894 Oct 31
+			-4:16:48 -	CMT	1920 May # Cordoba Mean Time
+			-4:00	-	ART	1930 Dec
+			-4:00	Arg	AR%sT	1969 Oct  5
+			-3:00	Arg	AR%sT	1999 Oct  3
+			-4:00	Arg	AR%sT	2000 Mar  3
+			-3:00	-	ART	2004 May 30
+			-4:00	-	WART	2004 Jun 20
+			-3:00	Arg	AR%sT	2008 Oct 18
+			-3:00	-	ART
+Zone	America/Aruba	-4:40:24 -	LMT	1912 Feb 12	# Oranjestad
+			-4:30	-	ANT	1965 # Netherlands Antilles Time
+			-4:00	-	AST
+Zone	America/La_Paz	-4:32:36 -	LMT	1890
+			-4:32:36 -	CMT	1931 Oct 15 # Calamarca MT
+			-4:32:36 1:00	BOST	1932 Mar 21 # Bolivia ST
+			-4:00	-	BOT	# Bolivia Time
+Rule	Brazil	1931	only	-	Oct	 3	11:00	1:00	S
+Rule	Brazil	1932	1933	-	Apr	 1	 0:00	0	-
+Rule	Brazil	1932	only	-	Oct	 3	 0:00	1:00	S
+Rule	Brazil	1949	1952	-	Dec	 1	 0:00	1:00	S
+Rule	Brazil	1950	only	-	Apr	16	 1:00	0	-
+Rule	Brazil	1951	1952	-	Apr	 1	 0:00	0	-
+Rule	Brazil	1953	only	-	Mar	 1	 0:00	0	-
+Rule	Brazil	1963	only	-	Dec	 9	 0:00	1:00	S
+Rule	Brazil	1964	only	-	Mar	 1	 0:00	0	-
+Rule	Brazil	1965	only	-	Jan	31	 0:00	1:00	S
+Rule	Brazil	1965	only	-	Mar	31	 0:00	0	-
+Rule	Brazil	1965	only	-	Dec	 1	 0:00	1:00	S
+Rule	Brazil	1966	1968	-	Mar	 1	 0:00	0	-
+Rule	Brazil	1966	1967	-	Nov	 1	 0:00	1:00	S
+Rule	Brazil	1985	only	-	Nov	 2	 0:00	1:00	S
+Rule	Brazil	1986	only	-	Mar	15	 0:00	0	-
+Rule	Brazil	1986	only	-	Oct	25	 0:00	1:00	S
+Rule	Brazil	1987	only	-	Feb	14	 0:00	0	-
+Rule	Brazil	1987	only	-	Oct	25	 0:00	1:00	S
+Rule	Brazil	1988	only	-	Feb	 7	 0:00	0	-
+Rule	Brazil	1988	only	-	Oct	16	 0:00	1:00	S
+Rule	Brazil	1989	only	-	Jan	29	 0:00	0	-
+Rule	Brazil	1989	only	-	Oct	15	 0:00	1:00	S
+Rule	Brazil	1990	only	-	Feb	11	 0:00	0	-
+Rule	Brazil	1990	only	-	Oct	21	 0:00	1:00	S
+Rule	Brazil	1991	only	-	Feb	17	 0:00	0	-
+Rule	Brazil	1991	only	-	Oct	20	 0:00	1:00	S
+Rule	Brazil	1992	only	-	Feb	 9	 0:00	0	-
+Rule	Brazil	1992	only	-	Oct	25	 0:00	1:00	S
+Rule	Brazil	1993	only	-	Jan	31	 0:00	0	-
+Rule	Brazil	1993	1995	-	Oct	Sun>=11	 0:00	1:00	S
+Rule	Brazil	1994	1995	-	Feb	Sun>=15	 0:00	0	-
+Rule	Brazil	1996	only	-	Feb	11	 0:00	0	-
+Rule	Brazil	1996	only	-	Oct	 6	 0:00	1:00	S
+Rule	Brazil	1997	only	-	Feb	16	 0:00	0	-
+Rule	Brazil	1997	only	-	Oct	 6	 0:00	1:00	S
+Rule	Brazil	1998	only	-	Mar	 1	 0:00	0	-
+Rule	Brazil	1998	only	-	Oct	11	 0:00	1:00	S
+Rule	Brazil	1999	only	-	Feb	21	 0:00	0	-
+Rule	Brazil	1999	only	-	Oct	 3	 0:00	1:00	S
+Rule	Brazil	2000	only	-	Feb	27	 0:00	0	-
+Rule	Brazil	2000	2001	-	Oct	Sun>=8	 0:00	1:00	S
+Rule	Brazil	2001	2006	-	Feb	Sun>=15	 0:00	0	-
+Rule	Brazil	2002	only	-	Nov	 3	 0:00	1:00	S
+Rule	Brazil	2003	only	-	Oct	19	 0:00	1:00	S
+Rule	Brazil	2004	only	-	Nov	 2	 0:00	1:00	S
+Rule	Brazil	2005	only	-	Oct	16	 0:00	1:00	S
+Rule	Brazil	2006	only	-	Nov	 5	 0:00	1:00	S
+Rule	Brazil	2007	only	-	Feb	25	 0:00	0	-
+Rule	Brazil	2007	only	-	Oct	Sun>=8	 0:00	1:00	S
+Rule	Brazil	2008	max	-	Oct	Sun>=15	0:00	1:00	S
+Rule	Brazil	2008	2011	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2012	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2013	2014	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2015	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2016	2022	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2023	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2024	2025	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2026	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2027	2033	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2034	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2035	2036	-	Feb	Sun>=15	0:00	0	-
+Rule	Brazil	2037	only	-	Feb	Sun>=22	0:00	0	-
+Rule	Brazil	2038	max	-	Feb	Sun>=15	0:00	0	-
+Zone America/Noronha	-2:09:40 -	LMT	1914
+			-2:00	Brazil	FN%sT	1990 Sep 17
+			-2:00	-	FNT	1999 Sep 30
+			-2:00	Brazil	FN%sT	2000 Oct 15
+			-2:00	-	FNT	2001 Sep 13
+			-2:00	Brazil	FN%sT	2002 Oct  1
+			-2:00	-	FNT
+Zone America/Belem	-3:13:56 -	LMT	1914
+			-3:00	Brazil	BR%sT	1988 Sep 12
+			-3:00	-	BRT
+Zone America/Santarem	-3:38:48 -	LMT	1914
+			-4:00	Brazil	AM%sT	1988 Sep 12
+			-4:00	-	AMT	2008 Jun 24 00:00
+			-3:00	-	BRT
+Zone America/Fortaleza	-2:34:00 -	LMT	1914
+			-3:00	Brazil	BR%sT	1990 Sep 17
+			-3:00	-	BRT	1999 Sep 30
+			-3:00	Brazil	BR%sT	2000 Oct 22
+			-3:00	-	BRT	2001 Sep 13
+			-3:00	Brazil	BR%sT	2002 Oct  1
+			-3:00	-	BRT
+Zone America/Recife	-2:19:36 -	LMT	1914
+			-3:00	Brazil	BR%sT	1990 Sep 17
+			-3:00	-	BRT	1999 Sep 30
+			-3:00	Brazil	BR%sT	2000 Oct 15
+			-3:00	-	BRT	2001 Sep 13
+			-3:00	Brazil	BR%sT	2002 Oct  1
+			-3:00	-	BRT
+Zone America/Araguaina	-3:12:48 -	LMT	1914
+			-3:00	Brazil	BR%sT	1990 Sep 17
+			-3:00	-	BRT	1995 Sep 14
+			-3:00	Brazil	BR%sT	2003 Sep 24
+			-3:00	-	BRT
+Zone America/Maceio	-2:22:52 -	LMT	1914
+			-3:00	Brazil	BR%sT	1990 Sep 17
+			-3:00	-	BRT	1995 Oct 13
+			-3:00	Brazil	BR%sT	1996 Sep  4
+			-3:00	-	BRT	1999 Sep 30
+			-3:00	Brazil	BR%sT	2000 Oct 22
+			-3:00	-	BRT	2001 Sep 13
+			-3:00	Brazil	BR%sT	2002 Oct  1
+			-3:00	-	BRT
+Zone America/Bahia	-2:34:04 -	LMT	1914
+			-3:00	Brazil	BR%sT	2003 Sep 24
+			-3:00	-	BRT
+Zone America/Sao_Paulo	-3:06:28 -	LMT	1914
+			-3:00	Brazil	BR%sT	1963 Oct 23 00:00
+			-3:00	1:00	BRST	1964
+			-3:00	Brazil	BR%sT
+Zone America/Campo_Grande -3:38:28 -	LMT	1914
+			-4:00	Brazil	AM%sT
+Zone America/Cuiaba	-3:44:20 -	LMT	1914
+			-4:00	Brazil	AM%sT	2003 Sep 24
+			-4:00	-	AMT	2004 Oct  1
+			-4:00	Brazil	AM%sT
+Zone America/Porto_Velho -4:15:36 -	LMT	1914
+			-4:00	Brazil	AM%sT	1988 Sep 12
+			-4:00	-	AMT
+Zone America/Boa_Vista	-4:02:40 -	LMT	1914
+			-4:00	Brazil	AM%sT	1988 Sep 12
+			-4:00	-	AMT	1999 Sep 30
+			-4:00	Brazil	AM%sT	2000 Oct 15
+			-4:00	-	AMT
+Zone America/Manaus	-4:00:04 -	LMT	1914
+			-4:00	Brazil	AM%sT	1988 Sep 12
+			-4:00	-	AMT	1993 Sep 28
+			-4:00	Brazil	AM%sT	1994 Sep 22
+			-4:00	-	AMT
+Zone America/Eirunepe	-4:39:28 -	LMT	1914
+			-5:00	Brazil	AC%sT	1988 Sep 12
+			-5:00	-	ACT	1993 Sep 28
+			-5:00	Brazil	AC%sT	1994 Sep 22
+			-5:00	-	ACT	2008 Jun 24 00:00
+			-4:00	-	AMT
+Zone America/Rio_Branco	-4:31:12 -	LMT	1914
+			-5:00	Brazil	AC%sT	1988 Sep 12
+			-5:00	-	ACT	2008 Jun 24 00:00
+			-4:00	-	AMT
+Rule	Chile	1927	1932	-	Sep	 1	0:00	1:00	S
+Rule	Chile	1928	1932	-	Apr	 1	0:00	0	-
+Rule	Chile	1942	only	-	Jun	 1	4:00u	0	-
+Rule	Chile	1942	only	-	Aug	 1	5:00u	1:00	S
+Rule	Chile	1946	only	-	Jul	15	4:00u	1:00	S
+Rule	Chile	1946	only	-	Sep	 1	3:00u	0:00	-
+Rule	Chile	1947	only	-	Apr	 1	4:00u	0	-
+Rule	Chile	1968	only	-	Nov	 3	4:00u	1:00	S
+Rule	Chile	1969	only	-	Mar	30	3:00u	0	-
+Rule	Chile	1969	only	-	Nov	23	4:00u	1:00	S
+Rule	Chile	1970	only	-	Mar	29	3:00u	0	-
+Rule	Chile	1971	only	-	Mar	14	3:00u	0	-
+Rule	Chile	1970	1972	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	Chile	1972	1986	-	Mar	Sun>=9	3:00u	0	-
+Rule	Chile	1973	only	-	Sep	30	4:00u	1:00	S
+Rule	Chile	1974	1987	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	Chile	1987	only	-	Apr	12	3:00u	0	-
+Rule	Chile	1988	1989	-	Mar	Sun>=9	3:00u	0	-
+Rule	Chile	1988	only	-	Oct	Sun>=1	4:00u	1:00	S
+Rule	Chile	1989	only	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	Chile	1990	only	-	Mar	18	3:00u	0	-
+Rule	Chile	1990	only	-	Sep	16	4:00u	1:00	S
+Rule	Chile	1991	1996	-	Mar	Sun>=9	3:00u	0	-
+Rule	Chile	1991	1997	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	Chile	1997	only	-	Mar	30	3:00u	0	-
+Rule	Chile	1998	only	-	Mar	Sun>=9	3:00u	0	-
+Rule	Chile	1998	only	-	Sep	27	4:00u	1:00	S
+Rule	Chile	1999	only	-	Apr	 4	3:00u	0	-
+Rule	Chile	1999	max	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	Chile	2000	2007	-	Mar	Sun>=9	3:00u	0	-
+Rule	Chile	2008	only	-	Mar	30	3:00u	0	-
+Rule	Chile	2009	max	-	Mar	Sun>=9	3:00u	0	-
+Zone America/Santiago	-4:42:46 -	LMT	1890
+			-4:42:46 -	SMT	1910 	    # Santiago Mean Time
+			-5:00	-	CLT	1916 Jul  1 # Chile Time
+			-4:42:46 -	SMT	1918 Sep  1 # Santiago Mean Time
+			-4:00	-	CLT	1919 Jul  1 # Chile Time
+			-4:42:46 -	SMT	1927 Sep  1 # Santiago Mean Time
+			-5:00	Chile	CL%sT	1947 May 22 # Chile Time
+			-4:00	Chile	CL%sT
+Zone Pacific/Easter	-7:17:44 -	LMT	1890
+			-7:17:28 -	EMT	1932 Sep    # Easter Mean Time
+			-7:00	Chile	EAS%sT	1982 Mar 13 21:00 # Easter I Time
+			-6:00	Chile	EAS%sT
+Rule	CO	1992	only	-	May	 3	0:00	1:00	S
+Rule	CO	1993	only	-	Apr	 4	0:00	0	-
+Zone	America/Bogota	-4:56:20 -	LMT	1884 Mar 13
+			-4:56:20 -	BMT	1914 Nov 23 # Bogota Mean Time
+			-5:00	CO	CO%sT	# Colombia Time
+Zone	America/Curacao	-4:35:44 -	LMT	1912 Feb 12	# Willemstad
+			-4:30	-	ANT	1965 # Netherlands Antilles Time
+			-4:00	-	AST
+Zone America/Guayaquil	-5:19:20 -	LMT	1890
+			-5:14:00 -	QMT	1931 # Quito Mean Time
+			-5:00	-	ECT	     # Ecuador Time
+Zone Pacific/Galapagos	-5:58:24 -	LMT	1931 # Puerto Baquerizo Moreno
+			-5:00	-	ECT	1986
+			-6:00	-	GALT	     # Galapagos Time
+Rule	Falk	1937	1938	-	Sep	lastSun	0:00	1:00	S
+Rule	Falk	1938	1942	-	Mar	Sun>=19	0:00	0	-
+Rule	Falk	1939	only	-	Oct	1	0:00	1:00	S
+Rule	Falk	1940	1942	-	Sep	lastSun	0:00	1:00	S
+Rule	Falk	1943	only	-	Jan	1	0:00	0	-
+Rule	Falk	1983	only	-	Sep	lastSun	0:00	1:00	S
+Rule	Falk	1984	1985	-	Apr	lastSun	0:00	0	-
+Rule	Falk	1984	only	-	Sep	16	0:00	1:00	S
+Rule	Falk	1985	2000	-	Sep	Sun>=9	0:00	1:00	S
+Rule	Falk	1986	2000	-	Apr	Sun>=16	0:00	0	-
+Rule	Falk	2001	max	-	Apr	Sun>=15	2:00	0	-
+Rule	Falk	2001	max	-	Sep	Sun>=1	2:00	1:00	S
+Zone Atlantic/Stanley	-3:51:24 -	LMT	1890
+			-3:51:24 -	SMT	1912 Mar 12  # Stanley Mean Time
+			-4:00	Falk	FK%sT	1983 May     # Falkland Is Time
+			-3:00	Falk	FK%sT	1985 Sep 15
+			-4:00	Falk	FK%sT
+Zone America/Cayenne	-3:29:20 -	LMT	1911 Jul
+			-4:00	-	GFT	1967 Oct # French Guiana Time
+			-3:00	-	GFT
+Zone	America/Guyana	-3:52:40 -	LMT	1915 Mar	# Georgetown
+			-3:45	-	GBGT	1966 May 26 # Br Guiana Time
+			-3:45	-	GYT	1975 Jul 31 # Guyana Time
+			-3:00	-	GYT	1991
+			-4:00	-	GYT
+Rule	Para	1975	1988	-	Oct	 1	0:00	1:00	S
+Rule	Para	1975	1978	-	Mar	 1	0:00	0	-
+Rule	Para	1979	1991	-	Apr	 1	0:00	0	-
+Rule	Para	1989	only	-	Oct	22	0:00	1:00	S
+Rule	Para	1990	only	-	Oct	 1	0:00	1:00	S
+Rule	Para	1991	only	-	Oct	 6	0:00	1:00	S
+Rule	Para	1992	only	-	Mar	 1	0:00	0	-
+Rule	Para	1992	only	-	Oct	 5	0:00	1:00	S
+Rule	Para	1993	only	-	Mar	31	0:00	0	-
+Rule	Para	1993	1995	-	Oct	 1	0:00	1:00	S
+Rule	Para	1994	1995	-	Feb	lastSun	0:00	0	-
+Rule	Para	1996	only	-	Mar	 1	0:00	0	-
+Rule	Para	1996	2001	-	Oct	Sun>=1	0:00	1:00	S
+Rule	Para	1997	only	-	Feb	lastSun	0:00	0	-
+Rule	Para	1998	2001	-	Mar	Sun>=1	0:00	0	-
+Rule	Para	2002	2004	-	Apr	Sun>=1	0:00	0	-
+Rule	Para	2002	2003	-	Sep	Sun>=1	0:00	1:00	S
+Rule	Para	2004	max	-	Oct	Sun>=15	0:00	1:00	S
+Rule	Para	2005	max	-	Mar	Sun>=8	0:00	0	-
+Zone America/Asuncion	-3:50:40 -	LMT	1890
+			-3:50:40 -	AMT	1931 Oct 10 # Asuncion Mean Time
+			-4:00	-	PYT	1972 Oct # Paraguay Time
+			-3:00	-	PYT	1974 Apr
+			-4:00	Para	PY%sT
+Rule	Peru	1938	only	-	Jan	 1	0:00	1:00	S
+Rule	Peru	1938	only	-	Apr	 1	0:00	0	-
+Rule	Peru	1938	1939	-	Sep	lastSun	0:00	1:00	S
+Rule	Peru	1939	1940	-	Mar	Sun>=24	0:00	0	-
+Rule	Peru	1986	1987	-	Jan	 1	0:00	1:00	S
+Rule	Peru	1986	1987	-	Apr	 1	0:00	0	-
+Rule	Peru	1990	only	-	Jan	 1	0:00	1:00	S
+Rule	Peru	1990	only	-	Apr	 1	0:00	0	-
+Rule	Peru	1994	only	-	Jan	 1	0:00	1:00	S
+Rule	Peru	1994	only	-	Apr	 1	0:00	0	-
+Zone	America/Lima	-5:08:12 -	LMT	1890
+			-5:08:36 -	LMT	1908 Jul 28 # Lima Mean Time?
+			-5:00	Peru	PE%sT	# Peru Time
+Zone Atlantic/South_Georgia -2:26:08 -	LMT	1890		# Grytviken
+			-2:00	-	GST	# South Georgia Time
+Zone America/Paramaribo	-3:40:40 -	LMT	1911
+			-3:40:52 -	PMT	1935     # Paramaribo Mean Time
+			-3:40:36 -	PMT	1945 Oct # The capital moved?
+			-3:30	-	NEGT	1975 Nov 20 # Dutch Guiana Time
+			-3:30	-	SRT	1984 Oct # Suriname Time
+			-3:00	-	SRT
+Zone America/Port_of_Spain -4:06:04 -	LMT	1912 Mar 2
+			-4:00	-	AST
+Rule	Uruguay	1923	only	-	Oct	 2	 0:00	0:30	HS
+Rule	Uruguay	1924	1926	-	Apr	 1	 0:00	0	-
+Rule	Uruguay	1924	1925	-	Oct	 1	 0:00	0:30	HS
+Rule	Uruguay	1933	1935	-	Oct	lastSun	 0:00	0:30	HS
+Rule	Uruguay	1934	1936	-	Mar	Sat>=25	23:30s	0	-
+Rule	Uruguay	1936	only	-	Nov	 1	 0:00	0:30	HS
+Rule	Uruguay	1937	1941	-	Mar	lastSun	 0:00	0	-
+Rule	Uruguay	1937	1940	-	Oct	lastSun	 0:00	0:30	HS
+Rule	Uruguay	1941	only	-	Aug	 1	 0:00	0:30	HS
+Rule	Uruguay	1942	only	-	Jan	 1	 0:00	0	-
+Rule	Uruguay	1942	only	-	Dec	14	 0:00	1:00	S
+Rule	Uruguay	1943	only	-	Mar	14	 0:00	0	-
+Rule	Uruguay	1959	only	-	May	24	 0:00	1:00	S
+Rule	Uruguay	1959	only	-	Nov	15	 0:00	0	-
+Rule	Uruguay	1960	only	-	Jan	17	 0:00	1:00	S
+Rule	Uruguay	1960	only	-	Mar	 6	 0:00	0	-
+Rule	Uruguay	1965	1967	-	Apr	Sun>=1	 0:00	1:00	S
+Rule	Uruguay	1965	only	-	Sep	26	 0:00	0	-
+Rule	Uruguay	1966	1967	-	Oct	31	 0:00	0	-
+Rule	Uruguay	1968	1970	-	May	27	 0:00	0:30	HS
+Rule	Uruguay	1968	1970	-	Dec	 2	 0:00	0	-
+Rule	Uruguay	1972	only	-	Apr	24	 0:00	1:00	S
+Rule	Uruguay	1972	only	-	Aug	15	 0:00	0	-
+Rule	Uruguay	1974	only	-	Mar	10	 0:00	0:30	HS
+Rule	Uruguay	1974	only	-	Dec	22	 0:00	1:00	S
+Rule	Uruguay	1976	only	-	Oct	 1	 0:00	0	-
+Rule	Uruguay	1977	only	-	Dec	 4	 0:00	1:00	S
+Rule	Uruguay	1978	only	-	Apr	 1	 0:00	0	-
+Rule	Uruguay	1979	only	-	Oct	 1	 0:00	1:00	S
+Rule	Uruguay	1980	only	-	May	 1	 0:00	0	-
+Rule	Uruguay	1987	only	-	Dec	14	 0:00	1:00	S
+Rule	Uruguay	1988	only	-	Mar	14	 0:00	0	-
+Rule	Uruguay	1988	only	-	Dec	11	 0:00	1:00	S
+Rule	Uruguay	1989	only	-	Mar	12	 0:00	0	-
+Rule	Uruguay	1989	only	-	Oct	29	 0:00	1:00	S
+Rule	Uruguay	1990	1992	-	Mar	Sun>=1	 0:00	0	-
+Rule	Uruguay	1990	1991	-	Oct	Sun>=21	 0:00	1:00	S
+Rule	Uruguay	1992	only	-	Oct	18	 0:00	1:00	S
+Rule	Uruguay	1993	only	-	Feb	28	 0:00	0	-
+Rule	Uruguay	2004	only	-	Sep	19	 0:00	1:00	S
+Rule	Uruguay	2005	only	-	Mar	27	 2:00	0	-
+Rule	Uruguay	2005	only	-	Oct	 9	 2:00	1:00	S
+Rule	Uruguay	2006	only	-	Mar	12	 2:00	0	-
+Rule	Uruguay	2006	max	-	Oct	Sun>=1	 2:00	1:00	S
+Rule	Uruguay	2007	max	-	Mar	Sun>=8	 2:00	0	-
+Zone America/Montevideo	-3:44:44 -	LMT	1898 Jun 28
+			-3:44:44 -	MMT	1920 May  1	# Montevideo MT
+			-3:30	Uruguay	UY%sT	1942 Dec 14	# Uruguay Time
+			-3:00	Uruguay	UY%sT
+Zone	America/Caracas	-4:27:44 -	LMT	1890
+			-4:27:40 -	CMT	1912 Feb 12 # Caracas Mean Time?
+			-4:30	-	VET	1965	     # Venezuela Time
+			-4:00	-	VET	2007 Dec  9 03:00
+			-4:30	-	VET

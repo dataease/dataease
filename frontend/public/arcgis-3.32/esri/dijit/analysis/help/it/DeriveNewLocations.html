@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Deriva nuove località</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Deriva nuove posizioni"></h2>
+        <hr/>
+    <p>Questo strumento consente di derivare nuove feature nell'area di studio conformi ad una serie di criteri specificati. Tali criteri possono essere basati su interrogazioni sugli attributi (ad esempio, particelle ancora disponibili) e su interrogazioni su dati spaziali (ad esempio, particelle comprese nella pianura alluvionale).
+
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verranno analizzate solo le feature visibili nell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Deriva nuove località corrispondenti alle seguenti espressioni</h2></div>
+        <hr/>
+        <div>
+            <p>Fare clic sul pulsante  <b>Aggiungi espressione</b> per definire un'espressione.  &Egrave; possibile aggiungere pi&ugrave; espressioni. Dopo aver immesso l'espressione e aver fatto clic sul pulsante <b>Analizza</b>, le feature del layer di analisi vengono filtrate nelle singole espressioni.  Le porzioni di feature che soddisfano tutte le espressioni vengono scritte nel layer risultati.
+            </p>
+            <p>&Egrave; possibile creare due tipi di base di espressioni, ovvero di attributi e spaziali. Le espressioni di attributi sono interrogazioni su valori di campo, ad esempio  <code>dove nome &egrave; 'Milano'</code>.  Esistono quattro tipi di espressioni spaziali:
+                <ul>
+                    <li> <b>entro una distanza di</b>: porzioni di una feature che si trovano entro una certa distanza da una feature in un altro layer.  Ad esempio, consente di individuare porzioni di particelle che si trovano a un massimo di 500 metri dal fiume Tevere.
+                    </li>
+                    <li> <b>contiene completamente</b>: la feature deve contenere interamente una feature in un altro layer.  Ad esempio, consente di individuare gli spartiacque che contengono completamente particelle zonizzate per uso industriale. Nessuna parte della particella deve quindi essere esterna allo spartiacque.
+                    </li>
+                    <li> <b>completamente all'interno di</b>: la feature deve essere completamente circondata da una feature in un altro layer.  Ad esempio, consente di individuare i distretti scolastici entro i confini di una citt&agrave;. Nessuna parte del distretto scolastico deve quindi essere esterna ai confini della citt&agrave;.
+                    </li>
+                    <li> <b>interseca</b>: la feature o porzioni della feature devono essere sovrapposte o intersecare una feature in un altro layer.  Ad esempio, consente di individuare le aree in cui la vegetazione &egrave; andata distrutta in seguito a numerosi incendi verificatisi all'interno di un parco nazionale. Le aree distrutte dagli incendi all'esterno dei confini del parco non verranno incluse.
+                    </li>
+                    <li> <b>Pi&ugrave; vicina a</b>: la feature deve essere pi&ugrave; vicina ad una feature in un altro layer.  Per esempio, trova il parco pi&ugrave; vicino ad ogni scuola.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Per ogni espressione spaziale &egrave; disponibile la versione al negativo, fatta eccezione per  <b>pi&ugrave; vicina a</b>; <b>non entro una distanza di</b>, <b>non contiene completamente </b>, <b>non completamente all&rsquo;interno di</b>, e <b>non interseca</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

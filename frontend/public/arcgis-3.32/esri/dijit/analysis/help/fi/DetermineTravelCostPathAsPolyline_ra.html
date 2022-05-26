@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Määritä matkakustannusten polku taiteviivana</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Matkakustannusten polun taiteviivaty&ouml;kalun kuvauksen m&auml;&auml;rittely"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu laskee pienimm&auml;n kustannuksen taiteviivareitin l&auml;ht&ouml;paikkojen ja tunnettujen kohteiden v&auml;lill&auml;.
+    </p>
+    <p>Esimerkkisovelluksia ovat mm. seuraavat:
+        <ul>
+            <li>Etsi paras reitti uudelle tielle rakennuskustannuksien kannalta.
+                
+
+            </li>
+            <li>M&auml;&auml;rit&auml; polku useista esikaupunkisijainneista (l&auml;hd&ouml;t) l&auml;himp&auml;&auml;n ostoskeskukseen (kohde).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -asetus on valittuna, vain l&auml;ht&ouml;karttatasoissa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t sijainnit analysoidaan. Jos toimintoa ei ole valittu, kaikki molempien l&auml;ht&ouml;karttatasojen sijainnit analysoidaan &ndash; my&ouml;s ne, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Valitse rasteri tai kohteen lähtökarttataso polkujen määrittämiseksi sijainnista</h2></div>
+        <hr/>
+        <div>
+            <p>Kuva- tai kohdepalvelu, joka tunnistaa solut, joista alhaisimpien kustannusten polku m&auml;&auml;ritet&auml;&auml;n edullisimpaan kohteeseen.
+            </p>
+            <p>Jos l&auml;ht&ouml; on kuvapalvelu, l&auml;ht&ouml; koostuu soluista, joilla on kelvolliset arvot (nolla on kelvollinen arvo). Loput solut m&auml;&auml;ritet&auml;&auml;n NoData-soluiksi.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Valitse matkakulujen rasterikarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Rasteri, joka m&auml;&auml;ritt&auml;&auml; impedanssin tai kustannuksen, jotta se voi liikkua planimetrisesti jokaisen solun l&auml;pi.
+            </p>
+            <p>Kunkin solusijainnin arvo edustaa yksikk&ouml;kohtaisen kustannuksen v&auml;limatkaa solun kautta siirtymiseksi. Kunkin solusijainnin arvo kerrotaan solun resoluutiolla diagonaalista liikett&auml; kompensoimalla, jotta saadaan selville solun l&auml;pikulun aiheuttamat kustannukset.
+            </p>
+            <p>Kustannusrasterin arvo voi olla kokonaisluku tai liukuluku, mutta se ei voi olla negatiivinen eik&auml; nolla (kustannus ei voi olla negatiivinen eik&auml; nolla).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Lähtöaineiston määränpäärasteri tai kohteet</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;, joka m&auml;&auml;ritt&auml;&auml; kohteet et&auml;isyyden laskemiseksi. Karttataso voi olla rasteri tai kohde.
+            </p>
+            <p>Jos l&auml;ht&ouml; on kuvapalvelu, l&auml;ht&ouml; koostuu soluista, joilla on kelvolliset arvot (nolla on kelvollinen arvo). Loput solut m&auml;&auml;ritet&auml;&auml;n NoData-soluiksi.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Tuloksena olevan taiteviivakarttatason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Valitse määritettävien polkujen tyyppi</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; tavan, jolla l&auml;hd&ouml;n m&auml;&auml;r&auml;np&auml;&auml;tietojen arvot ja vy&ouml;hykkeet tulkitaan kustannuspolkulaskelmissa.
+            </p>
+            <ul>
+                <li>Paras yksitt&auml;inen&mdash;Koskee l&auml;hd&ouml;n m&auml;&auml;r&auml;np&auml;&auml;tietojen kaikkia soluja tai sijainteja. Pienimm&auml;n kustannuksen reitti saadaan sijainnista, josta on kaikkein alhaisimman kustannusten reitti l&auml;ht&ouml;sijaintiin. T&auml;m&auml; on oletusarvo
+                    
+
+                </li>
+                <li>Jokaiseen soluun&mdash;Koskee jokaista solua tai sijaintia, jonka m&auml;&auml;r&auml;np&auml;&auml;tiedoissa on kelvolliset arvot. Pienimm&auml;n kustannuksen reitti m&auml;&auml;ritet&auml;&auml;n ja tallennetaan tulosaineiston kohdepalveluun. T&auml;ss&auml; vaihtoehdossa jokaista m&auml;&auml;r&auml;np&auml;&auml;tietojen solua k&auml;sitell&auml;&auml;n erikseen. Pienimm&auml;n kustannuksen reitti m&auml;&auml;ritet&auml;&auml;n kussakin tapauksessa solun pohjalta.
+                    
+
+                </li>
+                <li>Jokaiseen vy&ouml;hykkeeseen &mdash;Koskee jokaista vy&ouml;hykett&auml; m&auml;&auml;r&auml;np&auml;&auml;tiedoissa. Pienimm&auml;n kustannuksen reitti m&auml;&auml;ritet&auml;&auml;n ja tallennetaan tulosaineiston kohdepalveluun. T&auml;ss&auml; vaihtoehdossa pienimm&auml;n kustannuksen reitti kullekin vy&ouml;hykkeelle alkaa solusta tai sijainnista, jolla on vy&ouml;hykkeen alhaisin kustannus-et&auml;isyys-painoarvo.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>A raszterelemz&eacute;s lehetőv&eacute; teszi nagy m&eacute;retű raszteres adathalmazok elemz&eacute;s&eacute;t az  ArcGIS Image Server seg&iacute;ts&eacute;g&eacute;vel. &Iacute;gy a szerver erej&eacute;t kihaszn&aacute;lva t&ouml;bb adatot elemezhet gyorsabban. A  Portal for ArcGIS port&aacute;lon kereszt&uuml;l jelenleg a k&ouml;vetkező eszk&ouml;zk&eacute;szletek &eacute;rhetők el:  <b>Adatok &ouml;sszegz&eacute;se</b>, <b>Mint&aacute;zatok elemz&eacute;se</b>, <b>K&ouml;zels&eacute;g haszn&aacute;lata</b>, <b>K&eacute;p elemz&eacute;se</b>, <b>Felsz&iacute;nelemz&eacute;s</b>, <b>Adatok kezel&eacute;se</b> &eacute;s <b>deep learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="regularsize">
+        <h2>Adatok összegzése</h2>
+        <hr/>
+        <p>Ez az eszk&ouml;zk&eacute;szlet egy, az &Ouml;n &aacute;ltal kijel&ouml;lt hat&aacute;rvonalakkal meghat&aacute;rozott ter&uuml;leten bel&uuml;l tal&aacute;lhat&oacute; raszteres r&eacute;teg n&eacute;h&aacute;ny statisztik&aacute;j&aacute;nak kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lhat&oacute; eszk&ouml;zt tartalmaz. 
+            <ul>
+                <li>A  <b>Raszter ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;se</b> a kijel&ouml;lt hat&aacute;rvonalakkal meghat&aacute;rozott ter&uuml;leten bel&uuml;l eső raszteres cell&aacute;k statisztik&aacute;it sz&aacute;m&iacute;tja ki.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raszter területen belüli összegzése</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Raszter ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;se eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Meghat&aacute;rozott ter&uuml;leteken bel&uuml;l eső raszteres cell&aacute;k n&eacute;h&aacute;ny &ouml;sszefoglal&oacute; statisztik&aacute;j&aacute;t sz&aacute;m&iacute;tja ki.
+            </p>
+            <p>N&eacute;h&aacute;ny p&eacute;lda az eszk&ouml;z alkalmaz&aacute;s&aacute;ra: 
+
+                <ul>
+                    <li>Adott egy v&iacute;zgyűjtő ter&uuml;leteket tartalmaz&oacute; r&eacute;teg &eacute;s egy raszteres magass&aacute;gr&eacute;teg &ndash; sz&aacute;m&iacute;tsa ki a magass&aacute;gtartom&aacute;nyt az egyes v&iacute;zgyűjtő ter&uuml;leteken bel&uuml;l, &eacute;s ez alapj&aacute;n &aacute;llap&iacute;tsa meg, hogy melyikeknek lesz a legnagyobb energi&aacute;j&uacute; v&iacute;z&aacute;raml&aacute;sa.
+                        
+
+                    </li>
+                    <li>Adott egy adminisztrat&iacute;v igazgat&aacute;si egys&eacute;geket tartalmaz&oacute; r&eacute;teg &eacute;s egy f&ouml;ldhaszn&aacute;lati kateg&oacute;ri&aacute;kat tartalmaz&oacute; raszteres r&eacute;teg &ndash; sz&aacute;m&iacute;tsa ki a f&ouml;ldhaszn&aacute;lati &eacute;rt&eacute;kek v&aacute;ltozatoss&aacute;g&aacute;t az egyes igazgat&aacute;si ter&uuml;leteken bel&uuml;l, &eacute;s &aacute;llap&iacute;tsa meg, hogy melyikekn&eacute;l sz&uuml;ks&eacute;ges a legt&ouml;bb munka egy kezel&eacute;si terv meghat&aacute;roz&aacute;s&aacute;hoz.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Mintázatok elemzése</h2>
+        <hr/>
+        <p>Az al&aacute;bbi eszk&ouml;z&ouml;k seg&iacute;tenek azonos&iacute;tani, mennyis&eacute;gileg meghat&aacute;rozni &eacute;s megjelen&iacute;teni az adatok t&eacute;rbeli mint&aacute;zatait. 
+
+            <ul>
+                <li>A  <b>Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa</b> sűrűs&eacute;gt&eacute;rk&eacute;pet hoz l&eacute;tre bizonyos jelens&eacute;gek ismert mennyis&eacute;geit sz&eacute;tter&iacute;tve a t&eacute;rk&eacute;pen.
+                    
+
+                </li>
+                <li>A  <b>Pontok interpol&aacute;l&aacute;sa</b> pontgyűjtem&eacute;nyekben tal&aacute;lt m&eacute;rt &eacute;rt&eacute;kek alapj&aacute;n előre jelzi az &eacute;rt&eacute;keket az &uacute;j helyeken.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sűrűség számítása</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Sűrűs&eacute;g sz&aacute;m&iacute;t&aacute;sa eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A sűrűs&eacute;gvizsg&aacute;lat sűrűs&eacute;gt&eacute;rk&eacute;pet hoz l&eacute;tre bizonyos jelens&eacute;gek ismert mennyis&eacute;geit sz&eacute;tter&iacute;tve a t&eacute;rk&eacute;pen. Az eszk&ouml;z haszn&aacute;lat&aacute;val kimutathatja p&eacute;ld&aacute;ul vill&aacute;mcsap&aacute;sok vagy torn&aacute;d&oacute;k koncentr&aacute;ci&oacute;j&aacute;t, eg&eacute;szs&eacute;g&uuml;gyi int&eacute;zm&eacute;nyek el&eacute;rhetős&eacute;g&eacute;t &eacute;s a n&eacute;pess&eacute;g sűrűs&eacute;g&eacute;t.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pontok interpolálása</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Pontok interpol&aacute;l&aacute;sa eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ezzel az eszk&ouml;zzel pontgyűjtem&eacute;nyekben tal&aacute;lt mutat&oacute;k alapj&aacute;n &eacute;rt&eacute;keket jelezhet előre &uacute;j helyeken. Az eszk&ouml;z egyes &eacute;rt&eacute;kkel rendelkező pont adatok alapj&aacute;n előre jelzett &eacute;rt&eacute;kek szerint kategoriz&aacute;lt ter&uuml;leteket ad eredm&eacute;ny&uuml;l. Az eszk&ouml;z haszn&aacute;lat&aacute;val p&eacute;ld&aacute;ul csapad&eacute;km&eacute;rők adatai alapj&aacute;n előre jelezheti a csapad&eacute;k mennyis&eacute;g&eacute;t egy v&iacute;zgyűjtő ter&uuml;leten.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Közelség használata</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k seg&iacute;tenek v&aacute;laszt adni a t&eacute;rbeli elemz&eacute;sn&eacute;l leggyakrabban feltett k&eacute;rd&eacute;sek egyik&eacute;re: &bdquo;Mi mihez van k&ouml;zel?&rdquo;
+
+            <ul>
+                <li>A  <b>T&aacute;vols&aacute;g kisz&aacute;m&iacute;t&aacute;sa</b> az euklideszi t&aacute;vols&aacute;got, ir&aacute;nyt &eacute;s allok&aacute;ci&oacute;t sz&aacute;m&iacute;tja ki egyetlen forr&aacute;sb&oacute;l vagy egy forr&aacute;shalmazb&oacute;l.
+                    
+
+                </li>
+                <li>Az  <b>Optim&aacute;lis &uacute;tik&ouml;lts&eacute;ghez tartoz&oacute; h&aacute;l&oacute;zat meghat&aacute;roz&aacute;sa</b> az optim&aacute;lis k&ouml;lts&eacute;gh&aacute;l&oacute;zatot sz&aacute;m&iacute;tja ki bemeneti r&eacute;gi&oacute;k halmaz&aacute;b&oacute;l.
+                    
+
+                </li>
+                <li>Az  <b>&Uacute;tik&ouml;lts&eacute;g-&uacute;tvonal meghat&aacute;roz&aacute;sa polyline-k&eacute;nt</b> a legkisebb k&ouml;lts&eacute;ggel j&aacute;r&oacute; polyline-&uacute;tvonalat hat&aacute;rozza meg kiindul&oacute;pontok &eacute;s ismert c&eacute;lpontok k&ouml;z&ouml;tt.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Távolság kiszámítása</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="T&aacute;vols&aacute;g kisz&aacute;m&iacute;t&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Az euklideszi t&aacute;vols&aacute;got, ir&aacute;nyt &eacute;s allok&aacute;ci&oacute;t sz&aacute;m&iacute;tja ki egyetlen forr&aacute;sb&oacute;l vagy egy forr&aacute;shalmazb&oacute;l. Az eszk&ouml;z seg&iacute;ts&eacute;g&eacute;vel meghat&aacute;rozhatja, hogy milyen messze van egy hely egy &uacute;tt&oacute;l, egy &eacute;p&uuml;lettől vagy egy parkt&oacute;l. Azt is meghat&aacute;rozhatja, hogy melyik ir&aacute;nyba kell mennie egy helyről ahhoz, hogy a legk&ouml;zvetlenebb &uacute;ton jusson vissza a kiindul&oacute;pontra. A vizsg&aacute;lt ter&uuml;let &ouml;sszes hely&eacute;n&eacute;l l&aacute;thatja, hogy melyik a legk&ouml;zelebbi kiindul&oacute;pont.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Optimális útiköltséghez tartozó hálózat meghatározása</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Az Optim&aacute;lis &uacute;tik&ouml;lts&eacute;ghez tartoz&oacute; h&aacute;l&oacute;zat meghat&aacute;roz&aacute;sa eszk&ouml;z illusztr&aacute;ci&oacute;ja">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Az optim&aacute;lis k&ouml;lts&eacute;gh&aacute;l&oacute;zatot sz&aacute;m&iacute;tja ki bemeneti r&eacute;gi&oacute;k halmaz&aacute;b&oacute;l.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Útiköltség-útvonal meghatározása polyline-ként</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Az &Uacute;tik&ouml;lts&eacute;g-&uacute;tvonal meghat&aacute;roz&aacute;sa polyline-k&eacute;nt eszk&ouml;z illusztr&aacute;ci&oacute;ja">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A legkisebb k&ouml;lts&eacute;ggel j&aacute;r&oacute; polyline-&uacute;tvonalat hat&aacute;rozza meg kiindul&oacute;pontok &eacute;s ismert c&eacute;lpontok k&ouml;z&ouml;tt.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="regularsize">
+        <h2>Kép elemzése</h2>
+        <hr/>
+        <p>Az al&aacute;bbi eszk&ouml;z k&eacute;pek elemz&eacute;s&eacute;ben seg&iacute;t. 
+            <ul>
+                <li>A  <b>Raszterfunkci&oacute;-sablon alkalmaz&aacute;sa</b> feldolgozza a t&aacute;v&eacute;rz&eacute;kelt felv&eacute;tel&eacute;t a raszterfunkci&oacute;-sablon &aacute;ltal meghat&aacute;rozott funkci&oacute;l&aacute;nccal.
+                </li>
+                <li>A  <b>N&ouml;v&eacute;nyzeti monitoring</b> a s&aacute;vokon alkalmazott sz&aacute;mtani műveletek alapj&aacute;n felismeri a n&ouml;v&eacute;nyzetet egy k&eacute;pen bel&uuml;l.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raszterfunkció-sablon alkalmazása</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Raszterfunkci&oacute;-sablon alkalmaz&aacute;sa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Feldolgozza a t&aacute;v&eacute;rz&eacute;kelt felv&eacute;tel&eacute;t a raszterfunkci&oacute;-sablon &aacute;ltal meghat&aacute;rozott funkci&oacute;l&aacute;nccal.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Növényzeti monitoring</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="N&ouml;v&eacute;nyzeti monitoring eszk&ouml;z port&aacute;lhoz">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sz&aacute;mtani műveletet hajt v&eacute;gre egy t&ouml;bbs&aacute;vos raszteres r&eacute;teg s&aacute;vjain, &eacute;s az adatok alapj&aacute;n felt&aacute;rja a mintater&uuml;let n&ouml;v&eacute;nyzeti bor&iacute;totts&aacute;g&aacute;nak m&eacute;rt&eacute;k&eacute;t.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Felszínelemzés</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k raszteres felsz&iacute;nek elemz&eacute;s&eacute;ben seg&iacute;tenek. 
+            <ul>
+                <li>A  <b>Lejtősz&ouml;gsz&aacute;m&iacute;t&aacute;s</b> a felsz&iacute;n meredeks&eacute;g&eacute;t sz&aacute;m&iacute;tja ki.
+                    
+
+                </li>
+                <li>A  <b>Kitetts&eacute;gsz&aacute;m&iacute;t&aacute;s</b> a legmeredekebb lejtő ir&aacute;ny&aacute;t sz&aacute;m&iacute;tja ki minden egyes helyhez.
+                    
+
+                </li>
+                <li>A  <b>Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa</b> meghat&aacute;rozza, hogy mi l&aacute;that&oacute; a t&aacute;j b&aacute;rmely adott pontj&aacute;r&oacute;l.
+                    
+
+                </li>
+                <li>A  <b>V&iacute;zgyűjtő ter&uuml;let</b> kisz&aacute;m&iacute;tja az &ouml;sszefoly&aacute;si ter&uuml;letet a felsz&iacute;n egy adott pontja felett.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Lejtőszögszámítás</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Lejtősz&ouml;gsz&aacute;m&iacute;t&aacute;s eszk&ouml;z port&aacute;lhoz">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Egy, a bemeneti magass&aacute;gadatok lejtősz&ouml;g&eacute;t megjelen&iacute;tő felsz&iacute;nt hat&aacute;roz meg. A lejtősz&ouml;g a magass&aacute;g v&aacute;ltoz&aacute;s&aacute;nak m&eacute;rt&eacute;k&eacute;t mutatja a digit&aacute;lis magass&aacute;gmodell (DMM) minden egyes cell&aacute;j&aacute;hoz.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kitettségszámítás</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Kitetts&eacute;gsz&aacute;m&iacute;t&aacute;si eszk&ouml;z port&aacute;lhoz">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A szomsz&eacute;dos cell&aacute;k k&ouml;z&ouml;tti, legnagyobb m&eacute;rt&eacute;kű &eacute;rt&eacute;kv&aacute;ltoz&aacute;shoz tartoz&oacute; lejtő ir&aacute;ny&aacute;t hat&aacute;rozza meg. A kitetts&eacute;g felfoghat&oacute; lejt&eacute;sir&aacute;nyk&eacute;nt is.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Belátható terület létrehozása</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Azokat a helyeket hat&aacute;rozza meg egy raszteres felsz&iacute;nen, amelyek egy megfigyelői csoport sz&aacute;m&aacute;ra l&aacute;that&oacute;k.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vízgyűjtő terület</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="V&iacute;zgyűjtő ter&uuml;lettel kapcsolatos feladat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A lefoly&aacute;si ter&uuml;letet hat&aacute;rozza meg egy adott raszteren. 
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Adatok kezelése</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k f&ouml;ldrajzi adatok napi kezel&eacute;s&eacute;re &eacute;s az adatok elemz&eacute;s előtti egyes&iacute;t&eacute;s&eacute;re egyar&aacute;nt haszn&aacute;lhat&oacute;k. 
+            <ul>
+                <li>A  <b>Raszterkinyer&eacute;s</b> r&eacute;szeket v&aacute;g ki egy raszteres adathalmazb&oacute;l tov&aacute;bbi elemz&eacute;s c&eacute;lj&aacute;ra.
+                    
+
+                </li>
+                <li>Az  <b>&Uacute;jralek&eacute;pez&eacute;si &eacute;rt&eacute;kek</b> k&uuml;l&ouml;nb&ouml;ző &eacute;rt&eacute;keket rendel raszteres cell&aacute;khoz.
+                    
+
+                </li>
+                <li>A  <b>Vektoros elem &aacute;talak&iacute;t&aacute;sa raszterr&eacute;</b> raszteress&eacute; alak&iacute;t vektoros adatokat.
+                    
+
+                </li>
+                <li>A  <b>Raszter &aacute;talak&iacute;t&aacute;sa vektoros elemm&eacute;</b> vektoross&aacute; alak&iacute;t raszteres adatokat.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raszterkinyerés</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Raszterkinyer&eacute;s eszk&ouml;z port&aacute;lhoz">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cell&aacute;kat nyer ki egy raszterből &eacute;rt&eacute;k, alak vagy egy elt&eacute;rő adathalmaz kiterjed&eacute;se alapj&aacute;n.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Újraleképezési értékek</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="&Uacute;jralek&eacute;pez&eacute;si &eacute;rt&eacute;kek eszk&ouml;z port&aacute;lhoz">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Egy cella&eacute;rt&eacute;ket vagy cella&eacute;rt&eacute;kek egy tartom&aacute;ny&aacute;t &uacute;j &eacute;rt&eacute;kekk&eacute; alak&iacute;t.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vektoros elem átalakítása raszterré</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Vektoros elem &aacute;talak&iacute;t&aacute;sa raszterr&eacute; eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uacute;j raszteres adathalmazt hoz l&eacute;tre megl&eacute;vő vektoros adathalmazb&oacute;l.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raszter átalakítása vektoros elemmé</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Raszter &aacute;talak&iacute;t&aacute;sa vektoros elemm&eacute; eszk&ouml;z">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uacute;j vektoros adathalmazt hoz l&eacute;tre megl&eacute;vő raszteres adathalmazb&oacute;l.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Deep learning eszközkészlet</h2>
+        <hr/>
+        <p>Ezek az eszk&ouml;z&ouml;k 	egy k&eacute;pben tal&aacute;lhat&oacute; bizonyos vektoros elemek &eacute;szlel&eacute;s&eacute;re vagy egy raszteres adathalmazban tal&aacute;lhat&oacute; pixelek oszt&aacute;lyoz&aacute;s&aacute;ra haszn&aacute;lhat&oacute;k. A deep learning egy mesters&eacute;ges intelligencia g&eacute;pi tanul&aacute;si m&oacute;dszer, amely  vektoros elemeket ismer fel t&aacute;v&eacute;rz&eacute;kel&eacute;si r&eacute;tegben &uacute;gy, hogy t&ouml;bb r&eacute;teget alkalmaz a neur&aacute;lis h&aacute;l&oacute;zatban, ahol minden r&eacute;teg egy vagy t&ouml;bb vektoros elemet k&eacute;pes kinyerni a k&eacute;pből. Ezek az eszk&ouml;z&ouml;k azokat a tan&iacute;tott modelleket haszn&aacute;lj&aacute;k fel, amelyek k&eacute;pesek bizonyos vektoros elemeket felismerni harmadik f&eacute;l deep learning keretrendszereiben (pl. TensorFlow, CNTK &eacute;s Keras), &eacute;s kimenetk&eacute;nt vektoros elemeket vagy oszt&aacute;lyt&eacute;rk&eacute;peket hoznak l&eacute;tre.
+            <ul>
+                <li>A  <b>Pixelek oszt&aacute;lyoz&aacute;sa deep learning haszn&aacute;lat&aacute;val</b> eszk&ouml;z tan&iacute;tott deep learningi modell haszn&aacute;lat&aacute;val oszt&aacute;lyozott rasztert hoz l&eacute;tre.
+                </li>
+                <li>A  <b>deep learninget alkalmaz&oacute; objektumok felismer&eacute;se</b> eszk&ouml;z vektoroselem-oszt&aacute;lyt hoz l&eacute;tre, amely tartalmazza az eszk&ouml;z &aacute;ltal egy bemeneti raszterben tal&aacute;lt, tan&iacute;tott deep learningi modellt alkalmaz&oacute; objektumokat.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pixelek osztályozása deep learning használatával</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Pixelek oszt&aacute;lyoz&aacute;sa deep learning haszn&aacute;lat&aacute;val">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tan&iacute;tott deep learning modellt futtat egy bemeneti raszteren egy oszt&aacute;lyozott raszter l&eacute;trehoz&aacute;s&aacute;ra, ahol minden &eacute;rv&eacute;nyes pixelnek van hozz&aacute;rendelt oszt&aacute;ly felirata.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Objektumok felismerése deep learning használatával</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Objektumok felismer&eacute;se deep learning haszn&aacute;lat&aacute;val">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deep learning modellt futtat egy bemeneti raszteren egy olyan vektoroselem-oszt&aacute;ly l&eacute;trehoz&aacute;s&aacute;ra, amely tartalmazza a tal&aacute;lt objektumokat. A vektoros elemek lehetnek az objektum k&ouml;r&uuml;l tal&aacute;lhat&oacute;, hat&aacute;rol&oacute; mezők vagy soksz&ouml;gek, &eacute;s lehetnek pontok az objektumok k&ouml;z&eacute;ppontjaiban.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

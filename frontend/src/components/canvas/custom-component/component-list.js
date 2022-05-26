@@ -105,12 +105,30 @@ export const VIDEOLINKS = {
 
 // 流媒体视频信息配置
 export const STREAMMEDIALINKS = {
-  videoType: 'flv',
+  videoType: 'hls',
   flv: {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true
+    loop: true,
+    // url: null // 网络动画视频
+  },
+  hls: {
+    type: 'hls',
+    isLive: false,
+    cors: true, // 允许跨域
+    loop: true,
+    // url: null // 网络动画视频
+  },
+  rtmp: {
+    type: 'rtmp',
+    isLive: false,
+    cors: true, // 允许跨域
+    loop: true,
+    // url: null // 网络动画视频
+  },
+  webrtc: {
+    type: 'webrtc',
     // url: null // 网络动画视频
   }
 }

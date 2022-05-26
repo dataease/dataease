@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/AddBarrierLayers",{addBarriers:"Vali t\u00f5kke kihid",pointBarrier:"Punktt\u00f5kked",lineBarrier:"Joonet\u00f5kked",polygonBarrier:"Alat\u00f5kked",choosePointBarrier:"Vali punktt\u00f5kke kiht",chooseLineBarrier:"Vali joont\u00f5kke kiht",choosePolygonBarrier:"Vali hulknurkt\u00f5kke kiht",selectPointBarrier:"Vali punktt\u00f5kked",selectLineBarrier:"Vali joont\u00f5kked",selectPolygonBarrier:"Vali hulknurkt\u00f5kked"});

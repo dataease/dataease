@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>レイヤーのマージ (Merge Layers)</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="レイヤーのマージ (Merge Layers)"></h2>
+        <hr/>
+    <p>このツールは 2 つのフィーチャ レイヤーを結合して 1 つの出力レイヤーを作成します。マージするレイヤーのジオメトリ タイプと時間タイプが同じである必要があります。入力レイヤーのフィールドを結合およびコピーする方法を制御できます。たとえば、次のように指定します。
+        <ul>
+            <li>イングランド、ウェールズ、スコットランドの 3 つのレイヤーから、1 つのイギリスのレイヤーを作成する。
+            </li>
+            <li>2 のレイヤーがあり、それぞれに隣接するタウンシップの土地区画情報が含まれている。これらを 1 つのレイヤーに結合し、2 の入力レイヤーで同じ名前とタイプを持つフィールドだけを保持する。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>2 つ目のフィーチャ レイヤーのマージ先となる表形式、ポイント、ライン、またはエリア フィーチャを含むレイヤー。このレイヤーのすべてのフィールドが結果レイヤーに含まれます。
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>マージするレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>入力レイヤーとマージするフィーチャ レイヤー。マージするレイヤーのジオメトリ タイプと時間タイプが入力レイヤーと同じである必要があります。
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>マージするフィールドの変更</h2></div>
+        <hr/>
+        <div>
+            <p>デフォルトでは、両方の入力レイヤーのすべてのフィールドが出力に含まれます。マージするレイヤーのフィールドを出力に含める方法を変更できます。次のオプションがあります。
+                <ul>
+                    <li> <b>[名前変更]</b> - フィールド名を変更して、出力レイヤーに追加します。
+                    </li>
+                    <li> <b>[削除]</b> - フィールドを出力レイヤーから削除します。
+                    </li>
+                    <li> <b>[一致]</b> - フィールド名をマージ先レイヤーのフィールド名と同じ名前にします。マージされるレイヤーのフィールドの値は、一致させる出力フィールドにコピーされます。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>両方のレイヤーに同じ名前とデータ タイプのフィールドが含まれている場合、両方のフィールドの内容がその名前の 1 つのフィールドにマージされます。これは、 <b>[マージするフィールドの変更]</b> パラメーターに <b>[一致]</b> が使用されているフィールドには適用されません。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

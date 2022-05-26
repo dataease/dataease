@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dizolvare graniţe</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dizolvare graniţe"></h2>
+        <hr/>
+    <p>Suprafeţele care se suprapun sau &icirc;mpărtăşesc o graniţă comună sunt unificate pentru a forma o singură suprafaţă.    
+    </p>
+    <p>Puteţi controla ce graniţe urmează să fie unificate specific&acirc;nd un c&acirc;mp. De exemplu, dacă aveți un strat tematic cu unități teritoriale, și fiecare unitate teritorială are un atribut  <i>State_Name</i>, puteți dizolva granițele folosind atributul <i>State_Name</i>.  Unităţile teritoriale adiacente vor fi unificate dacă au aceeaşi valoare pentru <i>State_Name</i>.  Rezultatul final este un strat tematic cu graniţe statale.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic cu suprafeţele ale căror graniţe vor fi dizolvate</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul care conţine obiectele spaţiale de suprafeţe care vor fi dizolvate. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Alegere metodă de dizolvare</h2></div>
+        <hr/>
+        <div>
+            <p>Puteţi alege una din două metode pentru unificare obiectelor spaţiale de suprafaţă:
+                <ul>
+                    <li> <b>Suprafeţe care se suprapun sau sunt adiacente</b>&mdash;Două sau mai multe suprafeţe ale căror graniţe se suprapun vor fi unificate &icirc;ntr-o singură suprafaţă.  &Icirc;n plus, suprafeţele care sunt adiacente (adică au o graniţă comună) vor fi unificate &icirc;ntr-o singură suprafaţă.
+                    </li>
+                    <li> <b>Suprafeţe cu aceeaşi valoare de c&acirc;mp</b>&mdash;Suprafeţele care se suprapun şi au o graniţă comună vor fi unificate &icirc;ntr-o singură suprafaţă dacă au aceeaşi valoare de c&acirc;mp.
+                        <p>De exemplu, dacă aveţi un strat tematic de unităţi teritoriale şi fiecare unitate teritorială are un c&acirc;mp  <i>State_Name</i>, puteți dizolva granițele folosind c&acirc;mpul <i>State_Name</i>.  Unităţile teritoriale adiacente vor fi unificate dacă au aceeaşi valoare pentru <i>State_Name</i>.  Rezultatul final este un strat tematic cu graniţe statale.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi dizolvate numai obiectele spaţiale din stratul tematic de intrare care sunt vizibile &icirc;n extinderea curentă a hărţii.  Dacă nu se bifează, toate obiectele spaţiale din stratul tematic de intrare vor fi dizolvate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Creare obiecte spaţiale cu mai multe părţi</h2></div>
+        <hr/>
+        <div>
+            <p>&Icirc;n ArcGIS, o reprezentare a unui loc sau lucru care are mai mult de o singură parte dar este definită ca un obiect spațial doarece face referire la un set de atribute. &Icirc;ntr-un strat tematic de state, de exemplu, statul Hawaii poate fi considerat obiect spaţial cu componente multiple deoarece componentele geometrice separate ale acestuia pot fi clasificate drept un singur stat. Acest parametru boolean oferă două opțiuni:
+                <ul>
+                    <li>Real (verificat): serviciul de ieșire poate include obiecte spațiale cu componente multiple.
+                    </li>
+                    <li>Fals (neverificat): serviciul de ieșire va include doar obiecte spațiale cu componente individuale, iar obiecte spațiale individuale vor fi create pentru fiecare parte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Adăugare statistică</h2></div>
+        <hr/>
+        <div>
+            <p>La unificarea suprafeţelor, le puteţi rezuma atributele. De exemplu, dacă dizolvaţi graniţa dintre unităţi teritoriale &icirc;n funcţie de  <i>State_Name</i>, iar fiecare unitate teritorială are un c&acirc;mp <i>Population</i>, puteți calcula suma <i>Population</i> pentru stat.
+            </p>
+            <p>Tipurile de statistici disponibile sunt:
+            </p>
+            <ul>
+                <li> <b>Sumă</b>&mdash;Adaugă valoarea totală pentru c&acirc;mpul specificat
+                    
+
+                </li>
+                <li> <b>Medie</b>&mdash;Calculează media pentru c&acirc;mpul specificat
+                    
+
+                </li>
+                <li> <b>Minim</b>&mdash;Găseşte cea mai mică valoare pentru toate &icirc;nregistrările c&acirc;mpului specificat
+                    
+
+                </li>
+                <li> <b>Maxim</b>&mdash;Găseşte cea mai mare valoare pentru toate &icirc;nregistrările c&acirc;mpului specificat
+                    
+
+                </li>
+                <li> <b>Abatere standard</b>&mdash;Găseşte abaterea standard a valorilor din c&acirc;mpul specificat
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

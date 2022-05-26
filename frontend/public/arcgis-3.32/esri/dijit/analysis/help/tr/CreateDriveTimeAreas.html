@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sürüş Süresi Alanları Oluştur</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="S&uuml;r&uuml;ş S&uuml;resi Alanları Oluştur"></h2>
+        <hr/>
+    <p>S&uuml;r&uuml;ş Saati Alanları Oluştur, belirtilen bir s&uuml;r&uuml;ş saati, s&uuml;r&uuml;ş mesafesi, y&uuml;r&uuml;y&uuml;ş mesafesi vb. dahilinde ulaşılabilecek alanlar oluşturur. Aşağıdaki gibi soruları yanıtlamanıza yardımcı olabilecek bir katman oluşturmak i&ccedil;in yollar veya y&uuml;r&uuml;y&uuml;ş yolları boyunca bir ya da daha fazla noktadan (en fazla 1000) &ouml;l&ccedil;&uuml;m yapar:
+        <ul>
+            <li>30 dakikalık bir s&uuml;r&uuml;şle buradan nereye gidebilirim?
+            </li>
+            <li>Yoğun saatlerde saat 17:30'da 30 dakikalık bir s&uuml;r&uuml;şle buradan nereye gidebilirim?
+            </li>
+            <li>Otelimden iki kilometre y&uuml;r&uuml;y&uuml;ş mesafesinde neler var?
+            </li>
+            <li>Kentin hangi alanları itfaiyenin beş dakikada erişebileceği yerlerdir? 
+            </li>
+            <li>Yangına m&uuml;dahale s&uuml;resi, buraya yeni bir itfaiye istasyonu inşa edilerek nasıl iyileştirilir?
+            </li>
+            <li>İşletmem hangi pazar alanlarını kapsıyor?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Yalnızca &ccedil;ıktı alanlarını g&ouml;rselleştirerek sorularınızı yanıtlayabilirsiniz. Alternatif olarak &ccedil;ıktı alanlarının kullanımı ile daha fazla mekansal analiz yapabilirsiniz. &Ouml;rneğin Noktaları K&uuml;mele aracını kullanarak, demografik veri ile s&uuml;r&uuml;ş saati alanlarını belirtip, hangi potansiyel mağaza konumunun işinizin t&uuml;r&uuml; i&ccedil;in en iyi m&uuml;şteri tabanını sağlayacağı belirlenebilir. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Yollar s&uuml;resince &ouml;l&ccedil;&uuml;m yerine, d&uuml;z hat mesefeleri &ouml;l&ccedil;erek alanlar oluşturmak i&ccedil;in Tampon Oluştur aracını kullanın.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Eğer  <b>Ge&ccedil;erli harita yayılımını kullan </b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımı i&ccedil;inde g&ouml;r&uuml;n&uuml;r olan detaylar, s&uuml;r&uuml;ş s&uuml;resi ya da s&uuml;r&uuml;ş mesafesi tabanlı alanları oluşturmak i&ccedil;in kullanılacaktır. İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile kullanılacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Etraftaki sürüş süresi alanlarını hesaplamak için nokta katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Etrafında alanların hesaplanacağı nokta detaylarıdır. Seyahat modunuza (ara&ccedil;, toplu taşıma veya y&uuml;r&uuml;y&uuml;ş) ve &ouml;l&ccedil;&uuml; biriminize (s&uuml;re veya mesafe) bağlı olarak alanların hesaplanma bi&ccedil;imini belirleyebilirsiniz.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+            <p>Ara&ccedil; girdi katmanında 1.000 detaya kadar destekler.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Ölçü</h2></div>
+        <hr/>
+        <div>
+            <p>Seyahat modunuzu (s&uuml;r&uuml;şle, kamyonla veya y&uuml;r&uuml;y&uuml;şle) ve &ouml;l&ccedil;&uuml; biriminizi (zaman veya mesafe olarak) belirleyin. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir.   Modunuzu ve &ouml;l&ccedil;&uuml;m biriminizi girdikten sonra s&uuml;re veya mesafe olarak en fazla  5 saat (300 dakika) veya  300 mil (482.80 kilometre) girin. 
+            </p>
+            <p>Seyahat y&ouml;n&uuml; ( <b>Tesisten Uzaklaşma</b> veya <b>Tesise Y&ouml;nelme</b>) alanların nasıl &uuml;retildiğini etkileyebilir. S&uuml;r&uuml;ş S&uuml;resi Alanları Oluşturmak tek y&ouml;nl&uuml; sokaklara uygun olacak, yasa dışı d&ouml;n&uuml;şlerden ka&ccedil;ınacak ve seyahat y&ouml;n&uuml;ne g&ouml;re diğer kuralları takip edecektir. Girdi konumlarının t&uuml;r&uuml;ne ve analizinizin i&ccedil;eriğine bağlı olarak seyahat y&ouml;n&uuml;n&uuml; se&ccedil;melisiniz. &Ouml;rneğin, bir pizza dağıtım mağazası i&ccedil;in s&uuml;r&uuml;ş s&uuml;resi tesisten uzaklaşma ile kurulmalı, hastane i&ccedil;in s&uuml;r&uuml;ş s&uuml;resi ise tesise y&ouml;nelme ile oluşturulmalıdır.
+            </p>
+            <p> <b>S&uuml;r&uuml;ş S&uuml;resi</b>, <b>Arazide S&uuml;r&uuml;ş S&uuml;resi</b> ya da <b>Kamyonla Taşıma S&uuml;resi</b>'ni se&ccedil;tiğinizde, s&uuml;r&uuml;ş s&uuml;resinin &ouml;l&ccedil;&uuml;lmesine ilişkin se&ccedil;enekleriniz olur.
+                <ul>
+                    <li>
+                        <p>Sabit hızlara dayanan s&uuml;r&uuml;ş s&uuml;resi alanları oluşturmak i&ccedil;in  <b>Trafiği Kullan</b> işaretini kaldırın. Bu se&ccedil;enek, belirli bir &ccedil;ıkış saati i&ccedil;in değişen trafik koşullarını kullanarak hesaplanmamış genel bir s&uuml;r&uuml;ş s&uuml;resi alanı istiyorsanız tercih edilecektir
+                        </p>
+                    </li>
+                    <li>
+                        <p>S&uuml;r&uuml;ş s&uuml;resi alanlarını, belirli bir başlangı&ccedil; saati ve değişen trafik koşullarına g&ouml;re oluşturmak i&ccedil;in  <b>Trafiği Kullan</b>'ı işaretleyin. Ayrıca <b>Canlı trafik</b> se&ccedil;eneğini belirlediğinizde, girdi noktalarından &ccedil;ıkış saati ge&ccedil;erli saate ayarlanır ve s&uuml;r&uuml;ş s&uuml;resi alanları oluşturmak i&ccedil;in ge&ccedil;erli ve tahmin edilen trafik hızları, sens&ouml;rlerden ve akışlardan referans alır. Tahmini trafik hızları, canlı trafik hızları, ge&ccedil;miş hızlar ve hava durumu gibi ge&ccedil;erli olaylar referans alınarak hesaplanır. Trafik hızları şu andan 12 saate kadar tahmin edilir, bu sayede &ccedil;ıkış saatini ayarlamak i&ccedil;in kaydırıcıyı ge&ccedil;erli saatten 12 saat sonrasına kadar ayarlayabilirsiniz.
+                        </p>
+                        <p>Şimdi, bir saat sonra vb. &ccedil;ıkış yapıldığında hangi alanlara ulaşılabileceğini &ouml;ğrenmek i&ccedil;in canlı trafik ayarlarını kullanın.
+                        </p>
+                    </li>
+                    <li>
+                        <p> <b>Trafiği Kullan</b> işaretlendiğinde; g&uuml;n&uuml;n ve saatin <b>Tipik koşullarına bağlı trafiği</b> se&ccedil;ildiğinde, ara&ccedil; s&uuml;r&uuml;ş s&uuml;resi alanlarını rutin bir haftanın her beş dakikalık aralıklarla kaydedilen ge&ccedil;miş hız ortalamalarına g&ouml;re oluşturur. Sonu&ccedil;lar trafiği i&ccedil;erir ancak ge&ccedil;erli trafik koşullarının ve olaylarının etkisini &ccedil;ıkarır, bunlar normdan b&uuml;y&uuml;k oranda sapma g&ouml;sterebilir.
+                        </p>
+                        <p>Bu ge&ccedil;miş trafik ayarlarını, &ouml;rneğin &quot;&Ccedil;arşamba saat 11:30'da &ccedil;ıkış yaparken genel olarak hangi alanlara ulaşılabilir?&quot; gibi bir soruyu sormak i&ccedil;in kullanabilirsiniz. 
+                        </p>
+                        <p>Belirlediğiniz saat, girdi noktalarınızın yer aldığı saat dilimini referans alır. Yani saati 08:00'a ayarlarsanız ve biri New York City ve diğeri Los Angeles'ta iki noktanız varsa, s&uuml;r&uuml;ş s&uuml;resi alanları 08:00 i&ccedil;in &uuml;retilecektir. Doğu Saati ve 08:00. Pasifik Saati, sırasıyla.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bir ara&ccedil; bir noktadan dışa doğru s&uuml;r&uuml;l&uuml;rken, saatin ge&ccedil;eceğine ve trafik koşullarının değişeceğine dikkat edin. S&uuml;r&uuml;ş S&uuml;resi Alanları aracı,  <b>S&uuml;r&uuml;ş S&uuml;resi</b> se&ccedil;eneğini belirlediğinizde ve <b>Trafiği kullan</b> &ouml;gesini işaretlediğinizde bu değişkenleri hesaba katar; ancak b&ouml;lgelerin t&uuml;m&uuml; trafiği desteklemez. &Ccedil;alışma alanınızda sunulup sunulmadığını &ouml;ğrenmek i&ccedil;in <b>Kullanılabilirliği g&ouml;r</b> bağlantısına tıklayın.
+            </p>
+            <p> <b>Kamyonla Taşıma S&uuml;resi</b>'nde-dinamik seyahat hızları trafiğe dayalı olarak, ancak yalnızca yasal kamyon hız sınırına kadar kullanılabilir. &Ouml;rneğin, canlı trafiğe dayalı olarak bir cadde i&ccedil;in dinamik hız saatte 65 mil, ancak o cadde i&ccedil;in kamyon hız limiti saatte 55 mil ise, hesaplamada o cadde i&ccedil;in saatte 55 mil kullanılır.
+            </p>
+            <p> <b>Y&uuml;r&uuml;y&uuml;ş S&uuml;resi</b> ve <b>Y&uuml;r&uuml;y&uuml;ş Mesafesi</b> sabit bir hız değeri olarak 5 km/sa (3.1 mil/sa) kullanır ve tanımlı caddelerin yanı sıra yaya yollarını da izler (tek y&ouml;nl&uuml; yol gibi ara&ccedil;ları etkileyen trafik kuralları yok sayılır). </p>
+            <p> <b>Kamyonla Taşıma Mesafesi</b>'nde sabit hızlar kullanılır ve ağır kamyonlara uygulanan kurallar dikkate alınır; <b>S&uuml;r&uuml;ş Mesafesi</b> ve <b>Arazide S&uuml;r&uuml;ş Mesafesi</b>'nde ise sabit hızlar kullanılır ve arabalar gibi otomobiller i&ccedil;in ge&ccedil;erli kurallar dikkate alınır.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Engel katmanlarını seç</h2></div>
+        <hr/>
+        <div>
+            <p> Aşağıdaki sokaklarda seyahat ederken ge&ccedil;ici kısıtlamalar (engeller) işlevi g&ouml;recek bir ya da daha fazla &ouml;zellik. Nokta, &ccedil;izgi ve poligon &ouml;zelliklerini kullanarak engel belirleyebilirsiniz.
+            </p>
+            <p>Nokta engel devrilmiş bir ağacı, kazayı, kopmuş bir elektrik hattını veya sokağın belirli bir noktasında trafiği tamamen engelleyen herhangi bir şeyi ifade edebilir. Sokakta harekete izin verilir ancak engel ge&ccedil;ilemez. Nokta engel olarak işlev g&ouml;recek 250'ye kadar &ouml;zellik belirleyebilirsiniz.
+            </p>
+            <p>Hat engel, sokakları kestiği her yerde hareketi engeller. &Ouml;rneğin, birka&ccedil; sokak boyunca trafiği engelleyen bir ge&ccedil;it t&ouml;reni ya da protesto bir &ccedil;izgi bariyeri ile modellenebilir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 500'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+            <p>&Ccedil;okgen engel, sokakları kestiği her yerde hareketi engeller. Bu engel tipinin kullanımlarından biri sokak ağının alanlarını kaplayan taşkınları modellemektir ve sokakta hareket imkansız hale gelir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 2000'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Farklı noktalardan alanlar</h2></div>
+        <hr/>
+        <div>
+            <p>Farklı girdi noktalarından paylaşılan alanların bir diğerine eriştiğinde nasıl işleneceğini se&ccedil;in. Bunlar şunları yapabilir
+                <ul>
+                    <li> <b>Bindirme</b>&mdash;Farklı girdi noktalarından gelen alanlar aynı yolu kapsayabilir. Bu, verilen s&uuml;re ya da mesafe dahilindeki &ouml;zel bir konuma erişebilecek t&uuml;m girdi noktalarını bilmeniz gerektiğinde kullanışlıdır.
+                    </li>
+                    <li> <b>&Ccedil;&ouml;z&uuml;nd&uuml;r</b>&mdash;T&uuml;m alanlar bir alan i&ccedil;inde birleşir ve &ouml;zel bir konumu en fazla bir alan kapsayabilir. Bu, t&uuml;m bilmeniz gerekenin verilen bir s&uuml;re ya da mesafe dahilinde erişilebilecek alan olduğu, ancak hangi &ouml;zel girdi noktalarının konuma erişebileceğini bilmenizin gerekmediği durumlarda kullanışlıdır.
+                    </li>
+                    <li> <b>B&ouml;l&uuml;nme</b>&mdash;Birbiri ile bindirilecek farklı girdi konumlarından gelen alanlar ortadan b&ouml;l&uuml;n&uuml;r, bu sayede bunlar bitişik olur. Bu, hangi alanların verilen bir s&uuml;re ya da girdi noktaları mesafesinde olduğunu g&ouml;rmek ve aynı zamanda hangi girdi noktasının bu alana en yakın olduğunu belirlemek istediğinizde kullanışlıdır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Erişilemeyen alanları delik olarak göster</h2></div>
+        <hr/>
+        <div>
+            <p> <b>&Ouml;l&ccedil;&uuml;m</b> s&uuml;resinden veya mesafesinden veya seyahat modunun getirdiği kısıtlamalar nedeniyle bazı caddelere erişilemediğinde, &ccedil;ıkış alanlarının delikler i&ccedil;erip i&ccedil;ermeyeceğini se&ccedil;in.
+            </p>
+            <p>Bu parametre kullanılarak oluşturulan s&uuml;r&uuml;ş s&uuml;resi alanları 15 dakika veya 15 mil (24 kilometre) ile sınırlıdır.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç Katmanı Adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Erişilebilir sokakları dahil et</h2></div>
+        <hr/>
+        <div>
+            <p>S&uuml;r&uuml;ş s&uuml;resi alanlarını bir &ccedil;ıktı katmanı olarak oluşturmak i&ccedil;in kullanılan sokakları ekleyin. 
+            </p>
+            <p>S&uuml;r&uuml;ş S&uuml;resi Alanları Oluşturma, bir tesisin sokak ağı boyunca erişimini &ouml;l&ccedil;er, ardından seyahat edilen sokaklardan s&uuml;r&uuml;ş s&uuml;resi alanları oluşturur. Bu nedenle, alanlar gezilen caddelerin yaklaşık halidir. Analiziniz, hangi caddelerin belirli bir seyahat mesafesi i&ccedil;inde veya bir tesisteki belirli bir s&uuml;re i&ccedil;erisinde kapsandığını belirlemek ise, erişilebilir sokakların oluşturulması, belirli bir caddenin erişilebilir olup olmadığını değerlendirmek i&ccedil;in s&uuml;r&uuml;ş s&uuml;resi alanlarını kullanmaktan daha doğru olabilir.
+            </p>
+            <p>Bu parametre kullanılarak oluşturulan s&uuml;r&uuml;ş s&uuml;resi alanları 15 dakika veya 15 mil (24 kilometre) ile sınırlıdır.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

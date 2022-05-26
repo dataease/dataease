@@ -1,0 +1,56 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- Aggregate Information -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'aggrInfo',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.aggrInfo.caption}'">
+    
+    <div class="gxeEditOnly gxeIndent gxePrompt">${i18nArcGIS.aggrInfo.datasetHint}</div>
+    
+    <!-- dataset identifier -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'aggrDSIdent',minOccurs:0,label:'${i18nArcGIS.aggrInfo.aggrDSIdent}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'identCode',minOccurs:1,label:'${i18nArcGIS.codeRef.identCode}'">
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'identAuth',minOccurs:0,label:'${i18nArcGIS.codeRef.identAuth}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>    
+      </div>
+    </div>
+    
+    <!-- dataset name - citation -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'aggrDSName',minOccurs:0,label:'${i18nArcGIS.aggrInfo.aggrDSName}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>
+    </div>
+    
+    <!-- Association Type -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'assocType',minOccurs:1,label:'${i18nArcGIS.codelist.DS_AssociationTypeCode}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'AscTypeCd',minOccurs:1,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+          data-dojo-props="target:'value',minOccurs:1,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+            data-dojo-props="codelistType:'DS_AssociationTypeCode'">
+          </div>  
+        </div>
+      </div>
+    </div>
+    
+    <!-- Initiative Type -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'initType',minOccurs:0,label:'${i18nArcGIS.codelist.DS_InitiativeTypeCode}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'InitTypCd',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+          data-dojo-props="target:'value',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+            data-dojo-props="codelistType:'DS_InitiativeTypeCode'">
+          </div>          
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

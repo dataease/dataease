@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>경계 디졸브</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="경계 디졸브"></h2>
+        <hr/>
+    <p>공통 경계를 공유하거나 중첩되는 영역이 병합되어 단일 영역을 형성합니다.    
+    </p>
+    <p>필드를 지정하여 병합할 경계를 제어할 수 있습니다. 예를 들어 카운티 레이어가 있는 경우 각 카운티에  <i>State_Name</i> 속성이 있으면 <i>State_Name</i> 속성을 사용하여 경계를 디졸브할 수 있습니다.  인접 카운티는 <i>State_Name</i> 값이 동일한 경우에 병합됩니다.  이 도구에서 생성되는 최종 결과는 주 경계 레이어입니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>경계를 디졸브할 영역 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>디졸브할 영역 피처를 포함하는 레이어입니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>디졸브 방법 선택</h2></div>
+        <hr/>
+        <div>
+            <p>다음 두 가지 방법 중 하나를 선택하여 영역 피처를 병합할 수 있습니다.
+                <ul>
+                    <li> <b>겹치거나 인접한 영역</b> - 서로 경계가 겹치는 둘 이상의 영역이 하나의 영역으로 병합됩니다.  또한 인접한 영역, 즉 공통 경계를 공유하는 영역이 하나의 영역으로 병합됩니다.
+                    </li>
+                    <li> <b>필드 값이 같은 영역</b> - 공통 경계를 공유하거나 겹치는 영역이 같은 필드 값을 가진 경우 하나의 영역으로 병합됩니다.
+                        <p>예를 들어 국가 레이어가 있는 경우 각 국가에  <i>State_Name</i> 필드가 있으면 <i>State_Name</i> 필드를 사용하여 경계를 디졸브할 수 있습니다. 인접 카운티는 <i>State_Name</i> 값이 동일한 경우에 병합됩니다.  이 도구에서 생성되는 최종 결과는 주 경계 레이어입니다.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 입력 레이어의 피처만 디졸브됩니다.  선택하지 않으면 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 디졸브됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>멀티파트 피처 생성</h2></div>
+        <hr/>
+        <div>
+            <p>ArcGIS에서 파트가 둘 이상인 위치에 대한 디지털 표현은 한 속성 집합을 참조하므로 하나의 피처로 정의됩니다. 예를 들어, 상태 레이어에서 하와이 주는 별도 지오메트릭 파트가 단일 주로 분류되기 때문에 멀티파트 피처로 간주될 수 있습니다. 불린(Boolean) 매개변수는 다음과 같은 두 가지 옵션을 제공합니다.
+                <ul>
+                    <li>True(선택함): 결과 서비스에는 멀티파트 피처가 포함될 수 있습니다.
+                    </li>
+                    <li>False(선택하지 않음): 결과 서비스에는 싱글파트 피처만 포함되며, 각 파트에 대해 개별 피처가 생성됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>통계 추가</h2></div>
+        <hr/>
+        <div>
+            <p>영역이 병합된 경우 해당 속성을 요약할 수 있습니다. 예를 들어  <i>State_Name</i>을 기반으로 국가 간의 경계를 해제한 경우 각 국가에 <i>Population</i> 필드가 있으면 해당 주에 대한 <i>Population</i> 합계를 계산할 수 있습니다.
+            </p>
+            <p>사용 가능한 통계 유형은 다음과 같습니다.
+            </p>
+            <ul>
+                <li> <b>합계</b> - 지정된 필드의 전체 값을 더합니다.
+                    
+
+                </li>
+                <li> <b>평균</b> - 지정된 필드의 평균을 계산합니다.
+                    
+
+                </li>
+                <li> <b>최소</b> - 지정된 필드의 모든 레코드에서 가장 작은 값을 찾습니다.
+                    
+
+                </li>
+                <li> <b>최대</b> - 지정된 필드의 모든 레코드에서 가장 큰 값을 찾습니다.
+                    
+
+                </li>
+                <li> <b>표준 편차</b> - 지정된 필드의 값에 대한 표준 편차를 구합니다.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

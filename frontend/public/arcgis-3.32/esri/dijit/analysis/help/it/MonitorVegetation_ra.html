@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitora vegetazione</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Strumento Monitora vegetazione per Portal"></h2>
+        <hr/>
+    <p>Questo strumento esegue un'operazione aritmetica sulle bande di un layer raster multibanda per mostrare informazioni sulla copertura di vegetazione nell'area di studio.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Seleziona i dati di input</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il layer raster multibanda. Assicurarsi che il raster di input abbia le bande appropriate disponibili.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Scegliere metodo per monitorare vegetazione</h2></div>
+        <hr/>
+        <div>
+            <p>Selezionare il metodo per creare il layer di indice della vegetazione. I differenti indici di vegetazione consentono di mettere in evidenza alcune feature o di ridurre diversi rumori.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI &egrave; un indice di vegetazione non lineare per il monitoraggio ambientale globale a partire dalle immagini satellitari. &Egrave; simile a NDVI, ma &egrave; meno sensibile agli effetti atmosferici. &Egrave; influenzato dal terreno nudo, pertanto non &egrave; consigliato per l'utilizzo in aree in cui la vegetazione &egrave; scarsa o di densit&agrave; moderata.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+L'indice GVI, inizialmente concepito per l'utilizzo a partire dalle immagini Landsat MSS, &egrave; stato modificato per essere utilizzato con le immagini Landsat TM. &Egrave; anche noto come indice di vegetazione verde Landsat TM Tasseled Cap. Questo indice di monitoraggio pu&ograve; anche essere utilizzato con le immagini le cui bande condividono le stesse caratteristiche spettrali.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 &egrave; un indice di vegetazione che tenta di ridurre le influenze del terreno nudo del metodo SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI &egrave; un indice standardizzato che consente di generare un'immagine raffigurante aree verdi o biomassa relativa. Questo indice sfrutta le caratteristiche contrastanti di due bande di un raster dataset multispettrale: l'assorbimento dei pigmenti di clorofilla nella banda rossa e l'elevata riflettanza dei materiali vegetali nella banda dell'infrarosso vicino (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+Il PVI &egrave; simile a un indice di vegetazione per differenza, tuttavia &egrave; sensibile alle variazioni atmosferiche. Quando si utilizza questo metodo per confrontare immagini diverse, esso dovrebbe essere utilizzato solo su immagini che hanno subito correzioni atmosferiche. Queste informazioni possono essere presentate dal fornitore di dati.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI &egrave; un indice di vegetazione che tenta di ridurre l'influenza della luminosit&agrave; del terreno utilizzando un apposito fattore di correzione. Spesso viene usato in regioni aride dove la copertura vegetativa &egrave; scarsa.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Il processo della formula di Sultan utilizza un'immagine a 8 bit e a sei bande e vi applica un algoritmo specifico per produrre un'immagine a 8 bit e a tre bande. L'immagine risultante mette in evidenza le formazioni rocciose chiamate ofioliti lungo i litorali. Questa formula &egrave; stata ideata in funzione delle bande TM ed ETM di una scena Landsat 5 o 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+L'indice SAVI trasformato &egrave; un indice di vegetazione che tenta di ridurre le influenze della luminosit&agrave; del terreno presupponendo che la linea del terreno abbia una pendenza e un'intercettazione arbitrarie.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Specificare gli indici per le bande del quasi infrarosso e del rosso</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare gli indici per le bande del quasi infrarosso e del rosso.
+            </p>
+            <p>Ciascun sensore satellitare e la fotocamera aerea catturano informazioni che vengono suddivise in indici di banda. Ciascun indice di banda contiene le informazioni per una parte specifica dello spettro elettromagnetico. Questo metodo di monitoraggio della vegetazione richiede di specificare l'indice di banda che ha acquisito le lunghezze d'onda del quasi infrarosso e del rosso.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Pendenza della linea del terreno</h2></div>
+        <hr/>
+        <div>
+            <p>La pendenza della linea del terreno. La pendenza &egrave; la relazione lineare approssimativa tra le bande del quasi infrarosso e del rosso in un grafico a dispersione.
+            </p>
+            <p>Questo parametro &egrave; valido solo per il metodo dell'indice di vegetazione in funzione del suolo e trasformato.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Intercept</h2></div>
+        <hr/>
+        <div>
+            <p>Il valore della banda del quasi rosso quando il valore di riflessione della banda del rosso (Red) &egrave; 0 per determinate linee del terreno.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , quando Red &egrave; 0.
+            </p> 
+            <p>Questo parametro &egrave; valido solo per il metodo dell'indice di vegetazione in funzione del suolo e trasformato.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Quantità di copertura di vegetazione verde</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica la quantit&agrave; di copertura della vegetazione, richiesta dal metodo SAVI.
+            </p>
+            <p>I valori validi sono i seguenti: 
+
+                <ul>
+                    <li>1 = Aree con nessuna copertura di vegetazione verde
+                        
+ 
+                    </li>
+                    <li>0.5 = Aree con copertura di vegetazione verde moderata
+                        
+ 
+                    </li>
+                    <li>0 = Aree con elevata copertura di vegetazione verde
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Fattore di regolazione</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica il fattore di regolazione per ridurre l'effetto del terreno, richiesto dal metodo dell'indice di vegetazione in funzione del suolo e trasformato. Il valore predefinito &egrave; 0.08.
+            </p>
+            <p>Un valore ridotto significa ignorare l'effetto del terreno. Un valore elevato significa che il terreno influenzer&agrave; il risultato.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

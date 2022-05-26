@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spartiacque</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Attivit&agrave; spartiacque"></h2>
+        <hr/>
+    <p>Questo strumento determina l'area contribuente su una serie di celle in un raster.
+    </p>
+    <p>Uno spartiacque &egrave; l'area di pendenza a monte che contribuisce al flusso, generalmente di acqua, a uno sbocco comune come drenaggio concentrato. Pu&ograve; far parte di uno spartiacque pi&ugrave; grande e pu&ograve; anche contenere piccoli spartiacque, denominati sottobacini idrografici.
+    </p>
+    <p>Il valore di ogni spartiacque sar&agrave; preso dal valore dell&rsquo;origine nel raster di input o nel feature layer di punti di versamento. Quando il punto di versamento &egrave; un dataset raster, i valori di cella vengono utilizzati per impostazione predefinita. Quando il punto di versamento &egrave; un dataset di feature puntuale, i valori provengono dal campo specificato.
+    </p>
+    <p>Lo strumento Spartiacque supporta solo un layer raster di direzione di flusso di input D8.
+    </p>
+    <p>Quando si specificano le posizioni del punto di versamento di input come dati feature, il campo predefinito sar&agrave; il primo campo valido disponibile. Se non esiste alcun campo valido, viene utilizzato il campo ObjectID (ad esempio, OID o FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Scegli layer di direzione flusso</h2></div>
+        <hr/>
+        <div>
+            <p>Il raster di input che mostra la direzione del flusso fuori da ogni cella.
+            </p>
+            <p>Il raster di direzione di flusso pu&ograve; essere creato utilizzando lo strumento Direzione flusso o l'attivit&agrave; FlowDirection nel servizio RasterAnalysisTools, eseguire utilizzando il tipo di direzione di flusso predefinito  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Specifica posizioni del punto di versamento di input</h2></div>
+        <hr/>
+        <div>
+            <p>Le posizioni del punto di versamento di input.
+            </p>
+            <p>Per un raster, ci&ograve; rappresenta le celle oltre le quali verranno determinate l'area o il bacino pluviale di contribuzione. Tutte le celle che non sono NoData verranno utilizzate come celle di origine. Per un input di punto, ci&ograve; rappresenta le posizioni oltre le quali verranno determinate l'area o il bacino pluviale di contribuzione.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Scegli campo punto versamento</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo usato per assegnare valori alle posizioni del punto di versamento.
+            </p>
+            <p>Se il layer di punti di versamento di input &egrave; un raster, viene utilizzato Valore. Se &egrave; una feature, viene utilizzato un campo numerico. Se il campo contiene valori a virgola mobile, verranno troncati in numeri interi.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

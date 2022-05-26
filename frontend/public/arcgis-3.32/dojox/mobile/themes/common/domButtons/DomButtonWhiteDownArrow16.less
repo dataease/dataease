@@ -1,0 +1,23 @@
+@import "../css3.less";
+/* === WhiteDownArrow16 ==*/
+.mblDomButtonWhiteDownArrow16 {
+	position: relative;
+	width: 16px;
+	height: 16px;
+}
+.mblDomButtonWhiteDownArrow16 > div {
+	position: absolute;
+	left: 0px;
+	clip: rect(4px 16px 16px 0px);
+}
+.mblDomButtonWhiteDownArrow16 > div > div {
+	position: absolute;
+	top: 0px;
+	left: 3px;
+	width: 10px;
+	height: 10px;
+	margin: 0px;
+	font-size: 1px;
+	background-color: white;
+	.transform(scaleX(0.5) rotate(45deg));
+}

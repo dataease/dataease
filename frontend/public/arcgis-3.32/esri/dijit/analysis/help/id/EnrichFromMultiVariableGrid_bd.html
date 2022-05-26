@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Perkaya dari Multi-Variable Grid</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Perkaya dari Multi-Variable Grid"></h2>
+        <hr/>
+    <p>Alat  Perkaya dari Multi-Variable Grid secara efisien menggabungkan atribut dari multi-variable grid ke layer titik.
+    </p>
+    <p>Sebuah multi-variable grid adalah layer apa-pun yang dibuat dengan alat Buat Multi-Variable Grid, yang mengumpulkan atribut dari beberapa layer ke dalam grid poligon tunggal.  Menggunakan multi-variable grid untuk pengayaan memungkinkan Anda untuk dengan cepat menambahkan koleksi informasi yang besar dan beragam ke data titik untuk digunakan dalam analisis spasial lebih lanjut.
+    </p>
+    <p>Contoh, anggaplah Anda telah memperoleh layer peristiwa kejahatan baru yang terjadi sepanjang tahun lalu di seluruh kota. Anda ingin membuat model hubungan antara frekuensi kejahatan dan faktor keragaman demografi, ekonomi, dan geografis. Anda memiliki akses ke data yang menjelaskan faktor-faktor ini, tapi akses ini disimpan dalam lima layer berbeda dengan membedakan jenis geometri. Selain itu, beberapa layer disimpan dalam sebuah berbagi file big data sementara lainnya disimpan sebagai feature service. Dengan membuat multi-variable grid untuk menyimpan informasi ini dan kemudian menggabungkan grid ke peristiwa kejahatan dengan alat  Perkaya dari Multi-Variable Grid, Anda dapat secara efisien menggabungkan beragam atribut ke layer titik Anda hanya dengan menjalankan dua alat. Anda kemudian dapat menggunakan atribut yang digabungkan sebagai variabel penjelas dan mulai membuat model frekuensi kejahatan dengan layer hasil.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Pilih fitur titik untuk diperkaya</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik yang akan diperkaya oleh multi-variable grid.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Pilih multi-variable grid untuk diperkaya</h2></div>
+        <hr/>
+        <div>
+            <p>Layer multi-variable grid berisi atribut yang akan digabungkan ke fitur titik input. Layer harus dibuat menggunakan alat Buat Multi-Variable Grid dan harus merupakan feature layer yang di-host. Layer multi-variable grid disimpan dalam sebuah berbagi file big data tidak didukung sebagai input pada alat ini.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Pilih variabel yang akan ditambahkan</h2></div>
+        <hr/>
+        <div>
+            <p>Atribut dalam layer multi-variable grid yang akan digabungkan ke dalam fitur titik input kapan saja fitur titik memotong grid.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

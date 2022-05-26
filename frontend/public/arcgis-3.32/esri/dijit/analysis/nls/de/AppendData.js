@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/AppendData",{inputLayerLabel:"Layer ausw\u00e4hlen, der angeh\u00e4ngt werden soll an",inputWarningLabel:"Warnung: Der Layer, an den Sie Daten anh\u00e4ngen, wird ge\u00e4ndert.",inputHostedLayerWarning:"Der ausgew\u00e4hlte Layer ist kein gehosteter Feature-Layer. W\u00e4hlen Sie zum Anh\u00e4ngen einen gehosteten Feature-Layer aus.",appendLayerLabel:"Anzuh\u00e4ngenden Layer ausw\u00e4hlen",filterLabel:"Alle Features anh\u00e4ngen oder eine Teilmenge definieren (optional)",
+fieldMappingLabel:"Festlegen, wie Felder angeh\u00e4ngt werden sollen (optional)",inputField:"Eingabefeld",appendValue:"Wert anh\u00e4ngen",expression:"Ausdruck"});

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opiši skup podataka</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Dijagram radnog toka alatke Opi&scaron;i skup podataka"></h2>
+        <hr/>
+    <p>Alatka Opi&scaron;i skup podataka obezbeđuje detaljniji uvid u va&scaron; skup podataka. Pre sprovođenja analize na velikim količinama podataka, iskoristite ovu alatku za određivanje koji su va&scaron;i ulazni podaci i gde se nalaze. Podrazumevano će rezultat biti JSON niska koja opisuje ključne deskriptore va&scaron;eg ulaznog sloja i tabela sa detaljima sumarne statistike za svako polje. 
+    </p>
+    <p>Opciono možete da kreirate dodatne izlazne slojeve geoobjekata da dodatno opi&scaron;ete podatke. Opcije su sloj uzoraka ili sloj obuhvata. Možete da za izlaz izaberete jedan ili oba.
+    </p>
+    <p>Na primer, recimo da vam je dat deljeni resurs za datoteke sa velikim podacima koji sadrži 15 skupova podataka. Svaki skup podataka ima 10 miliona geoobjekata oblasti koji predstavljaju zgrade i kuće &scaron;irom različitih regiona va&scaron;e zemlje. Zadatak vam je da analizirate region C, ali vi ne znate koji skup podataka sadrži ove geoobjekte. Da biste otkrili koji skup podataka treba da koristite, pokrenite Opi&scaron;i skup podataka i odaberite da kreirate sloj obuhvata da biste istražili koji skup podataka je u va&scaron;em regionu ispitivanja.
+    </p>
+    <p>Kao drugi primer, zamislite da vam je zadatak zavr&scaron;avanje radnog toka analize na velikoj količini podataka. Želite da isprobate radni tok, ali bi moglo da potraje satima ili danima sa čitavim skupom podataka. Umesto iskori&scaron;ćavanja vremena i resursa sprovođenjem potpune analize, kreirajte sloj uzoraka na kom možete da efikasno testirate kompletan radni tok.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite skup podataka za opis</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži tačkaste, linijske, geoobjekte oblasti ili tabelarne geoobjekte koji će biti opisani, sumirani i uzorkovani.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Razumite svoj skup podatke kreiranjem (opcionih)</h2></div>
+        <hr/>
+        <div>
+            <p>Po&scaron;aljite na izlaz dodatne opisne slojeve da biste pobolj&scaron;ali svoje razumevanje velikih podataka. Možete da za izlaz izaberete nula, jedan ili oba sledeća sloja:
+            </p>
+            <ul>
+                <li> <b>Sloj obuhvata</b> &ndash; kreira geoobjekat oblasti koja predstavlja obuhvat va&scaron;ih ulaznih geoobjekata ili oblast interesovanja.
+                </li>
+                <li> <b>Sloj uzoraka</b> &ndash; kreira sloj podskupa koji sadrži navedenu količinu ulaznih geoobjekata iz va&scaron;eg skupa podataka ili oblasti interesovanja.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Sloj uzoraka</h2></div>
+        <hr/>
+        <div>
+            <p>Po&scaron;aljite na izlaz sloj koji sadrži podskup geoobjekata iz va&scaron;eg ulaznog sloja. Ako je izabran  <b>Sloj uzoraka</b> možete da navedete broj geoobjekata koji želite da vratite u sloj uzoraka.  Podrazumevano, 100 geoobjekata uzoraka će biti vraćeno u izlazni sloj.
+            </p>
+            <p>Vrednost mora da bude veća od nule. Ako navedete broj koji je veći od ukupnog broja geoobjekata, biće vraćeni svi geoobjekti.
+            </p>
+            <p>Ako je izabrana opcija  <b>Koristi trenutni obuhvat mape</b> tada će sloj uzoraka sadržati geoobjekte iz obuhvata mape.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Sloj obuhvata</h2></div>
+        <hr/>
+        <div>
+            <p>Po&scaron;aljite na izlaz sloj geoobjekata koji sadrži jedan geoobjekat koji predstavlja obuhvat ulaznih geoobjekata tako &scaron;to ćete izabrati dugme  <b>Sloj obuhvata</b>. To je podrazumevano izabrano.
+            </p>
+            <p>Ako je izabrana opcija  <b>Koristi trenutni obuhvat mape</b> tada će sloj obuhvata predstavljati vidljivi obuhvat mape.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

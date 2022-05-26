@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trace Downstream</h2><p/>
+        <h2><img src="./images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Trace Downstream"></h2>
+        <hr/>
+    <p>This tool determines the trace, or flow path, in a downstream direction from the points in your input layer.
+    </p>
+    <p>For example, suppose you have point features representing sources of contamination and you want to determine where in your study area the contamination will flow. You can use Trace Downstream to identify the path the contamination will take. This trace can also be divided into individual line segments by specifying a distance value and units. The line being returned can be the total length of the flow path, a specified maximum trace length, or clipped to area features such as your study area. In many cases, if the total length of the trace path is returned, it will be from the source all the way to the ocean.
+    </p>
+    <p>The result is a line representing the downstream trace. If a distance is specified for  <b>Split the trace into line segments</b>, the trace line will be split into multiple lines where each line is of the specified length. For example, if your input point represents a contamination spill and the river it flows into moves at a rate of 0.6 miles per hour, or 15 miles per day, you might want to split the river into 15 mile segments. Splitting the trace into 15 mile intervals will show approximately where the spill will travel each day. The line will be symbolized using graduated colors based on distance and will be labeled with the distance from the start of the trace.
+    </p>
+    <p>The resulting trace will have all of the attributes of your input points as well as additional attributes.
+
+        <ul>
+            <li> <i>PointID</i>&mdash;Contains the ID value from the input point.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Contains the length in kilometers for the total downstream trace.
+                
+
+            </li>
+            <li> <i>Description</i> and <i>DataResolution</i>&mdash;Contains information pertaining to the hydrologic data used to calculate the trace.
+                
+
+            </li>
+            <li> <i>FromDistance</i> and <i>ToDistance</i>&mdash;Contains the from and to distance of each line segment. These attributes are written if <b>Split the trace into line segments</b> is used.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the point features in the input layer visible within the current map extent will be analyzed. If unchecked, all features in the input layer will be used, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Point features to use as the starting locations for each downstream trace</h2></div>
+        <hr/>
+        <div>
+            <p>The point features to use as the starting location of downstream trace. The output will contain a line for each input point.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Split the trace into line segments</h2></div>
+        <hr/>
+        <div>
+            <p>The trace line will be split into multiple lines where each line is of the specified length. For example, if your input point represents a contamination spill and the river it flows into moves at a rate of 0.6 miles per hour, or 15 miles per day, you might want to split the river into 15 mile segments. Splitting the trace into 15 mile intervals will show approximately where the spill will travel each day. The line will be symbolized using graduated colors based on distance and will be labeled with the distance from the start of the trace. The resulting trace will have multiple line segments, each with fields  <i>FromDistance</i> and <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maximum distance of the trace</h2></div>
+        <hr/>
+        <div>
+            <p>Determines the total length of the line that will be returned. If you provide area features to clip the trace, the result will be clipped to the area feature, regardless of the distance you enter here.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Clip output to</h2></div>
+        <hr/>
+        <div>
+            <p>Either draw or provide a layer of the area where you want the trace to be clipped. For example, if you only want the trace result to be within your study area, such as your county, use your county feature as input so the trace will stop at the county boundary.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+            <p> Running this tool does not consume credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

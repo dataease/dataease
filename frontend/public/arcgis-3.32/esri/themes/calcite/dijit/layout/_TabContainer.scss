@@ -1,0 +1,371 @@
+// TabContainer 
+// 
+// Styling TabContainer means styling the TabList and Its content container  (dijitTitlePane)
+// 
+// Tab List: (including 4 kinds of tab location)
+//    .dijitTabContainerTop-tabs     - tablist container at top
+//    .dijitTabContainerBottom-tabs  - tablist container at bottom
+//    .dijitTabContainerLeft-tabs    - tablist container at left
+//    .dijitTabContainerRight-tabs   - tablist container at right
+// 
+// Tab Strip Button:
+//    .dijitTabStripIcon - tab strip button icon
+//    .dijitTabStripMenuIcon - down arrow icon position
+//    .dijitTabStripSlideLeftIcon - left arrow icon position
+//    .dijitTabStripSlideRightIcon - right arrow icon position
+// 
+//    .tabStripButtonDisabled - styles for disabled tab strip buttons
+// 
+// Tab Button:
+//    .dijitTabContainerTop-tabs .dijitTab     - styles for top tab button container
+//    .dijitTabContainerBottom-tabs .dijitTab  - styles for bottom tab button container
+//    .dijitTabContainerLeft-tabs .dijitTab    - styles for left tab button container
+//    .dijitTabContainerRight-tabs .dijitTab   - styles for right tab button container
+// 
+//    .dijitTabContainerTop-tabs .dijitTabChecked .dijitTab
+//        - styles for selected status of top tab button
+//    same to Bottom, Left, Right Tabs
+// 
+//    .dijitTabHover .dijitTab   - styles when mouse hover on tab buttons
+//    .dijitTabActive .dijitTab  - styles when mouse down on tab buttons
+//    .dijitTabChecked .dijitTab  - styles when on buttons of selected tab
+// 
+//    .dijitTabCloseButton - the close action buttons lie at the right top of each tab button on closable tabs
+//    .dijitTabCloseButtonHover - styles when mouse hover on close action button
+//    .dijitTabCloseButtonActive - styles when mouse down on close action button
+// 
+// Tab Button: (checked status)
+// 
+// Tab Content Container:
+//    .dijitTabContainerTop-dijitContentPane
+//    .dijitTabContainerBottom-dijitContentPane
+//    .dijitTabContainerLeft-dijitContentPane
+//    .dijitTabContainerRight-dijitContentPane - for background and padding
+// 
+// Nested Tabs:
+//    .dijitTabContainerNested - Container for nested tabs
+//    .dijitTabContainerTabListNested - tab list container for nested tabs
+//
+.#{$theme-name} {
+  .dijitTabPaneWrapper {
+    border: 1px solid $tabs-default-border;
+    @include box-sizing(content-box);
+  }
+  .dijitTabContainerTop-tabs,
+  .dijitTabContainerBottom-tabs,
+  .dijitTabContainerLeft-tabs,
+  .dijitTabContainerRight-tabs {
+    border: 0;
+  }
+  // Tab
+  // --------------------------------------------------
+  .dijitTab {
+    padding: $tabs-padding;
+    line-height: $line-height-base;
+    background-color: $tabs-default-bg;
+    border: 1px solid $tabs-default-border;
+    color: $tabs-default-color;
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      background-color: $tabs-hover-bg;
+    }
+  }
+  .dijitTabChecked {
+    &,
+    &:hover,
+    &:focus {
+      color: $tabs-active-hover-color;
+      background-color: $tabs-active-hover-bg;
+      cursor: default;
+    }
+  }
+  .dijitTabDisabled {
+    &,
+    &:hover,
+    &:active,
+    &:focus {
+      color: inherit;
+      cursor: $cursor-disabled;
+      pointer-events: none; // Future-proof disabling of clicks
+      @include opacity($disabled-opacity);
+      @include box-shadow(none);
+    }
+  }
+  .dijitTabCloseButton {
+    float: right;
+    margin-left: $padding-base-horizontal;
+    @include dijit-icons;
+    line-height: inherit;
+    color: $close-color;
+    @include opacity(.2);
+    &:hover,
+    &:focus {
+      color: $close-color;
+      text-decoration: none;
+      cursor: pointer;
+      @include opacity(.5);
+    }
+    &:before {
+      @include icon-get-content(esri-icon-close);
+    }
+  }
+  // Top tabs
+  // --------------------------------------------------
+  .dijitTabContainerTop {
+    .dijitTabPaneWrapper {
+      border-top: 1px solid $tabs-default-border;
+    }
+    .dijitTabListContainer-top {
+      margin-top: 1px;
+      .dijitTab {
+        top: 0;
+      }
+    }
+    .dijitTabContainerTop-tabs {
+      .dijitTab {
+        margin-right: $tabs-spacing;
+        vertical-align: bottom;
+        &:hover {
+          padding-top: 4px;
+          border-bottom: 1px solid $tabs-default-border;
+          border-top: 3px solid $brand-primary;
+        }
+      }
+      .dijitTabChecked {
+        &,
+        &:hover,
+        &:focus {
+          border: 1px solid $tabs-active-hover-border-color;
+          border-bottom-color: transparent;
+        }
+        &:hover {
+          padding-top: 6px;
+        }
+      }
+    }
+  }
+  //Bottom tabs
+  // --------------------------------------------------
+  .dijitTabContainerBottom {
+    .dijitTabPaneWrapper {
+      border-bottom: 1px solid $tabs-default-border;
+    }
+    .dijitTabListContainer-bottom {
+      margin-top: -1px;
+      .dijitTab {
+        top: 0;
+      }
+    }
+    .dijitTabContainerBottom-tabs {
+      .dijitTab {
+        margin-right: $tabs-spacing;
+        vertical-align: top;
+        &:hover {
+          padding-bottom: 4px;
+          border-top: 1px solid $tabs-default-border;
+          border-bottom: 3px solid $brand-primary;
+        }
+      }
+      .dijitTabChecked {
+        &,
+        &:hover,
+        &:focus {
+          border: 1px solid $tabs-active-hover-border-color;
+          border-top-color: transparent;
+        }
+        &:hover {
+          padding-bottom: 6px;
+        }
+      }
+    }
+  }
+  // Left tabs
+  // --------------------------------------------------
+  .dijitTabContainerLeft {
+    .dijitTabPaneWrapper {
+      border-left: 1px solid $tabs-default-border;
+    }
+    .dijitTabContainerLeft-tabs {
+      .dijitTab {
+        margin-bottom: $tabs-spacing;
+        vertical-align: middle;
+        &:hover {
+          padding-left: 13px;
+          border-right: 1px solid $tabs-default-border;
+          border-left: 3px solid $brand-primary;
+        }
+      }
+      .dijitTabChecked {
+        &,
+        &:hover,
+        &:focus {
+          border: 1px solid $tabs-active-hover-border-color;
+          border-right-color: transparent;
+        }
+        &:hover {
+          padding-left: 15px;
+        }
+      }
+    }
+  }
+  // Right tabs
+  // --------------------------------------------------
+  .dijitTabContainerRight {
+    .dijitTabPaneWrapper {
+      border-right: 1px solid $tabs-default-border;
+    }
+    .dijitTabContainerRight-tabs {
+      .dijitTab {
+        margin-bottom: $tabs-spacing;
+        vertical-align: middle;
+        &:hover {
+          padding-right: 13px;
+          border-left: 1px solid $tabs-default-border;
+          border-right: 3px solid $brand-primary;
+        }
+      }
+      .dijitTabChecked {
+        &,
+        &:hover,
+        &:focus {
+          border: 1px solid $tabs-active-hover-border-color;
+          border-left-color: transparent;
+        }
+        &:hover {
+          padding-right: 15px;
+        }
+      }
+    }
+  }
+  // Strip buttons
+  // --------------------------------------------------
+  .tabStripButton {
+    color: $tabs-strip-btn-default-color;
+    background-color: $tabs-strip-btn-default-bg;
+    border-color: $tabs-strip-btn-default-border;
+    padding-left: 0;
+    padding-right: 0;
+    @include box-sizing(content-box);
+  }
+  .dijitTabListContainer-top {
+    .tabStripButton {
+      border-bottom: 1px solid $tabs-default-border;
+    }
+  }
+  .dijitTabListContainer-bottom {
+    .tabStripButton {
+      border-top: 1px solid $tabs-default-border;
+    }
+    .dijitTabStripMenuIcon {
+      &:before {
+        @include icon-get-content(esri-icon-up-arrow);
+      }
+    }
+  }
+  .dijitTabStripIcon {
+    @include dijit-icons;
+    padding-left: $padding-base-horizontal;
+    padding-right: $padding-base-horizontal;
+    line-height: 2;
+    vertical-align: middle;
+  }
+  .dijitTabStripSlideLeftIcon {
+    &:before {
+      @include icon-get-content(esri-icon-left);
+    }
+  }
+  .dijitTabStripSlideRightIcon {
+    &:before {
+      @include icon-get-content(esri-icon-right);
+    }
+  }
+  .dijitTabStripMenuIcon {
+    &:before {
+      @include icon-get-content(esri-icon-down-arrow);
+    }
+  }
+  // Container of tabs only when tabPosition is "top" or "bottom"
+  .dijitTabListWrapper {
+    margin: 0;
+  }
+  // Tab content
+  .dijitTabContainerTop-dijitContentPane,
+  .dijitTabContainerBottom-dijitContentPane,
+  .dijitTabContainerLeft-dijitContentPane,
+  .dijitTabContainerRight-dijitContentPane {
+    background-color: $tabs-content-bg;
+  }
+  // Nested tabs
+  // --------------------------------------------------
+  .dijitTabContainerNested {
+    .dijitTab {
+      background-color: $tabs-nested-default-bg;
+      border: 0;
+      top: 0;
+      &:hover,
+      &:focus {
+        background-color: $tabs-hover-bg;
+      }
+      &.dijitTabChecked {
+        &,
+        &:hover,
+        &:focus {
+          color: $tabs-nested-active-hover-color;
+          background-color: $tabs-nested-active-hover-bg;
+          border: 0;
+        }
+      }
+    }
+    &.dijitTabContainerTop,
+    &.dijitTabContainerBottom,
+    &.dijitTabContainerLeft,
+    &.dijitTabContainerRight {
+      .dijitTabPaneWrapper {
+        border: 0;
+      }
+      .dijitTab {
+        &:hover {
+          padding: $tabs-padding;
+          border: 0;
+        }
+      }
+    }
+    // Top tabs
+    &.dijitTabContainerTop {
+      .dijitTabContainerTop-tabs {
+        .dijitTab {
+          margin-right: $tabs-nested-spacing;
+        }
+      }
+    }
+    //Bottom tabs
+    &.dijitTabContainerBottom {
+      .dijitTabContainerBottom-tabs {
+        .dijitTab {
+          margin-right: $tabs-nested-spacing;
+        }
+      }
+    }
+    // Left tabs
+    &.dijitTabContainerLeft {
+      .dijitTabContainerLeft-tabs {
+        .dijitTab {
+          margin-bottom: $tabs-nested-spacing;
+        }
+      }
+    }
+    // Right tabs
+    &.dijitTabContainerRight {
+      .dijitTabContainerRight-tabs {
+        .dijitTab {
+          margin-bottom: $tabs-nested-spacing;
+        }
+      }
+    }
+    .dijitTabCloseButton {
+      color: inherit;
+    }
+  }
+}
+

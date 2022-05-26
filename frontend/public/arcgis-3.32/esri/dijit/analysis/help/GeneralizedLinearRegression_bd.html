@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalized Linear Regression</h2><p/>
+        <h2><img src="./images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="GeneralizedLinearRegression workflow diagram"></h2>
+        <hr/>
+    <p>Performs Generalized Linear Regression 
+(GLR) to generate predictions or to model a dependent variable in terms of its relationship to a set of explanatory variables.  This tool can be used to fit continuous (Gaussian), binary (logistic) and count (Poisson) models.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysis Type</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the operation mode of the tool. The tool can be run to train a model to only assess performance, or train a model and  predict to features. Prediction types are as follows:
+                <ul>
+                    <li> <b>Fit a model to assess model performance</b>&mdash;A model will be fit and applied to the input data. Use this option to assess the accuracy of your model before generating predictions on a new dataset or understand relationships and drivers of your predicted variable. The output of this option will be a feature service of your fitted data and model diagnostics.
+                    </li>
+                    <li> <b>Fit a model and predict values</b>&mdash; Predictions or classifications will be generated for input features and prediction  features. Explanatory variables must be provided for both the prediction features and the features to be predicted. The output of this option will be a feature service of your model fitted to your input data, a feature service of predicted values and model diagnostics.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Fit a model to assess model performance</h2></div>
+        <hr/>
+        <div>
+            <p>Use this mode if you want to fit a model, and investigate the fit.
+            </p>
+            <p>With this choice the model will be trained using an input layer. Use this option to assess the accuracy of your model before generating predictions on a new dataset. This option will output model diagnostics apply the model to your training data.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Fit a model and predict values</h2></div>
+        <hr/>
+        <div>
+            <p>Use this mode if you want to fit a model, and apply the model to the dataset to generate predictions.
+            </p>
+            <p>Predictions or classifications will be generated for features. The output of this option will be a feature service, model diagnostics, and an optional table of variable importance.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Choose a layer to generate a model from</h2></div>
+        <hr/>
+        <div>
+            <p>The layer containing point, line, area, or tabular features that contain the dependent and explanatory variables.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Choose the field to model</h2></div>
+        <hr/>
+        <div>
+            <p>The numeric field containing the observed values to be modeled and the type of value you are modelling. There are three types of values you can model
+                <ul>
+                    <li>Continuous&mdash;Represents continuous values. The model used is Gaussian, and the tool performs  ordinary least squares regression.
+                    </li>
+                    <li>Binary&mdash;Represents presence or absence values. These must be 1s and 0s. The model used is Logistic Regression.
+                    </li>
+                    <li>Count&mdash;Represents discrete and represents events, for example, crime counts,   disease incidents, or traffic accidents. The model used is Poisson regression. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Choose a layer to predict values for</h2></div>
+        <hr/>
+        <div>
+            <p>A layer with features representing locations where estimates should be computed. Each feature in this dataset should contain values for all  the explanatory variables specified. The dependent variable for these features will be estimated using the model calibrated for the input layer.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Choose the explanatory fields</h2></div>
+        <hr/>
+        <div>
+            <p>One or more fields representing the explanatory
+variables (fields) that help predict the value. Only numeric fields will be visible.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Choose how explanatory fields are matched</h2></div>
+        <hr/>
+        <div>
+            <p>How the corresponding variables in the input layer will match the variables in the prediction layer. Only the variables used in generating the model will be included in the table. Only numeric values can be used. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>The results returned will depend on the type of analysis. If you are fitting to assess model fit, results  will contain a layer of input data fit to the model and result info assessing the model fit. If you are fitting and predicting, results will contain a layer of the input data fit to the model, a layer of predicted results, and result info assessing the model fit.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

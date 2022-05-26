@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Construire un carroyage à plusieurs variables</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagramme de processus Ajouter des donn&eacute;es"></h2>
+        <hr/>
+    <p>L&rsquo;outil Construire un carroyage &agrave; plusieurs variables fonctionne avec une ou plusieurs entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques. L&rsquo;outil g&eacute;n&egrave;re un carroyage de groupes carr&eacute;s ou hexagonaux et calcule les valeurs de chaque groupe en fonction de sa proximit&eacute; par rapport &agrave; chaque couche en entr&eacute;e. Ces valeurs peuvent inclure les variables suivantes&nbsp;: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Distance to Nearest (Distance par rapport au plus proche)</b>&nbsp;: distance de chaque groupe &agrave; l&rsquo;entit&eacute; la plus proche
+            </li>
+            <li> <b>Attribute of Nearest (Attribut du plus proche)</b>&nbsp;: valeur de champ de l&rsquo;entit&eacute; la plus proche de chacun des groupes
+            </li>
+            <li> <b>Summary of Nearby (R&eacute;sum&eacute; de proximit&eacute;)</b>&nbsp;: statistiques d&eacute;termin&eacute;es de toutes les entit&eacute;s &agrave; une certaine distance de chaque groupe
+            </li>
+            <li> <b>Summary of Intersection (R&eacute;sum&eacute; d&rsquo;intersection)</b>&nbsp;: statistiques sp&eacute;cifi&eacute;es de toutes les entit&eacute;s &agrave; une certaine distance de chaque groupe
+            </li>
+        </ul>
+        
+    </p>
+    <p>Seules les variables que vous sp&eacute;cifiez sont incluses dans la couche de r&eacute;sultat. Ces variables peuvent participer &agrave; la compr&eacute;hension de la proximit&eacute; et la distribution de vos donn&eacute;es. Les r&eacute;sultats peuvent aider &agrave; r&eacute;pondre &agrave; des questions du type&nbsp;:
+        <ul>
+            <li>&Eacute;tant donn&eacute; plusieurs couches d&rsquo;infrastructure de transport public, quelle partie de la ville est la moins accessible par les transports publics&nbsp;?
+            </li>
+            <li>&Eacute;tant donn&eacute; les couches de voies navigables (lacs et rivi&egrave;res), quel est le nom de la masse d&rsquo;eau la plus proche de chaque emplacement aux &Eacute;tats-Unis&nbsp;?
+            </li>
+            <li>&Eacute;tant donn&eacute; une couche de revenu des m&eacute;nages, o&ugrave; se trouve, aux &Eacute;tats-Unis, la variation de revenus la plus grande dans un rayon de 50&nbsp;miles alentour&nbsp;?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Choisir les types des groupes utilisés pour construire le carroyage à plusieurs variables</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Type et taille des groupes qui serviront &agrave; cr&eacute;er le carroyage &agrave; plusieurs variables. Pour l&rsquo;option  <b>Square (Carr&eacute;)</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la hauteur et la longueur du carr&eacute;. Pour l&rsquo;option <b>Hexagon (Hexagone)</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la distance entre les c&ocirc;t&eacute;s parall&egrave;les.
+            </p>
+            <p>Cette analyse utilise des groupes et requiert un syst&egrave;me de coordonn&eacute;es projet&eacute;es. Vous pouvez d&eacute;finir le  <b>syst&egrave;me de coordonn&eacute;es de traitement</b> dans <b>Environnements d'analyse</b>. Si votre syst&egrave;me de coordonn&eacute;es de traitement n&rsquo;est pas d&eacute;fini sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es, vous &ecirc;tes invit&eacute; &agrave; le configurer lorsque vous lancez <b>Run analysis (Ex&eacute;cuter l&rsquo;analyse)</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Choisir les couches en entrée et les variables à inclure dans le carroyage</h2></div>
+        <hr/>
+        <div>
+            <p>Cliquez sur le bouton d&rsquo;ajout ( <b>+</b>) pour ouvrir la fen&ecirc;tre <b>Add Variables (Ajouter des variables)</b> et ajoutez une couche &agrave; votre analyse. Dans la fen&ecirc;tre <b>Add Variables (Ajouter des variables)</b>, choisissez une couche en entr&eacute;e et configurez les variables que vous voulez calculer pour cette couche.
+            </p>
+            <p>Lorsque vous avez choisi et configur&eacute; les variables &agrave; calculer, la couche appara&icirc;tra dans la fen&ecirc;tre de l&rsquo;outil avec les autres couches &eacute;ventuellement s&eacute;lectionn&eacute;es. Cliquez sur le bouton de mise &agrave; jour de n&rsquo;importe quelle couche pour ouvrir la fen&ecirc;tre  <b>Add Variables (Ajouter des variables)</b> et voir toutes les variables configur&eacute;es pour cette couche. Cliquez sur le bouton de suppression au niveau de la couche pour supprimer cette couche et toutes les variables associ&eacute;es de l&rsquo;analyse.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Ajouter des variables</h2></div>
+        <hr/>
+        <div>
+            <p>Cette fen&ecirc;tre permet de choisir une couche en entr&eacute;e et de configurer les variables que vous voulez calculer pour cette couche. Pour commencer, utilisez le menu d&eacute;roulant  <b>Choose an input layer (Choisir une couche en entr&eacute;e)</b> pour s&eacute;lectionner la couche de points, de lignes ou de polygones &agrave; ajouter &agrave; votre analyse.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+            <p>Lorsque vous avez choisi une couche en entr&eacute;e, cliquez sur le bouton  <b>Add a variable (Ajouter une variable)</b> pour ouvrir une nouvelle variable &agrave; mettre &agrave; jour. Vous devez donner un nom unique &agrave; chaque variable. Ce nom sera le nom du champ cr&eacute;&eacute; dans la table attributaire de la couche de r&eacute;sultat.
+            </p>
+            <p>Utilisez le menu d&eacute;roulant pour s&eacute;lectionner le type de variable &agrave; ajouter. Chaque type de variable doit &ecirc;tre configur&eacute; selon un jeu unique de param&egrave;tres&nbsp;; tous les param&egrave;tres sont requis.
+            </p>
+            <p>Lorsque vous avez ajout&eacute; toutes les variables qui vous int&eacute;ressent pour la couche choisie, cliquez sur le bouton  <b>Add (Ajouter)</b> pour enregistrer les variables.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Wykryj zdarzenia</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Wykryj zdarzenia"></h2>
+        <hr/>
+    <p> To narzędzie działa z zawierającą dane czasowe warstwą punkt&oacute;w, linii, obszar&oacute;w lub tabel reprezentujących momenty w czasie. Za pomocą uporządkowanych sekwencyjnie obiekt&oacute;w nazywanych ścieżkami narzędzie to wskazuje obiekty będące interesującymi zdarzeniami. Zdarzenia są określane na podstawie podanych warunk&oacute;w.
+    </p>
+    <p>Najpierw, przy użyciu jednego lub większej liczby p&oacute;l, narzędzie ustala, kt&oacute;re obiekty należą do ścieżki. Na podstawie danych czasowych poszczeg&oacute;lnych obiekt&oacute;w ścieżki są porządkowane sekwencyjnie, a następnie stosowany jest warunek zdarzenia. Obiekty spełniające warunek początkowy zdarzenia zostają oznaczone jako zdarzenie. Opcjonalnie można zastosować warunek końcowy zdarzenia. Gdy warunek końcowy jest spełniony, obiekt przestaje być zdarzeniem. Wyniki są zwracane wraz z oryginalnymi obiektami &mdash; z nowymi kolumnami zawierającymi nazwy zdarzeń &mdash; i wskazują, kt&oacute;ry obiekt spełnia warunek zdarzenia. Można zwr&oacute;cić wszystkie oryginalne obiekty lub tylko te, kt&oacute;re są zdarzeniami.
+    </p>
+    <p>Przyjmijmy na przykład, że dysponujesz pomiarami GPS huragan&oacute;w wykonywanymi co 10 minut. W ramach każdego pomiaru GPS rejestrowana jest nazwa huraganu, jego lokalizacja, czas rejestracji i prędkość wiatru. Za pomocą tych p&oacute;l można utworzyć zdarzenie o nazwie  <code>katastrofalne</code>, gdy pomiar prędkości wiatru przekroczy wartość 208&nbsp;km/h. Przy nieustawionym warunku końcowym zdarzenie kończyłoby się w momencie, gdy obiekt przestałby spełniać warunek początkowy (prędkość wiatru mniejsza niż 208).
+    </p>
+    <p>Innym przykładem może być monitorowanie stężeń substancji chemicznych w lokalnych źr&oacute;dłach wody pitnej za pomocą pola o nazwie  <code>contaminateLevel</code> (poziom zanieczyszczenia). Wiadomo, że zalecane poziomy to wartości mniejsze niż 0,01&nbsp;mg/l, a poziomy niebezpieczne to wartości przekraczające 0,03&nbsp;mg/l. W celu wykrywania zdarzeń, kt&oacute;rych wystąpienie sygnalizuje wartość wyższa niż 0,03&nbsp;mg/l, a kt&oacute;rych zakończenie następuje po przywr&oacute;ceniu normalnego poziomu zanieczyszczeń, można utworzyć zdarzenie za pomocą warunku początkowego <code>contaminateLevel &gt; 0,03</code> i warunku końcowego <code>contaminateLevel &lt; 0,01</code>. Spowoduje to oznaczenie każdej sekwencji wartości przekraczających 0,03&nbsp;mg/l, aż do przywr&oacute;cenia wartości mniejszej niż 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę na której będą wykrywane zdarzenia</h2></div>
+        <hr/>
+        <div>
+            <p>Punkty, linie, obszary lub tabele, kt&oacute;re będą używane do wyszukiwania zdarzeń. Warstwa wejściowa musi zawierać dane czasowe oraz obiekty reprezentujące momenty w czasie, jak r&oacute;wnież jedno lub większą liczbę p&oacute;l, za pomocą kt&oacute;rych można identyfikować ścieżki.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Wybierz co najmniej jedno pole do identyfikacji ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Pola reprezentujące identyfikator ścieżki. Do reprezentowania unikalnych wartości ścieżek można użyć jednego lub wielu p&oacute;l.
+            </p>
+            <p>Na przykład podczas rekonstruowania ścieżek huragan&oacute;w, jako pola ścieżki można użyć nazwy huraganu.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Utwórz warunek wyrażenia wskazujący rozpoczęcie zdarzenia</h2></div>
+        <hr/>
+        <div>
+            <p>Za pomocą kreatora wyrażeń dodaj warunek określający zdarzenie. Jeśli podany warunek jest spełniony, obiekt jest zdarzeniem. Jeśli nie określi się warunku końcowego, zdarzenie kończy się w momencie, gdy warunek początkowy przestanie być spełniany.
+            </p>
+            <p>Na przykład użytkownik może chcieć otrzymywać powiadomienia, gdy suma p&oacute;l  <code>concentration_1</code> i <code>concentration_2</code> jest większa niż wartość pola <code>concentration_3</code>. W tym celu zastosuj warunek <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Jeśli interesującą informacją jest zmiana stężenia w czasie i użytkownik chce otrzymywać powiadomienia, gdy bieżąca wartość pola  <code>concentration_1</code> jest większa od dw&oacute;ch poprzednich pomiar&oacute;w wartości <code>concentration_2</code>, można użyć wyrażenia o postaci <code>$feature[&quot;concentration_1&quot;] &gt; $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Utwórz warunek wyrażenia wskazujący zakończenie zdarzenia (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcjonalnie za pomocą kreatora wyrażeń dodaj warunek określający zakończenie zdarzenia. Jeśli podany warunek końcowy będzie spełniony, obiekt przestanie być zdarzeniem. Jeśli nie określi się warunku końcowego, zdarzenie kończy się w momencie, gdy warunek początkowy przestanie być spełniany.    
+            </p>
+            <p>Na przykład użytkownik może chcieć otrzymywać powiadomienia, gdy suma p&oacute;l  <code>concentration_1</code> i <code>concentration_2</code> jest większa niż wartość pola <code>concentration_3</code>. Może r&oacute;wnież określić, że zdarzenie kończy się, gdy wartość pola <code>concentration_4</code> jest mniejsza niż wartość pola <code>concentration_1</code>. W tym celu zastosuj warunek początkowy <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> i warunek końcowy <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Chcąc, by zdarzenie kończyło się, kiedy wartość średnia z bieżącej wartości pola  <code>concentration_1</code> i poprzednich czterech pomiar&oacute;w stanie się większa od pierwszego pomiaru, można użyć wyrażenia o postaci <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Pokaż mi</h2></div>
+        <hr/>
+        <div>
+            <p>We wszystkich metodach wynikowych do obiekt&oacute;w oryginalnych dołączane są pola. Istnieją dwa sposoby określania zwracanych obiekt&oacute;w:
+                <ul>
+                    <li> <b>Wszystkie obiekty</b> &mdash; jest to metoda domyślna. Zwracane są wszystkie obiekty w warstwie wejściowej.
+                    </li>
+                    <li> <b>Tylko zdarzenia</b> &mdash; zwracane są wyłącznie obiekty będące zdarzeniami. Żadne obiekty, kt&oacute;re nie zostały uznane za zdarzenia, nie zostaną zwr&oacute;cone.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Zanalizuj dane z przedziałami czasu (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Wskaż, czy chcesz wykrywać zdarzenia przy użyciu przedział&oacute;w czasu, co spowoduje podzielenie obiekt&oacute;w wejściowych na segmenty w celu analizy. W przypadku użycia przedział&oacute;w czasu należy ustawić określony przedział i opcjonalnie ustawić czas referencyjny. Jeśli czas referencyjny nie zostanie ustawiony, przyjęty zostanie 1&nbsp;stycznia 1970&nbsp;r. 
+            </p>
+            <p>Jeśli na przykład granica czasu zostanie ustawiona na 1&nbsp;dzień, począwszy od 9:00 rano w dniu 1&nbsp;stycznia 1990, to każda ścieżka będzie obcinana dla każdego dnia o godz. 9:00 rano i analizowana w tym segmencie. 
+            </p>
+            <p>Użycie przedział&oacute;w czasu to prosty spos&oacute;b na skr&oacute;cenie czasu przetwarzania, ponieważ pozwala szybko tworzyć mniejsze ścieżki na potrzeby analizy. Jeśli podział na powtarzalne przedziały czasu ma sens w danej analizie, jest to zalecana metoda w przypadku przetwarzania dużych zbior&oacute;w danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

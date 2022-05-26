@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Thêm Dữ liệu</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Th&ecirc;m Dữ liệu sơ đồ luồng c&ocirc;ng việc"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y th&ecirc;m dữ liệu v&agrave;o lớp đối tượng được lưu trữ hiện c&oacute;. Gộp Dữ liệu sẽ sửa đổi lớp đầu v&agrave;o ban đầu v&agrave; kh&ocirc;ng tạo một lớp đầu ra mới. Bạn c&oacute; thể so khớp c&aacute;c trường dựa v&agrave;o t&ecirc;n v&agrave; loại trường, hoặc bạn c&oacute; thể &aacute;p dụng c&aacute;c phương ph&aacute;p so khớp ti&ecirc;n tiến hơn.
+    </p>
+    <p>Dưới đ&acirc;y l&agrave; c&aacute;c v&iacute; dụ: 
+        <ul>
+            <li>Bạn l&agrave; nh&acirc;n vi&ecirc;n của một c&ocirc;ng ty bảo hiểm lớn, cần tạo hồ sơ b&aacute;n h&agrave;ng h&agrave;ng th&aacute;ng. Đối với b&aacute;o c&aacute;o h&agrave;ng năm của bạn, dữ liệu h&agrave;ng th&aacute;ng phải được bi&ecirc;n soạn để ph&acirc;n t&iacute;ch. Để bắt đầu ph&acirc;n t&iacute;ch b&aacute;n h&agrave;ng, bạn c&oacute; thể sử dụng Th&ecirc;m Dữ liệu để cập nhật lớp AnnualReport_2018 của bạn sau khi c&oacute; số liệu h&agrave;ng th&aacute;ng. V&igrave; bạn biết tổ chức của m&igrave;nh duy tr&igrave; sơ đồ thống nhất mỗi th&aacute;ng, n&ecirc;n bạn c&oacute; thể sử dụng phương ph&aacute;p lập bản đồ trường mặc định để th&ecirc;m đối tượng một c&aacute;ch hiệu quả dựa tr&ecirc;n t&ecirc;n v&agrave; loại trường.
+            </li>
+            <li>Cứ mỗi mười nh&oacute;m m&ocirc;i trường sẽ thu thập h&agrave;ng trăm ng&agrave;n gi&aacute; trị đo về kh&iacute; hậu trong phạm vi quyền hạn của họ. Những tổ chức n&agrave;y muốn bi&ecirc;n soạn dữ liệu của m&igrave;nh để hiểu r&otilde; hơn về c&aacute;c m&ocirc; h&igrave;nh khu vực v&agrave; to&agrave;n cầu. Mỗi tổ chức sẽ x&aacute;c định sơ đồ cho bộ dữ liệu của họ. Từng tổ chức x&aacute;c định c&aacute;c t&ecirc;n trường kh&aacute;c nhau cho dữ liệu nhiệt độ v&agrave; tốc độ gi&oacute;. Với sự kh&aacute;c biệt t&ecirc;n trường giữa c&aacute;c bộ dữ liệu, lập bản đồ trường c&oacute; thể được sử dụng để x&aacute;c định c&aacute;ch th&ecirc;m c&aacute;c gi&aacute; trị đo nhiệt độ v&agrave; tốc độ gi&oacute; v&agrave;o c&aacute;c trường tương ứng.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp để thêm vào</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng bảng, điểm, đường hoặc đa gi&aacute;c m&agrave; dữ liệu sẽ được th&ecirc;m v&agrave;o.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Lớp bạn th&ecirc;m v&agrave;o sẽ được sửa đổi trong qu&aacute; tr&igrave;nh c&ocirc;ng cụ tiến h&agrave;nh. Trước khi tiến h&agrave;nh, h&atilde;y chắc chắn rằng bạn muốn sửa đổi lớp n&agrave;y.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để duyệt nội dung của m&igrave;nh cho lớp đối tượng được lưu trữ.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Chọn lớp để thêm</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng bảng, điểm, đường hoặc đa gi&aacute;c để th&ecirc;m v&agrave;o lớp đầu v&agrave;o.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Thêm tất cả đối tượng hoặc xác định một tập hợp con (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định c&aacute;c đối tượng được th&ecirc;m v&agrave;o. Tham số n&agrave;y l&agrave; t&ugrave;y chọn.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Chọn cách thức thêm các trường (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định c&aacute;ch th&ecirc;m c&aacute;c trường lớp v&agrave;o lớp đầu v&agrave;o. Theo mặc định, tất cả c&aacute;c trường đầu v&agrave;o v&agrave; trường th&ecirc;m tr&ugrave;ng khớp sẽ được th&ecirc;m v&agrave;o. C&aacute;c trường tr&ugrave;ng khớp nếu ch&uacute;ng c&oacute; c&ugrave;ng t&ecirc;n trường v&agrave; c&ugrave;ng loại trường. Bạn cũng c&oacute; thể t&ugrave;y &yacute; chọn c&aacute;ch so khớp c&aacute;c trường, hoặc t&iacute;nh to&aacute;n biểu thức Arcade để điền c&aacute;c gi&aacute; trị trường.
+            </p>
+            <p>V&iacute; dụ: bạn c&oacute; một lớp đầu v&agrave;o với c&aacute;c trường  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i>, v&agrave; một lớp th&ecirc;m với c&aacute;c trường <i>field_string</i>, <i>field_number</i> v&agrave; <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Theo mặc định, c&ocirc;ng cụ sẽ so khớp  <i>field_number</i> trong lớp đầu v&agrave;o với <i>field_number</i> trong lớp th&ecirc;m, v&agrave; <i>field_string</i>  trong lớp đầu v&agrave;o với <i>field_string</i> trong lớp th&ecirc;m.
+                    </li>
+                    <li>Theo mặc định, c&aacute;c trường của lớp đầu v&agrave;o  <i>date_field</i> v&agrave; <i>unused_field</i> sẽ được điền c&aacute;c gi&aacute; trị <i>null</i> bởi v&igrave; ch&uacute;ng kh&ocirc;ng c&oacute; trường tr&ugrave;ng khớp trong lớp th&ecirc;m.
+                    </li>
+                    <li>Ngo&agrave;i ra, bạn c&oacute; thể th&ecirc;m gi&aacute; trị v&agrave;o c&aacute;c trường đ&atilde; kh&ocirc;ng được so khớp tự động theo mặc định. V&iacute; dụ:  <i>date_field</i> trong lớp đầu v&agrave;o c&oacute; thể được so khớp với trường th&ecirc;m <i>MY_DATE_FIELD</i>. Để thực hiện điều n&agrave;y, h&atilde;y sử dụng menu thả xuống b&ecirc;n cạnh <i>date_field</i> trong cột đầu ti&ecirc;n v&agrave; chọn <i>MY_DATE_FIELD</i> từ menu thả xuống trong cột thứ hai.
+                    </li>
+                </ul>
+                 Ở một v&iacute; dụ kh&aacute;c, một lớp đầu v&agrave;o c&oacute; c&aacute;c trường số <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, v&agrave; <i>my_Average</i>, v&agrave; một lớp th&ecirc;m c&oacute; c&aacute;c trường số <i>value_1</i>, <i>value_2</i>, v&agrave; <i>value_3</i>.
+                <ul>
+                    <li>Theo mặc định,  <i>value_1</i>, <i>value_2</i>, v&agrave; <i>value_3</i> sẽ được so khớp v&agrave; th&ecirc;m.
+                    </li>
+                    <li>Ngo&agrave;i h&agrave;nh vi mặc định, c&aacute;c gi&aacute; trị c&ograve;n c&oacute; thể được t&iacute;nh to&aacute;n cho trường  <i>my_Average</i>. Thực hiện điều n&agrave;y bằng c&aacute;ch sử dụng nhiều trường v&agrave; c&aacute;c ph&eacute;p t&iacute;nh to&aacute;n học bằng c&aacute;ch chọn t&ugrave;y chọn thả xuống <b>Biểu thức</b> trong cột b&ecirc;n cạnh <i>my_Average</i> v&agrave; x&acirc;y dựng một biểu thức Arcade t&ugrave;y chỉnh chẳng hạn như <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

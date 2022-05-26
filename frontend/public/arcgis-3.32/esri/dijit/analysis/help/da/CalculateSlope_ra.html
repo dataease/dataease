@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Beregn stigning</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Beregn stigning-v&aelig;rkt&oslash;j til Portal"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j opretter en overflade, der viser stigningen for de indtastede h&oslash;jdedata. Stigningen repr&aelig;senterer &aelig;ndringen af h&oslash;jden for hver celle i den digitale elevationsmodel (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg inputdata til beregning af stigning</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&oslash;jdelag, som stigningen beregnes ud fra.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Angiv skaleringsfaktor for elevation</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv en z-faktor.
+            </p>
+            <p>Z-faktoren er en skaleringsfaktor, der bruges til at konvertere h&oslash;jdev&aelig;rdierne med to form&aring;l:
+ 
+                <ul>
+                    <li>At konvertere h&oslash;jdeenheder (f.eks. meter eller fod) til horisontale koordinatenheder for laget, som kan v&aelig;re fod, meter eller grader
+                        
+  
+                    </li>
+                    <li>At tilf&oslash;je vertikal overdrivelse for at &oslash;ge den visuelle virkning
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Fra fod
+                    </p>
+                </td>
+                <td>
+                    <p>Fra meter
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fra fod
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fra meter
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

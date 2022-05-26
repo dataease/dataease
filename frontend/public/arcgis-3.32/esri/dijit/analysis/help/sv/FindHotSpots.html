@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitta hotspots</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Hitta hotspots"></h2>
+        <hr/>
+    <p> Med verktyget Hitta hotspots kan du fastst&auml;lla om det finns statistiskt signifikanta kluster i det geografiska m&ouml;nstret f&ouml;r dina data.
+        <ul>
+            <li>&Auml;r dina punkter (brottsfall, tr&auml;d, trafikolyckor) verkligen klustrade? Hur kan du vara s&auml;ker p&aring; det?
+            </li>
+            <li>Har du verkligen uppt&auml;ckt en statistiskt signifikant hotspot (f&ouml;r utgifter, barnd&ouml;dlighet, st&auml;ndigt h&ouml;ga provresultat), eller skulle kartan ber&auml;tta n&aring;got annat om du &auml;ndrade hur den symboliseras?
+            </li>
+        </ul>
+        Verktyget Hitta hotspots hj&auml;lper dig besvara de h&auml;r fr&aring;gorna med s&auml;kerhet.
+    </p>
+    <p>Till och med slumpm&auml;ssiga geografiska m&ouml;nster uppvisar n&aring;gon grad av klustring. Det &auml;r dessutom naturligt f&ouml;r v&aring;ra &ouml;gon och hj&auml;rnor att f&ouml;rs&ouml;ka hitta m&ouml;nster &auml;ven n&auml;r det inte finns n&aring;gra. D&auml;rf&ouml;r kan det vara sv&aring;rt att veta om m&ouml;nstren i dina data &auml;r resultatet av verkliga geografiska processer eller slumpen. Detta &auml;r orsaken till att forskare och analytiker anv&auml;nder statistiska metoder som Hitta hotspots (Getis-Ord Gi*) f&ouml;r att m&auml;ta geografiska m&ouml;nster. N&auml;r du hittar statistiskt signifikant klustring i dina data har du v&auml;rdefull information. Om du vet var och n&auml;r klustring uppst&aring;r kan det ge viktiga ledtr&aring;dar om processerna som leder till de m&ouml;nster du ser. Kunskapen om att till exempel bostadsinbrott &auml;r betydligt h&ouml;gre i vissa grannskap kan vara avg&ouml;rande om du beh&ouml;ver ta fram effektiva f&ouml;rebyggande strategier, f&ouml;rdela polisens begr&auml;nsade resurser, starta bevakningsprogram, besluta om st&ouml;rre polisunders&ouml;kningar eller identifiera m&ouml;jliga g&auml;rningsm&auml;n.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Välj det lager som hotspots ska beräknas för</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt- eller omr&aring;deslager som hotspots och coldspots ska hittas i. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Hitta kluster med hög och låg</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r analysen besvarar fr&aring;gan: Var klustras h&ouml;ga och l&aring;ga v&auml;rden geografiskt?
+            </p>
+            <p>Om dina data utg&ouml;rs av punkter och du v&auml;ljer  <b>Punktantal</b>, analyserar verktyget den geografiska ordningen av punktgeoobjekten f&ouml;r att besvara fr&aring;gan: Var har punkterna ov&auml;ntat bildat kluster eller spridits ut?
+            </p>
+            <p>Om du v&auml;ljer ett f&auml;lt analyserar verktyget den geografiska ordningen f&ouml;r v&auml;rden som kopplas till varje geoobjekt f&ouml;r att besvara fr&aring;gan: Var har de h&ouml;ga respektive l&aring;ga v&auml;rdena bildat kluster?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Räkna punkter inom</h2></div>
+        <hr/>
+        <div>
+            <p>Standardalternativet &auml;r att r&auml;kna punkter inom ett fiskn&auml;tsrutn&auml;t som skapats av verktyget baserat p&aring; dina punktdata. Du kan ocks&aring; r&auml;kna punkter i ett hexagonrutn&auml;t eller ange ett omr&aring;deslager (normalt sett visar dessa administrativa rapporterande distrikt, till exempel folkr&auml;kningsdistrikt eller kommun- eller l&auml;nsgr&auml;nser) f&ouml;r att besvara fr&aring;gan: Med tanke p&aring; antalet punkter inom varje omr&aring;desgeoobjekt, finns det platser med statistiskt signifikanta geografiska kluster med h&ouml;gt eller l&aring;gt punktantal?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definiera var punkter är möjliga</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan rita eller ange ett lager som definierar var incidenter &auml;r m&ouml;jliga f&ouml;r att besvara fr&aring;gan: Finns det n&aring;gra platser inom omr&aring;dena med ov&auml;ntat h&ouml;ga eller l&aring;ga punktkoncentrationer?   
+            </p>
+            <p>Omr&aring;desgeoobjekten du ritar eller geoobjekten i det omr&aring;deslager du anger b&ouml;r definiera var punkterna kan t&auml;nkas uppst&aring;. Rita omr&aring;dena genom att klicka p&aring; knappen  <b>Rita</b>, och klicka sedan p&aring; kartan f&ouml;r att skapa ett omr&aring;desgeoobjekt. Om du vill rita fler omr&aring;den klickar du p&aring; ritknappen igen och klickar sedan p&aring; en plats p&aring; kartan f&ouml;r att forts&auml;tta.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dela med</h2></div>
+        <hr/>
+        <div>
+            <p>Ibland kan du vilja analysera m&ouml;nster som tar h&auml;nsyn till underliggande distributioner. Om dina punkter till exempel representerar brott och du dividerar med den totala befolkningen, skulle detta resultera i en analys av antalet brott per capita i st&auml;llet f&ouml;r obearbetade brottssifror. Att v&auml;lja ett attribut att dividera med kallas ofta normalisering.
+            </p>
+            <p>Om du v&auml;ljer  <i>Esri Befolkning</i> geoberikas varje omr&aring;desgeoobjekt med befolkningsv&auml;rden som sedan anv&auml;nds som attributet att dividera med. Det h&auml;r alternativet kostar krediter.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Åsidosätt alternativ</h2></div>
+        <hr/>
+        <div>
+            <p> Verktyget hittar optimala inst&auml;llningar som kan anv&auml;ndas som standardv&auml;rden f&ouml;r <b>Cellstorlek</b> och <b>Avst&aring;ndsband</b> utifr&aring;n egenskaperna hos dina data. Om du i st&auml;llet anv&auml;nder en s&auml;rskild <b>Cellstorlek</b> eller ett s&auml;rskilt <b>Avst&aring;ndsband</b> som passar din analys b&auml;ttre, kan <b>&Aring;sidos&auml;tt alternativ</b> anv&auml;ndas f&ouml;r att ange de v&auml;rdena.
+            </p>
+            <p> <b>&Aring;sidos&auml;tt alternativ</b> &auml;r ocks&aring; praktiskt n&auml;r du k&ouml;r analyser p&aring; olika dataset, eftersom du kan h&aring;lla <b>Avst&aring;ndsband</b> och <b>Cellstorlek</b> konstanta &ouml;ver flera dataset. Sedan kan du j&auml;mf&ouml;ra resultaten p&aring; l&auml;mpligt s&auml;tt, till exempel fetma- och diabetessiffror eller till och med brottsstatistik f&ouml;r tv&aring; olika &aring;r.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellstorlek</h2></div>
+        <hr/>
+        <div>
+            <p>Storleken p&aring; de rutn&auml;tsceller som anv&auml;nds f&ouml;r att r&auml;kna punkter i rutn&auml;tet.  
+            </p>
+            <p>N&auml;r du anv&auml;nder ett hexagonrutn&auml;t till att r&auml;kna punkter i rutn&auml;tet anv&auml;nds detta avst&aring;nd som h&ouml;jden f&ouml;r hexagonerna.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Avståndsband</h2></div>
+        <hr/>
+        <div>
+            <p>Varje geoobjekt analyseras i ett sammanhang som utg&ouml;rs av de angr&auml;nsande geoobjekt som &auml;r placerade inom det avst&aring;nd som du anger. Verktyget ber&auml;knar ett standardavst&aring;nd f&ouml;r dig, men du kan ocks&aring; anv&auml;nda det h&auml;r alternativet till att ange ett s&auml;rskilt avst&aring;nd som passar b&auml;ttre f&ouml;r din analys. 
+            </p>
+            <p>Om du till exempel studerar pendlingsm&ouml;nster och vet att den genomsnittliga resan till arbetet &auml;r 25 kilometer l&aring;ng, kanske du vill anv&auml;nda ett 25 kilometers avst&aring;ndsband f&ouml;r din analys.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett namn f&ouml;r lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Resultatlagret visar statistiskt signifikanta kluster med h&ouml;ga och l&aring;ga v&auml;rden eller punktantal. Om lagrets namn redan finns uppmanas du att byta namn p&aring; det.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,17 @@
+<div>
+	<div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey"
+			class="dijitTitlePaneTitle" data-dojo-attach-point="titleBarNode" id="${id}_titleBarNode">
+		<div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode">
+			<span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span
+			><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner"></span
+			><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode"></span>
+		</div>
+	</div>
+	<div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+		<div class="dijitReset" data-dojo-attach-point="wipeNode" role="presentation">
+			<div class="dijitTitlePaneContentInner" data-dojo-attach-point="containerNode" role="region" id="${id}_pane" aria-labelledby="${id}_titleBarNode">
+				<!-- nested divs because wipeIn()/wipeOut() doesn't work right on node w/padding etc.  Put padding on inner div. -->
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/PredictUsingTrendRaster",{toolDefine:"Napoved s pomo\u010djo rasterja trenda",outputLayerName:"${layername}_napovej",variablesLabel:"Izberi spremenljivko(-e), ki bodo napovedane",variablesListLabel:"Spremenljivke [Informacije dimenzije] (opis)",dimensionDefinitionLabel:"Izberi metodo, uporabljeno za zagotavljanje napovedi vrednosti dimenzije",dimensionValuesLabel:"Dolo\u010di vrednost(-i) dimnezije za napoved",dimensionIntervalLabel:"Dolo\u010di interval dimenzije za napoved",
+intervalValueLabel:"Dolo\u010di \u0161tevilo korakov med za\u010detnimi in kon\u010dnimi vrednostmi",intervalUnitLabel:"Izberi enoto, ki bo uporabljena za \u010dasovno vrednost intervala",startLabel:"Za\u010detna vrednost",endLabel:"Kon\u010dna vrednost",byValueLabel:"Po vrednosti",byIntervalLabel:"Po intervalu",hours:"Ure",days:"Dni",weeks:"Tedni",months:"Meseci",years:"Leta",custom:"Po meri",itemDescription:"Storitev analize slik, ustvarjena iz Napovej s pomo\u010djo rasterja trenda",itemTags:"Rezultat rastrske analize, Napovej s pomo\u010djo rasterja trenda, ${layername}",
+itemSnippet:"Storitev analize slik, ustvarjena iz Napovej s pomo\u010djo rasterja trenda"});

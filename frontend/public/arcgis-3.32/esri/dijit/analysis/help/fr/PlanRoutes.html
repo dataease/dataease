@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planifier des itinéraires</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planifier des itin&eacute;raires"></h2>
+        <hr/>
+    <p>L'outil Planifier des itin&eacute;raires d&eacute;termine comment diviser efficacement des t&acirc;ches parmi le personnel mobile.
+    </p>
+    <p>Vous indiquez &agrave; l'outil un ensemble d'arr&ecirc;ts et le nombre de v&eacute;hicules disponibles pour se rendre &agrave; ces arr&ecirc;ts. L'outil attribue les arr&ecirc;ts aux v&eacute;hicules et renvoie des itin&eacute;raires montrant comment chaque v&eacute;hicule peut atteindre les arr&ecirc;ts qui lui sont assign&eacute;s dans le laps de temps le plus court.
+    </p>
+    <p>Avec Planifier des itin&eacute;raires, le personnel mobile se rend sur un plus grand nombre de sites en un temps plus court, ce qui augmente la productivit&eacute; et am&eacute;liore le service client.
+        <ul>
+            <li>Inspection des maisons, restaurants ou sites de construction
+                
+
+            </li>
+            <li>R&eacute;paration, installation ou services techniques
+            </li>
+            <li>Livraison d'articles et de petits colis
+            </li>
+            <li>Appels commerciaux
+            </li>
+            <li>Transport des personnes depuis leur domicile jusqu'&agrave; un &eacute;v&eacute;nement
+            </li>
+        </ul>
+        
+    </p>
+    <p>La sortie de l'outil Planifier des itin&eacute;raires comprend une couche d'arr&ecirc;ts cod&eacute;s par les itin&eacute;raires auxquels ils sont attribu&eacute;s, une couche d'itin&eacute;raires pr&eacute;sentant les chemins les plus courts pour acc&eacute;der aux arr&ecirc;ts attribu&eacute;s et, si certains arr&ecirc;ts n'ont pu &ecirc;tre atteints, une couche d'arr&ecirc;ts non attribu&eacute;s. 
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s qui sont visibles au sein de l'&eacute;tendue courante de la carte seront prises en compte dans l'analyse.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront prises en compte, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Choisissez la couche de points représentant les arrêts à visiter</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la couche de points par lesquels les itin&eacute;raires (ou les v&eacute;hicules) doivent passer.  Ces points se transforment en arr&ecirc;ts attribu&eacute;s ou non attribu&eacute;s dans la sortie. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+            <p>L'outil prend en charge 2&nbsp;000&nbsp;entit&eacute;s en entr&eacute;e au maximum. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Mode de déplacement pour les itinéraires</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez votre mode de d&eacute;placement.  Les itin&eacute;raires en sortie suivront les routes ou voies et respecteront les r&egrave;gles en vigueur, par exemple les rues en sens unique et l'interdiction de faire demi-tour pour les voitures ou les camions.  Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Les itinéraires commencent aux arrêts</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez le lieu et l'heure auxquels les v&eacute;hicules d&eacute;butent leurs itin&eacute;raires.
+            </p>
+            <p>Avec Planifier des itin&eacute;raires, vous pouvez sp&eacute;cifier un ou plusieurs emplacements de d&eacute;part pour vos v&eacute;hicules.
+            </p>
+            <p>Lorsqu'un seul emplacement est sp&eacute;cifi&eacute;, tous les v&eacute;hicules partent de ce point, quel que soit le nombre de v&eacute;hicules disponibles. Vous pouvez choisir une couche de points avec un point ou ajouter un point &agrave; la carte en s&eacute;lectionnant  <b>Ajouter un point &agrave; la carte</b>, en cliquant sur le bouton de mise &agrave; jour du point adjacent et en cliquant sur la carte. 
+            </p>
+            <p>Lorsque plusieurs emplacements sont sp&eacute;cifi&eacute;s, chaque v&eacute;hicule doit &ecirc;tre associ&eacute; &agrave; son propre point. Le nombre de v&eacute;hicules doit correspondre au nombre de points dans la couche. Choisissez une couche avec plusieurs points et sp&eacute;cifiez un champ qui identifie de mani&egrave;re unique chaque itin&eacute;raire, v&eacute;hicule ou chauffeur dans la liste d&eacute;roulante  <b>Champ d'ID d'itin&eacute;raire</b>.
+            </p>
+            <p>L'heure de d&eacute;part est la m&ecirc;me pour tous les itin&eacute;raires. Le fuseau horaire de l'heure de d&eacute;part &eacute;tant le m&ecirc;me que le fuseau horaire dans lequel se trouvent le ou les points de d&eacute;part, veillez &agrave; saisir l'horaire en heure locale. Supposons par exemple que votre fuseau horaire soit Heure normale du Pacifique (UTC-8:00) et que les v&eacute;hicules que vous acheminez se trouvent dans le fuseau horaire Heure normale des Rocheuses (UTC-7:00). Il est actuellement 9&nbsp;h&nbsp;30. Heure normale du Pacifique (10&nbsp;h&nbsp;30 Heure normale des Rocheuses) et vos v&eacute;hicules doivent commencer leur itin&eacute;raire dans 30&nbsp;minutes. Vous r&eacute;glez dans ce cas l'heure de d&eacute;part sur 11&nbsp;h&nbsp;00. 
+            </p>
+            <p>Si vos v&eacute;hicules partent de diff&eacute;rents fuseaux horaires, l'heure de d&eacute;part ne peut pas &ecirc;tre simultan&eacute;e. Les v&eacute;hicules sont au contraire d&eacute;cal&eacute;s. Par exemple, si un itin&eacute;raire commence &agrave; partir d'un point Pacifique et un autre itin&eacute;raire part du fuseau horaire Rocheuses, et que vous entrez 11&nbsp;h&nbsp;00 comme heure de d&eacute;part, l'itin&eacute;raire Pacifique commence &agrave; 11&nbsp;h&nbsp;00 Pacifique et l'itin&eacute;raire Rocheuses commence &agrave; 11&nbsp;h&nbsp;00 Rocheuses (un d&eacute;calage d'une heure).
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Les itinéraires se terminent aux arrêts</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez l'endroit o&ugrave; les v&eacute;hicules terminent leurs itin&eacute;raires.
+            </p>
+            <p>Vous pouvez faire en sorte que les itin&eacute;raires se terminent dans un des trois emplacements suivants&nbsp;: 
+                <ul>
+                    <li>Le m&ecirc;me emplacement auquel les itin&eacute;raires ont commenc&eacute;, qu'ils proviennent d'un ou de plusieurs emplacements
+                    </li>
+                    <li>Un seul emplacement
+                    </li>
+                    <li>Plusieurs emplacements, c'est-&agrave;-dire un point d'arriv&eacute;e pour chaque itin&eacute;raire
+                    </li>
+                </ul>
+                
+            </p>
+            <p>S&eacute;lectionnez  <b>Revenir au d&eacute;part</b> si les v&eacute;hicules commencent et terminent leurs itin&eacute;raires aux m&ecirc;mes emplacements.
+            </p>
+            <p>Pour acheminer tous les v&eacute;hicules vers un point d'arriv&eacute;e commun autre que le point de d&eacute;part, d&eacute;s&eacute;lectionnez  <b>Revenir au d&eacute;part</b> et ajoutez un point &agrave; la carte ou choisissez une couche contenant un seul point.
+            </p>
+            <p>Pour que les itin&eacute;raires se terminent &agrave; des emplacements uniques, d&eacute;s&eacute;lectionnez  <b>Retour au d&eacute;part</b> et choisissez une couche contenant plusieurs points. Le nombre de v&eacute;hicules doit &ecirc;tre &eacute;gal au nombre de points dans la couche choisie. Dans la liste d&eacute;roulante <b>Champ d'ID d'itin&eacute;raire</b>, choisissez un champ qui identifie de mani&egrave;re unique chaque itin&eacute;raire, v&eacute;hicule ou chauffeur. Si les v&eacute;hicules partent de plusieurs emplacements et arrivent &agrave; plusieurs emplacements, les ID d'itin&eacute;raire choisis pour les couches de d&eacute;part et d'arriv&eacute;e doivent correspondre.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Sélectionner les couches d’interruptions</h2></div>
+        <hr/>
+        <div>
+            <p> Une ou plusieurs entit&eacute;s qui agissent comme restrictions temporaires (en d&rsquo;autres termes, les interruptions) lors du d&eacute;placement dans les rues sous-jacentes. Vous pouvez pr&eacute;ciser les interruptions &agrave; l&rsquo;aide d&rsquo;entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques.
+            </p>
+            <p>Une interruption ponctuelle peut mod&eacute;liser un arbre au sol, un accident, une ligne &eacute;lectrique &agrave; terre, ou tout &eacute;l&eacute;ment qui bloque le trafic &agrave; un emplacement donn&eacute; dans la rue. Le d&eacute;placement est autoris&eacute; sur la rue, hormis franchir l&rsquo;interruption. Vous pouvez pr&eacute;ciser jusqu&rsquo;&agrave; 250&nbsp;&eacute;l&eacute;ments comme interruptions ponctuelles.
+            </p>
+            <p>Une interruption lin&eacute;aire interdit le d&eacute;placement l&agrave; o&ugrave; l&rsquo;interruption intersecte les rues. Par exemple, un d&eacute;fil&eacute; ou une manifestation qui bloque la circulation sur plusieurs segments de rue peut &ecirc;tre mod&eacute;lis&eacute; avec une interruption lin&eacute;aire. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions lin&eacute;aires d&eacute;passe&nbsp;500, l&rsquo;outil renvoie une erreur.
+            </p>
+            <p>Une interruption polygonale interdit le d&eacute;placement l&agrave; o&ugrave; le polygone intersecte les rues. Une utilisation de ce type d&rsquo;interruption consiste &agrave; mod&eacute;liser les inondations couvrant les zones du r&eacute;seau routier et &agrave; identifier la circulation sur la route comme impossible &agrave; ces emplacements pr&eacute;cis. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions polygonales est sup&eacute;rieur &agrave; 2&nbsp;000, l&rsquo;outil renvoie une erreur.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Nombre maximum de véhicules à acheminer</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez le nombre de v&eacute;hicules disponibles pour se rendre &agrave; ces arr&ecirc;ts. L'outil prend en charge jusqu'&agrave;  100&nbsp;v&eacute;hicules. 
+            </p>
+            <p>L'outil peut &ecirc;tre en mesure de trouver une solution faisant appel &agrave; un nombre de v&eacute;hicules inf&eacute;rieur &agrave; celui que vous sp&eacute;cifiez ici, selon le nombre total d'arr&ecirc;ts, le nombre d'arr&ecirc;ts que vous autorisez par v&eacute;hicule, la distance entre les arr&ecirc;ts, le temps pass&eacute; &agrave; chaque arr&ecirc;t et les limites que vous imposez au temps de trajet total par v&eacute;hicule.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Nombre maximum d\'arrêts par véhicule</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit d'un des deux param&egrave;tres qui &eacute;quilibrent la charge de travail globale parmi les itin&eacute;raires. Vous pouvez sp&eacute;cifier une valeur comprise entre 1 et  200. 
+            </p>
+            <p>En r&eacute;duisant le nombre maximum d'arr&ecirc;ts pouvant &ecirc;tre attribu&eacute;s &agrave; chaque v&eacute;hicule, les v&eacute;hicules ont plus de chance de se voir attribuer un nombre &eacute;gal d'arr&ecirc;ts. Ceci permet d&rsquo;&eacute;quilibrer la charge de travail parmi les conducteurs. L'inconv&eacute;nient toutefois est que la solution engendr&eacute;e risque d'&ecirc;tre moins efficace.
+            </p>
+            <p>En augmentant le nombre d'arr&ecirc;ts par v&eacute;hicule, l'outil a plus de libert&eacute; pour trouver des solutions plus efficaces. Cependant, la charge de travail risque d'&ecirc;tre r&eacute;partie de mani&egrave;re in&eacute;gale parmi les chauffeurs et les v&eacute;hicules. Notez que vous pouvez &eacute;quilibrer la charge de travail en fonction du temps aussi bien qu'en fonction du nombre d'arr&ecirc;ts, en attribuant une valeur au param&egrave;tre  <b>Limiter le temps de trajet total par v&eacute;hicule</b>.
+            </p>
+            <p>Les exemples suivants montrent les effets de la limitation du nombre maximum d'arr&ecirc;ts par v&eacute;hicule ou du temps de trajet total par v&eacute;hicule. Tous les exemples comptent six arr&ecirc;ts et deux itin&eacute;raires, qui commencent au m&ecirc;me emplacement.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Arr&ecirc;ts et temps de trajet &eacute;quilibr&eacute;s">
+                </td>
+                <td>
+                    <p>Temps de trajet et arr&ecirc;ts par itin&eacute;raire &eacute;quilibr&eacute;s&nbsp;:
+                    </p>
+                    <p>Les arr&ecirc;ts &eacute;tant plus ou moins uniform&eacute;ment &eacute;loign&eacute;s les uns des autres, la d&eacute;finition du nombre maximum d'arr&ecirc;ts par v&eacute;hicule de mani&egrave;re &agrave; r&eacute;partir &eacute;quitablement la charge de travail engendre des itin&eacute;raires qui sont de la m&ecirc;me dur&eacute;e environ.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Temps de trajet non &eacute;quilibr&eacute;s">
+                </td>
+                <td>
+                    <p>Arr&ecirc;ts par itin&eacute;raire &eacute;quilibr&eacute;s mais temps de trajet non &eacute;quilibr&eacute;s&nbsp;:
+                    </p>
+                    <p>Cinq des six arr&ecirc;ts sont regroup&eacute;s &agrave; proximit&eacute; de l'emplacement de d&eacute;part, mais un des arr&ecirc;ts est &eacute;loign&eacute; et le trajet n&eacute;cessaire pour l'atteindre est beaucoup plus long. La division &eacute;quitable des arr&ecirc;ts entre les deux itin&eacute;raires provoque des temps de trajet non &eacute;quilibr&eacute;s.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Temps de trajet &eacute;quilibr&eacute;s">
+                </td>
+                <td>
+                    <p>Arr&ecirc;ts par itin&eacute;raire non &eacute;quilibr&eacute;s mais temps de trajet &eacute;quilibr&eacute;s&nbsp;:
+                    </p>
+                    <p>Les arr&ecirc;ts se trouvent au m&ecirc;me emplacement que dans le graphique pr&eacute;c&eacute;dent, mais en augmentant le nombre maximum d'arr&ecirc;ts par itin&eacute;raire et en limitant le temps de trajet total par v&eacute;hicule, les temps de trajet sont &eacute;quilibr&eacute;s.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Temps passé à chaque arrêt</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;finissez le temps de service moyen attendu &agrave; chaque arr&ecirc;t. Par exemple, si vous planifiez la journ&eacute;e de travail d'inspecteurs et que le temps d'inspection moyen est de 45&nbsp;minutes, entrez  <code>45</code>.
+            </p>
+            <p>Le temps de service pass&eacute; &agrave; chaque arr&ecirc;t est cens&eacute; &ecirc;tre le m&ecirc;me.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limiter le temps de trajet total par véhicule</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifiez la dur&eacute;e maximum d'un itin&eacute;raire du d&eacute;but &agrave; la fin. Cela inclut le temps de trajet attendu et les temps de service pass&eacute;s aux arr&ecirc;ts le long de l'itin&eacute;raire. Si les chauffeurs ne doivent pas travailler plus qu'un certain nombre d'heures par jour, par exemple huit heures, vous pouvez pr&eacute;ciser cette limite ici.
+            </p>
+            <p>Consultez l'aide concernant le  <b>nombre maximum d'arr&ecirc;ts par v&eacute;hicule</b> pour en savoir plus sur l'&eacute;quilibrage de la charge de travail.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche d'entit&eacute;s qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Si la couche d'entit&eacute;s existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom. La couche d'entit&eacute;s contiendra une couche pour chacun des &eacute;l&eacute;ments suivants&nbsp;: itin&eacute;raires, arr&ecirc;ts attribu&eacute;s et arr&ecirc;ts non attribu&eacute;s lorsque certains arr&ecirc;ts n'ont pas pu &ecirc;tre attribu&eacute;s &agrave; un itin&eacute;raire.
+            </p>
+            <p>Si vous s&eacute;lectionnez  <b>Inclure les couches d'itin&eacute;raires</b>, chaque itin&eacute;raire du r&eacute;sultat est &eacute;galement enregistr&eacute; en tant que couche d'itin&eacute;raires. Une couche d&rsquo;itin&eacute;raire comprend toutes les informations associ&eacute;es &agrave; un itin&eacute;raire en particulier, telles que les arr&ecirc;ts attribu&eacute;s &agrave; l&rsquo;itin&eacute;raire et les feuilles de route. La cr&eacute;ation de couches d&rsquo;itin&eacute;raire est utile si vous voulez partager les itin&eacute;raires individuels avec d&rsquo;autres membres de votre organisation ou si vous souhaitez poursuivre la modification des itin&eacute;raires &agrave; l&rsquo;aide du bouton <b>Directions (Feuille de route)</b> dans la visionneuse de carte. Les couches d&rsquo;itin&eacute;raire utilisent le nom fourni pour la couche d&rsquo;entit&eacute;s comme pr&eacute;fixe, et le nom de l&rsquo;itin&eacute;raire g&eacute;n&eacute;r&eacute; dans le cadre de l&rsquo;analyse qui est ajout&eacute; pour conf&eacute;rer un nom unique &agrave; chaque couche d&rsquo;itin&eacute;raire.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel la couche d&rsquo;entit&eacute;s et les couches d&rsquo;itin&eacute;raire, si elles sont cr&eacute;&eacute;es, seront enregistr&eacute;es.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

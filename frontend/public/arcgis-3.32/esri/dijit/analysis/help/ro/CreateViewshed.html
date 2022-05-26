@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Creare rază vizuală</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Creare rază vizuală"></h2>
+        <hr/>
+    <p>Instrumentul Creare rază vizuală generează zone &icirc;n cadrul cărora un observator poate vedea obiectele de la nivelul solului. Punctul de observator intrare poate reprezenta fie observatorii (cum ar fi oameni de la nivelul solului sau din puncte de observaţie situate &icirc;n foişoare de foc) fie obiectele observate (cum ar fi turbine eoliene, turnuri de apă, vehicule sau alţi oameni). Zonele rezultate sunt cele &icirc;n cadrul cărora observatorii pot vedea obiectele observate şi viceversa &ndash; obiectele observate pot vedea observatorii.
+    </p>
+    <p>At&acirc;t observatorii, c&acirc;t şi obiectele observate pot avea o oarecare &icirc;nălţime deasupra nivelul solului, iar această &icirc;nălţime este utilizată &icirc;n stabilirea vizibilităţii.
+ De exemplu, o rază vizuală calculată pentru turbine eoliene de 122 m şi oameni cu &icirc;nălţimea de 1,83 m st&acirc;nd &icirc;n picioare la nivelul solului va fi, de regulă, mai mare dec&acirc;t o rază vizuală calculată pentru turbine eoliene de 61 m şi oameni cu &icirc;nălţimea de 1,83 m.
+    </p>
+    <p>Reţineţi faptul că această calculare a razei vizuale nu ţine cont de obstacole precum copaci sau clădiri. Puteţi considera că acest calcul are loc pe sol neocupat, lipsit de orice elemente &icirc;n afara observatorului şi a obiectelor observate.
+    </p>
+    <p>Stratul tematic de rezultate conţine obiectele spaţiale zonale, care reprezintă zonele vizibile. C&acirc;mpul  <i>Frequency</i> &icirc;nregistrează numărul punctelor de observatoare care pot vedea fiecare zonă. De exemplu, dacă aveți cinci puncte de intrare, fiecare reprezent&acirc;nd un punct de observație dintr-un foișor de foc, c&acirc;mpul <i>Frequency</i> va conține valori &icirc;ntre unu și cinci; zonele cu valoarea unu pot fi văzute de către un singur turn, iar zonele cu valoarea cinci pot fi văzute de către toate turnurile. De asemenea, stratul tematic de rezultate conține și c&acirc;mpul <i>DEMResolution</i>, care &icirc;nregistrează rezoluția modelului digital de elevație (DEM) folosit pentru a crea razele vizuale.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi analizate doar punctele de observatoare vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, toate punctele de observatoare din stratul tematic introdus vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Obiecte spaţiale punctuale care reprezintă locaţiile observatoarelor</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale punctuale care vor fi utilizate ca locaţii de observatoare. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Înălţimea locaţiilor observatoarelor</h2></div>
+        <hr/>
+        <div>
+            <p>Aceasta este &icirc;nălţimea locaţiilor dvs. de observatoare deasupra nivelului solului.    Valoarea implicită este aproximativ &icirc;nălţimea medie a unei persoane.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Înălțimea celorlalte obiecte de la sol</h2></div>
+        <hr/>
+        <div>
+            <p>Aceasta reprezintă &icirc;nălţimea structurilor sau oamenilor situaţi la nivelul solului, utilizaţi pentru stabilirea vizibilităţii. Raza vizuală rezultată constă &icirc;n acele zone &icirc;n cadrul cărora un punct de observator poate vedea aceste obiecte.  Viceversa este, de asemenea, valabilă; celelalte obiecte pot vedea un punct de observator. 
+            </p>
+            <p>
+                <ul>
+                    <li>Dacă punctele dvs. de observatoare reprezintă turbine eoliene şi doriţi să stabiliţi de unde pot vedea turbinele oamenii care stau &icirc;n picioare la nivelul solului, introduceţi &icirc;nălţimea medie a unei persoane (aproximativ 1,83 m).  Rezultatul constă &icirc;n acele zone din cadrul cărora o persoană st&acirc;nd &icirc;n picioare poate vedea turbinele eoliene.
+                    </li>
+                    <li>Dacă punctele dvs. de observatoare reprezintă foişoare de foc av&acirc;nd puncte de observaţie şi doriţi să stabiliţi care turnuri de observaţie pot vedea o d&acirc;ră de fum cu &icirc;nălţimea de 6,1 m sau mai &icirc;naltă, introduceţi 1,83 m &icirc;n dreptul &icirc;nălţimii.  Rezultatul constă &icirc;n acele zone de unde un turn de observaţie poate vedea o d&acirc;ră de fum cu &icirc;nălţimea de cel puţin 6,1 m.
+                    </li>
+                    <li>Dacă punctele dvs. de observatoare reprezintă puncte de observare a peisajului situate de-a lungul drumurilor şi cărărilor şi doriţi să stabiliţi de unde pot fi observate turbinele eoliene cu &icirc;nălţimea de 122 m sau mai &icirc;nalte, introduceţi 122 m &icirc;n dreptul &icirc;nălţimii.  Rezultatul constă &icirc;n acele zone de unde o persoană st&acirc;nd &icirc;n picioare la un punct de observare a peisajului poate vedea o turbină eoliană cu &icirc;nălţimea de cel puţin 122 m.
+                    </li>
+                    <li>Dacă punctele dvs. de observatoare reprezintă puncte de observare a peisajului şi doriţi să stabiliţi ce suprafaţă situată la nivelul solului pot vedea oamenii ce stau &icirc;n picioare la punctul de observaţie, introduceţi zero.  Rezultatul constă &icirc;n acele zone care pot fi văzute de la punctul de observare a peisajului.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distanță maximă de vizualizare</h2></div>
+        <hr/>
+        <div>
+            <p>Aceasta este o distanţă hotar, unde se opreşte calcularea zonelor vizibile. Dincolo de această distanţă, nu se ştie dacă punctele de observatoare şi celelalte obiecte se pot vedea reciproc. Valorile mari cresc timpul de calcul. Valoarea maximă permisă este de 31 mile (50 de kilometri).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+            <p> Rularea acestui instrument nu consumă credite.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

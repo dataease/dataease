@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Encontrar Clusters de Ponto</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Encontrar Clusters de Ponto"></h2>
+        <hr/>
+    <p>A ferramenta  Encontrar Clusters de Ponto encontra clusters de elementos de pontos no ru&iacute;do circundante com base na sua distribui&ccedil;&atilde;o espacial.
+    </p>
+    <p>Por exemplo, uma organiza&ccedil;&atilde;o n&atilde;o-governamental est&aacute; a estudar uma doen&ccedil;a espec&iacute;fica transmitida por parasita. Possui um conjunto de dados de ponto que representa agregados familiares numa &aacute;rea de estudo, algumas das quais se encontram infestadas, outras n&atilde;o. Ao utilizar a ferramenta  Encontrar Clusters de Ponto , um analista pode determinar clusters de agregados familiares infestados para ajudar a definir uma &aacute;rea na qual iniciar o tratamento e a extermina&ccedil;&atilde;o dos parasitas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecione a camada a partir da qual os clusters serão encontrados.</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de pontos na qual os clusters se encontrar&atilde;o.  As camadas t&ecirc;m de encontrar-se numa refer&ecirc;ncia espacial projetada ou a refer&ecirc;ncia espacial de processamento tem de ser definida para um sistema de coordenadas projetado que utilize os  <b>Ambientes de An&aacute;lise</b>.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Escolha o método de agrupamento a usar</h2></div>
+        <hr/>
+        <div>
+            <p>O m&eacute;todo de agrupamento que ser&aacute; utilizado para distinguir agrupamentos de elementos de pontos de ru&iacute;do circundante. Pode optar por utilizar uma dist&acirc;ncia definida ou um algoritmo de agrupamento autoajust&aacute;vel.
+            </p>
+            <p>A dist&acirc;ncia definida (DBSCAN) utiliza um intervalo de pesquisa especificado para separar agrupamentos densos de ru&iacute;do disperso. A dist&acirc;ncia definida (DBSCAN) &eacute; mais r&aacute;pida, mas apenas &eacute; adequada se houver um intervalo de pesquisa muito claro a utilizar que funcione bem para definir todos os agrupamentos que possam estar presentes. A dist&acirc;ncia definida (DBSCAN) encontra agrupamentos que t&ecirc;m densidades similares.
+            </p>
+            <p>O autoajustamento (HDBSCAN) n&atilde;o necessita que se especifique um intervalo de pesquisa, mas &eacute; um m&eacute;todo mais demorado. O autoajustamento (HDBSCAN) encontra agrupamentos de pontos tal como a dist&acirc;ncia definida (DBSCAN), mas utiliza intervalos de pesquisa vari&aacute;veis, permitindo agrupamentos com densidades vari&aacute;veis. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Número mínimo de pontos para ser coniderado um cluster</h2></div>
+        <hr/>
+        <div>
+            <p>Este par&acirc;metro &eacute; utilizado distintamente, dependendo do m&eacute;todo de agrupamento escolhido:
+            </p>
+            <p>
+                <ul>
+                    <li>Dist&acirc;ncia definida (DBSCAN) &mdash; especifica o n&uacute;mero de elementos que t&ecirc;m de ser encontrados a uma certa dist&acirc;ncia de um ponto para que esse ponto comece a formar um agrupamento. A dist&acirc;ncia &eacute; definida utilizando o par&acirc;metro  <b>Limitar o intervalo de pesquisa para</b>.
+                    </li>
+                    <li>Autoajustamento (HDBSCAN) &mdash; especifica o n&uacute;mero de elementos que circundam cada ponto (incluindo o pr&oacute;prio ponto) que ser&atilde;o considerados ao estimar a densidade. Este n&uacute;mero tamb&eacute;m &eacute; o tamanho m&iacute;nimo de agrupamento permitido ao extrair agrupamentos.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limite o intervalo de pesquisa para</h2></div>
+        <hr/>
+        <div>
+            <p>Ao utilizar a dist&acirc;ncia definida (DBSCAN), este par&acirc;metro &eacute; a dist&acirc;ncia dentro da qual o  <b>N&uacute;mero m&iacute;nimo de pontos para ser considerado um agrupamento</b> tem de ser encontrado. Este par&acirc;metro n&atilde;o &eacute; utilizado quando o autoajustamento (HDBSCAN) &eacute; escolhido como o m&eacute;todo de agrupamento a utilizar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tentukan Jaringan Biaya Perjalanan Optimal</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Ilustrasi alat Tentukan Jaringan Biaya Perjalanan Optimal"></h2>
+        <hr/>
+    <p>Alat ini menghitung jaringan biaya optimal dari serangkaian daerah input.
+    </p>
+    <p>Satu contoh aplikasi alat ini adalah menemukan jaringan terbaik untuk kendaraan darurat.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya lokasi di layer input yang terlihat dalam jangkauan peta saat ini yang akan dianalisis. Jika tidak dicentang, seluruh lokasi pada layer input akan dianalisis, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Pilih raster atau layer lokasi fitur untuk menentukan jalur perjalanan di antaranya</h2></div>
+        <hr/>
+        <div>
+            <p>Wilayah input yang akan dihubungkan oleh jaringan dengan biaya paling sedikit.
+            </p>
+            <p>Wilayah dapat ditentukan oleh layanan gambar atau feature service.
+            </p>
+            <p>Untuk layanan gambar, wilayah ditentukan menurut kelompok sel yang berdekatan dengan nilai yang sama. Setiap wilayah harus diberi nomor secara unik. Sel yang bukan bagian dari wilayah apa pun harus berupa NoData. Jenis raster harus berupa bilangan bulat, dan nilai dapat berupa nilai positif atau negatif.
+            </p>
+            <p>Untuk feature service, input dapat berupa titik, garis, atau poligon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Pilih layer raster biaya perjalanan</h2></div>
+        <hr/>
+        <div>
+            <p>Sebuah raster mendefinisikan impedansi atau biaya untuk bergerak secara planimetri melalui setiap sel.
+            </p>
+            <p>Nilai di setiap lokasi sel mewakili jarak biaya-per-unit untuk bergerak melalui sel. Setiap nilai lokasi sel dikalikan dengan resolusi sel, sementara juga mengkompensasi gerakan diagonal untuk mendapatkan biaya total melewati sel.
+            </p>
+            <p>Nilai-nilai dari raster biaya dapat berupa bilangan bulat atau bilangan titik mengambang, tetapi tidak boleh negatif atau nol (Anda tidak dapat memiliki biaya negatif atau nol).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nama layer polyline jalur optimal hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nama layer polyline jalur yang berdekatan hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

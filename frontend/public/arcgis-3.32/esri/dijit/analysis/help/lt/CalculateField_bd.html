@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skaičiuoti lauko reikšmes</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Skaičiuoti lauko reik&scaron;mes"></h2>
+        <hr/>
+    <p> Apskaičiuojant naujo arba esamo lauko reik&scaron;mes, &scaron;is įrankis veikia su įvesties sluoksniu. Norėdami apskaičiuoti reik&scaron;mes, kurios turėtų būti pateiktos elementuose, sukurkite Arcade i&scaron;rai&scaron;ką.   Jei jūsų duomenys yra susieti su laiku ir jų tipas yra &bdquo;I&scaron;kart&ldquo;, galite kurti pokyčių laike i&scaron;rai&scaron;kas.
+    </p>
+    <p>Tarkime, norite pakeisti esamą lauką, pavadintą  <i>TotalSales</i>. Jūs norite, kad lauke būtų pateikta bendra 2016 ir 2017 m. apyvartos suma. Naudodami tuos laukus i&scaron;rai&scaron;koje, lauko reik&scaron;mę apskaičiuojate kaip <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Arba, tarkime, kad turite GPS matavimus, kurie užfiksuoja vietą, laiką, autobuso ID ir autobusų greitį mieste. Norime sukurti naują lauką pavadinimu  <i>SpeedFrom3</i> kuriame bus pateikiamas kiekvieno elemento paskutinių 3 užfiksuotų GPS matavimų greičio vidurkis. &Scaron;iam apskaičiavimui reikėtų naudoti pokyčių laike skaičiavimą, kai pokytis yra pagal autobuso ID nurodomas autobusas.    Skaičiavimas, kuriuo nustatomas vidutinis ankstesnių 3 laiko žingsnių ir dabartinio žingsnio greitis, yra <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kuriame bus skaičiuojamos laukų reikšmės</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kai, linijos, plotai ar lentelė, kurioje bus apskaičiuojamos laukų reik&scaron;mės.  
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Apskaičiuokite lauko reikšmes</h2></div>
+        <hr/>
+        <div>
+            <p>Naujas arba esamas laukas, kuriame bus skaičiuojamos reik&scaron;mės, ir to lauko duomenų tipas. Jei apskaičiuojate jau esančio lauko reik&scaron;mes, duomenų tipo suderinti nereikia. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Kurti išraišką, skirtą lauko reikšmėms skaičiuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Norėdami apskaičiuoti laukų reik&scaron;mes, įtraukite i&scaron;rai&scaron;ką naudodami i&scaron;rai&scaron;kų kūrimo priemonę. 
+            </p>
+            <p>Tarkime, norime įtraukti laukų  <i>income</i> ir <i>bonus</i> reik&scaron;mes. Norėdami tai padaryti, įtraukite i&scaron;rai&scaron;ką <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;]</code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Išraiška sekimui</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, ar tai yra pokyčių laike i&scaron;rai&scaron;ka. Pokyčių laike i&scaron;rai&scaron;ka bus tokio formato:  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Pokyčių laike i&scaron;rai&scaron;koms reikalingi laukai, nurodantys atskirus pokyčius. Pokyčius gali sudaryti ta&scaron;kai, linijos, plotai ar lentelės ir vienintelis reikalavimas &ndash; kad įvestyje būtų sekimo identifikatorius, o duomenys būtų susieti su laiku ir tipas &bdquo;I&scaron;kart&ldquo;.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizuoti duomenis su laiko intervalais</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, ar norite skaičiuoti trajektorijų reik&scaron;mes naudodami laiko intervalus, kurie segmentuos jūsų įvestį analizei. Jei naudosite laiko intervalus, turite nustatyti norimą naudoti laiko intervalą ir (nebūtina) nustatyti atskaitos laiką. Jei nenustatysite atskaitos laiko, bus naudojama 1970 m. sausio 1 d. 
+            </p>
+            <p>Pavyzdžiui, jei nustatysite laiko ribą kaip 1 dieną, o pradžios ta&scaron;ką 1990 m. sausio 1 d. 9:00 val., kiekviena trajektorija bus supaprastinama kasdien 9:00 val. ir analizuojama tame segmente. 
+            </p>
+            <p>Laiko intervalų naudojimas yra paprastas būdas paspartinti skaičiavimo laiką, nes taip greitai sukuriamos mažesnės trajektorijos analizei. Jei padalinimas į pasikartojančius laiko intervalus logi&scaron;kai tinkamas jūsų analizei, rekomenduojama tai padaryti apdorojant didelius duomenis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

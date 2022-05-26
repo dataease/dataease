@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/utils/plots/animation/_WaffleAnimation",["dojo/_base/declare","dojo/dom-construct","esri/dijit/geoenrichment/utils/animation/Animator","esri/dijit/geoenrichment/ReportPlayer/ReportPlayerState","./_defaults"],function(b,e,f,h,k){return b(null,{_animationMemo:null,_isAnimating:!1,renderAnimation:function(){!this._isAnimating&&this._animationMemo&&this._renderAnimation(this._animationMemo.s)},_renderAnimation:function(b){function l(){d.forEach(function(a){e.destroy(a)});
+c.valueLabelElements.forEach(function(a){a.style.display=""});c._isAnimating=!1}var c=this;if(this._animationInfos.length&&this.opt.animate&&(this._animationMemo={s:b},!h.isAnimationSuspended)){var d=[];(function(){c.valueLabelElements.forEach(function(a){a.style.display="none"})})();this._isAnimating=!0;(function(){c._animationInfos.forEach(function(a,b){f.animateProperty({duration:c.opt.animate.duration||k.duration,properties:{slice:{start:0,end:1}},progressFunction:function(c,f,g){a.isShape?a.func(g):
+a.isLabel&&(d[b]&&e.destroy(d[b]),d[b]=a.func(g))},endFunction:l})})})()}}})});

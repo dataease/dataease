@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea àrees d'influència</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Crea &agrave;rees d'influ&egrave;ncia"></h2>
+        <hr/>
+    <p>Una &agrave;rea d'influ&egrave;ncia &eacute;s una &agrave;rea que cobreix una dist&agrave;ncia determinada des d'una entitat de punts, de l&iacute;nies o d'&agrave;rees. 
+    </p>
+    <p>Les &agrave;rees d'influ&egrave;ncia se solen utilitzar per crear &agrave;rees que es poden analitzar amb m&eacute;s profunditat mitjan&ccedil;ant una eina, com ara Superposa les capes. Per exemple, per trobar la resposta de la pregunta &quot;Quins edificis estan a un quil&ograve;metre de l'escola?&quot;, es pot crear una &agrave;rea d'influ&egrave;ncia d'un quil&ograve;metre al voltant de l'escola i utilitzar l'eina Superposa les capes per superposar l'&agrave;rea d'influ&egrave;ncia amb la capa que cont&eacute; les superf&iacute;cies dels edificis.  El resultat final &eacute;s una capa amb els edificis que es troben a menys d'un quil&ograve;metre de l'escola.  
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s es crearan &agrave;rees d'influ&egrave;ncia per a les entitats que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, es crearan &agrave;rees d'influ&egrave;ncia per a totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa que conté entitats amb les quals es crearan àrees d'influència</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts, de l&iacute;nies o d'&agrave;rees amb les quals es crearan les &agrave;rees d'influ&egrave;ncia. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Introduïu la mida de l'àrea d'influència</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu introduir un o diversos valors de dist&agrave;ncia separats per un espai.  Per especificar un atribut a la capa d'entrada que cont&eacute; el valor de dist&agrave;ncia, tamb&eacute; podeu fer clic a  <b>Camp</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opcions</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu com voleu que es gestionin les &agrave;rees d'influ&egrave;ncia que se superposen. Per a qualsevol &agrave;rea d'influ&egrave;ncia que es trobi a sobre d'una altra, les &agrave;rees en com&uacute; es poden conservar (superposar) o combinar (dissoldre). Quan s'utilitza  <b>Dissol</b>, totes les &agrave;rees d'influ&egrave;ncia es dissolen en una &uacute;nica entitat de diverses parts i s'elimina qualsevol superposici&oacute;.
+            </p>  
+            <p> Quan feu servir diverses dist&agrave;ncies, podeu triar com es representa la dist&agrave;ncia des de l'&uacute;ltima dist&agrave;ncia d'&agrave;rea d'influ&egrave;ncia. Per exemple, si les dist&agrave;ncies s&oacute;n 10 i 14:
+                <ul>
+                    <li>Si trieu  <b>Anells</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 10 a 14.
+                    </li>
+                    <li>Si trieu  <b>Discs</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opcions</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu com voleu que es gestionin les &agrave;rees d'influ&egrave;ncia que se superposen. Per a qualsevol &agrave;rea d'influ&egrave;ncia que es trobi a sobre d'una altra, les &agrave;rees en com&uacute; es poden conservar (superposar) o combinar (dissoldre).  Quan s'utilitza  <b>Dissol</b>, totes les &agrave;rees d'influ&egrave;ncia es dissolen en una &uacute;nica entitat de diverses parts i s'elimina qualsevol superposici&oacute;.
+            </p>
+            <p>Quan creeu una sola &agrave;rea d'influ&egrave;ncia al voltant d'entitats d'&agrave;rees (s'ha introdu&iuml;t una dist&agrave;ncia), podeu triar si l'entitat de la qual es crear&agrave; l'&agrave;rea d'influ&egrave;ncia s'inclour&agrave; a l'&agrave;rea d'influ&egrave;ncia resultant o no.
+            </p>
+            <p>Quan feu servir diverses dist&agrave;ncies, podeu triar com es representa la dist&agrave;ncia des de l'&uacute;ltima dist&agrave;ncia d'&agrave;rea d'influ&egrave;ncia. Per exemple, si les dist&agrave;ncies s&oacute;n 10 i 14:
+                <ul>
+                    <li>Si trieu  <b>Anells</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 10 a 14.
+                    </li>
+                    <li>Si trieu  <b>Discs</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opcions</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu com voleu que es gestionin les &agrave;rees d'influ&egrave;ncia que se superposen. Per a qualsevol &agrave;rea d'influ&egrave;ncia que es trobi a sobre d'una altra, les &agrave;rees en com&uacute; es poden conservar (superposar) o combinar (dissoldre). Quan s'utilitza  <b>Dissol</b>, totes les &agrave;rees d'influ&egrave;ncia es dissolen en una &uacute;nica entitat de diverses parts i s'elimina qualsevol superposici&oacute;.
+            </p>
+            <p>Quan creeu una sola &agrave;rea d'influ&egrave;ncia al voltant de l&iacute;nies (s'ha introdu&iuml;t una dist&agrave;ncia), podeu triar quina banda de la l&iacute;nia s'inclour&agrave; a l'&agrave;rea d'influ&egrave;ncia.  Normalment, es trien tots dos costats.  L'esquerra i la dreta es determinen com si estigu&eacute;ssiu caminant des de la primera coordenada x,y de la l&iacute;nia (coordenada inicial) fins a l'&uacute;ltima coordenada x,y de la l&iacute;nia (coordenada final).  Normalment, trieu esquerra o dreta quan sabeu que les entitats de l&iacute;nies s'han creat i emmagatzemat en una direcci&oacute; concreta (per exemple, aig&uuml;es amunt o aig&uuml;es avall en una xarxa fluvial).   Als extrems de les l&iacute;nies, l'&agrave;rea d'influ&egrave;ncia pot ser arrodonida (circular) o recta (plana).
+            </p>
+            <p>Quan creeu diverses &agrave;rees d'influ&egrave;ncia (m&eacute;s d'una dist&agrave;ncia), podeu triar com es representa la dist&agrave;ncia des de l'&uacute;ltima dist&agrave;ncia d'&agrave;rea d'influ&egrave;ncia. Per exemple, si les dist&agrave;ncies s&oacute;n 10 i 14:
+                <ul>
+                    <li>Si trieu  <b>Anells</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 10 a 14.
+                    </li>
+                    <li>Si trieu  <b>Discs</b>, es generen &agrave;rees d'influ&egrave;ncia que van de 0 a 10 i de 0 a 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opcions</h2></div>
+        <hr/>
+        <div>
+            <p>Quan h&agrave;giu triat una capa per crear l'&agrave;rea d'influ&egrave;ncia, podreu triar com voleu que es gestionin les &agrave;rees d'influ&egrave;ncia que se superposen. Per a qualsevol &agrave;rea d'influ&egrave;ncia que es trobi a sobre d'una altra, les &agrave;rees en com&uacute; es poden conservar (superposar) o combinar (dissoldre). Quan s'utilitza  <b>Dissol</b>, totes les &agrave;rees d'influ&egrave;ncia es dissolen en una &uacute;nica entitat de diverses parts i s'elimina qualsevol superposici&oacute;.  Tamb&eacute; podeu especificar com es representaran les diverses dist&agrave;ncies.   Per a les capes que contenen entitats de l&iacute;nies, podeu triar quina banda de la l&iacute;nia s'inclour&agrave; a l'&agrave;rea d'influ&egrave;ncia.  Per a les capes que contenen entitats d'&agrave;rees, podeu triar si l'entitat de la qual es crear&agrave; l'&agrave;rea d'influ&egrave;ncia s'inclour&agrave; a l'&agrave;rea d'influ&egrave;ncia resultant o no.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Temukan Pencilan</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Temukan Pencilan"></h2>
+        <hr/>
+    <p>Alat Temukan Pencilan akan menentukan apakah ada pencilan yang signifikan secara statistik pada pola spasial data Anda. 
+        <ul>
+            <li>Apakah terdapat area anomali pada pola data Anda (insiden kejahatan, pohon, kecelakaan lalu lintas)?  Bagaimana Anda bisa yakin?
+            </li>
+            <li>Apakah Anda benar-benar menemukan pencilan yang signifikan secara statistik (untuk pengeluaran, mortalitas bayi, skor tes yang tinggi secara konsisten) atau apakah peta Anda memberikan cerita yang berbeda jika Anda mengubah cara simbolisasinya?
+            </li>
+        </ul>
+        Alat Temukan Pencilan akan membantu Anda menjawab pertanyaan tersebut dengan yakin.
+    </p>
+    <p>Setiap kali kita melihat ke peta, mata dan otak kita secara alami mulai mencoba menemukan pola bahkan ketika pola tersebut tidak ada.  Maka, akan menjadi sulit untuk mengetahui apakah pola pada data Anda merupakan hasil kerja nyata dari proses spasial, atau hanya merupakan hasil kemungkinan acak.  Hal tersebut menjadi alasan para peneliti dan analis menggunakan metode statistik seperti Temukan Pencilan (Anselin Local Moran's I) untuk melakukan kuantifikasi pola spasial.  Ketika Anda menemukan pencilan atau pengklusteran secara statistik yang signifikan pada data Anda, maka Anda memiliki informasi yang berharga.  Dengan mengetahui tempat dan waktu pencilan terjadi, akan dapat memberikan petunjuk penting tentang proses yang mengakibatkan pola yang Anda lihat.  Langkah selanjutnya adalah menginvestigasi penyebab hal-hal menjadi berbeda secara signifikan di area pencilan tersebut.  Dengan mengetahui bahwa perampokan rumah, sebagai contoh, secara signifikan lebih tinggi pada lingkungan tertentu meskipun dikelilingi oleh lingkungan dengan tingkat perampokan yang rendah merupakan informasi penting jika Anda akan mendesain strategi pencegahan yang efektif, mengalokasikan sumber daya polisi yang terbatas, memulai program sistem keamanan lingkungan, mengotorisasi investigasi kriminal mendalam, atau mengidentifikasi tersangka potensial.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pilih layer yang pencilannya akan dihitung</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik atau area tempat pencilan akan ditemukan. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Temukan pencilan dari</h2></div>
+        <hr/>
+        <div>
+            <p>Analisis ini menjawab pertanyaan: Di manakah pencilan spasial pada data saya berada?  
+            </p>
+            <p>Jika data Anda berupa titik dan Anda memilih  <b>Jumlah Titik</b>, alat ini akan mengevaluasi pengaturan spasial fitur-fitur titik untuk menjawab pertanyaan: Di manakah titik-titik tersebut terkluster atau tersebar tidak secara semestinya?
+            </p>
+            <p>Jika Anda memilih kolom, alat ini akan mengevaluasi pengaturan spasial dari nilai yang terkait dengan masing-masing fitur untuk menjawab pertanyaan: Di manakah nilai rendah yang dikelilingi oleh nilai tinggi?  Di manakah nilai tinggi yang dikelilingi oleh nilai rendah?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Hitung titik di dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Defaultnya adalah menghitung titik yang berada dalam sebuah grid jaring yang dibuat oleh alat berdasarkan data titik Anda. Atau, Anda dapat memilih untuk menghitung titik dalam grid heksagon untuk menyediakan layer area (biasanya hal ini akan mencerminkan pelaporan administratif wilayah seperti sistem sensus, batas kota, atau daerah) untuk menjawab pertanyaan: Dengan mempertimbangkan jumlah titik yang dihitung pada masing-masing fitur area, apakah ada lokasi yang signifikan secara statistik dengan jumlah titik tinggi atau rendah dibandingkan dengan sekitarnya?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Tentukan tempat kemungkinan titik-titik berada</h2></div>
+        <hr/>
+        <div>
+            <p>Gambar atau sediakan layer yang menentukan tempat kemungkinan terjadi insiden untuk menjawab pertanyaan: Dalam suatu area, apakah ada lokasi dengan konsentrasi titik yang tinggi atau rendah yang tidak diperkirakan?   
+            </p>
+            <p>Fitur area yang Anda gambar atau fitur pada layer area yang Anda tentukan harus menjelaskan tempat titik kemungkinan akan muncul.  Untuk menggambar area ini, klik tombol  <b>Gambar</b> dan klik lokasi pada peta untuk membuat bentuk area.  Untuk menggambar area tambahan, klik kembali tombol gambar kemudian klik lokasi pada peta untuk melanjutkan.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Bagi berdasarkan</h2></div>
+        <hr/>
+        <div>
+            <p>Terkadang Anda mungkin ingin menganalisis pola yang perlu dipertimbangkan yang mendasari distribusi. Contoh, jika data Anda melambangkan titik-titik kriminal, membaginya dengan total populasi akan menghasilkan analisis kejahatan per jumlah penduduk dan bukan hanya hitungan kejahatan mentah.  Memilih suatu atribut untuk dibagi sering disebut sebagai normalisasi.
+            </p>
+            <p> Memilih <i>Populasi Esri</i> akan memperkaya lokasi masing-masing fitur area dengan nilai populasi yang kemudian digunakan sebagai atribut untuk dibagi.  Opsi ini akan menggunakan kredit.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimalkan untuk</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memilih untuk mengoptimalkan kecepatan atau presisi.  
+            </p>
+            <p>Alat ini menggunakan permutasi untuk menentukan seberapa beda pola spasial data Anda dari pola acak.  Meningkatkan jumlah permutasi akan meningkatkan presisi namun juga akan memperlambat waktu proses.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opsi Override</h2></div>
+        <hr/>
+        <div>
+            <p>Alat ini akan menemukan pengaturan optimal untuk  <b>Ukuran Sel</b> dan <b>Pita Jarak</b> standar berdasarkan karakteristik data Anda. Namun, jika Anda memiliki <b>Ukuran Sel</b> tertentu atau <b>Pita Jarak</b> yang masuk akal untuk analisis Anda, <b>Opsi Override</b> dapat digunakan untuk menentukan nilai tersebut.
+            </p>
+            <p> <b>Opsi Override</b> juga berguna saat menjalankan analisis pada rangkaian data yang berbeda, hal ini memungkinkan Anda untuk menyimpan <b>Pita Jarak</b> dan <b>Ukuran Sel</b> yang konsisten di antara beberapa set data.  Anda kemudian dapat membandingkan hasilnya (contohnya, tingkat obesitas dan diabetes atau bahkan tingkat kejahatan pada dua tahun yang berbeda).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Ukuran Sel</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran grid sel yang digunakan untuk menghitung jumlah titik di dalamnya.  
+            </p>
+            <p>Saat menggunakan grid heksagon untuk menghitung titik di dalamnya, jarak ini digunakan sebagai tinggi dari heksagon.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Pita Jarak</h2></div>
+        <hr/>
+        <div>
+            <p>Masing-masing fitur dianalisis dalam konteks fitur yang berdekatan yang berlokasi pada jarak yang Anda tentukan.  Alat ini akan menghitung jarak standar untuk Anda atau Anda dapat menggunakan opsi ini untuk menentukan jarak tertentu yang masuk akal untuk analisis Anda. 
+            </p>
+            <p>Contoh, jika Anda mempelajari pola komuter dan Anda tahu bahwa rata-rata perjalanan ke tempat kerja adalah 15 mil, misalnya, maka Anda dapat menggunakan pita jarak 15-mil.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Beri nama untuk layer yang akan dibuat di  <b>Konten Saya</b> dan tambahkan ke dalam peta.  Layer hasil ini akan memperlihatkan kepada Anda pencilan yang signifikan secara statistik dengan nilai tinggi atau rendah atau jumlah titik. Jika nama layer hasil sudah ada, Anda akan diminta untuk memberi nama baru.
+            </p>
+            <p>Dengan menggunakan kotak tarik-turun  <b>Simpan hasil</b>, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

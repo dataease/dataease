@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/rasterLib/function/ResampleFunction",["dojo/_base/declare","dojo/_base/lang","./pixelShaders","./RasterFunctionX","./RasterFunctionWebGLMixin"],function(e,l,g,h,k){return e([h,k],{declaredClass:"esri.layers.rasterLib.function.ResampleFunction",renderTexture:!0,resamplingType:0,resamplingOrigin:null,resamplingRatio:null,zFactor:1,functionName:"Resample",supportWebGL:!0,support2D:!1,constructor:function(c){},readGL:function(c){this._performance.start();this._initializeProgram({fragment:g.mask,
+fragmentName:"Mask"});var d=this._setupTextureData(c.raster),e=this.bindFrameBuffer(),b=this.gl;b.bindTexture(b.TEXTURE_2D,d.texture);var a,f=b.drawingBufferWidth,b=b.drawingBufferHeight;a=c.raster;void 0!==a.pixelBlock?(d=d||this._setupTextureData(a),c=a.pixelBlock.width,a=a.pixelBlock.height):(d=d||a,c=f,a=b);this._setUniforms({u_resamplingRatio:this.resamplingRatio||[c/f,a/b],u_anchor:this.resamplingOrigin||[0,1],u_resamplingType:this.resamplingType,u_resolution:[1/f,1/b]});this._drawGL();this._addPerformanceMetric(this._performance.elapsed());
+return{extent:d.extent,texture:e.texture}}})});

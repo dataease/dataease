@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Puntclusters zoeken</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Puntclusters zoeken"></h2>
+        <hr/>
+    <p>Deze tool zoekt clusters van puntobjecten binnen omringende ruis gebaseerd op hun ruimtelijke distributie.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten geanalyseerd in de invoerlaag die zichtbaar zijn binnen het huidige kaartextent. Als de optie niet is aangevinkt, worden alle objecten in de invoerpuntlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Kies de laag waarvoor clusters zullen worden gevonden</h2></div>
+        <hr/>
+        <div>
+            <p>De puntlaag waar de clusters zich bevinden. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimumaantal punten dat als een cluster moet worden beschouwd</h2></div>
+        <hr/>
+        <div>
+            <p>Het minimum aantal objecten om als een cluster te worden beschouwd. Een cluster met minder kenmerken dan verstrekt, wordt gezien als ruis. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Beperk het zoekbereik tot (optioneel)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>De maximale afstand om objecten te beschouwen als deel uitmakend van dezelfde cluster. Als dit niet wordt ingevuld, zal de tool HDBSCAN uitvoeren, waarbij verschillende afstanden worden gebruikt om clusters met een vari&euml;rende dichtheid te scheiden van verspreide ruis. Als een waarde wordt gegeven, zal de tool DBSCAN uitvoeren, waarbij een gespecificeerde afstand wordt gebruikt om dichte clusters te scheiden van verspreide ruis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

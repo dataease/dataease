@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Havaitse tapahtumat</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Havaitse tapahtumat"></h2>
+        <hr/>
+    <p> T&auml;m&auml; ty&ouml;kalu toimii sellaisen karttatason kanssa, jossa on otettu aika k&auml;ytt&ouml;&ouml;n ja joka sis&auml;lt&auml;&auml; hetke&auml; ajassa kuvaavia pisteit&auml;, viivoja, alueita tai taulukoita. K&auml;ytt&auml;m&auml;ll&auml; per&auml;kk&auml;isess&auml; j&auml;rjestyksess&auml; olevia kohteita, joita kutsutaan reiteiksi, t&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml;, mitk&auml; kohteet ovat kiinnostavia tapahtumia. Tapahtumat m&auml;&auml;ritet&auml;&auml;n m&auml;&auml;ritt&auml;miesi ehtojen perusteella.
+    </p>
+    <p>Ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; ensin, mitk&auml; kohteet kuuluvat reittiin, k&auml;ytt&auml;m&auml;ll&auml; v&auml;hint&auml;&auml;n yht&auml; kentt&auml;&auml;. K&auml;ytt&auml;m&auml;ll&auml; aikaa kussakin kohteessa, reitit j&auml;rjestet&auml;&auml;n per&auml;kk&auml;in ja tapahtuman ehtoa sovelletaan. Kohteet, jotka t&auml;ytt&auml;v&auml;t tapahtuman aloitusehdon, merkit&auml;&auml;n tapahtumiksi. Voit vaihtoehtoisesti soveltaa tapahtuman lopetusehtoa; jos lopetusehto on tosi, kohde ei ole en&auml;&auml; tapahtuma.  Tulokset palautetaan alkuper&auml;isten kohteiden mukana. Uudet sarakkeet edustavat tapahtuman nime&auml; ja osoittavat, mik&auml; kohde t&auml;ytt&auml;&auml; tapahtuman ehdon. Voit palauttaa kaikki alkuper&auml;iset kohteet tai vain ne kohteet, jotka ovat tapahtumia.
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; sinulla on GPS-mittauksia hurrikaaneista aina kymmenen minuutin v&auml;lein. Jokainen GPS-mittaus tallentaa hurrikaanin nimen, sijainnin, tallennusajan ja tuulen nopeuden. K&auml;ytt&auml;m&auml;ll&auml; n&auml;it&auml; kentti&auml; voit luoda tapahtuman, jossa mik&auml; tahansa mittaus, jossa tuulen nopeus on suurempi kuin 208 km/h, on tapahtuma nimelt&auml;  <code>Catastrophic</code>. Jos et m&auml;&auml;rit&auml; lopetusehtoa, tapahtuma p&auml;&auml;ttyy, jos kohteen aloitusehto (tuulen nopeus laskee alle 208:n) ei en&auml;&auml; t&auml;yty.
+    </p>
+    <p>Oletetaan toisessa esimerkiss&auml;, ett&auml; seuraat kemikaalin pitoisuutta paikallisessa vedenjakelussa k&auml;ytt&auml;m&auml;ll&auml; kentt&auml;&auml; nimelt&auml;  <code>contaminateLevel</code>. Tied&auml;t, ett&auml; suositeltu taso on alle 0,01 mg/l, ja vaarallinen pitoisuustaso on yli 0,03 mg/l. Jos haluat havaita tapahtumat, joissa arvon 0,03 mg/l ylitt&auml;v&auml; arvo on tapahtuma, ja se s&auml;ilyy tapahtumana, kunnes saastumistaso on palautunut normaaliksi, voit luoda tapahtuman k&auml;ytt&auml;m&auml;ll&auml; aloitusehtoa <code>contaminateLevel &gt; 0,03</code> ja lopetusehtoa <code>contaminateLevel &lt; 0,01</code>. T&auml;m&auml; ehto merkitsee kaikki jaksot, joissa arvot ylitt&auml;v&auml;t arvon 0,03 mg/l, kunnes ne palautuvat arvoon, joka on alle 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, jossa tapahtumat havaitaan</h2></div>
+        <hr/>
+        <div>
+            <p>Pisteet, viivat, alueet tai taulukot, joita k&auml;ytet&auml;&auml;n tapahtumien etsimiseen. Ajan on oltava k&auml;yt&ouml;ss&auml; l&auml;ht&ouml;aineiston karttatasossa, jossa on ajan hetke&auml; edustavia kohteita. Lis&auml;ksi siin&auml; on oltava v&auml;hint&auml;&auml;n yksi kentt&auml;, jota voi k&auml;ytt&auml;&auml; reittien tunnistamiseen.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Valitse vähintään yksi kenttä reittien tunnistamista varten</h2></div>
+        <hr/>
+        <div>
+            <p>Kent&auml;t, jotka edustavat reittitunnusta. Voit k&auml;ytt&auml;&auml; yht&auml; kentt&auml;&auml; tai useaa kentt&auml;&auml; reittien yksil&ouml;llisten arvojen esitt&auml;miseen.
+            </p>
+            <p>Jos olet esimerkiksi muodostamassa uudelleen hurrikaanin reitti&auml;, voit k&auml;ytt&auml;&auml; hurrikaanin nime&auml; reittikentt&auml;n&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Muodosta lausekkeen ehto, joka ilmaisee tapahtuman alun</h2></div>
+        <hr/>
+        <div>
+            <p>Lis&auml;&auml; ehto k&auml;ytt&auml;m&auml;ll&auml; lausekkeen muodostustoimintoa, jos haluat selvitt&auml;&auml;, mik&auml; on tapahtuma. Jos m&auml;&auml;ritt&auml;m&auml;si ehto on tosi, kohde on tapahtuma. Jos et m&auml;&auml;rit&auml; lopetusehtoa, tapahtuma p&auml;&auml;ttyy, kun aloitusehto ei ole en&auml;&auml; tosi.
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; haluat saada ilmoituksen, kun kenttien  <code>concentration_1</code> ja <code>concentration_2</code> summa on suurempi kuin <code>concentration_3</code>.   Voit tehd&auml; t&auml;m&auml;n soveltamalla ehtoa <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Jos kiinnostuit siit&auml;, miten keskittym&auml;t ovat muuttuneen ajan my&ouml;t&auml; ja haluat ilmoituksen, kun nykyinen  <code>keskittym&auml;_1</code> on suurempi kuin kaksi edellist&auml; <code>keskittym&auml;_2-mittausta</code> voit k&auml;ytt&auml;&auml; esimerkiksi lauseketta <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Muodosta lausekkeen ehto, joka ilmaisee tapahtuman lopun (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Voit vaihtoehtoisesti lis&auml;t&auml; ehdon k&auml;ytt&auml;m&auml;ll&auml; lausekkeen muodostustoimintoa, jos haluat selvitt&auml;&auml; tapahtuman p&auml;&auml;ttymisen. Jos m&auml;&auml;ritt&auml;m&auml;si lopetusehto on tosi, kohde ei en&auml;&auml; ole tapahtuma. Jos et m&auml;&auml;rit&auml; lopetusehtoa, tapahtuma p&auml;&auml;ttyy, kun aloitusehto ei ole en&auml;&auml; tosi.    
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; haluat saada ilmoituksen, kun kenttien  <code>concentration_1</code> ja <code>concentration_2</code> summa on suurempi kuin <code>concentration_3</code> ja haluat, ett&auml; tapahtuma p&auml;&auml;ttyy, jos kent&auml;n <code>concentration_4</code> arvo on pienempi kuin <code>concentration_1</code>. Voit tehd&auml; t&auml;m&auml;n soveltamalla aloitusehtoa <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> ja lopetusehtoa <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Jos haluat p&auml;&auml;tt&auml;&auml; tapahtuman, jossa nykyisen  <code>keskittym&auml;_1</code> :n sek&auml; nelj&auml;n aiikaisemman mittauksen keskiarvo on suurempi kuin ensimm&auml;isen mittauksen tulos, voit k&auml;ytt&auml;&auml; esimerkiksi lauseketta <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Näytä minulle</h2></div>
+        <hr/>
+        <div>
+            <p>Kaikki tulosten esitystavat liitt&auml;v&auml;t kent&auml;t alkuper&auml;isiin kohteisiin. Voit selvitt&auml;&auml; palautettavat kohteet kahdella tavalla:
+                <ul>
+                    <li> <b>Kaikki kohteet</b> &ndash; t&auml;m&auml; on oletusarvo. Kaikki l&auml;ht&ouml;aineiston kohteet palautetaan.
+                    </li>
+                    <li> <b>Vain tapahtumat</b> &ndash; t&auml;m&auml; tapa palauttaa vain kohteet, jotka ovat tapahtumia. Mit&auml;&auml;n kohteita, joiden ei ole todettu olevan tapahtumia, ei palauteta.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysoi aikavälejä sisältävät tiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, haluatko havaita tapahtumat k&auml;ytt&auml;m&auml;ll&auml; aikav&auml;lej&auml;, jotka segmentoivat l&auml;ht&ouml;aineistosi kohteet analyysia varten. Jos k&auml;yt&auml;t aikav&auml;lej&auml;, sinun on m&auml;&auml;ritett&auml;v&auml; aikav&auml;li, jota haluat k&auml;ytt&auml;&auml;, ja m&auml;&auml;ritett&auml;v&auml; vaihtoehtoisesti viiteaika. Jos et m&auml;&auml;rit&auml; viiteaikaa, j&auml;rjestelm&auml; k&auml;ytt&auml;&auml; p&auml;iv&auml;m&auml;&auml;r&auml;&auml; 1.1.1970. 
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t aikarajaksi esimerkiksi yhden p&auml;iv&auml;n, alkaen 1.1.1990 klo 9.00, kukin reitti katkaistaan klo 9.00 kunakin p&auml;iv&auml;n&auml; ja analysoidaan kyseisen segmentin osalta. 
+            </p>
+            <p>Aikav&auml;lien k&auml;ytt&ouml; on nopea tapa kiihdytt&auml;&auml; laskenta-aikaa, koska se luo pienempi&auml; analysoitavia reittej&auml;. Jos toistuvan aikav&auml;lin k&auml;ytt&ouml; jaossa on parempi analyysin kannalta, sit&auml; suositellaan Big Datan k&auml;sittelyss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

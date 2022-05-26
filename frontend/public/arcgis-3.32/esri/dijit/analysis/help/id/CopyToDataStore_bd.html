@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Salin ke Penyimpanan Data</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Salin ke Penyimpanan Data"></h2>
+        <hr/>
+    <p>Alat ini akan mengambil layer input dan menyalinnya ke penyimpanan data. Anda dapat menyalin hasil ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) dan sebuah layer akan dibuat di portal Anda atau Anda dapat menyalin hasil ke sebuah file big data. 
+    </p>
+    <p>Contoh, Anda dapat menyalin fitur yang disimpan dalam  <code>berbagi file big data</code> ke <code>penyimpanan data relasional</code> dan menentukan bahwa hanya fitur dalam jangkauan peta saat ini yang akan disalin. Hal ini akan membuat feature service yang di-host hanya dengan fitur yang berada di dalam jangkauan peta yang telah ditentukan.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer untuk disalin</h2></div>
+        <hr/>
+        <div>
+            <p>Layer atau tabel yang akan disalin. 
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Anda dapat menggunakan semua fitur atau membuat pilihan (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Atau, gunakan tombol pemilih untuk mengidentifikasi lokasi yang akan disalin.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Pilih penyimpanan data untuk disalin</h2></div>
+        <hr/>
+        <div>
+            <p>Penyimpanan data yang mana layernya akan disalin. Parameter ini akan menimpa pilihan dalam  <b>Lingkungan Analisis</b>. Opsinya adalah sebagai berikut:
+                <ul>
+                    <li> <b>Penyimpanan Data ArcGIS</b> ArcGIS Data Store <ul>
+                            <li> <b>Spasiotemporal</b>&mdash;Ini adalah default.
+                            </li>
+                            <li> <b>Relasional</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Template Output Berbagi File Big Data</b>
+                        <ul>
+                            <li>Sebuah daftar template berbagi file big data terdapat dalam format  <b>bigDataFileShareName-templateName</b>. Template berbagi file big data harus dikonfigurasi sebelum menjalankan alat.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

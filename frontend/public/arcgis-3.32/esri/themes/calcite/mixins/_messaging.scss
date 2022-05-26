@@ -1,0 +1,19 @@
+// Calcite Messaging
+// Warning Message
+@mixin warning-message() {
+  background-color: $Calcite_Vibrant_Yellow_100;
+  color: $Calcite_Gray_650;
+}
+
+// Success Message
+@mixin success-message() {
+  background-color: $Calcite_Green_100;
+  color: $Calcite_Gray_650;
+}
+
+// Error Message
+@mixin error-message() {
+  background-color: $Calcite_Vibrant_Red_100;
+  color: $Calcite_Gray_650;
+}
+

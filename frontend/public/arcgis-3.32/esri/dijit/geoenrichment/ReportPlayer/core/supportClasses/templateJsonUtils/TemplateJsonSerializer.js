@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/templateJsonUtils/TemplateJsonSerializer",["./query/TemplateJsonQueryUtil","../images/ImageDataHolder","../conditionalStyling/ConditionalStyleUtil"],function(c,d,g){return{serialize:function(a){this._attachImagesToTemplateJson(a);return a},_attachImagesToTemplateJson:function(a){function b(a){var e=d.getImageData(a);e&&(f[a]=e)}var f={};c.processTemplateFieldInfos(a,function(a){a.isImage?(b(a.imageJson.fileName),a.triggerJson&&g.collectImageFileNames(a.triggerJson).forEach(b)):
+a.isInfographic&&a.infographicJson.variableTables&&a.infographicJson.variableTables.forEach(function(a){a.image&&b(a.image.imageJson.fileName)})});c.processSectionElements(a,function(a){"img"===a.id&&b(a.fileName)});a.imageData=f},deserialize:function(a){this._takeImagesFromTemplateJson(a);return a},_takeImagesFromTemplateJson:function(a){for(var b in a.imageData)d.putImageData(b,a.imageData[b]);delete a.imageData}}});

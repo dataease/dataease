@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Identifiera händelser</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Identifiera h&auml;ndelser"></h2>
+        <hr/>
+    <p> Det h&auml;r verktyget fungerar med ett tidsaktiverat lager med punkter, linjer, omr&aring;den eller tabeller som representerar ett &ouml;gonblick i tiden. Genom att anv&auml;nda geoobjekt som ordnats i tidsordning, s&aring; kallade sp&aring;r, avg&ouml;r det h&auml;r verktyget vilka geoobjekt som utg&ouml;r h&auml;ndelser som &auml;r intressanta att hitta. Villkoren som du anger avg&ouml;r vad som betraktas som h&auml;ndelser.
+    </p>
+    <p>F&ouml;rst avg&ouml;r verktyget vilka geoobjekt som h&ouml;r till ett sp&aring;r med hj&auml;lp av ett eller flera f&auml;lt. Genom att anv&auml;nda tidsangivelsen f&ouml;r varje geoobjekt ordnas sp&aring;ren i tidsordning och villkoret f&ouml;r h&auml;ndelsen till&auml;mpas. Geoobjekt som uppfyller startvillkoret f&ouml;r h&auml;ndelsen markeras som en h&auml;ndelse. Om du vill kan du till&auml;mpa ett slutvillkor f&ouml;r h&auml;ndelsen; n&auml;r slutvillkoret &auml;r sant &auml;r geoobjektet inte l&auml;ngre en h&auml;ndelse.  Resultaten returneras med de ursprungliga geoobjekten, d&auml;r nya kolumner representerar h&auml;ndelsenamnet som en indikation p&aring; vilka geoobjekt som uppfyller villkoret f&ouml;r h&auml;ndelsen. Du kan returnera alla ursprungliga geoobjekt eller bara de geoobjekt som &auml;r h&auml;ndelser.
+    </p>
+    <p>Anta som exempel att du har GPS-m&auml;tningar av orkaner var 10 minut. Varje GPS-m&auml;tning registrerar orkanens namn, plats, registreringstid och vindhastighet. Med hj&auml;lp av dessa f&auml;lt kan du till exempel skapa en h&auml;ndelse d&auml;r en uppm&auml;tt vindhastighet p&aring; &ouml;ver 208 km/h r&auml;knas som en h&auml;ndelse med titeln  <code>Katastrofl&auml;ge</code>. Om du inte st&auml;ller in n&aring;got slutvillkor avslutas h&auml;ndelsen n&auml;r geoobjektet inte l&auml;ngre uppfyller startvillkoret (vindhastigheten sjunker under 208 km/h).
+    </p>
+    <p>I ett annat exempel kan vi anta att du &ouml;vervakar koncentrationer av kemiskt &auml;mne i det lokala vattentaget med hj&auml;lp av ett f&auml;lt som heter  <code>contaminateLevel</code>. Du vet att de rekommenderade niv&aring;erna ligger under 0,01 mg/L, medan niv&aring;er &ouml;ver 0,03 mg/L r&auml;knas som farliga. F&ouml;r att uppt&auml;cka h&auml;ndelser d&auml;r v&auml;rden &ouml;ver 0,03 mg/L r&auml;knas som en h&auml;ndelse och f&ouml;rblir en h&auml;ndelse tills f&ouml;roreningsniv&aring;erna har &aring;terg&aring;tt till de normala, skapar du en h&auml;ndelse med ett startvillkor p&aring; <code>contaminateLevel &gt; 0,03</code> och ett slutvillkor p&aring; <code>contaminateLevel &lt; 0,01</code>. D&aring; markeras alla sekvenser d&auml;r v&auml;rdena &ouml;verstiger 0,03 mg/L fram tills dess att v&auml;rdet &aring;ter &auml;r under 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj ett lager att identifiera händelser från</h2></div>
+        <hr/>
+        <div>
+            <p>Punkterna, linjerna, omr&aring;dena eller tabellerna som ska anv&auml;ndas f&ouml;r att hitta h&auml;ndelser. Indatalagret m&aring;ste vara tidsaktiverat med geoobjekt som representerar ett &ouml;gonblick i tiden, och det m&aring;ste dessutom ha ett eller flera f&auml;lt som kan anv&auml;ndas f&ouml;r identifiering av sp&aring;r.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Välj ett eller flera fält att identifiera spår ifrån</h2></div>
+        <hr/>
+        <div>
+            <p>De f&auml;lt som representerar sp&aring;ridentifieraren. Du kan anv&auml;nda ett eller flera f&auml;lt f&ouml;r att representera unika v&auml;rden f&ouml;r sp&aring;r.
+            </p>
+            <p>Om du exempelvis rekonstruerar orkansp&aring;r kan du anv&auml;nda orkanens namn som sp&aring;rf&auml;lt.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Bygg ett uttrycksvillkor för att ange starten för händelsen</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;gg till ett villkor med hj&auml;lp av uttrycksskaparen n&auml;r du vill fastst&auml;lla vad som ska vara en h&auml;ndelse. N&auml;r villkoret som du anger &auml;r sant &auml;r geoobjektet en h&auml;ndelse. Om du inte anger ett slutvillkor avslutas en h&auml;ndelse n&auml;r startvillkoret inte l&auml;ngre &auml;r sant.
+            </p>
+            <p>Anta att du till exempel vill bli varnad om summan av f&auml;lten  <code>concentration_1</code> och <code>concentration_2</code> &auml;r st&ouml;rre &auml;n <code>concentration_3</code>.   Det g&ouml;r du genom att till&auml;mpa f&ouml;ljande villkor <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Om du var intresserad av hur koncentrationerna har f&ouml;r&auml;ndrats &ouml;ver tid och ville bli varnad n&auml;r den aktuella  <code>concentration_1</code> var st&ouml;rre &auml;n de tv&aring; f&ouml;reg&aring;ende m&auml;tningarna av <code>concentration_2</code>, skulle du kunna anv&auml;nda ett uttryck som <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Bygg ett uttrycksvillkor för att ange slutet för händelsen (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Om du vill kan du l&auml;gga till ett villkor med hj&auml;lp av uttrycksskaparen f&ouml;r att fastst&auml;lla slutet p&aring; en h&auml;ndelse. Om slutvillkoret som du anger &auml;r sant &auml;r geoobjektet inte l&auml;ngre en h&auml;ndelse. Om du inte anger ett slutvillkor avslutas en h&auml;ndelse n&auml;r startvillkoret inte l&auml;ngre &auml;r sant.    
+            </p>
+            <p>S&auml;g att du till exempel vill bli varnad n&auml;r summan av f&auml;lten  <code>concentration_1</code> och <code>concentration_2</code> &auml;r st&ouml;rre &auml;n <code>concentration_3</code>, och du vill att h&auml;ndelsen ska avslutas om <code>concentration_4</code> &auml;r mindre &auml;n <code>concentration_1</code>. Det g&ouml;r du genom att till&auml;mpa ett startvillkor p&aring; <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> och ett slutvillkor p&aring; <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Om du ville att en incident skulle sluta n&auml;r medelv&auml;rdet av den aktuella  <code>concentration_1</code> och de fyra f&ouml;reg&aring;ende m&auml;tningarna var st&ouml;rre &auml;n den f&ouml;rsta m&auml;tningen, skulle du kunna anv&auml;nda ett uttryck som <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Visa mig</h2></div>
+        <hr/>
+        <div>
+            <p>I alla metoder bifogas f&auml;lten till de ursprungliga geoobjekten. Det finns tv&aring; s&auml;tt att avg&ouml;ra vilka geoobjekt som returneras:
+                <ul>
+                    <li> <b>Alla geoobjekt</b> &ndash; Det h&auml;r &auml;r standardinst&auml;llningen. Alla geoobjekt i inmatningen returneras.
+                    </li>
+                    <li> <b>Bara h&auml;ndelser</b> &ndash; Med den h&auml;r metoden returneras bara s&aring;dana geoobjekt som &auml;r h&auml;ndelser. Geoobjekt som inte uppfyller villkoren f&ouml;r h&auml;ndelser returneras inte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysera data med tidsintervall (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ange om du vill uppt&auml;cka h&auml;ndelser genom att anv&auml;nda tidsintervall som segmenterar dina indatageoobjekt f&ouml;r analys. Om du anv&auml;nder tidsintervall m&aring;ste du st&auml;lla in tidsintervallet som du vill anv&auml;nda och eventuellt ocks&aring; referenstiden. Om du inte st&auml;ller in en referenstid anv&auml;nds 1 jan 1970. 
+            </p>
+            <p>Om du till exempel st&auml;ller in tidsgr&auml;nsen till 1 dag, med start kl. 09.00 den 1 januari 1990, kommer varje sp&aring;r att kortas ned kl. 09.00 varje dag och analyseras inom det segmentet. 
+            </p>
+            <p>Att anv&auml;nda tidsintervaller &auml;r ett enkelt s&auml;tt att snabba p&aring; ber&auml;kningstiden, eftersom det snabbt skapar mindre sp&aring;r f&ouml;r analys. Om det verkar vettigt att dela med &aring;terkommande tidsintervall f&ouml;r analysen rekommenderas det f&ouml;r behandling av big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

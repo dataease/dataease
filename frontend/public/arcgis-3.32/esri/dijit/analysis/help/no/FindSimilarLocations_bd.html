@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Finn lignende lokasjoner</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Finn lignende lokasjoner"></h2>
+        <hr/>
+    <p>Basert p&aring; kriteriene du angir, m&aring;ler verkt&oslash;yet Finn lignende lokasjoner likheten mellom lokasjoner i kandidats&oslash;kelaget ditt og en eller flere referanselokasjoner. Dette verkt&oslash;yet kan gi deg svar p&aring; sp&oslash;rsm&aring;l som: 
+        <ul>
+            <li>Hvilke av dine butikker er mest lik de som gj&oslash;r det best med hensyn til kundeprofiler?
+            </li>
+            <li>Basert p&aring; egenskapene til landsbyer som er hardest rammet av sykdommen, hvilke andre landsbyer har st&oslash;rst risiko?
+            </li>
+        </ul>
+        N&aring;r du vil besvare sp&oslash;rsm&aring;l som disse, oppgir du referanselokasjonene, kandidats&oslash;kelokasjonene og feltene som representerer de kriteriene du &oslash;nsker &aring; matche. Det f&oslash;rste inndatalaget m&aring; inneholde referansen eller referanselokasjoner. Dette kan for eksempel v&aelig;re et lag som inneholder butikkene som gj&oslash;r det best eller landsbyene som er hardest rammet av sykdommen. Deretter angir du laget som inneholder kandidats&oslash;kelokasjonene dine. Dette kan v&aelig;re alle butikkene dine eller alle andre landsbyer. Til slutt identifiserer du ett eller flere felter som skal brukes til &aring; m&aring;le likheten. Finn lignende lokasjoner-verkt&oslash;yet vil deretter rangere alle kandidats&oslash;kelokasjonene etter hvor n&aelig;rt de samsvarer med referanselokasjonene dine p&aring; tvers av alle feltene du har valgt.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg laget som inneholder referanselokasjonene</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som inneholder referanselokasjonene som skal matches. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Du kan bruke alle lokasjoner eller velge noen av dem</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk eventuelt valgknappene til &aring; identifisere referanselokasjoner. Dette alternativet er bare tilgjengelig hvis geoobjektene er tegnet p&aring; kartet (ikke tilgjengelig en fildeling med big data).  Hvis inndatalaget f.eks. inneholder alle lokasjonene, referanselokasjonene i tillegg til kandidats&oslash;klokasjonene, m&aring; du bruke et av utvalgsverkt&oslash;yene til &aring; identifisere referanselokasjonene.  Hvis du oppretter to separate lag, ett med referanselokasjoner og det andre med alle kandidats&oslash;klokasjoner, trenger du ikke &aring; foreta et utvalg.
+            </p>
+            <p>Hvis det er flere enn &eacute;n referanselokasjon, opprettes det &eacute;n enkelt lokasjon ved &aring; ta gjennomsnittet av verdiene for hver av de feltene som brukes til &aring; analysere likheter.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Søk etter lignende lokasjoner i</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidats&oslash;kgeoobjektene i dette laget vil bli rangert fra mest til minst likt. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Baser likheten på</h2></div>
+        <hr/>
+        <div>
+            <p>Feltene du velger, vil v&aelig;re kriteriene som brukes til &aring; vurdere likheten. Hvis du for eksempel velger et befolknings- og et inntektsfelt, vil kandidats&oslash;kelokasjonene med de laveste (beste) rangeringene v&aelig;re de som har lignende befolknings- og inntektsverdier i forhold til referanselokasjonene.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Fastsett den mest og minst like ved hjelp av</h2></div>
+        <hr/>
+        <div>
+            <p>Metoden du velger, avgj&oslash;r hvordan matchendingen fastsettes. 
+                <ul>
+                    <li> <b>Feltverdier</b>-metoden bruker de kvadratiske forskjellene i standardiserte verdier. Dette er standardalternativet.
+                    </li>
+                    <li> <b>Feltprofiler</b>-metoden bruker cosinuslikhetsmatematikk til &aring; sammenligne profilen til standardiserte verdier. Bruk av attributtprofiler krever bruk av minst to analysefelt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Vis meg</h2></div>
+        <hr/>
+        <div>
+            <p>Du ser enten alle kandidats&oslash;kelokasjonene rangert fra mest lik til minst lik, eller du kan oppgi hvor mange resultater du &oslash;nsker &aring; se. 
+                <ul>
+                    <li>Hvis du spesifiserer  <b>Alle lokasjoner fra mest til minst lik</b>, blir alle geoobjektene i kandidats&oslash;kelaget tatt med i rangeringen i resultatlaget. Maksimalt 10&nbsp;000 resultater blir returnert.
+                    </li>
+                    <li>Hvis du spesifiserer  <code>antall</code> <code>mest, minst eller mest og minst</code> <b>lignende lokasjoner</b>, m&aring; du fastsl&aring; hvor mange av de mest, minst eller flest og minst lignende kandidatene som skal v&aelig;re med i resultatlaget. H&oslash;yeste tillatte verdi er 10&nbsp;000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Velg felt for å legge til i resultater</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan eventuelt legge til felter i dataene fra s&oslash;kelaget. Samtlige felt blir lagt til som standard.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>Dette resultatlaget inneholder referanselokasjoner og antallet rangerte kandidats&oslash;kegeoobjekter du har angitt.   Hvis resultatlaget allerede finnes, blir du bedt om &aring; gi det et nytt navn.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

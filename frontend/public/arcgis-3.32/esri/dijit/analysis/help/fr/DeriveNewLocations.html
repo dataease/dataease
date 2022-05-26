@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Dériver de nouveaux emplacements</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="D&eacute;river de nouveaux emplacements"></h2>
+        <hr/>
+    <p>Cet outil g&eacute;n&egrave;re de nouvelles entit&eacute;s dans votre zone d'&eacute;tude r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res que vous d&eacute;finissez. Ces crit&egrave;res peuvent reposer sur des requ&ecirc;tes attributaires (par exemple, des parcelles vacantes) et des requ&ecirc;tes spatiales (par exemple, des parcelles situ&eacute;es dans des zones inondables).
+
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Dériver de nouveaux emplacements qui correspondent aux expressions suivantes</h2></div>
+        <hr/>
+        <div>
+            <p>Cliquez sur le bouton  <b>Ajouter une expression</b> pour d&eacute;finir une expression.  Vous pouvez ajouter plusieurs expressions. Apr&egrave;s avoir entr&eacute; les expressions et cliqu&eacute; sur le bouton <b>Ex&eacute;cuter l'analyse</b>, les entit&eacute;s de votre couche d'analyse sont filtr&eacute;es &agrave; travers chaque expression.  Les portions d'entit&eacute;s qui respectent toutes les expressions sont &eacute;crites dans la couche r&eacute;sultat.
+            </p>
+            <p>Vous pouvez cr&eacute;er deux types d&rsquo;expressions de base&nbsp;; attributaires et spatiales. Les expressions attributaires sont des requ&ecirc;tes sur des valeurs de champs, telles que  <code>o&ugrave; le nom est 'San Francisco'</code>.  Il existe quatre types d'expressions spatiales&nbsp;:
+                <ul>
+                    <li> <b>&agrave; une certaine distance de</b> : portions d'une entit&eacute; situ&eacute;es &agrave; une certaine distance d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les portions de parcelles &agrave; moins de 500&nbsp;m&egrave;tres de la rivi&egrave;re Los Angeles.
+                    </li>
+                    <li> <b>englobe enti&egrave;rement</b> : l'entit&eacute; doit englober l'int&eacute;gralit&eacute; d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les bassins qui contiennent compl&egrave;tement des parcelles destin&eacute;es &agrave; un usage industriel. Aucune partie de la parcelle ne peut se trouver en dehors du bassin versant.
+                    </li>
+                    <li> <b>compl&egrave;tement dans</b> : l'entit&eacute; doit &ecirc;tre enti&egrave;rement entour&eacute;e d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les secteurs scolaires qui se trouvent compl&egrave;tement dans les limites d&rsquo;une ville. Aucune partie de la zone scolaire ne peut se trouver en dehors de la limite de la ville.
+                    </li>
+                    <li> <b>intersectent</b> : l'entit&eacute; ou les portions de l'entit&eacute; doivent recouvrir ou intersecter une entit&eacute; dans une autre couche.  Par exemple, recherchez les zones de v&eacute;g&eacute;tation brul&eacute;e par plusieurs feux dans un parc national.   Les zones br&ucirc;l&eacute;es en-dehors des limites du parc ne sont pas englob&eacute;es.
+                    </li>
+                    <li> <b>le plus proche de</b>&nbsp;: l&rsquo;entit&eacute; doit &ecirc;tre la plus proche d&rsquo;une entit&eacute; d&rsquo;une autre couche. Par exemple, recherchez l&rsquo;espace vert le plus proche de chaque &eacute;cole.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Chaque expression spatiale poss&egrave;de une n&eacute;gation correspondante, &agrave; l&rsquo;exception de  <b>le plus proche de</b>; <b>non dans une distance de</b>, <b>ne contient pas compl&egrave;tement</b>, <b>non compl&egrave;tement dans</b> et <b>n&rsquo;intersecte pas</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

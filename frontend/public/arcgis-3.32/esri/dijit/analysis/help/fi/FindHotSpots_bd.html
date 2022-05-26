@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Etsi HotSpot-pisteitä</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Etsi HotSpot-pisteit&auml;"></h2>
+        <hr/>
+    <p>Etsi kuumat pisteet -toiminto m&auml;&auml;ritt&auml;&auml;, onko tietojen koordinaattikuviossa tilastollisesti merkitsev&auml;&auml; ryp&auml;st&auml;. 
+        <ul>
+            <li>Muodostavatko pisteet (rikokset, puut tai liikenneonnettomuudet) klusterin? Miten t&auml;st&auml; voi varmistua?
+            </li>
+            <li>Oletko l&ouml;yt&auml;nyt tilastollisesti merkitsev&auml;n hotspot-pisteen vai kertooko kartta muuta, jos muuttaisit sen symbolien esitystapaa?
+            </li>
+        </ul>
+        Etsi kuumat pisteet -toiminto auttaa vastaamaan n&auml;ihin kysymyksiin luotettavasti.
+    </p>
+    <p>Jopa satunnaiset paikkatietomallit sis&auml;lt&auml;v&auml;t jonkinasteista klusterointia. Lis&auml;ksi silm&auml;mme ja aivot pyrkiv&auml;t tietenkin l&ouml;yt&auml;m&auml;&auml;n malleja, vaikka niit&auml; ei olisikaan. N&auml;in ollen voi olla vaikea tiet&auml;&auml;, ovatko aineiston mallit todellisten, ty&ouml;ss&auml; l&auml;pik&auml;ytyjen paikkatietoprosessien tuloksia vai vain sattuman aiheuttamia tuloksia. T&auml;st&auml; syyst&auml; tutkijat ja analyytikot k&auml;ytt&auml;v&auml;t tilastollisia malleja, kuten Etsi HotSpot-pisteit&auml; (Getis-Ord Gi*), paikkatietomallien m&auml;&auml;ritt&auml;miseen. Kun l&ouml;yd&auml;t tilastollisesti merkitt&auml;v&auml;&auml; klusterointia aineistosta, k&auml;yt&ouml;ss&auml;si on arvokasta tietoa. Tieto siit&auml;, miss&auml; ja milloin klusterointia tapahtuu, voi tarjota t&auml;rkeit&auml; vihjeit&auml; n&auml;kemi&auml;si malleja tukevista prosesseista. Esimerkiksi tieto siit&auml;, ett&auml; asuinalueiden murtovarkaita esiintyy huomattavasti enemm&auml;n tietyill&auml; alueilla, on t&auml;rke&auml;&auml;, jos haluat suunnitella tehokkaita suojautumisstrategioita, k&auml;ytt&auml;&auml; v&auml;h&auml;isi&auml; poliisin resursseja, aloittaa naapuruston vahtivuoro-ohjelmia, valtuuttaa tekij&ouml;it&auml; perusteelliseen rikostutkintaan tai tunnistaa mahdollisia ep&auml;iltyj&auml;.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valitse karttataso, jonka HotSpot-pisteet lasketaan</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, josta HotSpot- ja ColdSpot-pisteet l&ouml;ytyv&auml;t.
+            </p>
+            <p>Analyysi k&auml;ytt&auml;&auml; lohkoja ja edellytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. Voit m&auml;&auml;ritt&auml;&auml;  <b>k&auml;sittelev&auml;n koordinaattij&auml;rjestelm&auml;n</b> <b>Analyysiymp&auml;rist&ouml;t</b>-kohdassa. Jos k&auml;sittelev&auml;&auml; koordinaattij&auml;rjestelm&auml;&auml; ei ole m&auml;&auml;ritetty projisoiduksi koordinaattij&auml;rjestelm&auml;ksi, sinua pyydet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n se sellaiseksi, kun valitset <b>Suorita Analyysi</b> .
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Etsi klusterit, joissa on suuria ja pieniä arvoja</h2></div>
+        <hr/>
+        <div>
+            
+            <p>T&auml;m&auml; analyysi vastaa seuraavaan kysymykseen: minne pienet ja suuret arvot muodostavat klusterin?
+            </p>
+            <p>Jos aineistosi sis&auml;lt&auml;&auml; pisteit&auml; ja valitset  <b>Pistem&auml;&auml;r&auml;t</b>-vaihtoehdon, ty&ouml;kalu arvioi pistekohteiden koordinaattiasettelun ja vastaa seuraavaan kysymykseen: miss&auml; kohdissa pisteet muodostavat odottamattomia klustereita tai hajoamisia?
+            </p>
+            <p>Jos valitset kent&auml;n, t&auml;m&auml; ty&ouml;kalu arvioi niiden arvojen koordinaattiasettelun, jotka liittyv&auml;t kuhunkin kohteeseen, ja vastaa seuraavaan kysymykseen: mihin pienet ja suuret arvot klusteroituvat?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Valitse lohkon koko koostamista varten</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden neli&ouml;lohkojen luomiseen k&auml;ytetty et&auml;isyys, joiden avulla l&auml;ht&ouml;aineiston pisteet analysoidaan.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Etsi HotSpot -pisteitä käyttämällä aikavälejä (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Jos aika on otettu k&auml;ytt&ouml;&ouml;n karttatasossa ja jos ajan tyyppin&auml; on hetki, voit k&auml;ytt&auml;&auml; analysointiin aikav&auml;lej&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Aikavälijakso</h2></div>
+        <hr/>
+        <div>
+            <p>Aikav&auml;li, jota k&auml;ytet&auml;&auml;n aikav&auml;lien luomiseen. Aika voidaan kohdistaa l&auml;ht&ouml;aineiston alkamisaikaan tai p&auml;&auml;ttymisaikaan tai m&auml;&auml;ritettyyn viiteaikaan.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Aikavälijakso</h2></div>
+        <hr/>
+        <div>
+            <p>Aikav&auml;li, jota k&auml;ytet&auml;&auml;n aikav&auml;lien luomiseen. Aika voidaan kohdistaa l&auml;ht&ouml;aineiston alkamisaikaan tai p&auml;&auml;ttymisaikaan tai m&auml;&auml;ritettyyn viiteaikaan.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Valitse aikavälien kohdistustapa</h2></div>
+        <hr/>
+        <div>
+            <p>Miten aikav&auml;lit kohdistetaan. Aikav&auml;lit voi kohdistaa kolmella tavalla:
+                <ul>
+                    <li> <b>Aloitusaika</b>: Aikav&auml;lit kohdistetaan ajallisesti ensimm&auml;isen kohteen kanssa.
+                    </li>
+                    <li> <b>Lopetusaika</b>: Aikav&auml;lit kohdistetaan ajallisesti viimeisen kohteen kanssa.
+                    </li>
+                    <li> <b>Viiteaika</b>: Aikav&auml;lit kohdistetaan m&auml;&auml;ritetyn ajan kanssa.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Viiteaika, johon aikavälit kohdistetaan</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;iv&auml;m&auml;&auml;r&auml; ja kellonaika, joita k&auml;ytet&auml;&auml;n aikav&auml;lien kohdistamiseen.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Valitse naapuruston koko HotSpot-laskentaa varten</h2></div>
+        <hr/>
+        <div>
+            <p>Et&auml;isyys, jonka avulla m&auml;&auml;ritet&auml;&auml;n HotSpot-laskentaan k&auml;ytetty naapurusto. Naapuruston on oltava suurempi kuin lohkon koko, jotta voidaan varmistaa, ett&auml; kullakin lohkolla on v&auml;hint&auml;&auml;n yksi naapuri. Jokainen lohko analysoidaan, ja jokaista lohkoa verrataan naapurilohkoihin.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinaatistotieto (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on esijulkaisun tilap&auml;inen parametri k&auml;sittelyn koordinaatistotiedon m&auml;&auml;ritt&auml;miseen. Monet Big Data -ty&ouml;kalut edellytt&auml;v&auml;t, ett&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml; k&auml;ytet&auml;&auml;n k&auml;sittelyn koordinaatistotietona. Oletusarvon mukaan ty&ouml;kalu k&auml;ytt&auml;&auml; l&auml;ht&ouml;aineiston koordinaattij&auml;rjestelm&auml;&auml;, mutta ty&ouml;kalua ei voi suorittaa, jos kyseess&auml; on maantieteellinen koordinaattij&auml;rjestelm&auml;. Jos haluat m&auml;&auml;ritt&auml;&auml; projisoidun koordinaattij&auml;rjestelm&auml;n, anna WKID. Jos haluat esimerkiksi m&auml;&auml;ritt&auml;&auml;  <b>Web Mercator</b> -koordinaattij&auml;rjestelm&auml;n, anna <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse ArcGIS Data Store -tietokanta, johon tulokset tallennetaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Tulostasossa n&auml;kyv&auml;t tilastollisesti merkitsev&auml;t pienten ja suurten arvojen keskittym&auml;t. Jos tulostason nimi on jo k&auml;yt&ouml;ss&auml;, saat kehotuksen nimet&auml; tason uudelleen.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

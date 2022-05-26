@@ -1,0 +1,31 @@
+<snippets>
+  <snippet name="bitblitVS">
+  <![CDATA[
+    attribute vec2 a_pos;
+    attribute vec2 a_tex;
+
+    varying mediump vec2 v_uv;
+
+    void main(void) {
+      gl_Position = vec4(a_pos, 0.0, 1.0);
+      v_uv = a_tex;
+    }
+  ]]>
+  </snippet>
+
+  <snippet name="bitblitFS">
+  <![CDATA[
+    	uniform lowp sampler2D u_tex;
+      uniform lowp float u_opacity;
+
+      varying mediump vec2 v_uv;
+
+      void main() {
+        lowp vec4 color = texture2D(u_tex, v_uv);
+
+        // Note: output in pre-multiplied alpha for correct alpha compositing
+        gl_FragColor = color *  u_opacity;
+      }
+  ]]>
+  </snippet>
+</snippets>

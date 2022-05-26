@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ekstrakcija podatkov</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Ekstrahiraj podatke"></h2>
+        <hr/>
+    <p>S tem orodjem lahko izberete in prenesete podatke za določeno interesno območje. Sloji, ki jih izberete, bodo dodani datoteki ZIP, CSV ali KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Sloji za ekstrakcijo</h2></div>
+        <hr/>
+        <div>
+            <p>To so sloji v Vsebini, iz katere lahko ekstrahirate geoobjekte. Sloji, ki so obkljukani, so ekstrahirani in vključeni v datoteko ZIP ali CSV.
+            </p>
+            <p>Da se sloj pojavi v seznamu slojev za ekstrakcijo, morate biti lastnik podatkov ali pa mora lastnik podatkov omogočiti izvoz podatkov. Da sami omogočite izvoz podatkov: 
+                <ul>
+                    <li>Odprite opis elementov podatkov.
+                    </li>
+                    <li>Kliknite zavihek  <b>Nastavitve</b>.
+                    </li>
+                    <li>Premaknite se navzdol na razdelek  <b>Izvoz podatkov</b>.
+                    </li>
+                    <li>Obkljukajte  <b>Omogoči drugim izvoz v različne formate</b>. Ko končate, kliknite <b>Shrani</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Če va&scaron; sloj za analizo vsebuje priloge, upo&scaron;tevajte, da bodo te ekstrahirate samo, če je format izhodnih podatkov File Geodatabase in je odkljukana možnost  <b>Izsekaj geoobjekte</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Študijsko območje</h2></div>
+        <hr/>
+        <div>
+            <p>Območje, ki določa, kateri geoobjekti bodo vključeni v izhodno datoteko ZIP ali CSV. Izbirate lahko med naslednjim:
+                <ul>
+                    <li>Trenutno viden obseg va&scaron;e karte ( <b>Enako kot prikaz</b>).
+                    </li>
+                    <li>Eden od slojev v va&scaron;i Vsebini. Če izbrani sloj vsebuje točkovne ali linijske geoobjekte, bo obseg sloja uporabljen kot &scaron;tudijsko območje.
+                    </li>
+                    <li>Nari&scaron;ite poligon, da določite &scaron;tudijsko območje.
+                    </li>
+                </ul>
+                 Ekstrahirani bodo vsi geoobjekti, ki so v celoti znotraj obsega karte. Za geoobjekte, ki prečkajo ali sekajo mejo obsega karte, vendar niso v celoti znotraj obsega, imate dve možnosti:
+                <ul>
+                    <li> <b>Izberi geoobjekte</b> &ndash; Ekstrahirani bodo celotni geoobjekti, ki prečkajo mejo &scaron;tudijskega območja.
+                    </li>
+                    <li> <b>Izsekaj geoobjekte</b> &ndash; Ekstrahirani bodo samo tisti deli geoobjektov, ki so znotraj &scaron;tudijskega območja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format izhodnih podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Format podatkov, ki bodo ekstrahirani. Pri izvozu linijskih ali poligonskih geoobjektov v datoteke CSV, so ekstrahirani samo neprostorski atributi. Pri izvozu točkovnih geoobjektov, so ekstrahirani tako prostorski kot neprostorski atributi.  
+            </p>
+            <p>Ekstrahirani podatki bodo uporabili projekcijo Web Mercator 1984. Pri datotekah CSV bosta polji  <i>Lat</i> in <i>Long</i> pridruženi podatkom s koordinatami v Web Mercatorju 1984.
+            </p> 
+            <p>Podprti so naslednji izhodni formati:
+                <ul>
+                    <li>Comma separated value (CSV) &ndash;  <code>.csv</code> ali <code>.zip</code>
+                    </li>
+                    <li>File geodatabase &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML) &ndash;  <code>.kmz</code> ali <code>.zip</code>
+                    </li>
+                    <li>Shapefile &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ime izhodne datoteke</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime elementa, ki bo dodan v  <b>Mojo vsebino</b>. Ime elementa temelji na izbranem <b>formatu izhodnih podatkov</b>. Če element že obstaja, boste morali navesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moja vsebina</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

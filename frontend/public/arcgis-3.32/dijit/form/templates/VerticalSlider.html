@@ -1,0 +1,46 @@
+<table class="dijit dijitReset dijitSlider dijitSliderV" cellspacing="0" cellpadding="0" border="0" rules="none" data-dojo-attach-event="onkeydown:_onKeyDown,onkeyup:_onKeyUp"
+	role="presentation"
+	><tr class="dijitReset"
+		><td class="dijitReset"></td
+		><td class="dijitReset dijitSliderButtonContainer dijitSliderButtonContainerV"
+			><div class="dijitSliderIncrementIconV" style="display:none" data-dojo-attach-point="decrementButton"><span class="dijitSliderButtonInner">+</span></div
+		></td
+		><td class="dijitReset"></td
+	></tr
+	><tr class="dijitReset"
+		><td class="dijitReset"></td
+		><td class="dijitReset"
+			><center><div class="dijitSliderBar dijitSliderBumper dijitSliderBumperV dijitSliderTopBumper" data-dojo-attach-event="press:_onClkIncBumper"></div></center
+		></td
+		><td class="dijitReset"></td
+	></tr
+	><tr class="dijitReset"
+		><td data-dojo-attach-point="leftDecoration" class="dijitReset dijitSliderDecoration dijitSliderDecorationL dijitSliderDecorationV"></td
+		><td class="dijitReset dijitSliderDecorationC" style="height:100%;"
+			><input data-dojo-attach-point="valueNode" type="hidden" ${!nameAttrSetting}
+			/><center class="dijitReset dijitSliderBarContainerV" role="presentation" data-dojo-attach-point="sliderBarContainer"
+				><div role="presentation" data-dojo-attach-point="remainingBar" class="dijitSliderBar dijitSliderBarV dijitSliderRemainingBar dijitSliderRemainingBarV" data-dojo-attach-event="press:_onBarClick"><!--#5629--></div
+				><div role="presentation" data-dojo-attach-point="progressBar" class="dijitSliderBar dijitSliderBarV dijitSliderProgressBar dijitSliderProgressBarV" data-dojo-attach-event="press:_onBarClick"
+					><div class="dijitSliderMoveable dijitSliderMoveableV" style="vertical-align:top;"
+						><div data-dojo-attach-point="sliderHandle,focusNode" class="dijitSliderImageHandle dijitSliderImageHandleV" data-dojo-attach-event="press:_onHandleClick" role="slider"></div
+					></div
+				></div
+			></center
+		></td
+		><td data-dojo-attach-point="containerNode,rightDecoration" class="dijitReset dijitSliderDecoration dijitSliderDecorationR dijitSliderDecorationV"></td
+	></tr
+	><tr class="dijitReset"
+		><td class="dijitReset"></td
+		><td class="dijitReset"
+			><center><div class="dijitSliderBar dijitSliderBumper dijitSliderBumperV dijitSliderBottomBumper" data-dojo-attach-event="press:_onClkDecBumper"></div></center
+		></td
+		><td class="dijitReset"></td
+	></tr
+	><tr class="dijitReset"
+		><td class="dijitReset"></td
+		><td class="dijitReset dijitSliderButtonContainer dijitSliderButtonContainerV"
+			><div class="dijitSliderDecrementIconV" style="display:none" data-dojo-attach-point="incrementButton"><span class="dijitSliderButtonInner">-</span></div
+		></td
+		><td class="dijitReset"></td
+	></tr
+></table>

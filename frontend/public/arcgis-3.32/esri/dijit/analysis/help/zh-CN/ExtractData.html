@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>提取数据</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="提取数据"></h2>
+        <hr/>
+    <p>使用此工具可以选择并下载特定感兴趣区的数据。所选图层将被添加到 ZIP、CSV 或 KMZ 文件中。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>待提取图层</h2></div>
+        <hr/>
+        <div>
+            <p>它们是内容表中的图层，可从中提取要素。选中的图层将被提取到结果 ZIP 文件或 CSV 文件中。
+            </p>
+            <p>为使图层显示在要进行提取的图层列表中，您必须拥有数据或数据的拥有者必须启用导出数据功能。要对拥有的数据启用数据导出： 
+                <ul>
+                    <li>请打开数据的项目描述。
+                    </li>
+                    <li>单击 <b>设置</b>选项卡。
+                    </li>
+                    <li>向下滚动至 <b>导出数据</b>部分。
+                    </li>
+                    <li>选中 <b>允许其他用户导出不同格式</b>。完成后单击 <b>保存</b>。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您的分析图层包含附件，则请注意，仅当输出数据格式为文件地理数据库并且未选中 <b>裁剪要素</b>时才能提取附件。
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>研究区域</h2></div>
+        <hr/>
+        <div>
+            <p>定义输出 ZIP 文件或 CSV 文件将包含哪些要素的区域。可选择的范围有：
+                <ul>
+                    <li>地图的当前可见范围（ <b>与显示相同</b>）。
+                    </li>
+                    <li>内容列表中的一个图层。如果所选图层是点或线要素，则图层的范围将用作研究区域。
+                    </li>
+                    <li>绘制一个区域以定义研究区域。
+                    </li>
+                </ul>
+                 将提取所有完全位于地图范围内的要素。对于跨越地图范围边界或与地图范围边界相交但没有完全位于范围之内的要素，您有两种选择：
+                <ul>
+                    <li> <b>选择要素</b> - 将提取跨越研究区域边界的整个要素。
+                    </li>
+                    <li> <b>裁剪要素</b> - 仅提取要素位于研究区域内的相应部分。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>输出数据格式</h2></div>
+        <hr/>
+        <div>
+            <p>将提取的数据格式。在将线要素或面要素导出为 CSV 文件时，只提取非空间属性。导出点要素时，会同时提取空间和非空间属性。
+            </p>
+            <p>提取的数据将使用 Web Mercator 1984 投影。对于 CSV 文件，将采用 Web Mercator 1984 坐标将  <i>Lat</i> 和 <i>Long</i> 字段附加到数据。
+            </p> 
+            <p>支持以下输出格式：
+                <ul>
+                    <li>逗号分隔值 (CSV) -  <code>.csv</code> 或 <code>.zip</code>
+                    </li>
+                    <li>文件地理数据库 -  <code>.zip</code>
+                    </li>
+                    <li>Keyhole 标记语言 (KML) -  <code>.kmz</code> 或 <code>.zip</code>
+                    </li>
+                    <li>Shapefile -  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>输出文件名</h2></div>
+        <hr/>
+        <div>
+            <p>此为将添加到 <b>我的内容</b>中的项目的名称。项目名称基于所选的 <b>输出数据格式</b>。如果项目已经存在，则系统会要求您输入其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉框，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

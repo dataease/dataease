@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-104" y="-200" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-136" y="-232" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-104" y="-200" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-136" y="-232" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-104" y="-200" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-104" y="-200" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<g>
+		<rect fill-rule="evenodd" clip-rule="evenodd" fill="none" width="16" height="16"/>
+		<path fill="#E5D255" d="M16,14.4004002c0,0-3.2002058-1.6015997-8,0c-4.7998052,1.5995998-8,0-8,0L2.1327949,1.5996
+			c0,0,3.2012053,1.0663999,5.8672051,0s5.8671942,0,5.8671942,0L16,14.4004002z"/>
+		<path fill="#F4EEC8" d="M3.1171949,13c-0.2821949,0-0.5508001-0.1190996-0.7407-0.3281002
+			c-0.1894948-0.2089996-0.2818-0.4882994-0.2544-0.7685995l0.7783-8C2.9501948,3.3906,3.3808949,3,3.8954949,3h8.2089996
+			c0.5145998,0,0.9452991,0.3906,0.9951,0.9033l0.7782993,8c0.0274,0.2803001-0.0648947,0.5595999-0.2544003,0.7685995
+			C13.4335947,12.8809004,13.165,13,12.8827944,13H3.1171949z"/>
+		<polygon fill="#6D6E71" points="3.1171949,12 3.8954949,4 12.104495,4 12.8827944,12 		"/>
+		<path fill="#6D6E71" d="M12.0010004,7V6H10V5H9v1H7V5H6v1H4.0009999v1H6v1H4.0009999v1H6v2h1V9h2v2h1V9h2.0010004V8H10V7
+			H12.0010004z M9,8H7V7h2V8z"/>
+		<rect x="7" y="5" fill="#BDDBEE" width="2" height="1"/>
+		<polygon fill="#F4EEC8" points="6,6 6,5 4.8026948,5 4.7050948,6 		"/>
+		<rect x="7" y="7" fill="#6DB5E3" width="2" height="1"/>
+		<polygon fill="#F4EEC8" points="11.3915949,7 10,7 10,8 11.489295,8 		"/>
+		<polygon fill="#D3EAF9" points="11.2948942,6 11.1972942,5 10,5 10,6 		"/>
+		<rect x="7" y="9" fill="#9BC29C" width="2" height="2"/>
+		<polygon fill="#D3EAF9" points="4.510695,8 6,8 6,7 4.6083946,7 		"/>
+		<polygon fill="#9BC29C" points="10,9 10,11 11.7812948,11 11.586895,9 		"/>
+		<polygon fill="#6DB5E3" points="4.413095,9 4.2187948,11 6,11 6,9 		"/>
+	</g>
+</g>
+</svg>

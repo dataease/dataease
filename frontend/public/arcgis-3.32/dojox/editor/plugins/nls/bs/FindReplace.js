@@ -1,0 +1,3 @@
+//>>built
+define("dojox/editor/plugins/nls/bs/FindReplace",{findLabel:"Na\u0111i:",findTooltip:"Unesite tekst koji treba na\u0107i",replaceLabel:"Zamijeni sa:",replaceTooltip:"Unesite tekst s kojim zamijeniti",findReplace:"Na\u0111i i zamijeni",matchCase:"Spari slovo",matchCaseTooltip:"Spari slovo",backwards:"Unazad",backwardsTooltip:"Pretra\u017euj unazad za tekst",replaceAllButton:"Zamijeni sve",replaceAllButtonTooltip:"Zamijeni cijeli tekst",findButton:"Na\u0111i",findButtonTooltip:"Na\u0111i tekst",replaceButton:"Zamijeni",
+replaceButtonTooltip:"Zamijeni tekst",replaceDialogText:"Zamijenjena ${0} pojavljivanja",eofDialogText:"zadnje pojavljivanje ${0}",eofDialogTextFind:"prona\u0111eno",eofDialogTextReplace:"zamijenjeno"});

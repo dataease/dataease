@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/zh-tw/FindDwellLocations",{inputLayerLabel:"\u9078\u64c7\u5716\u5c64\u4ee5\u5c0b\u627e\u5c45\u4f4f\u4f4d\u7f6e",selectTracksLabel:"\u9078\u64c7\u7528\u4f86\u8b58\u5225\u8ecc\u8de1\u7684\u4e00\u6216\u591a\u500b\u6b04\u4f4d",defineDistanceLabel:"\u5b9a\u7fa9\u7a7a\u9593\u641c\u5c0b\u8ddd\u96e2",distMethodLabel:"\u9078\u64c7\u7528\u4f86\u8a08\u7b97\u8ddd\u96e2\u7684\u65b9\u6cd5",temporalSearchLabel:"\u5b9a\u7fa9\u7a7a\u9593\u641c\u5c0b\u7bc4\u570d",outputDwellLabel:"\u5c07\u5c45\u4f4f\u4f4d\u7f6e\u8f38\u51fa\u70ba",
+outputLayerName:"\u5c0b\u627e ${inputLayerName} \u7684\u5c45\u4f4f\u4f4d\u7f6e",meanCenters:"\u5e73\u5747\u503c\u4e2d\u5fc3",convexHulls:"\u51f8\u6bbc",dwellFeatures:"\u5c45\u4f4f\u4f4d\u7f6e\u5716\u5fb5",allFeatures:"\u6240\u6709\u5716\u5fb5",itemDescription:"\u70ba ${inputLayerName} \u57f7\u884c\u300c\u5c0b\u627e\u5c45\u4f4f\u4f4d\u7f6e\u300d\u89e3\u6c7a\u65b9\u6848\u6240\u7522\u751f\u7684\u5716\u5fb5\u5716\u5c64\u3002",itemTags:"\u5206\u6790\u7d50\u679c\uff0c\u5c0b\u627e\u5c45\u4f4f\u4f4d\u7f6e\uff0c${inputLayerName}",
+itemSnippet:"\u5f9e\u300c\u5c0b\u627e\u5c45\u4f4f\u4f4d\u7f6e\u300d\u7522\u751f\u7684\u5716\u5fb5\u5716\u5c64"});

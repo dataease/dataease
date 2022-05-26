@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Escolher os elementos de pontos a melhorar",chooseMVgridLyrLabel:"Escolher a grelha de m\u00faltiplas vari\u00e1veis a partir da qual melhorar",chooseVariables:"Escolher as vari\u00e1veis a adicionar",outputLayerName:"${inputFeatures} melhorados de ${gridLayer}",itemDescription:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o da solu\u00e7\u00e3o Melhorar a partir de uma Grelha Multivari\u00e1vel para ${inputFeatures}.",
+itemTags:"Resultado da An\u00e1lise, Melhorar a partir de uma Grelha Multivari\u00e1vel, ${inputFeatures}, ${gridLayer}",itemSnippet:"Camada de elementos gerada a partir de Melhorar a partir de uma Grelha Multivari\u00e1vel."});

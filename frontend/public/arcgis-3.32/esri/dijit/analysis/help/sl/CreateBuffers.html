@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ustvari obrise</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Ustvari obrise"></h2>
+        <hr/>
+    <p>Obris je območje, ki pokriva dano razdaljo od točkovnega, linijskega ali poligonskega geoobjekta. 
+    </p>
+    <p>Obrisi se običajno uporabljajo za ustvarjanje poligonov, ki jih je mogoče nadalje analizirati z orodji, kot je Prekrij sloje. Na primer, če je vpra&scaron;anje &raquo;Katere stavbe so v razdalji enega kilometra od &scaron;ole?&laquo; je odgovor mogoče najti tako, da ustvarite kilometrski obris okoli &scaron;ole in uporabite orodje Prekrij sloje, da prekrijete obris s slojem, ki vsebuje načrte stavb. Končni rezultat je sloj stavb, ki so znotraj enega kilometra od &scaron;ole.  
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo obrisani samo geoobjekti, vidni znotraj trenutnega obsega karte. Če je odkljukano, bodo obrisani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberite sloj, ki vsebuje geoobjekte za ustvarjanje obrisa</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni, linijski ali poligonski geoobjekti, ki bodo obrisani. 
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Vnesi velikost obrisa</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesete lahko eno ali več vrednosti razdalj; med seboj jih ločite s presledkom. Navedete lahko tudi atribut na vhodnem sloju, ki vključuje vrednost razdalje, tako da kliknete  <b>Polje</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, kako želite, da so obravnavani prekrivajoči se obrisi. Za katerekoli obrise, ki se nahajajo nad drugimi obrisi, so lahko skupni poligoni ohranjeni (Prekrivanje) ali združeni (Razgradnja). Z uporabo možnosti  <b>Razgradnja</b> se vsi obrisi razgradijo skupaj v enojni mnogodelni geoobjekt, s čimer je odstranjeno vsako prekrivanje.
+            </p>  
+            <p> Ko uporabljate več razdalj, lahko izberete, kako predstaviti razdaljo od zadnje razdalje obrisa; na primer, če sta razdalji 10 in 14:
+                <ul>
+                    <li>Rezultat izbire možnosti  <b>Obroči</b> so obrisi od 0 do 10 in od 10 do 14.
+                    </li>
+                    <li>Rezultat izbire možnosti  <b>Diski</b> so obrisi od 0 do 10 in od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, kako želite, da so obravnavani prekrivajoči se obrisi. Za vse obrise, ki se nahajajo nad drugimi obrisi, so lahko skupni poligoni ohranjeni (Prekrivanje) ali združeni (Razgradnja). Z uporabo možnosti  <b>Razgradnja</b> se vsi obrisi razgradijo skupaj v en mnogodelni geoobjekt, s čimer je odstranjeno vsako prekrivanje.
+            </p>
+            <p>Ko ustvarjajte enojni obris okoli poligonskih geoobjektov (vnesena samo ena razdalja), lahko izbirate ali bo obrisani geoobjekt vključen ali izključen iz dobljenega obrisa.
+            </p>
+            <p>Ko uporabljate več razdalj, lahko izberete, kako predstaviti razdaljo od zadnje razdalje obrisa; na primer, če sta razdalji 10 in 14:
+                <ul>
+                    <li>Rezultat izbire možnosti  <b>Obroči</b> so obrisi od 0 do 10 in od 10 do 14.
+                    </li>
+                    <li>Rezultat izbire možnosti  <b>Diski</b> so obrisi od 0 do 10 in od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, kako naj bodo obravnavani prekrivajoči se obrisi. Za katerekoli obrise, ki se nahajajo nad drugimi obrisi, so lahko skupni poligoni ohranjeni (Prekrivanje) ali združeni (Razgradnja). Z uporabo možnosti  <b>Razgradnja</b> se vsi obrisi razgradijo skupaj v enojni mnogodelni geoobjekt, s čimer je odstranjeno vsako prekrivanje.
+            </p>
+            <p>Ko ustvarjate enojni obris okoli linij (vnesena samo ena razdalja), lahko izbirate, katera stran linije bo obrisana. Običajno lahko izberete obe strani. Leva in desna stran sta določeni, kot če bi hodili od prve koordinate x, y linije (začetna koordinata) do zadnje koordinate x, y linije (končna koordinata). Izbira leve ali desne strani običajno pomeni, da veste, da so bili linijski geoobjekti ustvarjeni in shranjeni v določeni smeri (na primer gorvodno ali dolvodno glede na vodotok). Na koncu linij je obris lahko zaobljen (Zaobljeno) ali raven (Ravno).
+            </p>
+            <p>Ko ustvarjate več obrisov (več kot ena razdalja), lahko izberete, kako predstaviti razdaljo od zadnje razdalje obrisa; na primer, če sta razdalji 10 in 14:
+                <ul>
+                    <li>Rezultat izbire možnosti  <b>Obroči</b> so obrisi od 0 do 10 in od 10 do 14.
+                    </li>
+                    <li>Rezultat izbire možnosti  <b>Diski</b> so obrisi od 0 do 10 in od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Ko izberete sloj za obrise, lahko izberete, kako želite ravnati s prekrivajočimi se obrisi. Za katerekoli obrise, ki se nahajajo nad drugimi obrisi, so lahko skupni poligoni ohranjeni (Prekrivanje) ali združeni (Razgradnja). Z uporabo možnosti  <b>Razgradnja</b> se vsi obrisi razgradijo skupaj v enojni mnogodelni geoobjekt, s čimer je odstranjeno vsako prekrivanje. Poleg tega lahko določite, kako bo predstavljenih več razdalj. Za sloje, ki vsebujejo linijske geoobjekte, lahko izberete, katera stran linije bo obrisana. Za sloje, ki vsebujejo poligonske geoobjekte, lahko izberete, ali bo obrisani geoobjekt vključen ali izključen iz dobljenega obrisa.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

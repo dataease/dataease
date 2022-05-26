@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračunaj polje</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Izračunaj polje"></h2>
+        <hr/>
+    <p> Orodje deluje samo z vhodnim slojem za izračun vrednosti za novo ali obstoječe polje. Izdelajte izraz Arcade za izračun vrednosti, s katerimi boste dopolnili geoobjekte. Če so va&scaron;i podatki časovno omogočeni ter predstavljajo trenutek v času, lahko poljubno izdelate izraze, ki zaznavajo sledi.
+    </p>
+    <p>Na primer, denimo, da želite spremeniti obstoječe polje z imenom <i>TotalSales</i>. Želite, da polje vsebuje vsoto skupne prodaje v letih 2016 in 2017. Z uporabo teh polj v izrazu lahko izračunate vrednost polja kot <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Vzemimo drug primer, denimo, da imate GPS-meritve, ki beležijo lokacijo, čas, &scaron;tevilko avtobusa in hitrost avtobusov v mestu. Želimo ustvariti novo polje z imenom  <i>SpeedFrom3</i>, ki izračunava povprečje hitrosti zadnjih 3 zabeleženih GPS-meritev za vsak geoobjekt. Za ta izračun bomo uporabili izračun zaznavanja sledi, kjer je sled avtobus, ki je označen s &scaron;tevilko. Izračun za ugotovitev povprečne hitrosti zadnjih 3 časovnih korakov in trenutnega časovnega koraka je <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj za izračun vrednosti polj za</h2></div>
+        <hr/>
+        <div>
+            <p>Za točke, linije, poligone ali tabele bodo izračunane vrednosti polj.  
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Izračun vrednosti polj za polje</h2></div>
+        <hr/>
+        <div>
+            <p>Nova ali obstoječa polja, za katera bodo izračunani vrednosti in tip podatkov. Če izračunavate vrednosti na že obstoječem polju, vam ni treba usklajevati tipov podatkov. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Izdelaj izraz za izračun vrednosti polj</h2></div>
+        <hr/>
+        <div>
+            <p>Za izračun vrednosti polj dodajte izraz s pomočjo graditelja izrazov. 
+            </p>
+            <p>Na primer, denimo, da želimo dodati vrednosti polj z imenom  <i>income</i>  in <i>bonus</i>. To lahko storimo z dodajanjem izraza <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Izraz zaznava sledi.</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite, ali va&scaron; izraz zaznava sledi. Izraz za zaznavanje sledi bo vseboval formatiranje, kot je  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Izrazi za zaznavanje sledi zahtevajo polja za identifikacijo posameznih sledi. Sledi so lahko sestavljene iz točk, linij, poligonov ali tabel in zahtevajo samo, da ima vhod identifikator sledi ter da so podatki časovno omogočeni in predstavljajo trenutek v času.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizirajte podatke s časovnimi intervali</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite, ali želite izračunati vrednosti za svoje sledi s časovnimi intervali, ki bodo segmentirali va&scaron;e vhode za analizo. Če boste uporabili časovne intervale, morate nastaviti časovni interval, ki ga želite uporabiti, in po želji nastaviti referenčni čas. Če referenčnega časa ne nastavite, bo uporabljen Jan 1, 1970. 
+            </p>
+            <p>Na primer, če nastavite časovno omejitev na en dan, ki se začne 1. januarja 1990 ob 9.00 zjutraj, bo vsaka sled odrezana ob 9.00 zjutraj vsak dan in analizirana v tem segmentu. 
+            </p>
+            <p>S časovnimi intervali lahko hitro pospe&scaron;ite čas izračunavanja, saj hitro ustvarja manj&scaron;e sledi za analizo. Če je za va&scaron;o analizo ustrezna razdelitev s ponavljajočim se časovnim intervalom, se ta priporoča za procesiranje velikih podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

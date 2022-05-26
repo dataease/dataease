@@ -1,0 +1,88 @@
+<table style="width:100%" class="esriFormTable">
+  <tbody>
+    <tr data-dojo-attach-point="_useTrafficCheckRow">
+      <td class="shortTextInput" colspan="3" style="padding-bottom:0;">
+        <div class="esriLeadingMargin1">
+          <label>
+            <input id="${id}_usetrafficcheck" type="checkbox" data-dojo-attach-point="_useTrafficCheck" data-dojo-type="dijit/form/CheckBox" data-dojo-attach-event="onChange:_handleUseTrafficCheckChange" data-dojo-props="checked:false" style="margin-bottom:0.25em;">
+            </input>
+            <label for="${id}_usetrafficcheck" data-dojo-attach-point="_useTrafficLabel" class="esriLeadingMargin025">${i18n.trafficLabel}</label>
+         </label>
+        </div>
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_liveTrafficRadioRow">
+      <td colspan="3">
+        <div class="esriLeadingMargin2">
+          <label>
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" name="trafficSelect" data-dojo-attach-event="onChange:_handleLifeTrafficRadioChange"  data-dojo-props="checked:true" data-dojo-attach-point="_liveTrafficRadioBtn"></input>
+            <label data-dojo-attach-point="_liveTraficLabel">${i18n.liveTrafficLabel}</label>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_liveTrafficCtrlRow">
+      <td colspan="3">
+        <div class="esriLeadingMargin2 longInput" value="0" data-dojo-props="intermediateChanges:true,showButtons:false,minimum:0, maximum:12,discreteValues:49" data-dojo-attach-point="_liveTimeSlider" data-dojo-attach-event="onChange:_handleLiveTimeSliderChange" type="range" data-dojo-type="dijit/form/HorizontalSlider">
+          <div data-dojo-type="dijit/form/HorizontalRule"  style="width:86%" data-dojo-props="container: 'topDecoration',count: 13,style: 'height: 0.55em;'"></div>
+           <ol data-dojo-type="dijit/form/HorizontalRuleLabels"  data-dojo-attach-point="_liveTimeRuleLabels" data-dojo-props="container: 'bottomDecoration', count:5" style="margin-top:5px;height: 1em;">
+              <li>${i18n.nowLabel}</li>
+              <li>+3</li>
+              <li>+6</li>
+              <li>+9</li>
+              <li>+12 ${i18n.hoursSmall}</li>
+            </ol>
+        </div>
+         <!-- create rules and labels below horizontal slider -->
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_typicalTrafficRadioRow">
+      <td colspan="3">
+        <div class="esriLeadingMargin2">
+          <label>
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" name="trafficSelect" data-dojo-attach-point="_typicalTrafficRadioBtn"></input>
+            <label data-dojo-attach-point="_typicalTraficLabel">${i18n.typicalTraffCdtnLabel}</label>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_driveTimeRow">
+      <td colspan="3" style="padding-top:0;padding-bottom:0">
+        <select class="esriLeadingMargin2 mediumInput esriAnalysisSelect" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_trafficDay" style="width:46%;table-layout:fixed;">
+          <option value="1/1/1990">${i18n.monday}</option>
+          <option value="1/2/1990">${i18n.tuesday}</option>
+          <option value="1/3/1990">${i18n.wednesday}</option>
+          <option value="1/4/1990">${i18n.thursday}</option>
+          <option value="1/5/1990">${i18n.friday}</option>
+          <option value="1/6/1990">${i18n.saturday}</option>
+          <option value="1/7/1990">${i18n.sunday}</option>
+        </select>
+        <input  type="text" data-dojo-type="dijit/form/TimeTextBox" data-dojo-props="value:'T12:00:00', required:true,intermediateChanges:true,constraints:{formatLength:'short',selector:'time'}"  data-dojo-attach-point="_trafficTime" style="height:24px;width:37%;margin-top:0;" />
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_availabilityRow">
+      <td colspan="3" style="padding-top:0;">
+        <a class="esriLeadingMargin3 esriSmallFont" href="http://www.arcgis.com/home/item.html?id=b7a893e8e1e04311bd925ea25cb8d7c7" target="_available">${i18n.seeAvailability}</a>
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_timeTrafficLabel">
+      <td colspan="3">
+        <div class="esriLeadingMargin2">
+          <label>${i18n.startTime}</label>
+        </div>
+      </td>
+    </tr>
+    <tr data-dojo-attach-point="_timeTrafficRow">
+      <td colspan="2">
+        <div class="esriLeadingMargin2">
+          <input type="text" data-dojo-attach-point="_startDateInput"
+                 data-dojo-type="dijit/form/DateTextBox" />
+        </div>
+      </td>
+      <td>
+        <input type="text" data-dojo-attach-point="_startTimeInput"
+                 data-dojo-type="dijit/form/TimeTextBox" />
+      </td>
+    </tr>
+  </tbody>
+</table>

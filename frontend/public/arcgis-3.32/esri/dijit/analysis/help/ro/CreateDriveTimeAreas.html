@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Creare suprafețe pentru timpul de condus</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Creare suprafețe pentru timpul de condus"></h2>
+        <hr/>
+    <p>Crearea suprafețelor pentru timpul de condus creează suprafețe la care se poate ajunge &icirc;ntr-un interval specificat de timp de condus sau aflate la o anumită distanță de conducere ori de mers pe jos etc. Această funcție măsoară din unul sau mai multe puncte (p&acirc;nă la 1.000), de-a lungul drumurilor sau aleilor pietonale, pentru a crea un strat tematic care vă poate ajuta să răspundeți la &icirc;ntrebări precum:
+        <ul>
+            <li>P&acirc;nă unde pot ajunge de aici &icirc;n 30 de minute cu mașina?
+            </li>
+            <li>P&acirc;nă unde pot ajunge de aici &icirc;n 30 de minute cu mașina, la 5:30 p.m. c&acirc;nd este ora de v&acirc;rf?
+            </li>
+            <li>Ce se află la o distanță maximă de doi kilometri de mers pe jos de la hotel?
+            </li>
+            <li>La ce zone din oraș pot ajunge pompierii &icirc;n cinci minute? 
+            </li>
+            <li>Cum s-ar &icirc;mbunătăți răspunsul pompierilor prin construirea unei noi stații de pompieri aici?
+            </li>
+            <li>Ce suprafețe de piață acoperă afacerea mea?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Este posibil să reușiți să răspundeți la &icirc;ntrebările care vă preocupă numai vizualiz&acirc;nd suprafețele rezultate. Alternativ, puteți realiza și alte analize spațiale utiliz&acirc;nd suprafețele rezultate. De exemplu, prin executarea funcției &Icirc;nsumare puncte folosind suprafețe pentru tipul de condus cu date demografice, se poate determina ce locație potențială de magazin este cel mai probabil să ofere cea mai bună bază de clienți pentru tipul dvs. de afacere. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Pentru a crea suprafețe prin măsurarea distanței &icirc;n linie dreaptă &icirc;n locul măsurării de-a lungul drumurilor, utilizați &icirc;n schimb instrumentul Creare buffere.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărții</b>, &icirc;n buffer vor fi incluse numai obiectele spațiale vizibile &icirc;n extinderea curentă a hărții &icirc;n vederea creării de zone bazate pe timpul de condus sau pe distanța de condus. Dacă nu se bifează, vor fi utilizate toate obiectele spațiale din stratul tematic introdus, chiar dacă se află &icirc;n afara extinderii curente a hărții.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeți un strat tematic de puncte pentru a calcula zonele pentru timpul de condus</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale punctuale &icirc;n jurul cărora vor fi calculate zonele. Puteți alege cum sunt calculate zonele &icirc;n baza modului de deplasare (cu mașina, cu camionul sau pe jos) și măsurați (timpul sau distanța).
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+            <p>Instrumentul acceptă p&acirc;nă la 1.000 de obiecte spațiale &icirc;n stratul tematic de intrare.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Măsurare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți un mod de deplasare (cu mașina, cu camionul sau pe jos) și măsurați (timpul sau distanța). Modurile de deplasare disponibile sunt determinate de administratorul organizației dvs. După alegerea modului și a măsurării, introduceți o durată sau o distanță de p&acirc;nă la  5 ore (300 de minute) sau  300 de mile (482.80 de kilometri). 
+            </p>
+            <p>Direcția de deplasare ( <b>Dinspre unitate</b> sau <b>Către unitate</b>) poate influența modul &icirc;n care sunt generate suprafețele. Crearea suprafețelor pentru timpul de condus va respecta regulile pentru sensurile unice, interdicțiile de schimbare a direcției, precum și alte reguli pe baza direcției de deplasare. Va trebui să selectați direcția de deplasare pe baza tipului de locație introdus și a contextului analizei. De exemplu, suprafața pentru timpul de condus pentru locație de livrare pizza trebuie creată dinspre unitate, &icirc;n timp ce suprafața pentru timpul de condus pentru un spital trebuie creată către unitate.
+            </p>
+            <p>Dacă alegeți  <b>Timp de condus</b>, <b>Timp de condus &icirc;n mediul rural</b> sau <b>Timp de deplasare cu camionul</b>, beneficiați de opțiuni pentru modul de măsurare a timpului de condus.
+                <ul>
+                    <li>
+                        <p>Debifați  <b>Utilizare trafic</b> pentru a crea suprafețe pentru tipul de conducere bazate pe viteze fixe. Aceasta este opțiunea de ales dacă doriți o suprafață generală pentru timpul de condus, nu una calculată utiliz&acirc;nd condițiile de trafic dinamice pentru o anumită oră de pornire.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Bifați  <b>Utilizare trafic</b> pentru a crea suprafețe pentru timpul de deplasare auto &icirc;n funcție de o anumită oră de pornire sau de condițiile de trafic dinamice. Dacă se alege și opțiunea <b>Trafic &icirc;n timp real</b>, ora de pornire din punctele introduse este setată la ora curentă, iar viteza curentă și cea prevăzută pentru trafic sunt preluate de la senzori și fluxuri pentru a crea suprafețele pentru timpul de condus. Vitezele prevăzute pentru trafic sunt calculate prin luarea &icirc;n considerare a vitezelor traficului &icirc;n timp real, a vitezelor istorice și a evenimentelor curente, cum ar fi buletinul meteo. Vitezele traficului sunt prezise pentru următoarele 12 ore, &icirc;n consecință, puteți deplasa glisorul pentru a seta ora de pornire cu p&acirc;nă la 12 ore &icirc;n avans.
+                        </p>
+                        <p>Utilizați aceste setări pentru traficul &icirc;n timp real pentru a afla la ce suprafețe se poate ajunge dacă se pleacă acum, dacă se pleacă peste o oră și așa mai departe.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Dacă se bifează  <b>Utilizare trafic</b> și se alege <b>Trafic &icirc;n funcție de condițiile normale pentru</b> o zi și o oră, instrumentul creează suprafețe pentru timpul de condus pe baza vitezei medii istorice pentru fiecare interval de cinci minute de pe parcursul unei săptăm&acirc;ni obișnuite. Rezultatele includ traficul, &icirc;nsă elimină influența condițiilor și evenimentelor de trafic curente, care pot să difere semnificativ față de standard.
+                        </p>
+                        <p>Puteți utiliza aceste setări de trafic istorice pentru a &icirc;ntreba, de exemplu, &bdquo;P&acirc;nă la ce suprafețe pot ajunge &icirc;n general, dacă pornesc la ora 11:30 &icirc;ntr-o zi de miercuri?&rdquo; 
+                        </p>
+                        <p>Ora pe care o setați este evaluată pe fusul orar &icirc;n care se află punctele introduse. Prin urmare, dacă setați ora la 8:00 a.m. și aveți două puncte, unul &icirc;n New York City și altul &icirc;n Los Angeles, zonele pentru timpul de condus vor fi generate pentru 8:00 a.m. ora Coastei de Est și, respectiv, 8:00 a.m. ora Pacificului.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Rețineți că, pe măsură ce un vehicul se deplasează &icirc;nainte dintr-un punct, timpul se scurge și condițiile de trafic se modifică. Instrumentul Suprafețe pentru timpul de condus ține cont de aceste variații c&acirc;nd selectați  <b>Timp condus</b> și bifați <b>Utilizare trafic</b>; cu toate acestea, nu &icirc;n toate regiunile este acceptată opțiunea pentru trafic. Faceți clic pe linkul <b>Vizualizare disponibilitate</b> de pe instrument pentru a afla dacă această opțiune este disponibilă &icirc;n zona care vă interesează.
+            </p>
+            <p> <b>Timpul de deplasare cu camionul</b> poate utiliza viteze de deplasare dinamice pe baza traficului, dar numai p&acirc;nă la limita legală de viteză a vehiculului. De exemplu, dacă viteza dinamică pentru o stradă, pe baza traficului &icirc;n timp real, este de 65 de mile pe oră, dar limita de viteză a vehiculului pentru strada respectivă este de 55 de mile pe oră, calculul va utiliza 55 de mile pe oră pentru strada respectivă.
+            </p>
+            <p> <b>Timpul de mers pe jos</b> și <b>Distanța de mers pe jos</b> utilizează o viteză fixă de 5 kilometri pe oră (3.1 mile pe oră) și urmează traseele pietonale și străzile disponibile (ignoră regulile de circulație pentru autovehicule, precum drumurile cu sens unic). </p>
+            <p> <b>Distanța de deplasare cu camionul</b> utilizează viteze fixe și respectă regulile aplicabile vehiculelor grele, pe c&acirc;nd <b>Distanța de deplasare</b> și <b>Distanța de condus &icirc;n mediul rural</b> utilizează viteze fixe și respectă regulile aplicabile pentru automobile, precum mașinile.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selectare straturi tematice tip barieră</h2></div>
+        <hr/>
+        <div>
+            <p> Unul sau mai multe obiecte spațiale care acționează ca restricții temporare (bariere) atunci c&acirc;nd vă deplasați pe străzile subiacente. Puteți specifica barierele utiliz&acirc;nd obiecte spațiale de tip punct, linie sau poligon.
+            </p>
+            <p>O barieră de tip punct poate reprezenta modelul unui copac căzut, al unui accident, al unui cablu electric căzut sau al oricărui element care blochează complet traficul &icirc;ntr-o anumită poziție de pe stradă. Deplasarea este permisă pe stradă, dar nu &icirc;n afara barierei. Puteți specifica p&acirc;nă la 250 de obiecte spațiale care să acționeze ca bariere tip punct.
+            </p>
+            <p>O barieră tip linie interzice deplasarea &icirc;n orice punct &icirc;n care bariera se intersectează cu străzile. De exemplu, o paradă sau un protest care blochează traficul pe mai multe segmente de stradă pot fi modelate cu o barieră tip linie. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip linie depășește 500, instrumentul returnează o eroare.
+            </p>
+            <p>O barieră tip poligon interzice deplasarea &icirc;n orice punct &icirc;n care poligonul se intersectează cu străzile. Un mod de utilizare a acestui tip de barieră este să se modeleze inundațiile care acoperă suprafețele rețelei de străzi și să se facă imposibilă deplasarea pe traseul respectiv. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip poligon depășește 2000, instrumentul returnează o eroare.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Zone din puncte diferite</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți cum să fie gestionate suprafețele partajate din diferite puncte introduse atunci c&acirc;nd se &icirc;ntrepătrund. Acestea pot suferi:
+                <ul>
+                    <li> <b>Suprapunere</b>&mdash;Suprafețele din diferite puncte introduse pot acoperi același drum. Acest lucru este util c&acirc;nd trebuie să știți toate punctele de intrare din care se poate ajunge la o anumită locație aflată &icirc;n limita de tip sau de distanță dată.
+                    </li>
+                    <li> <b>Dizolvare</b>&mdash;Toate suprafețele sunt unificate &icirc;ntr-una singură și doar o singură suprafață poate acoperi o anumită locație. Acest lucru este util c&acirc;nd trebuie să cunoașteți numai dacă se poate ajunge la o suprafață &icirc;ntr-o anumită limită de timp sau distanță, &icirc;nsă nu trebuie să știți din ce puncte de intrare anume se poate ajunge la acea locație.
+                    </li>
+                    <li> <b>Separare</b>&mdash;Suprafețele din diferite locații de intrare care s-ar suprapune &icirc;ntre ele sunt separate la mijloc, astfel &icirc;nc&acirc;t să devină alăturate. Acest lucru este util c&acirc;nd doriți să vedeți ce suprafețe sunt acoperite &icirc;ntr-un interval de timp sau o limită de distanță de la punctele de intrare și, &icirc;n același timp, să determinați ce punct de intrare este cel mai apropiat de suprafața respectivă.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Afișare zone inaccesibile sub formă de găuri</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți dacă doriți ca suprafețele rezultate să includă găuri dacă anumite străzi sunt inaccesibile din cauza timpului sau a distanței de  <b>Măsurare</b> sau din cauza restricțiilor impuse de modul de deplasare.
+            </p>
+            <p>Suprafețele pentru timpul de condus care utilizează acest parametru au o limită de 15 minute sau 15 mile (24 kilometri).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Includere străzi accesibile</h2></div>
+        <hr/>
+        <div>
+            <p>Includeți străzile care sunt utilizate pentru crearea suprafețelor pentru timpul de condus ca un strat tematic rezultat. 
+            </p>
+            <p>Crearea suprafețelor pentru timpul de condus auto măsoară acoperirea la nivelul rețelei de străzi, apoi creează suprafețe pentru timpul de condus pe baza străzilor frecventate p&acirc;nă &icirc;n momentul respectiv. Prin urmare, suprafețele reprezintă o aproximare a străzile frecventate. Dacă analiza are scopul de a determina străzile acoperire &icirc;n cadrul unei distanțe sau al unui timp de condus specific de la o unitate, generarea străzilor accesibile poate fi mai precisă dec&acirc;t utilizarea suprafețelor pentru timpul de condus pentru a evalua dacă o anumită stradă a fost accesibilă.
+            </p>
+            <p>Suprafețele pentru timpul de condus care utilizează acest parametru au o limită de 15 minute sau 15 mile (24 kilometri).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

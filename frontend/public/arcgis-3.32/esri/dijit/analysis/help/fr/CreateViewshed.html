@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Créer un champ de vision</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Cr&eacute;er un champ de vision"></h2>
+        <hr/>
+    <p>L&rsquo;outil Cr&eacute;er un champ de vision cr&eacute;e des zones dans lesquelles un observateur peut voir des objets au sol. Les points d'observation en entr&eacute;e peuvent repr&eacute;senter soit des observateurs (par exemple, des personnes au sol ou des vigies dans une tour de guet) soit des objets observ&eacute;s (par exemple, des &eacute;oliennes, des ch&acirc;teaux d'eau, des v&eacute;hicules ou d'autres personnes). Les zones de r&eacute;sultat sont les zones dans lesquelles les observateurs peuvent voir les objets observ&eacute;s et inversement : ces objets observ&eacute;s peuvent voir les observateurs.
+    </p>
+    <p>Les observateurs et les objets observ&eacute;s peuvent avoir une hauteur au-dessus du sol et ces hauteurs sont utilis&eacute;es pour d&eacute;terminer la visibilit&eacute;. Par exemple, un champ de vision calcul&eacute; pour des &eacute;oliennes de 120&nbsp;m&egrave;tres et des personnes mesurant 1,80&nbsp;m&egrave;tre au sol sera g&eacute;n&eacute;ralement plus important qu&rsquo;un champ de vision calcul&eacute; pour des &eacute;oliennes de 60&nbsp;m&egrave;tres et des personnes mesurant 1,80&nbsp;m&egrave;tre.
+    </p>
+    <p>Notez que le calcul du champ de vision ne tient pas compte des obstructions telles que les arbres ou les b&acirc;timents. Vous pouvez envisager ce calcul comme portant sur un sol nu ne comportant rien d'autre que l'observateur et les objets observ&eacute;s.
+    </p>
+    <p>La couche de r&eacute;sultats contient des entit&eacute;s surfaciques repr&eacute;sentant des zones visibles. Le champ  <i>Frequency</i> consigne le nombre de points d&rsquo;observation pouvant voir chaque zone. Par exemple, si vous avez cinq points en entr&eacute;e, chacun repr&eacute;sentant une tour de guet, le champ <i>Frequency</i> contiendra des valeurs entre un et cinq. Les zones ayant une valeur de un sont visibles uniquement par une tour et les zones ayant une valeur de cinq sont visibles par toutes les tours. La couche de r&eacute;sultats contient &eacute;galement le champ <i>DEMResolution</i> qui consigne la r&eacute;solution du mod&egrave;le num&eacute;rique de terrain (MNT) utilis&eacute; pour cr&eacute;er les champs de vision.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seuls les points d'observation qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, tous les points d'observation qui se trouvent dans la couche en entr&eacute;e seront analys&eacute;s, m&ecirc;me s'ils se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entités ponctuelles qui représentent des points d'observation</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s ponctuelles &agrave; utiliser comme points d'observation. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Hauteur des emplacements des points d'observation</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit de la hauteur au-dessus du sol de vos points d'observation.    La valeur par d&eacute;faut correspond environ &agrave; la hauteur moyenne d'une personne.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Hauteur d\'autres objets au sol</h2></div>
+        <hr/>
+        <div>
+            <p>Il s&rsquo;agit de la hauteur des structures ou des personnes au sol qui servent &agrave; &eacute;tablir la visibilit&eacute;. Le champ de vision r&eacute;sultant correspond aux zones dans lesquelles un point d'observation peut voir les autres objets.  L'inverse est &eacute;galement vrai&nbsp;: les autres objets peuvent voir un point d'observation. 
+            </p>
+            <p>
+                <ul>
+                    <li>Si vos points d'observation repr&eacute;sentent des &eacute;oliennes et que vous souhaitez d&eacute;terminer o&ugrave; les personnes au sol voient les &eacute;oliennes, saisissez la hauteur moyenne d'une personne (environ 1,80&nbsp;m).  Le r&eacute;sultat repr&eacute;sente les zones dans lesquelles une personne au sol peut voir les &eacute;oliennes.
+                    </li>
+                    <li>Si vos points d'observation repr&eacute;sentent cinq tours de guet et que vous souhaitez d&eacute;terminer quelles tours de guet peuvent voir un panache de fum&eacute;e de 6&nbsp;m&egrave;tres au moins, saisissez 6&nbsp;m comme hauteur.  Le r&eacute;sultat repr&eacute;sente les zones o&ugrave; une tour de guet peut voir un panache de fum&eacute;e d'au moins 6&nbsp;m&egrave;tres.
+                    </li>
+                    <li>Si vos points d'observation repr&eacute;sentent des panoramas le long de routes et de pistes et que vous souhaitez d&eacute;terminer les endroits o&ugrave; les &eacute;oliennes d'au moins 120&nbsp;m&egrave;tres sont visibles, saisissez 120&nbsp;m comme hauteur.  Le r&eacute;sultat pr&eacute;sente les zones o&ugrave; une personne post&eacute;e &agrave; un panorama peut voir une &eacute;olienne d'au moins 120&nbsp;m&egrave;tres.
+                    </li>
+                    <li>Si vos points d'observation repr&eacute;sentent des panoramas et que vous souhaitez d&eacute;terminer la surface au sol que les personnes post&eacute;es au panorama voient, saisissez z&eacute;ro.  Le r&eacute;sultat repr&eacute;sente les zones visibles depuis le panorama.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distance d\'affichage maximum</h2></div>
+        <hr/>
+        <div>
+            <p>Il s&rsquo;agit d&rsquo;une distance limite o&ugrave; s&rsquo;arr&ecirc;te le calcul de zones visibles. Au-del&agrave; de cette distance, nul ne sait si les points d'observation et les autres objets peuvent se voir. Les valeurs importantes augmentent le temps de calcul. La valeur maximale autoris&eacute;e est 31&nbsp;miles (50&nbsp;kilom&egrave;tres).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+            <p> L&rsquo;ex&eacute;cution de cet outil n&rsquo;entra&icirc;ne aucune consommation de cr&eacute;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Razvodje</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Razvodna naloga"></h2>
+        <hr/>
+    <p>To orodje določi prispevno območje nad sklopom celic v rastru.
+    </p>
+    <p>Razvodje je območje na hribu, ki prispeva pretok, običajno vode, do skupnega izhoda kot koncentrirano odvodnjavanje. Lahko je del večjega razvodja in lahko vsebuje tudi manj&scaron;a razvodja, ki jih imenujemo podbazeni.
+    </p>
+    <p>Vrednost posameznega razvodja bo vzeta iz vrednosti vira v vhodnem rastru ali geoobjektne sloja s točko litja. Ko je točka litja rastrski sklop podatkov, so vrednosti celic uporabljene privzeto. Ko je točka litja sklop podatkov točkovnega geoobjekta, bodo vrednosti prihajale iz določenega polja.
+    </p>
+    <p>Orodje Razvodje podpira samo rastrski sloj smeri pretoka D8.
+    </p>
+    <p>Ko navajate lokacije vhodnih točk litja kot geoobjektne podatke, bo privzeto polje prvo razpoložljivo veljavno polje. Če veljavno polje ne obstaja, bo privzeto polje ObjectID (na primer OID ali FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Izberite sloj s smerjo pretoka</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodni raster, ki prikazuje smer pretoka iz vsake celice.
+            </p>
+            <p>Raster smeri pretoka je mogoče ustvariti z orodjem Smer pretoka ali nalogo FlowDirection v storitvi RasterAnalysisTools, zaženite privzeti tip smeri pretoka  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Navedite lokacije vhodnih točk litja</h2></div>
+        <hr/>
+        <div>
+            <p>Lokacije vhodnih točk litja.
+            </p>
+            <p>Za raster to predstavlja celice, nad katerimi bo določeno prispevno območje. Vse celice, ki nimajo vrednosti NoData, bodo uporabljene kot izvirne celice. Za vhodne točke to predstavlja lokacije, nad katerimi bo določeno prispevno območje.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Izberite polje s točko litja</h2></div>
+        <hr/>
+        <div>
+            <p>Polje, uporabljeno za dodelitev vrednosti lokacijam točk litja.
+            </p>
+            <p>Če je vhodni sloj točk litja raster, je uporabljena vrednost. Če je geoobjekt, je uporabljeno &scaron;tevilsko polje. Če polje vsebuje vrednosti s plavajočo vejico, bodo skraj&scaron;ane v cela &scaron;tevila.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sujungti sluoksnius</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Sujungti sluoksnius"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis sujungia du elementų sluoksnius ir sukuria vieną i&scaron;vesties sluoksnį. Jungiami sluoksniai turi turėti vienodą geometrijos tipą ir laiko tipą. Galite nurodyti kaip bus sujungiami ir kopijuojami atributiniai laukai. Pavyzdžiui:
+        <ul>
+            <li>Turite Anglijos, Velso ir &Scaron;kotijos sluoksnius ir norite juos sujungti į vieną Didžiosios Britanijos sluoksnį. 
+            </li>
+            <li>Turite 2 sluoksnių su sklypų duomenimis atskirose seniūnijose. Norite sujungti juos į vieną sluoksnį, paliekant tik tuos laukus, kurie turi tą patį pavadinimą ir tipą abejuose įvesties sluoksniuose.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis su lentelės, ta&scaron;kiniais, linijiniais arba plotiniais elementais, su kuriuo bus sujungiamas antrasis elementų sluoksnis. Rezultatų sluoksnyje bus įtraukti visi &scaron;io sluoksnio laukai.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Pasirinkite sujungtiną sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite elementų sluoksnį, kuris bus sujungtas su įvesties sluoksniu. Jungiamas sluoksnis turi turėti vienodą geometrijos tipą ir laiko tipą su įvesties sluoksniu.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Pakeiskite sujungimo laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Pagal numatytuosius nustatymus, bus perkelti visi abiejų įvesties sluoksnių laukai. Pakeisti, kaip įvestyje bus įtraukiami jungiamo sluoksnio laukai, galite naudodami &scaron;ias parinktis:
+                <ul>
+                    <li> <b>Pervadinti</b> &ndash; lauko pavadinimas bus pakeistas.
+                    </li>
+                    <li> <b>Pa&scaron;alinti</b> &ndash; laukas bus pa&scaron;alintas.
+                    </li>
+                    <li> <b>Sutapdinti</b> &ndash; laukų pavadinimai bus sutapdinti.  Reik&scaron;mės i&scaron; vieno sluoksnio bus nukopijuotos į lauką tokiu pačiu pavadinimu.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jei abiejuose sluoksniuose yra laukas su tokiu pačiu pavadinimu ir duomenų tipu, abiejų laukų turinys bus sujungtas į vieną lauką tokiu pavadinimu. Tai netaikoma laukams, kur naudojamas  <b>Atitikmuo</b> parametre <b>Keisti sujungimo laukus</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

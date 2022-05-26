@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Detectar objetos con aprendizaje profundo</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Detectar objetos con aprendizaje profundo"></h2>
+        <hr/>
+    <p>Esta herramienta ejecuta un modelo de aprendizaje profundo entrenado en un r&aacute;ster de entrada para generar una clase de entidad con los objetos que encuentre. Las entidades pueden ser cuadros o pol&iacute;gonos de delimitaci&oacute;n alrededor de los objetos encontrados o puntos en el centro de los objetos.
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute; el &aacute;rea r&aacute;ster visible dentro de la extensi&oacute;n de mapa actual. Si se ha desactivado, se analizar&aacute; todo el r&aacute;ster, aunque est&eacute; fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Elegir la imagen utilizada para detectar objetos</h2></div>
+        <hr/>
+        <div>
+            <p>La imagen de entrada usada para detectar objetos.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Elegir el modelo de aprendizaje profundo utilizado para detectar objetos</h2></div>
+        <hr/>
+        <div>
+            <p>El elemento del paquete de aprendizaje profundo de entrada ( <code>.dlpk</code>).
+            </p>
+            <p>El paquete de aprendizaje profundo est&aacute; formado por el archivo JSON de definici&oacute;n de modelo de Esri ( <code>.emd</code>), el archivo de modelo binario de aprendizaje profundo y, opcionalmente, la funci&oacute;n r&aacute;ster de Python que se debe utilizar.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Especificar los argumentos del modelo de aprendizaje profundo</h2></div>
+        <hr/>
+        <div>
+            <p>Los argumentos de funci&oacute;n se definen en la clase de funci&oacute;n r&aacute;ster de Python a la que el modelo de entrada hace referencia. Aqu&iacute; es donde enumera los argumentos y par&aacute;metros de aprendizaje profundo adicionales para experimentos y refinamiento, como un umbral de confianza para ajustar la sensibilidad.
+            </p>
+            <p>La herramienta rellena los nombres de los argumentos a partir de la lectura del m&oacute;dulo de Python del servidor de an&aacute;lisis de r&aacute;ster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Eliminar entidades duplicadas de la salida (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Lleva a cabo la supresi&oacute;n no m&aacute;xima, en la que se identifican los objetos duplicados y se elimina la entidad duplicada con el valor de coincidencia m&aacute;s bajo. 
+                <ul>
+                    <li>Desactivado: todos los objetos detectados estar&aacute;n en la clase de entidad de salida. Esta es la opci&oacute;n predeterminada.
+                        
+
+                    </li>
+                    <li>Activado: elimina los objetos duplicados detectados.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Campo de puntuación de confianza</h2></div>
+        <hr/>
+        <div>
+            <p>El campo del servicio de entidades que contiene las puntuaciones de confianza que se utilizar&aacute;n como salida del m&eacute;todo de detecci&oacute;n de objetos.
+            </p>
+            <p>Este par&aacute;metro es obligatorio si activa el par&aacute;metro  <b>Supresi&oacute;n no m&aacute;xima</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Campo de valor de clase</h2></div>
+        <hr/>
+        <div>
+            <p>El campo de valor de clase del servicio de entidades de salida. Si no se especifica, la herramienta utiliza los campos de valor de clase est&aacute;ndar  <i>Classvalue</i> y <i>Value</i>. Si estos campos no existen, todas las entidades se tratan como la misma clase de objeto.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Máx. ratio de superposición</h2></div>
+        <hr/>
+        <div>
+            <p>El ratio de superposici&oacute;n m&aacute;ximo para dos entidades de superposici&oacute;n, definido como la relaci&oacute;n del &aacute;rea de intersecci&oacute;n sobre el &aacute;rea de combinaci&oacute;n. El valor predeterminado es 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

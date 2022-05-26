@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Připojit data</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagram pracovn&iacute;ho postupu Připojit data"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj připoj&iacute; data k st&aacute;vaj&iacute;c&iacute; hostovan&eacute; vrstvě prvků. N&aacute;stroj Připojit data uprav&iacute; původn&iacute; vstupn&iacute; vrstvu a nevytvoř&iacute; novou v&yacute;stupn&iacute; vrstvu. Můžete p&aacute;rovat pole na z&aacute;kladě n&aacute;zvu pole a typu pole nebo můžete použ&iacute;t pokročilej&scaron;&iacute; způsoby p&aacute;rov&aacute;n&iacute;.
+    </p>
+    <p>N&aacute;sleduj&iacute; př&iacute;klady: 
+        <ul>
+            <li>Jste zaměstnancem velk&eacute; poji&scaron;ťovny, kter&yacute; vytv&aacute;ř&iacute; prodejn&iacute; v&yacute;kazy jednou za měs&iacute;c. Pro v&yacute;ročn&iacute; zpr&aacute;vu potřebujete zkompilovat měs&iacute;čn&iacute; data k anal&yacute;ze. Pro zah&aacute;jen&iacute; anal&yacute;zy prodejů můžete využ&iacute;t n&aacute;stroj Připojit data pro aktualizaci sv&eacute; vrstvy AnnualReport_2018, jakmile m&aacute;te k dispozici měs&iacute;čn&iacute; v&yacute;kaz. Protože v&iacute;te, že va&scaron;e organizace udržuje konzistentn&iacute; sch&eacute;ma každ&yacute; měs&iacute;c, můžete použ&iacute;t v&yacute;choz&iacute; metodu mapov&aacute;n&iacute; pol&iacute; a efektivně připojit prvky na z&aacute;kladě n&aacute;zvu pole a typu pole.
+            </li>
+            <li>Každ&aacute; z deseti ekologick&yacute;ch skupin sb&iacute;r&aacute; stovky tis&iacute;c měřen&iacute; klimatu v r&aacute;mci sv&eacute; oblasti působen&iacute;. Tyto organizace si přej&iacute; zkompilovat sv&aacute; data, aby l&eacute;pe porozuměly region&aacute;ln&iacute;m a glob&aacute;ln&iacute;m trendům. Každ&aacute; organizace urč&iacute; sch&eacute;ma sv&eacute; datov&eacute; sady. Každ&aacute; z nich zadala různ&yacute; n&aacute;zev pol&iacute; pro &uacute;daje o teplotě a rychlosti větru.  V př&iacute;padě různ&yacute;ch n&aacute;zvů např&iacute;č datov&yacute;mi sadami lze využ&iacute;t  mapov&aacute;n&iacute; pol&iacute; pro určen&iacute; toho, jak&yacute;m způsobem připojit měřen&iacute; teploty a rychlosti větru do př&iacute;slu&scaron;n&yacute;ch pol&iacute;.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vyberte vrstvu, ke které se má připojit</h2></div>
+        <hr/>
+        <div>
+            <p>Tabulkov&eacute;, bodov&eacute;, liniov&eacute; či polygonov&eacute; prvky, ke kter&yacute;m se připoj&iacute; data.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Vrstva, ke kter&eacute; se bude připojovat, se změn&iacute; během prov&aacute;děn&iacute; tohoto n&aacute;stroje. Před t&iacute;m, než budete pokračovat, se ujistěte, že chcete vrstvu opravdu změnit.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t hostovanou vrstvu prvků.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Vyberte vrstvu, která se má připojit</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute;, liniov&eacute; nebo polygonov&eacute; prvky, kter&eacute; chcete připojit ke vstupn&iacute; vrstvě.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Připojit všechny prvky nebo určit podmnožinu (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifikuje prvky, kter&eacute; se maj&iacute; připojit. Tento parametr je nepovinn&yacute;.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Vybrat, jak připojit pole (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Urč&iacute;, jak&yacute;m způsobem se pole připoj&iacute; ke vstupn&iacute; vrstvě. Ve v&yacute;choz&iacute;m nastaven&iacute; se připoj&iacute; v&scaron;echny vyhovuj&iacute;c&iacute; vstupn&iacute; a připojovan&eacute; prvky. Pole jsou vyhovuj&iacute;c&iacute;, pokud maj&iacute; stejn&yacute; n&aacute;zev pole a typ pole. Pokud si přejete, můžete zvolit, jak&yacute;m způsobem se pole p&aacute;ruj&iacute;, nebo vypoč&iacute;tat v&yacute;razy Arcade coby hodnoty, kter&yacute;mi se pole vypln&iacute;.
+            </p>
+            <p>M&aacute;te např. vstupn&iacute; vrstvu s poli  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> a připojovanou vrstvu s poli <i>field_string</i>, <i>field_number</i> a <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Ve v&yacute;choz&iacute;m nastaven&iacute; n&aacute;stroj sp&aacute;ruje  <i>field_number</i> ve vstupn&iacute; vrstvě s <i>field_number</i> v připojovan&eacute; vrstvě a <i>field_string</i>  ve vstupn&iacute; vrstvě s <i>field_string</i>  v připojovan&eacute; vrstvě.
+                    </li>
+                    <li>Ve v&yacute;choz&iacute;m nastaven&iacute; budou pole  <i>date_field</i> a <i>unused_field</i> ve vstupn&iacute; vrstvě vyplněny hodnotami <i>null</i> protože v připojovan&eacute; vrstvě nejsou ž&aacute;dn&aacute; pole, se kter&yacute;mi by se dala sp&aacute;rovat.
+                    </li>
+                    <li>Pokud si přejete, můžete připojit hodnoty k pol&iacute;m, kter&eacute; se ve v&yacute;choz&iacute;m nastaven&iacute; automaticky nep&aacute;ruj&iacute;. Např.  <i>date_field</i> ve vstupn&iacute; vrstvě lze sp&aacute;rovat s polem v připojovan&eacute; vrstvě <i>MY_DATE_FIELD</i>. Tohoto dos&aacute;hnete použit&iacute;m rozbalovac&iacute; nab&iacute;dky vedle pole <i>date_field</i> v prvn&iacute;m sloupci a v&yacute;běrem <i>MY_DATE_FIELD</i> v rozbalovac&iacute; nab&iacute;dce ve druh&eacute;m sloupci.
+                    </li>
+                </ul>
+                 V dal&scaron;&iacute;m př&iacute;kladu m&aacute; vstupn&iacute; vrstva č&iacute;seln&aacute; pole <i>value_1</i>, <i>value_2</i>, <i>value_3</i> a <i>my_Average</i> a připojovan&aacute; vrstva m&aacute; č&iacute;seln&aacute; pole <i>value_1</i>, <i>value_2</i> a <i>value_3</i>.
+                <ul>
+                    <li>Ve v&yacute;choz&iacute;m nastaven&iacute; se sp&aacute;ruj&iacute; a připoj&iacute; pole  <i>value_1</i>, <i>value_2</i> a <i>value_3</i>.
+                    </li>
+                    <li>Vedle v&yacute;choz&iacute;ho p&aacute;rov&aacute;n&iacute; můžete nechat vypoč&iacute;tat hodnoty pro pole  <i>my_Average</i>. Pokud si to přejete učinit, použijte různ&aacute; pole a matematick&eacute; operace v rozbalovac&iacute; nab&iacute;dce <b>V&yacute;raz</b> ve sloupci vedle <i>my_Average</i> a vytvořte vlastn&iacute; v&yacute;raz Arcade jako např&iacute;klad <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

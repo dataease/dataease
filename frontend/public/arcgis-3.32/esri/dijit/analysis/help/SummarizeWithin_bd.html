@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summarize Within</h2><p/>
+        <h2><img src="./images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summarize Within"></h2>
+        <hr/>
+    <p>This tool finds features (and portions of features) that are within the boundaries of areas in the first input layer.  
+        <ul>
+            <li>Given a layer of watershed boundaries and a layer of land-use boundaries, calculate total acreage of land-use type for each watershed. 
+            </li>
+            <li>Given a layer of parcels in a county and a layer of city boundaries, summarize the average value of vacant parcels within each city boundary.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those features in the input layer and the layer to be summarized that are visible within the current map extent will be analyzed.  If unchecked, all features in both the input layer and the  layer to be summarized will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Choose area layer to summarize other features within its boundaries</h2></div>
+        <hr/>
+        <div>
+            <p>The area layer that will be used to summarize features that fall within its boundaries.
+ You can choose to summarize within a polygon  layer that you provide or within square or hexagon bins that are generated when the tool runs.  When generating bins, for  <b>Square</b>, the number and units specified determine the height and length of the square. For <b>Hexagon</b>, the number and units specified  determine the distance between parallel sides.
+            </p>
+            <p>Analysis using square or hexagon bins requires a projected coordinate system. You can set the processing coordinate system in Analysis Environments. If your processing coordinate system is not set to a projected coordinate system, you will be prompted to set it when you run analysis .
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Choose layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>Features in this layer that fall within the boundaries of features in the input layer, or bins specified above, will be summarized. 
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Choose a distance to generate bins and aggregate into</h2></div>
+        <hr/>
+        <div>
+            <p>The distance used to generate bins.  
+            </p>
+            <p>Either  <b>Bin Size</b> for bins or <b>Area Layer</b> must be set.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggregate using time slices (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>If time is enabled on the input point layer and it is of type instant, you can  analyze using time stepping.  There are three parameters you can set when you use time:
+                <ul>
+                    <li> <b>Time step interval</b>
+                    </li>
+                    <li> <b>How often to repeat the time step</b>
+                    </li>
+                    <li> <b>Time to align the time steps to</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>For example, if you have data that represents a year in time and you want to analyze it using weekly steps, set  <b>Time step interval</b> to <code>1 week</code>. 
+            </p>
+            <p>For example, if you have data that represents a year in time and you want to analyze it using the first week of the month, set  <b>Time step interval</b> to <code>1 week</code>, <b>How often to repeat the time step</b> to <code>1 month</code>, and <b>Time to align the time steps to</b> to <code>January 1, at 12:00 am</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Time interval to be aggregate into</h2></div>
+        <hr/>
+        <div>
+            <p>The interval of time used for generating time steps.  <b>Time step interval</b> can be used alone or with the <b>How often to repeat the time step</b> or <b>Time to align the time steps to</b> parameter.
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Time step to be aggregate into</h2></div>
+        <hr/>
+        <div>
+            <p> The step used for calculating a time step. <b>How often to repeat the time step</b> can be used alone, with <b>Time step interval</b>, with <b>Reference Time</b>, or with both <b>Time step interval</b> and <b>Time to align the time steps to</b>.
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Reference time
+used to align the time slicing</h2></div>
+        <hr/>
+        <div>
+            <p>The date and time used to align time slicing. Time stepping will start at and continue backward from this time. If no reference time is selected, time stepping will align to January 1st, 1970. 
+            </p>
+            <p>For example, if you want to create time steps that take place every Monday from 9:00 a.m. until 10:00 a.m., set  <b>Time step interval</b> to <code>1 hour</code>, <b>How often to repeat the time step</b> to <code>1 week</code>, and <b>Time to align the time steps to</b> to <code>9:00:00 a.m. on a Monday</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Add statistics (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>You can calculate statistics on features that are summarized. You can calculate the following on numeric fields: 
+                <ul>
+                    <li>Count&mdash;Calculates the number of nonnull values. It can be used on numeric fields or strings. The count of [null, 0, 2] is 2.
+                    </li>
+                    <li>Sum&mdash;The sum of numeric values in a field. The sum of [null, null, 3] is 3.
+                    </li>
+                    <li>Mean&mdash;The mean of numeric values. The mean of [0, 2, null] is 1.
+                    </li>
+                    <li>Min&mdash;The minimum value of a numeric field. The minimum of [0, 2, null] is 0. 
+                    </li>
+                    <li>Max&mdash;The maximum value of a numeric field. The maximum value of [0, 2, null] is 2.
+                    </li>
+                    <li>Range&mdash;The range of a numeric field. This is calculated as the minimum values subtracted from the maximum value. The range of [0, null, 1] is 1. The range of [null, 4] is 0.
+                    </li>
+                    <li>Variance&mdash;The variance of a numeric field in a track. The  variance of [1] is null. The variance of [null, 1,0,1,1] is 0.25.
+                    </li>
+                    <li>Standard deviation&mdash;The standard deviation of a numeric field. The standard deviation of [1] is null. The standard deviation of [null, 1,0,1,1] is 0.5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You can calculate the following on string fields:
+                <ul>
+                    <li>Count&mdash;The number of nonnull strings.
+                    </li>
+                    <li>Any&mdash;This statistic is a random sample of a string value in the specified field.
+                    </li>
+                </ul>
+                All statistics are calculated on nonnull values. The resulting layer will contain a new field for each statistic calculated. Any number of statistics can be added by choosing an attribute and statistic. 
+            </p>
+            <p>In addition to these statistics, proportional statistics will be calculated on all numeric fields:
+                <ul>
+                    <li>Count&mdash;The count of each field multiplied by the proportion of the summary layer within the polygons. 
+                    </li>
+                    <li>Sum&mdash;The sum of weighted of values in each field. Where the weight applied is the proportion of the summary layer within the polygons.
+                    </li>
+                    <li>Mean&mdash;The weighted mean of values in each field. Where the weight applied is the proportion of the summary layer within the polygons.
+                    </li>
+                    <li>Min&mdash;The minimum of weighted values in each field. Where the weight applied is the proportion of the summary layer within the polygons.
+                    </li>
+                    <li>Max&mdash;The maximum of weighted values in each field. Where the weight applied is the proportion of the summary layer within the polygons.
+                    </li>
+                    <li>Range&mdash;The difference between the maximum and minimum weighted values.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Depending on the types of features you are summarizing, the total count of nearby points, total length of lines, or total area will be calculated.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choose field to group by</h2></div>
+        <hr/>
+        <div>
+            <p>This is an attribute of the  <b>Summarize</b> features that you can use to calculate statistics separately for each unique attribute value. For example, suppose the first input layer contains city boundaries and the summary features are parcels.  One of the attributes of the parcels is <i>Status</i> which contains two values: VACANT and OCCUPIED. To calculate the total area of vacant and occupied parcels within the boundaries of cities,  use <i>Status</i> as the group by attribute.
+ The statistics for each group, as well as the count of features within each area boundary, will be displayed in the result layer's pop-up.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Add minority, majority</h2></div>
+        <hr/>
+        <div>
+            <p>This checkbox is enabled  when you choose a field to group by.    If you want to find out which attribute values within each group are the minority (least dominant) or the majority (most dominant)  within each boundary of the first input layer,  select  <b>Add minority, majority</b>.   When you select <b>Add minority, majority</b>, two new fields are added to your result layer.   If you also select <b>Add percentages</b>, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+            <ul>
+                <li>If you are summarizing points, minority and majority values are calculated based on the count of points within each bounding area in the input area layer.  
+                </li>
+                <li>If you are summarizing  lines, minority and majority values are calculated based on the length of  lines within each bounding area in the input area layer.  
+                </li>
+                <li>If you are summarizing  areas, minority and majority values are calculated based on the areas within each bounding area in the input area layer.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Add percentages</h2></div>
+        <hr/>
+        <div>
+            <p>This check box is enabled  when you choose a field to group by.    Select  <b>Add percentages</b>   if you want to find the percentage of each attribute value within each group.  A new field  is added to the result table containing the percentages of each attribute value within each group.   If <b>Add minority, majority</b> is also checked, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choose datastore</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics results are stored to an data store and exposed as a feature layer in   Portal for ArcGIS. In most cases, results should be stored to the spatiotemporal data store and this is the default. In some cases, saving results to the  relational data store is a good option. The following are reasons why you may want to store results to the relational data store: 
+                <ul>
+                    <li>You can use results in portal-to-portal collaboration.
+                    </li>
+                    <li>You can enable sync capabilities with your results.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You should not use the relational data store if you expect your GeoAnalytics results to increase and need to take advantage of the spatiotemporal big data store's capabilities to handle large amounts of data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

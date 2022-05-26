@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodeer locaties vanuit tabel</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodeer locaties vanuit tabel"></h2>
+        <hr/>
+    <p>Geocodering is een manier om adressen om te zetten in co&ouml;rdinaten. Deze tool converteert adressen uit een tabel, een CSV-bestand of een Excel-bestand in een objectlaag of een uitvoerbestand met de co&ouml;rdinaten als extra kolommen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Kies een invoertabel</h2></div>
+        <hr/>
+        <div>
+            <p>De invoertabel met de adressen om te geocoderen. De invoer moet een tabel, een CSV-bestand of een Excel-bestand zijn.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Kies een locator</h2></div>
+        <hr/>
+        <div>
+            <p>Kies een locatorservice om mee te geocoderen. Als de locatorservice die u wilt gebruiken, niet in het drop-downmenu staat, neem dan contact op met de beheerder om de locatordienst te laten configureren voor batchgeocodering.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Als al uw adressen van &eacute;&eacute;n land zijn, selecteer dat land dan voor de meest nauwkeurige resultaten. Anders laat u deze parameter leeg.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Datavelden selecteren</h2></div>
+        <hr/>
+        <div>
+            <p>De locatorservice verwacht bepaalde velden in de gegevens, zoals adres, stad, staat en postcode. Koppel de datavelden in uw invoerbestand of tabel aan de velden die de locator verwacht met gebruik van de drop-downboxen. Hoe meer velden u in kaart brengt, des te accurater uw resultaten zullen zijn. Als de invoertabel alle gegevens in &eacute;&eacute;n kolom heeft, selecteer dan  <b>E&eacute;n veld</b> en kies een dataveld uit het drop-downmenu. Selecteer anders <b>Meerdere velden</b> en breng de juiste locatorvelden in kaart naar de meervoudige veldkolommen in uw tabel.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Kies een uitvoerindeling</h2></div>
+        <hr/>
+        <div>
+            <p>Formaat van de uitvoerresultaten. Als u ervoor kiest een feature service te maken, dan worden de adressen van de invoertabel toegevoegd aan de kaart als een laag van puntobjecten. De CSV- en XLS-opties voegen bestanden toe met de resultaten van de geocodeertaak aan  <b>Mijn content</b> als de taak is voltooid.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Uitvoerresultaatnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

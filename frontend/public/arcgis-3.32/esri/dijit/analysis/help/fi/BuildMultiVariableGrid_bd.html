@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Luo useita muuttujia sisältävä ruudukko</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Liit&auml; aineisto -ty&ouml;nkulkukaavio "></h2>
+        <hr/>
+    <p>Luo useita muuttujia sis&auml;lt&auml;v&auml; ruudukko -ty&ouml;kalu toimii yhden tai useamman piste- tai linjatason tai aluekohteiden kanssa. Ty&ouml;kalu luo neli&ouml;- tai kuusiolohkoristikon ja laskee arvot jokaiselle lohkolle kunkin l&auml;ht&ouml;karttatason l&auml;heisyyden perusteella. N&auml;m&auml; arvot voivat sis&auml;lt&auml;&auml; seuraavat muuttujat: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Et&auml;isyys l&auml;himp&auml;&auml;n</b>&mdash;Et&auml;isyys kustakin lohkosta l&auml;himp&auml;&auml;n tasoon
+            </li>
+            <li> <b>L&auml;himm&auml;n ominaisuustiedot</b>&mdash;Jokaista lohkoa l&auml;hinn&auml; olevan tason kentt&auml;arvo
+            </li>
+            <li> <b>L&auml;himm&auml;n yhteenveto</b>&mdash;Eritelty tilasto kaikista tasoista, jotka ovat jokaisen lohkon s&auml;teell&auml;
+            </li>
+            <li> <b>Leikkaavan yhteenveto</b>&mdash;Eritelty tilasto kaikista tasoista, jotka leikkaavat jokaisen lohkon.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Tulostasoon sis&auml;llytet&auml;&auml;n ainoastaan itse m&auml;&auml;rittelem&auml;si muuttujat. N&auml;m&auml; muuttujat voivat auttaa sinua ymm&auml;rt&auml;m&auml;&auml;n tietosi l&auml;heisyyden ja jakelun . Tulokset voivat auttaa sinua vastaamaan seuraavanlaisiin kysymyksiin:
+        <ul>
+            <li>Kun julkisen liikenteen infrastruktuurin eri tasot otetaan huomioon, mihin osaan kaupunkia julkisilla kulkuv&auml;lineill&auml; p&auml;&auml;see huonoiten?
+            </li>
+            <li>Kun huomioidaan vesist&ouml;tasot, kuten j&auml;rvet ja joet, mik&auml; on nimelt&auml;&auml;n se vesist&ouml;, joka on l&auml;hinn&auml; jokaista sijaintipaikkaa USA:ssa?
+            </li>
+            <li>Kun tulotaso kotitaloutta kohti otetaan huomioon, miss&auml; kohdin USA:ta tulojen vaihtelu on suurimmillaan ymp&auml;r&ouml;iv&auml;n 80 kilometrin s&auml;teell&auml;?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Valitse niiden lohkojen tyyppi, joita käytetään useita muuttujia sisältävän ruudukon luomiseen</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Valitse niiden lohkojen tyyppi ja koko, joita k&auml;ytet&auml;&auml;n useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon luomiseen Kun k&auml;ytet&auml;&auml;n  <b>Neli&ouml;</b> -valintaa, m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t neli&ouml;n korkeuden ja pituuden. Kun k&auml;ytet&auml;&auml;n <b>Kuusiolohko</b> -valintaa, m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t rinnakkaisten sivujen v&auml;lisen et&auml;isyyden.
+            </p>
+            <p>Analyysi k&auml;ytt&auml;&auml; lohkoja ja edellytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. Voit m&auml;&auml;ritt&auml;&auml;  <b>k&auml;sittelev&auml;n koordinaattij&auml;rjestelm&auml;n</b> <b>Analyysiymp&auml;rist&ouml;t</b>-kohdassa. Jos k&auml;sittelev&auml;&auml; koordinaattij&auml;rjestelm&auml;&auml; ei ole m&auml;&auml;ritetty projisoiduksi koordinaattij&auml;rjestelm&auml;ksi, sinua pyydet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n se sellaiseksi, kun valitset <b>Suorita Analyysi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Valitse lähtöaineiston karttatasot ja muuttujat, jotka haluat sisällyttää ruudukkoon</h2></div>
+        <hr/>
+        <div>
+            <p>Klikkaa  Lis&auml;&auml;-painiketta( <b>+</b>) , avaa <b>Lis&auml;&auml; muuttujat</b> -ikkuna ja lis&auml;&auml; taso omaan analyysiisi. Valitse <b>Lis&auml;&auml; muuttujat</b> -ikkunassa l&auml;ht&ouml;karttataso ja m&auml;&auml;rit&auml; ne muuttujat, jotka haluat laskea t&auml;t&auml; l&auml;ht&ouml;karttatasoa varten.
+            </p>
+            <p>Kun olet valinnut ja m&auml;&auml;ritt&auml;nyt ne muuttujat, jotka haluat laskea, taso n&auml;kyy ty&ouml;kaluikkunassa muiden valittujen tasojen kanssa. Klikkaa mink&auml; tahansa tason Muokkaa-painiketta ja avaa   <b>Lis&auml;&auml; muuttujat</b> -ikkuna, jotta n&auml;et kaikki kyseist&auml; tasoa varten m&auml;&auml;ritetyt muuttujat. Klikkaa mink&auml; tahansa tason Poista-painiketta ja poista analyysist&auml; taso sek&auml; kaikki siihen liittyv&auml;t muuttujat.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Lisää muuttujat</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;ss&auml; ikkunassa voit valita l&auml;ht&ouml;karttatason ja m&auml;&auml;ritt&auml;&auml; ne muuttujat, jotka haluat laskea t&auml;t&auml; l&auml;ht&ouml;karttatasoa varten. Aloita  <b>Valitse l&auml;ht&ouml;karttataso</b> -alaspudotusvalikosta ja valitse piste-, aluekohde- tai viivataso, jonka haluat lis&auml;t&auml; analyysiisi.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+            <p>Kun olet valinnut l&auml;ht&ouml;karttatason, klikkaa  <b>Lis&auml;&auml; muuttuja</b> -painiketta ja avaa uusi muuttuja muokattavaksi. Kukin muuttuja on nimett&auml;v&auml; omalla nimell&auml;&auml;n. T&auml;m&auml; tulee sen kent&auml;n nimeksi, joka luodaan tulostason ominaisuustietotauluun.
+            </p>
+            <p>Valitse lis&auml;tt&auml;v&auml;n muuttujan tyyppi alaspudotusvalikosta. Kukin muuttujatyyppi on m&auml;&auml;ritett&auml;v&auml; omilla parametreill&auml;&auml;n, ja kaikki parametrit vaaditaan.
+            </p>
+            <p>Kun olet lis&auml;nnyt kaikki valitun tason halutut muuttujat, klikkaa   <b>Lis&auml;&auml;</b> -painiketta ja tallenna muuttujat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

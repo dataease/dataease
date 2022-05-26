@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Apkopot atribūtus</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Atribūtu apkopo&scaron;anas shēma"></h2>
+        <hr/>
+    <p> &Scaron;is rīks apkopo visas atbilsto&scaron;ās vērtības vienā vai vairākos laukos un aprēķina to statistiku. Pamata statistika ir apkopoto elementu skaits, taču iespējams aprēķināt arī padziļinātāku statistiku.
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir veikalu izvietojuma punkti ar lauku, kas apzīmē  <i>DISTRICT_MANAGER_NAME</i>,, un jūs vēlaties apkopot kafijas pārdo&scaron;anas apjomus pēc pārdevēja. Varat norādīt lauku <i>DISTRICT_MANAGER_NAME</i> kā lauku, kurā iz&scaron;ķīdināt, un tiks apkopotas visas datu rindas, kas apzīmē atsevi&scaron;ķus pārdevējus. Tādējādi visi veikali, ko vada <pre>Manager1</pre> tiek apkopoti vienā rindā,, un tiks aprēķināta kopsavilkuma statistika. &Scaron;ajā gadījumā visiem veikaliem, ko vada <pre>Manager1</pre>, tiek aprēķināta statistika, piemēram, veikalu skaits un <i>TOTAL_SALES</i>, un statistika tiek aprēķināta , arī jebkuram citam vadītājam, kas norādīts laukā <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties apkopojamo ievadi</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kas ietver apkopojamos laukus.  
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Izvēlēties , kā apkopot savus datus</h2></div>
+        <hr/>
+        <div>
+            <p>Pastāv divi datu apkopo&scaron;anas veidi:
+                <ul>
+                    <li> <b>Visi elementi vienā elementā</b>&nbsp;&mdash; aprēķina visu elementu statistiku.
+                    </li>
+                    <li> <b>Pēc laukiem</b>&nbsp;&mdash; grupē elementus pēc vērtībām norādītajos laukos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Piemēram, pieņemsim, ka jums ir koku datu kopa, kurā iekļauts lauks  <i>koka veids</i> ar vērtību <code>Kļava</code>, <code>Egle</code> un <code>Priede</code>, kā arī lauks <i>koka augstums</i>, un jūs vēlaties atrast vidējo <i>koka augstumu</i>. Ja summējat visus elementus vienā elementā, atradīsit visu  to koku vidējo augstumu, kas uzrādīs vienu vidējo vērtību. Ja veicat summē&scaron;anu pēc lauka <i>koku augstums</i>, tiks uzrādīta vidējā vērtība kļavām, vidējā vērtība eglēm un vidējā vērtība priedēm.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p> Varat aprēķināt apkopoto elementu statistikuJūs varat aprēķināt tālāk norādītās vērtības ciparu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jūs varat aprēķināt tālāk norādītās vērtības virkņu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlēties datu krātuvi</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

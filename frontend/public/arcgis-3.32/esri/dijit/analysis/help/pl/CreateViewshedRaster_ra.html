@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Utwórz widoczność</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Narzędzie Utw&oacute;rz Widoczność"></h2>
+        <hr/>
+    <p>To narzędzie identyfikuje obszary widoczne dla obserwatora, biorąc pod uwagę ukształtowanie terenu. Wejściowe lokalizacje punkt&oacute;w mogą reprezentować albo obserwator&oacute;w (np. ludzi na ziemi lub obserwator&oacute;w w wieży pożarowej) albo obserwowane obiekty (takie jak turbiny wiatrowe, wieże ciśnień, pojazdy lub inni ludzie). Wynikiem będą obszary widoczne z lokalizacji obserwator&oacute;w.
+    </p>
+    <p>Zar&oacute;wno obserwatorzy, jak i obserwowane obiekty, mogą znajdować się na pewnej wysokości nad powierzchnią ziemi. Wysokości te są wykorzystywane przy określaniu widoczności. Przykład: widoczność obliczona dla 92-metrowych turbin wiatrowych i&nbsp;os&oacute;b o wzroście 180&nbsp;cm stojących na ziemi będzie przeważnie większa niż widoczność obliczona dla 60-metrowych turbin i&nbsp;os&oacute;b o&nbsp;wzroście 152&nbsp;cm.
+    </p>
+    <p>Na warstwie wynikowej są rejestrowane dane dotyczące tego, ile razy każda lokalizacja kom&oacute;rki na wejściowym rastrze powierzchni jest widoczna z wejściowych punkt&oacute;w obserwacyjnych. Do niewidocznych kom&oacute;rek są przypisywane wartości NoData.
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko obszar rastra i punkty obserwator&oacute;w widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie punkty obserwator&oacute;w w warstwie wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Powierzchnia wysokościowa</h2></div>
+        <hr/>
+        <div>
+            <p>Powierzchnia wysokościowa używana do obliczania widoczności.
+            </p>
+            <p>Jeśli jednostki pionowe używane na powierzchni wejściowej r&oacute;żnią się od jednostek poziomych, na przykład w sytuacji, gdy wartości wysokościowe są wyrażane w stopach, a układ wsp&oacute;łrzędnych jest prezentowany w metrach, dla powierzchni należy zdefiniować pionowy układ wsp&oacute;łrzędnych. Jest to spowodowane tym, że narzędzie używa jednostek pionowych (Z) i jednostek poziomych (XY) do obliczania wsp&oacute;łczynnika Z na potrzeby analizy widoczności. Bez pionowego układu wsp&oacute;łrzędnych i przy braku dostępnych informacji o jednostce Z w narzędziu zostanie przyjęte założenie, że jednostka Z jest taka sama jak jednostka XY. W wyniku tego podczas analizy zostanie użyty wewnętrzny wsp&oacute;łczynnik Z wynoszący 1,0, co może prowadzić do nieoczekiwanych wynik&oacute;w.
+            </p>
+            <p>Powierzchnia wysokościowa może zawierać dane typu całkowitego lub zmiennoprzecinkowego.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Obiekty punktowe reprezentujące lokalizacje obserwacyjne</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe, kt&oacute;re reprezentują lokalizacje obserwacyjne przy obliczaniu widoczności.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optymalizuj dla</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda optymalizacji używana do obliczenia widoczności.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Ta metoda optymalizuje szybkość przetwarzania, oferując wyższą wydajność kosztem dokładności wyniku. Jest to opcja domyślna.
+
+                </li>
+                <li>Accuracy &mdash; 
+Ta metoda zwraca najdokładniejsze wyniki kosztem dłuższego czasu przetwarzania.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksymalna odległość widoczności</h2></div>
+        <hr/>
+        <div>
+            <p>Wprowadź maksymalną odległość, na kt&oacute;rej będzie kończyć się wyznaczanie widocznych obszar&oacute;w. Po przekroczeniu tej odległości narzędzie nie będzie sprawdzać, czy obserwatorzy i inne obiekty widzą się nawzajem.
+            </p>
+            <p>Można podać wartość liczbową reprezentującą odległość liniową albo wybrać pole liczbowe z wejściowych obiekt&oacute;w obserwator&oacute;w. Jeśli zostanie podane pole, wartości w tych polach muszą być wyrażane w tych samych jednostkach, co jednostki xy wejściowej powierzchni wysokościowej.
+            </p>
+            <p>Pamiętaj, że większe wartości wydłużą czas wykonywania obliczeń. Jeśli nie zostanie podana maksymalna odległość, domyślnie zostanie ona obliczona na podstawie rozdzielczości i zasięgu wejściowej powierzchni wysokościowej.
+            </p>
+            <p>Ten parametr jest przydatny przy modelowaniu pewnych zjawisk. Na przykład ograniczając zasięg widoczności, można modelować warunki pogodowe, takie jak lekka mgła. Podobnie ograniczenie zasięgu widoczności można zastosować w przypadku pory dnia, na przykład odwzorowując w przybliżeniu efekt zmierzchu.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksymalna odległość widoczności</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalna odległość widoczności</h2></div>
+        <hr/>
+        <div>
+            <p>Wprowadź odległość, od kt&oacute;rej będzie rozpoczynać się wyznaczanie widocznych obszar&oacute;w. Kom&oacute;rki znajdujące się na powierzchni bliżej niż wynosi ta odległość nie są widoczne w danych wynikowych, ale nadal blokują widoczność kom&oacute;rek znajdujących się między minimalną a maksymalną odległością widoczności.
+            </p>
+            <p>Można podać wartość liczbową reprezentującą odległość liniową albo wybrać pole liczbowe z wejściowych obiekt&oacute;w obserwator&oacute;w. Jeśli zostanie podane pole, wartości w tych polach muszą być wyrażane w tych samych jednostkach, co jednostki xy wejściowej powierzchni wysokościowej.
+            </p>
+            <p>Tego parametru można użyć do kontrolowania obszaru analizy widoczności w konkretnej odległości od obserwatora. Na przykład jeśli oceniana jest widoczność z g&oacute;rnych pięter budynku na odległy park, można ustawić minimalną odległość widoczności w taki spos&oacute;b, aby wykluczyć nieistotne obszary znajdujące się w pobliżu budynku i uzyskać wyższą szybkość przetwarzania.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalna odległość widoczności</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Odległość w trzech wymiarach</h2></div>
+        <hr/>
+        <div>
+            <p>Zdecyduj, czy parametry minimalnej i maksymalnej odległości widoczności mają być mierzone tr&oacute;jwymiarowo, czy prościej, dwuwymiarowo. Jeśli ta opcja jest zaznaczona, odległości widoczności są traktowane jako odległości tr&oacute;jwymiarowe. Jeśli nie jest zaznaczona, są traktowane jako odległości dwuwymiarowe.
+            </p> 
+            <p>Odległość dwuwymiarowa jest prostą odległością liniową mierzoną między obserwatorem a celem przy użyciu ich odwzorowanych lokalizacji na poziomie morza. Używając odległości tr&oacute;jwymiarowej, można uzyskać bardziej realistyczną wartość, ponieważ pod uwagę brane są także względne wysokości obserwatora i celu.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Wysokości lokalizacji obserwacyjnych</h2></div>
+        <hr/>
+        <div>
+            <p>Wprowadź wysokość lokalizacji obserwacyjnych.
+            </p>
+            <p>Można podać albo wartość liczbową reprezentującą wysokość wszystkich obserwator&oacute;w, albo pole reprezentujące wysokość każdego obserwatora. Jeśli zostanie podane pole, wartość w tym polu musi być wyrażona w tych samych jednostkach, co jednostki Z wejściowej powierzchni wysokościowej.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Wysokości lokalizacji obserwacyjnych</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Wysokość obserwatorów</h2></div>
+        <hr/>
+        <div>
+            <p>Wprowadź wysokość nad powierzchnią ziemi dla lokalizacji obserwator&oacute;w.
+            </p> 
+            <p>Można podać wartość liczbową reprezentującą wysokość lub wybrać pole z wejściowych obiekt&oacute;w obserwator&oacute;w. Jeśli zostanie podane pole, wartość w tym polu musi być wyrażona w tych samych jednostkach, co jednostki z wejściowej powierzchni wysokościowej.
+            </p>
+            <p>Domyślna wartość to 180 cm. Jeśli patrzysz z lokalizacji znajdującej się wyżej, na przykład z wieży obserwacyjnej lub wysokiego budynku, użyj wysokości tej lokalizacji. Podczas obliczania widoczności wartość ta zostanie dodana do wysokości obserwatora, jeśli ją podano. W przeciwnym razie jest ona dodawana do wartości Z interpolowanej powierzchni.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Wysokość obserwatorów</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Wysokość celu</h2></div>
+        <hr/>
+        <div>
+            <p>Wprowadź wysokość obiekt&oacute;w lub os&oacute;b na ziemi używaną do ustalenia widoczności.
+            </p>
+            <p>Można podać wartość liczbową reprezentującą wysokość lub wybrać pole z wejściowych obiekt&oacute;w obserwator&oacute;w. Jeśli zostanie podane pole, wartość w tym polu musi być wyrażona w tych samych jednostkach, co jednostki z wejściowej powierzchni wysokościowej.
+            </p>
+            <p>Wynikowa widoczność wskazuje te obszary, z kt&oacute;rych obserwator może widzieć inne obiekty znajdujące się na ziemi. Może być r&oacute;wnież odwrotnie; obiekty znajdujące się na ziemi mogą widzieć punkt obserwatora. 
+            </p>
+            <p>Poniżej znajduje się kilka przykład&oacute;w ustawień wysokości celu:
+            </p>
+            <ul>
+                <li>Jeżeli punkty wejściowe reprezentują turbiny wiatrowe i&nbsp;chcesz ustalić, skąd osoby stojące na ziemi mogą zobaczyć turbiny, wprowadź przeciętny wzrost człowieka (około 180&nbsp;cm).
+                    
+
+                </li>
+                <li>Jeżeli punkty wejściowe reprezentują obserwacyjne wieże pożarowe i chcesz ustalić, z kt&oacute;rych wież można zobaczyć słup dymu wznoszący się na wysokość co najmniej 6 metr&oacute;w, wpisz wysokość celu 6 metr&oacute;w.
+                    
+
+                </li>
+                <li>Jeżeli punkty wejściowe reprezentują punkty widokowe przy drogach lub ścieżkach i chcesz ustalić, skąd można zobaczyć turbiny wiatrowe o wysokości co najmniej 120 metr&oacute;w, wpisz wysokość 120 metr&oacute;w.
+                    
+
+                </li>
+                <li>Jeżeli punkty wejściowe reprezentują punkty widokowe i chcesz ustalić, jaką część obszaru mogą zobaczyć osoby stojące w tych punktach, wpisz wysokość celu zero. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Wysokość obserwatorów</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Wysokość, po osiągnięciu której dane wynikowe staną się widoczne</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa wyniku powyżej poziomu terenu (above ground level - AGL). Wynik AGL to raster, w kt&oacute;rym każda wartość kom&oacute;rki jest minimalną wysokością, jaką trzeba dodać do niewidocznej kom&oacute;rki, aby stała się widoczna dla co najmniej jednego obserwatora. Kom&oacute;rkom, kt&oacute;re były już widoczne, zostanie w tym wynikowym rastrze przypisana wartość 0.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

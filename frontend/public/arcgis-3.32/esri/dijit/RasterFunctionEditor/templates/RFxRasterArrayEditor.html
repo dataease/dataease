@@ -1,0 +1,32 @@
+<div class="esriRFxRasterArrayEditor">
+  <table class="esriRFxArgsEditor__table">
+    <col width="auto">
+    <col class="esriRFxRasterArrayEditor__td--btn">
+    <tr>
+      <td colspan="2">
+        <div data-dojo-type="esri/dijit/RasterFunctionEditor/RFxRasterInput" data-dojo-attach-point="_layerSelect"></div>
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="3" class="esriRFxRasterArrayEditor__td--grid">
+        <div class="esriRFxRasterArrayEditor__grid" data-dojo-attach-point="_gridNode"></div>
+      </td>
+      <td>
+        <div data-dojo-type="dijit/form/Button" class="esriActionButton esriRFxRasterArrayEditor__btn" data-dojo-attach-event="onClick: _onUpButtonClick" data-dojo-props="iconClass: 'iconMoveUp'"
+        data-dojo-attach-point="_moveUpButton" title="${_i18n.rfxRasterArrayEditor.moveUp}"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div data-dojo-type="dijit/form/Button" class="esriActionButton esriRFxRasterArrayEditor__btn" data-dojo-attach-event="onClick: _onDownButtonClick" data-dojo-props="iconClass: 'iconMoveDown'"
+        data-dojo-attach-point="_moveDownButton" title="${_i18n.rfxRasterArrayEditor.moveDown}"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div data-dojo-type="dijit/form/Button" class="esriActionButton esriRFxRasterArrayEditor__btn" data-dojo-attach-event="onClick: _onRemoveButtonClick" data-dojo-props="iconClass:'esriAnalysisDeleteIcon'"
+        data-dojo-attach-point="_removeButton" title="${_i18n.rfxRasterArrayEditor.remove}"></div>
+      </td>
+    </tr>
+  </table>
+</div>

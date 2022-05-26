@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vali parimad teenused</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Vali parimad teenused"></h2>
+        <hr/>
+    <p>Parimate teenuste valiku t&ouml;&ouml;riista abil saate valida teenuste jaoks parimad asukohad. T&ouml;&ouml;riist m&auml;&auml;rab vastavalt seatud eesm&auml;rkidele asukohad, kus valitseb n&otilde;udlus teenuste j&auml;rgi.
+    </p>
+    <p>Teeninduskohad t&auml;histavad asukohti, kus pakutakse mingeid teenuseid (nt tulet&otilde;rjedepood, koolid, raamatukogud, poed v&otilde;i jaotuskeskused). N&otilde;udluskohad t&auml;histavad asukohti, kus on on n&otilde;udlust teenustele (nt rahvaloenduse ruutkaardi andmed, mis kirjeldavad teatud piirkonna rahvastikku).
+    </p>
+    <p>Parimate teenuste valiku t&ouml;&ouml;riista abil saate vastata j&auml;rgmistele k&uuml;simustele.
+        <ul>
+            <li>Kuidas saab h&auml;daolukorras suunata leibkonnad &otilde;igesse katastroofiabi keskusesse, kui voodite arv on piiratud ja seda ei tohiks &uuml;letada?
+            </li>
+            <li>Kuidas suunata &uuml;mbruskonna elanikke l&auml;himasse raamatukogusse ja saada teada iga raamatukogu potentsiaalne lugejate arv? 
+            </li>
+            <li>Kuidas leida toidupoe jaotuskeskuse jaoks selline asukoht, mille puhul oleks &uuml;ldine s&otilde;iduaeg (ja s&otilde;idukulu) kauba poekettidesse kohaletoimetamisel minimaalne?
+            </li>
+            <li>Kus peaks asuma uus park, et v&otilde;imalikult suur arv linnakodanikest elaks pargist kuni viieminutilise jalutusk&auml;igu kaugusel?
+            </li>
+            <li>Kuhu oleks maakonnas k&otilde;ige parem rajada lemmikloomakauplused, et 40% maakonna lemmikloomaomanikest oleksid &uuml;hest kauplusest kuni 10-minutilise autos&otilde;idu kaugusel?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Eesmärk</h2></div>
+        <hr/>
+        <div>
+            <p>Seadke eesm&auml;rk, mis peab olema t&auml;idetud, kui teenuste tarbeks n&otilde;udluskohti m&auml;&auml;ratakse.
+            </p>
+            <p>Parimate teenuste valiku t&ouml;&ouml;riista abil saate m&auml;&auml;rata lahendatava probleemi t&uuml;&uuml;bi ehk eesm&auml;rgi. T&ouml;&ouml;riist on optimeeritud nii, et see pakuks konkreetse eesm&auml;rgi jaoks v&auml;lja lahenduse. Olenemata eesm&auml;rgist kasutatakse lahenduseni j&otilde;udmiseks p&otilde;him&otilde;tteliselt sama metoodikat &ndash; teatud n&otilde;udluskoha n&otilde;udluse m&auml;&auml;r jaotatakse l&auml;himale teenuse asukohale. Eesm&auml;rgid varieeruvad olenevalt vahemaa (v&otilde;i aja) ja n&otilde;udluse vastastikusest m&otilde;just. T&ouml;&ouml;riist v&otilde;tab arvesse s&otilde;iduvahemaad ja -aega ning n&otilde;udluse m&auml;&auml;ra, m&otilde;nedel juhtudel ka teenuse mahtu. Kui eesm&auml;rgi puhul on t&auml;htsaim s&otilde;iduaja minimeerimine, &uuml;ritab t&ouml;&ouml;riist siiski maksimeerida ka jaotatavat n&otilde;udlust. Kui eesm&auml;rgiks on maksimeerida jaotatavat n&otilde;udlust, &uuml;ritab t&ouml;&ouml;riist samamoodi s&otilde;iduaega minimeerida (m&auml;&auml;rates n&otilde;udluskohad l&auml;himale rajatisele, mitte suvalisele teenusele).
+            </p>
+            <p>Olenevalt teie andmetest ja kasutatavatest seadetest, v&otilde;ivad erinevad eesm&auml;rgid anda sarnased v&otilde;i erinevad tulemused. Te peaksite aga m&auml;&auml;ratlema eesm&auml;rgi, mis on teie anal&uuml;&uuml;si jaoks k&otilde;ige asjakohasem.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Jaota olemasolevatele teenustele</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda eesm&auml;rki siis, kui te ei soovi uusi teenuseid otsida ning soovite m&auml;&auml;rata n&otilde;udluse olemasolevatele teenustele, millel v&otilde;ib olla piiratud v&otilde;i piiramatu mahutavus.    
+            </p>
+            <p>Selle eesm&auml;rgi puhul m&auml;&auml;ratakse n&otilde;udlus teenusele vastavalt selle mastaabile ja &uuml;mbritseva piirkonna n&otilde;udluse m&auml;&auml;rale. N&otilde;udlus jaotatakse l&auml;himale teenusele, kuni saadaolev maht on t&auml;is. Kui m&auml;&auml;ratlete maksimaalse s&otilde;iduvahemiku, ei m&auml;&auml;rata sellest vahemikust v&auml;lja j&auml;&auml;vaid n&otilde;udluspunkte teenustele isegi siis, kui kogu n&otilde;udlust pole t&auml;ielikult jaotatud.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimeeri sõitmist</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda eesm&auml;rki, kui soovite m&auml;&auml;rata teenused nii, et &uuml;ldine s&otilde;iduaeg v&otilde;i -vahemaa n&otilde;udluskohtade ja teenuste vahel oleks minimaalne.
+            </p>
+            <p>Seda eesm&auml;rki on sageli paslik kasutada siis, kui teenuse ja k&otilde;igi n&otilde;udluskohtade vahel on pidevalt vaja s&otilde;ita. V&otilde;ite seda eesm&auml;rki n&auml;iteks kasutada siis, kui soovite minimeerida &uuml;ldist s&otilde;iduvahemaad kaupade vedamisel jaotuskeskustest kauplustesse v&otilde;i kui soovite valida konverentsi toimumispaiga nii, et k&otilde;igi osalejate s&otilde;iduaeg oleks minimaalne.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksimeeri katvust</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda eesm&auml;rki, kui soovite maksimeerida kaetavat n&otilde;udluse m&auml;&auml;ra, mis j&auml;&auml;b teenustest kindla aja v&otilde;i vahemaa piiresse.    
+            </p>
+            <p>Selle eesm&auml;rgi puhul valitakse teenuste asukohad nii, et n&otilde;udlus oleks maksimaalselt&nbsp;jaotatud ning iga n&otilde;udluspunkti kogu n&otilde;udlus oleks jaotatud &uuml;hele l&auml;himale teenusele.
+            </p>
+            <p>Selle eesm&auml;rgi puhul on vaja sisestada l&otilde;plik maksimaalne s&otilde;iduvahemik, sest muidu v&otilde;idakse kogu n&otilde;udlus m&auml;&auml;rata &uuml;hele teenusele. N&otilde;udluskohti, mis j&auml;&auml;vad m&otilde;nest teenusest vahemaa v&otilde;i aja m&otilde;istes liiga kaugele, ei jaotata (see n&auml;itab, millistes kohtades pole n&otilde;udlus rahuldatud ning kus v&otilde;ib vaja minna t&auml;iendavaid teenust pakkuvaid kohti).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksimeeri katvust mahu abil</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda eesm&auml;rki, kui soovite maksimeerida teenustega kaetavat n&otilde;udluse m&auml;&auml;ra, kuid teenuste k&auml;ttesaadavus on piiratud.    
+            </p>
+            <p>Selle eesm&auml;rgi puhul valitakse teenused nii, et maksimaalne n&otilde;udluse m&auml;&auml;r oleks jaotatud ilma &uuml;hegi teenuse mahutavust &uuml;letamata. Iga n&otilde;udluskoha kogu n&otilde;udlus jaotatakse &uuml;hele l&auml;himale teenusele, mille saadaolev maht pole t&auml;is (s.t kui n&otilde;udluskoha m&auml;&auml;ramisel teenusele &uuml;letataks saadaolev maht, siis n&otilde;udluskohta ei m&auml;&auml;rata ning ei m&auml;&auml;rata ka teatud osa n&otilde;udlusest).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Kata teatud protsent nõudlusest</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda eesm&auml;rki, kui soovite teada saada minimaalset teenuskohtade arvu, mida vajate selleks, et katta teatud protsenti n&otilde;udlusest.
+            </p>
+            <p>Selle eesm&auml;rgi puhul valitakse minimaalne arv teenuskohti, mida on vaja m&auml;&auml;ratud n&otilde;udlusprotsendi katmiseks. Kui n&otilde;udluskoht j&auml;&auml;b kahe v&otilde;i enama teenust pakkuva koha maksimaalse s&otilde;iduvahemiku piiresse, jaotatakse selle n&otilde;udlus proportsionaalselt teenuskohtade vahel vastavalt sellele, kui kaugel see igast konkreetsest paigast asub. Seda eesm&auml;rki kasutatakse sageli juhul, kui inimesed saavad valida, millist teenust pakkuvat paika k&uuml;lastada ning eeldatakse, et nad k&uuml;lastavad &uuml;ldiselt l&auml;himat k&auml;ttesaadavat teenust (kui k&otilde;ik muud tingimused on sarnased).
+            </p>
+            <p>Erinevalt &uuml;lej&auml;&auml;nud teenuste asukohtade valimise eesm&auml;rkidest, mille puhul saate nende arvukust ise valida, valitakse selle eesm&auml;rgi puhul teenuseid pakkuvate kohtade arvukus teie eest, v&otilde;ttes aluseks n&otilde;udlusprotsendi, mille soovite katta. Eeldatakse, et teenuseid pakkuvate asukohtade arv ei ole piiramatu.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mõõda</h2></div>
+        <hr/>
+        <div>
+            <p>Nii nagu ka muude t&ouml;&ouml;riistade puhul, mis anal&uuml;&uuml;sivad muuhulgas liikumist, saate m&auml;&auml;rata, kas liikumist m&otilde;&otilde;detakse vahemaa v&otilde;i aja j&auml;rgi ning saate valida erinevate liikumisviiside hulgast (nt k&otilde;ndimisaeg, s&otilde;iduaeg, s&otilde;iduvahemaa maakohas jne). Lubatud liikumisviisid m&auml;&auml;rab teie asutuse administraator. Kui kasutate  <b>s&otilde;iduaega </b>, <b>s&otilde;iduaega maakohas</b> v&otilde;i <b>autoveo s&otilde;iduaega</b>, saate soovi korral lisada kindla n&auml;dalap&auml;eva ja kellaaja kohta k&auml;iva liiklusinfo.
+            </p>
+            <p> Selleks et n&otilde;udluskohti t&auml;pselt&nbsp;teenuseid&nbsp;pakkuvate kohtade tarbeks&nbsp;jaotada, peate m&auml;&auml;ratlema, kas liikumine toimub&nbsp;nendest n&otilde;udluskohtadesse (nt tulet&otilde;rjedepoodest majadesse) v&otilde;i n&otilde;udluskohtadest&nbsp;teenust&nbsp;pakkuvatesse kohtadesse&nbsp;(lugejad l&auml;hevad raamatukogudesse). Parimate&nbsp;teenuste valiku t&ouml;&ouml;riist v&otilde;tab arvesse liikumise suunda &uuml;hesuunalistel t&auml;navatel, seda, kas saate &uuml;helt t&auml;navalt teisele p&ouml;&ouml;rata ning kas ristmikel on vasakp&ouml;&ouml;rde v&otilde;imalus jne olenevalt sellest, kas liikumine toimub&nbsp;teenuste asukohtadest&nbsp;n&otilde;udluskohtade suunas v&otilde;i n&otilde;udluskohtadest&nbsp;teenuste&nbsp;asukohtade&nbsp;suunas.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Nõudluskohtade kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid, mis t&auml;histavad asukohti, kus on n&otilde;udlust neis kohtades pakutavate teenuste j&auml;rele. T&ouml;&ouml;riist m&auml;&auml;rab need n&otilde;udluse asukohad sobivate teenuste osas vastavalt valitud eesm&auml;rgile.
+            </p>
+            <p>N&otilde;udluse asukohtadega on seotud n&otilde;udluse m&auml;&auml;r. Kui k&otilde;ikide n&otilde;udluskohtade n&otilde;udlus on &uuml;hesugune, saate v&auml;&auml;rtuse m&auml;&auml;ramisel kasutada konstantset suurust. Kui n&otilde;udluse m&auml;&auml;r varieerub n&otilde;udluskohtade l&otilde;ikes, kasutage iga n&otilde;udluskoha jaoks sobiva v&auml;&auml;rtuse m&auml;&auml;ramiseks n&otilde;udluskohtade kihi v&auml;lja.
+            </p>
+            <p>Kogu n&otilde;udlus jaotatakse teenuste asukohtade aluse olenemata asjaolust, kui kaugel n&otilde;udluskohad teenuseid pakkuvatest kohtadest asuvad. Saate m&auml;&auml;rata n&otilde;udluskohtade kihi jaoks maksimaalse s&otilde;iduvahemiku, s.t l&otilde;pliku vahemaa v&otilde;i aja, millest v&auml;ljapoole j&auml;&auml;vaid n&otilde;udluskohti ei jaotata. Kui k&otilde;ikide n&otilde;udluskohtade maksimaalne s&otilde;iduvahemik on &uuml;hesugune, saate v&auml;&auml;rtuse m&auml;&auml;ramisel kasutada konstantset suurust. Kui maksimaalne s&otilde;iduvahemik varieerub n&otilde;udluskohtade l&otilde;ikes, kasutage iga n&otilde;udluskoha jaoks sobiva v&auml;&auml;rtuse m&auml;&auml;ramiseks n&otilde;udluskohtade kihi v&auml;lja.
+            </p>
+            <p>Kui eesm&auml;rgi t&uuml;&uuml;p on  <b>Kata teatud protsent n&otilde;udlusest</b>, peate m&auml;&auml;rama minimaalse n&otilde;udlusprotsendi, mida teenused peavad katma.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+            <p>T&ouml;&ouml;riist v&otilde;imaldab n&otilde;udluskohtade kihti lisada kuni 10 000 objekti.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Nõutud teenuste asukohtade kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid, mis t&auml;histavad teenustena toimivaid asukohti, kus pakutakse mingit teenust. N&otilde;utud teenused t&auml;histavad &uuml;ldiselt asukohti, mis on juba olemas, samas kui pakutavad teenused t&auml;histavad &uuml;ldiselt asukohti, kuhu uued teenused tekitatakse. N&otilde;udluskohtade jaotamisel kasutab t&ouml;&ouml;riist esmalt  <b>n&otilde;utud teenuste asukoha kihis</b> olevaid teenuseid ning seej&auml;rel <b>pakutavate teenuste asukoha kihis</b> olevaid teenuseid.
+            </p>
+            <p>N&otilde;utud teenuste maht v&otilde;ib olla piiramatu (st need v&otilde;ivad katta kogu nendele m&auml;&auml;ratud n&otilde;udluse) v&otilde;i piiratud. Kui k&otilde;ikidel teenustel on &uuml;hesugune piiratud maht (nt leibkondade arv, mida tulet&otilde;rjedepoo suudab teenindada &ndash; 4000), m&auml;&auml;rake konstantne v&auml;&auml;rtus. Kui mahutavus varieerub teenuste l&otilde;ikes (nt uustulnukate jaoks saadaolevate kohtade arv igas g&uuml;mnaasiumis), m&auml;&auml;rake iga teenuse maht vastaval v&auml;ljal.
+            </p>
+            <p>T&ouml;&ouml;riist v&otilde;imaldab  <b>n&otilde;utud teenuste asukohti kirjeldavasse kihti</b> lisada kuni 100 objekti.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Kandidaatteenuste kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid, mis t&auml;histavad teenustena toimivaid asukohti, kus pakutakse mingit teenust. Pakutavad teenused t&auml;histavad &uuml;ldiselt asukohti, kuhu neid luuakse, samas kui n&otilde;utud teenused t&auml;histavad &uuml;ldiselt asukohti, mis on juba varasemast olemas.
+            </p>
+            <p>Peate olenevalt anal&uuml;&uuml;si eesm&auml;rgist m&auml;&auml;rama, mitmest pakutavast teenusest saaksite valida. Kui m&auml;&auml;rate nii n&otilde;utud kui ka pakutavad teenused, kasutab t&ouml;&ouml;riist esmalt  <b>n&otilde;utud teenuste kihis</b> olevaid asukohti ja seej&auml;rel <b>pakutavate teenuste kihis</b> olevaid asukohti.
+            </p>
+            <p>Pakutavate teenuste maht v&otilde;ib olla piiramatu (s.t nad v&otilde;ivad katta kogu nendele m&auml;&auml;ratud n&otilde;udluse) v&otilde;i piiratud. Kui k&otilde;ikidel teenustel on &uuml;hesugune piiratud maht (nt leibkondade arv, mida tulet&otilde;rjedepoo suudab teenindada &ndash; 4000), m&auml;&auml;rake konstantne v&auml;&auml;rtus. Kui mahutavus varieerub teenuste l&otilde;ikes (nt uustulnukate jaoks saadaolevate kohtade arv igas g&uuml;mnaasiumis), m&auml;&auml;rake iga teenuse maht vastaval v&auml;ljal.
+            </p>
+            <p>T&ouml;&ouml;riist v&otilde;imaldab  <b>pakutavate teenuste kihti</b> lisada kuni 1000 objekti.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vali piirajakihid</h2></div>
+        <hr/>
+        <div>
+            <p> &Uuml;ks v&otilde;i mitu objekti, mis toimivad allpool paiknevatel t&auml;navatel s&otilde;itmise korral ajutiste piirangute (t&otilde;ketena). Saate m&auml;&auml;rata t&otilde;kked, kasutades punkti, joone v&otilde;i hulknurga objekte.
+            </p>
+            <p>Punktt&otilde;kke abil saab modelleerida mahakukkunud puud, avariid, allakukkunud elektriliini v&otilde;i midagi muud, mis t&otilde;kestab antud t&auml;navaosal liikluse t&auml;ielikult. T&auml;naval on liiklemine lubatud, kuid mitte l&auml;bi t&otilde;kke. Punktt&otilde;ketena saate m&auml;&auml;rata kuni 250 objekti.
+            </p>
+            <p>Joont&otilde;ke keelab liiklemise igal pool, kus t&otilde;ke l&otilde;ikub t&auml;navaga. Joont&otilde;kkega saab modelleerida n&auml;iteks paraadi v&otilde;i meeleavaldust, mis t&otilde;kestab liikluse mitmel t&auml;naval&otilde;igul. Kui k&otilde;igi joont&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 500, annab t&ouml;&ouml;riist veateate.
+            </p>
+            <p>Hulknurkt&otilde;ke keelab liiklemise igal pool, kus hulknurk l&otilde;ikub t&auml;navatega. Selle t&otilde;kket&uuml;&uuml;bi &uuml;heks kasutuskohaks on &uuml;leujutuste modelleerimine, kui &uuml;leujutus h&otilde;lmab t&auml;navav&otilde;rku ja muudab seal liiklemise v&otilde;imatuks. Kui k&otilde;igi hulknurkt&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 2000, annab t&ouml;&ouml;riist veateate.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Tulemkiht sisaldab kihte j&auml;rgmiste &uuml;ksuste jaoks: teenused, millele on m&auml;&auml;ratud n&otilde;udlus, n&otilde;udluskohad, mis on jaotatud teenustele ja jaotusjooned, mis &uuml;hendavad n&otilde;udluskohti nende jaoks m&auml;&auml;ratud teenustega. Jaotusjooned on kujutatud sirgjoontena, kuid teenuste ja n&otilde;udluskoha vaheline s&otilde;iduaeg v&otilde;i s&otilde;iduvahemaa s&otilde;ltub alati teie m&auml;&auml;ratletud liikumisviisist ning selle puhul ei kasutata sirgjoonelisi vahemaid.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

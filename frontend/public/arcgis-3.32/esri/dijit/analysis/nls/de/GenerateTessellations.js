@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/GenerateTessellations",{chooseShape:"Shape ausw\u00e4hlen",defineExtent:"Ausdehnung definieren",defineBin:"Definieren Sie die Abschnittsgr\u00f6\u00dfe durch folgende Angaben:",area:"Fl\u00e4che",distance:"Entfernung",resultLayerName:"Name des Ergebnis-Layers",hexagon:"Hexagon",transverseHexagon:"Transversales Hexagon",square:"Quadrat",triangle:"Dreieck",diamond:"Raute",sameAsDisplay:"Gleich wie Anzeige",emptyBinSize:"Abschnittsgr\u00f6\u00dfe darf nicht leer sein",
+currentExtent:"aktuelle Ausdehnung",intersectExtent:"Nur \u00fcberschneidende Mosaike beibehalten",outputLayerName:"Mosaike f\u00fcr ${extentLayerName} generieren",itemDescription:"Die Ausdehnung von ${extentLayerName} wurde verwendet.",itemTags:"Analyseergebnis, Mosaike generieren, ${extentLayerName}",itemSnippet:"\u00dcber 'Mosaike generieren' generierter Feature-Layer"});

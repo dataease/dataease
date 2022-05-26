@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics jaotab anal&uuml;&uuml;simise t&ouml;&ouml; ArcGIS GeoAnalytics Server vahel. Nii saate mitme seadme j&otilde;udlust &auml;ra kasutades anal&uuml;&uuml;sida kiiremini  rohkem  andmeid. Saadaval on j&auml;rgmised t&ouml;&ouml;riistad: <ul>
+                <li> Agregeeri punktid
+                </li>
+                <li> T&auml;iustuse j&auml;rk &bdquo;Mitme muutujaga v&otilde;rk&ldquo;
+                </li>
+                <li> Andmestiku kirjeldamine
+                </li>
+                <li> &Uuml;henda objektid
+                </li>
+                <li> Rekonstrueeri rajad
+                </li>
+                <li> Summeeri atribuudid
+                </li>
+                <li> Summeeri piirides
+                </li>
+                <li> Geokodeeritud asukohad tabelist
+                </li>
+                <li> Rikastage mitme muutujaga ruudustikust
+                </li>
+                <li> Tuvasta juhtumid
+                </li>
+                <li> Leia sarnased asukohad
+                </li>
+                <li> Arvuta tihedus
+                </li>
+                <li> Otsi punktklastreid
+                </li>
+                <li> Leia kuumkohad
+                </li>
+                <li> Metsandusp&otilde;hine klassifikatsioon ja regressioon
+                </li>
+                <li> &Uuml;ldistatud lineaarne regressioon
+                </li>
+                <li> Loo puhvrid
+                </li>
+                <li> Lisa andmed
+                </li>
+                <li> Arvuta v&auml;li
+                </li>
+                <li> Kopeeri andmelattu
+                </li>
+                <li> Kattuvad kihid
+                </li>
+                <li> Sulanda piirajad
+                </li>
+                <li> &Uuml;henda kihid
+                </li>
+                <li> L&otilde;ika kihti 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics keskendub suurandmete anal&uuml;&uuml;simisele, pannes r&otilde;hku nii ruumilistele kui ka ajalistele mustritele. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agregeeri punktid</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Agregeeri punktid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Punktobjektide kihti ja pindobjektide kihti v&otilde;i m&auml;&auml;ratud vahemaaga m&auml;&auml;ratletud salvesid kasutades oskab see t&ouml;&ouml;riist m&auml;&auml;ratleda igasse alasse v&otilde;i salve j&auml;&auml;vad punktid ja arvutada statistikud k&otilde;igi igas alas v&otilde;i salves asuvate punktide kohta. Lisaks v&otilde;ite kasutada t&ouml;&ouml;riistaga ka ajal&otilde;ike. 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Kuritegevusega seotud intsidentide punktasukohtade sisestamisel loendab t&ouml;&ouml;riist kuritegude arvu maakonna v&otilde;i muu haldusjaotuse kohta.
+                    </li>
+                    <li>T&ouml;&ouml;riist leiab k&otilde;ige suurema ja k&otilde;ige v&auml;iksema kuutuluga m&uuml;&uuml;gikohad  100km 100 km salvedes.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Täiustuse järk „mitme muutujaga võrk“</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Lisa andmete t&ouml;&ouml;voo skeem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&ouml;&ouml;riist Mitme muutujaga v&otilde;rk loob ruudukujuliste v&otilde;i kuusnurksete lahtrite v&otilde;rgu ja arvutab igale lahtrile v&auml;&auml;rtused &uuml;he v&otilde;i mitme sisendkihi l&auml;heduse j&auml;rgi.
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Milline linnaosa on &uuml;histranspordi antud mitut kihti arvestades &uuml;histranspordiga k&otilde;ige halvemini k&auml;ttesaadav?
+                    </li>
+                    <li>V&otilde;ttes arvesse laevateede, n&auml;iteks j&auml;rvede ja j&otilde;gede kihte, millise nimega veekogu on k&otilde;ige l&auml;hemal igale asukohale USAs?
+                    </li>
+                    <li>V&otilde;ttes arvesse &uuml;he majapidamise sissetulekut, kus on sissetulekute variatsioon USAs 50 miili raadiuses k&otilde;ige suurem?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Andmestiku kirjeldamine</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Andmestiku kirjeldamise t&ouml;&ouml;voo skeem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Summeeritakse sellised sisendobjektid nagu statistika, n&auml;idiskihid ja visualiseerimine. V&auml;ljundiks saate valida kas n&auml;idiskihi v&otilde;i kihi ulatuse.
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>Vaadake arvutatud statistika kokkuv&otilde;tet, et m&otilde;ista, milliseid v&auml;&auml;rtusi sisaldab teie andmestik.
+                    </li>
+                    <li>Kogu andmestiku joonistamise asemel looge kihi alamhulk, et visualiseerida kaardile lisamise korral objekte ja nende atribuute.
+                    </li>
+                    <li>Salvestage aeg ja ressursid ning k&auml;itage enne kogu andmestiku anal&uuml;&uuml;simist anal&uuml;&uuml;s n&auml;idiskihil.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ühenda objektid</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="&Uuml;henda objektid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Objektikihte v&otilde;i tabelandmeid kasutades saate liita objekte ja kirjeid vastavalt kindlatele seostele sisendkihtide v&otilde;i tabelite vahel. Liitmine s&otilde;ltub ruumilistest, ajalistest ja atribuutide seostest ning soovi korral saab arvutada ka statistika kokkuv&otilde;tte.  
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>V&otilde;ttes arvesse kuritegevuse s&uuml;ndmuste punktasukohti ajas, liidab t&ouml;&ouml;riist kuritegevusega seotud andmed omavahel, m&auml;&auml;rates ruumilise seosena toimumise &uuml;ksteisest 1 kilomeetri raadiuses ja ajalise seosena toimumise &uuml;ksteise suhtes 1 tunni jooksul, et m&auml;&auml;ratleda, kas aegruumis on &uuml;ksteise suhtes l&auml;hestikku toimunud kuritegusid.
+                    </li>
+                    <li>L&auml;htuvalt sihtnumbrite tabelist koos demograafilise teabega ja elumaju t&auml;histavatest pindobjektidest, liidab t&ouml;&ouml;riist demograafilise teabe elamutega nii, et iga elamu jaoks oleks olemas teave.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rekonstrueeri rajad</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Rekonstrueeri rajad">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kasutades ajateadlikku punkt- v&otilde;i pindobjektide kihti, mis kujutavad endast  <code>&uuml;hte ajahetke</code>, m&auml;&auml;rab t&ouml;&ouml;riist, millised sisendobjektid kuuluvad raja juurde ja seej&auml;rel j&auml;rjestab sisendid ajaliselt. Vajaduse korral arvutatakse iga raja sisendobjektide juurde ka statistikud.
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>V&otilde;ttes arvesse orkaanim&otilde;&otilde;tmiste punktasukohti ja aegasid, arvutab t&ouml;&ouml;riist orkaanide keskmise tuulekiiruse ja maksimaalse tuuler&otilde;hu.
+                    </li>
+                    <li>Kasuta laevateede joontena rekonstrueerimiseks laevade GPS-m&otilde;&otilde;tmisi. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summeeri atribuudid</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Summeeri atribuudid diagramm">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&ouml;&ouml;riist summeerib objekti- v&otilde;i tabelandmeid kasutades m&auml;&auml;ratud v&auml;ljade statistikud. 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>V&otilde;ttes aluseks toidupoodide asukohad v&auml;ljal  <i>COMPANY_NAME</i>, summeerib t&ouml;&ouml;riist poed ettev&otilde;tte nime j&auml;rgi, et m&auml;&auml;rata iga ettev&otilde;tte statistikud.
+                    </li>
+                    <li>V&otilde;ttes aluseks toidupoodide tabeli v&auml;ljadega  <i>COMPANY_NAME</i> ja <i>COUNTY</i>, summeerib t&ouml;&ouml;riist poed ettev&otilde;tte nime ja riigi j&auml;rgi, et m&auml;&auml;rata iga ettev&otilde;tte statistikud igas riigis.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summeeri piirides</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Summeeri piirides">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Leiab kahe kihi alusel alad (ja alade osad), mis omavahel kattuvad ning arvutab kattuva osa statistikud. 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Kui Teil on valgalade kiht ja maakasutuse alade kiht maakasutuse t&uuml;&uuml;bi j&auml;rgi, saate arvutada maakasutust&uuml;&uuml;pide pindala iga valgala kohta. 
+                    </li>
+                    <li>Kui teil on maakonna maa&uuml;ksuste kiht ja linnapiiride kiht, saate arvutada vabade maa&uuml;ksuste keskmise v&auml;&auml;rtuse igas linnas.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Leia asukohad</h2>
+        <hr/>
+        <p>Nende t&ouml;&ouml;riistade abil saate kindlaks m&auml;&auml;rata alad, mis vastavad teie m&auml;&auml;ratud kriteeriumidele.   
+            <ul>
+                <li>Funktsioon  <b>Tuvasta juhtumid</b> t&ouml;&ouml;tab ajateadlike kihtidega, et teha kindlaks, millised objektid vastavad m&auml;&auml;ratud tingimusele.
+                </li>
+                <li>Funktsioon  <b>Geokodeeritud asukohad tabelist</b> teisendab aadressiandmed koordinaatideks.
+                </li>
+                <li> <b>Leia sarnased asukohad</b> leiab teie m&auml;&auml;ratud kriteeriumite alusel asukohad, mis on &uuml;he v&otilde;i mitme viiteasukohaga k&otilde;ige sarnasemad.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tuvasta juhtumid</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Tuvasta juhtumid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>See t&ouml;&ouml;riist kasutab ajateadlikku punktide, joonte, alade v&otilde;i tabelite kihti, mis kujutab endast &uuml;hte ajahetke. T&ouml;&ouml;riist m&auml;&auml;ratleb j&auml;rjestatud objektide (radade) abil, millised objektid on huvipakkuvad juhtumid. Juhtumid m&auml;&auml;ratletakse teie m&auml;&auml;ratud tingimuste alusel. 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Tuvasta orkaanim&otilde;&otilde;tmisi, mis on tuulekiiruse atribuudi p&otilde;hjal 4. kategooria orkaanid.
+                    </li>
+                    <li>Leia laeva liikumise GPS-m&otilde;&otilde;tmiste abil, kus v&auml;li t&auml;histab laeva kiirust, m&otilde;&otilde;tmised, mis on suuremad kui viie viimatise m&otilde;&otilde;tmise keskmine korrutatud 1,5-ga.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokodeeri asukohad tabelist</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokodeeri asukohad tabelist">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&otilde;imaldab aadresse koordinaatideks teisendada. Kasutage seda t&ouml;&ouml;riista suurandmete failiketta tabelite puhul.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Leia sarnased asukohad</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Leia sarnased asukohad">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;psustatud kriteeriumitel p&otilde;hinevalt, otsib t&ouml;&ouml;riist sarnaseid asukohti, v&otilde;rreldes kandidaate otsitavast kihist &uuml;he v&otilde;i mitme viidatud asukohaga. 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited: 
+                <ul>
+                    <li>T&ouml;&ouml;riist leiab t&ouml;&ouml;tajate arvu ja aastatulu v&otilde;rreldes k&uuml;mme k&otilde;ige sarnasemat poodi.
+                    </li>
+                    <li>T&ouml;&ouml;riist leiab elanike arvu, aastast kasvu ja maksutulu v&otilde;rreldes 100 k&otilde;ige sarnasemat linna.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analüüsi mustreid</h2>
+        <hr/>
+        <p>  Need t&ouml;&ouml;riistad aitavad teil andmetes ruumilisi mustreid tuvastada, m&otilde;&otilde;ta ja visualiseerida.
+            <ul>
+                <li>Funktsiooniga  <b>Arvuta tihedus</b> saate v&otilde;tta m&otilde;nede n&auml;htuste teadaolevad kogused ja jaotada need kaardil &uuml;htlaselt.
+                </li>
+                <li> <b>Leia tulipunktid</b> funktsioon m&auml;&auml;rab, kas andmete ruumimustris on statistiliselt olulisi klastreid.
+                </li>
+                <li>T&ouml;&ouml;vahend  <b>Otsi punktklastreid</b>  leiab &uuml;mbritseva m&uuml;ra hulgast punktobjektide klastrid nende ruumilise jaotuse p&otilde;hjal.
+                </li>
+                <li> <b>Metsandusp&otilde;hise klassifikatsiooni ja regressiooni t&ouml;&ouml;riist</b> loob mudelid ja koostab ennustused, kasutades Leo Breimani juhusliku metsa algoritmi kohandatud varianti, mis on masina juhendatud &otilde;petamise meetod.
+                </li>
+                <li> <b>&Uuml;ldistatud lineaarse regressiooni 
+t&ouml;&ouml;riist</b> koostab ennustusi v&otilde;i modelleerib s&otilde;ltuvat muutujat oma seoste kaudu selgitavate muutujate komplektiga.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Arvuta tihedus</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Arvuta tihedus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tiheduse arvutamise t&ouml;&ouml;riist loob punktobjektidest tiheduskaardi, hajutades m&otilde;ned n&auml;htused, mis on esitatud punktide atribuutidena &uuml;le kogu kaardi. Tulemuseks on tihedust n&auml;itav alade kiht.
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Maakonnas asuvate haiglate tiheduse arvutamine. Tulemkiht n&auml;itab alasid, kus haiglaid on palju ja/v&otilde;i v&auml;he ning seda teavet saab kasutada selleks, et otsustada kuhu uusi haiglaid ehitada.
+                    </li>
+                    <li>Metsatulekahjude varasemate asukohtade p&otilde;hjal nende alade tuvastamine, kus metsatulekahju oht on suur.
+                    </li>
+                    <li>Suurtest kiirteedest kaugel olevate kogukondade kindlakstegemine, et planeerida uute teede ehitust.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Otsi punktklastreid</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Otsi punktklastreid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&ouml;&ouml;vahend Otsi punktklastreid  leiab  &uuml;mbritseva m&uuml;ra hulgast punktobjektide klastrid nende ruumilise jaotuse p&otilde;hjal.
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Leia kahjurite poolt nakatatud-kodud, et lihtsustada kahjurit&otilde;rje suunamist kindlatesse kodudesse.  
+                    </li>
+                    <li>Teavita p&auml;&auml;stet&ouml;&ouml;de ja evakuatsiooni vajadusest ja rakenda vastavaid meetmeid olenevalt klastrite suurusest ja asukohast, kasutades asukohaga seotuds&otilde;numeid p&auml;rast loodus&otilde;nnetusi ja terrorir&uuml;nnakuid .
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Leia tulipunktid</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Leia tulipunktid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tulipunktide leidmise t&ouml;&ouml;riistaga saab m&auml;&auml;rata, kas andmete ruumimustris on statistiliselt olulisi klastreid. 
+                <ul>
+                    <li>Kas teie punktn&auml;htused (nt kuriteod, puud, liiklus&otilde;nnetused jms) on t&otilde;esti klasterdatud? Kuidas saate selles kindel olla?
+                    </li>
+                    <li>Kas olete uurinud statistiliselt olulisi tulipunkte (nt kulutused, imikusuremus p&uuml;sivalt k&otilde;rge skooriga jms) v&otilde;i muutub kaardi sisu vastavalt s&uuml;mboloogiale?
+                    </li>
+                </ul>
+                Neile k&uuml;simustele saab kindla vastuse tulipunktide leidmise t&ouml;&ouml;riistaga.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Metsanduspõhine klassifikatsioon ja regressioon</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Metsandusp&otilde;hise klassifikatsiooni ja regressiooni t&ouml;&ouml;voo skeem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Metsandusp&otilde;hise klassifikatsiooni ja regressiooni t&ouml;&ouml;riist loob mudelid ja koostab ennustused, kasutades Leo Breimani juhusliku metsa algoritmi kohandatud varianti, mis on masina juhendatud &otilde;petamise meetod
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>Arvestades andmeid mererohu esinemise kohta, samuti mitmeid keskkonna selgitavaid muutujaid, mis on esindatud m&otilde;lema atribuudiga, mida on rikastatud, kasutades mitme muutujaga ruudustikku, et arvutada kaugust &uuml;lesvoolu paiknevate tehaste ja suuremate sadamateni, saab samade keskkonnaalaste selgitavate muutujate tulevikku projitseerimise teel ennustada mererohu esinemist tulevikus.
+                          
+                    </li>
+                    <li>Oletame, et teil on andmed sadade p&otilde;llumajandusettev&otilde;tete saagi kohta kogu riigis koos muude atribuutidega k&otilde;igis nendes p&otilde;llumajandusettev&otilde;ttes (t&ouml;&ouml;tajate arv, pindala jne). Kasutades neid andmeid, saate koostada funktsioonide komplekti, mis k&auml;sitleb talusid, kelle kohta puuduvad saagikuse andmed (kuid on olemas k&otilde;ik muud muutujad), ja prognoosida nende talude saagikust.
+                    </li>
+                    <li>Eluaseme hindu saab prognoosida jooksval aastal m&uuml;&uuml;dud majade hindade alusel. Sarnaste elamute m&uuml;&uuml;gihindade prognoosimiseks saab kasutada m&uuml;&uuml;dud elamute m&uuml;&uuml;gihinda ja infot magamistubade arvu, koolide kauguse, suurte maanteede l&auml;heduse, keskmise sissetuleku ja kuritegevuse ulatuse kohta.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Üldistatud lineaarne regressioon</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="&Uuml;ldistatud lineaarse regressiooni t&ouml;&ouml;voo skeem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uuml;ldistatud lineaarse regressiooni 
+t&ouml;&ouml;riist  koostab ennustusi v&otilde;i modelleerib s&otilde;ltuvat muutujat oma seoste kaudu selgitavate muutujate komplektiga. Seda t&ouml;&ouml;riista saab kasutada pidevate (Gaussi) ja binaarsete (logistiliste) mudelite ning loendamismudelite (Poissoni mudelite) kohandamiseks.
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>Millised demograafilised n&auml;itajad aitavad kaasa &uuml;histranspordi k&otilde;rgele kasutusm&auml;&auml;rale.
+                    </li>
+                    <li>Kas vandalismi ja murdvarguse vahel on positiivne seos?
+                    </li>
+                    <li>Milliste muutujate abil saab t&otilde;husalt prognoosida h&auml;daabitelefonile tehtavate k&otilde;nede arvu? V&otilde;ttes arvesse tulevikuprognoose, milline on eeldatav n&otilde;udlus h&auml;daolukordadele reageerimise vahendite j&auml;rele?
+                    </li>
+                    <li>Millised muutujad m&otilde;jutavad v&auml;ikest s&uuml;ndivust?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Kasuta lähedust</h2>
+        <hr/>
+        <p>Need t&ouml;&ouml;riistad aitavad vastata ruumianal&uuml;&uuml;si k&auml;igus sageli tekkivale k&uuml;simusele &bdquo;Mis on mille l&auml;hedal?&ldquo;
+            <ul>
+                <li> <b>Loo puhvrid</b> loob objektidest m&auml;&auml;ratud kaugusel asuvad alad.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Loo puhvrid</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Loo puhvrid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Puhver on ala, mis katab etteantud vahemaa punktist, joonest v&otilde;i pindobjektist.
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Lineaarsetest j&otilde;eobjektidest l&auml;htudes loob t&ouml;&ouml;riist iga j&otilde;e jaoks puhvi, mis on 50 korda j&otilde;e laius, et m&auml;&auml;rata soovituslik kaldav&ouml;&ouml;nd.
+                    </li>
+                    <li>V&otilde;ttes aladena aluseks riigid, lisab t&ouml;&ouml;riist merepiiri m&auml;&auml;ramiseks igale riigile 200 meremiili ulatusega puhvri.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kopeeri andmelattu</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Kopeeri andmelattu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopeerib sisendobjektide kihi v&otilde;i tabeli  ArcGIS Data Store&rsquo;i andmelattu ja loob kihi teie sisus kohas  ArcGIS Enterprise. </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Kopeerib  <code>.csv</code> failide kollektsiooni suurandmete failikettalt visualiseerimiseks ajalisruumilisse andmelattu.
+                    </li>
+                    <li>Kopeerib ajalisruumilisse andmelattu salvestatud praeguse kaardiv&auml;lja objektid relatsioonilisse andmelattu.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Arvuta väli</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Arvuta v&auml;li">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Arvutab uue v&otilde;i olemasoleva v&auml;lja v&auml;&auml;rtused ja loob kihi teie sisus kohas  ArcGIS Enterprise. </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Muutke olemasolev v&auml;li  <i>total</i> v&auml;ljade <i>total_2016</i>, <i>total_2017</i> ja <i>total_2018</i> summaks.
+                    </li>
+                    <li>Looge uus v&auml;li, et liigitada ohutasemeid v&auml;ljav&auml;&auml;rtuste p&otilde;hjal, nt  <i>windspeed</i> ja <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Lõika kihti</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Kihi l&otilde;ikamine">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L&otilde;ikab sisendobjektid m&auml;&auml;ratletud huvipakkuvatest aladest. V&auml;ljund on sisendobjektide alamhulk. 
+            </p>
+            <p>Allpool on esitatud n&auml;ited: 
+                <ul>
+                    <li>Looge alamhulk ohtlikest hoonetest, mis kuuluvad &uuml;leujutuspiirkonda.
+                    </li>
+                    <li>M&auml;&auml;rake, millised suuremad teed l&auml;bivad potentsiaalseid arenduspiirkondi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sulanda piirajad</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Sulanda piirajad">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sulandab pinnaobjektid, mis l&otilde;ikuvad v&otilde;i jagavad &uuml;hist v&auml;lja v&auml;&auml;rtust, et luua mitmeosalisedobjektid.
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>Looge Havai osariiki esindav &uuml;ksik objekt, sulandades Havai saarte piirid.
+                    </li>
+                    <li>Kombineerige mulla t&uuml;&uuml;bil p&otilde;hinevad sarnased uuringualad, et v&auml;ljastada k&uuml;lgnevatte mullat&uuml;&uuml;bi alade andmestikku.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kattuvad kihid</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Kattuvad kihid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uuml;hendavad kahe v&otilde;i enama sisendkihi sisu &uuml;heks terviklikuks kihiks.  Taolist meetodit kasutatakse geograafias tihti, saamaks vastust k&uuml;simusele  Mis on mille kohal? 
+            </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>Millised maad on olnud 100 aasta jooksul &uuml;leujutuste piirkonnas? (Esinemine/kattuvus t&auml;hendab teise kihi peal olemist.)
+                          
+                    </li>
+                    <li>Milline maakasutus on &uuml;he v&otilde;i teise mullat&uuml;&uuml;bi levialas?
+                         
+                    </li>
+                    <li>Millised kaevikud esinevad mahaj&auml;etud s&otilde;jav&auml;eosades?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Lisa andmed</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Lisa andmete t&ouml;&ouml;voo skeem">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Lisab objektid olemasolevale &uuml;lemkihile teie sisus  ArcGIS Enterprise. </p>
+            <p>Allpool on esitatud  n&auml;ited:
+                <ul>
+                    <li>V&auml;rskendage 2018_m&uuml;&uuml;gi objekti kihti igal kuul, kui aruanded muutuvad k&auml;ttesaadavaks.
+                    </li>
+                    <li>Lisage orkaani j&auml;lgimise andmestikud aastate 2016 ja 2017 kohta orkaani &uuml;lemandmestikku.
+                    </li>
+                    <li>Koguge ja lisage andmestikud erinevatest allikatest erinevate skeemidega, kasutades kohandatud v&auml;lja kaardistamist.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ühenda kihid</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="&Uuml;henda kihid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>See t&ouml;&ouml;riist &uuml;hendab kaks objektikihti, et luua &uuml;ksainus tulemuskiht. K&otilde;ik &uuml;henduskihi v&auml;ljad lisatakse vaikimisi, v&otilde;i saate m&auml;&auml;rata kohandatud &uuml;hendamise reeglid, et m&auml;&auml;ratleda saadav skeem.  
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>&Uuml;hendage kolm kihti, mis sisaldavad demograafilist teavet Inglismaalt, Walesist ja &Scaron;otimaalt, et luua &uuml;ks Suurbritannia kiht.
+                    </li>
+                    <li>&Uuml;hendage kaks kihti, mis sisaldavad teavet omavahel k&uuml;lgnevate elamurajoonide katastri&uuml;ksuste kohta, &uuml;heks kihiks, j&auml;ttes tulemusse alles vaid v&auml;ljad, kus kahel sisendkihil on sama nimi ja t&uuml;&uuml;p.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Andmete rikastamine</h2>
+        <hr/>
+        <p>Need t&ouml;&ouml;riistad aitavad Teil uurida piirkondade iseloomu.
+            <ul>
+                <li>T&ouml;&ouml;riist <b>Rikastage mitme muutujaga ruudustikust</b> &uuml;hendab mitme muutujaga ruudustiku atribuudid  punktkihiga.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rikastage mitme muutujaga ruudustikust</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Rikastage mitme muutujaga ruudustikust">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Uuml;hendab t&otilde;husalt mitme muutujaga ruudustikust p&auml;rit atribuudid punktkihiga, v&otilde;imaldades kiiresti lisada suure ja mitmek&uuml;lgse andmekogumiku punktandmetele, et kasutada seda edaspidises ruumianal&uuml;&uuml;sis. 
+            </p>
+            <p>Allpool on esitatud n&auml;ited:
+                <ul>
+                    <li>Arvestades kihti, mis sisaldab miljoneid elektrikatkestuse juhtumeid, rikastage juhtumite omadusi teabega t&uuml;&uuml;pilise kasutamise, keskkonnariskide ja infrastruktuuri tingimuste kohta, et uurida nende tegurite ja voolukatkestuse sageduse vahelist seost. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

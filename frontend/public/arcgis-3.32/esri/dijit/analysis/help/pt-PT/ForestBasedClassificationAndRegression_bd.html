@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Classificação e Regressão Baseadas na Floresta</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagrama do fluxo de trabalho Classifica&ccedil;&atilde;o e Regress&atilde;o Baseadas na Floresta"></h2>
+        <hr/>
+    <p>Cria modelos e gera previs&otilde;es utilizando uma adapta&ccedil;&atilde;o do algoritmo floresta aleat&oacute;ria de Leo Breiman, que &eacute; um m&eacute;todo de aprendizagem m&aacute;quina supervisionado. As previs&otilde;es podem ser realizadas quer para vari&aacute;veis categ&oacute;ricas (classifica&ccedil;&atilde;o) quer para vari&aacute;veis cont&iacute;nuas (regress&atilde;o). As vari&aacute;veis explanat&oacute;rias s&atilde;o campos na tabela de atributos dos elementos de treino. A ferramenta pode ser executada para gerar um modelo para avaliar o desempenho, ou gerar um modelo e prever resultados para outros conjuntos de dados.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo de Análise</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o modo de funcionamento da ferramenta. A ferramenta pode ser executada para treinar um modelo para apenas avaliar o desempenho, ou treinar um modelo e prever para elementos. Os tipos de previs&atilde;o s&atilde;o os seguintes:
+                <ul>
+                    <li> <b>Treinar um modelo para avaliar o desempenho do modelo </b>&mdash; Ser&aacute; treinado um modelo, e ajustado aos dados de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es sobre um novo conjunto de dados. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos dos seus dados de treino ajustados, diagn&oacute;stico do modelo, e uma tabela opcional de import&acirc;ncia vari&aacute;vel.
+                    </li>
+                    <li> <b>Treinar um modelo e prever valores</b>&mdash; Ser&atilde;o geradas previs&otilde;es ou classifica&ccedil;&otilde;es para elementos. Ter&atilde;o de ser fornecidas vari&aacute;veis explanat&oacute;rias quer para os elementos de treino quer para os elementos a prever. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos dos seus valores previstos, diagn&oacute;stico do modelo, e uma tabela opcional de import&acirc;ncia vari&aacute;vel.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Treinar um modelo para avaliar o desempenho do modelo</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se pretende ajustar um modelo, e investigar o ajuste.
+            </p>
+            <p>Com esta escolha, o modelo ser&aacute; treinado, utilizando uma camada de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es sobre um novo conjunto de dados. Esta op&ccedil;&atilde;o produzir&aacute; diagn&oacute;sticos do modelo na janela de mensagens e aplicar&aacute; o modelo aos seus dados de treino.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Treinar um modelo e prever valores</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se pretende ajustar um modelo, e aplique o modelo ao conjunto de dados para gerar previs&otilde;es.
+            </p>
+            <p>Ser&atilde;o geradas previs&otilde;es ou classifica&ccedil;&otilde;es para elementos. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos, diagn&oacute;stico do modelo, e uma tabela opcional de import&acirc;ncia vari&aacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Escolher a camada de treino</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de elementos que cont&eacute;m a vari&aacute;vel para prever e os campos que ser&atilde;o utilizados para gerar a previs&atilde;o.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Escolher uma camada para a qual prever valores</h2></div>
+        <hr/>
+        <div>
+            <p>Ser&aacute; criada uma camada de elementos representando as localiza&ccedil;&otilde;es nas quais ser&atilde;o realizadas previs&otilde;es. Esta camada de elementos dever&aacute; tamb&eacute;m conter quaisquer vari&aacute;veis explanat&oacute;rias fornecidas como campos que correspondem aos utilizados dos elementos de treino.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Escolher o campo para prever</h2></div>
+        <hr/>
+        <div>
+            <p>O campo dos elementos de treino que cont&eacute;m os valores a utilizar para treinar o modelo. Este campo cont&eacute;m valores (treino) conhecidos da vari&aacute;vel que ser&aacute; utilizada para prever em locais desconhecidos. Caso os valores sejam categ&oacute;ricos (por exemplo, &Aacute;cer, Pinheiro, Carvalho) selecione a caixa  <b>Categ&oacute;ricos</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Escolher uma ou mais variáveis explanatórias</h2></div>
+        <hr/>
+        <div>
+            <p>Um ou mais campos que representam as vari&aacute;veis explanat&oacute;rias (campos) que ajudam a prever o valor ou a categoria da vari&aacute;vel a prever.  Utilize a caixa categ&oacute;ricos para quaisquer vari&aacute;veis que representam classes ou categorias (como ocupa&ccedil;&atilde;o do solo ou presen&ccedil;a ou aus&ecirc;ncia). Especifique a vari&aacute;vel como  true  para qualquer uma que represente classes ou categorias como ocupa&ccedil;&atilde;o do solo ou presen&ccedil;a ou aus&ecirc;ncia e  false  caso a vari&aacute;vel seja cont&iacute;nua.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Número de árvores</h2></div>
+        <hr/>
+        <div>
+            <p>O n&uacute;mero de &aacute;rvores a criar no modelo. Mais &aacute;rvores resultar&atilde;o geralmente numa previs&atilde;o de modelo mais precisa, mas o modelo tardar&aacute; mais tempo a calcular. O n&uacute;mero predefinido de &aacute;rvores &eacute; de 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Tamanho mínimo de folha</h2></div>
+        <hr/>
+        <div>
+            <p>O n&uacute;mero m&iacute;nimo de observa&ccedil;&otilde;es necess&aacute;rias para manter uma folha (isto &eacute; o n&oacute; terminal numa &aacute;rvore sem mais divis&otilde;es). O m&iacute;nimo predefinido para regress&atilde;o &eacute; 5 e o predefinido para classifica&ccedil;&atilde;o &eacute; 1. Para grandes quantidades de dados, o aumento destes n&uacute;meros diminuir&aacute; o tempo de funcionamento da ferramenta.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Profundidade máxima da árvore</h2></div>
+        <hr/>
+        <div>
+            <p>O n&uacute;mero m&aacute;ximo de divis&otilde;es que ser&atilde;o feitas numa &aacute;rvore. Utilizando uma grande profundidade m&aacute;xima, ser&atilde;o criadas mais divis&otilde;es, podendo assim aumentar as chances de um sobreajuste do modelo. A predefini&ccedil;&atilde;o &eacute; impulsionada por dados e depende do n&uacute;mero de &aacute;rvores criadas e do n&uacute;mero de vari&aacute;veis inclu&iacute;das.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dados disponíveis por árvore (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica a percentagem de funcionalidades na camada de treino utilizada para cada &aacute;rvore de decis&atilde;o. A predefini&ccedil;&atilde;o &eacute; de 100 por cento dos dados. As amostras para cada &aacute;rvore s&atilde;o obtidas de forma aleat&oacute;ria a partir de dois ter&ccedil;os dos dados especificados.
+            </p>
+            <p>Cada &aacute;rvore de decis&atilde;o na floresta &eacute; criada utilizando uma amostra ou subconjunto aleat&oacute;rios (aproximadamente dois ter&ccedil;os) dos dados de treino dispon&iacute;veis. Utilizando uma percentagem mais baixa dos dados de entrada para cada &aacute;rvore de decis&atilde;o aumenta a velocidade da ferramenta para conjuntos de dados muito grandes.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Número de variáveis aleatoriamente amostradas</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o n&uacute;mero de vari&aacute;veis explanat&oacute;rias utilizadas para criar cada &aacute;rvore de decis&atilde;o.
+            </p>
+            <p>Cada uma das &aacute;rvores de decis&atilde;o na floresta &eacute; criada utilizando um subconjunto aleat&oacute;rio das vari&aacute;veis explanat&oacute;rias especificadas. Aumentando o n&uacute;mero de vari&aacute;veis utilizadas em cada &aacute;rvore de decis&atilde;o aumentar&aacute; as chances de sobreajuste do seu modelo particularmente caso exista uma ou mais vari&aacute;veis dominantes. A pr&aacute;tica comum consiste em utilizar a raiz quadrada do n&uacute;mero total de vari&aacute;veis explanat&oacute;rias caso a sua vari&aacute;vel para previs&atilde;o seja num&eacute;rica ou para a divis&atilde;o do n&uacute;mero total de vari&aacute;veis explanat&oacute;rias por 3 caso a vari&aacute;vel para prever seja categ&oacute;rica.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Escolher de que forma os campos explanatórios são correspondidos</h2></div>
+        <hr/>
+        <div>
+            <p>De que forma as vari&aacute;veis correspondentes na camada de treino ir&atilde;o corresponder &agrave;s vari&aacute;veis na camada de previs&atilde;o. Apenas as vari&aacute;veis utilizadas no treino ser&atilde;o inclu&iacute;das na tabela.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Número de execuções para validação</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica a percentagem (entre 0 e 50 por cento) de fun&ccedil;&otilde;es na camada de treino para reservar como o conjunto de dados de teste para valida&ccedil;&atilde;o. O modelo ser&aacute; treinado sem este subconjunto aleat&oacute;rio de dados e os valores observador para essas fun&ccedil;&otilde;es ser&atilde;o comparados com o valor previsto. A predefini&ccedil;&atilde;o &eacute; de 10 por cento.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que forne&ccedil;a outro nome.
+            </p>
+            <p>Os resultados devolvidos depender&atilde;o do tipo de an&aacute;lise. Caso esteja a treinar para avaliar o ajuste do modelo, os resultados ir&atilde;o conter uma camada de dados de treino ajustados ao modelo e informa&ccedil;&otilde;es do resultado da avalia&ccedil;&atilde;o do ajuste do modelo. Caso esteja a treinar e a prever, os resultados ir&atilde;o conter uma camada de dados de treino ajustados ao modelo, uma camada de resultados previstos e informa&ccedil;&otilde;es do resultado da avalia&ccedil;&atilde;o do encaixe do modelo.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

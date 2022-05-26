@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics는 ArcGIS GeoAnalytics Server에서 분석 작업을 배포합니다. 이를 통해 여러 머신을 활용하여 더 많은 데이터를 더욱 빠르게 분석할 수 있습니다. 다음과 같은 도구를 사용할 수 있습니다. <ul>
+                <li> 포인트 집약(Aggregate Points)
+                </li>
+                <li> 다중 변수 격자 생성(Build Multi-Variable Grid)
+                </li>
+                <li> 데이터셋 설명(Describe Dataset)
+                </li>
+                <li> 조인 피처
+                </li>
+                <li> 추적 재생성(Reconstruct Tracks)
+                </li>
+                <li> 속성 요약(Summarize Attributes)
+                </li>
+                <li> 다음 범위 내 요약(Summarize Within)
+                </li>
+                <li> 테이블의 지오코드 위치(Geocode Locations from Table)
+                </li>
+                <li> 다중 변수 격자에서 보강(Enrich From Multi-Variable Grid)
+                </li>
+                <li> 사건 감지(Detect Incidents)
+                </li>
+                <li> 유사한 위치 찾기(Find Similar Locations)
+                </li>
+                <li> 밀도 계산(Calculate Density)
+                </li>
+                <li> 포인트 군집 찾기(Find Point Clusters)
+                </li>
+                <li> 핫스팟 찾기(Find Hot Spots)
+                </li>
+                <li> 포레스트 기반 분류 및 회귀(Forest-based Classification and Regression)
+                </li>
+                <li> 일반화된 선형 회귀(Generalized Linear Regression)
+                </li>
+                <li> 버퍼 만들기
+                </li>
+                <li> 데이터 추가(Append Data)
+                </li>
+                <li> 계산 필드(Calculate Field)
+                </li>
+                <li> 데이터 저장소로 복사(Copy to Data Store)
+                </li>
+                <li> 레이어 중첩(Overlay Layers)
+                </li>
+                <li> 경계 디졸브(Dissolve Boundaries)
+                </li>
+                <li> 레이어 병합(Merge Layers)
+                </li>
+                <li> 클립 레이어(Clip Layer) 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics는 공간 및 시간 패턴 모두에서 강조 요소가 있는 대용량 데이터를 분석하는 데 중점을 둡니다. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>포인트 집약(Aggregate Points)</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="포인트 집약">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>이 도구는 포인트 피처 레이어와 영역 피처 레이어 또는 지정된 거리로 정의된 그룹을 사용하여 각 영역 또는 그룹 내에 속한 포인트를 확인하고 각 영역 또는 그룹 내의 모든 포인트에 대한 통계를 계산합니다. 필요한 경우 이 도구에 시간 슬라이싱을 적용할 수 있습니다. 
+            </p>
+            <p>예시:
+                <ul>
+                    <li>범죄 사건의 포인트 위치가 주어진 경우 도시별 또는 다른 행정 구역별 범죄 건수를 계산합니다.
+                    </li>
+                    <li>100km 그룹을 사용하여 프랜차이즈 위치의 최고 및 최저 월간 매출을 확인합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>다중 변수 격자 생성</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="데이터 추가 워크플로 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>다중 변수 격자 생성 도구는 사각형 또는 육각형 그룹의 격자를 생성하고 하나 이상의 입력 레이어의 인접도를 기반으로 각 그룹에 대한 변수를 계산합니다.
+            </p>
+            <p>예시:
+                <ul>
+                    <li>대중교통 인프라의 다중 레이어가 주어진 경우, 대중교통으로 가장 접근하기 어려운 도시는 어디일까요?
+                    </li>
+                    <li>호수와 강 같은 수로의 레이어가 주어진 경우, 미국 각 지역에서 가장 가까운 수역의 이름은 무엇일까요?
+                    </li>
+                    <li>가구 소득의 레이어가 주어진 경우, 미국에서 주변 50마일의 소득 변동이 가장 큰 곳은 어디일까요?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>데이터셋 설명(Describe Dataset)</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="데이터셋 설명 워크플로 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>통계, 샘플 레이어, 시각화를 사용하여 입력 피처를 요약합니다. 샘플 레이어나 범위 레이어로 결과를 도출하도록 선택할 수 있습니다.
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>계산된 요약 통계를 참조하여 데이터셋에 포함된 값을 파악합니다.
+                    </li>
+                    <li>전체 데이터셋을 그리는 대신, 맵에 추가할 때 일부분 레이어를 만들어 피처와 해당 속성을 시각화합니다.
+                    </li>
+                    <li>전체 데이터셋에 대한 분석을 실행하기 전에 시간과 리소스를 절약하고 샘플 레이어에 대한 분석을 실행합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>조인 피처 (Join Features)</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="조인 피처(Join Features)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>피처 레이어 또는 테이블 형식 데이터를 사용하여 입력 레이어 또는 테이블 간의 특정 대응비에 따라 피처와 레코드를 조인할 수 있습니다.  조인은 공간, 시계열 및 속성 대응비에 따라 결정되며 필요한 경우 요약 통계를 계산할 수 있습니다.  
+            </p>
+            <p>예시:
+                <ul>
+                    <li>시간과 함께 범죄 사건에 대한 포인트 위치가 주어진 경우, 서로 1시간 이내 발생한 범죄 사건에 대해 1킬로미터 이내의 공간 대응비를 지정하여 범죄 데이터를 해당 범죄 사건에 조인함으로써 시공간에서 일련의 범죄가 서로 근접하게 발생하는지를 확인할 수 있습니다.
+                    </li>
+                    <li>인구 통계 정보가 포함된 우편 번호 테이블과 주거 건물을 나타내는 영역 피처가 주어진 경우, 인구 통계 정보를 거주지에 조인하여 각 거주지에 인구 통계 정보가 포함되도록 할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>추적 재생성(Reconstruct Tracks)</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="추적 재생성">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p> <code>인스턴트</code> 시간을 나타내는 포인트 또는 폴리곤 피처의 레이어에 시간이 활성화되어 있는 경우 이 도구를 사용하여 추적에 속하게 될 입력 피처를 정하고 입력의 순서를 시간 순으로 정합니다. 필요한 경우 각 추적 내의 입력 피처에 대한 통계를 계산할 수 있습니다.
+            </p>
+            <p>예시:
+                <ul>
+                    <li>허리케인 측정치 시간과 포인트 위치가 주어진 경우 허리케인의 평균 풍속과 최대 풍압을 계산합니다.
+                    </li>
+                    <li>선박의 GPS 측정치를 사용하여 라인으로 항로를 재생성하세요. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>속성 요약 (Summarize Attributes)</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="속성 요약 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>이 도구는 피처 또는 테이블 형식 데이터를 사용하여 특정 필드에 대한 통계를 요약합니다. 
+            </p>
+            <p>예시:
+                <ul>
+                    <li> <i>COMPANY_NAME</i> 필드가 포함된 식료품점 위치가 주어진 경우 회사 이름을 기준으로 식료품점을 요약하여 각 회사의 통계를 확인합니다.
+                    </li>
+                    <li> <i>COMPANY_NAME</i> 및 <i>COUNTY</i> 필드가 있는 식료품점 테이블이 주어진 경우, 회사 이름 및 구/군별로 매장을 요약하여 각 구/군 내 각 회사에 대한 통계를 확인합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>다음 범위 내 요약 (Summarize Within)</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="다음 범위 내 요약">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>두 레이어 간에 겹치는 영역(및 영역의 일부)을 찾아서 해당 영역에 대한 통계를 계산합니다. 
+            </p>
+            <p>예시:
+                <ul>
+                    <li>하천 유역 레이어와 토지 이용 유형별 토지 이용 영역 레이어가 주어진 경우 각 하천 유역에 대한 토지 이용 유형의 총 면적을 계산합니다. 
+                    </li>
+                    <li>도시 내 필지 레이어와 도시 경계 레이어가 주어진 경우 각 도시 내의 공지에 대한 평균 지가를 요약합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="smallsize">
+        <h2>위치 찾기 (Find Locations)</h2>
+        <hr/>
+        <p>이러한 도구는 지정한 여러 조건을 충족하는 영역을 식별하는 데 사용됩니다. 
+            <ul>
+                <li> <b>사건 감지(Detect Incidents)</b>는 시계열 레이어와 함께 작동하여 어떤 피처가 지정한 조건을 충족하는지 확인합니다.
+                </li>
+                <li> <b>테이블의 지오코드 위치(Geocode Locations from Table)</b>는 주소를 좌표로 변환합니다.
+                </li>
+                <li> <b>유사한 위치 찾기(Find Similar Locations)</b> - 지정한 조건에 따라 하나 이상의 참조 위치와 가장 유사한 위치를 찾습니다.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>사건 감지(Detect Incidents)</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="사건 감지">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>이 도구는 인스턴트 시간을 나타내는 포인트, 라인, 영역 또는 테이블의 시계열 레이어와 함께 작동됩니다.   이 도구는 순서가 순차적으로 지정된 피처, 즉 추적을 사용하여 어떤 피처가 관심 사건인지 파악합니다. 사건은 지정한 조건에 따라 결정됩니다. 
+            </p>
+            <p>예시:
+                <ul>
+                    <li>풍속 속성을 기반으로 범주 4에 속하는 허리케인의 측정치를 감지했습니다.
+                    </li>
+                    <li>선박 속도를 나타내는 필드로 선박 이동에 따른 GPS 측정치를 사용하여 5개의 이전 측정치 평균보다 1.5배 더 큰 측정치를 찾습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>테이블의 지오코드 위치(Geocode Locations from Table)</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="테이블의 지오코드 위치(Geocode Locations from Table)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>주소를 좌표로 변환합니다. 빅데이터 파일 공유 테이블에 이 도구를 사용합니다.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>유사한 위치 찾기</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="유사한 위치 찾기">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>지정한 조건에 따라 하나 이상인 참조 위치에 대한 후보 검색 레이어의 위치 유사성을 측정하여 유사한 위치를 찾습니다. 
+            </p>
+            <p>예시: 
+                <ul>
+                    <li>직원 수와 연간 매출을 조사하여 가장 유사한 매장을 찾습니다.
+                    </li>
+                    <li>인구, 연간 성장률, 세제 수입 간의 관계를 조사하여 가장 유사한 100개 도시를 찾습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>패턴 분석 (Analyze Patterns)</h2>
+        <hr/>
+        <p>  이러한 도구를 사용하면 데이터에 있는 공간 패턴을 식별, 수량화, 시각화할 수 있습니다.
+            <ul>
+                <li> <b>밀도 계산(Calculate Density)</b> - 일부 현상의 알려진 수량을 이용하여 이러한 수량을 맵에서 분산시킵니다.
+                </li>
+                <li> <b>핫 스팟 찾기(Find Hot Spots)</b> - 데이터의 공간 패턴에서 통계적으로 중요한 군집을 식별합니다.
+                </li>
+                <li> <b>포인트 군집 찾기(Find Point Clusters)</b>는 공간 분포에 따라 주변 노이즈 내 포인트 피처의 군집을 찾습니다.
+                </li>
+                <li> <b>포레스트 기반 분류 및 회귀</b>는 감독 머신 러닝 방법인 Leo Breiman의 랜덤 포레스트 알고리즘의 채택을 사용하여 예측을 모델링하고 생성합니다.
+                </li>
+                <li> <b>일반화된 선형 회귀</b>는 설명 변수와의 관계에 따라 예측을 생성하거나 종속 변수를 모델링합니다.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>밀도 계산(Calculate Density)</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="밀도 계산">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>밀도 계산 도구는 맵에서 일부 현상(포인트의 속성으로 표시됨)의 알려진 수량을 분산시켜 포인트 피처에서 밀도 맵을 생성합니다. 결과는 밀도가 나타난 영역의 레이어입니다.
+            </p>
+            <p>예시:
+                <ul>
+                    <li>구/군 내의 병원 밀도를 계산합니다.  결과 레이어가 병원에 대한 높고 낮은 접근성을 지역에 표시하며 신규 병원 건설 장소를 결정하는 데 이 정보를 사용할 수 있습니다.
+                    </li>
+                    <li>과거 산불이 발생한 위치를 기반으로 산불 발생 위험도가 높은 지역을 식별합니다.
+                    </li>
+                    <li>새 도로 건설 장소를 계획하기 위해 주요 고속도로에서 멀리 있는 커뮤니티를 찾습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>포인트 군집 찾기(Find Point Clusters)</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="포인트 군집 찾기(Find Point Clusters)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>포인트 군집 찾기 도구는 공간 분포에 따라 주변 노이즈 내 포인트 피처의 군집을 찾습니다.
+            </p>
+            <p>예시:
+                <ul>
+                    <li>박멸 활동에 대한 대상 설정을 지원하기 위해 해충에 감염된 가구의 군집을 찾습니다.  
+                    </li>
+                    <li>자연 재해 또는 테러 공격에 따른 지리적 위치 트윗을 사용하여 군집의 크기와 위치를 기반으로 구조 및 대피 요구를 알리고 조치를 취합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>핫 스팟 찾기(Find Hot Spots)</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="핫 스팟 찾기">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>핫 스팟 찾기 도구는 데이터의 공간 패턴에 통계적으로 유의한 군집이 있는지 확인합니다. 
+                <ul>
+                    <li>포인트(범죄 사건, 나무, 교통 사고)가 실제로 군집되어 있습니까?  어떻게 확신할 수 있습니까?
+                    </li>
+                    <li>통계적으로 유의한 핫 스팟(지출, 영아 사망률, 지속적으로 높은 시험 점수)을 발견했습니까? 아니면 심볼화 방식을 변경한 경우 맵에 다른 정보가 표시됩니까?
+                    </li>
+                </ul>
+                핫 스팟 찾기 도구를 사용하면 확신을 가지고 이러한 질문에 답변할 수 있습니다.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>포레스트 기반 분류 및 회귀(Forest-based Classification and Regression)</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="포레스트 기반 분류 및 회귀 워크플로 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>포레스트 기반 분류 및 회귀 도구는 감독 머신 러닝 방법인 Leo Breiman의 랜덤 포레스트 알고리즘의 채택을 사용하여 예측을 모델링하고 생성합니다.
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>공장 상류 및 주요 항구와의 거리를 계산하기 위해 다중 변수 격자를 사용하여 보강된 두 속성으로 나타낸 환경 설명 변수의 숫자와 해초 발생에 대한 데이터가 주어진 경우, 동일한 환경 설명 변수에 대한 후속 투영에 기반하여 향후 해조류 발생을 예측할 수 있습니다.
+                          
+                    </li>
+                    <li>각 농장의 다른 속성과 함께 전국에 있는 수백 개 농장의 농작물 수확량 데이터를 가지고 있다고 가정해 보겠습니다(직원 수, 면적(에이커) 등). 이러한 데이터를 사용하여 농작물 수확량이 없는 농장을 나타내는 피처를 제공할 수 있으며 농작물 수확량을 예측할 수 있습니다(단, 기타 모든 변수가 있음).
+                    </li>
+                    <li>올해에 매매된 주택 가격을 기반으로 주택 가치를 예측할 수 있습니다. 침실 수, 학교까지의 거리, 주요 고속도로와의 인접성, 평균 소득, 범죄 발생 수에 대한 정보와 함께 매매된 주택 판매 가격을 이용하여 유사한 주택의 매매 가격을 예측할 수 있습니다.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>일반화된 선형 회귀(Generalized Linear Regression)</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="일반화된 선형 회귀(Generalized Linear Regression) 워크플로 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>일반화된 선형 회귀 도구는  설명 변수와의 관계에 따라 예측을 생성하거나 종속 변수를 모델링합니다.  이 도구는 연속(OLS), 이진(로지스틱), 개수(푸아송) 모델에 맞게 사용할 수 있습니다.
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>높은 대중교통 이용률에는 어떤 인구 통계 특성이 기여하나요?
+                    </li>
+                    <li>공공 기물 파손과 절도 사이에 정적 상관 관계가 있나요?
+                    </li>
+                    <li>어떤 변수가 119 통화량을 효과적으로 예측하나요?  향후 예측을 감안할 때 비상 대응 리소스에 대한 수요는 어느 정도인가요?
+                    </li>
+                    <li>저출산에 영향을 미치는 변수는 무엇인가요?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>인접도 사용</h2>
+        <hr/>
+        <p>공간 분석에서 가장 많이 제기되는 일반 질문 중 하나인 &quot;무엇과 무엇이 인접합니까?&quot;라는 질문에 대한 답을 찾는데 사용하는 도구입니다.
+            <ul>
+                <li> <b>버퍼 생성</b> - 피처에서 지정된 거리에 있는 영역을 생성합니다.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>버퍼 생성 (Create Buffers)</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="버퍼 생성">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>버퍼는 포인트, 라인 또는 폴리곤 피처에서 지정된 거리를 포함하는 영역입니다.
+            </p>
+            <p>예시:
+                <ul>
+                    <li>선형 하천 피처를 사용하는 경우 각 하천에 대해 하천 너비의 50배로 버퍼를 생성하여 제안된 하천 경계를 확인합니다.
+                    </li>
+                    <li>국가를 나타내는 영역이 주어진 경우 각 국가에 대해 200해리의 버퍼를 생성하여 해상 경계를 확인합니다.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>데이터 저장소로 복사(Copy to Data Store)</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="데이터 저장소로 복사">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>입력 피처 레이어 또는 테이블을  ArcGIS Data Store에 복사하고  ArcGIS Enterprise의 콘텐츠에서 레이어를 생성합니다. </p>
+            <p>예시:
+                <ul>
+                    <li>시각화를 위해 빅데이터 파일 공유의  <code>.csv</code> 파일 컬렉션을 시공간 데이터 저장소에 복사합니다.
+                    </li>
+                    <li>시공간형 데이터 저장소에 저장되어 있는 현재 맵 범위의 피처를 관계형 데이터 저장소로 복사합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>필드 계산(Calculate Fields)</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="계산 필드">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>새 필드 또는 기존 필드의 값을 계산하고  ArcGIS Enterprise의 콘텐츠에서 레이어를 생성합니다. </p>
+            <p>예시:
+                <ul>
+                    <li>기존 필드인  <i>total</i>을 필드 <i>total_2016</i>, <i>total_2017</i> 및 <i>total_2018</i> 수익의 합으로 수정합니다.
+                    </li>
+                    <li> <i>windspeed</i> 및 <i>pollutant</i> 같은 필드 값을 기반으로 위험 수준을 분류하는 새 필드를 생성합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>클립 레이어(Clip Layer)</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="클립 레이어">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>정의된 관심 영역에서 입력 피처를 클립합니다. 결과 데이터셋이 입력 레이어의 일부분이 됩니다. 
+            </p>
+            <p>예를 들면 다음과 같습니다. 
+                <ul>
+                    <li>홍수 범람 지역에 속하는 위험 가능성 있는 건물의 일부분을 만듭니다.
+                    </li>
+                    <li>잠재적인 개발 영역을 통과하는 주요 도로를 결정합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>경계 디졸브 (Dissolve Boundaries)</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="경계 디졸브">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>공통 필드 값을 교차하거나 공유하는 영역 피처를 병합하여 인접 피처 또는 멀티파트 피처를 만듭니다.
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>하와이 섬들 간의 경계를 해제하여 하와이주를 나타내는 단일 피처를 만듭니다.
+                    </li>
+                    <li>토질 유형에 기반하여 유사한 연구 영역을 결합해 인접한 토질 유형 데이터셋을 결과로 도출할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>레이어 중첩(Overlay Layers)</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="레이어 중첩(Overlay Layers)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>은 둘 이상의 레이어를 하나의 단일 레이어로 결합합니다.  중첩은 무엇과 무엇이 겹쳐 있습니까?라는 공간의 가장 기본적인 질문 중 하나에 대답하는 데 사용됩니다.
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>100년 홍수 지역 내에 있는 필지는 무엇인가요?(여기에서 (&lsquo;내에 있다'는 '겹침'을 의미하는 또 다른 표현 방식임)
+                          
+                    </li>
+                    <li>토질 유형별 토지 이용 현황이 어떻습니까?
+                         
+                    </li>
+                    <li>버려진 군사 기지에 어떤 우물이 있습니까?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>데이터 추가</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="데이터 추가 워크플로 다이어그램">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>피처를  ArcGIS Enterprise의 콘텐츠에 있는 기존 호스팅 레이어에 추가합니다. </p>
+            <p>예시:
+                <ul>
+                    <li>보고서를 사용할 수 있게 되면 매월 2018_Sales 피처 레이어를 업데이트합니다.
+                    </li>
+                    <li>2016년과 2017년의 허리케인 추적 데이터셋을 마스터 허리케인 데이터셋에 추가합니다.
+                    </li>
+                    <li>사용자 정의 필드 매핑을 사용하여 다른 스키마의 다양한 원본 데이터셋을 수집하고 추가합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>레이어 병합 (Merge Layers)</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="레이어 병합(Merge Layers)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>2개의 피처 레이어를 결합하여 하나의 결과 레이어를 만듭니다. 기본 설정에 따라 병합 레이어의 모든 필드가 포함되거나, 사용자 정의 병합 규칙을 지정하여 결과 스키마를 정의할 수 있습니다.  
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>잉글랜드, 웨일즈, 스코틀랜드의 인구 통계 정보가 포함된 3개의 레이어를 병합하여 영국 단일 레이어를 만듭니다.
+                    </li>
+                    <li>인접한 마을의 필지 정보가 포함된 2개의 레이어를 결합하여 2개의 레이어에서 동일한 이름과 유형을 가진 필드만 유지할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>데이터 보강</h2>
+        <hr/>
+        <p>영역의 특성을 파악하는 데 도움이 되는 도구입니다.
+            <ul>
+                <li> <b>다중 변수 격자에서 보강</b>은 다중 변수 격자 레이어에서 포인트 레이어로 속성을 조인합니다.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>다중 변수 격자에서 보강(Enrich From Multi-Variable Grid)</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="다중 변수 격자에서 보강(Enrich From Multi-Variable Grid)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>다중 변수 격자의 속성을 포인트 레이어에 효율적으로 조인하므로 포인트 데이터에 크고 다양한 정보 컬렉션을 신속하게 추가하여 추가적인 공간 분석에 사용할 수 있습니다. 
+            </p>
+            <p>예를 들면 다음과 같습니다.
+                <ul>
+                    <li>수백만 건의 정전 사건을 포함하는 레이어가 주어진 경우, 이러한 요소와 정전 빈도 간의 관계를 연구하기 위해 일반적인 사용법, 환경 위험, 인프라 조건에 대한 정보를 포함하여 사고 피처를 보강합니다. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>计算距离</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="计算距离"></h2>
+        <hr/>
+    <p>该工具用于根据单个源或一组源计算欧氏距离、方向和分配。
+    </p>
+    <p>示例应用包括回答以下问题：
+
+        <ul>
+            <li>到最近城镇的距离是多少？
+                
+
+            </li>
+            <li>到最近道路的距离是多少？
+                
+
+            </li>
+            <li>到最近水源的距离是多少？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中可见的输入图层中的要素。如果未选中，则将分析输入图层中的所有要素，包括超出当前地图显示范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>选择要素位置图层栅格以计算相应距离</h2></div>
+        <hr/>
+        <div>
+            <p>此图层用于定义计算距离的源。该图层可以是影像服务或要素服务。
+            </p>
+            <p>对于影像服务，输入类型可以为整型或浮点型。
+            </p>
+            <p>对于要素服务，输入可以为点、线或面。
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>最大计算距离</h2></div>
+        <hr/>
+        <div>
+            <p>要计算的最大距离。例如，如果您提供了值 10,000 米，则将按照源位置到该值（距离）的距离计算欧氏距离。
+            </p>
+            <p>如果未提供任何值，则将计算到定义范围的距离。
+            </p>
+            <p>可用单位包括千米、米、英里和英尺。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>输出像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>输出栅格的像元大小和单位。
+            </p>
+            <p>单位可以是千米、米、英里或英尺。
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>结果距离图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>结果方向图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将要在 <b>我的内容</b>中创建的图层的名称。必须提供 <b>我的内容</b>中当前没有的名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>结果分配图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将要在 <b>我的内容</b>中创建的图层的名称。必须提供 <b>我的内容</b>中当前没有的名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>选择分配字段</h2></div>
+        <hr/>
+        <div>
+            <p>输入源图层上用于保存定义每个源的值的字段。该字段可以是源数据集的整型字段或字符串型字段。
+            </p>
+            <p>默认值为  <i>Value</i>。如果使用的是要素服务但没有可用的 <i>Value</i> 字段，则将使用第一个可用的整型字段或字符串型字段。如果不存在有效字段，则将使用 ObjectID 字段（例如 OID 或 FID，取决于要素输入的类型）。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggiungi dati da griglia multi-variabile</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Aggiungi dati da griglia multi-variabile"></h2>
+        <hr/>
+    <p>Lo strumento  Aggiungi dati da griglia multi-variabile unisce efficacemente gli attributi da una griglia multi-variabile a un layer puntuale.
+    </p>
+    <p>Una griglia multi-variabile &egrave; un layer creato con lo strumento Crea griglia multi-variabile, che compila attributi da vari layer in un'unica griglia di poligoni.  L'uso di una griglia multi-variabile per l'aggiunta di dati consente di aggiungere rapidamente raccolte grandi e variegate di informazioni ai dati puntuali da usare in ulteriori analisi spaziali.
+    </p>
+    <p>Ad esempio, immaginiamo di aver ottenuto un layer di nuovi eventi criminali verificatisi l'anno scorso in una citt&agrave;. Si desidera modellare le relazioni tra la frequenza dei crimini e una variet&agrave; di fattori demografici, economici e geografici. Si ha accesso a dati che descrivono questi fattori, ma tali dati sono memorizzati in cinque layer diversi con tipi di geometria diversi. Inoltre, alcuni layer sono memorizzati in una condivisione file Big Data, mentre altri sono memorizzati come feature service. Creando una griglia multi-variabile per memorizzare queste informazioni e unendo quindi la griglia ai propri eventi criminali con lo strumento  Aggiungi dati da griglia multi-variabile, &egrave; possibile unire in modo efficace una grande variet&agrave; di attributi al proprio layer puntuale con l'avvio di solo due strumenti. &Egrave; quindi possibile usare gli attributi uniti come variabili esplicative e iniziare a costruire un modello di frequenza dei crimini con il layer dei risultati.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Scegliere le feature puntuali cui aggiungere dati</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali nelle quali saranno aggiunti dati dalla griglia multi-variabile.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Scegliere la griglia multi-variabile a partire dalla quale aggiungere dati</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer della griglia multi-variabile contenente attributi che saranno uniti alle feature puntuali di input. Il layer deve essere stato creato usando lo strumento Crea griglia multi-variabile e deve essere un feature layer hosted. I layer della griglia multi-variabile memorizzati in una condivisione file Big Data non sono supportati come input per questo strumento.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Scegliere le variabili da aggiungere</h2></div>
+        <hr/>
+        <div>
+            <p>Gli attributi nel layer della griglia multi-variabile che saranno uniti alle feature puntuali di input quando le feature puntuali intersecano la griglia.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determina costi di viaggio dell’itinerario come polilinea</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Illustrazione strumento Determina costi di viaggio dell&rsquo;itinerario come polilinea"></h2>
+        <hr/>
+    <p>Questo strumento calcola la polilinea di percorso a basso costo tra origini e destinazioni note.
+    </p>
+    <p>Di seguito sono riportate le applicazioni di esempio:
+        <ul>
+            <li>Trovare il miglior percorso per una nuova strada in termini di costi di costruzione.
+                
+
+            </li>
+            <li>Identificare il percorso da utilizzare da diverse localit&agrave; suburbane (origini) al centro commerciale pi&ugrave; vicino (destinazione).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzate solo le posizioni nei layer di input visibili nell'estensione mappa corrente. Se questa opzione &egrave; deselezionata, verranno analizzate tutte le posizioni di entrambi i layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Scegli il raster o il layer di origine della feature per determinare i percorsi da</h2></div>
+        <hr/>
+        <div>
+            <p>Un Image Service o un feature service che identifica le celle da cui viene determinato il percorso di costo minimo verso la destinazione meno costosa.
+            </p>
+            <p>Se l'input &egrave; un Image Service, l'input &egrave; costituito da celle con valori validi (zero &egrave; un valore valido) e alle celle rimanenti devono essere assegnato NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Scegli il layer raster costi di viaggio</h2></div>
+        <hr/>
+        <div>
+            <p>Un raster che definisce l'impedenza o il costo dello spostamento planimetrico attraverso ciascuna cella.
+            </p>
+            <p>Il valore ad ogni posizione di cella rappresenta la distanza costo per unit&agrave; per lo spostamento attraverso di essa. Ogni valore di posizione di una cella viene moltiplicato per la risoluzione della cella, compensando al contempo il movimento diagonale per ottenere il costo totale dell'attraversamento della cella.
+            </p>
+            <p>I valori del raster di costo possono essere a numero intero o a virgola mobile, ma non possono essere negativi o zero (non &egrave; possibile disporre di un costo negativo o zero).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Raster o Feature Sorgente di input</h2></div>
+        <hr/>
+        <div>
+            <p>Un input che definisce le destinazioni utilizzate per il calcolo della distanza. Il layer pu&ograve; essere un raster o una feature.
+            </p>
+            <p>Se l'input &egrave; un Image Service, l'input &egrave; costituito da celle con valori validi (zero &egrave; un valore valido) e alle celle rimanenti devono essere assegnato NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nome del layer polilineare dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Scegli i tipi di percorsi da determinare</h2></div>
+        <hr/>
+        <div>
+            <p>Definisce il modo in cui i valori e le zone nei dati di destinazione di input vengono interpretati nei calcoli dei costi di viaggio.
+            </p>
+            <ul>
+                <li>Singolo migliore: per tutte le celle o posizioni nei dati di destinazione di input, il percorso di costo minimo viene ricavato dalla posizione con il minimo dei percorsi di costo minimo verso la posizione di origine. Si tratta dell'impostazione predefinita.
+                    
+
+                </li>
+                <li>A ogni cella: per ogni cella o posizione con valori validi nei dati di destinazione di input, viene determinato e salvato sul feature service di output un percorso di costo minimo. Con questa opzione, ogni cella dei dati di destinazione di input viene trattata separatamente e viene determinato un percorso di costo minimo per ciascuna cella.
+                    
+
+                </li>
+                <li>A ogni zona: per ogni zona nei dati di destinazione di input, viene determinato e salvato sul feature service di output un percorso di costo minimo. Con questa opzione, il percorso di costo minimo per ogni zona inizia nella cella o nella posizione con la ponderazione distanza di costo pi&ugrave; basso nella zona.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

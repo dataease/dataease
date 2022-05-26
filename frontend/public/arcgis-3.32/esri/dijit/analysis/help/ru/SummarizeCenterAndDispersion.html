@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Суммированный центр и дисперсия</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Суммированный центр и дисперсия"></h2>
+        <hr/>
+    <p>Этот инструмент находит центральные объекты и пространственное распределение.
+Это может помочь вам ответить на вопросы, такие как:
+        <ul>
+            <li>Где находится центр?
+            </li>
+            <li>Какой объект является наиболее доступным для всех остальных?
+            </li>
+            <li>Насколько разбросаны, компактно расположены или интегрированы пространственные объекты?
+            </li>
+            <li>Имеются ли тренды направления?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Если опция  <b>Использовать текущий экстент карты</b> включена, анализ будет выполнен только для тех объектов входного слоя, которые видны в момент анализа в текущем экстенте. Если опция отключена, анализ будет выполнен для всех объектов входного слоя, даже если они находятся вне текущего экстента карты.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Выбрать слой для описания</h2></div>
+        <hr/>
+        <div>
+            <p>Точечный, линейный или площадной слой, который будет использоваться для поиска центральных объектов и пространственных распределений.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Типы суммирования</h2></div>
+        <hr/>
+        <div>
+            <p>Метод суммирования центра и дисперсии. 
+            </p>
+            <ul>
+                <li>Центральный объект &ndash; определяет наиболее центральной расположенный объект в наборе данных.
+                </li>
+                <li>Средний центр &ndash; определяет географический центр (или центр концентрации) для набора объектов.
+                </li>
+                <li>Медианный центр &ndash; идентифицирует местоположение, минимизирующее среднее Евклидово расстояние до пространственных объектов в наборе данных.
+                </li>
+                <li>Эллипс &ndash; создает эллипс стандартного отклонения для обобщения пространственных характеристик географических объектов: центральная тенденция, дисперсность и тренды, обладающие направленностью. Эллипсы могут быть размером в 1, 2 или 3 стандартных отклонения.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Вес по (дополнительно)</h2></div>
+        <hr/>
+        <div>
+            <p>Числовое поле, используемое для взвешивания местоположений согласно их относительной важности. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Группировать по (дополнительно)</h2></div>
+        <hr/>
+        <div>
+            <p>Поле, используемое для группировки объектов для отдельных расчетов центрального объекта или дисперсии. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Это имя слоя, который будет создан в разделе  <b>Мои ресурсы</b> и добавлен на карту.  Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>С помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

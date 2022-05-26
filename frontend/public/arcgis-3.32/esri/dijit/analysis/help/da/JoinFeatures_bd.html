@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Forbind objekter</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Forbind objekter"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet Forbind objekter arbejder med to lag. Forbind objekter-v&aelig;rkt&oslash;jet knytter attributter fra &eacute;t objekt til attributter fra et andet objekt ud fra spatiale og tidsbestemte relationer samt attributrelationer eller en kombination af alle tre dele. V&aelig;rkt&oslash;jet registrerer alle de inputobjekter, der opfylder de angivne tilknytningsbetingelser, og knytter det andet inputlag til det f&oslash;rste. Du kan v&aelig;lge at knytte alle objekter til de matchende objekter eller at summere de matchende objekter.
+    </p>
+    <p>Forbind objekter-v&aelig;rkt&oslash;jet kan anvendes til punkter, linjer, omr&aring;der og tabeller. En tidsbestemt forbindelse kr&aelig;ver, at dine inputdata er tidsbestemte, og en spatial forbindelse kr&aelig;ver, at dine data har en geometri. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Vælg destinationslag</h2></div>
+        <hr/>
+        <div>
+            <p>Det lag, der f&aring;r attributter fra det tilknytningslag, som er knyttet til dets tabel.
+            </p>
+            <p>Analyse ved hj&aelig;lp af den spatiale relation  <b>I n&aelig;rheden</b> kr&aelig;ver et projiceret koordinatsystem. Du kan indstille <b>koordinatsystem til behandling</b> i <b>Analysemilj&oslash;erne</b>. Hvis dit koordinatsystem til behandling ikke er indstillet til et projiceret koordinatsystem, vil du blive bedt om at indstille det, n&aring;r du benytter funktionen <b>K&oslash;r analyse</b> .
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Vælg lag, der skal knyttes til destinationslaget</h2></div>
+        <hr/>
+        <div>
+            <p>Tilknytningslaget med de attributter, der skal knyttes til destinationslaget.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Vælg tilknytningshandling</h2></div>
+        <hr/>
+        <div>
+            <p>Bestemmer, hvordan tilknytninger mellem destinations- og tilknytningslagene vil blive h&aring;ndteret i outputtet, hvis det viser sig, at flere tilknyttede objekter har den samme relation til det lag, der bliver tilknyttet. Du kan v&aelig;lge mellem to tilknytningshandlinger:
+                <ul>
+                    <li> <b>Tilknyt &eacute;n-til-&eacute;n</b> &ndash; Denne indstilling summerer alle matchende objekter for hvert objekt, der bliver tilknyttet.
+                    </li>
+                    <li> <b>Tilknyt &eacute;n-til-mange</b> &ndash; Denne indstilling knytter alle matchende objekter til tilknytningslaget.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Forestil dig f.eks., at du vil finde supermarkeder inden for 2 kilometer fra et marked med landbrugsprodukter. I dette tilf&aelig;lde har m&aring;llaget et enkelt objekt, der repr&aelig;senterer et marked med landbrugsprodukter, og tilknytningslaget repr&aelig;senterer de lokale dagligvarebutikker, og har attributter s&aring;som samlet &aring;rlige oms&aelig;tning. Med Forbind objekter-v&aelig;rkt&oslash;jet finder du ud af, at fem dagligvarebutikker opfylder kriterierne. Hvis du har angivet tilknytningshandlingen  <b>Tilknyt &eacute;n-til-mange</b>, f&aring;r du fem objekter i dit resultatlag, hvor hver r&aelig;kke repr&aelig;senterer markedet med landbrugsprodukter og &eacute;n dagligvarebutik. Hvis du har angivet et <b>Tilknyt &eacute;n-til-&eacute;n</b> forhold, f&aring;r du et objekt, der repr&aelig;senterer markedet med landbrugsprodukter og de opsummerede oplysninger fra supermarkederne, som t&aelig;lleren (2) og andre statistikker som f.eks. summen af ​​det &aring;rlige salg.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Vælg en eller flere tilknytninger</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver den anvendte tilknytnings-indstilling. Du kan anvende &eacute;n, to eller tre af f&oslash;lgende tilknytningstyper: 
+                <ul>
+                    <li> <b>Spatial</b> &ndash; Benytter den angivne spatiale relation til at tilknytte objekter. Dette kr&aelig;ver, at begge lag har en geometri.
+                    </li>
+                    <li> <b>Tidsbestemt</b> &ndash; Benytter en tidsbestemt relation til at tilknytte objekter. Dette kr&aelig;ver, at tid er aktiveret for begge lag.
+                    </li>
+                    <li> <b>Attribut</b> &ndash; Tilknytter objekter baseret p&aring; matchende felter.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Vælg en spatial relation</h2></div>
+        <hr/>
+        <div>
+            <p>Den spatiale relation, der bestemmer, om objekterne skal knyttes til hinanden. F&oslash;lgende tilg&aelig;ngelige relationer afh&aelig;nger af den geometritype (punkt, polylinje, polygon), der anvendes til inputobjekterne:
+                <ul>
+                    <li> <b>Gennemsk&aelig;r</b> &ndash; Objekterne matches, hvis de gennemsk&aelig;rer hinanden.
+                    </li>
+                    <li> <b>Lig med</b> &ndash; Objekterne matches, hvis de har den samme geometri.
+                    </li>
+                    <li> <b>I n&aelig;rheden</b> &ndash; Objekterne matches, hvis de ligger inden for en angivet afstand fra hinanden. Destinationslaget skal v&aelig;re placeret i et projiceret koordinatsystem, eller den spatiale reference til behandling skal v&aelig;re indstillet til et projiceret koordinatsystem ved hj&aelig;lp af <b>Analysemilj&oslash;erne</b>, hvis der anvendes en geografisk <b>n&aelig;rliggende</b> relation.
+                    </li>
+                    <li> <b>Indeholder</b> &ndash; Objekterne matches, hvis m&aring;llaget er indeholdt i de objekter, der skal tilknyttes.
+                    </li>
+                    <li> <b>Inden for</b> &ndash; Objekterne matches, hvis m&aring;llaget er inden for de objekter, der skal tilknyttes.
+                    </li>
+                    <li> <b>Ber&oslash;ringer</b> &ndash; Objekterne matches, hvis de har en gr&aelig;nse, der ber&oslash;rer det m&aring;lobjektet.
+                    </li>
+                    <li> <b>Krydser</b> &ndash; Objekterne matches, hvis de har en kontur, der krydser.
+                    </li>
+                    <li> <b>Overlapper</b> &ndash; Objekterne tilknyttes, hvis de overlapper.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Angiver den radius, der anvendes til en spatial n&aelig;rliggende relation.
+            </p>
+            <p>Hvis du for eksempel havde et datas&aelig;t, der repr&aelig;senterer et atomkraftv&aelig;rk, og et datas&aelig;t, der repr&aelig;senterer boliger, kunne du indstille en nearSpatial-afstand p&aring; 1 kilometer for at finde huse, der ligger inden for 1 kilometer fra atomkraftv&aelig;rket.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Vælg en tidsbestemt relation</h2></div>
+        <hr/>
+        <div>
+            <p>Den tidsbestemte relation, der bestemmer, om objekterne knyttes til hinanden. Denne indstilling er kun tilg&aelig;ngelig, hvis der er aktiveret tid for begge lag, og de tilg&aelig;ngelige relationer afh&aelig;nger af den tidstype (&oslash;jeblik eller interval), der anvendes til inputobjekterne. De tilg&aelig;ngelige tidsm&aelig;ssige relationer er som f&oslash;lger:
+                <ul>
+                    <li> <b>M&oslash;der</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt m&oslash;der det andet.
+                    </li>
+                    <li> <b>M&oslash;des af</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt m&oslash;des af det andet.
+                    </li>
+                    <li> <b>Overlapper</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt overlapper det andet.
+                    </li>
+                    <li> <b>Overlappet af </b>&ndash; Objekterne matches, hvis det f&oslash;rste objekt overlappes af det andet.
+                    </li>
+                    <li> <b>I l&oslash;bet af</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt forekommer i l&oslash;bet af det andet.
+                    </li>
+                    <li> <b>Indeholder</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt indeholder det andet.
+                    </li>
+                    <li> <b>Lig med</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt er lig med det andet.
+                    </li>
+                    <li> <b>Afslutter</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt afslutter det andet.
+                    </li>
+                    <li> <b>Afsluttet af</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt afsluttes af det andet.
+                    </li>
+                    <li> <b>Starter</b> &ndash; Objekterne matches, hvis det f&oslash;rste objekt er start p&aring; det andet.
+                    </li>
+                    <li> <b>Startet af </b>&ndash; Objekterne matches, hvis det f&oslash;rste objekt er startet af det andet.
+                    </li>
+                    <li> <b>Gennemsk&aelig;r</b> &ndash; Objekterne matches, hvis de gennemsk&aelig;res af tiden.
+                    </li>
+                    <li> <b>I n&aelig;rheden</b> Objekterne matches, hvis de ligger i n&aelig;rheden af hinanden og er defineret af en angivet tidsindstilling.
+                    </li>
+                    <li> <b>Lige f&oslash;r</b> &ndash; Objekterne tilknyttes, hvis det f&oslash;rste objekt er f&oslash;r det andet og inden for den angivne tid.
+                    </li>
+                    <li> <b>Lige efter</b> &ndash; Objekterne tilknyttes, hvis det f&oslash;rste objekt er efter det andet og inden for den angivne tid.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Angiver den tidsbestemte radius, der anvendes til en tidsbestemt n&aelig;rliggende relation. En tidsbestemt n&aelig;rliggende relation omfatter  <b>I n&aelig;rheden</b>, <b>Lige f&oslash;r</b>, og <b>Lige efter</b>.
+            </p>
+            <p>Hvis du f.eks. har et lag af skibsfartsh&aelig;ndelserne og et lag med GPS-spor for en orkan, kan du s&oslash;ge efter skibsfartsh&aelig;ndelser inden for en angivet afstand fra orkansporingerne inden for b&aring;de afstand (1 kilometer) og tid (5 timer). Dette ville resultere i, at skibsfartsh&aelig;ndelserne ville blive knyttet til orkaner, der forekom t&aelig;t p&aring; hinanden i rum og tid.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Vælg de felter, der skal matches</h2></div>
+        <hr/>
+        <div>
+            <p>Matcher v&aelig;rdier i et felt fra &eacute;t lag med v&aelig;rdier i et felt fra et andet lag. 
+            </p>
+            <p>Hvis du f.eks. havde et landsd&aelig;kkende geografisk lag af boligadresser (inklusive et  <i>ZIP</i>-felt) og et tabeldatas&aelig;t med helbredsm&aelig;ssige og demografiske oplysninger fordelt efter postnummer (et felt med titlen <i>HEALTHZIP</i>), kunne du knytte datas&aelig;ttet med helbredsoplysninger til datas&aelig;ttet med adresseoplysninger ved at matche feltet <i>ZIP</i> med feltet <i>HEALTHZIP</i>. Det ville resultere i et lag med boliger med tilsvarende sundhedsdata.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tilføj statistik (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Beregner statistikker om de tilknyttede objekter, hvis tilknytningshandlingen er  <b>Tilknyt &eacute;n-til-&eacute;n</b>. Alle statistikker beregnes som standard.
+            </p>
+            <p>Du kan beregne statistik for objekter, der er summeret. For numeriske felter kan du beregne f&oslash;lgende: 
+                <ul>
+                    <li>Antal &ndash; Beregner antallet af ikke-nul-v&aelig;rdier.Det anvendes til numeriske felter eller strenge. Opt&aelig;llingen af [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen af numeriske v&aelig;rdier i et felt. Summen af [null, null, 3] er 3.
+                    </li>
+                    <li>Middelv&aelig;rdi &ndash; Middelv&aelig;rdier af de numeriske v&aelig;rdier. Middelv&aelig;rdien af [0, 2, null] er 1.
+                    </li>
+                    <li>Min. &ndash; Minimumv&aelig;rdien for et numerisk felt. Minimumsv&aelig;rdien af [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks. &ndash; Maksimumv&aelig;rdien for et numerisk felt. Maksimumv&aelig;rdien af [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Dette beregnes som minimumv&aelig;rdierne, der er trukket fra maksimumv&aelig;rdien. Omr&aring;det for [0, null, 1] er 1. Omr&aring;det for [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen af et numerisk felt i et spor. Variansen af [1] er nul. Variansen af [null, 1,0, 1,1] er 0,25.
+                    </li>
+                    <li>Standardafvigelse &ndash; Standardafvigelsen for et numerisk felt. Standardafvigelsen for [1] er nul. Standardafvigelsen for [null, 1,0, 1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>For strengfelter kan du beregne f&oslash;lgende:
+                <ul>
+                    <li>Antal &ndash; Antallet af ikke-nul-strenge.
+                    </li>
+                    <li>Vilk&aring;rlig &ndash; Denne statistik er et vilk&aring;rligt eksempel p&aring; en strengv&aelig;rdi i det angivne felt.
+                    </li>
+                </ul>
+                Alle statistiske data beregnes ud fra ikke-nul-v&aelig;rdier. Resultatlaget vil indeholde et nyt felt for hver beregnet statistik. Du kan tilf&oslash;je et vilk&aring;rligt antal statistikker ved at v&aelig;lge attributter og statistikker.
+            </p>
+            <p>Alle statistiske data beregnes ud fra ikke-nul-v&aelig;rdier. Resultatlaget vil indeholde et nyt felt for hver beregnet statistik. Du kan tilf&oslash;je et vilk&aring;rligt antal statistikker ved at v&aelig;lge attributter og statistikker.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Opret et udtryk til at forbinde objekter (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Anvender en betingelse til de angivne felter. Kun objekter med felter, der opfylder disse betingelser, vil blive tilknyttet.
+            </p>
+            <p>Hvis du f.eks. vil anvende en tilknytning p&aring; et datas&aelig;t, men kun p&aring; de objekter, hvor  <i>health_spending</i> er st&oslash;rre end 20 procent af <i>income</i>,  skal du anvende en tilknytningsbetingelse som <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> ved at bruge feltet <i>health_spending</i> fra det f&oslash;rste datas&aelig;t (det datas&aelig;t, som objekterne knyttes til) og feltet <i>income</i> fra det andet datas&aelig;t (det datas&aelig;t, der tilknyttes).
+            </p>
+            <p>Tilknytningsbetingelserne kan anvendes ved at bruge udtryksberegneren.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vælg Datastore</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultater lagres i et datalager og vises som et vektorlag i  Portal for ArcGIS. I de fleste tilf&aelig;lde b&oslash;r resultaterne blive lagret i et spatiotemporalt datalager, hvilket ogs&aring; er standarden. I nogle tilf&aelig;lde er det at lagre resultaterne i et relationsdatalager en god mulighed. Her er &aring;rsagerne til, at du m&aring;ske &oslash;nsker at lagre resultaterne i et relationsdatalager: 
+                <ul>
+                    <li>Du kan  bruge resultaterne i portalen-til-portalsamarbejde.
+                    </li>
+                    <li>Du kan  aktivere synkroniseringsfunktioner i forbindelse med dine resultater
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r benytte et relationsdatalager, hvis du forventer, at m&aelig;ngden af dine GeoAnalytics-resultater vil blive st&oslash;rre, og du &oslash;nsker at drage fordel af det spatiotemporale big data-lagers muligheder for at h&aring;ndtere store datam&aelig;ngder.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

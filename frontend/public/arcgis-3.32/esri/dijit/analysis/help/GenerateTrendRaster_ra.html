@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Generate Trend Raster</h2><p/>
+        <h2><img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" alt="Generate Trend Raster"></h2>
+        <hr/>
+    <p>Estimates the trend for each pixel along a dimension for one or more variables in a multidimensional raster.
+    </p>
+    <p>A use example for this tool is you have 40 years worth of monthly ocean temperature data, and you want to fit a trend line for each pixel to see where and how temperature changed over time.
+    </p>
+    <p>There are three trend line options for fitting a trend to the variable values along a dimension: linear, polynomial, and harmonic.
+    </p>
+    <p>The output trend raster generated with this tool is used as the input to the  tool. The output is a multidimensional raster in which each slice is a multiband raster containing information about the trend line. If you are analyzing the trend for a single variable for a dataset containing a single dimension (for example, time), there will be a single slice in the output dataset. If you are analyzing a single variable for a dataset containing multiple dimensions (for example, time and depth), each slice will contain trend information for each dimension value along the dimension that was not included in the analysis.
+    </p>
+    <p>For Linear trend analysis, the output contains five-band rasters, where: 
+        <ul>
+            <li>Band 1 = Slope
+            </li>
+            <li>Band 2 = Intercept
+            </li>
+            <li>Band 3 = Root Mean Square Error (RMSE) or the error around the line of best fit
+            </li>
+            <li>Band 4 = Coefficient of determination (R2)
+            </li>
+            <li>Band 5 = Probability value (P_Value)
+            </li>
+        </ul>
+        
+    </p>
+    <p>For Polynomial trend analysis, the number of bands in the output depends on the polynomial order. Second order polynomial fitting produces a six-band raster, where:
+        <ul>
+            <li>Band 1 = Polynomial_2
+            </li>
+            <li>Band 2 = Polynomial_1
+            </li>
+            <li>Band 3 = Polynomial_0
+            </li>
+            <li>Band 4 = RMSE
+            </li>
+            <li>Band 5 = R2
+            </li>
+            <li>Band 6 = P_Value
+            </li>
+        </ul>
+        
+    </p>
+    <p>Third order polynomial fitting produces a seven-band raster, where:
+        <ul>
+            <li>Band 1 = Polynomial_3
+            </li>
+            <li>Band 2 = Polynomial_2
+            </li>
+            <li>Band 3 = Polynomial_1
+            </li>
+            <li>Band 4 = Polynomial_0
+            </li>
+            <li>Band 5 = RMSE
+            </li>
+            <li>Band 6 = R2
+            </li>
+            <li>Band 7 = P_Value
+            </li>
+        </ul>
+        
+    </p>
+    <p>For Harmonic trend analysis, the number of bands in the output depends on the harmonic frequency. When the frequency is set to 1, the output is a seven-band raster, where:
+        <ul>
+            <li>Band 1 = Slope
+            </li>
+            <li>Band 2 = Intercept
+            </li>
+            <li>Band 3 = Harmonic_sin1
+            </li>
+            <li>Band 4 = Harmonic_cos1
+            </li>
+            <li>Band 5 = RMSE
+            </li>
+            <li>Band 6 = R2
+            </li>
+            <li>Band 7 = P_Value
+            </li>
+        </ul>
+        
+    </p>
+    <p>When the frequency is set to 2, the output is a seven-band raster, where:
+        <ul>
+            <li>Band 1 = Slope
+            </li>
+            <li>Band 2 = Intercept
+            </li>
+            <li>Band 3 = Harmonic_sin1
+            </li>
+            <li>Band 4 = Harmonic_cos1
+            </li>
+            <li>Band 5 = Harmonic_sin2
+            </li>
+            <li>Band 6 = Harmonic_cos2
+            </li>
+            <li>Band 7 = RMSE
+            </li>
+            <li>Band 6 = R2
+            </li>
+            <li>Band 7 = P_Value
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, variables of the layer that are  visible within the current map extent will be analyzed. If unchecked, variables of the full layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputMultidimensionalRaster">
+        <div><h2>Choose multidimensional imagery layer to analyze trend</h2></div>
+        <hr/>
+        <div>
+            <p>The input imagery layer of a multidimensional raster that will be analyzed.
+            </p>
+        </div>
+    </div>
+    <div id="dimension">
+        <div><h2>Choose dimension along which variable trend will be analyzed</h2></div>
+        <hr/>
+        <div>
+            <p>The dimension along which a trend will be extracted for the variable or variables selected in the analysis.
+            </p>
+        </div>
+    </div>
+    <div id="variables">
+        <div><h2>Choose variable(s) to analyze trend</h2></div>
+        <hr/>
+        <div>
+            <p>The variable or variables for which trends will be calculated. If no variable is specified, the first variable in the multidimensional raster will be analyzed.
+            </p>
+        </div>
+    </div>
+    <div id="trendLineType">
+        <div><h2>Choose the type of line to fit variable values along a dimension</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the type of line to be used to fit to the pixel values along a dimension. 
+                <ul>
+                    <li> <b>Linear</b>&mdash;Fits the pixel values for a variable along a linear trend line. This is the default.
+                    </li>
+                    <li> <b>Polynomial</b>&mdash;Fits the pixel values for a variable along a second order polynomial trend line.
+                    </li>
+                    <li> <b>Harmonic</b>&mdash;Fits the pixel values for a variable along a harmonic trend line.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="frequency">
+        <div><h2>Specify the frequency number for the harmonic trend fitting</h2></div>
+        <hr/>
+        <div>
+            <p>The frequency to use in the  <b>Harmonic</b> trend fitting. This parameter specifies the frequency of cycles in a year.
+            </p>
+            <p>The default value is  1, or one harmonic cycle per year.
+            </p>
+            <p>This parameter is only included in the trend analysis when the dimension being analyzed is time.
+            </p>
+        </div>
+    </div>
+    <div id="polynomialOrder">
+        <div><h2>Specify the polynomial order number for the trend fitting</h2></div>
+        <hr/>
+        <div>
+            <p>The polynomial order number to use in the   <b>Polynomial</b> trend fitting.
+            </p>
+            <p>This parameter is only included in the trend analysis when the dimension being analyzed is time.
+            </p>
+            <p>The default value is 2, or second order polynomial.
+            </p>
+        </div>
+    </div>
+    <div id="ignoreNodata">
+        <div><h2>Ignore missing values in calculation</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies whether missing values are ignored in the analysis.
+                <ul>
+                    <li>Checked&mdash;The analysis will include all valid pixels along a given dimension and ignore any NoData pixels. This is the default.
+                    </li>
+                    <li>Unchecked&mdash;The analysis will result in NoData if there are any NoData values for the pixel along the given dimension.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

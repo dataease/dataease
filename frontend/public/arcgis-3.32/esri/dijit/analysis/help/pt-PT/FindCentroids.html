@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Encontrar Centróides</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Encontrar Centr&oacute;ides"></h2>
+        <hr/>
+    <p>Esta ferramenta funciona com uma camada de elementos de m&uacute;ltiplos pontos, linhas ou &aacute;rea para determinar o centro representativo de cada elemento.
+    </p>
+    <p>Se  <b>Utilizar atual extens&atilde;o de mapa</b> se encontrar selecionado, apenas os elementos na camada de m&uacute;ltiplos pontos, linhas, ou &aacute;rea vis&iacute;vel na atual extens&atilde;o de mapa ser&atilde;o analizados. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os elementos na camada de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar camada cujos elementos serão utilizados para gerar centróides</h2></div>
+        <hr/>
+        <div>
+            <p> A camada de m&uacute;ltiplos pontos. Linhas ou &aacute;rea que ser&aacute; utilizada para encontrar centr&oacute;ides.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Mostrem-me localizações de saída</h2></div>
+        <hr/>
+        <div>
+            <p> Quando <b>No verdadeiro centr&oacute;ide</b> est&aacute; selecionado (predefini&ccedil;&atilde;o), a sa&iacute;da ir&aacute; devolver a verdadeira localiza&ccedil;&atilde;o do centr&oacute;ide para cada elemento de entrada. Os centr&oacute;ides estar&atilde;o localizados como se segue:
+                <ul>
+                    <li>Elementos de m&uacute;ltiplos pontos&mdash;O centr&oacute;ide de sa&iacute;da estar&aacute; localizado na m&eacute;dia das coordenadas x e y de todos os pontos no elemento de m&uacute;ltiplos pontos.
+                    </li>
+                    <li>Elementos de linhas&mdash;O centr&oacute;ide de sa&iacute;da estar&aacute; localizado na m&eacute;dia ponderada das coordenadas x e y dos pontos interm&eacute;dios no elemento de linhas. O peso baseia-se no comprimento do segmento.
+                    </li>
+                    <li>Elementos de &aacute;rea&mdash;O centr&oacute;ide de sa&iacute;da estar&aacute; localizado no centro da &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Quando  <b>contido em elementos de entrada</b> se encontra selecionado, os elementos de pontos de sa&iacute;da estar&atilde;o contidos por, ou no interior de, cada elemento de entrada. Os elementos de pontos resultantes surgir&atilde;o como se segue:
+                <ul>
+                    <li>Elementos de m&uacute;ltiplos pontos&mdash;O centr&oacute;ide de sa&iacute;da ser&aacute; coincidente com um dos pontos no grupo de pontos m&uacute;ltiplos.
+                    </li>
+                    <li>Elementos de linhas&mdash;O centr&oacute;ide de sa&iacute;da encontrar-se-&aacute; na linha.  Caso a linha seja curvada, a sa&iacute;da encontrar-se-&aacute; no ponto interm&eacute;dio da linha. 
+                    </li>
+                    <li>Elementos de &aacute;rea&mdash;O ponto de sa&iacute;da encontrar-se-&aacute; no interior do elementos de &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

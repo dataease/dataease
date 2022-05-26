@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>העתק למאגר נתונים</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="העתק למאגר נתונים"></h2>
+        <hr/>
+    <p>כלי זה ייקח שכבת קלט ויעתיק אותה למאגר נתונים. באפשרותך להעתיק תוצאות אל  ArcGIS Data Store (מאגר Big Data יחסי או של מרחב-זמן) ותיווצר שכבה בפורטל שלך או להעתיק תוצאות למיקום שיתוף קובצי Big Data. 
+    </p>
+    <p>לדוגמה, תוכל להעתיק ישויות שמאוחסנות  <code>במיקום שיתוף קובצי Big Data</code> אל <code>מאגר נתוני יחסי</code> ולציין שרק ישויות עם תיחום מפה נוכחי יועתקו. פעולה זו תיצור שירות ישויות מתארח שכולל רק את הישויות שהיו בתוך תיחום המפה שצוין.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה להעתקה</h2></div>
+        <hr/>
+        <div>
+            <p>השכבה או הטבלה שיועתקו. 
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>תוכל להשתמש בכל הישויות או לבחור מביניהן (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>אופציונלית, השתמש בלחצן הבחירה כדי לזהות את המיקומים שיועתקו.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>בחר את מאגר הנתונים להעתיק אליו</h2></div>
+        <hr/>
+        <div>
+            <p>מאגר הנתונים שהשכבה תועתק אליו. פרמטר זה יגבר על הבחירה  <b>בסביבות ניתוח</b>. להלן האפשרויות:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>מרחבי-זמני</b> - זוהי ברירת המחדל.
+                            </li>
+                            <li> <b>יחסי</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>תבניות פלט שיתוף קבצים של Big Data</b>
+                        <ul>
+                            <li>רשימה של תבניות שיתוף קובצי Big Data בפורמט  <b>bigDataFileShareName-templateName</b>. יש להגדיר את התצורה של תבניות שיתוף קובצי Big Data לפני הרצת הכלי.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

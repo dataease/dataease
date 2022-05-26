@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Fahrzeitgebiete erstellen</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Fahrzeitgebiete erstellen"></h2>
+        <hr/>
+    <p>Mit &quot;Fahrzeitgebiete erstellen&quot; k&ouml;nnen Gebiete erstellt werden, die innerhalb einer angegebenen Fahrzeit, Fahrstrecke, eines Fu&szlig;weges usw. erreicht werden k&ouml;nnen. Ausgehend von einem oder mehreren Punkten (bis zu 1.000) wird entlang von Stra&szlig;en oder Fu&szlig;g&auml;ngerwegen ein Layer erstellt, der zur Beantwortung der folgenden Fragen herangezogen werden kann:
+        <ul>
+            <li>Welche Orte kann ich von diesem Standort aus innerhalb einer Fahrzeit von 30 Minuten erreichen?
+            </li>
+            <li>Welche Orte kann ich von diesem Standort aus innerhalb einer Fahrzeit von 30 Minuten um 17:30 Uhr w&auml;hrend der Hauptverkehrszeit erreichen?
+            </li>
+            <li>Welche Orte k&ouml;nnen im Umkreis von zwei Kilometern vom Hotel zu Fu&szlig; erreicht werden?
+            </li>
+            <li>Welche Gebiete kann die Feuerwehr innerhalb von f&uuml;nf Minuten erreichen? 
+            </li>
+            <li>Wie k&ouml;nnte die Fl&auml;chendeckung bei der Brandbek&auml;mpfung durch die Einrichtung einer neuen Feuerwache verbessert werden?
+            </li>
+            <li>Welche Markteinzugsbereiche deckt mein Gesch&auml;ft ab?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Diese Fragen k&ouml;nnen ausschlie&szlig;lich durch die Visualisierung der Ausgabefl&auml;chen beantwortet werden. Sie k&ouml;nnen auch weitere Analysen anhand der Ausgabefl&auml;chen durchf&uuml;hren. Beispielsweise kann durch die Ausf&uuml;hrung von &quot;Punkte aggregieren&quot; anhand von Fahrzeitgebieten mit demografischen Daten besser ermittelt werden, welcher potenzielle Ladenstandort &uuml;ber den optimalen Kundenstamm f&uuml;r Ihre Art von Gesch&auml;ft verf&uuml;gen w&uuml;rde. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Um Gebiete durch Messen einer geradlinigen Entfernung statt entlang von Stra&szlig;en zu erstellen, verwenden Sie stattdessen das Werkzeug &quot;Puffer erstellen&quot;.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features zum Erstellen der auf Fahrzeit oder Fahrentfernung basierenden Gebiete verwendet, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer verwendet, auch wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt-Layer auswählen, um umgebende Fahrzeitgebiete zu berechnen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, deren umliegende Fl&auml;chen berechnet werden. Sie k&ouml;nnen festlegen, wie Fl&auml;chen basierend auf dem Reisemodus (Auto, Lkw oder zu Fu&szlig;) berechnet und gemessen (Zeit oder Entfernung) werden.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 1.000&nbsp;Features im Eingabe-Layer.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Messen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Reisemodus (Auto, Lkw oder zu Fu&szlig;) und den Messwert (Uhrzeit oder Entfernung) aus. Die verf&uuml;gbaren Reisemodi werden vom Administrator Ihrer Organisation bestimmt.   Nachdem Sie den Modus und Messwert ausgew&auml;hlt haben, geben Sie eine Dauer oder Entfernung von maximal  5 Stunden (300 Minuten) oder  300 Meilen (482,80 Kilometer) ein. 
+            </p>
+            <p>Die Fahrtrichtung ( <b>Weg von Einrichtung</b> oder <b>In Richtung Einrichtung</b>) hat u.&nbsp;U. Auswirkungen auf die Erstellung der Fahrzeitgebiete. Bei &quot;Fahrzeitgebiete erstellen&quot; werden Einbahnstra&szlig;en, unzul&auml;ssige Wendepunkte und andere Regeln basierend auf der Fahrtrichtung ber&uuml;cksichtigt. Sie sollten die Fahrtrichtung entsprechend dem Typ der Eingabepositionen sowie dem Analysekontext ausw&auml;hlen. Beispielsweise sollte das Fahrzeitgebiet f&uuml;r einen Pizza-Lieferservice von der Einrichtung weg erstellt werden, wohingegen das Fahrzeitgebiet f&uuml;r ein Krankenhaus zur Einrichtung hin erstellt werden sollte.
+            </p>
+            <p>Bei Auswahl von  <b>Fahrzeit</b>, <b>Fahrzeit auf Landstra&szlig;en</b> oder <b>Lkw-Fahrzeit</b> werden Optionen zum Messen der Fahrzeit bereitgestellt.
+                <ul>
+                    <li>
+                        <p>Deaktivieren Sie die Option  <b>Verkehrsdaten verwenden</b>, um Fahrzeitgebiete auf Grundlage von festen Geschwindigkeiten zu erstellen. Sie m&uuml;ssen diese Option ausw&auml;hlen, wenn Sie ein allgemeines Fahrzeitgebiet und nicht etwa ein Gebiet w&uuml;nschen, das anhand einer sich st&auml;ndig &auml;ndernden Verkehrslage f&uuml;r eine bestimmte Abfahrtzeit berechnet wird.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Aktivieren Sie  <b>Verkehrsdaten verwenden</b>, um Fahrzeitgebiete basierend auf einer angegebenen Startzeit und sich &auml;ndernder Verkehrsbedingungen zu erstellen. Wenn Sie au&szlig;erdem die Option <b>Live-Verkehrsdaten</b> ausw&auml;hlen, wird die Abfahrtzeit von den Eingabepunkten auf die aktuelle Uhrzeit festgelegt und aktuelle und vorhergesagte Fahrgeschwindigkeiten werden von Sensoren und Feeds referenziert, um die Fahrzeitgebiete zu erstellen. Die vorhergesagten Fahrgeschwindigkeiten werden berechnet, indem Geschwindigkeitsdaten des Live-Verkehrs und aktuelle Ereignisse wie das Wetter referenziert werden. Fahrgeschwindigkeiten werden f&uuml;r die n&auml;chsten 12 Stunden vorhergesagt, damit Sie die Abfahrtzeit mit dem Schieberegler auf bis zu 12 Stunden im Voraus einstellen k&ouml;nnen.
+                        </p>
+                        <p>Verwenden Sie diese Einstellungen f&uuml;r Live-Verkehrsdaten, um zu ermitteln, welche Gebiete erreicht werden k&ouml;nnen, wenn Sie zum aktuellen Zeitpunkt, in einer Stunde ab dem aktuellen Zeitpunkt usw. abfahren.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Wenn Sie die Option  <b>Verkehrsdaten verwenden</b> aktivieren und die Option <b>Verkehrsdaten auf Grundlage von normalen Bedingungen f&uuml;r</b> einen Tag und eine Uhrzeit ausw&auml;hlen, erstellt das Werkzeug Fahrzeitgebiete basierend auf historischen Durchschnittsgeschwindigkeiten f&uuml;r jedes 5-Minuten-Intervall einer normalen Woche. Die Ergebnisse umfassen Verkehrsdaten, lassen jedoch den Einfluss aktueller Verkehrssituationen und -ereignisse au&szlig;er Acht, die erheblich von der Norm abweichen k&ouml;nnen.
+                        </p>
+                        <p>Sie k&ouml;nnen diese Einstellungen f&uuml;r historische Verkehrsdaten verwenden, um beispielsweise folgende Frage zu stellen: Welches Gebiet kann ich im Allgemeinen erreichen, wenn ich an einem Mittwoch um 11:30 Uhr losfahre? 
+                        </p>
+                        <p>Die festgelegte Zeit bezieht sich auf die Zeitzone, in der sich die Eingabepunkte befinden. Wenn Sie die Uhrzeit also auf 8:00 Uhr festlegen und &uuml;ber zwei Punkte verf&uuml;gen, einen in New York und den anderen in Los Angeles, werden die Fahrzeitgebiete f&uuml;r 8:00 Uhr Eastern Time bzw. 8:00 Uhr Pacific Time erstellt.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Beachten Sie, dass Zeit vergeht und Verkehrslagen sich &auml;ndern, w&auml;hrend sich ein Fahrzeug von einem Punkt wegbewegt. Das Werkzeug &quot;Fahrzeitgebiete&quot; ber&uuml;cksichtigt diese Unterschiede, wenn Sie  <b>Fahrzeit</b> ausw&auml;hlen und <b>Verkehrsdaten verwenden</b> aktivieren. Allerdings unterst&uuml;tzen nicht alle Regionen Verkehrsdaten. 
+Klicken Sie in dem Werkzeug auf den Link <b>Verf&uuml;gbarkeit anzeigen</b>, um zu ermitteln, ob dies f&uuml;r Ihr Einzugsgebiet zutrifft.
+            </p>
+            <p>F&uuml;r die  <b>Lkw-Fahrzeit</b> k&ouml;nnen dynamische, auf den Verkehrsbedingungen basierende Reisegeschwindigkeiten bis maximal zur gesetzlichen H&ouml;chstgeschwindigkeit f&uuml;r Lkw zugrunde gelegt werden. Wenn beispielsweise die dynamische Geschwindigkeit f&uuml;r eine Stra&szlig;e auf Grundlage der Live-Verkehrsdaten bei 100&nbsp;km/h liegt, die zul&auml;ssige H&ouml;chstgeschwindigkeit f&uuml;r Lkw auf dieser Stra&szlig;e jedoch 80&nbsp;km/h betr&auml;gt, werden in der Berechnung f&uuml;r diese Stra&szlig;e 80&nbsp;km/h zugrunde gelegt.
+            </p>
+            <p> <b>Gehzeit</b> und <b>Gehstrecke</b> verwenden eine festgelegte Geschwindigkeit von 5 Kilometern pro Stunde (3,1 Meilen pro Stunde) und folgen Fu&szlig;g&auml;ngerwegen und ausgewiesenen Stra&szlig;en (wobei Regeln ignoriert werden, die sich auf Fahrzeuge auswirken, z.&nbsp;B. Einbahnstra&szlig;en). </p>
+            <p>Bei der  <b>Lkw-Fahrstrecke</b> werden feste Geschwindigkeiten zugrunde gelegt und die Vorschriften f&uuml;r schwere Lastkraftwagen ber&uuml;cksichtigt. Bei <b>Fahrstrecke</b> und <b>Fahrstrecke auf Landstra&szlig;en</b> hingegen werden feste Geschwindigkeiten zugrunde gelegt und die Vorschriften f&uuml;r andere Fahrzeuge, beispielsweise Pkw, ber&uuml;cksichtigt.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barriere-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Mindestens ein Feature, das als vor&uuml;bergehende Einschr&auml;nkung (also Barriere) bei der Fahrt auf den zugrunde liegenden Stra&szlig;en fungiert Sie k&ouml;nnen die Barrieren anhand von Punkt-, Linien- oder Polygon-Features angeben.
+            </p>
+            <p>Eine Punkt-Barriere kann zum Modellieren eines umgefallenen Baumes, eines Unfalls, einer herabh&auml;ngenden Stromleitung oder eines beliebigen anderen Objekts, das den Verkehr an einer bestimmten Position auf der Stra&szlig;e blockiert, verwendet werden. Die Fahrt auf der Stra&szlig;e ist zul&auml;ssig, jedoch nicht die Fahrt durch die Barriere. Sie k&ouml;nnen bis zu 250&nbsp;Features, die als Punkt-Barrieren fungieren, hinzuf&uuml;gen.
+            </p>
+            <p>Eine Linien-Barriere unterbindet den Verkehr an allen Punkten, an denen die Barriere Stra&szlig;en schneidet. Mit einer Linien-Barriere kann beispielsweise eine Parade oder Demonstration modelliert werden, die den Verkehr &uuml;ber mehrere Stra&szlig;enz&uuml;ge hinweg blockiert. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Linien-Barrieren schneiden, 500 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+            <p>Eine Polygon-Barriere unterbindet den Verkehr an allen Punkten, an denen das Polygon Stra&szlig;en schneidet. Dieser Barrierentyp wird beispielsweise verwendet, um &uuml;berflutete Bereiche des Stra&szlig;ennetzes zu modellieren und den Stra&szlig;enverkehr in diesen Bereichen zu sperren. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Polygon-Barrieren schneiden, 2000 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Bereiche von verschiedenen Punkten</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie gemeinsame Gebiete von unterschiedlichen Eingabepunkten behandelt werden sollen, wenn sie aufeinander treffen. Sie k&ouml;nnen:
+                <ul>
+                    <li> <b>&Uuml;berlappen</b>: Gebiete von verschiedenen Eingabepunkten k&ouml;nnen die gleiche Stra&szlig;e abdecken. Dies ist hilfreich, wenn Sie alle Eingabepunkte ermitteln m&uuml;ssen, die einen bestimmten Standort innerhalb der angegebenen Zeit oder Entfernung erreichen k&ouml;nnen.
+                    </li>
+                    <li> <b>Zusammenf&uuml;hren</b>: Alle Gebiete werden zu einem zusammengef&uuml;hrt und nur ein Gebiet kann einen bestimmten Standort abdecken. Dies ist hilfreich, wenn Sie lediglich wissen m&uuml;ssen, dass ein Gebiet innerhalb einer angegebenen Zeit oder Entfernung erreicht werden kann, Sie aber nicht wissen m&uuml;ssen, welche Eingabepunkte den Standort erreichen k&ouml;nnen.
+                    </li>
+                    <li> <b>Teilen</b>: Die Gebiete von verschiedenen Eingabepositionen, die sich &uuml;berlappen, werden in der Mitte geteilt, sodass sie stattdessen aneinander angrenzen. Dies ist hilfreich, wenn Sie ermitteln m&ouml;chten, welche Gebiete sich innerhalb einer angegebenen Zeit oder Entfernung von den Eingabepunkten befinden, und Sie gleichzeitig bestimmen m&ouml;chten, welcher Eingabepunkt diesem Gebiet am n&auml;chsten liegt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Nicht erreichbare Gebiete als Löcher anzeigen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob die Ausgabegebiete L&ouml;cher enthalten, wenn Stra&szlig;en aufgrund der in  <b>Messen</b> festgelegten Zeit bzw. Entfernung oder aufgrund von Beschr&auml;nkungen durch den Reisemodus nicht erreicht werden k&ouml;nnen.
+            </p>
+            <p>F&uuml;r Fahrzeitgebiete, die mit diesem Parameter erstellt werden, gilt eine Begrenzung auf 15&nbsp;Minuten bzw. 24&nbsp;Kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Erreichbare Straßen einbeziehen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Stra&szlig;en, aus denen die Fahrzeitgebiete erstellt wurden, werden als Ausgabe-Layer einbezogen. 
+            </p>
+            <p>Mit &quot;Fahrzeitgebiete erstellen&quot; wird f&uuml;r eine Einrichtung die Reichweite im Stra&szlig;ennetz gemessen, und anschlie&szlig;end werden aus den durchlaufenen Stra&szlig;en Fahrzeitgebiete erstellt. Somit entsprechen die Fahrzeitgebiete einer n&auml;herungsweisen Darstellung der durchlaufenen Stra&szlig;en. Wenn Sie mit der Analyse bestimmen m&ouml;chten, welche Stra&szlig;en von einer Einrichtung aus bei einer bestimmten Fahrstrecke oder Fahrzeit abgedeckt werden bzw. erreichbar sind, erzielen Sie durch die Erstellung von erreichbaren Stra&szlig;en genauere Ergebnisse als mit Fahrzeitgebieten.
+            </p>
+            <p>F&uuml;r Fahrzeitgebiete, die mit diesem Parameter erstellt werden, gilt eine Begrenzung auf 15&nbsp;Minuten bzw. 24&nbsp;Kilometer.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

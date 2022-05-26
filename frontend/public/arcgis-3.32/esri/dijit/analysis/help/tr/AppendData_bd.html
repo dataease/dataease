@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Veri Ekle</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Veri Ekle iş akışı diyagramı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, verileri mevcut bir barındırılan detay katmanına ekler. Veri Ekle, orijinal girdi katmanını değiştirir ve yeni bir &ccedil;ıktı katmanı oluşturmaz. Alanları, alan adı ve alan t&uuml;r&uuml;ne g&ouml;re eşleştirebilirsiniz ya da daha gelişmiş eşleştirme y&ouml;ntemleri uygulayabilirsiniz.
+    </p>
+    <p>Aşağıda &ouml;rnekleri verilmiştir: 
+        <ul>
+            <li>Aylık olarak satış kayıtları &uuml;reten b&uuml;y&uuml;k bir sigorta şirketinde &ccedil;alışıyorsunuz. Yıllık raporunuz i&ccedil;in bu aylık verilerin analiz amacıyla derlenmesi gerekir. Satış analizini başlatmak i&ccedil;in, aylık rakamlar kullanıma sunulduğunda, AnnualReport_2018 katmanını g&uuml;ncellemek i&ccedil;in Veri Ekle'den yararlanabilirsiniz. Kuruluşunuzun her ay tutarlı bir şemaya sahip olduğunu bildiğinizden, detayları alan adı ve t&uuml;r&uuml;ne g&ouml;re verimli bir şekilde eklemek i&ccedil;in varsayılan alan eşleme y&ouml;ntemini kullanabilirsiniz.
+            </li>
+            <li>On &ccedil;evre grubu i&ccedil;erisindeki her grup , kendi yetki alanlarına ait y&uuml;zbinlerce iklim &ouml;l&ccedil;&uuml;m&uuml; toplar. Bu kuruluşlar, b&ouml;lgesel ve k&uuml;resel desenleri daha iyi anlamak i&ccedil;in verilerini derlemek ister. Her kuruluş veri k&uuml;meleri i&ccedil;in şemayı belirler. Her biri sıcaklık ve r&uuml;zgar hızı verileri i&ccedil;in farklı alan adları belirtir. Veri k&uuml;meleri arasındaki alan adı farklılıkları dikkate alındığında, alan eşleme, sıcaklık ve r&uuml;zgar hızı &ouml;l&ccedil;&uuml;mlerinin ilgili alanlara nasıl ekleneceğini belirtmek i&ccedil;in kullanılabilir.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Üzerine eklenecek katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Verilerin ekleneceği tablo, nokta, &ccedil;izgi veya &ccedil;okgen detayları.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Eklediğiniz katman, aracın y&uuml;r&uuml;t&uuml;lmesi sırasında değiştirilecektir. Devam etmeden &ouml;nce bu katmanı değiştirmek istediğinizden emin olun.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek barındırılan bir detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Eklenecek katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi katmanına eklenecek tablo, nokta, &ccedil;izgi veya &ccedil;okgen detayları.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Tüm detayları ekle veya bir alt küme tanımla (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Eklenecek detayları tanımlar. Bu parametre isteğe bağlıdır.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Alanları nasıl ekleyeceğinizi seçin (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Ekleme katmanı alanlarının girdi katmanına nasıl eklendiğini belirtir. Varsayılan olarak, t&uuml;m eşleşen girdi ve ekleme alanları eklenecektir. Alanlar, aynı alan adına ve aynı alan t&uuml;r&uuml;ne sahiplerse eşleşirler. İsteğe bağlı olarak, alanların nasıl eşleştirileceğini se&ccedil;ebilir veya alan değerlerini doldurmak i&ccedil;in Arcade ifadelerini hesaplayabilirsiniz.
+            </p>
+            <p>&Ouml;rneğin,  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> alanlarına sahip bir girdi katmanına ve <i>field_string</i>, <i>field_number</i> ve <i>MY_DATE_FIELD</i> alanlarına sahip bir ekleme katmanına sahipsiniz.
+                <ul>
+                    <li>Varsayılan olarak, ara&ccedil;, girdi katmanındaki  <i>field_number</i> alanını, ekleme katmanındaki <i>field_number</i> alanı ile eşleştirecektir ve girdi katmanındaki <i>field_string</i> alanını, ekleme katmanındaki <i>field_string</i> alanı ile eşleştirecektir.
+                    </li>
+                    <li>Varsayılan olarak, girdi katmanı  <i>date_field</i> ve <i>unused_field</i> alanları, <i>null</i> değerleriyle doldurulur, &ccedil;&uuml;nk&uuml; ekleme katmanında eşleşen alanlar bulunmaz.
+                    </li>
+                    <li>İsteğe bağlı olarak, varsayılan olarak otomatik eşleştirilmemiş alanlara değer ekleyebilirsiniz. &Ouml;rneğin, girdi katmanındaki  <i>date_field</i>, <i>MY_DATE_FIELD</i> ekleme alanı ile eşleştirilebilir. Bunun i&ccedil;im, ilk s&uuml;tundaki <i>date_field</i> &ouml;ğesinin yanındaki a&ccedil;ılır men&uuml;y&uuml; kullanın ve ikinci s&uuml;tundaki a&ccedil;ılır men&uuml;den <i>MY_DATE_FIELD</i> &ouml;ğesini se&ccedil;in.
+                    </li>
+                </ul>
+                 Başka bir &ouml;rnekte, bir girdi katmanındaki sayısal alanlar <i>value_1</i>, <i>value_2</i>, <i>value_3</i> ve <i>my_Average</i>, ve bir ekleme katmanındaki sayısal alanlar <i>value_1</i>, <i>value_2</i> ve <i>value_3</i>.
+                <ul>
+                    <li>Varsayılan olarak,  <i>value_1</i>, <i>value_2</i> ve <i>value_3</i> eşleştirilecek ve eklenecektir.
+                    </li>
+                    <li>Varsayılan davranışa ek olarak, değerler  <i>my_Average</i> alanı i&ccedil;in hesaplanabilir. Bunun i&ccedil;in, <i>my_Average</i> &ouml;ğesinin yanındaki s&uuml;tunda yer alan <b>İfade</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; se&ccedil;erek ve <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre> gibi &ouml;zel bir Arcade ifadesi oluşturarak birden fazla alanı ve matematik işlemini kullanabilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

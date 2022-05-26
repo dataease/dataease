@@ -1,0 +1,18 @@
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 0">
+    <div class="DataCategoriesPage_Country" data-dojo-attach-point="divCountrySelect"></div>
+    <input type="text"
+           data-dojo-type="esri/dijit/geoenrichment/DataBrowser/SearchTextBox"
+           data-dojo-attach-point="txbSearch"
+           data-dojo-props="prompt:'${nls.search}'"
+           data-dojo-attach-event="onSearch: _search"
+           class="DataCategoriesPage_Search" />
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 1">
+    <div class="DataCategoriesPage_Pagination">
+        <div data-dojo-type="esri/dijit/geoenrichment/Pagination" data-dojo-attach-point="pagination" data-dojo-attach-event="onSelect: _onItemClick"></div>
+    </div>
+    <div data-dojo-attach-point="progressDiv"></div>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 2">
+    <div data-dojo-attach-point="spnShowFavorites" class="Wizard_Link DataCategoriesPage_ShowFavorites" data-dojo-attach-event="onClick: _showFavorites"></div>
+</div>

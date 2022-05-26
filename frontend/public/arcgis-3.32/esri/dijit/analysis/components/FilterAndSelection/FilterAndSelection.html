@@ -1,0 +1,7 @@
+<div class="esriLeadingMargin1 esriFloatTrailing marginTop1">
+  <div data-dojo-type="dijit/form/ToggleButton" class="esriActionButton" data-dojo-props="label:'${i18n.selectLabel}',iconClass:'esriAnalysisSelectFilterIcon',showLabel:false" data-dojo-attach-point="_selectBtn" data-dojo-attach-event="onChange:_handleSelectionButtonClick"></div>
+  <div data-dojo-type="dijit/form/Button" class="esriActionButton" data-dojo-props="label:'${i18n.queryLabel}',iconClass:'esriAnalysisAttributeFiltercon',showLabel:false" data-dojo-attach-point="_queryBtn" data-dojo-attach-event="onClick:_handleQueryButtonClick"></div>
+  <div data-dojo-type="dijit/Dialog" title="${i18n.expression}" data-dojo-props="closable:false" data-dojo-attach-point="_expDialog" style="width:65em;">
+    <div data-dojo-attach-point="_expressionForm" data-dojo-type="esri/dijit/analysis/ExpressionForm" data-dojo-props="showFirstRow:false,primaryActionButttonClass:'btn calcite blue'"></div>
+  </div>
+</div>

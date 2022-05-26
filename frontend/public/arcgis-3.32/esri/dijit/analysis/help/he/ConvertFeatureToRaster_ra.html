@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>המר ישות לרסטר</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="כלי 'המר ישות לרסטר'"></h2>
+        <hr/>
+    <p>כלי זה ממיר ישויות לסט נתוני רסטר.
+    </p>
+    <p>כל קבוצת ישויות שמכילה ישויות נקודה, קו או פוליגון ניתנת להמרה לסט נתוני רסטר.
+    </p>
+    <p>מרכז התא משמש לקביעת הערך של פיקסל רסטר הפלט.
+    </p>
+    <p>סוג שדה הקלט קובע את סוג רסטר הפלט. אם השדה הוא מספר שלם, רסטר הפלט יהיה מספר שלם; אם הוא נקודה צפה, הפלט יהיה נקודה צפה.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבת ישות להמרה</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת ישויות הקלט להמרה לסט נתוני רסטר.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>בחר שדה</h2></div>
+        <hr/>
+        <div>
+            <p>בחר את שדה שישמש להקצאת ערכים לרסטר הפלט.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>פלט גודל תא</h2></div>
+        <hr/>
+        <div>
+            <p>גודל התא והיחידה עבור הרסטרים של הפלט.
+            </p>
+            <p>היחידות הזמינות הן מיילים, רגל, קילומטרים ומטרים. ערך ברירת המחדל הוא רגל.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

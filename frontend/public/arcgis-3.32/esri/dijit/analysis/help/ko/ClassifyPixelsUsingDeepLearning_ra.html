@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>딥러닝을 사용하여 픽셀 분류(Classify Pixels Using Deep Learning)</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="딥러닝을 사용하여 픽셀 분류"></h2>
+        <hr/>
+    <p>이 도구는 입력 래스터에서 숙련된 딥러닝 모델을 실행하여 분류 래스터를 생성하며 각 유효 픽셀에는 할당된 클래스 레이블이 있습니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위에 보이는 래스터 영역만 분석됩니다. 이 옵션을 선택하지 않으면 현재 맵 범위가 아닌 경우에도 전체 래스터가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>픽셀 분류에 사용되는 이미지 선택</h2></div>
+        <hr/>
+        <div>
+            <p>분류할 입력 이미지입니다.
+            </p>
+            <p>입력 이미지는 이미지 서비스 URL, 래스터 레이어, 이미지 서비스 레이어일 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>픽셀 분류에 사용되는 딥러닝 모델 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 딥러닝 패키지( <code>.dlpk</code>) 항목입니다.
+            </p>
+            <p>딥러닝 패키지는 Esri 모델 정의 JSON 파일( <code>.emd</code>), 딥러닝 이진 모델 파일, 필요한 경우 사용할 파이썬 래스터 함수로 구성됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>딥러닝 모델 인수 지정</h2></div>
+        <hr/>
+        <div>
+            <p>함수 인수는 입력 모델에서 참조하는 파이썬 래스터 함수 클래스에 정의됩니다. 여기에서, 민감도를 조정하기 위한 신뢰도 임계값 등의 실험 및 세부 조정에 대한 추가적인 딥러닝 매개변수와 인수를 나열합니다.
+            </p>
+            <p>인수의 이름은 도구를 통해 래스터 분석 서버에서 파이썬 모듈을 읽어 채워집니다.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

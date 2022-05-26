@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pronađi odstupanja</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Pronađi odstupanja"></h2>
+        <hr/>
+    <p>Alatka Pronađi odstupanja će odrediti da li postoje statistički značajna odstupanja u prostornom obrascu va&scaron;ih podataka. 
+        <ul>
+            <li>Da li postoje neke neredovne oblasti u obrascu va&scaron;ih podataka (kriminalni incidenti, drveće, saobraćajne nesreće)? Kako možete da budete sigurni?
+            </li>
+            <li>Da li ste zaista otkrili statistički značajna odstupanja (za tro&scaron;enje, smrtnost kod odojčadi, dosledno visoki rezultati testa) ili bi vam mapa predstavila drugačiju situaciju ako biste promenili način na koji je simbolizovana?
+            </li>
+        </ul>
+        Alatka Pronađi odstupanja će vam pomoći da odgovorite na ova pitanja sa sigurno&scaron;ću.
+    </p>
+    <p>Svaki put kad gledamo u mapu, za na&scaron;e oči i mozgove je prirodno da poku&scaron;avamo da otkrijemo obrasce, čak i kad ne postoje. Zbog toga, ne može se sa sigurno&scaron;ću znati da li su obrasci u va&scaron;im podacima rezultati stvarnih prostornih procesa na delu ili su samo rezultat nasumične slučajnosti. Zbog toga istraživači i analitičari koriste statističke metode kao &scaron;to je Pronađi odstupanja (Anselin lokalni Moranov I) za kvantifikovanje prostornih obrazaca. Kada stvarno pronađete statistički značajna odstupanja ili grupisanja u svojim podacima, dobićete vredne informacije. Ako znate gde i kada je do&scaron;lo do odstupanja, to će vam dati važne naznake o procesima koji uslovljavaju obrasce koje vidite. Sledeći korak bi bio da istražite za&scaron;to su stvari značajno različite u tim oblastima odstupanja. Ako znate da su rezidencijalne provale, na primer, značajno vi&scaron;e u određenom susedstvu, uprkos tome &scaron;to je okruženo susedstvima sa niski stepenom provala, to će vam pružiti ključne informacije ako želite da dizajnirate efektne strategije prevencije, dodelite ograničene policijske resurse, pokrenete programe nadzora susedstva, pokrenete detaljne kriminalne istrage ili identifikujete potencijalne osumnjičene.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Odaberite sloj za koji će biti izračunata odstupanja</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj ili sloj oblasti iz kojih će se pronaći odstupanja. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Pronađi odstupanja od</h2></div>
+        <hr/>
+        <div>
+            <p>Ova analiza odgovara na pitanje: Gde se nalaze prostorna odstupanja u mojim podacima?  
+            </p>
+            <p>Ako su va&scaron;i podaci tačke, a odabrali ste  <b>Broj tačaka</b>, ova alatka će proceniti prostorni raspored tačkastih geoobjekata kako bi odgovorila na pitanje: Gde se tačke neočekivano grupi&scaron;u u klastere ili &scaron;ire?
+            </p>
+            <p>Ako odaberete polje, ova alatka će proceniti prostorni raspored vrednosti povezanih sa svakim geoobjektom da bi odgovorila na pitanja: Gde se nalaze niske vrednosti okružene visokim vrednostima? Gde se nalaze visoke vrednosti okružene niske vrednostima?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Prebroj tačke unutar</h2></div>
+        <hr/>
+        <div>
+            <p>Podrazumevano je da se tačke broje unutar mrežne podele koju je alatka kreirala na osnovu podataka iz tačaka. Alternativno, možete da odaberete da brojite tačke u okviru &scaron;estougaone mreže ili da obezbedite sloj oblasti (obično, ovo bi odražavalo okruge administrativnog izve&scaron;tavanja, kao &scaron;to su područja popisa, granice op&scaron;tina ili okruzi) kako biste odgovorili na pitanje: S obzirom na broj izbrojanih tačaka u okviru svakog geoobjekta oblasti, da li postoje lokacije sa statistički značajnim prostornim grupisanjem visokih ili niskih brojeva tačaka u poređenju sa njihovim susedima?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definišite gde su tačke moguće</h2></div>
+        <hr/>
+        <div>
+            <p>Ili nacrtajte ili obezbedite sloj koji defini&scaron;e gde su mogući incidenti, da biste odgovorili na pitanje: Unutar oblasti, da li postoje neke lokacije sa neočekivano visokim ili niskim koncentracijama tačaka?   
+            </p>
+            <p>Geoobjekti oblasti koje nacrtate ili geoobjekti u sloju oblasti koje navedete treba da defini&scaron;u gde bi tačke mogle potencijalno da se pojave. Da biste nacrtali ove oblasti, kliknite na dugme  <b>Nacrtaj</b> i kliknite na lokaciju na mapi da biste kreirali oblik oblasti. Da biste nacrtali dodatne oblasti, ponovo kliknite na dugme Nacrtaj i kliknite na lokaciju na mapi da biste nastavili.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Podeli sa</h2></div>
+        <hr/>
+        <div>
+            <p>Ponekad ćete možda želeti da analizirate obrasce koji uzimaju u obzir raspodelu podataka. Na primer, ako va&scaron;e tačke predstavljaju kriminalna dela, deljenje sa ukupnom populacijom dalo bi analizu broja kriminalnih dela po glavi stanovnika, umesto očitanog broja kriminalnih dela. Biranje atributa kojim će se deliti često se naziva normalizacija.
+            </p>
+            <p> Biranje <i>Esri populacije</i> će obogatiti svaki geoobjekat oblasti sa vrednostima populacije, koje će se potom koristiti kao atribut kojim se deli. Ova opcija će koristiti kredite.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimizuj za</h2></div>
+        <hr/>
+        <div>
+            <p>Možete da odaberete optimizaciju radi brzine ili preciznosti.  
+            </p>
+            <p>Ova alatka koristi permutacije da odredi koliko su va&scaron;i podaci različiti od nasumičnog prostornog obrasca. Povećavanje broja permutacija povećava preciznost, ali takođe povećava i vreme obrade.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Zameni opcije</h2></div>
+        <hr/>
+        <div>
+            <p>Alatka će pronaći optimalne postavke za podrazumevane vrednosti za  <b>Veličinu ćelije</b> i <b>Opseg rastojanja</b> na osnovu karakteristika va&scaron;ih podataka. Međutim, ako imate određenu <b>Veličinu ćelije</b> ili <b>Opseg rastojanja</b> koji imaju smisla za va&scaron;u analizu, moguće je koristiti <b>Opcije zamene</b> za pode&scaron;avanje tih vrednosti.
+            </p>
+            <p> <b>Opcije zamene</b> su takođe korisne za sprovođenje analiza na različitim skupovima podataka, omogućavajući vam da održite <b>Opseg rastojanja</b> i <b>Veličinu ćelije</b> doslednim &scaron;irom vi&scaron;estrukih skupova podataka. Zatim možete da uporedite rezultate (na primer, stope gojaznosti i dijabetesa ili čak stope kriminala za dve različite godine).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Veličina ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelija mreže koja se koristi za brojanje tačaka unutar njih.  
+            </p>
+            <p>Pri kori&scaron;ćenju &scaron;estougaone mreže za brojanje tačaka unutar ćelija, ovo rastojanje se koristi kao visina &scaron;estougaonika.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Traka udaljenosti</h2></div>
+        <hr/>
+        <div>
+            <p>Svaki geoobjekat se analizira u okviru konteksta onih susednih geoobjekata koji se nalaze unutar rastojanja koje vi navedete. Alatka će izračunati podrazumevano rastojanje za vas ili možete da koristite ovu opciju da podesite određeno rastojanje koje ima smisla za va&scaron;u analizu. 
+            </p>
+            <p>Na primer, ako proučavate obrasce putovanja na posao i znate da prosečno putovanje na posao iznosi npr. 15 milja, možete da koristite opseg rastojanja od 15 milja.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite naziv za sloj koji će se kreirati u  <b>Mom sadržaju</b> i koji će biti dodat na mapu. Ovaj sloj sa rezultatima će vam prikazati statistički značajna odstupanja visokih i niskih vrednosti ili brojeva tačaka. Ako naziv rezultujućeg sloja već postoji, od vas će se tražiti da ga preimenujete.
+            </p>
+            <p>Koristeći padajuće polje  <b>Sačuvaj rezultat u</b> možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

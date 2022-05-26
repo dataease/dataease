@@ -1,0 +1,282 @@
+// Dialog 
+// 
+// Styling Dialog includes two sections: Dialog and Tooltip & TooltipDialog
+// 
+// Dialog:
+// 1. Dialog (default styling): 
+//    .dijitDialog - styles for dialog's bounding box
+//
+// 2. Dialog title 
+//    .dijitDialogTitleBar - styles for the title container at the top of dialog
+//    .dijitDialogTitle - the text container in dialog title
+// 
+// 3. Dialog content 
+//    .dijitDialogPaneContent - main container for content area and action bar
+//    .dijitDialogPaneContentArea - styles for content container
+// 
+// 4. Dialog action bar 
+//    .dijitDialogPaneActionBar - styles for action buttons lie at the bottom of dialog pane content
+// 
+// 5. Dialog underlay 
+//    .dijitDialogUnderlay - div under the dialog which used for separate dialog and page content
+// 
+// 
+// Tooltip & TooltipDialog:
+// 1. tooltip content container: 
+//    .dijitTooltipContainer - tooltip content container
+//
+// 2. tooltip connector: 
+//    .dijitTooltipConnector - tooltip anchor includes 4 direction(up, down, left, right)
+//
+.#{$theme-name} {
+  // Dialog
+  // --------------------------------------------------
+  .dijitDialog {
+    position: relative;
+    background-color: $modal-content-bg;
+    border: 1px solid $modal-content-fallback-border-color; //old browsers fallback (ie8 etc)
+    border: 1px solid $modal-content-border-color;
+    @include calcite-box-shadow-dropdown;
+    background-clip: padding-box;
+    outline: 0;
+  }
+  .dijitDialogTitleBar {
+    padding: $modal-title-padding;
+    border-bottom: 1px solid $modal-header-border-color;
+    min-height: ($modal-title-padding + $modal-title-line-height);
+  }
+  .dijitDialogTitle {
+    font-size: $modal-title-font-size;
+    margin: 0;
+    line-height: $modal-title-line-height;
+  }
+  .dijitDialogCloseIcon {
+    float: right;
+    @include dijit-icons;
+    font-size: $icon-size-large;
+    line-height: 1;
+    color: $close-color;
+    @include opacity(.2);
+    &:before {
+      @include icon-get-content(esri-icon-close);
+    }
+    &:hover,
+    &:focus {
+      color: $close-color;
+      text-decoration: none;
+      cursor: pointer;
+      @include opacity(.5);
+    }
+  }
+  .dijitDialogPaneContent {
+    padding: $modal-inner-padding;
+    position: relative;
+    // When action bar is wrapped within the .dijitDialogPaneContent container  
+    > .dijitDialogPaneActionBar {
+      margin: $modal-inner-padding (- $modal-inner-padding) (- $modal-inner-padding);
+    }
+  }
+  .dijitDialogPaneContentArea {
+    position: relative;
+    padding: 0;
+  }
+  .dijitDialogPaneActionBar {
+    padding: $modal-inner-padding;
+    text-align: right; // right align buttons
+    border-top: 1px solid $modal-footer-border-color;
+    @include pie-clearfix;
+    // Properly space out buttons
+    .dijitButton + .dijitButton {
+      margin-left: $padding-small-horizontal;
+    }
+  }
+  .dijitTooltipDialog {
+    outline: none;
+    .dijitTooltipContainer {
+      font-size: $font-size-base;
+      text-align: left;
+      background-color: $dropdown-bg;
+      background-clip: padding-box;
+      border: 1px solid $dropdown-fallback-border;
+      border: 1px solid $dropdown-border;
+      @include calcite-box-shadow-dropdown;
+      white-space: normal;
+      .dijitTooltipContents {
+        padding: $modal-inner-padding;
+        .dijitDialogPaneActionBar {
+          margin: $modal-inner-padding (- $modal-inner-padding) (- $modal-inner-padding);
+        }
+      }
+    }
+    .dijitTooltipConnector {
+      &,
+      &:after {
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+      }
+      border-width: $popover-arrow-outer-width;
+      &:after {
+        border-width: $popover-arrow-width;
+        content: "";
+      }
+    }
+    &.dijitTooltipBelow {
+      padding-top: $popover-arrow-width;
+      .dijitTooltipConnector {
+        border-top-width: 0;
+        border-bottom-color: $popover-arrow-outer-fallback-color; // IE8 fallback
+        border-bottom-color: $popover-arrow-outer-color;
+        top: 0;
+        &:after {
+          content: " ";
+          top: 1px;
+          left: - $popover-arrow-width;
+          border-top-width: 0;
+          border-bottom-color: $popover-arrow-color;
+        }
+      }
+    }
+    &.dijitTooltipAbove {
+      padding-bottom: $popover-arrow-width;
+      .dijitTooltipConnector {
+        border-bottom-width: 0;
+        border-top-color: $popover-arrow-outer-fallback-color; // IE8 fallback
+        border-top-color: $popover-arrow-outer-color;
+        bottom: 0;
+        &:after {
+          content: " ";
+          bottom: 1px;
+          left: - $popover-arrow-width;
+          border-bottom-width: 0;
+          border-top-color: $popover-arrow-color;
+        }
+      }
+    }
+    &.dijitTooltipABLeft {
+      .dijitTooltipConnector {
+        left: $popover-arrow-width;
+      }
+    }
+    &.dijitTooltipABRight {
+      .dijitTooltipConnector {
+        left: auto;
+        right: $popover-arrow-width;
+      }
+    }
+    &.dijitTooltipLeft {
+      padding-right: $popover-arrow-width;
+      .dijitTooltipConnector {
+        right: 0;
+        top: $popover-arrow-width;
+        border-right-width: 0;
+        border-left-color: $popover-arrow-outer-fallback-color; // IE8 fallback
+        border-left-color: $popover-arrow-outer-color;
+        &:after {
+          content: " ";
+          right: 1px;
+          border-right-width: 0;
+          border-left-color: $popover-arrow-color;
+          bottom: - $popover-arrow-width;
+        }
+      }
+    }
+    &.dijitTooltipRight {
+      padding-left: $popover-arrow-width;
+      .dijitTooltipConnector {
+        left: 0;
+        top: $popover-arrow-width;
+        border-left-width: 0;
+        border-right-color: $popover-arrow-outer-fallback-color; // IE8 fallback
+        border-right-color: $popover-arrow-outer-color;
+        &:after {
+          content: " ";
+          left: 1px;
+          bottom: - $popover-arrow-width;
+          border-left-width: 0;
+          border-right-color: $popover-arrow-color;
+        }
+      }
+    }
+  }
+  // Tooltip & TooltipDialog
+  // --------------------------------------------------
+  .dijitTooltip {
+    &,
+    * {
+      @include box-sizing(content-box);
+    }
+    .dijitTooltipContainer {
+      border: 0;
+      font-size: $font-size-base;
+      line-height: 1.4;
+      max-width: $tooltip-max-width;
+      color: $tooltip-color;
+      text-align: center;
+      text-decoration: none;
+      background-color: $tooltip-bg;
+      @include opacity($tooltip-opacity);
+    }
+    .dijitTooltipContents {
+      padding: $padding-base-vertical $padding-base-horizontal;
+    }
+    .dijitTooltipConnector {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-style: solid;
+      @include opacity($tooltip-opacity);
+    }
+    &.dijitTooltipBelow {
+      margin-top: 3px;
+      padding-top: $tooltip-arrow-width;
+      .dijitTooltipConnector {
+        top: 0;
+        left: 15px;
+        border-width: 0 $tooltip-arrow-width $tooltip-arrow-width;
+        border-bottom-color: $tooltip-arrow-color;
+      }
+    }
+    &.dijitTooltipAbove {
+      margin-top: -3px;
+      padding-bottom: $tooltip-arrow-width;
+      .dijitTooltipConnector {
+        bottom: 0;
+        left: 15px;
+        border-width: $tooltip-arrow-width $tooltip-arrow-width 0;
+        border-top-color: $tooltip-arrow-color;
+      }
+    }
+    &.dijitTooltipLeft {
+      margin-left: -3px;
+      padding-right: $tooltip-arrow-width;
+      .dijitTooltipConnector {
+        top: 50%;
+        right: 0;
+        border-width: $tooltip-arrow-width 0 $tooltip-arrow-width $tooltip-arrow-width;
+        border-left-color: $tooltip-arrow-color;
+      }
+    }
+    &.dijitTooltipRight {
+      margin-left: 3px;
+      padding-left: $tooltip-arrow-width;
+      .dijitTooltipConnector {
+        top: 50%;
+        left: 0;
+        border-width: $tooltip-arrow-width $tooltip-arrow-width $tooltip-arrow-width 0;
+        border-right-color: $tooltip-arrow-color;
+      }
+    }
+  }
+  // Dialog Underlay
+  // --------------------------------------------------
+  .dijitDialogUnderlay {
+    background: $modal-backdrop-bg;
+    @include opacity($modal-backdrop-opacity);
+  }
+}
+

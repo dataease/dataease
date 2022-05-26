@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>تحديد شبكة تكلفة السفر المُثلَى</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="شرح أداة تحديد شبكة تكلفة السفر المُثلَى"></h2>
+        <hr/>
+    <p>تقوم هذا الأداة بحساب أفضل شبكة تكلفة من مجموعة من المناطق المدخلة.
+    </p>
+    <p>يتمثل أحد أمثلة تطبيق هذه الأداة في البحث عن أفضل شبكة لمركبات الطوارئ.
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b>، لن يتم تحليل إلا تلك المواقع الموجودة في الطبقة المدخلة المرئية داخل نطاق الخريطة الحالي. إذا لم يتم التأشير عليها، سيتم تحليل المواقع في الطبقة المدخلة مؤقتًا، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>اختر البيانات النقطية أو طبقة موقع المعالم لتحديد مسافات السفر بينها</h2></div>
+        <hr/>
+        <div>
+            <p>المناطق المدخلة التي سيتم توصيلها بالشبكة الأقل تكلفة.
+            </p>
+            <p>يمكن تحديد المناطق إما بخدمة صورة أو خدمة معالم.
+            </p>
+            <p>من خدمة الصورة، يتم تحديد المناطق بواسطة مجموعات خلايا متلاصقة (متجاورة) لنفس القيمة. يجب ترقيم كل منطقة بشكل فريد. يجب أن تكون الخلايا التي لا تمثل جزءًا من أي منطقة NoData. يجب أن يكون نوع البيانات النقطية عددًا صحيحًا، كما يمكن أن تكون القيم موجبة أو سالبة.
+            </p>
+            <p>في خدمة المعالم، يمكن أن تكون المدخلات نقطة أو خطًا أو مضلعًا.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>اختر طبقة البيانات النقطية لتكلفة السفر.</h2></div>
+        <hr/>
+        <div>
+            <p>بيانات نقطية تحدد المعاوقة أو التكلفة المطلوب نقلها بشكل مسطح من خلال كل خلية.
+            </p>
+            <p>تمثل القيمة في كل موقع خلية مسافة &quot;تكلفة لكل وحدة&quot; للتحريك خلال الخلية. يتم ضرب كل قيمة موقع خلية في دقة الخلية، وهو ما يُعوِّض التحرُّك المائل للحصول على التكلفة الإجمالية للتمرير خلال الخلية.
+            </p>
+            <p>يمكن أن تكون قيمة البيانات النقطية للتكلفة عددًا صحيحًا أو نقطة عائمة، ولكن يتعذر أن تكون قيمة سالبة أو صفرًا (لا يجوز أن يكون لديك تكلفة سالبة أو صفر).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>اسم طبقة الخطوط المتصلة للمسارات الأمثل للنتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>اسم طبقة الخطوط المتصلة للمسارات المجاورة للنتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Waarden opnieuw bepalen</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Tool Waarden opnieuw bepalen voor Portal"></h2>
+        <hr/>
+    <p>Met deze tool kunt u de pixelwaarden wijzigen of herindelen van de rastergegevens. Pixelwaarden worden opnieuw in kaart gebracht door een reeks pixelwaarden op te geven voor een outputpixelwaarde. De outputpixelwaarde kan een geldige waarde of een NoData-waarde zijn, wat pixels zijn die geen bekende waarde ermee geassocieerd hebben.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de cellen zichtbaar in de huidige kaartextent opnieuw in kaart gebracht. Als deze optie niet is geselecteerd, worden alle cellen in het raster verwerkt ook als ze zich buiten de huidige kaartomvang bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Invoergegevens</h2></div>
+        <hr/>
+        <div>
+            <p>De invoergegevens waarvan de waarden opnieuw in kaart zijn gebracht.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Pixelwaarden opnieuw bepalen naar nieuwe waarden</h2></div>
+        <hr/>
+        <div>
+            <p>U voert een reeks waarden in door een minimum en maximum waarde te specificeren, vervolgens wijst u een outputwaarde of een NoData-waarde toe aan het opgegeven bereik.
+            </p>
+            <p>Om een nieuwe reeks waarden in kaart te brengen, klikt u  <b>Toevoegen</b> die een rij toevoegt. Klik op elke waarde om de tabel aan te passen aan de reeksen en de opnieuw in kaart gebrachte waarde die u nodig hebt. Als u de waardereeksen opgeeft, zijn er twee belangrijke regels die worden gebruikt:
+                <ul>
+                    <li>De minimumwaarde in de reeks is inclusief en de maximumwaarde is exclusief.
+                    </li>
+                    <li>De rijen in de tabel worden verwerkt van boven naar beneden.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Onderstaande tabel laat zien dat de minimumwaarde is opgenomen in de uitvoer maar de maximumwaarde is niet opgenomen in de output.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>De volgorde van de reeksen opgegeven in de tabel is ook belangrijk. De bovenste rij van de tabel wordt eerst verwerkt, vervolgens wordt de rij eronder verwerkt. De twee onderstaande tabellen tonen hoe deze waardebereiken andere resultaten produceren, vanwege de volgorde van de tabelrijen.
+            </p> 
+            <p>Onderstaande tabel laat de uitvoerwaarde zien wanneer de eerste kolom numeriek gesorteerd wordt:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>De tabel hieronder laat zien hoe een verschillende volgorde van de rijen verschillende uitvoerwaarden zal opleveren:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Beide regels worden gebruikt om de waarden opnieuw te ordenen. Omdat elke rij van boven naar beneden wordt verwerkt, hebben deze waarden voorrang bij het bepalen van de uitvoer, zelfs wanneer dezelfde reeksen worden gebruikt.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

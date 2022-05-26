@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissolve Boundaries</h2><p/>
+        <h2><img src="./images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissolve Boundaries"></h2>
+        <hr/>
+    <p>Areas that overlap or share a common boundary or attribute value are merged to form a single area.
+    </p>
+    <p>You can control which boundaries are merged by specifying a field. For example, if you have a layer of counties, and each county has a  <pre>State_Name</pre> attribute, you can dissolve boundaries using the <pre>State_Name</pre> attribute.  Counties will be merged if they have the same <pre>State_Name</pre> value.  The result is a layer of state boundaries.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose area layer whose boundaries will be dissolved</h2></div>
+        <hr/>
+        <div>
+            <p>The layer containing area features that will be dissolved.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Choose dissolve method</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the method used to dissolve the fields.
+            </p>
+            <p>You can choose one of two methods for merging area features:
+                <ul>
+                    <li> <b>Areas that overlap or are adjacent</b>&mdash;Two or more areas whose boundaries overlap will be merged into one area.  In addition, areas that are adjacent (that is, they share a common boundary) will be merged into one area.
+                    </li>
+                    <li> <b>Areas with the same field value</b>&mdash;Two or more areas will be merged into one area if they have the same field value.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Create multipart features</h2></div>
+        <hr/>
+        <div>
+            <p>Multipart is a representation of a place or thing that has
+more than one part but is defined as one feature because it
+references one set of attributes. In a layer of states, for
+example, Hawaii could be considered a multipart
+feature because its separate geometric parts are classified as a
+single state.
+            </p>
+            <p> <b>Create multipart features</b> offers two options:
+                <ul>
+                    <li>True (checked)&mdash; The output service can contain multipart features.
+                    </li>
+                    <li>False (unchecked)&mdash; The output service will only contain single-part features, and individual features will be created for each part. This is the default.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Add statistics (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>When areas are merged, you can summarize their attribute values with meaningful statistics.  For example, if you are dissolving the boundary between counties based on  <pre>State_Name</pre>, and each county has a <i>Population</i> field, you could calculate the sum of <pre>Population</pre> for the state.
+            </p>
+            <p>You can calculate statistics on features that are summarized. You can calculate the following on numeric fields: 
+                <ul>
+                    <li>Count&mdash;Calculates the number of nonnull values. It can be used on numeric fields or strings. The count of [null, 0, 2] is 2.
+                    </li>
+                    <li>Sum&mdash;The sum of numeric values in a field. The sum of [null, null, 3] is 3.
+                    </li>
+                    <li>Mean&mdash;The mean of numeric values. The mean of [0, 2, null] is 1.
+                    </li>
+                    <li>Min&mdash;The minimum value of a numeric field. The minimum of [0, 2, null] is 0. 
+                    </li>
+                    <li>Max&mdash;The maximum value of a numeric field. The maximum value of [0, 2, null] is 2.
+                    </li>
+                    <li>Range&mdash;The range of a numeric field. This is calculated as the minimum values subtracted from the maximum value. The range of [0, null, 1] is 1. The range of [null, 4] is 0.
+                    </li>
+                    <li>Variance&mdash;The variance of a numeric field in a track. The  variance of [1] is null. The variance of [null, 1,0,1,1] is 0.25.
+                    </li>
+                    <li>Standard deviation&mdash;The standard deviation of a numeric field. The standard deviation of [1] is null. The standard deviation of [null, 1,0,1,1] is 0.5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You can calculate the following on string fields:
+                <ul>
+                    <li>Count&mdash;The number of nonnull strings.
+                    </li>
+                    <li>Any&mdash;This statistic is a random sample of a string value in the specified field.
+                    </li>
+                </ul>
+                All statistics are calculated on nonnull values. The resulting layer will contain a new field for each statistic calculated. Any number of statistics can be added by choosing an attribute and statistic. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Veri Kümesini Tanımla</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Veri K&uuml;mesini Tanımla iş akışı diyagramı"></h2>
+        <hr/>
+    <p>Veri K&uuml;mesini Tanımla aracı, veri k&uuml;menize daha ayrıntılı bir şekilde bakmanızı sağlar. B&uuml;y&uuml;k miktarda veri &uuml;zerinde analiz yapmadan &ouml;nce, girdi verilerinizin ne ve nerede olduğunu belirlemek i&ccedil;in bu aracı kullanın. Varsayılan olarak, sonu&ccedil;, girdi katmanınızın anahtar tanımlayıcılarını ana hatlarıyla a&ccedil;ıklayan bir JSON dizisi ve her alan i&ccedil;in &ouml;zet istatistiklerini ayrıntılandıran bir tablo olacaktır. 
+    </p>
+    <p>İsteğe bağlı olarak verilerinizi daha fazla tanımlamak i&ccedil;in ek &ccedil;ıktı detayı katmanları oluşturabilirsiniz. Se&ccedil;enekler bir &ouml;rnek katmanı veya bir yayılım katmanıdır. Birini veya her ikisini de &ccedil;ıkarmayı se&ccedil;ebilirsiniz.
+    </p>
+    <p>&Ouml;rneğin, size 15 veri k&uuml;mesi i&ccedil;eren b&uuml;y&uuml;k bir veri dosyası paylaşımı verildiğini varsayalım. Her veri k&uuml;mesinde, &uuml;lkenizin farklı b&ouml;lgelerinde bulunan binaları ve evleri temsil eden 10 milyon alan detayı bulunuyor. B&ouml;lge C&rsquo;yi analiz etmekle g&ouml;revlisiniz, ancak hangi veri k&uuml;mesinin bu detayları i&ccedil;erdiğini bilmiyorsunuz. Hangi veri k&uuml;mesini kullanmanız gerektiğini bulmak i&ccedil;in Veri K&uuml;mesini Tanımla&rsquo;yı &ccedil;alıştırın ve hangi veri k&uuml;mesinin &ccedil;alışma b&ouml;lgenizde bulunduğunu araştırmak i&ccedil;in bir yayılım katmanı oluşturmayı se&ccedil;in.
+    </p>
+    <p>Başka bir &ouml;rnek olarak, b&uuml;y&uuml;k miktarda veri &uuml;zerinde bir analiz iş akışını tamamlamakla g&ouml;revlendirildiğinizi varsayalım. İş akışını denemek istiyorsunuz, ancak bu işlem veri k&uuml;menizin tamamıyla saatler veya g&uuml;nler s&uuml;rebilir. Zamanı ve kaynakları tam analizi &ccedil;alıştırmak i&ccedil;in kullanmak yerine, t&uuml;m iş akışınızı etkin bir şekilde test etmek i&ccedil;in bir &ouml;rnek katmanı oluşturun.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tanımlanacak veri kümesini seç</h2></div>
+        <hr/>
+        <div>
+            <p>A&ccedil;ıklanacak, &ouml;zetlenecek ve &ouml;rneklenecek nokta, &ccedil;izgi, alan veya tablo detaylarını i&ccedil;eren katman.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Şunu oluşturarak veri kümenizi anlayın (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>B&uuml;y&uuml;k verilerinizi daha iyi anlamak i&ccedil;in ek a&ccedil;ıklayıcı katmanlar &ccedil;ıkarın. Aşağıdaki katmanlardan hi&ccedil;birini, birini veya ikisini &ccedil;ıkarmayı se&ccedil;ebilirsiniz:
+            </p>
+            <ul>
+                <li> <b>Yayılım katmanı</b>: Girdi detaylarınızın yayılımını veya ilgi alanını temsil eden bir alan detayı oluşturur.
+                </li>
+                <li> <b>&Ouml;rnek katmanı</b>: Veri k&uuml;menizden veya ilgi alanınızdan belirli miktarda girdi detayı i&ccedil;eren alt k&uuml;me katmanı oluşturur.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Örnek katmanı</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi katmanınızdan bir detaylar alt k&uuml;mesi i&ccedil;eren bir katman &ccedil;ıkarın.  <b>&Ouml;rnek katmanı</b> se&ccedil;iliyse, &ouml;rnek katmanında getirmek istediğiniz detayların sayısını belirleyebilirsiniz. Varsayılan olarak, &ccedil;ıktı katmanında 100 &ouml;rnek detayı getirilir.
+            </p>
+            <p>Değer sıfırdan b&uuml;y&uuml;k olmalıdır. Toplam detay sayısından daha b&uuml;y&uuml;k bir sayı belirtirseniz, t&uuml;m detaylar getirilir.
+            </p>
+            <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> se&ccedil;iliyse, &ouml;rnek katmanı harita yayılımındaki detayları i&ccedil;erecektir.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Yayılım katmanı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>Yayılım katmanı</b> butonunu se&ccedil;erek girdi detaylarının yayılımını temsil eden tek bir detay i&ccedil;eren bir detay katmanı &ccedil;ıkarın. Bu, varsayılan olarak se&ccedil;ilidir.
+            </p>
+            <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> se&ccedil;iliyse, yayılım katmanı haritanın g&ouml;r&uuml;n&uuml;r yayılımını g&ouml;sterir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

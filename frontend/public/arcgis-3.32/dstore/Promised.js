@@ -1,0 +1,2 @@
+//>>built
+define("dstore/Promised",["dojo/_base/declare","dojo/Deferred","./QueryResults","dojo/when"],function(c,d,e,f){function a(a,c){return function(){var b=new d;try{b.resolve(this[a].apply(this,arguments))}catch(g){b.reject(g)}return c?(b=new e(b.promise),b.totalLength=f(b.totalLength),b):b.promise}}return c(null,{get:a("getSync"),put:a("putSync"),add:a("addSync"),remove:a("removeSync"),fetch:a("fetchSync",!0),fetchRange:a("fetchRangeSync",!0)})});

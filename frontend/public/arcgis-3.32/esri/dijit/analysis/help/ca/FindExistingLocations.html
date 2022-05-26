@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Cerca ubicacions existents</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Cerca ubicacions existents"></h2>
+        <hr/>
+    <p>Aquesta eina selecciona les entitats existents de l'&agrave;rea d'estudi que compleixen una s&egrave;rie de criteris que especifiqueu. Aquests criteris poden basar-se en consultes d'atributs (per exemple, parcel&middot;les que estan buides) i consultes espacials (per exemple, parcel&middot;les que es troben com a m&agrave;xim a una milla d'un riu). 
+    </p>
+    <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, nom&eacute;s s'analitzaran les entitats de la capa d'entrada que siguin visibles a l'extensi&oacute; del mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Trieu la capa que conté les entitats que voleu trobar fent servir consultes d'atributs i espacials</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts, de l&iacute;nies o d'&agrave;rees per a la qual voleu cercar entitats en funci&oacute; d'una combinaci&oacute; de consultes espacials i d'atributs que s'especifiquen a continuaci&oacute;.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Genera una consulta per cercar entitats</h2></div>
+        <hr/>
+        <div>
+            <p>Feu clic al bot&oacute;  <b>Afegeix una expressi&oacute;</b> per definir una expressi&oacute;.  Podeu afegir diverses expressions.  Despr&eacute;s d'introduir les expressions i fer clic al bot&oacute; <b>Executa l'an&agrave;lisi</b>, les entitats de la vostra capa d'entrada es filtren mitjan&ccedil;ant cada expressi&oacute;.  Les entitats que compleixen totes les expressions s'escriuen a la capa de resultats.
+            </p>
+            <p>Hi ha dos tipus b&agrave;sics d'expressions que podeu crear: d'atributs i espacials.  Les expressions d'atributs s&oacute;n consultes sobre valors de camp, com ara  <code>on el nom &eacute;s &quot;San Francisco&quot;</code>.  Hi ha quatre tipus d'expressions espacials:
+                <ul>
+                    <li> <b>dins d'una dist&agrave;ncia de</b>: l'entitat ha d'estar com a m&agrave;xim a una dist&agrave;ncia d'una entitat d'una altra capa.  Per exemple, troba parcel&middot;les que estiguin a 500 metres com a m&agrave;xim del riu Los Angeles.
+                    </li>
+                    <li> <b>cont&eacute; totalment</b>: l'entitat ha de contenir tota una entitat d'una altra capa.  Per exemple, troba conques hidrogr&agrave;fiques que continguin completament les parcel&middot;les qualificades per a l'&uacute;s industrial.  Cap part de la parcel&middot;la pot estar fora de la conca hidrogr&agrave;fica.
+                    </li>
+                    <li> <b>completament dins</b>: l'entitat ha d'estar totalment envoltada d'una entitat d'una altra capa.  Per exemple, troba districtes escolars que estiguin totalment dins dels l&iacute;mits d'una ciutat.  Cap part del districte escolar pot estar fora dels l&iacute;mits de la ciutat.
+                    </li>
+                    <li> <b>s'interseca</b>: l'entitat cont&eacute; una part d'una entitat d'una altra capa.  Per exemple, troba parcel&middot;les que s'intersequen amb rius.  Qualsevol part del riu que passi per la parcel&middot;la, o en toqui els l&iacute;mits, s'hi interseca.
+                    </li>
+                    <li> <b>m&eacute;s proper</b>: l'entitat &eacute;s la m&eacute;s propera a una entitat d'una altra capa.  Per exemple, troba el restaurant m&eacute;s proper a cada hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada expressi&oacute; espacial t&eacute; una negaci&oacute; corresponent, amb l'excepci&oacute; de  <b>m&eacute;s proper</b>; <b>fora d'una dist&agrave;ncia de</b>, <b>no cont&eacute; completament</b>, <b>no completament dins</b> i <b>no s'interseca</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

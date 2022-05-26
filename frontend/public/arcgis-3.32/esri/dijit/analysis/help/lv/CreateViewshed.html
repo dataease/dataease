@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izveidot redzamības lauku</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Izveidot skata aizsegumu"></h2>
+        <hr/>
+    <p>Skata aizseguma izveides rīks veido apgabalus, kuros novērotājs var redzēt uz zemes eso&scaron;us objektus. Ievades novēro&scaron;anas punkti var apzīmēt vai nu novērotājus (piemēram, cilvēkus, kas stāv uz zemes vai ugunsgrēku novēro&scaron;anas tornī), vai novērotos objektus (piemēram, vējturbīnas, ūdenstorņus, transportlīdzekļus vai citus cilvēkus). Rezultātu apgabali ir tādi apgabali, kuros novērotāji var redzēt novērotos objektus, un pretēji&nbsp;&mdash; novērotie objekti var redzēt novērotājus.
+    </p>
+    <p>Gan novērotāji, gan novērotie objekti var atrasties virs zemes, un &scaron;is augstums virs zemes tiek izmantots, lai noteiktu redzamību. Piemēram, skata aizsegums, kas tiek aprēķināts 400&nbsp;pēdu augstām vējturbīnām un 6&nbsp;pēdas gariem cilvēkiem, kas stāv uz zemes, parasti būs lielāks nekā skata aizsegums, kas aprēķināts 200&nbsp;pēdu augstām vējturbīnām un 6&nbsp;pēdas gariem cilvēkiem.
+    </p>
+    <p>Ņemiet vērā, ka skata aizseguma aprēķinos netiek ņemti vērā tādi &scaron;ķēr&scaron;ļi kā koki un celtnes. Varat pieņemt, ka aprēķini tiek veikti tuk&scaron;ā vietā, kur nav nekā cita kā tikai novērotājs un novērotie objekti.
+    </p>
+    <p>Rezultāta slānis satur apgabala elementus, kas apzīmē redzamos apgabalus. Laukā  <i>Frequency</i> tiek reģistrēts novērotāja punktu skaits, no kuriem var redzēt katru no apgabaliem. Piemēram, ja jums ir pieci ievades punkti, kas visi apzīmē ugunsgrēku novēro&scaron;anas torņus, laukā <i>Frequency</i> būs vērtības no &ldquo;1&rdquo; līdz &ldquo;5&rdquo;; apgabali ar vērtību &ldquo;1&rdquo; būs redzami tikai no viena torņa, un apgabali ar vērtību &ldquo;5&rdquo; būs redzami no visiem pieciem torņiem. Rezultāta slānis satur arī lauku <i>DEMResolution</i>, kurā tiek reģistrēta digitālā pacēluma modeļa (Digital Elevation Model, DEM) iz&scaron;ķirtspēja, kas tiek izmantota, lai izveidotu skata aizsegumus.
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>Izmantot pa&scaron;reizējo kartes apmēru</b>, tad tiks analizēti tikai tie novēro&scaron;anas punkti, kas ir redzami pa&scaron;reizējā kartes skatā.  Ja iespēja nav atzīmēta, tiks analizēti visi ievades slāņa novēro&scaron;anas punkti&nbsp;&mdash; arī tie, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktu elementi, kas atspoguļo vērotāja novietojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta elementi, kas jāizmanto kā novērotāja vietas. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Novērotāja vietu augstums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is ir jūsu novērotāja vietu augstums virs zemes.    Noklusējums ir aptuvenais vidējais cilvēka garums.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Citu objektu, kas atrodas uz zemes, augstums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is ir uz zemes eso&scaron;u celtņu vai cilvēku augstums, kas tiek izmantots, lai noteiktu redzamību. Rezultātā iegūtais skata aizsegums ir tie apgabali, kuros no novēro&scaron;anas punkta var redzēt &scaron;os citus objektus.  Ir pareizs arī pretējais apgalvojums&nbsp;&mdash; &scaron;ie citi objekti var redzēt novēro&scaron;anas punktu. 
+            </p>
+            <p>
+                <ul>
+                    <li>Ja novēro&scaron;anas punkti apzīmē vējturbīnas un jūs vēlaties noteikt, kurā vietā uz zemes cilvēki var redzēt &scaron;īs turbīnas, ievadiet vidējo cilvēka garumu (apmēram 6&nbsp;pēdas).  Rezultāts ir tie apgabali, kuros cilvēks stāvot uz zemes var redzēt &scaron;īs vējturbīnas.
+                    </li>
+                    <li>Ja novēro&scaron;anas punkti apzīmē ugunsgrēku novēro&scaron;anas torņus un jūs vēlaties noteikt, no kuriem novēro&scaron;anas torņiem var redzēt dūmu grīstes 20&nbsp;pēdu augstumā vai augstāk, ievadiet augstuma vērtību 20&nbsp;pēdu.  Rezultāts ir tie apgabali, kuros no ugunsgrēku novēro&scaron;anas torņa var redzēt dūmu grīstes vismaz 20&nbsp;pēdu augstumā.
+                    </li>
+                    <li>Ja novēro&scaron;anas punkti apzīmē ainavu skatu laukumus ceļa vai takas malā un jūs vēlaties noteikt, kur 400&nbsp;pēdu augstas vai augstākas vējturbīnas var saskatīt, ievadiet augstuma vērtību 400&nbsp;pēdu.  Rezultāts ir tie apgabali, kuros cilvēks, kas stāv ainavas skatu laukumā, var redzēt vismaz 400&nbsp;pēdu augstu vējturbīnu.
+                    </li>
+                    <li>Ja novēro&scaron;anas punkti apzīmē ainavu skatu laukumus un jūs vēlaties noteikt, cik lielu apgabalu uz zemes var redzēt cilvēki, kas stāv &scaron;ajā skatu laukumā, ievadiet nulli.  Rezultāts ir tie apgabali, ko var redzēt no ainavas skatu laukuma.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimālais skatīšanas attālums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is ir attālums, kurā tiek pārtraukta redzamo apgabalu aprēķinā&scaron;ana. Tālāk par &scaron;o vietu nav zināms, vai novēro&scaron;anas punkti un citi objekti var redzēt cits citu. Lielas vērtības palielina aprēķinā&scaron;anas laiku. Maksimālā atļautā vērtība ir 31&nbsp;jūdzes (50&nbsp;kilometru).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+            <p> &Scaron;ī rīka izmanto&scaron;ana nepatērē kredītu.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

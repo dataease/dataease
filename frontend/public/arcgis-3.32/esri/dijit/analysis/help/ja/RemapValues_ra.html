@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>再分類値</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="ポータルの [再分類値] ツール"></h2>
+        <hr/>
+    <p>このツールを使用すると、ラスター データのピクセル値を変更または再分類できます。ピクセル値を再分類するには、ピクセル値の範囲を指定して出力ピクセル値にマッピングします。出力ピクセル値は有効な値または NoData 値のいずれかであり、ピクセルには既知の値が関連付けられていません。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されているセルだけが再分類されます。オフにすると、現在のマップ範囲内にない場合でも、ラスター内のすべてのセルが処理されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>入力データ</h2></div>
+        <hr/>
+        <div>
+            <p>値が再分類される入力データ。
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>ピクセル値を新しい値に再分類</h2></div>
+        <hr/>
+        <div>
+            <p>最小値と最大値を指定して値の範囲を入力した後、出力値または NoData 値を指定の範囲に割り当てます。
+            </p>
+            <p>新しい値の範囲を再分類するには、 <b>[追加]</b> をクリックして行を追加します。各値をクリックし、必要な範囲と再分類値に合わせてテーブルを編集します。値の範囲を指定する際には、次に示す重要な 2 つのルールが適用されます。
+                <ul>
+                    <li>最小値は範囲に含まれますが、最大値は範囲に含まれません。
+                    </li>
+                    <li>テーブル内の行は上から下の順に処理されます。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>次のテーブルから、最小値は出力に含まれるが、最大値は出力に含まれないことがわかります。
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>テーブル内に指定された範囲の順序も重要です。テーブルの一番上にある行が最初に処理され、その下の行が次に処理されます。次の 2 つのテーブルから、値の範囲は同じでも、テーブル行の順序によって生成される結果が異なることがわかります。
+            </p> 
+            <p>1 番目の列が数値で並べ替えられた場合の出力値を下のテーブルに示します。
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>行の異なる順序によって異なる出力値がどのように生成されるかを下のテーブルに示します。
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>値の順序を変更する両方のルールが適用されます。各行が上から下の順に処理されるため、同じ範囲が指定されている場合でも、出力を決定する際にこれらの値が優先されます。
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

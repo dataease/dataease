@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea àrees de temps de recorregut</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Crea &agrave;rees de temps de recorregut"></h2>
+        <hr/>
+    <p>Crea &agrave;rees de temps de recorregut crea &agrave;rees a les quals es pot arribar en un termini de temps o una dist&agrave;ncia de conducci&oacute;, a peu, etc. Mesura a partir d'un o diversos punts (fins a 1.000) en carreteres o camins per crear una capa que pugui ajudar-vos a respondre preguntes com ara:
+        <ul>
+            <li>On puc anar des d'aqu&iacute; si condueixo 30 minuts?
+            </li>
+            <li>On puc anar des d'aqu&iacute; si condueixo 30 minuts a les 17.30 en hora punta?
+            </li>
+            <li>Qu&egrave; hi ha a dos quil&ograve;metres del meu hotel si vaig a peu?
+            </li>
+            <li>A quines &agrave;rees de la ciutat poden arribar els bombers en cinc minuts? 
+            </li>
+            <li>Fins a quin punt milloraria la cobertura de la resposta en cas d'incendi si es constru&iacute;s un parc de bombers nou aqu&iacute;?
+            </li>
+            <li>Quines &agrave;rees de mercat cobreix el meu negoci?
+            </li>
+        </ul>
+        
+    </p>
+    <p>&Eacute;s possible que trobeu les respostes d'aquestes preguntes nom&eacute;s amb una ullada a les &agrave;rees de sortida. Si ho preferiu, podeu utilitzar les &agrave;rees de sortida per fer una an&agrave;lisi espacial addicional. Per exemple, l'execuci&oacute; de l'opci&oacute; Consolida punts amb &agrave;rees de temps de recorregut i dades demogr&agrave;fiques us pot ajudar a determinar quines ubicacions d'establiments oferirien les millors perspectives de clientela per al vostre negoci. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Per crear &agrave;rees a partir de la mesura d'una dist&agrave;ncia en l&iacute;nia recta en lloc de fer la mesura al llarg de les carreteres, utilitzeu l'eina Crea &agrave;rees d'influ&egrave;ncia.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s les entitats que siguin visibles a l'extensi&oacute; de mapa actual s'utilitzaran per crear &agrave;rees basades en el temps o la dist&agrave;ncia de recorregut. Si l'opci&oacute; est&agrave; desactivada, s'utilitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa de punts a partir de la qual s'han de calcular les àrees de temps de recorregut</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts al voltant de les quals es calcularan les &agrave;rees. Podeu triar com es calculen les &agrave;rees en funci&oacute; del mode de viatge (en cotxe, en cami&oacute; o a peu) i la mesura (temps o dist&agrave;ncia).
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+            <p>L'eina admet fins a 1.000 entitats a la capa d'entrada.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mesura</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el mode de viatge (en cotxe, en cami&oacute; o a peu) i la mesura (temps o dist&agrave;ncia).  L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles.   Despr&eacute;s de triar el mode de viatge i la mesura, introdu&iuml;u una durada o una dist&agrave;ncia de fins a  5 hores (300 minuts) o  300 milles (482,80 quil&ograve;metres). 
+            </p>
+            <p>La direcci&oacute; del viatge ( <b>Away from Facility</b> o <b>Toward Facility</b>) pot influir en com es generen les &agrave;rees. L'opci&oacute; Crea &agrave;rees de temps de recorregut respectar&agrave; els carrers d'un sentit, evitar&agrave; els girs il&middot;legals i seguir&agrave; altres regles basades en la direcci&oacute; del viatge. Heu de seleccionar la direcci&oacute; del viatge en funci&oacute; del tipus d'ubicacions d'entrada i el context de l'an&agrave;lisi. Per exemple, l'&agrave;rea de temps de recorregut d'un establiment de venda de pizza s'ha de crear allunyant-se de la instal&middot;laci&oacute;, mentre que l'&agrave;rea de temps de recorregut d'un hospital s'ha de crear en direcci&oacute; a la instal&middot;laci&oacute;.
+            </p>
+            <p>Si trieu  <b>Temps de conducci&oacute;</b>, <b>Temps de conducci&oacute; rural</b> o <b>Temps en cami&oacute;</b>, disposeu d'opcions per mesurar el temps de recorregut.
+                <ul>
+                    <li>
+                        <p>Desactiveu  <b>Utilitza el tr&agrave;nsit</b> per crear &agrave;rees de temps de recorregut basades en velocitats predeterminades. Aquesta &eacute;s l'opci&oacute; que heu de triar si voleu una &agrave;rea de temps de recorregut general en lloc d'una &agrave;rea que es calculi en funci&oacute; de les condicions de tr&agrave;nsit variables per a una hora de sortida espec&iacute;fica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Activeu  <b>Utilitza el tr&agrave;nsit</b> per crear &agrave;rees de temps de recorregut basades en una hora d'inici determinada i unes condicions de tr&agrave;nsit variables. Si tamb&eacute; trieu l'opci&oacute; <b>Tr&agrave;nsit en temps real</b>, l'hora de sortida des dels punts d'entrada es defineix a l'hora actual i es prenen com a refer&egrave;ncia les velocitats de tr&agrave;nsit actuals i previstes dels sensors i les fonts de dades per crear les &agrave;rees de temps de recorregut. Les velocitats de tr&agrave;nsit previstes es calculen prenent com a refer&egrave;ncia les velocitats del tr&agrave;nsit en temps real, les velocitats hist&ograve;riques i els esdeveniments actuals, com ara les condicions meteorol&ograve;giques. Les velocitats del tr&agrave;nsit es prediuen amb 12 hores d'antelaci&oacute;, aix&iacute; que podeu moure el control lliscant per definir l'hora de sortida m&eacute;s endavant, fins al cap de 12 hores.
+                        </p>
+                        <p>Utilitzeu aquestes opcions del tr&agrave;nsit en temps real per saber a quines &agrave;rees es pot arribar si sortiu ara, d'aqu&iacute; a una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Si activeu  <b>Utilitza el tr&agrave;nsit</b> i trieu <b>Tr&agrave;nsit en funci&oacute; de les condicions t&iacute;piques per a</b> un dia i una hora, l'eina crea &agrave;rees de temps de recorregut en funci&oacute; de les velocitats mitjanes hist&ograve;riques per a cada interval de cinc minuts d'una setmana normal. Els resultats inclouen el tr&agrave;nsit per&ograve; eliminen la influ&egrave;ncia de les condicions de tr&agrave;nsit i els esdeveniments actuals, que poden variar considerablement del que &eacute;s habitual.
+                        </p>
+                        <p>Podeu utilitzar aquesta configuraci&oacute; de tr&agrave;nsit hist&ograve;rica per preguntar, per exemple: &quot;En general, a quines &agrave;rees puc arribar si surto a les 11.30 hores d'un dimecres?&quot;. 
+                        </p>
+                        <p>L'hora que definiu far&agrave; refer&egrave;ncia a la zona hor&agrave;ria on es troben els punts d'entrada. &Eacute;s a dir, si definiu l'hora a les 8.00 hores i teniu dos punts, un a la ciutat de Nova York i un altre a Los Angeles, les &agrave;rees de temps de recorregut es generaran per a les 8.00 hora de l'Est i les 8.00 hora del Pac&iacute;fic, respectivament.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Teniu en compte que, quan un vehicle s'allunya d'un punt, el temps passa i les condicions de tr&agrave;nsit canvien. L'eina &Agrave;rees de temps de recorregut t&eacute; en compte aquestes variacions quan trieu  <b>Temps de conducci&oacute;</b> i activeu <b>Utilitza el tr&agrave;nsit</b>. Aix&ograve; no obstant, no totes les regions s&oacute;n compatibles amb el tr&agrave;nsit. Feu clic a l'enlla&ccedil; <b>Mostra la disponibilitat</b> a l'eina per saber si est&agrave; disponible a la vostra &agrave;rea d'estudi.
+            </p>
+            <p> <b>Temps en cami&oacute;</b> pot utilitzar velocitats de viatge din&agrave;miques en funci&oacute; del tr&agrave;nsit, per&ograve; nom&eacute;s fins al l&iacute;mit de velocitat legal del cami&oacute;. Per exemple, si la velocitat din&agrave;mica per a una via en funci&oacute; del tr&agrave;nsit en temps real &eacute;s de 65 milles per hora, per&ograve; el l&iacute;mit de velocitat del cami&oacute; per a la via &eacute;s de 55 milles per hora, el c&agrave;lcul utilitzar&agrave; les 55 milles per hora per a la via.
+            </p>
+            <p> <b>Temps caminant</b> i <b>Dist&agrave;ncia caminant</b> utilitzen una velocitat fixa de 5 quil&ograve;metres per hora (3,1 milles per hora) i segueixen els camins de vianants i els carrers designats (alhora que ignora les regles que afecten els autom&ograve;bils, com ara carrers de sentit &uacute;nic). </p>
+            <p> <b>Dist&agrave;ncia en cami&oacute;</b> utilitza una velocitat fixa i segueix les regles que s'apliquen als camions pesats, mentre que <b>Dist&agrave;ncia de conducci&oacute;</b> i <b>Dist&agrave;ncia de conducci&oacute; rural</b> utilitzen velocitats fixes i segueixen les regles que s'apliquen als autom&ograve;bils, com ara els cotxes.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccioneu capes de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o diverses entitats poden actuar com a restriccions temporals (barreres) quan viatgeu per carrers subjacents. Podeu especificar les barreres amb entitats de punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <p>Una barrera de punt pot mostrar un arbre caigut, un accident, una l&iacute;nia el&egrave;ctrica fora de servei o qualsevol element que bloquegi completament el tr&agrave;nsit en un punt espec&iacute;fic del carrer. Es pot viatjar pel carrer, per&ograve; no creuar la barrera. Podeu especificar fins a 250 entitats perqu&egrave; actu&iuml;n com a barreres de punt.
+            </p>
+            <p>Una barrera de l&iacute;nia prohibeix viatjar per qualsevol lloc on la barrera s'intersequi amb els carrers. Per exemple, una desfilada o manifestaci&oacute; que bloquegi el tr&agrave;nsit en diversos segments del carrer es pot mostrar amb una barrera de l&iacute;nia. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de l&iacute;nia &eacute;s superior a 500, l'eina retornar&agrave; un error.
+            </p>
+            <p>Una barrera de pol&iacute;gon prohibeix viatjar per qualsevol lloc on el pol&iacute;gon s'intersequi amb els carrers. Un dels usos d'aquest tipus de barrera &eacute;s mostrar les inundacions que cobreixen &agrave;rees de la xarxa de carrers i que impedeixen el viatge per carretera. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de pol&iacute;gon &eacute;s superior a 2.000, l'eina retornar&agrave; un error.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Àrees des de diferents punts</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu com es gestionen les &agrave;rees compartides de diferents punts d'entrada quan conflueixen entre si. Es poden fer servir les accions:
+                <ul>
+                    <li> <b>Superposa</b>: &eacute;s possible que les &agrave;rees de diferents punts d'entrada cobreixin la mateixa carretera. Aquesta acci&oacute; &eacute;s &uacute;til quan necessiteu con&egrave;ixer tots els punts d'entrada que poden arribar a una ubicaci&oacute; determinada en una dist&agrave;ncia o un temps concrets.
+                    </li>
+                    <li> <b>Dissol</b>: totes les &agrave;rees es fusionen en una i nom&eacute;s una &agrave;rea pot cobrir una ubicaci&oacute; determinada. Aquesta acci&oacute; &eacute;s &uacute;til quan nom&eacute;s necessiteu saber si es pot arribar a una &agrave;rea en un temps o una dist&agrave;ncia concrets, per&ograve; no us cal con&egrave;ixer quins punts d'entrada espec&iacute;fics poden arribar a la ubicaci&oacute;.
+                    </li>
+                    <li> <b>Divideix</b>: les &agrave;rees de les diferents ubicacions d'entrada que se superposarien entre si es divideixen pel mig perqu&egrave; quedin adjacents. Aquesta acci&oacute; &eacute;s &uacute;til quan voleu veure quines &agrave;rees estan dins d'una dist&agrave;ncia o temps determinats dels punts d'entrada i, alhora, determinar quin punt d'entrada &eacute;s el m&eacute;s proper a l'&agrave;rea.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Mostra àrees inaccessibles com forats</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu si les &agrave;rees de sortida inclouran forats en cas que no es pugui accedir als carrers a causa del temps o la dist&agrave;ncia de  <b>Mesura</b>, o b&eacute; de les restriccions imposades pel mode de viatge.
+            </p>
+            <p>Les &agrave;rees de temps de recorregut creades amb aquest par&agrave;metre tenen un l&iacute;mit de 15 minuts o 15 milles (24 quil&ograve;metres).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Inclou carrers accessibles</h2></div>
+        <hr/>
+        <div>
+            <p>Incloeu els carrers que s'utilitzen per crear les &agrave;rees de temps de recorregut com una capa de sortida. 
+            </p>
+            <p>L'opci&oacute; Crea &agrave;rees de temps de recorregut mesura l'abast d'una instal&middot;laci&oacute; a la xarxa de carrers i, a continuaci&oacute;, crea &agrave;rees de temps de recorregut des dels carrers per on s'ha passat. Per tant, les &agrave;rees s&oacute;n una aproximaci&oacute; dels carrers per on s'ha passat. Si la vostra an&agrave;lisi t&eacute; per objectiu determinar quins carrers cobreixen una dist&agrave;ncia o un temps de viatge espec&iacute;fics des d'una instal&middot;laci&oacute;, la generaci&oacute; dels carrers accessibles pot ser m&eacute;s precisa que la utilitzaci&oacute; de les &agrave;rees de temps de recorregut per avaluar si es pot accedir a un carrer concret.
+            </p>
+            <p>Les &agrave;rees de temps de recorregut creades amb aquest par&agrave;metre tenen un l&iacute;mit de 15 minuts o 15 milles (24 quil&ograve;metres).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

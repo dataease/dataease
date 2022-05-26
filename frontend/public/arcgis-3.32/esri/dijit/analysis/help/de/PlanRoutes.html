@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Routen planen</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Routen planen"></h2>
+        <hr/>
+    <p>&quot;Routen planen&quot; bietet die M&ouml;glichkeit, Aufgaben im mobilen Au&szlig;endienstteam effizient aufzuteilen.
+    </p>
+    <p>Sie geben eine Reihe von Stopps und die Anzahl der Fahrzeuge ein, die diese Stopps anfahren werden. Das Werkzeug weist Fahrzeugen die Stopps zu und gibt Routen zur&uuml;ck, die anzeigen, wie die einzelnen Fahrzeuge ihre zugewiesenen Stopps in k&uuml;rzester Zeit erreichen k&ouml;nnen.
+    </p>
+    <p>Mit &quot;Routen planen&quot; erreichen mobile Au&szlig;endienstteams mehr Einsatzorte in weniger Zeit, was zu einer Erh&ouml;hung der Produktivit&auml;t und zur Verbesserung des Kundenservice f&uuml;hrt.
+        <ul>
+            <li>Inspektion von H&auml;usern, Restaurants oder Baustellen
+                
+
+            </li>
+            <li>Bereitstellung von Reparatur-, Montage- oder technischen Diensten
+            </li>
+            <li>Lieferdienste
+            </li>
+            <li>Kundenbesuche
+            </li>
+            <li>Bef&ouml;rderung von Personen von ihrer Wohnung zu einer Veranstaltung
+            </li>
+        </ul>
+        
+    </p>
+    <p>Die Ausgabe von &quot;Routen planen&quot; umfasst einen Layer von Stopps, die durch die Routen codiert sind, denen sie zugewiesen sind, einen Routen-Layer, der die k&uuml;rzesten Wege zu den Stopps anzeigt, und je nachdem, ob alle Stopps erreicht werden konnten oder nicht, einen Layer mit nicht zugewiesenen Stopps. 
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features in der Analyse ber&uuml;cksichtigt, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer ber&uuml;cksichtigt, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Punkt-Layer auswählen, der die zu besuchenden Ziele darstellt</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Layer mit Punkten aus, die die Routen (oder Fahrzeuge) ber&uuml;cksichtigen sollen.  Diese Punkte werden in der Ausgabe zu zugewiesenen oder nicht zugewiesenen Stopps. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 2.000 Eingabe-Features. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Reisemodus für Routen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie Ihren Reisemodus. Die Ausgaberoute folgt Stra&szlig;en und Gehwegen, wobei alle geltenden Verkehrsregeln wie Einbahnstra&szlig;en und unzul&auml;ssige Wendepunkte ber&uuml;cksichtigt werden. Die verf&uuml;gbaren Reisemodi werden vom Administrator Ihrer Organisation bestimmt.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Routen beginnen an Stopps</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wo und wann die Fahrzeuge ihre Routen starten.
+            </p>
+            <p>Mit &quot;Routen planen&quot; k&ouml;nnen Sie eine oder mehrere Startpositionen f&uuml;r Ihre Fahrzeuge festlegen.
+            </p>
+            <p>Bei Angabe einer Punktposition starten alle Fahrzeuge von diesem Punkt aus, unabh&auml;ngig von der Anzahl der verf&uuml;gbaren Fahrzeuge. Sie k&ouml;nnen einen Punkt-Layer mit einem Punkt ausw&auml;hlen oder der Karte einen Punkt hinzuf&uuml;gen, indem Sie  <b>Punkt zur Karte hinzuf&uuml;gen</b> ausw&auml;hlen, auf die Schaltfl&auml;che zum Bearbeiten benachbarter Punkte und dann auf die Karte klicken. 
+            </p>
+            <p>Bei Angabe mehrerer Positionen muss jedes Fahrzeug mit dem eigenen Punkt verkn&uuml;pft werden. Die Anzahl der Fahrzeuge muss mit der Anzahl der Punkte im Layer &uuml;bereinstimmen. W&auml;hlen Sie einen Layer mit mehreren Punkten aus, und legen Sie ein Feld fest, das die einzelnen Routen, Fahrzeuge oder Fahrer in der Dropdown-Liste  <b>Routen-ID-Feld</b> eindeutig identifiziert.
+            </p>
+            <p>Die Startzeit ist f&uuml;r alle Routen gleich. Da die Zeitzone f&uuml;r die Startzeit der Zeitzone entspricht, in der sich der/die Startpunkt(e) befinden, m&uuml;ssen Sie sicherstellen, dass Sie die lokale Uhrzeit eingeben. Angenommen, Sie befinden sich in der Zeitzone Pacific Standard Time (UTC-8:00) und die Fahrzeuge, f&uuml;r die Sie eine Route erstellen, befinden sich in der Zeitzone Mountain Standard Time (UTC-7:00). Wenn es aktuell 9:30 Uhr PST (10:30 Uhr MST) ist und Ihre Fahrzeuge ihre Routen in 30 Minuten starten sollen, m&uuml;ssen Sie die Startzeit auf 11:00 Uhr festlegen. 
+            </p>
+            <p>Wenn sich Ihre Fahrzeuge in unterschiedlichen Zeitzonen befinden, kann die Startzeit nicht zeitgleich sein. Sie starten stattdessen versetzt. Wenn eine Route beispielsweise von einem Punkt in PST und eine andere Route in MST startet und Sie 11:00 Uhr als Startzeit eingeben, startet die Route in PST um 11:00 Uhr PST und die Route in MST um 11:00 Uhr MST &ndash; also mit einer Differenz von einer Stunde.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Routen enden an Stopps</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wo die Fahrzeuge ihre Routen beenden.
+            </p>
+            <p>Sie k&ouml;nnen die Routen so konfigurieren, dass sie an einer der drei folgenden Positionen enden: 
+                <ul>
+                    <li>an derselben Position, an der sie gestartet wurden, unabh&auml;ngig davon, ob sie von einer oder vielen Positionen aus gestartet sind
+                    </li>
+                    <li>an einer einzelnen Position
+                    </li>
+                    <li>an vielen Positionen &ndash; d. h. ein Endpunkt f&uuml;r jede Route
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aktivieren Sie die Option  <b>Zur&uuml;ck zum Start</b>, wenn Fahrzeuge ihre Routen an denselben Positionen starten und beenden.
+            </p>
+            <p>Um alle Fahrzeuge zu einem gemeinsamen Endpunkt zu leiten, der vom Startpunkt abweicht, deaktivieren Sie  <b>Zur&uuml;ck zum Start</b>, und f&uuml;gen Sie der Karte einen Punkt hinzu, oder w&auml;hlen Sie einen Layer aus, der genau diesen Punkt enth&auml;lt.
+            </p>
+            <p>Um Routen an eindeutigen Positionen zu beenden, deaktivieren Sie die Option  <b>Zur&uuml;ck zum Start</b>, und w&auml;hlen Sie einen Layer aus, der mehr als einen Punkt enth&auml;lt. Die Anzahl der Fahrzeuge muss der Anzahl der Punkte im ausgew&auml;hlten Layer entsprechen. W&auml;hlen Sie in der Dropdown-Liste <b>Routen-ID-Feld</b> ein Feld aus, das die einzelnen Routen, Fahrzeuge oder Fahrer eindeutig identifiziert. Wenn die Fahrzeuge eine Route mit mehreren Start- und Endpositionen aufweisen, m&uuml;ssen die ausgew&auml;hlten Routen-IDs f&uuml;r die Layer mit den Start- und Endpunkten &uuml;bereinstimmen.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barriere-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Mindestens ein Feature, das als vor&uuml;bergehende Einschr&auml;nkung (also Barriere) bei der Fahrt auf den zugrunde liegenden Stra&szlig;en fungiert Sie k&ouml;nnen die Barrieren anhand von Punkt-, Linien- oder Polygon-Features angeben.
+            </p>
+            <p>Eine Punkt-Barriere kann zum Modellieren eines umgefallenen Baumes, eines Unfalls, einer herabh&auml;ngenden Stromleitung oder eines beliebigen anderen Objekts, das den Verkehr an einer bestimmten Position auf der Stra&szlig;e blockiert, verwendet werden. Die Fahrt auf der Stra&szlig;e ist zul&auml;ssig, jedoch nicht die Fahrt durch die Barriere. Sie k&ouml;nnen bis zu 250&nbsp;Features, die als Punkt-Barrieren fungieren, hinzuf&uuml;gen.
+            </p>
+            <p>Eine Linien-Barriere unterbindet den Verkehr an allen Punkten, an denen die Barriere Stra&szlig;en schneidet. Mit einer Linien-Barriere kann beispielsweise eine Parade oder Demonstration modelliert werden, die den Verkehr &uuml;ber mehrere Stra&szlig;enz&uuml;ge hinweg blockiert. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Linien-Barrieren schneiden, 500 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+            <p>Eine Polygon-Barriere unterbindet den Verkehr an allen Punkten, an denen das Polygon Stra&szlig;en schneidet. Dieser Barrierentyp wird beispielsweise verwendet, um &uuml;berflutete Bereiche des Stra&szlig;ennetzes zu modellieren und den Stra&szlig;enverkehr in diesen Bereichen zu sperren. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Polygon-Barrieren schneiden, 2000 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maximale Anzahl von Fahrzeugen, für die eine Route erstellt werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die Anzahl der Fahrzeuge an, die zum Anfahren der Stopps verf&uuml;gbar sind. Das Werkzeug unterst&uuml;tzt bis zu  100 Fahrzeuge. 
+            </p>
+            <p>Je nach Gesamtzahl der Stopps, nach Anzahl der zul&auml;ssigen Stopps pro Fahrzeug, der Entfernung zwischen den Stopps, der Aufenthaltszeit an jedem Stopp und der festgelegten Gesamtroutenzeit pro Fahrzeug kann das Werkzeug m&ouml;glicherweise eine L&ouml;sung finden, bei der weniger Fahrzeuge als hier angegeben verwendet werden.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maximale Anzahl von Stopps pro Fahrzeug</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist einer von zwei Parametern zum Ausgleichen der Gesamtarbeitslast von Routen. Sie k&ouml;nnen einen Wert zwischen 1 und  200 eingeben. 
+            </p>
+            <p>Durch eine Verringerung der maximalen Anzahl von Stopps, die jedem Fahrzeug zugewiesen werden kann, wird den Fahrzeugen mit h&ouml;herer Wahrscheinlichkeit eine gleiche Anzahl von Stopps zugewiesen. Dadurch k&ouml;nnen Arbeitslasten gleichm&auml;&szlig;ig auf die Fahrer verteilt werden. Der Nachteil liegt jedoch darin, dass dies m&ouml;glicherweise zu einer weniger effizienten L&ouml;sung f&uuml;hrt.
+            </p>
+            <p>Durch die Erh&ouml;hung der Anzahl der Stopps pro Fahrzeug kann das Werkzeug leichter effizientere L&ouml;sungen finden, die Arbeitslast wird jedoch m&ouml;glicherweise ungleichm&auml;&szlig;ig auf die Fahrer und Fahrzeuge verteilt. Beachten Sie, dass Sie die Arbeitslast nach Zeit und nach der Anzahl der Stopps verteilen k&ouml;nnen, indem Sie einen Wert f&uuml;r den Parameter  <b>Die Gesamtroutenzeit pro Fahrzeug begrenzen</b> angeben.
+            </p>
+            <p>Anhand der folgenden Beispiele werden die Auswirkungen der Begrenzung der maximalen Anzahl von Stopps pro Fahrzeug und der Gesamtzeit pro Fahrzeug veranschaulicht. In allen Beispielen gibt es sechs Stopps und zwei Routen mit identischer Startposition.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Ausgewogene Anzahl von Stopps und Fahrzeiten">
+                </td>
+                <td>
+                    <p>Ausgewogene Fahrzeiten und Stopps pro Route:
+                    </p>
+                    <p>Da die Verteilung der Stopps mehr oder weniger einheitlich erfolgt, f&uuml;hrt die Festlegung der maximalen Anzahl von Stopps pro Fahrzeug zu Routen mit ungef&auml;hr gleicher Fahrzeit.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Unausgewogene Routenzeiten">
+                </td>
+                <td>
+                    <p>Ausgewogene Anzahl von Stopps pro Route, aber unausgewogene Verteilung von Fahrzeiten:
+                    </p>
+                    <p>F&uuml;nf der sechs Stopps werden in der N&auml;he der Startposition geb&uuml;ndelt, bis auf einen, f&uuml;r den eine viel l&auml;ngere Fahrzeit erforderlich ist. Eine gleichm&auml;&szlig;ige Verteilung der Stopps auf die zwei Routen f&uuml;hrt zu unausgewogenen Fahrzeiten.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Ausgewogene Verteilung von Fahrzeiten">
+                </td>
+                <td>
+                    <p>Unausgewogene Anzahl von Stopps pro Route, aber ausgewogene Verteilung von Fahrzeiten:
+                    </p>
+                    <p>Die Stopps haben dieselbe Position wie in der vorherigen Abbildung, durch die Erh&ouml;hung der maximalen Anzahl von Stopps pro Route und die Begrenzung der Gesamtfahrzeit pro Fahrzeug sind die Fahrzeiten jedoch ausgewogen verteilt.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Aufenthaltszeit an jedem Stopp</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie die erwartete durchschnittliche Servicezeit fest, die an jedem Stopp aufgewendet wird. Wenn Sie beispielsweise den Zeitplan eines Arbeitstags f&uuml;r Inspektoren erstellen und die durchschnittliche Zeit f&uuml;r eine Inspektion 45 Minuten betr&auml;gt, geben Sie den Wert  <code>45</code> ein.
+            </p>
+            <p>Es wird davon ausgegangen, dass die Servicezeit an allen Stopps identisch ist.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Die Gesamtroutenzeit pro Fahrzeug begrenzen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie die maximal zul&auml;ssige Zeitdauer einer Route vom Start bis zum Ende fest. Dies umfasst erwartete Reise- und Servicezeiten, die an den Stopps entlang der Route aufgewendet werden. Wenn Fahrer nicht l&auml;nger als eine angegebene Zeit pro Tag arbeiten sollen, etwa 8 Stunden, k&ouml;nnen Sie hier das Zeitlimit festlegen.
+            </p>
+            <p>Weitere &Uuml;berlegungen zu einer ausgewogenen Verteilung von Arbeitslasten finden Sie unter  <b>Maximale Anzahl der Stopps pro Fahrzeug</b>.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Feature-Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Wenn der Feature-Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben. Der Feature-Layer enth&auml;lt einen Layer f&uuml;r jedes der folgenden Elemente: Routen, zugewiesene Stopps und nicht zugewiesene Stopps, wenn einige Eingabestopps nicht zu bestimmten Routen zugewiesen werden konnten.
+            </p>
+            <p>Wenn Sie  <b>Routen-Layer einbeziehen</b> ausw&auml;hlen, wird jede Route des Ergebnisses auch als Routen-Layer gespeichert. Ein Routen-Layer umfasst alle Informationen einer bestimmten Route wie zum Beispiel die Stopps, die der Route zugewiesen sind, oder die Wegbeschreibungen. Das Erstellen von Routen-Layern ist n&uuml;tzlich, wenn Sie die einzelnen Routen f&uuml;r andere Mitglieder in Ihrer Organisation freigeben oder wenn Sie die Routen mithilfe der Schaltfl&auml;che <b>Wegbeschreibung</b> im Map Viewer weiter bearbeiten m&ouml;chten. F&uuml;r die Namen der Routen-Layer wird der Name des angegebenen Feature-Layers als Pr&auml;fix verwendet. Dazu hinzugef&uuml;gt wird der Routenname, der bei der Analyse generiert wurde, um einen eindeutigen Namen f&uuml;r jeden Routen-Layer zu erstellen.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, um darin den Feature-Layer und die ggf. erstellten Routen-Layer zu speichern.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

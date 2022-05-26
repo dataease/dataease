@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar a Jusante</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Localizar a Jusante"></h2>
+        <hr/>
+    <p>Esta ferramenta determina o tra&ccedil;o, ou caminho do fluxo, de uma dire&ccedil;&atilde;o de sentido jusante a partir dos pontos da sua camada de entrada.
+    </p>
+    <p>Por exemplo, suponha que tem pontos de elementos que representam fontes de contamina&ccedil;&atilde;o e quer determinar onde na sua &aacute;rea de estudo a contamina&ccedil;&atilde;o ir&aacute; fluir. Pode usar o Localizar a Jusante para identificar o caminho que a contamina&ccedil;&atilde;o ir&aacute; tomar. Este tra&ccedil;ado tamb&eacute;m pode ser dividido em segmentos de linha individuais especificando um valor e unidades de dist&acirc;ncia. A linha que est&aacute; a ser devolvida pode ter o comprimento total do caminho de fluxo, um comprimento m&aacute;ximo de rastreio especificado, ou preso a recursos da &aacute;rea, tais como a sua &aacute;rea de estudo. Em muitos casos, se o comprimento total do caminho de rastreio &eacute; devolvido, ser&aacute; a partir da fonte para o oceano.
+    </p>
+    <p>O resultado &eacute; uma linha que representa o tra&ccedil;o a jusante. Se a dist&acirc;ncia &eacute; especificada para  <b>Dividir o tra&ccedil;o em segmentos de linha</b>, a linha de rastreio ser&aacute; dividida em m&uacute;ltiplas linhas onde cada linha &eacute; do tamanho especificado. Por exemplo, se o seu ponto de entrada representa uma contamina&ccedil;&atilde;o por derramamento e o rio que flui em movimentos a uma taxa de 0,6 milhas por hora, ou 15 milhas por dia, pode querer dividir o rio em 15 segmentos de milha Dividir o tra&ccedil;o em intervalos de 15 milhas ir&aacute; mostrar aproximadamente onde o derrame vai chegar a cada dia. A linha ser&aacute; simbolizada usando cores graduadas com base na dist&acirc;ncia e ser&aacute; marcada com a dist&acirc;ncia desde o in&iacute;cio do rastreio.
+    </p>
+    <p>O tra&ccedil;ado resultante ter&aacute; todos os atributos dos seus pontos de entrada bem como esses atributos adicionais: 
+        <ul>
+            <li> <i>PointID</i>&mdash;Cont&eacute;m o valor do ID do ponto de entrada.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Cont&eacute;m o comprimento em quil&oacute;metros do tra&ccedil;o total do sentido jusante.
+                
+
+            </li>
+            <li> <i>Description</i> e <i>DataResolution</i>&mdash;Cont&eacute;m informa&ccedil;&otilde;es pertencentes aos dados hidrol&oacute;gicos usados para calcular o tra&ccedil;o.
+                
+
+            </li>
+            <li> <i>FromDistance</i> e <i>ToDistance</i>&mdash;Cont&eacute;m a dist&acirc;ncia de e para cada segmento de linha. Estes atributos s&atilde;o escritos se <b>Dividir o tra&ccedil;o em segmentos de linha</b> &eacute; usado.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se marcar a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> , apenas ser&atilde;o analisados os elementos pontos da camada de entrada vis&iacute;vel na atual extens&atilde;o do mapa.  Se n&atilde;o estiver ativo, todos os elementos da camada de entrada ser&atilde;o utilizados, mesmo que estejam fora da atual extens&atilde;o do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elementos pontos para utilizar como origens para cada traço do sentido jusante</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos pontos para utilizar como origens para cada tra&ccedil;o do sentido jusante. Os dados de sa&iacute;da ir&atilde;o conter uma linha por cada ponto de entrada.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Dividir o percurso em segmentos de linha</h2></div>
+        <hr/>
+        <div>
+            <p>A linha de rastreio ser&aacute; dividida em m&uacute;ltiplas linhas, onde cada linha &eacute; do comprimento especificado. Por exemplo, se o seu ponto de entrada representa uma contamina&ccedil;&atilde;o por derramamento e o rio que flui em movimentos a uma taxa de 0,6 milhas por hora, ou 15 milhas por dia, pode querer dividir o rio em 15 segmentos de milha Dividir o tra&ccedil;o em intervalos de 15 milhas ir&aacute; mostrar aproximadamente onde o derrame vai chegar a cada dia. A linha ser&aacute; simbolizada usando cores graduadas com base na dist&acirc;ncia e ser&aacute; marcada com a dist&acirc;ncia desde o in&iacute;cio do rastreio. O tra&ccedil;o resultante ter&aacute; m&uacute;ltiplos segmentos de linha, cada um com campos  <i>FromDistance</i> e <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Distância máxima da divisão</h2></div>
+        <hr/>
+        <div>
+            <p>Determina o comprimento total da linha que ser&aacute; devolvido. Se fornecer elementos de &aacute;rea para cortar o tra&ccedil;o, o resultado vai ser cortado para o elemento de &aacute;rea, independentemente da dist&acirc;ncia que introduzir aqui.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Recortar saída para</h2></div>
+        <hr/>
+        <div>
+            <p>Ou desenhar ou fornecer uma camada da &aacute;rea onde deseja que o resultado a ser desenhado. Por exemplo, se s&oacute; deseja o resultado de rastreio para estar dentro de sua &aacute;rea de estudo, como o seu distrito, use o elemento do distrito como entrada para que o tra&ccedil;o vai parar no limite do munic&iacute;pio.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+            <p> Executar esta ferramenta n&atilde;o consome cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

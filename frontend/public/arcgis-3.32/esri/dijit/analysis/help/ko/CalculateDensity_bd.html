@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>밀도 계산(Calculate Density)</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="밀도 계산"></h2>
+        <hr/>
+    <p>밀도 계산 도구는 맵에서 일부 현상(포인트의 속성으로 표시됨)의 알려진 수량을 분산시켜 포인트 피처에서 밀도 맵을 생성합니다. 가장 낮은 밀도에서 가장 높은 밀도로 분류된 영역 레이어가 결과로 나옵니다.   
+
+    </p>
+    <p>포인트 입력의 경우 각 포인트는 일부 이벤트 또는 인시던트의 위치를 표시해야 하며, 결과 레이어는 단위 면적당 인시던트 횟수를 표시합니다. 새 위치의 높은 밀도 값은 해당 위치 근처에 더 많은 포인트가 있음을 나타냅니다. 대부분의 경우 결과 레이어는 향후 이벤트에 대한 위험 표면으로 해석할 수 있습니다. 예를 들어 입력 포인트가 낙뢰의 위치를 표시하는 경우 결과 레이어는 향후 낙뢰에 대한 위험 표면으로 해석할 수 있습니다.
+    </p>
+    <p>이 도구의 기타 이용 사례:
+        <ul>
+            <li>경찰이 범죄율이 높은 지역에 리소스를 제대로 할당할 수 있도록 범죄 밀도 맵을 생성합니다.
+            </li>
+            <li>구/군 내의 병원 밀도를 계산합니다.  결과 레이어가 병원에 대한 높고 낮은 접근성을 지역에 표시하며 신규 병원 건설 장소를 결정하는 데 이 정보를 사용할 수 있습니다.
+            </li>
+            <li>과거 산불이 발생한 위치를 기반으로 산불 발생 위험도가 높은 지역을 식별합니다.
+            </li>
+            <li>새 도로 건설 장소를 계획하기 위해 주요 고속도로에서 멀리 있는 커뮤니티를 찾습니다.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>밀도를 계산할 포인트 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도가 계산될 포인트 레이어입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>밀도를 계산할 필드를 하나 이상 선택(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>각 위치에서 사건의 수를 지정하는 하나 이상의 필드를 제공하세요. 예를 들어 도시를 표시하는 포인트가 있는 경우 개수 필드처럼 도시 인구를 표시하는 필드를 사용할 수 있으며, 결과 인구 밀도 레이어는 더 많은 인구가 있는 도시 근처에서 더 높은 인구 밀도를 계산합니다.
+            </p>
+            <p>포인트 개수의 밀도는 항상 계산됩니다. 필드를 선택하지 않으면 각 위치는 단일 개수를 표시하는 것으로 간주합니다.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>그룹 도형 선택</h2></div>
+        <hr/>
+        <div>
+            <p>포인트가 집약되고 밀도 계산에 사용되는 그룹 도형입니다.
+            </p>
+            <p> <b>사각형</b> 또는 <b>육각형</b> 그룹을 사용하여 분석을 실행하려면 투영 좌표체계가 필요합니다. <b>분석 환경</b>의 <b>처리 좌표체계</b>를 설정할 수 있습니다. 처리 좌표계가 투영 좌표계로 설정되지 않은 경우에 <b>분석을 실행</b> 하면 투영 좌표계로 설정하라는 메시지가 나타납니다.
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>집약을 위한 그룹 크기 선택</h2></div>
+        <hr/>
+        <div>
+            <p>그룹의 크기가 생성됩니다. 정사각형 그룹의 경우 크기는 정사각형의 높이를 나타냅니다. 육각형 그룹의 경우 크기는 육각형의 높이(평행한 두 변 간의 거리)를 나타냅니다.
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>적용할 밀도 가중치 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 계산에 적용되는 가중치 유형입니다. 두 가지 옵션을 사용할 수 있습니다.
+                <ul>
+                    <li> <b>균일(Uniform)</b> - 영역별 크기를 계산합니다.
+                    </li>
+                    <li> <b>커널(Kernel)</b> - 완만하게 가늘어지는 표면을 각 포인트에 맞추기 위해 커널 함수를 적용합니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>네이버후드 크기 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도를 계산하는 데 사용되는 영역의 크기입니다. 네이버후드 크기는 그룹 크기보다 커야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>밀도의 출력 단위 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 값에 대한 결과 단위입니다. 기본 설정에 따라 프로필에 지정한 기본 단위를 기반으로 제곱킬로미터 또는 제곱마일로 설정됩니다. 밀도 값이 아주 작다면, 영역의 크기 단위를 높여(예: 제곱미터를 제곱킬로미터로) 더 큰 값을 반환할 수 있습니다. 값은 결과만 조정합니다.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>시간 단계를 사용하여 밀도 계산(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>입력 포인트 레이어에 시간이 활성화되었으며 시간 유형이 인스턴트인 경우 시간 단계를 사용하여 분석할 수 있습니다.  시간을 설정할 때 다음과 같은 세 가지 매개변수를 사용할 수 있습니다.
+                <ul>
+                    <li> <b>시간 단계 간격</b>
+                    </li>
+                    <li> <b>시간 단계 반복 빈도</b>
+                    </li>
+                    <li> <b>시간 단계를 정렬하기 위한 시간</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>예를 들어, 1년을 나타내는 데이터가 있고 주별 단계를 사용하여 분석하려는 경우,  <b>시간 단계 간격</b>을 <code>1주</code>로 설정합니다. 
+            </p>
+            <p>예를 들어, 1년을 나타내는 데이터가 있고 해당 월의 첫 번째 주를 사용하여 분석하려는 경우,  <b>시간 단계 간격</b>을 <code>1주</code>로, <b>시간 단계 반복 빈도</b>를 <code>1개월</code>로, <b>시간 단계를 정렬하기 위한 시간</b>을 <code>1월 1일 오전 12시</code>로 설정합니다.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>시간 단계 간격</h2></div>
+        <hr/>
+        <div>
+            <p>시간 단계 생성에 사용되는 시간 간격입니다.  <b>시간 단계 간격</b>은 단독으로 사용하거나 <b>시간 단계 반복 빈도</b> 또는 <b>시간 단계를 정렬하기 위한 시간</b> 매개변수와 함께 사용할 수 있습니다.
+            </p>
+            <p>예를 들어, 매주 월요일 오전 9시부터 오전 10시까지 발생하는 시간 단계를 생성하려면,  <b>시간 단계 간격</b>을 <code>1시간</code>으로, <b>시간 단계 반복 빈도</b>를 <code>1주</code>로, <b>시간 단계를 정렬하기 위한 시간</b>을 <code>월요일 오전 9시</code>로 설정합니다.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>시간 단계 반복 빈도</h2></div>
+        <hr/>
+        <div>
+            <p> 시간 단계를 계산하는 데 사용되는 단계입니다. <b>시간 단계 반복 빈도</b>는 단독으로 사용하거나 <b>시간 단계 간격</b> 및 <b>참조 시간</b>과 함께 사용하거나 또는 <b>시간 단계 간격</b>과 <b>시간 단계를 정렬하기 위한 시간</b> 둘 다와 함께 사용할 수 있습니다.
+            </p>
+            <p> 예를 들어, 매주 월요일 오전 9시부터 오전 10시까지 발생하는 시간 단계를 생성하려면, <b>시간 단계 간격</b>을 <code>1시간</code>으로, <b>시간 단계 반복 빈도</b>를 <code>1주</code>로, <b>시간 단계를 정렬하기 위한 시간</b>을 <code>월요일 오전 9시</code>로 설정합니다.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>시간 단계를 정렬하기 위한 시간</h2></div>
+        <hr/>
+        <div>
+            <p>시간 슬라이싱을 정렬하는 데 사용되는 날짜와 시간입니다. 시간 단계는 이 시간을 포함하여 그 이전으로 진행됩니다. 참조 시간이 선택되지 않은 경우 시간 단계는 1970년 1월 1일로 정렬됩니다. 
+            </p>
+            <p> 예를 들어, 매주 월요일 오전 9시부터 오전 10시까지 발생하는 시간 단계를 생성하려면, <b>시간 단계 간격</b>을 <code>1시간</code>으로, <b>시간 단계 반복 빈도</b>를 <code>1주</code>로, <b>시간 단계를 정렬하기 위한 시간</b>을 <code>월요일 오전 9시</code>로 설정합니다.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference(wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>이 매개변수는 프로세싱 공간 참조를 설정하기 위한 시험판용 임시 매개변수입니다. 대부분의 빅데이터 도구의 경우 투영 좌표체계를 프로세싱 공간 참조로 사용해야 합니다. 기본 설정에 따라 이 도구는 입력 좌표체계를 사용하지만 지리 좌표체계일 경우에는 사용할 수 없습니다. 투영 좌표체계를 설정하려면 WKID를 입력합니다. 예를 들어  <b>Web Mercator</b>를 설정하려면 <code>3857</code>을 입력합니다.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>데이터 저장소 선택</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic 결과는 데이터 저장소에 저장되며  Portal for ArcGIS에서 피처 레이어로 나타납니다. 대부분의 경우 결과는 기본 설정에 따라 시공간적 데이터 저장소에 저장되어야 합니다. 하지만 관계형 데이터 저장소에 결과를 저장하는 것이 좋은 경우도 있습니다. 결과를 관계형 데이터 저장소에 저장하려는 이유는 다음과 같습니다. 
+                <ul>
+                    <li>결과를 포털 간 컬래버레이션에 사용할 수 있습니다.
+                    </li>
+                    <li>기능을 결과와 동기화할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics 결과가 늘어날 것으로 예상되며 시공간 빅데이터 저장소의 기능을 활용하여 대용량 데이터를 처리하려는 경우에는 관계형 데이터 저장소를 사용하지 마세요.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

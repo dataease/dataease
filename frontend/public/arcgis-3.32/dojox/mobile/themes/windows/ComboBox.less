@@ -1,0 +1,28 @@
+@import "variables.less";
+@import "../common/ComboBox.less";
+
+.mblComboBoxMenuPopup {
+	background-color: @win-dialog-color;
+	color: @win-foreground-color;
+	width: 100%;
+	height: calc(~'100% - @{mbl-combo-box-padding-top}') !important;
+	padding: @mbl-combo-box-padding-top 0 0 0;
+	left: 0px !important;
+	-ms-touch-action: none;
+
+  &:before {
+		content: 'CHOOSE AN ITEM';
+		position: absolute;
+		top: @mbl-combo-box-title-top;
+		left: @default-padding-left;
+		font-weight: 600;
+	}
+}
+
+.mblComboBoxMenu > div {
+	width: 100%;
+}
+
+.mblComboBoxMenuItem:active {
+	color: @win-accent-color;
+}

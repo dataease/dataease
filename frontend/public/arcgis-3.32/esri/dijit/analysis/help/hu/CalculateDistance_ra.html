@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Távolság kiszámítása</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="T&aacute;vols&aacute;g kisz&aacute;m&iacute;t&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z az euklideszi t&aacute;vols&aacute;got, ir&aacute;nyt &eacute;s allok&aacute;ci&oacute;t sz&aacute;m&iacute;tja ki egyetlen forr&aacute;sb&oacute;l vagy egy forr&aacute;shalmazb&oacute;l.
+    </p>
+    <p>Az alkalmaz&aacute;sra p&eacute;lda lehet az al&aacute;bbihoz hasonl&oacute; k&eacute;rd&eacute;sek megv&aacute;laszol&aacute;sa:
+
+        <ul>
+            <li>Mekkora t&aacute;vols&aacute;gra van a legk&ouml;zelebbi v&aacute;ros?
+                
+
+            </li>
+            <li>Mekkora t&aacute;vols&aacute;gra van a legk&ouml;zelebbi &uacute;t?
+                
+
+            </li>
+            <li>Mekkora t&aacute;vols&aacute;gra van a legk&ouml;zelebbi v&iacute;zforr&aacute;s?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s csak azokat a bemenő r&eacute;tegen l&eacute;vő vektoros elemeket foglalja mag&aacute;ban, amelyek l&aacute;that&oacute;k az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen. Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lisan megjelen&iacute;tett t&eacute;rk&eacute;pkiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Válasszon raszteres vagy vektoros helyréteget a távolság kiszámításához</h2></div>
+        <hr/>
+        <div>
+            <p>Azokat a kiindul&oacute;pontokat meghat&aacute;roz&oacute; r&eacute;teg, amelyektől a t&aacute;vols&aacute;got sz&aacute;m&iacute;tani kell. A r&eacute;teg lehet k&eacute;pszolg&aacute;ltat&aacute;s vagy vektoros adatszolg&aacute;ltat&aacute;s.
+            </p>
+            <p>K&eacute;pszolg&aacute;ltat&aacute;s eset&eacute;n a bementi t&iacute;pus lehet integer vagy lebegőpontos &eacute;rt&eacute;k.
+            </p>
+            <p>Vektoros adatszolg&aacute;ltat&aacute;s eset&eacute;n a bemenet lehet pont, vonal vagy polygon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Kiszámítandó maximális távolság</h2></div>
+        <hr/>
+        <div>
+            <p>A kisz&aacute;m&iacute;tand&oacute; maxim&aacute;lis t&aacute;vols&aacute;g. Ha p&eacute;ld&aacute;ul &eacute;rt&eacute;kk&eacute;nt 10&nbsp;000 m&eacute;tert ad meg, az euklideszi t&aacute;vols&aacute;g a kiindul&oacute;helyektől ekkora &eacute;rt&eacute;kre (t&aacute;vols&aacute;gra) lesz kisz&aacute;m&iacute;tva.
+            </p>
+            <p>Ha nem ad meg &eacute;rt&eacute;ket, a t&aacute;vols&aacute;got a meghat&aacute;rozott kiterjed&eacute;sig sz&aacute;m&iacute;tja.
+            </p>
+            <p>A rendelkez&eacute;sre &aacute;ll&oacute; m&eacute;rt&eacute;kegys&eacute;gek: kilom&eacute;ter, m&eacute;ter, m&eacute;rf&ouml;ld &eacute;s l&aacute;b.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kimeneti cellaméret</h2></div>
+        <hr/>
+        <div>
+            <p>A kimeneti raszterek cellam&eacute;rete &eacute;s m&eacute;rt&eacute;kegys&eacute;ge.
+            </p>
+            <p>A m&eacute;rt&eacute;kegys&eacute;g lehet kilom&eacute;ter, m&eacute;ter, m&eacute;rf&ouml;ld vagy l&aacute;b.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Eredményül kapott távolságréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Eredményül kapott irányréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő r&eacute;teg neve. Olyan nevet kell megadnia, amely m&eacute;g nem l&eacute;tezik a <b>Saj&aacute;t tartalomban</b>.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Eredményül kapott allokációréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő r&eacute;teg neve. Olyan nevet kell megadnia, amely m&eacute;g nem l&eacute;tezik a <b>Saj&aacute;t tartalomban</b>.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Allokáció kiválasztása mező</h2></div>
+        <hr/>
+        <div>
+            <p>Az egyes kiindul&oacute;pontokat meghat&aacute;roz&oacute; &eacute;rt&eacute;keket tartalmaz&oacute; mező a bemeneti kiindul&oacute;pont-r&eacute;tegen. Lehet a kiindul&oacute;pontok adathalmaz&aacute;nak integer- vagy sz&ouml;veges mezője.
+            </p>
+            <p>Az alap&eacute;rtelmezett &eacute;rt&eacute;k  <i>Value</i>. Ha vektoros adatszolg&aacute;ltat&aacute;s haszn&aacute;lata eset&eacute;n nem &eacute;rhető el <i>Value</i> mező, akkor az első el&eacute;rhető integer- vagy sz&ouml;veges mezőt haszn&aacute;lja. Ha nem l&eacute;tezik &eacute;rv&eacute;nyes mező, az ObjectID mezőt (p&eacute;ld&aacute;ul OID vagy FID, a vektoros bemenet t&iacute;pus&aacute;t&oacute;l f&uuml;ggően) haszn&aacute;lja.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

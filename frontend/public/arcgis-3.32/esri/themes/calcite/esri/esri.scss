@@ -1,0 +1,46 @@
+@import "compass/css3";
+@import "variables";
+* {
+  &,
+  &:before,
+  &:after {
+    @include box-sizing(border-box);
+  }
+}
+
+// Reset
+html {
+  font-size: 10px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $text-color;
+  background-color: $body-bg;
+}
+
+@import url("jsapi.css");
+@import url("../icons/style.css");
+@import "widgets/BasemapGallery";
+@import "widgets/BasemapToggle";
+@import "widgets/Bookmarks";
+@import "widgets/Directions";
+@import "widgets/HomeButton";
+@import "widgets/LayerSwipe";
+@import "widgets/Legend";
+@import "widgets/LocateButton";
+@import "widgets/OverviewMap";
+@import "widgets/Print";
+@import "widgets/Scalebar";
+@import "widgets/Search";
+@import "widgets/SimpleSlider";
+@import "widgets/TimeSlider";
+@import "widgets/Popup";
+@import "widgets/Measurement";
+
+// Dark Theme
+@import "variables_dark";
+
+@import "dark/widgets/Popup";

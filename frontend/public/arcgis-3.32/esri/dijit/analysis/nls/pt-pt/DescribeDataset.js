@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-pt/DescribeDataset",{inputLayerLabel:"Escolher conjunto de dados para descrever",describeDataLabel:"Compreender os dados criando uma (opcional)",sampleLayer:"Camada de amostra",extentLayer:"Camada de extens\u00e3o",noOfFeaturesLabel:"N\u00famero de elementos a incluir",outputLayerName:"Nome da camada resultante",resultName:"Descrever dados de ${layerName}",itemDescription:"Camada de elementos gerada atrav\u00e9s da execu\u00e7\u00e3o de Descrever conjunto de dados em ${layerName}. ",
+itemTags:"Resultado da an\u00e1lise, Descrever conjunto de dados, ${layerName}",itemSnippet:"Camada de elementos gerada a partir de Descrever conjunto de dados"});

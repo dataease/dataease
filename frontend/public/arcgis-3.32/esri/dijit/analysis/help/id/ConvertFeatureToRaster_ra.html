@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konversi Fitur ke Raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Alat Konversi Fitur ke Raster"></h2>
+        <hr/>
+    <p>Ala ini mengubah fitur ke set data raster.
+    </p>
+    <p>Setiap kelas fitur yang berisi fitur titik, garis, atau poligon dapat diubah menjadi set data raster.
+    </p>
+    <p>Pusat sel digunakan untuk memutuskan nilai oiksel raster output.
+    </p>
+    <p>Tipe kolom input menentukan tipe raster output. Jika kolom berupa bilangan bulat, output raster akan berupa bilangan bulat; jika berupa bilangan titik mengambang, output akan berupa bilangan titik mengambang.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih feature layer untuk dikonversi</h2></div>
+        <hr/>
+        <div>
+            <p>Input feature layer untuk dikonversi ke rangkaian data raster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Pilih kolom</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih kolom yang akan digunakan untuk mengisikan nilai pada output raster.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ukuran sel output</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran dan unit sel untuk raster output.
+            </p>
+            <p>Unit yang tersedia adalah Mil, Kaki, Kilometer, dan Meter. Unit defaultnya adalah Kaki.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

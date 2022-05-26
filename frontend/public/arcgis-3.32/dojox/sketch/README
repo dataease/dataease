@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------------
+dojox.sketch
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 28/01/2008
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Contributed by TeamPatent (supported by National Science Foundation grant 638334)
+  Tom Trenka (ttrenka@gmail.com)
+  Heng Liu/LiuCougar (heng@teampatent.com)
+-------------------------------------------------------------------------------
+Project description
+
+A cross-browser drawing editor based on dojox.gfx.
+-------------------------------------------------------------------------------
+Dependencies:
+
+dijit (Toolbar, Button, Slider)
+dojox.gfx
+dojox.xml
+-------------------------------------------------------------------------------
+Documentation
+
+Currently, 5 shapes are supported: line, single arrow line, double arrow line,
+underline text and text. The first 3 shapes can have optinal text associated.
+
+Shapes can be added, deleted, moved and modified. All of these operations can
+be undo-ed or redo-ed.
+
+TODO:
+ * provide UI to change various properties on shapes (fill, stroke, text) and
+allow changing of background image
+ * serialize/unserialize in dojox.gfx to svg (and maybe vml as well?) (or another
+simplier format? such as a json based one, which is easier to parse, and then
+write a convertor to convert the json format to svg or any other format?)
+ * Move mousedown/up/move to each shape (to prepare for the following)
+ * Add shapes for other primitive shapes (needs to decide which primitive 
+dojox.gfx.shapes are useful), and add in support for user to group any 
+shapes/groups to form a single "compound shape" (need to add support to set 
+fill/stroke properties on the entire compound shape, which shallpropagate to 
+all children shapes)
+-------------------------------------------------------------------------------
+Installation instructions
+
+Install dijit, dojox.gfx and dojox.xml first
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/sketch.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/sketch/*
+
+Install into the following directory structure:
+/dojox/sketch/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

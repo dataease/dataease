@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Gebieden op basis van reistijd maken</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Gebieden op basis van reistijd maken"></h2>
+        <hr/>
+    <p>Met Gebieden op basis van reistijd maken kunt u gebieden maken die kunnen worden bereikt binnen een opgegeven reistijd, reisafstand, wandelafstand enzovoort. Het meet de afstanden vanaf een of meerdere punten (maximaal 1000) langs wegen of wandelpaden om een laag te maken die u helpt de volgende vragen te beantwoorden:
+        <ul>
+            <li>Waar kan ik heen binnen een reisduur van 30 minuten vanaf hier?
+            </li>
+            <li>Waar kan ik naartoe binnen een reisduur van 30 minuten vanaf hier om 17.30 uur tijdens het spitsuur?
+            </li>
+            <li>Wat bevindt zich binnen een afstand van twee kilometer wandelen van mijn hotel?
+            </li>
+            <li>Welke stadsdelen kan de brandweer binnen vijf minuten bereiken? 
+            </li>
+            <li>In hoeverre zou de dekking van de reactietijd bij een brandalarm verbeteren door hier een nieuwe brandweerkazerne te bouwen?
+            </li>
+            <li>Welke marktgebieden worden door mijn bedrijf gedekt?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Misschien kunt u uw vragen alleen al beantwoorden door de uitvoergebieden te visualiseren. U kunt ook een verdere ruimtelijke analyse uitvoeren aan de hand van de uitvoergebieden. Als u bijvoorbeeld Punten aggregeren uitvoert met behulp van reistijdgebieden met demografische gegevens, kunt u daarmee bepalen welke potenti&euml;le winkellocatie de beste klantbasis zou zijn voor uw type bedrijf. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Voor het maken van gebieden door afstanden in rechte lijnen te meten in plaats van langs wegen, gebruikt u in plaats daarvan de tool Buffers maken.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Als  <b>Huidig kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten die binnen het huidige kaartextent zichtbaar zijn, gebruikt om gebieden op basis van reistijd of reisafstand te maken. Als deze optie niet is aangevinkt, worden alle objecten in de invoerlaag gebruikt, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies de puntenlaag om gebieden op basis van reistijd te berekenen rond</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten rond welke gebieden worden berekend. U kunt kiezen hoe gebieden berekend worden op basis van reismethode (rijden, vrachtverkeer of wandelen) en (tijd of afstand) meten.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+            <p>De tool ondersteunt maximaal 1.000 objecten in de invoerlaag.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Meten</h2></div>
+        <hr/>
+        <div>
+            <p>Kies uw manier van reizen (auto, vrachtwagen, wandelen) en meeteenheid (tijd of afstand). De beschikbare manieren van reizen worden bepaald door de beheerder van uw organisatie. Nadat u uw manier van reizen en uw meeteenheid hebt gekozen, voert u een duur of afstand in van maximaal  5 uur (300 minuten) of  300 mijl (482,80 kilometer). 
+            </p>
+            <p>De rijrichting <b>(Weg van de bestemming</b> of <b>Richting de bestemming</b>) kan van invloed zijn op de manier waarop de gebieden worden gegenereerd. Het maken van reistijdgebieden houdt rekening met eenrichtingsstraten, vermijdt verboden bochten en volgt andere regels die gebaseerd zijn op de rijrichting. U moet de rijrichting selecteren op basis van het type invoerlocatie en de context van uw analyse. Zo moet bijvoorbeeld de reistijdruimte voor een pizzabezorger buiten de bestemming worden gecre&euml;erd, terwijl de reistijdruimte voor een ziekenhuis in de richting van de bestemming moet worden gecre&euml;erd.
+            </p>
+            <p>Als u  <b>Reistijd</b>, <b>Landelijke reistijd</b> of <b>Reistijd per vrachtwagen</b> kiest, hebt u opties voor het meten van de reistijd.
+                <ul>
+                    <li>
+                        <p>Vink  <b>Verkeer gebruiken</b> uit om gebieden voor reistijd te maken op basis van vaste snelheden. Dit is een geschikte optie als u een algemeen reistijdgebied wilt, en niet een gebied dat wordt berekend aan de hand van vari&euml;rende verkeersomstandigheden voor een bepaalde vertrektijd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Vink  <b>Verkeer gebruiken</b> aan om reistijdgebieden te maken op basis van een gegeven vertrektijd en veranderende verkeersomstandigheden. Door eveneens de optie <b>Actueel verkeer</b> te kiezen wordt de vertrektijd van de invoerpunten ingesteld op de huidige tijd, en wordt gebruikgemaakt van huidige en voorspelde verkeerssnelheden via sensors en invoergegevens om de reistijdgebieden te maken. De voorspelde verkeerssnelheden worden berekend op basis van actuele verkeerssnelheden, historische snelheden en huidige omstandigheden zoals het weer. Verkeerssnelheden worden tot 12 uur in de toekomst voorspeld, dus u kunt de schuifregelaar verplaatsen om de vertrektijd maximaal 12 uur naar de toekomst te verplaatsen.
+                        </p>
+                        <p>Gebruik deze actuele verkeersinstellingen om te ontdekken welke gebieden bereikbaar zijn als u nu vertrekt, over een uur vertrekt, enzovoort.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Als u  <b>Verkeer gebruiken</b> aanvinkt en <b>Verkeer op basis van gemiddelde omstandigheden voor</b> een dag en een tijdstip selecteert, maakt de tool reistijdgebieden op basis van historische gemiddelde snelheden voor elk interval van vijf minuten gedurende een gewone week. De resultaten houden rekening met het verkeer, maar laten de invloed van huidige verkeersomstandigheden en gebeurtenissen buiten beschouwing die aanzienlijk van het gemiddelde kunnen verschillen.
+                        </p>
+                        <p>U kunt deze historische verkeersinstellingen bijvoorbeeld gebruiken voor de vraag: 'Welke gebieden kan ik gewoonlijk bereiken wanneer ik op een woensdag om 11:30 uur vertrek?' 
+                        </p>
+                        <p>De tijd die u instelt, verwijst naar de tijdzone waarop uw invoerpunten zich bevinden. Als u de tijd dus instelt op 8:00 uur en twee startpunten hebt, een in New York City en een ander in Los Angeles, worden de reistijdgebieden gegenereerd voor respectievelijk 8:00 uur. Eastern Time en 8:00 uur Pacific Time als uitgangspunt.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Houd er rekening mee dat wanneer een voertuig wegrijdt vanaf een bepaald punt, de tijd verstrijkt en de verkeersomstandigheden wijzigen. De tool Reistijdgebieden houdt rekening met deze variaties wanneer u  <b>Reistijd</b> kiest en <b>Verkeer gebruiken</b> selecteert. Niet alle regio's echter ondersteunen verkeer. Klik op de koppeling <b>Beschikbaarheid bekijken</b> om erachter te komen of deze optie voor uw onderzoeksgebied van toepassing is.
+            </p>
+            <p> <b>Reistijd per vrachtwagen</b> kan dynamische reissnelheden gebruiken op basis van het verkeer tot de maximale rijsnelheid voor vrachtverkeer. Bijvoorbeeld als de dynamische snelheid voor een straat gebaseerd op live verkeer 65 mile per uur is maar de maximale rijsnelheid voor vrachtverkeer voor die straat is 55 mile per uur, dan gebruikt de berekening 55 mile per uur voor die straat.
+            </p>
+            <p> <b>Wandeltijd</b> en <b>Wandelafstand</b> gebruiken een vaste snelheid van 5 kilometer per uur (3,1 mijl per uur) en volgen wandelpaden en straten voor voetgangers (zonder rekening te houden met regels die van toepassing zijn op automobilisten, zoals eenrichtingswegen). </p>
+            <p> <b>Truckafstand</b>  gebruikt vaste snelheden en volgt regels die van toepassing zijn op zware vrachtwagens terwijl <b>Reisafstand</b> en <b>Landelijke reisafstand</b> vaste snelheden gebruiken en regels volgen die van toepassing zijn op auto's.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barrièrelagen selecteren</h2></div>
+        <hr/>
+        <div>
+            <p> E&eacute;n of meerdere objecten die dienen als tijdelijke beperkingen (barri&egrave;res) tijdens het reizen op de onderliggende straten. U kunt de barri&egrave;res specificeren door gebruik van punt-, lijn-, of polygoonobjecten.
+            </p>
+            <p>Een puntbarri&egrave;re kan een weergave zijn van een omgevallen boom, een ongeval, een omgewaaide elektriciteitspaal of iets anders waardoor een bepaald punt op straat volledig ontoegankelijk is voor verkeer. Verkeer heeft toegang tot de straat maar kan de barri&egrave;re niet passeren. U kunt tot 250 objecten aanduiden als puntbarri&egrave;re.
+            </p>
+            <p>Een lijnbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de barri&egrave;re de straat kruist. Een optocht of protestmars bijvoorbeeld waardoor het verkeer geen toegang heeft tot verschillende straatsegmenten kan weergegeven worden met een lijnbarri&egrave;re. Indien het aantal straatobjecten dat wordt doorkruist door alle lijnbarri&egrave;res meer dan 500 is, geeft de tool een foutmelding.
+            </p>
+            <p>Een polygoonbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de polygoon de straat kruist. Een manier waarop deze barri&egrave;re gebruikt wordt is voor het weergeven van een overstroming in een bepaald gebied of van een bepaald netwerk van straten waar geen verkeer mogelijk is. Indien het aantal straatobjecten dat wordt doorkruist door alle polygoonbarri&egrave;res meer dan 2000 is, geeft de tool een foutmelding.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Gebieden vanaf verschillende punten</h2></div>
+        <hr/>
+        <div>
+            <p>Kies hoe met gedeelde gebieden van verschillende invoerpunten wordt omgegaan wanneer ze elkaar bereiken. Ze kunnen:
+                <ul>
+                    <li> <b>Overlappen</b>&mdash;Gebieden van verschillende invoerpunten dekken dezelfde weg. Dit is handig wanneer u alle invoerpunten moet weten vanwaar een bepaalde locatie bereikbaar is binnen de gegeven tijd of afstand.
+                    </li>
+                    <li> <b>Oplossen</b>&mdash;Alle gebieden worden tot &eacute;&eacute;n gebied samengevoegd, en slechts &eacute;&eacute;n gebied dekt een bepaalde locatie. Dit is handig wanneer u alleen maar hoeft te weten dat een gebied bereikbaar is binnen een gegeven tijd of afstand, maar u niet hoeft te weten vanaf welke specifieke invoerpunten de locatie kan worden bereikt.
+                    </li>
+                    <li> <b>Splitsen</b>&mdash;De gebieden van verschillende invoerpunten die elkaar zouden overlappen, worden in het midden gesplitst, zodat ze nu aan elkaar grenzen. Dit is handig wanneer u wilt zien welke gebieden zich binnen een gegeven tijd of afstand van de invoerpunten bevinden, en u tegelijk wilt vaststellen welk invoerpunt het dichtst bij dat gebied ligt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Onbereikbare plaatsen als gaten tonen</h2></div>
+        <hr/>
+        <div>
+            <p>Kies of de uitvoergebieden gaten bevatten als sommige straten niet kunnen worden bereikt vanwege de  <b>Meet</b>-tijd of afstand of vanwege de beperkingen die worden opgelegd door de reismodus.
+            </p>
+            <p>De reistijdgebieden die met deze parameter worden gecre&euml;erd, hebben een limiet van 15 minuten of 15 mijl (24 kilometer).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naam resultaatlaag</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Inclusief bereikbare straten</h2></div>
+        <hr/>
+        <div>
+            <p>Neem de straten op die worden gebruikt om de reistijdgebieden als uitvoerlaag aan te maken. 
+            </p>
+            <p>Reistijdgebieden maken meet het bereik van een bestemming langs het stratennetwerk en cre&euml;ert vervolgens reistijdgebieden vanuit de straten die zijn afgelegd. Daarom zijn de gebieden een benadering van de afgelegde straten. Als uw analyse moet uitwijzen welke straten binnen een bepaalde reisafstand of -tijd van een bestemming liggen, kan het genereren van bereikbare straten nauwkeuriger zijn dan het gebruik van de reistijdgebieden om te evalueren of een bepaalde straat bereikbaar was.
+            </p>
+            <p>De reistijdgebieden die met deze parameter worden gecre&euml;erd, hebben een limiet van 15 minuten of 15 mijl (24 kilometer).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

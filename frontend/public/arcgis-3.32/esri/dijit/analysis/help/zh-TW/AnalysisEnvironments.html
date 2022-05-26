@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>入口網站分析環境設定</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>   Portal for ArcGIS 和  ArcGIS Online 中分析的環境設定。 </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>覆寫結果圖層</h2></div>
+        <hr/>
+        <div>
+            
+            <p>指定是否覆寫現有的圖層。勾選後，若內容中存在同名的圖層，則會覆寫該圖層。
+            </p>
+            <p>
+                <ul>
+                    <li>勾選 - 若內容中存在同名的圖層，則會覆寫該圖層。輸出將具有輸入的相同座標系統。
+                    </li>
+                    <li>取消勾選 - 如果提供的結果圖層名稱已存在，則會發生錯誤，且必須先重命名結果圖層才能執行工具。這是預設情況。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>執行分析後關閉分析 widget</h2></div>
+        <hr/>
+        <div>
+            <p>指定工具正在處理時，是否要維持開啟和啟用分析對話方塊。此設定能讓您修改分析參數，同時讓先前的分析工作繼續執行。分析是一個反覆的程序，且藉由維持工具對話方塊開啟，能讓您變更參數並重新執行分析。
+            </p>
+            <p>
+                <ul>
+                    <li>勾選 - 分析工具對話方塊將關閉，且焦點將回到目錄。這是預設值
+                    </li>
+                    <li>取消勾選 - 分析工具對話方塊將維持開啟和啟用。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>將分析結果儲存為託管圖徵圖層</h2></div>
+        <hr/>
+        <div>
+            
+            <p>指定透過分析建立的結果圖層為圖徵集合或託管圖徵圖層。
+            </p>
+            <p>
+                <ul>
+                    <li>勾選 - 分析結果將建立託管圖徵圖層，並在內容中建立項目。這是預設情況。
+                    </li>
+                    <li>取消勾選 - 分析結果將建立圖徵集合。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>輸出座標系統</h2></div>
+        <hr/>
+        <div>
+            <p>指定用於點陣分析之結果圖層的座標系統。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>與輸入相同</b> - 分析結果將位於輸入所在的相同座標系統中。這是預設情況。
+                    </li>
+                    <li> <b>依照指定</b> - 分析結果將位於您選擇的座標系統。選擇此選項後按一下地球按鈕，並從已知座標系統清單中進行選擇，或在提供的方塊中新增空間參考 WKID。
+                    </li>
+                    <li> <b>圖層
+&lt;name&gt;</b> - 分析的結果將與您在 Web 地圖中選擇的現有圖層位於相同的座標系統中。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>正在處理座標系統</h2></div>
+        <hr/>
+        <div>
+            <p>指定您的分析在執行 GeoAnalytics 分析期間將使用的座標系統。
+            </p>
+            <p>對於 GeoAnalytics，部分分析需要在投影的座標系統中進行處理。已實作資料或線性單位分級的任何工具都需要投影的座標系統。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>與輸入相同</b> - 將在輸入所在的相同座標系統中處理分析。這是預設情況。
+                    </li>
+                    <li> <b>依照指定</b> - 您的分析將位於您選擇的座標系統。選擇此選項後按一下地球按鈕，並從已知的投影座標系統清單中進行選擇，或在提供的方塊中新增空間參考 WKID。
+                    </li>
+                    <li> <b>圖層
+&lt;name&gt;</b> - 您的分析將與您在 Web 地圖中選擇的現有圖層位於相同的座標系統中。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>範圍</h2></div>
+        <hr/>
+        <div>
+            <p>指定在執行分析期間將使用的範圍或邊界。將在分析中使用完全位於指定範圍內的所有輸入圖徵，或與指定範圍相交的所有輸入圖徵。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>預設值</b> - 工具提供的範圍。
+                    </li>
+                    <li> <b>依照指定</b> - 使用您提供的座標來定義範圍。
+                    </li>
+                    <li> <b>圖層
+&lt;name&gt;</b> - 用來處理分析的範圍，將與您在 Web 地圖中選擇的現有圖層的空間範圍相同。 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>捕捉光柵</h2></div>
+        <hr/>
+        <div>
+            <p>調整輸出點陣圖層的範圍，使其在點陣分析中符合指定的 <b>對齊點陣</b>圖層的儲存格對齊。
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>儲存格大小</h2></div>
+        <hr/>
+        <div>
+            <p>指定將在點陣分析中用來建立輸出點陣圖層的儲存格大小或解析度。預設的輸出解析度由輸入點陣圖層的最大儲存格大小所決定。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>輸入的最小值</b> - 使用所有輸入圖層的最小儲存格大小。
+                    </li>
+                    <li> <b>輸入的最大值</b> - 使用所有輸入圖層的最大儲存格大小。這是預設情況。
+                    </li>
+                    <li> <b>依照指定</b> - 指定用來設定儲存格大小的數值。如果選擇此設定，則預設值為 1。
+                    </li>
+                    <li> <b>圖層 &lt;name&gt;</b> - 將儲存格大小設定為選擇的點陣圖層。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>面罩</h2></div>
+        <hr/>
+        <div>
+            <p>指定在點陣分析中將用來定義感興趣區域的圖層。分析操作只會考量分析遮罩中的儲存格。
+            </p>
+            <ul>
+                <li>遮罩可為點陣或圖徵圖層。
+                </li>
+                <li>如果分析遮罩是點陣，則會考量具有值的所有儲存格以定義遮罩。會將遮罩點陣中的 NoData 儲存格視為位於遮罩外部，並且在分析結果圖層中將是 NoData。
+                </li>
+                <li>如果分析遮罩是圖徵圖層，會在內部將其轉換成點陣加以執行。因此，請務必針對分析適當地設定 <b>儲存格大小</b>和 <b>對齊點陣</b> 。
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>資料儲存庫</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 結果可儲存於  ArcGIS Data Store 並在  Portal for ArcGIS 中顯示為圖徵圖層，或配置的大數據檔案分享。 </p>
+            <p>在  ArcGIS Data Store 中儲存結果時，大多數情況下必須在時空資料儲存庫中儲存結果。這是預設情況。在下列情況下，您可能想要在關聯式資料儲存庫中儲存結果： 
+                <ul>
+                    <li>在入口網站之間的協同作業中使用您的結果。
+                    </li>
+                    <li>啟用與您結果的同步功能
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您預期 GeoAnalytics 結果會增加，並想要利用大型的時空資料儲存庫的功能來處理大量資料，則不應使用關聯式資料儲存庫。
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>平行處理因子</h2></div>
+        <hr/>
+        <div>
+            <p>跨多個點陣處理服務執行個體執行分散式分析。
+            </p>
+            <p>您可以使用支援 <b>平行處理因子</b>環境的工具，控制可用於處理資料的點陣處理服務執行個體的數量。
+            </p>
+            <p>如果工具不支援 <b>處理器類型</b>，或將 <b>處理器類型</b>環境設為 <b>CPU</b>，則 <b>平行處理因子</b>環境將控制點陣處理 (CPU) 服務執行個體。若將 <b>處理器類型</b>設為 <b>GPU</b>， <b>平行處理因子</b>環境將控制處理 GPU 執行個體的點陣數量。
+            </p> 
+            <p>藉由設定 <b>平行處理因子</b>，您可以請求點陣分析圖片伺服器用來處理一個點陣分析任務的平行工作者數量。不過，如果平行處理的總數超過處理（CPU 或 GPU）服務執行個體的點陣數上限，則會將其他平行處理排入佇列。
+            </p>
+            <p>若未指定 <b>平行處理因子</b>（預設值），工具將使用處理服務執行個體的點陣數上限的 80%。可將整數或百分比指定為平行處理因子。
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>處理器類型</h2></div>
+        <hr/>
+        <div>
+            <p>您可以使用支援 <b>處理器類型</b>環境的工具來選擇處理資料的位置和方式。您可以使用伺服器電腦的 CPU 或 GPU 來處理資料。如果 <b>處理器類型</b>環境空白，工具會使用 CPU 來處理資料。這是預設情況。
+            </p> 
+            <p>可跨多個核心和執行個體進行 CPU 平行處理，這個動作由 <b>平行處理因子</b>所控制。
+            </p>
+            <p>GPU 可有效地處理圖形和圖片，其高度平行的結構可讓它們以重複且有效的方式處理大資料區塊。支援此環境的點陣分析工具可跨越多部點陣分析伺服器電腦的 GPU 執行個體分散其工作，這個動作由 <b>平行處理因子</b>所處理。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> - 將使用圖形處理單元處理資料。
+                    </li>
+                    <li> <b>CPU</b> - 將使用電腦的中央處理單元處理資料。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

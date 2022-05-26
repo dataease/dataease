@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Yhteenveto, lähistö</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Yhteenveto, l&auml;hist&ouml;"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voit etsi&auml; kohteet, jotka sijaitsevat m&auml;&auml;ritetyn et&auml;isyyden sis&auml;ll&auml; ensimm&auml;isen l&auml;ht&ouml;karttatason kohteista, ja laatia niist&auml; yhteenvedon. Et&auml;isyyden voi mitata suorana et&auml;isyyten&auml; tai k&auml;ytt&auml;m&auml;ll&auml; valittua matkustustapaa. Matkustustapa-asetukset ovat ajoet&auml;isyys, ajoaika, et&auml;isyys rekka-autolla, aika rekka-autolla, k&auml;velyet&auml;isyys tai k&auml;velyaika. Sen j&auml;lkeen ty&ouml;kalu laskee tilastotietoja l&auml;hell&auml; sijaitsevista kohteista. Esimerkki
+        <ul>
+            <li>Laske, kuinka monta ihmist&auml; asuu viiden minuutin ajomatkan sis&auml;ll&auml; alueesta, joka on ehdolla uuden liikkeen sijainniksi.
+            </li>
+            <li>Arvioi uuden liikkeen luoksep&auml;&auml;st&auml;vyys laskemalla, kuinka monta valtatien liittym&auml;&auml; on yhden kilometrin s&auml;teell&auml; ehdolla olevasta uudesta sijainnista.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -toiminto on valittuna, vain l&auml;ht&ouml;karttatason ja yhteenvetokarttatason nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos toimintoa ei ole valittu, analyysiin sis&auml;llytet&auml;&auml;n kaikki l&auml;ht&ouml;- ja yhteenvetokarttatason kohteet, vaikka ne eiv&auml;t sijaitsisikaan nykyisen karttalaajuuden alueella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Valitse karttataso, jonka etäisyydet yhteenvetoon sisällytettävän karttatason kohteisiin mitataan</h2></div>
+        <hr/>
+        <div>
+            <p>Piste-, viiva- ja aluekarttataso, jota k&auml;ytet&auml;&auml;n yhteenvetoon lis&auml;tt&auml;vien, l&auml;hist&ouml;ll&auml; olevien kohteiden aloitussijainteina.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+            <p>Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n 1 000 kohdetta t&auml;ss&auml; karttatasossa. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Valitse karttataso yhteenvetoa varten</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;ss&auml; karttatasossa olevista kohteista, jotka sijaitsevat m&auml;&auml;ritetyn et&auml;isyyden sis&auml;ll&auml; edell&auml; m&auml;&auml;ritetyn karttatason kohteista, tehd&auml;&auml;n yhteenveto. 
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Tee yhteenveto lähimmistä kohteista käyttäen</h2></div>
+        <hr/>
+        <div>
+            <p> Voit m&auml;&auml;ritt&auml;&auml;, mit&auml; et&auml;isyytt&auml; haluat k&auml;ytt&auml;&auml; hakuperusteena: suoraviivaista et&auml;isyytt&auml; vai valittua matkustustapaa. Matkustustavat otetaan k&auml;ytt&ouml;&ouml;n vain, kun ensimm&auml;inen l&auml;ht&ouml;karttataso (karttataso, josta et&auml;isyydet mitataan) sis&auml;lt&auml;&auml; pisteit&auml;. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat. Kun k&auml;yt&auml;t jotain matkustustapaa, mittaukset tehd&auml;&auml;n teit&auml; tai kevyen  liikenteen v&auml;yli&auml; pitkin ja niiss&auml; noudatetaan asianmukaisia s&auml;&auml;nt&ouml;j&auml;, kuten yksisuuntaisia katuja, k&auml;&auml;ntymissuuntakieltoja jne. <b>Ajoajan</b>, <b>ajoajan maaseudulla</b> ja <b>rekkaliikenteen ajan</b> laskemisessa k&auml;ytet&auml;&auml;n valitsemaasi ajonopeutta, joka voi perustua joko reaaliaikaisiin tai tyypillisiin liikennetietoihin. Reaaliaikaiset nopeudet perustuvat nykyisiin anturilukemiin ja tyypilliset nopeudet lasketaan historiallisten keskiarvojen perusteella.
+            </p>
+            <p>Voit antaa useita et&auml;isyyksi&auml;. Yhteenvetoon sis&auml;llytet&auml;&auml;n kohteet, jotka sijaitsevat haluamasi et&auml;isyyden sis&auml;ll&auml; (tai vastaavalla et&auml;isyydell&auml;).  
+            </p>
+            <p>Jos  <b>Palauta raja-alueet</b> -valintaruutu on valittu, ohjelma palauttaa m&auml;&auml;ritetyn et&auml;isyysmitan m&auml;&auml;ritt&auml;mien alueiden tulostason. Tulostaso sis&auml;lt&auml;&auml; kaikki pyydetyt yhteenvetotiedot. Kun teet yhteenvetoa esimerkiksi l&auml;heisist&auml; pisteist&auml; ja k&auml;yt&auml;t viiden kilometrin <b>viivaet&auml;isyytt&auml;</b>, tulos sis&auml;lt&auml;&auml; alueet, joiden s&auml;de sy&ouml;tekohteiden ymp&auml;rill&auml; on viisi kilometri&auml;, sek&auml; kaikki yhteenvetotiedot, kuten pisteiden m&auml;&auml;r&auml; ja kaikki lis&auml;tyt tilastotiedot. Jos valintaruutua ei ole valittu, tuloskarttataso palauttaa samat ensimm&auml;isen l&auml;ht&ouml;karttatason kohteet sek&auml; kaikki pyydetyt yhteenvetotiedot.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Lisää yhteenvetoon lisättävät tilastotiedot karttatasosta</h2></div>
+        <hr/>
+        <div>
+            <p>Valinnaisesti voit laskea tilastotietoja l&auml;heisten pisteiden mist&auml; tahansa numeromuotoisista ominaisuustiedoista. 
+            </p>
+            <p>Jos valitset  <b>Pisteiden m&auml;&auml;r&auml;</b> -valinnan, ty&ouml;kalu laskee l&auml;hell&auml; sijaitsevien pisteiden kokonaism&auml;&auml;r&auml;n. Voit laskea my&ouml;s tilastotietoja l&auml;heisten pisteiden numeromuotoisille kentille.
+            </p>
+            <ul>
+                <li> <b>Summa</b>: m&auml;&auml;ritetyn kent&auml;n kokonaisarvo.
+                </li>
+                <li> <b>Keskiarvo</b>: m&auml;&auml;ritetyn kent&auml;n keskiarvo.
+                </li>
+                <li> <b>Minimi</b>: m&auml;&auml;ritetyn kent&auml;n pienin arvo.
+                </li>
+                <li> <b>Maksimi</b>: m&auml;&auml;ritetyn kent&auml;n suurin arvo.
+                </li>
+                <li> <b>Keski Hajonta</b>: m&auml;&auml;ritetyn kent&auml;n arvojen keskihajonta
+                </li>
+            </ul>
+            
+            <p>Jos karttatasossa, josta yhteenveto luodaan, ei ole numerokentti&auml;, lis&auml;tilastotiedot eiv&auml;t ole k&auml;ytett&auml;viss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Lisää yhteenvetoon lisättävät tilastotiedot karttatasosta</h2></div>
+        <hr/>
+        <div>
+            <p>Valinnaisesti voit laskea tilastotietoja l&auml;heisten viivojen mist&auml; tahansa numeromuotoisista ominaisuustiedoista. 
+            </p>
+            <p>Jos  <b>Kokonaispituus</b> -valintaruutu on valittu, ty&ouml;kalu laskee l&auml;heisten viivojen kokonaispituuden. Voit laskea my&ouml;s tilastotietoja l&auml;heisten viivojen numeromuotoisille kentille.
+            </p>
+            <ul>
+                <li> <b>Summa</b>: m&auml;&auml;ritetyn kent&auml;n kokonaisarvo.
+                </li>
+                <li> <b>Keskiarvo</b>: m&auml;&auml;ritetyn kent&auml;n keskiarvo.
+                </li>
+                <li> <b>Minimi</b>: m&auml;&auml;ritetyn kent&auml;n pienin arvo.
+                </li>
+                <li> <b>Maksimi</b>: m&auml;&auml;ritetyn kent&auml;n suurin arvo.
+                </li>
+                <li> <b>Keski Hajonta</b>: m&auml;&auml;ritetyn kent&auml;n arvojen keskihajonta
+                </li>
+            </ul>
+            
+            <p>Jos karttatasossa, josta yhteenveto luodaan, ei ole numerokentti&auml;, lis&auml;tilastotiedot eiv&auml;t ole k&auml;ytett&auml;viss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Lisää yhteenvetoon lisättävät tilastotiedot karttatasosta</h2></div>
+        <hr/>
+        <div>
+            <p>Valinnaisesti voit laskea tilastotietoja l&auml;heisten alueiden mist&auml; tahansa numeromuotoisista ominaisuuksista. 
+            </p>
+            <p>Jos  <b>Kokonaispinta-ala</b> -valintaruutu on valittuna, ty&ouml;kalu laskee l&auml;heisten kohteiden kokonaispinta-alan. Voit laskea my&ouml;s tilastotietoja l&auml;heisten kohteiden numeromuotoisille kentille.
+            </p>
+            <ul>
+                <li> <b>Summa</b>: m&auml;&auml;ritetyn kent&auml;n kokonaisarvo.
+                </li>
+                <li> <b>Keskiarvo</b>: m&auml;&auml;ritetyn kent&auml;n keskiarvo.
+                </li>
+                <li> <b>Minimi</b>: m&auml;&auml;ritetyn kent&auml;n pienin arvo.
+                </li>
+                <li> <b>Maksimi</b>: m&auml;&auml;ritetyn kent&auml;n suurin arvo.
+                </li>
+                <li> <b>Keski Hajonta</b>: m&auml;&auml;ritetyn kent&auml;n arvojen keskihajonta
+                </li>
+            </ul>
+            
+            <p>Jos karttatasossa, josta yhteenveto luodaan, ei ole numerokentti&auml;, lis&auml;tilastotiedot eiv&auml;t ole k&auml;ytett&auml;viss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Lisää yhteenvetoon lisättävät tilastotiedot karttatasosta</h2></div>
+        <hr/>
+        <div>
+            <p>Valittuasi tason, josta yhteenveto tehd&auml;&auml;n, voit vaihtoehtoisesti laskea tilastotietoja l&auml;heisten pisteiden, viivojen tai alueiden kaikille numeromuotoisille ominaisuustiedoille. 
+            </p>
+            <ul>
+                <li> <b>Summa</b>: m&auml;&auml;ritetyn kent&auml;n kokonaisarvo.
+                </li>
+                <li> <b>Keskiarvo</b>: m&auml;&auml;ritetyn kent&auml;n keskiarvo.
+                </li>
+                <li> <b>Minimi</b>: m&auml;&auml;ritetyn kent&auml;n pienin arvo.
+                </li>
+                <li> <b>Maksimi</b>: m&auml;&auml;ritetyn kent&auml;n suurin arvo.
+                </li>
+                <li> <b>Keski Hajonta</b>: m&auml;&auml;ritetyn kent&auml;n arvojen keskihajonta
+                </li>
+            </ul>
+            
+            <p>Niiden kohteiden tyyppien mukaan, joista yhteenveto tehd&auml;&auml;n, voit laskea l&auml;heisten pisteiden kokonaism&auml;&auml;r&auml;n, l&auml;heisten viivojen kokonaispituuden tai l&auml;heisten aluekohteiden kokonaisalueen.
+            </p>
+            <p>Jos karttatasossa, josta yhteenveto luodaan, ei ole numerokentti&auml;, lis&auml;tilastotiedot eiv&auml;t ole k&auml;ytett&auml;viss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Valitse kenttä ryhmittelyä varten</h2></div>
+        <hr/>
+        <div>
+            <p> T&auml;m&auml; on l&auml;himpien kohteiden ominaisuus, jota voit k&auml;ytt&auml;&auml; tilastotietojen laskemiseen erikseen kullekin yksil&ouml;lliselle ominaisuuden arvolle. Oletetaan esimerkiksi, ett&auml; ensimm&auml;inen l&auml;ht&ouml;karttataso (karttataso, josta et&auml;isyydet mitataan) sis&auml;lt&auml;&auml; vapaita tontteja, ja l&auml;heiset kohteesi ovat rakennusten pohja-aloja. Yksi rakennusten pohja-alojen attribuuteista on <i>UseType</i>, jolla on sellaisia arvoja kuten V&Auml;HITT&Auml;ISLIIKE, ASUINRAKENNUS, TEHDAS ja JULKINEN. Jos haluat selvitt&auml;&auml; kunkin vapaan tontin l&auml;hist&ouml;n rakennusten tyypit, voit esimerkiksi laskea kunkin rakennustyypin kokonaispinta-alan kahden kilometrin s&auml;teell&auml; vapaana olevista tonteista k&auml;ytt&auml;m&auml;ll&auml; <i>UseType</i>-ominaisuustietoa ryhmittelyominaisuustietona. Ryhmien tilastot sek&auml; l&auml;hist&ouml;ominaisuuksien m&auml;&auml;r&auml; n&auml;kyv&auml;t esiin tulevassa tulostasossa.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lisää vähemmistö, enemmistö</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; valintaruutu on k&auml;yt&ouml;ss&auml;, kun valitset kent&auml;n ryhmittely&auml; varten. Jos haluat selvitt&auml;&auml;, mitk&auml; kunkin ryhm&auml;n ominaisuustietoarvot ovat v&auml;hemmist&ouml;n&auml; (v&auml;hiten hallitsevia) tai enemmist&ouml;n&auml; (hallitsevimpia) m&auml;&auml;ritt&auml;m&auml;si et&auml;isyyden tai ajan sis&auml;ll&auml;, valitse  <b>Lis&auml;&auml; v&auml;hemmist&ouml;, enemmist&ouml;</b>. Kun valitset <b>Lis&auml;&auml; v&auml;hemmist&ouml;, enemmist&ouml;</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi uutta kentt&auml;&auml;. Jos valitset my&ouml;s <b>Lis&auml;&auml; prosenttiosuudet</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi lis&auml;kentt&auml;&auml;. Kent&auml;t sis&auml;lt&auml;v&auml;t jokaisen ryhm&auml;n v&auml;hemmist&ouml;- ja enemmist&ouml;ominaisuustietoarvojen prosenttiosuuden.
+            </p>
+            <ul>
+                <li>Jos olet tekem&auml;ss&auml; yhteenvetoa l&auml;heisist&auml; pisteist&auml;, v&auml;hemmist&ouml;- ja enemmist&ouml;arvot lasketaan m&auml;&auml;ritt&auml;m&auml;si et&auml;isyyden tai ajan sis&auml;ll&auml; olevien pisteiden m&auml;&auml;r&auml;n perusteella.
+                </li>
+                <li>Jos olet tekem&auml;ss&auml; yhteenvetoa l&auml;heisist&auml; viivoista, v&auml;hemmist&ouml;- ja enemmist&ouml;arvot lasketaan m&auml;&auml;ritt&auml;m&auml;si et&auml;isyyden tai ajan sis&auml;ll&auml; olevien viivojen pituuksien perusteella.  
+                </li>
+                <li>Jos olet tekem&auml;ss&auml; yhteenvetoa l&auml;heisist&auml; alueista, v&auml;hemmist&ouml;- ja enemmist&ouml;arvot lasketaan m&auml;&auml;ritt&auml;m&auml;si et&auml;isyyden tai ajan sis&auml;ll&auml; olevien alueiden perusteella.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Lisää prosenttiosuudet</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; valintaruutu on k&auml;yt&ouml;ss&auml;, kun valitset kent&auml;n ryhmittely&auml; varten. Valitse   <b>Lis&auml;&auml; prosenttiosuudet</b>, jos haluat selvitt&auml;&auml; jokaisen ryhm&auml;n kunkin ominaisuustietoarvon prosenttiosuuden. Tulostaulukkoon lis&auml;t&auml;&auml;n uusi kentt&auml;, joka sis&auml;lt&auml;&auml; jokaisen ryhm&auml;n kunkin ominaisuustietoarvon prosenttiosuuden. Jos valittuna on my&ouml;s <b>Lis&auml;&auml; prosenttiosuudet</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi lis&auml;kentt&auml;&auml;. Kent&auml;t sis&auml;lt&auml;v&auml;t jokaisen ryhm&auml;n v&auml;hemmist&ouml;- ja enemmist&ouml;ominaisuustietoarvojen prosenttiosuuden.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

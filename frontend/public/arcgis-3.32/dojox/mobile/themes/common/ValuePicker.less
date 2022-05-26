@@ -1,0 +1,54 @@
+/* dojox.mobile.ValuePicker */
+.mblValuePicker {
+  height: 126px;
+}
+/* dojox.mobile.ValuePickerSlot */
+.mblValuePicker > .mblValuePickerSlot {
+	float: left;
+	.mblValuePickerSlot-style;
+}
+.mblValuePickerSlotButton {
+	position: relative;
+	height: 38px;
+	.mbl-value-picker-slot-button-background-image();
+}
+.mblValuePickerSlotPlusButton {
+	border-top-left-radius: @mbl-value-picker-slot-button-radius;
+	border-top-right-radius: @mbl-value-picker-slot-button-radius;
+}
+
+.mblValuePickerSlotMinusButton {
+	border-bottom-left-radius: @mbl-value-picker-slot-button-radius;
+	border-bottom-right-radius: @mbl-value-picker-slot-button-radius;
+}
+
+.mblValuePickerSlotButtonSelected {
+	.default-button-selected-background-image();
+}
+.mblValuePickerSlotIcon {
+	top: 5px;
+	margin: 0 auto;
+}
+.mblValuePickerSlotInputArea {
+	position: relative;
+	height: 48px;
+	border-top: 1px solid #7b797b;
+	border-bottom: 1px solid #c6c3c6;
+	.mbl-value-picker-slot-input-area-background-image();
+}
+.mblValuePickerSlotInput {
+	display: block;
+	width: 90%;
+	height: 90%;
+	margin: 5% auto;
+	padding: 0;
+	text-align: center;
+	border-style: none;
+	background-color: transparent;
+	.mblValuePickerSlot-input-style;
+}
+
+/* dojox.mobile.ValuePickerTimePicker */
+.mblValuePickerTimePicker > .mblToolBarButton {
+	top: 45px;
+}

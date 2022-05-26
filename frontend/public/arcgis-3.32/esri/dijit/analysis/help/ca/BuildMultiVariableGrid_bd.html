@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea una quadrícula de diverses variables</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagrama del flux de treball Afegeix dades"></h2>
+        <hr/>
+    <p>L'eina Crea una quadr&iacute;cula de diverses variables funciona amb una o diverses capes d'entitats de punts, l&iacute;nies o pol&iacute;gons. L'eina genera una quadr&iacute;cula de bins quadrats o hexagonals i calcula els valors de cada bin segons la proximitat de cada capa d'entrada. Aquests valors poden incloure les variables seg&uuml;ents: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Dist&agrave;ncia al m&eacute;s proper</b>: dist&agrave;ncia des de cada bin fins a l'entitat m&eacute;s propera
+            </li>
+            <li> <b>Atribut del m&eacute;s proper</b>: valor de camp de l'entitat m&eacute;s propera a cada bin
+            </li>
+            <li> <b>Resum d'entitats properes</b>: estad&iacute;stica especificada de totes les entitats que es troben a una dist&agrave;ncia m&agrave;xima de cada bin
+            </li>
+            <li> <b>Resum d'entitats que s'intersequen</b>: estad&iacute;stica especificada de totes les entitats que s'intersequen amb cada bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nom&eacute;s les variables que especifiqueu s'inclouran a la capa de resultats. Aquestes variables us poden ajudar a entendre la proximitat i la distribuci&oacute; de les vostres dades. Els resultats us poden ajudar a respondre preguntes com ara:
+        <ul>
+            <li>Amb diverses capes d'infraestructura de transport p&uacute;blic especificades, quina part de la ciutat &eacute;s menys accessible amb transport p&uacute;blic?
+            </li>
+            <li>Amb les capes de vies navegables especificades, com ara llacs i rius, com es diu la massa d'aigua m&eacute;s propera a cada ubicaci&oacute; dels EUA?
+            </li>
+            <li>Amb una capa d'ingressos d'una unitat familiar especificada, en quin lloc dels EUA es dona la variaci&oacute; d'ingressos m&eacute;s gran en un radi de 50 milles?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Trieu el tipus de bins que s'utilitzaran per crear la quadrícula de diverses variables</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Tipus i mida dels bins que s'utilitzaran per crear la quadr&iacute;cula de diverses variables. Per a l'opci&oacute;  <b>Quadrat</b>, el nombre i les unitats que s'especifiquin determinaran l'altura i la longitud del quadrat. Per a l'opci&oacute; <b>Hex&agrave;gon</b>, el nombre i les unitats que s'especifiquin determinaran la dist&agrave;ncia entre els costats paral&middot;lels.
+            </p>
+            <p>Aquest an&agrave;lisi utilitza bins i necessita un sistema de coordenades projectades. Podeu definir l'opci&oacute; de  <b>Sistema de coordenades de processament</b> a <b>Entorns d'an&agrave;lisi</b>. Si el sistema de coordenades de processament no est&agrave; definit en un sistema de coordenades projectades, se us demanar&agrave; que el definiu quan utilitzeu <b>Executa l'an&agrave;lisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Trieu les capes i variables d'entrada que voleu incloure a la quadrícula</h2></div>
+        <hr/>
+        <div>
+            <p>Feu clic al bot&oacute; Afegeix ( <b>+</b>) per obrir la finestra <b>Afegeix variables</b> i afegiu una capa a l'an&agrave;lisi. A la finestra <b>Afegeix variables</b>, trieu una capa d'entrada i configureu les variables que voleu calcular per a aquesta capa.
+            </p>
+            <p>Un cop triades i configurades les variables que voleu calcular, la capa es mostrar&agrave; a la finestra de l'eina amb totes les altres capes seleccionades. Feu clic al bot&oacute; Editar de qualsevol capa per obrir la finestra  <b>Afegeix variables</b> i visualitzar totes les variables configurades per a aquesta capa. Feu clic al bot&oacute; Suprimeix de qualsevol capa per eliminar aquesta capa i totes les variables relacionades de l'an&agrave;lisi.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Afegeix variables</h2></div>
+        <hr/>
+        <div>
+            <p>Aquesta finestra us permet triar una capa d'entrada i configurar les variables que voleu calcular per a aquesta capa. Per comen&ccedil;ar, utilitzeu el men&uacute; desplegable  <b>Trieu una capa d'entrada</b> per seleccionar la capa de punts, pol&iacute;gons o l&iacute;nies que voleu afegir a l'an&agrave;lisi.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+            <p>Un cop hagueu triat una capa d'entrada, feu clic al bot&oacute;  <b>Afegeix una variable</b> per obrir una nova variable per editar. Heu de proporcionar un nom &uacute;nic per a cada variable. Ser&agrave; el nom del camp creat a la taula d'atributs de la capa de resultats.
+            </p>
+            <p>Utilitzeu el men&uacute; desplegable per seleccionar el tipus de variable que s'afegir&agrave;. Cadascun dels tipus de variable s'ha de configurar amb un conjunt &uacute;nic de par&agrave;metres. Tots els par&agrave;metres s&oacute;n obligatoris.
+            </p>
+            <p>Un cop hagueu afegit totes les variables desitjades per a la capa seleccionada, feu clic al bot&oacute;  <b>Afegeix</b> per desar-les.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

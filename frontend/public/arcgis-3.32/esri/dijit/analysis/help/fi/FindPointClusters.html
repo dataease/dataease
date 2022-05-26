@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Etsi pisteklustereita</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Etsi pisteklustereita"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu etsii pistekohdeklustereita ymp&auml;r&ouml;iv&auml;st&auml; kohinasta sijainnin jakauman perusteella.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;ss&auml; l&auml;ht&ouml;karttatasossa olevat kohteet analysoidaan. Jos toimintoa ei ole valittu, kaikki l&auml;ht&ouml;aineiston pistekarttatason kohteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valitse karttataso, jolle klusterit etsitään</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, miss&auml; klusterit ovat. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Klusteriksi laskettavien pisteiden minimimäärä</h2></div>
+        <hr/>
+        <div>
+            <p>Klusteriksi laskettavien kohteiden minimim&auml;&auml;r&auml; Mik&auml; tahansa klusteri, jossa on annettua v&auml;hemm&auml;n kohteita, m&auml;&auml;ritell&auml;&auml;n kohinaksi. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Rajoita hakualue arvoon (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Enimm&auml;iset&auml;isyys, joka kattaa samaan klusteriin kuuluvat kohteet. Jos t&auml;m&auml; j&auml;tet&auml;&auml;n tyhj&auml;ksi, ty&ouml;kalu suorittaa HDBSCAN-toiminnon, joka erottaa vaihtelevien et&auml;isyyksien avulla vaihtelevien tiheyksien klusterit harvasta kohinasta. Jos arvo annetaan, ty&ouml;kalu suorittaa DBSCAN-toiminnon, joka erottaa m&auml;&auml;ritetyn et&auml;isyyden avulla tihe&auml;t klusterit harvasta kohinasta.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

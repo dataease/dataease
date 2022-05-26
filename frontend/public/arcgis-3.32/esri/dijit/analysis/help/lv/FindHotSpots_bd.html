@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Atrast karstos punktus</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Atrast karstos punktus"></h2>
+        <hr/>
+    <p>Rīks Atrast karstos punktus nosaka, vai jūsu telpiskajos datos ir kādas statistiski nozīmīgas kopas (klasteri). 
+        <ul>
+            <li>Vai jūsu punkti (noziedzība, koki vai satiksmes negadījumi) tie&scaron;ām veido klasterus? Kā jūs varat būt par to dro&scaron;s?
+            </li>
+            <li>Vai esat atklāju&scaron;i patie&scaron;ām statistiski nozīmīgu karsto punktu, vai arī jūsu kartes sniegtā informācija būtu cita, tikai, ja jūs nomainītu tās simbolizācijas veidu?
+            </li>
+        </ul>
+        Atrast karstos punktus rīks palīdzēs jums atbildēt uz &scaron;iem jautājumiem ar pārliecību.
+    </p>
+    <p>Pat nejau&scaron;os telpiskajos modeļos ir novērojama klasterizācija.  Turklāt mūsu acis un smadzenes dabiski mēģina atrast kopsakarības, pat ja tās neeksistē. Līdz ar to, var būt grūti zināt, vai jūsu sakarības jūsu datu piemēros ir reālu telpiskos procesu, vai nejau&scaron;ības rezultāts. Tāpēc pētnieki un analītiķi izmanto statistikas metodes, piemēram, Atrast karstos punktus (Getis-Ord Gi*), lai skaitļotu telpiskos piemērus. Kad atrodat statistiski nozīmīgu klasterizāciju datos, jums ir vērtīga informācija. Zinot to, kur un kad notiek klasterizācija, var gūt nozīmīgus pavedienus par to, kādi procesi veicina redzamo modeļu veido&scaron;anos. Zinot, ka piem., dzīvokļu laupī&scaron;anu rādītāji ir augstāki atsevi&scaron;ķos dzīvojamajos rajonos, ir vitāli svarīgi zināt vai nepiecie&scaron;ams veidot efektīvas profilakses stratēģijās, pie&scaron;ķirtu ierobežotos policijas resursus, uzsāktu apkaimju novēro&scaron;anas programmas, atļautu padziļinātu izmeklē&scaron;anu krimināllietās, vai konstatētu iespējamos aizdomās turamos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izvēlieties slāni, kuram tiks aprēķināti karstie punkti</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis, kuram tiks meklēti karstie un aukstie punkti.
+            </p>
+            <p>&Scaron;ajā analīzē tiek izmantoti nodalījumi, un tai ir nepiecie&scaron;ama projicētā koordinātu sistēma. Varat iestatīt  <b>Apstrādes koordinātu sistēmu</b> <b>Analīzes darba vidē</b>. Ja apstrādes koordinātu sistēma nav iestatīta kā projicētā koordinātu sistēma, jūs saņemsit pamudinājumu to iestatīt, veicot darbību <b>Darbināt analīzi</b> .
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Atrast augstas un zemas vērtības klasterus</h2></div>
+        <hr/>
+        <div>
+            
+            <p>&Scaron;ī analīze atbildēs uz jautājumu: Kur telpiski veidojas augstu un zemu vērtību klasteri?
+            </p>
+            <p>Ja jūsu dati ir punkti, un jūs izvēlaties iespēju  <b>Punktu skaits</b>, &scaron;is rīks novērtē punktu elementu telpisko izkārtojumu, atbildot uz jautājumu: kur punkti ir neparedzēti sagrupēti vai izkliedēti?
+            </p>
+            <p>Ja izvēlēsities lauku, &scaron;is rīks izvērtēs ar katru elementu saistīto vērtību telpisko izkārtojumu, lai atbildētu uz jautājumu: Kur rodas augstu un zemu vērtību kopas?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izvēlēties nodalījuma lielumu apkopošanai</h2></div>
+        <hr/>
+        <div>
+            <p>Attālums, kas tiek izmantots, lai ģenerētu kvadrāta nodalījumus, kas savukārt tiks izmantoti, lai analizētu ievades punktus.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Atrast karstos punktus, izmantojot laika soļus (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Ja punktu slānī ir aktivizēts laiks, kura veids ir tūlītējs, varat analizēt, lietojot laika soļus.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Laika soļa intervāls</h2></div>
+        <hr/>
+        <div>
+            <p>Laika intervāls, ko izmanto laika soļu ģenerē&scaron;anai. Laiku var līdzināt ar ievades datu sākuma vai beigu laiku, vai arī ar norādīto atsauces laiku.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Laika soļa intervāls</h2></div>
+        <hr/>
+        <div>
+            <p>Laika intervāls, ko izmanto laika soļu ģenerē&scaron;anai. Laiku var līdzināt ar ievades datu sākuma vai beigu laiku, vai arī ar norādīto atsauces laiku.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Izvēlēties, kā līdzināt laika soļus</h2></div>
+        <hr/>
+        <div>
+            <p>Laika soļu līdzinā&scaron;ana. Ir trīs laika soļu līdzinā&scaron;anas veidi:
+                <ul>
+                    <li> <b>Sākuma laiks</b>&nbsp;&mdash; laika soļi tiek līdzināti ar pirmo elementu laikā.
+                    </li>
+                    <li> <b>Beigu laiks</b>&nbsp;&mdash; laika soļi tiek līdzināti ar pēdējo elementu laikā.
+                    </li>
+                    <li> <b>Atsauces laiks</b>&nbsp;&mdash; laika soļi tiek līdzināti ar norādīto laiku.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Atsauces laiks laika soļu līdzināšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Laiks un datums, kas izmantots laika soļu līdzinā&scaron;anai.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Izvēlēties apkārtnes lielumu karsto punktu aprēķiniem</h2></div>
+        <hr/>
+        <div>
+            <p>Attālums, kas tiek izmantots karsto punktu aprēķinā&scaron;anā izmantotās apkārtnes noteik&scaron;anai. Apkārtnei jābūt lielākai par nodalījuma lielumu, lai nodro&scaron;inātu, ka katram nodalījumam ir vismaz viens kaimiņ&scaron;. Katrs nodalījums tiek analizēts un salīdzināts ar blakus eso&scaron;ajiem nodalījumiem.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir pagaidu pirmsizlaides parametrs, lai iestatītu apstrādes telpisko atskaiti. Daudziem big data rīkiem nepiecie&scaron;ams apstrādei kā telpisko atskaiti lietot projekcijas koordinātu sistēmu. Pēc noklusējuma rīks lietos ievades koordinātu sistēmu, bet tas pārstās darboties, ja tā ir ģeogrāfisko koordinātu sistēma. Lai iestatītu projekcijas koordinātu sistēmu, ievadiet WKID. Piemēram,  <b>Web Mercator</b> jāievada kā <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlieties ArcGIS Data Store, lai saglabātu rezultātus</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot tad, ja ir sagaidām GeoAnalytics rezultātu apjoma palielinā&scaron;anās, kā arī tad, ja ir nepiecie&scaron;ams izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rezultātu slānis rādīs statistiski nozīmīgas augstu un zemu vērtību klasterus vai punktu skaitu. Ja rezultātu slāņa nosaukums jau pastāv, jums tiks lūgts to pārdēvēt.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

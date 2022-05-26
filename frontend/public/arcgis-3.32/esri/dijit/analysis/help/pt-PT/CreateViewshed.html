@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Viewshed</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Criar Viewshed"></h2>
+        <hr/>
+    <p>A ferramenta Criar Viewshed cria &aacute;reas em que um observador pode visualizar objetos no terreno. Os pontos de observa&ccedil;&atilde;o de entrada podem representar observadores (como pessoas no terreno ou vigias numa torre de controlo de inc&ecirc;ndios) ou objetos observados (como aerogeradores, torres de reservat&oacute;rios de &aacute;gua, ve&iacute;culos, ou outras pessoas). As &aacute;reas de resultados s&atilde;o as &aacute;reas em que os observadores podem ver os objectos observados e vice-versa: os objectos observados podem ver os observadores.
+    </p>
+    <p>Ambos os observadores e os objectos observados podem ter uma altura acima do solo, e essas alturas s&atilde;o utilizados na determina&ccedil;&atilde;o de visibilidade. Por exemplo, uma viewshed programada para turbinas de 400 p&eacute;s e pessoas de seis p&eacute;s de altura no terreno ser&aacute; tipicamente maior do que uma viewshed programada para turbinas de 200 p&eacute;s e pessoas com 6 p&eacute;s de altura.
+    </p>
+    <p>Note-se que o c&aacute;lculo do Viewshed n&atilde;o tem em conta as obstru&ccedil;&otilde;es, como &aacute;rvores ou edif&iacute;cios. Pode pensar na computa&ccedil;&atilde;o como ocorrendo em terreno &quot;nu&quot; desprovido de qualquer coisa, exceptuando o observador e os objectos observados.
+    </p>
+    <p>A camada de resultados cont&eacute;m elementos de &aacute;rea que representam &aacute;reas vis&iacute;veis. O campo  <i>Frequency</i> regista o n&uacute;mero de pontos de observa&ccedil;&atilde;o que podem ver cada &aacute;rea. Por exemplo, se tem cinco pontos de entrada, cada representando uma torre de vigia de inc&ecirc;ndios, o campo <i>Frequency</i> ter&aacute; valores entre o um e o cinco; &aacute;reas com valor de um apenas podem ser vistas por uma torre, e &aacute;reas com o valor de cinco podem ser vistas por todas as torres. A camada resultante tamb&eacute;m cont&eacute;m o campo <i>DEMResolution</i>, que grava a resolu&ccedil;&atilde;o do modelo digital de eleva&ccedil;&atilde;o (DEM) usado para criar os Viewsheds.
+    </p>
+    <p>Se marcar a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> , ser&atilde;o analisados apenas os pontos de observa&ccedil;&atilde;o que se encontrem vis&iacute;veis na atual extens&atilde;o do mapa ser&atilde;o analisados.  Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os pontos de observa&ccedil;&atilde;o da camada de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elementos pontos que representam pontos de observação</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos pontos a utilizar como localiza&ccedil;&otilde;es de observa&ccedil;&atilde;o. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Altura das localizações de observação</h2></div>
+        <hr/>
+        <div>
+            <p>Esta &eacute; a altura acima do terreno das suas localiza&ccedil;&otilde;es de observa&ccedil;&atilde;o.    O padr&atilde;o &eacute; aproximadamente a altura m&eacute;dia de uma pessoa.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Altura de outros objetos no solo</h2></div>
+        <hr/>
+        <div>
+            <p>Esta &eacute; a altura de estruturas ou pessoas no terreno usado para estabelecer visibilidade. O viewshed resultante s&atilde;o as &aacute;reas onde um ponto de observa&ccedil;&atilde;o pode ver estes outros objetos.  O inverso tamb&eacute;m &eacute; verdade; os outros objetos podem ver o ponto de observa&ccedil;&atilde;o. 
+            </p>
+            <p>
+                <ul>
+                    <li>Se os seus pontos de observa&ccedil;&atilde;o representam aerogeradores e voc&ecirc; pretende determinar onde as pessoas no terreno conseguem visualiz&aacute;-los, introduza a altura m&eacute;dia de uma pessoa (aproximadamente 6 p&eacute;s).  O resultado &eacute; as &aacute;reas em que uma pessoa de p&eacute; no ch&atilde;o pode ver as turbinas e&oacute;licas.
+                    </li>
+                    <li>Se os seus pontos de observa&ccedil;&atilde;o representam torres de controlo de inc&ecirc;ndios e voc&ecirc; pretende determinar que torres de controlo podem ver um pluma de fumo com 20 p&eacute;s ou mais de altura, introduza 20 p&eacute;s como valor de altura.  O resultado &eacute; que essas &aacute;reas onde uma torre de vigia de inc&ecirc;ndio pode ver uma coluna de fumo, de pelo menos 20 p&eacute;s de altura.
+                    </li>
+                    <li>Se os seus pontos de observa&ccedil;&atilde;o representam miradouros ao longo das estradas e caminhos e voc&ecirc; pretende determinar onde aerogeradores de 400 p&eacute;s ou mais de altura podem ser observados, introduza 400 p&eacute;s como valor de altura.  O resultado &eacute; essas &aacute;reas em que uma pessoa que est&aacute; numa vista panor&acirc;mica pode ver uma turbina e&oacute;lica a pelo menos 400 p&eacute;s de altura.
+                    </li>
+                    <li>Se os seus pontos de observa&ccedil;&atilde;o representam miradouros e voc&ecirc; pretende determinar a quantidade de &aacute;rea de terreno que &eacute; poss&iacute;vel observar por algu&eacute;m no miradouro, introduza zero.  O resultado &eacute; que essas &aacute;reas podem ser vistas a partir do miradouro.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distância máxima de visualização</h2></div>
+        <hr/>
+        <div>
+            <p>Isto &eacute; uma dist&acirc;ncia de corte, onde o c&aacute;lculo das zonas vis&iacute;veis p&aacute;ra. Acima desta dist&acirc;ncia, n&atilde;o &eacute; poss&iacute;vel calcular se os pontos de observa&ccedil;&atilde;o e os outros objetos se v&ecirc;m mutuamente. Valores altos aumentam o tempo de computa&ccedil;&atilde;o. O valor m&aacute;ximo permitido &eacute; de 31 milhas (50 km).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+            <p> Executar esta ferramenta n&atilde;o consome cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

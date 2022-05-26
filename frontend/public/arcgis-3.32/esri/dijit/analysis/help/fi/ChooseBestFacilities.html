@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Valitse parhaat palvelut</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Valitse parhaat palvelut"></h2>
+        <hr/>
+    <p>Valitse parhaat palvelut -ty&ouml;kalun avulla voit valita parhaat sijainnit palveluja varten. Ty&ouml;kalu allokoi sijainnit, joissa on kysynt&auml;&auml; palveluille, tavalla, joka t&auml;ytt&auml;&auml; m&auml;&auml;ritetyn tavoitteen.
+    </p>
+    <p>Palvelut edustavat sijainteja, joissa tarjotaan jonkinlaista palvelua, kuten paloasemia, kouluja, kirjastoja, kauppoja ja jakelukeskuksia. Kysynt&auml;sijainnit edustavat sijainteja, joissa on kysynt&auml;&auml; palvelujen tarjoamille palveluille, esimerkiksi v&auml;est&ouml;laskentapisteet, jotka laskevat yhteen annetun alueen v&auml;est&ouml;n.
+    </p>
+    <p>Valitse parhaat palvelut -ty&ouml;kalun avulla voit vastata kysymyksiin, esimerkiksi
+        <ul>
+            <li>Miten kotitaloudet ohjataan h&auml;t&auml;tilanteessa oikeaan pelastautumiskeskukseen, jos vuodepaikkojen m&auml;&auml;r&auml; on rajallinen eik&auml; se saa ylitty&auml;?
+            </li>
+            <li>Miten voit m&auml;&auml;ritt&auml;&auml; asuinalueen sen l&auml;himp&auml;&auml;n sivukirjastoon ja etsi&auml; niiden mahdollisten asiakkaiden m&auml;&auml;r&auml;n, jota kukin sivukirjasto palvelee? 
+            </li>
+            <li>Miten voit l&ouml;yt&auml;&auml; parhaan sellaisen sijainnin elintarvikkeiden jakelukeskukselle, joka minimoi jakelun kokonaismatka-ajan (ja siten my&ouml;s kustannukset) elintarvikekauppojen ketjuun?
+            </li>
+            <li>Miss&auml; uusi puisto voisi sijaita, jos halutaan varmistaa, ett&auml; suurin osa kaupungin asukkaista asuu viiden minuutin k&auml;velymatkan p&auml;&auml;ss&auml; puistosta?
+            </li>
+            <li>Mitk&auml; ovat parhaat sijainnit usealle maakunnan lemmikkiel&auml;inkaupalle, jotta 40 prosenttia maakunnan lemmikkiel&auml;inten omistajista asuu enint&auml;&auml;n kymmenen minuutin ajomatkan p&auml;&auml;ss&auml; jostakin n&auml;ist&auml; kaupoista?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Tavoite</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; tavoite, jonka on t&auml;ytytt&auml;v&auml;, kun allokoidaan kysynt&auml;sijainteja palveluille.
+            </p>
+            <p>Valitse parhaat palvelut -ty&ouml;kalun avulla voit m&auml;&auml;ritt&auml;&auml; ratkaistavan ongelman tyypin eli tavoitteen. Ty&ouml;kalu on optimoitu antamaan ratkaisu kyseiselle tavoitteelle. Tavoitteesta riippumatta yleens&auml; k&auml;ytet&auml;&auml;n samaa taustalla olevaa menetelm&auml;&auml; ratkaisun l&ouml;ytymiseen &ndash; annetun kysynt&auml;sijainnin kysynn&auml;n m&auml;&auml;r&auml; allokoidaan l&auml;himp&auml;&auml;n palveluun. Tavoitteet vaihtelevat sen mukaan, miten matkan (tai ajan) ja kysynn&auml;n v&auml;list&auml; vuorovaikutusta k&auml;sitell&auml;&auml;n. Ty&ouml;kalu on ottaa huomioon sek&auml; matkaet&auml;isyyden tai -ajan ett&auml; kysynn&auml;n m&auml;&auml;r&auml;n ja joissakin tapauksissa palvelujen kapasiteetin. Jos tavoitteen kannalta on parempi lyhent&auml;&auml; esimerkiksi matkustusaikaa, ty&ouml;kalu yritt&auml;&auml; silti toissijaisesti maksimoida allokoitua kysynt&auml;&auml;. Vastaavasti, jos tavoitteena on maksimoida allokoitua kysynt&auml;&auml;, ty&ouml;kalu toimii niin lyhent&auml;m&auml;ll&auml; matkustusaikaa (m&auml;&auml;ritt&auml;m&auml;ll&auml; kysynt&auml;sijainteja l&auml;himp&auml;&auml;n palveluun eik&auml; vain mihin tahansa palveluun).
+            </p>
+            <p>Aineiston ja k&auml;ytt&auml;miesi asetusten perusteella eri tavoitteet voivat tuottaa samat tulokset tai eri tulokset. Kannattaa kuitenkin m&auml;&auml;ritt&auml;&auml; tavoite, joka soveltuu parhaiten analyysiin.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Allokoi olemassa oleviin palveluihin</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tavoitetta, jos et halua etsi&auml; uusia palveluja ja haluat m&auml;&auml;ritt&auml;&auml; kysynn&auml;t olemassa oleviin palveluihin, joiden kapasiteetti voi olla rajallinen tai rajoittamaton.    
+            </p>
+            <p>T&auml;m&auml; tavoite m&auml;&auml;ritt&auml;&auml; kysynn&auml;t palveluihin palvelun kapasiteetin ja ymp&auml;r&ouml;iv&auml;n alueen kysynn&auml;n m&auml;&auml;r&auml;n perusteella. Kysynt&auml; on allokoitu l&auml;himp&auml;&auml;n palveluun, kunnes k&auml;ytett&auml;viss&auml; oleva kapasiteetti on saavutettu. Jos m&auml;&auml;rit&auml;t matkustusalueen enimm&auml;iset&auml;isyyden, yht&auml;&auml;n alueen ulkopuolella olevaa kysynt&auml;sijaintia ei m&auml;&auml;ritet&auml; palveluun, vaikka kaikkea kysynt&auml;&auml; ei ole kokonaan allokoitu.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimoi matkustus</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tavoiteta, jos haluat etsi&auml; palveluja siten, ett&auml; kokonaismatkustusaika tai kysynt&auml;sijaintien ja palvelujen v&auml;linen matkaet&auml;isyys on mahdollisimman lyhyt.
+            </p>
+            <p>T&auml;m&auml; tavoite soveltuu usein, kun palvelun ja kaikkien kysynt&auml;sijaintien v&auml;lille sis&auml;ltyy s&auml;&auml;nn&ouml;llist&auml; matkustusta. T&auml;t&auml; tavoitetta k&auml;ytet&auml;&auml;n esimerkiksi silloin, kun halutaan minimoida tuotteiden siirron kokoismatkaa jakelukeskuksista kauppoihin tai kun halutaan valita kokouspaikka konferenssille siten, ett&auml; kaikilla osallistujilla on mahdollisimman lyhyt matkustusaika.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksimoi kattavuus</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tavoitetta, jos haluat maksimoida palvelujen kattaman kysynn&auml;n m&auml;&auml;r&auml;n tietyll&auml; ajalla tai tietyll&auml; et&auml;isyydell&auml;.    
+            </p>
+            <p>T&auml;m&auml; tavoite valitsee palveluja siten, ett&auml; kysynn&auml;n enimm&auml;ism&auml;&auml;r&auml; on allokoitu ja ett&auml; kunkin kysynt&auml;sijainnin kysynt&auml; on allokoitu yksitt&auml;iseen, l&auml;hinn&auml; olevaan palveluun.
+            </p>
+            <p>T&auml;m&auml; tavoite edellytt&auml;&auml; &auml;&auml;rellist&auml; matkustusalueen enimm&auml;iset&auml;isyytt&auml;. Muussa tapauksessa koko kysynt&auml; m&auml;&auml;ritet&auml;&auml;n yksitt&auml;iselle palvelulle. Kysynt&auml;sijainteja, jotka ovat yhdellek&auml;&auml;n palvelulle m&auml;&auml;ritetyn matkan tai matkustusajan ulottumattomissa, ei allokoida (t&auml;m&auml; osoittaa, miss&auml; kysynt&auml;&auml; ei saavuteta ja miss&auml; lis&auml;palveluja tarvitaan).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksimoi kattavuus kapasiteetin kanssa</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tavoitetta, jos haluat maksimoida palvelujen kattaman kysynn&auml;n m&auml;&auml;r&auml;n, mutta palvelujen kapasiteetti on rajallinen.    
+            </p>
+            <p>T&auml;m&auml; tavoite valitsee palvelut siten, ett&auml; kysynn&auml;n enimm&auml;ism&auml;&auml;r&auml; allokoidaan ylitt&auml;m&auml;tt&auml; yhdenk&auml;&auml;n palvelun kapasiteettia. Kunkin kysynt&auml;sijainnin kaikki kysynt&auml; allokoidaan yksitt&auml;iseen l&auml;himp&auml;&auml;n palveluun, jossa on kapasiteettia k&auml;ytett&auml;viss&auml; (toisin sanoen, jos kysynt&auml;sijainnin m&auml;&auml;ritys palveluun ylitt&auml;&auml; palvelun k&auml;ytett&auml;viss&auml; olevan kapasiteetin, kysynt&auml;sijaintia ei m&auml;&auml;ritet&auml;, vaan kysynn&auml;n osa m&auml;&auml;ritet&auml;&auml;n palveluun).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Kata kysynnän prosenttiosuus</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tavoitetta, jos haluat selvitt&auml;&auml; niiden palvelujen v&auml;himm&auml;ism&auml;&auml;r&auml;n, joiden on katettava annettu kysynn&auml;n prosenttiosuus.
+            </p>
+            <p>T&auml;m&auml; tavoite valitsee niiden palvelujen v&auml;himm&auml;ism&auml;&auml;r&auml;n, jotka tarvitaan m&auml;&auml;ritetyn kysynn&auml;n prosenttiosuuden saavuttamiseen. Kahden tai useamman palvelun matkustusalueen enimm&auml;iset&auml;isyydell&auml; olevan kysynt&auml;sijainnin kysynt&auml; jaetaan suhteellisesti palvelujen v&auml;lill&auml; sen perusteella, mill&auml; et&auml;isyydell&auml; kysynt&auml;sijainti on kustakin palvelusta. T&auml;t&auml; tavoitetta k&auml;ytet&auml;&auml;n usein, kun ihmisill&auml; on mahdollisuus valita k&auml;ytett&auml;v&auml; palvelu ja oletetaan, ett&auml; yleens&auml; he k&auml;ytt&auml;v&auml;t l&auml;hint&auml; palvelua (kaikki muut ominaisuudet ovat samanarvoisia).
+            </p>
+            <p>Toisin kuin muissa palveluja valitsevissa tavoitteissa, joissa m&auml;&auml;ritet&auml;&auml;n valittavien palvelujen m&auml;&auml;r&auml;, t&auml;m&auml; tavoite valitsee palvelujen m&auml;&auml;r&auml;n puolestasi tavoiteltavan kysynn&auml;n prosenttiosuuden perusteella. Ty&ouml;kalu olettaa, ett&auml; palvelujen kapasiteettia ei ole rajoitettu.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mitta</h2></div>
+        <hr/>
+        <div>
+            <p>Kun muissakin ty&ouml;kaluissa, joiden analyysiin liittyy matkustusta, voit m&auml;&auml;ritt&auml;&auml;, mitataanko matka et&auml;isyyten&auml; vai aikana. Lis&auml;ksi voit valita eri matkustustavoista, kuten k&auml;velyajan, ajoajan, ajoet&auml;isyyden maaseudulla jne. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat. Kun k&auml;yt&auml;t  <b>ajoaikaa</b>, <b>ajoaikaa maaseudulla</b> tai <b>rekkaliikenteen aikaa</b>, voit vaihtoehtoisesti ottaa huomioon my&ouml;s tietyn viikonp&auml;iv&auml;n ja kellonajan liikenteen.
+            </p>
+            <p> Jotta voit allokoida tarkkaan kysynt&auml;sijainnit palveluihin, m&auml;&auml;rit&auml;, matkustetaanko palveluista kysynt&auml;sijainteihin (esimerkiksi paloasemilta koteihin) vai kysynt&auml;sijainneista palveluihin (kuten asiakkaat kirjastoihin). Valitse parhaat palvelut -ty&ouml;kalu ottaa huomioon matkustussuunnan yksisuuntaisilla kaduilla, voitko k&auml;&auml;nty&auml; kadulta toiselle, onko risteyksiss&auml; vasemmalle k&auml;&auml;ntyminen kielletty jne. Lis&auml;ksi se ottaa huomioon sen, suuntautuuko matkustus palvelusta kysynt&auml;sijainteihin vai kysynt&auml;sijainneista palveluihin.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Kysyntäsijaintien karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, jotka edustavat sijainteja, joissa on kysynt&auml;&auml; palvelujen tarjoamille palveluille. Ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; n&auml;m&auml; kysynt&auml;sijainnit asianmukaisiin palveluihin valitun tavoitteen perusteella.
+            </p>
+            <p>Kysynt&auml;sijainteihin on liitetty kysynn&auml;n m&auml;&auml;r&auml;. M&auml;&auml;rit&auml; arvo vakion avulla, jos kaikkien kysynt&auml;sijaintien kysynt&auml; on sama. Jos kysynn&auml;n m&auml;&auml;r&auml; vaihtelee kysynt&auml;sijainnin mukaan, m&auml;&auml;rit&auml; kunkin kysynt&auml;sijainnin arvo k&auml;ytt&auml;m&auml;ll&auml; kentt&auml;&auml; kysynt&auml;sijaintien karttatasossa.
+            </p>
+            <p>Kysynt&auml; allokoidaan palveluihin, kunnes koko kysynt&auml; on allokoitu, riippumatta siit&auml;, miten kaukana kysynt&auml;sijainnit ovat palveluista. Voit m&auml;&auml;ritt&auml;&auml; matkustusalueen enimm&auml;iset&auml;isyyden kysynt&auml;sijaintien karttatasoon, jos haluat luoda et&auml;isyyden tai ajan, jota ei saa ylitt&auml;&auml; &ndash; yht&auml;k&auml;&auml;n raja-arvon ulkopuolella olevaa kysynt&auml;sijaintia ei allokoida. M&auml;&auml;rit&auml; arvo vakion avulla, jos kaikkien kysynt&auml;sijaintien matkustusalueen enimm&auml;iset&auml;isyys on sama. Jos matkustusalueen enimm&auml;iset&auml;isyys vaihtelee kysynt&auml;sijainnin mukaan, m&auml;&auml;rit&auml; kunkin kysynt&auml;sijainnin arvo k&auml;ytt&auml;m&auml;ll&auml; kentt&auml;&auml; kysynt&auml;sijaintien karttatasossa.
+            </p>
+            <p>Jos tavoitteen tyyppi on  <b>Kata kysynn&auml;n prosenttiosuus</b>, sinun on m&auml;&auml;ritett&auml;v&auml; kysynn&auml;n v&auml;himm&auml;isprosenttiosuus, joka palvelujen on t&auml;ytett&auml;v&auml;.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+            <p>Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n 10&nbsp;000 kohdetta kussakin kysynt&auml;sijaintien karttatasossa.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Pakollisten palvelujen karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Sijainteja edustavat pistekohteet, jotka toimivat palveluina tarjoamalla jonkinlaista palvelua. Pakolliset palvelut edustavat yleens&auml; sijainteja, jotka ovat jo olemassa, ehdokaspalveluihin verrattuna. Ne puolestaan edustavat sijainteja, joihin uusia palveluja rakennetaan tai sijoitetaan. Kohdistaessaan kysynt&auml;sijainteja ty&ouml;kalu k&auml;ytt&auml;&auml;  <b>pakollisten palvelujen karttatason</b> palveluja ennen yht&auml;k&auml;&auml;n <b>ehdokaspalvelujen karttatason</b> palvelua.
+            </p>
+            <p>Pakollisten palvelujen kapasiteetti voi olla rajoittamaton (toisin sanoen, ne t&auml;ytt&auml;v&auml;t kaiken niille m&auml;&auml;ritetyn kysynn&auml;n) tai niiden kapasiteetti voi olla rajallinen. Jos kaikilla palveluilla on sama rajoitettu kapasiteetti (kuten niiden kotitalouksien m&auml;&auml;r&auml;, joita paloasema voi palvella &ndash; esimerkiksi 4 000), m&auml;&auml;rit&auml; vakioarvo. Jos kapasiteetti vaihtelee palvelujen v&auml;lill&auml; (kuten aloittavien opiskelijoiden m&auml;&auml;r&auml; kussakin lukiossa), m&auml;&auml;rit&auml; kentt&auml;, joka sis&auml;lt&auml;&auml; kunkin palvelun kapasiteettiarvon.
+            </p>
+            <p>Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n 100 kohdetta  <b>pakollisten palvelujen karttatasossa</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Ehdokaspalvelujen karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Sijainteja edustavat pistekohteet, jotka toimivat palveluina tarjoamalla jonkinlaista palvelua. Ehdokaspalvelut edustavat yleens&auml; sijainteja, joihin uudet palvelut rakennetaan tai sijoitetaan, toisin kuin pakolliset palvelut, jotka yleens&auml; edustavat olemassa olevia sijainteja.
+            </p>
+            <p>Analyysin tavoitteen mukaan sinun on m&auml;&auml;ritett&auml;v&auml; niiden ehdokaspalvelujen m&auml;&auml;r&auml;, joista ehdokasjoukko valitaan. Jos m&auml;&auml;rit&auml;t sek&auml; pakollisia palveluja ett&auml; ehdokaspalveluja, ty&ouml;kalu k&auml;ytt&auml;&auml;  <b>pakollisten palvelujen karttatason</b> palveluja ennen yht&auml;k&auml;&auml;n <b>ehdokaspalvelujen karttatason</b> palvelua.
+            </p>
+            <p>Ehdokaspalvelujen kapasiteetti voi olla rajoittamaton (toisin sanoen, ne t&auml;ytt&auml;v&auml;t kaiken niille m&auml;&auml;ritetyn kysynn&auml;n) tai niiden kapasiteetti voi olla rajallinen. Jos kaikilla palveluilla on sama rajoitettu kapasiteetti (kuten niiden kotitalouksien m&auml;&auml;r&auml;, joita paloasema voi palvella &ndash; esimerkiksi 4 000), m&auml;&auml;rit&auml; vakioarvo. Jos kapasiteetti vaihtelee palvelujen v&auml;lill&auml; (kuten aloittavien opiskelijoiden m&auml;&auml;r&auml; kussakin lukiossa), m&auml;&auml;rit&auml; kentt&auml;, joka sis&auml;lt&auml;&auml; kunkin palvelun kapasiteettiarvon.
+            </p>
+            <p>Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n 1&nbsp;000 kohdetta  <b>ehdokaspalvelujen karttatasossa</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Valitse esteiden karttatasot</h2></div>
+        <hr/>
+        <div>
+            <p> V&auml;hint&auml;&auml;n yksi kohde, joka toimii tilap&auml;isen&auml; rajoitteena (esteen&auml;) liikuttaessa taustalla olevilla kaduilla. Voit m&auml;&auml;ritt&auml;&auml; esteet k&auml;ytt&auml;m&auml;ll&auml; piste-, viiva- tai aluekohteita.
+            </p>
+            <p>Piste-este voi mallintaa kaatunutta puuta, onnettomuutta, katkennutta s&auml;hk&ouml;linjaa tai mit&auml; tahansa, joka katkaisee liikenteen tietyss&auml; kohdassa kadulla. Liikkuminen on sallittu kadulla, mutta ei esteen kohdalla. Voit m&auml;&auml;ritt&auml;&auml; enint&auml;&auml;n 250 piste-esteen&auml; toimivaa kohdetta.
+            </p>
+            <p>Viivaeste est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa este riste&auml;&auml; katujen kanssa. Esimerkiksi paraatia tai mielenosoitusta, joka est&auml;&auml; liikenteen usealla katuosuudella, voidaan mallintaa viivaesteell&auml;. Jos kaikkien viivaesteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 500, ty&ouml;kalu palauttaa virheen.
+            </p>
+            <p>Alue-este est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa alue riste&auml;&auml; katujen kanssa. T&auml;m&auml;ntyyppist&auml; estett&auml; voi k&auml;ytt&auml;&auml; esimerkiksi sellaisten katuverkoston kattavien tulvien mallintamiseen, jotka tekev&auml;t liikkumisen kaduilla mahdottomaksi. Jos kaikkien alue-esteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 2 000, ty&ouml;kalu palauttaa virheen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Tuloskarttataso sis&auml;lt&auml;&auml; karttatason kullekin seuraavalle: palvelut, joille on m&auml;&auml;ritetty kysynt&auml;&auml;, kysynt&auml;sijainnit, jotka on allokoitu palveluihin, ja allokointiviivat, jotka yhdist&auml;v&auml;t kysynt&auml;sijainnit niihin m&auml;&auml;ritettyihin palveluihin. Allokointiviivat piirret&auml;&auml;n suorina viivoina. Palvelun ja kysynt&auml;sijainnin v&auml;linen matkustusaika tai matkaet&auml;isyys perustuu kuitenkin aina m&auml;&auml;ritettyyn matkustustapaan eik&auml; suoraan et&auml;isyyteen.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

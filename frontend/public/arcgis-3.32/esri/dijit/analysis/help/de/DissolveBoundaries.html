@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Grenzen zusammenführen</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Grenzen zusammenf&uuml;hren"></h2>
+        <hr/>
+    <p>Fl&auml;chen, die sich &uuml;berlappen oder eine gemeinsame Grenze haben, werden zu einer Fl&auml;che zusammengef&uuml;hrt.    
+    </p>
+    <p>Durch Angabe eines Feldes k&ouml;nnen Sie steuern, welche Grenzen zusammengef&uuml;hrt werden. Wenn Sie beispielsweise &uuml;ber einen Landkreis-Layer verf&uuml;gen und jeder Landkreis das Attribut  <i>State_Name</i> aufweist, k&ouml;nnen Sie Grenzen anhand des Attributs <i>State_Name</i> zusammenf&uuml;hren. Benachbarte Landkreise werden zusammengef&uuml;hrt, wenn sie den gleichen Wert f&uuml;r <i>State_Name</i> haben. Der Ergebnis-Layer zeigt Bundeslandgrenzen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Flächen-Layer auswählen, deren Grenzen aufgelöst werden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer, der Fl&auml;chen-Features enth&auml;lt, die zusammengef&uuml;hrt werden. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Zusammenführungsmethode auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen eine dieser beiden Methoden ausw&auml;hlen, um Fl&auml;chen-Features zusammenzuf&uuml;hren:
+                <ul>
+                    <li> <b>&Uuml;berlappende oder benachbarte Fl&auml;chen</b>: Mindestens zwei Fl&auml;chen, deren Grenzen sich &uuml;berlappen, werden zu einer Fl&auml;che zusammengef&uuml;hrt.  Au&szlig;erdem werden benachbarte Fl&auml;chen (d.&nbsp;h. sie haben eine gemeinsame Grenze) zu einer Fl&auml;che zusammengef&uuml;hrt.
+                    </li>
+                    <li> <b>Fl&auml;chen mit dem gleichen Feldwert</b>: Fl&auml;chen, die sich &uuml;berlappen oder eine gemeinsame Grenze aufweisen, werden zu einer Fl&auml;che zusammengef&uuml;hrt, wenn sie den gleichen Feldwert aufweisen.
+                        <p>Wenn Sie beispielsweise &uuml;ber einen Landkreis-Layer verf&uuml;gen und jeder Landkreis das Feld  <i>State_Name</i> aufweist, k&ouml;nnen Sie Grenzen anhand des Feldes <i>State_Name</i> zusammenf&uuml;hren. Benachbarte Landkreise werden zusammengef&uuml;hrt, wenn sie den gleichen Wert f&uuml;r <i>State_Name</i> haben. Der Ergebnis-Layer zeigt Bundeslandgrenzen.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer zusammengef&uuml;hrt, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabe-Layer aufgel&ouml;st, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Multipart-Features erstellen</h2></div>
+        <hr/>
+        <div>
+            <p>In ArcGIS eine digitale Darstellung eines Ortes oder Objekts, der bzw. das aus mehreren Teilen besteht, jedoch als ein Feature definiert ist, da es einen Satz von Attributen referenziert. Bei einem Layer mit Bundesstaaten kann beispielsweise der Bundesstaat Hawaii als Multipart-Feature betrachtet werden, da dessen separate geometrische Teile als ein Bundesstaat klassifiziert werden. Dieser boolesche Parameter bietet zwei Optionen:
+                <ul>
+                    <li>True (aktiviert): Der Ausgabeservice kann Multipart-Features enthalten.
+                    </li>
+                    <li>False (deaktiviert): Der Ausgabeservice enth&auml;lt nur Singlepart-Features, und f&uuml;r jeden Teil werden jeweils einzelne Features erstellt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Statistik hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn Fl&auml;chen zusammengef&uuml;hrt werden, k&ouml;nnen Sie deren Attribute zusammenfassen. Wenn Sie beispielsweise die Grenze zwischen Landkreisen auf Grundlage von  <i>State_Name</i> zusammenf&uuml;hren und jeder Landkreis &uuml;ber ein <i>Population</i>-Feld verf&uuml;gt, k&ouml;nnen Sie die Summe der <i>Population</i> f&uuml;r das Bundesland berechnen.
+            </p>
+            <p>Die verf&uuml;gbaren Statistiktypen lauten:
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld wird hinzugef&uuml;gt.
+                    
+
+                </li>
+                <li> <b>Durchschnitt</b>: Der Mittelwert f&uuml;r das angegebene Feld wird berechnet.
+                    
+
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert aller Datens&auml;tze des angegebenen Feldes wird ermittelt.
+                    
+
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert aller Datens&auml;tze des angegebenen Feldes wird ermittelt.
+                    
+
+                </li>
+                <li> <b>Standard- Abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld wird ermittelt
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Encontrar Locais Existentes</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Encontrar Locais Existentes"></h2>
+        <hr/>
+    <p>Este procedimento seleciona fei&ccedil;&otilde;es existentes na sua &aacute;rea de estudo que atendem uma s&eacute;rie de crit&eacute;rios que voc&ecirc; especifica. Estes crit&eacute;rios podem ser baseados em consultas de atributo (por exemplo, lotes que est&atilde;o desocupados) e consultas espaciais (por exemplo, dentro de uma milha de um rio). 
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de entrada que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es ser&atilde;o analisadas, mesmo se estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Escolha a camada contendo feições que deseja localizar atributos e consultas espaciais</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto, linha, ou de &aacute;rea que deseja localizar fei&ccedil;&otilde;es baseado em uma combina&ccedil;&atilde;o de atributos e consultas espaciais especificados abaixo.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Construa uma consulta para localizar feições</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o  <b>Adicionar Express&atilde;o</b> para definir uma express&atilde;o.  Voc&ecirc; pode adicionar m&uacute;ltiplas express&otilde;es. Ap&oacute;s inserir as express&otilde;es e clicar no bot&atilde;o <b>Executar An&aacute;lise</b>, as fei&ccedil;&otilde;es na sua camada de entrada s&atilde;o filtradas por cada express&atilde;o.  Estas fei&ccedil;&otilde;es que atendem todas as express&otilde;es s&atilde;o gravadas na camada resultante.
+            </p>
+            <p>H&aacute; dois tipos b&aacute;sicos de express&otilde;es que voc&ecirc; pode criar; atributo e espacial. As express&otilde;es de atributo s&atilde;o consultas em valores de campo, como  <code>onde est&aacute; o nome 'San Francisco'</code>.  H&aacute; quatro tipos de express&otilde;es espaciais:
+                <ul>
+                    <li> <b>dentro de uma dist&acirc;ncia de</b>: a fei&ccedil;&atilde;o deve estar dentro de uma dist&acirc;ncia de uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar lotes dentro de 500 metros do rio Los Angeles.
+                    </li>
+                    <li> <b>cont&eacute;m completamente</b>: a fei&ccedil;&atilde;o deve conter tudo de uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar bacias que cont&ecirc;m completamente lotes zoneados para uso industrial. Nenhuma parte do lote pode estar fora da bacia.
+                    </li>
+                    <li> <b>completamente dentro</b>: a fei&ccedil;&atilde;o deve estar completamente cercada por uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar distritos de escola que est&atilde;o completamente dentro do limite de uma cidade. Nenhuma parte do distrito de escola pode estar fora do limite da cidade.
+                    </li>
+                    <li> <b>intersecciona</b>: a fei&ccedil;&atilde;o cont&eacute;m parte de uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar lotes que interseccionam rios. Qualquer parte do rio que passa pelo lote ou toca o limite do lote, intersecciona o lote.
+                    </li>
+                    <li> <b>mais pr&oacute;ximo a</b>: a fei&ccedil;&atilde;o deve estar mais pr&oacute;xima de uma fei&ccedil;&atilde;o em outra camada. Por exemplo, localize o restaurante que est&aacute; mais pr&oacute;ximo de cada hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada express&atilde;o espacial tem uma nega&ccedil;&atilde;o correspondente, com a exce&ccedil;&atilde;o de  <b>mais pr&oacute;ximo a</b>; <b>n&atilde;o dentro de uma dist&acirc;ncia de</b>, <b>n&atilde;o cont&eacute;m completamente</b>, <b>n&atilde;o completamente dentro</b>, e <b>n&atilde;o intersecciona</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

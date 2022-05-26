@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/PredictUsingTrendRaster",{toolDefine:"Mit Trend-Raster vorhersagen",outputLayerName:"${layername}_predict",variablesLabel:"Vorherzusagende Variable(n) ausw\u00e4hlen",variablesListLabel:"Variablen [Dimensionsinfo] (Beschreibung)",dimensionDefinitionLabel:"Methode ausw\u00e4hlen, die zum Bereitstellen von Vorhersagedimensionswerten verwendet wird",dimensionValuesLabel:"Dimensionswert(e) f\u00fcr Vorhersage angeben",dimensionIntervalLabel:"Dimensionsintervall f\u00fcr Vorhersage angeben",
+intervalValueLabel:"Anzahl an Schritten zwischen Start- und Endwert angeben",intervalUnitLabel:"Die f\u00fcr das Zeitwertintervall verwendete Einheit ausw\u00e4hlen",startLabel:"Startwert",endLabel:"Endwert",byValueLabel:"Schrittweite",byIntervalLabel:"Nach Intervall",hours:"Stunden",days:"Tage",weeks:"Wochen",months:"Monate",years:"Jahre",custom:"Benutzerdefiniert",itemDescription:'\u00dcber "Mit Trend-Raster vorhersagen" erstellter Analyse-Image-Service',itemTags:"Raster-Analyseergebnis, Mit Trend-Raster vorhersagen, ${layername}",
+itemSnippet:'\u00dcber "Mit Trend-Raster vorhersagen" erstellter Analyse-Image-Service'});

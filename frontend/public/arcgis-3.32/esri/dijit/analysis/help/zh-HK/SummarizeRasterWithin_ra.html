@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>摘要點陣範圍</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="摘要點陣範圍工具"></h2>
+        <hr/>
+    <p>此工具根據第一個輸入圖層所定義的區域（地區）來摘要點陣。
+    </p>
+    <p>部分應用程式範例包含：
+    </p>
+    <p>
+        <ul>
+            <li>已知流域邊界圖層和依土地利用類型劃分的土地利用邊界圖層，計算每個流域之土地利用類型的總面積。
+                
+
+            </li>
+            <li>已知一個郡內宗地的圖層和城市邊界圖層，摘述各城市邊界內閒置宗地的平均值。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍內可見的輸入圖層和待摘要圖層中的圖徵。如果未勾選，則會對分析輸入圖層和待摘要圖層內的所有圖徵，包括超出當前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>選擇區域圖層以摘要定義之邊界內的光柵圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將摘要定義了區域邊界或地區的圖層。
+            </p>
+            <p>圖層可為點陣或圖徵資料。對於點陣，地區是由具有相同儲存格值的輸入中的所有位置所定義。區域不必連續。
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>選擇欄位以定義邊界</h2></div>
+        <hr/>
+        <div>
+            <p>這是將用來定義區域之邊界的圖層屬性。
+            </p>
+            <p>例如，假設第一個輸入圖層使用屬性來定義管理單元邊界，這些屬性可定義每個單元的地區、區域和宗地 ID。您也擁有可定義每個位置的生物多樣性指數的點陣圖層。藉助選擇的欄位，您可以決定計算本地、區域或地區級別上的生物多樣性平均值。
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>選擇要摘要的光柵圖層</h2></div>
+        <hr/>
+        <div>
+            <p>此圖層中的點陣儲存格將按其所在的區域（地區）摘要。
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>選擇要計算的統計資料</h2></div>
+        <hr/>
+        <div>
+            <p>選擇要摘要的圖層後，您可以根據該輸入區域圖層中所含點、線或面的任何數值屬性計算其統計資料。
+            </p>
+            <p>當所選欄位為整數時的可用統計資料類型為「平均值」、「多數」、「最大值」、「中位數」、「最小值」、「少數」、「範圍」、「標準差」、「總和」和「變化」。
+            </p>
+            <p>如果欄位是浮點數，則選項為「平均值」、「最大值」、「最小值」、「範圍」、「標準差」和「總和」。
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>忽略計算中缺少的值</h2></div>
+        <hr/>
+        <div>
+            <p>如果選擇忽略缺少的值，則在判定該區域的輸出值時，只會使用具有欲摘要之圖層中值的儲存格。否則，若區域的任何位置缺少值，系統將視為資訊不足，從而無法為地區中的所有儲存格執行統計數字計算，且該區域將在輸出中收到 null (NoData) 值。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Analisis Raster memungkinkan Anda melakukan analisis terhadap set data raster dengan jumlah banyak menggunakan  ArcGIS Image Server. Hal ini memungkinkan Anda untuk menganalisis lebih banyak data dengan lebih cepat dengan memanfaatkan kekuatan server. Rangkaian alat saat ini tersedia melalui pengalaman pengguna web  Portal for ArcGIS adalah  <b>Ringkas Data</b>, <b>Analisis Pola</b>, <b>Gunakan Kedekatan Jarak</b>, <b>Analisis Gambar</b>, <b>Analisis Medan</b>, <b>Kelola Data</b>, dan <b>Deep Learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Ringkas Data</h2>
+        <hr/>
+        <p>Rangkaian alat ini berisi alat untuk menghitung statistik untuk layer raster di dalam batas area yang Anda tentukan. 
+            <ul>
+                <li> <b>Ringkas Raster di Dalam</b> menghitung statistik untuk sel raster yang berada di dalam batas area yang sudah ditentukan.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ringkas Raster di Dalam</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Alat Ringkas Raster di Dalam">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menghitung statistik ringkasan untul sel raster yang berada di dalam batas area yang sudah ditentukan.
+            </p>
+            <p>Beberapa aplikasi contoh adalah seperti berikut: 
+
+                <ul>
+                    <li>Dengan mengetahui layer area batas air dan layer raster elevasi, hitung rentang elevasi di dalam setiap batas air untuk menentukan manakah yang memiliki aliran stream energi yang tertinggi.
+                        
+
+                    </li>
+                    <li>Dengan mengetahui layer unit manajemen administratif dan layer raster kategori penggunaan tanah, hitung berbagai nilai penggunaan tanah di dalam setiap area manajemen untuk mengidentifikasi manakah yang memerlukan pekerjaan paling banyak untuk menentukan rencana manajemen.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Menganalisis Pola</h2>
+        <hr/>
+        <p>Alat ini membantu Anda mengidentifikasi, mengkuantifikasi, dan memvisualisasi pola-pola spasial pada data Anda. 
+
+            <ul>
+                <li> <b>Hitung Kepadatan</b> mengambil kuantitas dari suatu fenomena dan membuat peta kepadatan dengan menyebarkan kuantitas ini pada peta.
+                    
+
+                </li>
+                <li> <b>Sisipkan Titik</b> memprediksi nilai-nilai di lokasi baru berdasarkan pengukuran yang ditemukan pada sekumpulan titik.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitung Kepadatan</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Alat Hitung Kepadatan">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Analisis kepadatan mengambil kuantitas dari suatu fenomena dan membuat peta kepadatan dengan menyebarkan kuantitas ini pada peta. Anda dapat menggunakan alat ini, misalnya, untuk menunjukkan konsentrasi sambaran kilat atau tornado, akses ke fasilitas pelayanan kesehatan, dan kepadatan penduduk.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolasikan Titik</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Alat Interpolasikan Titik">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat ini memungkinkan Anda memprediksi nilai-nilai di lokasi baru berdasarkan pengukuran yang ditemukan pada sekumpulan titik. Alat ini mengambil nilai data pada setiap titik dan menampilkan area yang dikelompokkan menurut nilai prediksi. Anda dapat menggunakan alat ini, misalnya, untuk memprediksi tingkat curah hujan di sepanjang batas air berdasarkan pengukuran yang diambil di suatu alat pengukur hujan.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Gunakan Kedekatan Jarak</h2>
+        <hr/>
+        <p>Alat ini membantu Anda menjawab salah satu pertanyaan yang paling sering diajukan dalam analisis ruang: &quot;Apa yang berada di dekat apa?&quot;
+
+            <ul>
+                <li> <b>Hitung Jarak</b> menghitung jarak, arah, dan alokasi Euclidean untuk satu atau serangkaian sumber.
+                    
+
+                </li>
+                <li> <b>Tentukan Jaringan Biaya Perjalanan Optimal</b> menghitung jaringan biaya optimal dari serangkaian wilayah input.
+                    
+
+                </li>
+                <li> <b>Tentukan Jalur Biaya Perjalanan Sebagai Polyline</b> menghitung jalur polyline biaya paling sedikit antara sumber dan tujuan yang diketahui.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitung Jarak</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Hitung Jarak">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menghitung jarak, arah, dan alokasi Euclidean untuk satu atau serangkaian sumber. Anda dapat menggunakan alat ini untuk menentukan seberapa jauh lokasi ke jalanan, gedung, atau taman. Anda juga dapat menentukan arah mana yang harus Anda lalui dari lokasi sebelum kembali ke sumber di sebagian besar jalur langsung. Anda dapat melihat setiap lokasi di area studi yang terdekat dari sumber.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tentukan Jaringan Biaya Perjalanan Optimal</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Ilustrasi alat Tentukan Jaringan Biaya Perjalanan Optimal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menghitung jaringan biaya optimal dari serangkaian wilayah input.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tentukan Jalur Biaya Perjalanan sebagai Polyline</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Alat ilustrasi Tentukan Jalur Biaya Perjalanan sebagai Polyline">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menghitung jalur polyline biaya paling sedikit antara sumber dan tujuan yang diketahui.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analisis Gambar</h2>
+        <hr/>
+        <p>Alat berikut membantu Anda menganalisis gambar. 
+            <ul>
+                <li> <b>Terapkan Template Fungsi Raster</b> memproses citra Anda dengan rangkaian fungsi, sesuai yang ditentukan oleh template fungsi raster.
+                </li>
+                <li> <b>Pantau Vegetasi</b> mendeteksi vegetasi di dalam gambar, berdasarkan operasi aritmetika pada pita.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Terapkan Template Fungsi Raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Terapkan Template Fungsi Raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Memproses citra Anda dengan rangkaian fungsi, sesuai yang ditentukan oleh template fungsi raster.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pantau Vegetasi</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Alat Pantau Vegetasi untuk Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Melakukan operasi aritmetika pada pita dari layer raster multipeta untuk mengungkapkan informasi cakupan vegetasi dari area studi.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analisis Medan</h2>
+        <hr/>
+        <p>Alat ini membantu Anda menganalisis permukaan raster. 
+            <ul>
+                <li> <b>Hitung Kelerengan</b> menghitung kecuraman medan.
+                    
+
+                </li>
+                <li> <b>Dapatkan Aspek</b> mengitung arah lereng yang paling curam untuk setiap lokasi.
+                    
+
+                </li>
+                <li> <b>Buat Jarak Pandang</b> mengidentifikasi apa yang dapat dilihat dari setiap titik lanskap.
+                    
+
+                </li>
+                <li> <b>Batas Air</b> menghitung area kontribusi di atas lokasi yang teridentifikasi pada permukaan.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitung Lereng</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Alat Hitung Lereng untuk Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mengidentifikasi permukaan yang menunjukkan lereng data elevasi input. Lereng mewakili tingkat perubahan elevasi untuk setiap sel model elevasi digital (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dapatkan Aspek</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Alat Dapatkan Aspek untuk Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mengidentifikasi arah kelerengan tingkat perubahan maksimum dalam nilai dari setiap sel ke tetangganya. Aspek dapat dianggap sebagai arah lereng.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buat Jarak Pandang</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Alat Buat Jarak Pandang">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menentukan lokasi pada permukaan raster yang terlihat oleh sejumlah pengamat.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Batas Air</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Tugas batas air">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menentukan area kontribusi di atas rangkaian sel dalam raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Kelola Data</h2>
+        <hr/>
+        <p>Alat tersebut digunakan untuk mengelola data geografis sehari-hari dan menggabungkan data sebelum analisis dilakukan. 
+            <ul>
+                <li> <b>Ekstrak Raster</b> menempelkan porsi dari rangkaian data raster untuk analisis lebih lanjut.
+                    
+
+                </li>
+                <li> <b>Petakan Ulang Nilai</b> menugaskan nilai yang berbeda pada sel raster.
+                    
+
+                </li>
+                <li> <b>Konversi Fitur ke Raster</b> merasterisasi data vektor.
+                    
+
+                </li>
+                <li> <b>Konversi Raster ke Fitur</b> memvektorisasi data raster.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ekstrak Raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Alat Ekstrak Raster untuk Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ekstrak sel dari raster berdasarkan nilai, bentuk, atau cakupan rangkaian data yang berbeda.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Petakan Ulang Nilai</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Alat Petakan Ulang Nilai untuk Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ubah nilai sel individu atau kisaran nilai sel ke nilai baru.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konversi Fitur ke Raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Alat Konversi Fitur ke Raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Buat rangkaian data raster baru dari rangkaian data fitur yang sudah ada
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konversi Raster ke Fitur</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Alat Konversi Raster ke Fitur">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Buat rangkaian data fitur baru dari rangkaian data raster yang sudah ada
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Deep Learning Rangkaian Alat</h2>
+        <hr/>
+        <p>Peralatan ini 	digunakan untuk mendeteksi fitur spesifik dalam sebuah gambar atau untuk mengklasifikasikan piksel dalam set data raster. Deep learning adalah jenis metode pembelajaran mesin cerdas buatan yang mendeteksi fitur dalam pencitraan menggunakan beberapa layer dalam jaringan neural di mana setiap layer mampu mengekstrak satu fitur unik atau lebih dalam gambar. Peralatan ini menggunakan model yang telah dilatih untuk mendeteksi fitur spesifik dalam kerangka kerja deep learning pihak ketiga&mdash;seperti TensorFlow, CNTK, dan Keras&mdash;serta fitur output atau peta kelas.
+            <ul>
+                <li> <b>Klasifikasikan Piksel Menggunakan Deep Learning</b> menghasilkan raster yang diklasifikasi menggunakan model deep learning terlatih.
+                </li>
+                <li> <b>Deteksi Objek Menggunakan Deep Learning</b> menghasilkan kelas fitur yang berisi objek yang ditemukannya dalam raster input menggunakan model deep learning terlatih.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasifikasikan Piksel Menggunakan Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klasifikasikan Piksel Menggunakan Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menjalankan model deep learning terlatih pada raster input untuk menghasilkan raster yang diklasifikasikan, dengan setiap piksel valid memiliki label kelas yang ditetapkan.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deteksi Objek Menggunakan Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Deteksi Objek Menggunakan Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menjalankan model deep learning terlatih pada sebuah raster input untuk menghasilkan sebuah kelas fitur berisi objek yang ditemukannya. Fitur tersebut bisa jadi kotak atau poligon keliling di sekitar objek yang ditemukan, atau titik di tengah objek.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

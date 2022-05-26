@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>集水域ラスターの作成</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="[集水域ラスターの作成] タスク"></h2>
+        <hr/>
+    <p>このツールは、ラスター内のセルに対する集水域を決定します。
+    </p>
+    <p>集水域は、ある共通の流出点へ排水が集中することによる流れ　(一般的に水) をもたらす上り方向のエリアです。これは、より大きい流域の一部を構成することも、副流域と呼ばれるより小さい集水域を複数含んでいることもあります。
+    </p>
+    <p>各集水域の値は、入力ラスターまたはフィーチャの流出点レイヤーのソースの値から取得されます。流出点がラスター データセットの場合、デフォルトではセル値が使用されます。流出点がポイント フィーチャ データセットの場合、値は指定されたフィールドから取得されます。
+    </p>
+    <p>[集水域ラスターの作成] ツールは、D8 入力流向ラスター レイヤーにのみ対応しています。
+    </p>
+    <p>入力の流出点の位置をフィーチャ データとして指定する場合、デフォルトのフィールドは有効な最初のフィールドになります。有効なフィールドがない場合は、ObjectID フィールド (たとえば、OID や FID) がデフォルトになります。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>流向レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>各セルからの流れの方向を示す入力ラスター。
+            </p>
+            <p>流向ラスターは、[流向ラスターの作成] ツールまたは、RasterAnalysisTools サービスの FlowDirection タスクを使用して、デフォルトの流向タイプ  <b>[D8]</b> を実行して作成できます。
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>入力流出点の位置の指定</h2></div>
+        <hr/>
+        <div>
+            <p>入力流出点の位置。
+            </p>
+            <p>ラスターの場合、これは流出寄与域または集水域を判別するセルを表します。NoData でないすべてのセルがソース セルとして使用されます。ポイント入力の場合、これは流出寄与域または集水域を判別する位置を表します。
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>流出点フィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>流出点の位置に値を割り当てるために使用するフィールド。
+            </p>
+            <p>入力流出点レイヤーがラスターである場合、Value が使用されます。フィーチャである場合は、数値フィールドが使用されます。フィールドが浮動小数点値を含む場合は、切り捨てられて整数値に変換されます。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

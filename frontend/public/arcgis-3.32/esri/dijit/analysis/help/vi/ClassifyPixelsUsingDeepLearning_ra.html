@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Phân loại Pixel sử dụng Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Ph&acirc;n loại Pixel sử dụng Deep Learning"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y chạy một m&ocirc; h&igrave;nh deep learning được đ&agrave;o tạo tr&ecirc;n một raster đầu v&agrave;o để tạo ra một raster được ph&acirc;n loại, theo đ&oacute; mỗi pixel hợp lệ được g&aacute;n một nh&atilde;n lớp.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ v&ugrave;ng raster nh&igrave;n thấy được trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, to&agrave;n bộ raster sẽ được ph&acirc;n t&iacute;ch, ngay cả khi n&oacute; nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Chọn hình ảnh được dùng để phân loại pixel</h2></div>
+        <hr/>
+        <div>
+            <p>H&igrave;nh ảnh đầu v&agrave;o để ph&acirc;n loại.
+            </p>
+            <p>Đ&oacute; c&oacute; thể l&agrave; một URL dịch vụ h&igrave;nh ảnh, một lớp raster hoặc một lớp dịch vụ h&igrave;nh ảnh.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Chọn mô hình Deep Learning được dùng để phân loại pixel</h2></div>
+        <hr/>
+        <div>
+            <p>G&oacute;i deep learning đầu v&agrave;o mục ( <code>.dlpk</code>).
+            </p>
+            <p>G&oacute;i deep learning bao gồm tệp JSON định nghĩa m&ocirc; h&igrave;nh Esri ( <code>.emd</code>), tệp m&ocirc; h&igrave;nh nhị ph&acirc;n deep learning v&agrave; c&oacute; thể c&oacute; h&agrave;m raster Python sẽ được sử dụng.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Xác định đối số mô hình Deep Learning</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối số của h&agrave;m được x&aacute;c định trong lớp h&agrave;m raster Python được tham chiếu bởi m&ocirc; h&igrave;nh đầu v&agrave;o. Đ&acirc;y l&agrave; nơi bạn liệt k&ecirc; c&aacute;c tham số v&agrave; đối số deep learning bổ sung cho c&aacute;c thử nghiệm v&agrave; s&agrave;ng lọc, chẳng hạn như ngưỡng tin cậy để điều chỉnh độ nhạy.
+            </p>
+            <p>T&ecirc;n của c&aacute;c đối số được c&ocirc;ng cụ điền v&agrave;o từ việc đọc m&ocirc;-đun Python tr&ecirc;n m&aacute;y chủ ph&acirc;n t&iacute;ch raster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

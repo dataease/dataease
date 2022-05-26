@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dataset beschreiben</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagramm des Workflows &quot;Dataset beschreiben&quot;"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Dataset beschreiben&quot; bietet einen detaillierteren Einblick in Ihr Dataset. Ermitteln Sie mit diesem Werkzeug, worum es sich bei Ihren Eingabedaten handelt und wo sie sich befinden, bevor Sie Analysen f&uuml;r gro&szlig;e Datenmengen durchf&uuml;hren. Das Ergebnis ist standardm&auml;&szlig;ig eine JSON-Zeichenfolge, die wichtige Deskriptoren Ihrer Eingabe-Layer darstellen, und eine Tabelle mit Details zur Summenstatistik f&uuml;r jedes Feld. 
+    </p>
+    <p>Sie k&ouml;nnen auch zus&auml;tzliche Ausgabe-Feature-Layer erstellen, um Ihre Daten weiter zu beschreiben. Zu den Optionen z&auml;hlen ein Beispiel-Layer oder ein Ausdehnungs-Layer. Sie k&ouml;nnen einen oder beide dieser Layer als Ausgabe festlegen.
+    </p>
+    <p>Angenommen, Sie erhalten eine Big-Data-Dateifreigabe mit 15&nbsp;Datasets. Jedes Dataset verf&uuml;gt &uuml;ber 10&nbsp;Millionen Fl&auml;chen-Features, die Geb&auml;ude und H&auml;user in verschiedenen Regionen Ihres Landes darstellen. Ihre Aufgabe besteht darin, Region C zu analysieren, Ihnen ist jedoch nicht bekannt, in welchem Dataset diese Features enthalten sind. Um zu ermitteln, welches Dataset Sie verwenden sollten, f&uuml;hren Sie das Werkzeug &quot;Dataset beschreiben&quot; aus, und erstellen Sie einen Ausdehnungs-Layer, um zu untersuchen, welches Dataset sich in Ihrer Region befindet.
+    </p>
+    <p>Ein weiteres Beispiel: Stellen Sie sich vor, Sie wurden mit der Aufgabe betraut, einen Analyse-Workflow f&uuml;r eine gro&szlig;e Datenmenge auszuf&uuml;hren. Sie m&ouml;chten den Workflow testen, aber dieser Vorgang k&ouml;nnte f&uuml;r das vollst&auml;ndige Dataset Stunden oder Tage in Anspruch nehmen. Erstellen Sie einen Beispiel-Layer, an dem Sie den vollst&auml;ndigen Workflow effizient testen k&ouml;nnen, anstatt Zeit und Ressourcen f&uuml;r die Ausf&uuml;hrung der vollst&auml;ndigen Analyse in Anspruch zu nehmen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zu beschreibendes Dataset auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer mit Punkt-, Linien-, Fl&auml;chen- oder tabellarischen Features, der beschrieben, zusammengefasst und als Stichprobe verwendet wird.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Gewinnen Sie einen Überblick über Ihr Dataset, indem Sie eines der folgenden Elemente erstellen (optional):</h2></div>
+        <hr/>
+        <div>
+            <p>Erstellen Sie zus&auml;tzliche beschreibende Layer als Ausgabe, um ein besseres Verst&auml;ndnis Ihrer Big Data zu erlangen. Sie k&ouml;nnen keinen, einen oder beide der folgenden Layer als Ausgabe festlegen:
+            </p>
+            <ul>
+                <li> <b>Ausdehnungs-Layer</b>: Erstellt ein Fl&auml;chen-Feature, das die Ausdehnung Ihrer Eingabe-Features bzw. Ihres Eingabe-Interessenbereichs darstellt.
+                </li>
+                <li> <b>Beispiel-Layer</b>: Erstellt einen Teilmengen-Layer mit einer bestimmten Menge von Eingabe-Features &uuml;ber Ihr Dataset oder Ihren Interessenbereich.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Beispiel-Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Erstellen Sie einen Layer mit einer Teilmenge der Features aus Ihrem Eingabe-Layer als Ausgabe. Wenn  <b>Beispiel-Layer</b> ausgew&auml;hlt ist, k&ouml;nnen Sie die Anzahl der Features festlegen, die im Beispiel-Layer zur&uuml;ckgegeben werden sollen.  Im Ausgabe-Layer werden standardm&auml;&szlig;ig 100&nbsp;Beispiel-Features zur&uuml;ckgegeben.
+            </p>
+            <p>Der Wert muss gr&ouml;&szlig;er 0 sein. Wenn Sie eine gr&ouml;&szlig;ere Anzahl als die Gesamtzahl der Features festlegen, werden alle Features zur&uuml;ckgegeben.
+            </p>
+            <p>Bei Auswahl von  <b>Aktuelle Kartenausdehnung verwenden</b> enth&auml;lt der Beispiel-Layer Features, die sich in der Ausdehnung der Karte befinden.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Ausdehnungs-Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Erstellen Sie einen Feature-Layer mit einem einzelnen Feature, das die Ausdehnung der Eingabe-Features darstellt, als Ausgabe, indem Sie die Schaltfl&auml;che  <b>Ausdehnungs-Layer</b> ausw&auml;hlen. Diese Option ist standardm&auml;&szlig;ig ausgew&auml;hlt.
+            </p>
+            <p>Bei Auswahl von  <b>Aktuelle Kartenausdehnung verwenden</b> stellt der Ausdehnungs-Layer die sichtbare Ausdehnung der Karte dar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

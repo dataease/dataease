@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Convertir ráster a entidad</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Herramienta Convertir r&aacute;ster a entidad"></h2>
+        <hr/>
+    <p>Esta herramienta convierte un r&aacute;ster en un dataset de entidades como, por ejemplo, puntos, l&iacute;neas o pol&iacute;gonos.
+    </p>
+    <p>El par&aacute;metro  <b>Elegir campo</b> le permite elegir qu&eacute; campo de atributo del dataset r&aacute;ster de entrada se convertir&aacute; en un atributo en la clase de entidad de salida. Este par&aacute;metro solo est&aacute; disponible para r&aacute;steres enteros que tienen atributos adicionales en la tabla asociada.
+    </p>
+    <p>El r&aacute;ster de entrada puede tener cualquier tama&ntilde;o de celda.
+    </p>
+    <p>Los r&aacute;steres enteros se pueden convertir a entidades de punto, l&iacute;nea o pol&iacute;gono; no obstante, los r&aacute;steres de puntos flotante solo se pueden convertir a entidades de puntos.
+    </p>
+    <p>Si la opci&oacute;n  <b>Utilizar la extensi&oacute;n de mapa actual</b> est&aacute; activada, solo se convertir&aacute;n las celdas de r&aacute;ster que est&eacute;n visibles dentro de la extensi&oacute;n de mapa actual. Si la opci&oacute;n est&aacute; desactivada, se convertir&aacute;n todas las celdas de la capa r&aacute;ster, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual. Tenga en cuenta este aspecto si la capa r&aacute;ster es grande o tiene una resoluci&oacute;n muy alta.
+    </p>
+    <p>Se describen a continuaci&oacute;n ejemplos de uso de esta herramienta:
+ 
+        <ul>
+            <li>Crear entidades poligonales a partir de un r&aacute;ster de clasificaci&oacute;n de uso del suelo.
+                
+ 
+            </li>
+            <li>Los arroyos identificados en un DEM se pueden convertir a entidades de l&iacute;neas.
+                
+
+            </li>
+            <li>Un DEM se puede convertir a entidades de puntos que se podr&aacute;n utilizar en un flujo de trabajo no basado en r&aacute;ster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elija una capa ráster para convertir</h2></div>
+        <hr/>
+        <div>
+            <p>La capa r&aacute;ster de entrada que se convertir&aacute; a capas de entidades.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Elegir campo</h2></div>
+        <hr/>
+        <div>
+            <p>Proporcione un campo que especifique el valor que se utilizar&aacute; para la conversi&oacute;n.
+            </p>
+            <p>Puede ser cualquier valor entero o de texto.
+            </p>
+            <p>Los campos que contienen valores de punto flotante solo se pueden utilizar si la salida es a un dataset de puntos.
+            </p>
+            <p>La opci&oacute;n predeterminada consiste en utilizar el campo  <i>Value</i>, que contiene el valor de cada celda r&aacute;ster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Elegir tipo de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Elija el tipo de salida entre punto, l&iacute;nea o pol&iacute;gono.
+            </p>
+            <ul>
+                <li>Punto: el r&aacute;ster se convertir&aacute; a un dataset de puntos.
+                    
+ 
+                </li>
+                <li>L&iacute;nea: el r&aacute;ster se convertir&aacute; a un dataset de entidades de l&iacute;nea.
+                    
+ 
+                </li>
+                <li>Pol&iacute;gono: el r&aacute;ster se convertir&aacute; a un dataset de entidades poligonales.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplificar líneas o polígonos</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique si se deben simplificar las entidades.
+            </p>
+            <p>Si el par&aacute;metro est&aacute; activado (opci&oacute;n predeterminada), las entidades de l&iacute;nea o poligonales se suavizar&aacute;n para generar un resultado m&aacute;s generalizado. Si esta opci&oacute;n est&aacute; desactivada, las entidades lineales seguir&aacute;n los l&iacute;mites de las celdas del dataset r&aacute;ster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

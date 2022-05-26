@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/core/accessorSupport/extensions/serializableProperty","require exports ./serializableProperty/originAliases ./serializableProperty/reader ./serializableProperty/shorthands ./serializableProperty/writer".split(" "),function(m,e,k,g,l,h){function f(a,b,c){var d=a&&a.json;a&&a.json&&a.json.origins&&c&&(a=a.json.origins[c.origin])&&b in a&&(d=a);return d}Object.defineProperty(e,"__esModule",{value:!0});e.originSpecificReadPropertyDefinition=function(a,b){return f(a,"read",
+b)};e.originSpecificWritePropertyDefinition=function(a,b){return f(a,"write",b)};e.SerializablePropertyExtension={processPrototypePropertyMetadata:function(a,b,c,d){if(l.process(b)){k.process(b);c=b.type;for(d=0;Array.isArray(c);)c=c[0],d++;if(b.json.origins)for(var e in b.json.origins){var f=b.json.origins[e];g.create(c,d,a,f);h.create(c,d,a,f)}g.create(c,d,a,b.json);h.create(c,d,a,b.json)}}};e.default=e.SerializablePropertyExtension});

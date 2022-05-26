@@ -1,0 +1,48 @@
+/* dojox.mobile.ToggleButton */
+.mblToggleButton {
+	position: relative;
+	padding: 0 10px 0 25px;
+	height: 29px;
+	border-width: 1px 1px 1px 1px;
+	border-style: outset;
+	.mbl-button-background-image();
+	font-family: Helvetica;
+	line-height: 29px;
+	cursor: pointer;
+	.tap-highlight-color(rgba(255,255,255,0));
+	.mblToggleButton-styles;
+	&:disabled {
+		border-color: grey;
+		background-image: none;
+		color: grey;
+		cursor: default;
+	}
+}
+.mblToggleButtonSelected {
+	.mbl-button-selected-background-image();
+	.mblToggleButtonSelected-styles;
+}
+.mblToggleButtonChecked {
+	.mbl-button-checked-background-image();
+	.mblToggleButtonChecked-styles;
+	&:after {
+		position: absolute;
+		content: "";
+		top: 6px;
+		left: 7px;
+		width: 5px;
+		height: 10px;
+		border-width: 2px;
+		border-style: none solid solid none;
+		.transform(rotate(45deg) skew(10deg));
+		.transform-origin(50% 50%);
+		.mblToggleButtonChecked-after-styles;
+	}
+	&.mblToggleButtonSelected {
+		.mbl-blue-button-selected-background-image();
+		.mblToggleButtonCheckedSelected-styles;
+		&:after {
+			.mblToggleButtonCheckedSelected-after-styles;
+		}
+	}
+}

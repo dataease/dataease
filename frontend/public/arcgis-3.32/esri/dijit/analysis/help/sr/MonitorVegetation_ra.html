@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nadgledaj vegetaciju</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Alatka Nadgledaj vegetaciju za portal"></h2>
+        <hr/>
+    <p>Ova alatka vr&scaron;i aritmetičke operacije na opsezima rasterskog sloja sa vi&scaron;e opsega kako bi otkrila informacije o pokrivenosti vegetacijom oblasti ispitivanja.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selektuj ulazne podatke</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite rasterski sloj sa vi&scaron;e opsega. Postarajte se da ulazni raster ima dostupne odgovarajuće opsege.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Izaberite metod za nadgledanje vegetacije</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite metod za kreiranje sloja indeksa vegetacije. Različiti indeksi vegetacije mogu da pomognu u isticanju određenih geoobjekata ili u smanjenju raznovrsne buke.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI je nelinearni indeks vegetacije za globalno ekolo&scaron;ko nadgledanje iz satelitskih snimaka. Sličan je sa NDVI, ali je manje osetljiv na atmosferske efekte. Pod uticajem je golog zemlji&scaron;ta; stoga se ne preporučuje za upotrebu u oblastima sa retkom ili umereno gustom vegetacijom.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI je originalno dizajniran iz Landsat MSS snimaka, ali je izmenjen za kori&scaron;ćenje sa Landsat TM snimcima. Takođe je poznat kao Landsat TM Tasseled Cap indeks zelene vegetacije. Ovaj indeks za nadgledanje može takođe da se koristi sa snimcima čiji opsezi dele iste spektralne karakteristike.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 je indeks vegetacije koji poku&scaron;ava da smanji uticaje golog zemlji&scaron;ta SAVI metoda.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI je standardizovan indeks koji vam omogućava da generi&scaron;ete snimak koji prikazuje zelenilo ili relativnu biomasu. Ovaj indeks koristi prednosti kontrasta karakteristika dva opsega iz vi&scaron;espektralnog rasterskog skupa podataka: apsorpcije pigmenta hlorofila u crvenom opsegu i velika reflektivnost materijala biljaka u blizu infracrvenom (NIR) opsegu.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI je sličan indeksu razlike vegetacije; međutim, on je osetljiv na atmosferske varijacije. Kada se ovaj metod koristi za poređenje različitih snimaka, trebalo bi da se koristi samo na snimcima koji su bili atmosferski ispravljeni. Ove informacije može da vam pruži va&scaron; snabdevač podacima.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI je indeks vegetacije koji poku&scaron;ava da smanji uticaje osvetljenosti zemlji&scaron;ta kori&scaron;ćenjem zemlji&scaron;te-osvetljenost faktora za korekciju. Ovo se često koristi u bezvodnim regionima gde je vegetativni pokrivač nizak.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Proces Sultanove formule koristi 8-bitni snimak sa &scaron;est opsega i primenjuje poseban algoritam na njega, kako bi proizveo 8-bitni snimak sa tri opsega. Rezultujući snimak ističe kamen formacije zvane ofioliti na obalama. Ova formula je projektovana na osnovu TM i ETM opsega Landsat 5 ili 7 scene.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Transformisani-SAVI je indeks vegetacije koji poku&scaron;ava da smanji uticaje osvetljenosti zemlji&scaron;ta pretpostavljajući da linija zemlji&scaron;ta ima proizvoljan nagib i prekid.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Navedite indekse NIR opsega i Red opsega</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite indekse opsega za NIR (blizu infracrveni) i Red (vidljivi) opseg.
+            </p>
+            <p>Svaki satelitski senzor i vazdu&scaron;na kamera snimaju informacije koje se rastavljaju u indekse opsega. Svaki indeks opsega sadrži informacije za specifični deo elektromagnetnog spektra. Ovaj metod nadgledanja vegetacije zahteva da navedete indeks opsega koji je uhvatio NIR i Red talasne dužine.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Nagib linije zemljišta</h2></div>
+        <hr/>
+        <div>
+            <p>Nagib linije zemlji&scaron;ta. Nagib je približan linearni odnos između NIR i crvenog opsega na XY grafikonu.
+            </p>
+            <p>Ovaj parametar je važeći samo za metod Transformisani indeks vegetacije prilagođen zemlji&scaron;tu.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Prekid</h2></div>
+        <hr/>
+        <div>
+            <p>Vrednost infracrvenog (NIR) kada je vrednost refleksije crvenog (Red) opsega 0 za posebne linije zemlji&scaron;ta.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , kada je Red 0.
+            </p> 
+            <p>Ovaj parametar je važeći samo za metod Transformisani indeks vegetacije prilagođen zemlji&scaron;tu.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Količina zelenog pokrivača</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje količinu pokrivača zelene vegetacije, koji je obavezan prema SAVI metodi.
+            </p>
+            <p>Validne vrednosti su kako sledi: 
+
+                <ul>
+                    <li>1 = oblasti bez zelenog vegetativnog pokrivača
+                        
+ 
+                    </li>
+                    <li>0,5 = oblasti sa umerenim zelenim vegetativnim pokrivačem
+                        
+ 
+                    </li>
+                    <li>0 = oblasti sa izraženim zelenim vegetativnim pokrivačem
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Faktor podešavanja</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi faktor prilagođavanja kako bi se pomoglo da se efekat zemlji&scaron;ta svede na najmanju meru, &scaron;to je zahtevano metodom Transformisani indeks vegetacije prilagođen zemlji&scaron;tu. Podrazumevana vrednost je 0,08.
+            </p>
+            <p>Niska vrednost znači da ignori&scaron;ete efekat zemlji&scaron;ta. Visoka vrednost znači da će zemlji&scaron;te uticati na va&scaron; rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

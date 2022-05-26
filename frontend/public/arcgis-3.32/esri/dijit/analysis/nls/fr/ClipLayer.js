@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fr/ClipLayer",{inputLayerLabel:"Choisir les entit\u00e9s \u00e0 d\u00e9couper",filterSelectLabel:"D\u00e9couper toutes les entit\u00e9s ou d\u00e9finir un sous-ensemble (facultatif)",targetArea:"Choisir une surface de d\u00e9coupage",outputLayerName:"D\u00e9couper ${inputLayerName} sur ${clipLayerName}",itemDescription:"Couche d\u2019entit\u00e9s g\u00e9n\u00e9r\u00e9e en ex\u00e9cutant les solutions D\u00e9couper. Les entit\u00e9s de ${inputLayerName} ont \u00e9t\u00e9 d\u00e9coup\u00e9es sur ${clipLayerName}.",
+itemTags:"R\u00e9sultat d\u2019analyse, D\u00e9couper la couche, ${inputLayerName}, ${clipLayerName}, ${outputLayerGeometry}",itemSnippet:"Couche d\u2019entit\u00e9s g\u00e9n\u00e9r\u00e9e avec D\u00e9couper la couche"});

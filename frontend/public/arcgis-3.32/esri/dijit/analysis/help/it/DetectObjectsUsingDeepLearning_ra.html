@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Rileva oggetti usando l'apprendimento profondo</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Rileva oggetti usando l'apprendimento profondo"></h2>
+        <hr/>
+    <p>Questo strumento esegue un modello di apprendimento profondo addestrato su un raster di input per produrre una feature class che contiene gli oggetti che trova. Le feature possono essere riquadri di contorno o poligoni intorno agli oggetti trovati o punti al centro degli oggetti.
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verr&agrave; analizzata solo l'area raster visibile all'interno dell'estensione mappa corrente. Se non lo si seleziona, verr&agrave; analizzato il raster intero, anche se esterno all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Scegli l’immagine usata per rilevare oggetti</h2></div>
+        <hr/>
+        <div>
+            <p>L'immagine di input usata per rilevare oggetti.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Scegli il modello di apprendimento profondo usato per rilevare oggetti</h2></div>
+        <hr/>
+        <div>
+            <p>L'elemento del pacchetto di apprendimento profondo di input ( <code>.dlpk</code>).
+            </p>
+            <p>Il pacchetto di apprendimento profondo &egrave; composto dal file JSON di definizione del modello Esri ( <code>.emd</code>), il file del modello binario di apprendimento profondo e, facoltativamente, dalla funzione raster Python da usare.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Specifica gli argomenti del modello di apprendimento profondo</h2></div>
+        <hr/>
+        <div>
+            <p>Gli argomenti della funzione sono definiti nella classe della funzione raster Python a cui fa riferimento il modello di input. &Egrave; qui che si elencano parametri e argomenti aggiuntivi di apprendimento per gli esperimenti e la rifinitura, come la soglia di affidabilit&agrave; per regolare la sensibilit&agrave;.
+            </p>
+            <p>I nomi degli argomenti vengono popolati dallo strumento mediante lettura del modulo Python sul server dell'analisi raster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Rimuovi feature duplicate dall’output (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Esegue Soppressione non massima, in cui si identificano gli oggetti duplicati e si rimuove la feature duplicata con un valore di affidabilit&agrave; minore. 
+                <ul>
+                    <li>Non selezionato: tutti gli oggetti rilevati saranno nella feature class di output. Questa &egrave; l'impostazione predefinita.
+                        
+
+                    </li>
+                    <li>Selezionato: rimuove gli oggetti duplicati rilevati.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Campo del punteggio di affidabilità</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo nel feature service che contiene il punteggio di affidabilit&agrave; come risultato del metodo di rilevamento degli oggetti.
+            </p>
+            <p>Questo parametro &egrave; obbligatorio quando si seleziona il parametro  <b>Soppressione non massima</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Campo del valore di classe</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo del valore di classe nel feature service di output. Se non specificato, lo strumento user&agrave; i campi standard del valore di classe  <i>Classvalue</i> e <i>Value</i>. Se questi campi non esistono, tutte le feature saranno trattate come nella stessa classe di oggetti.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Rapporto di sovrapposizione massimo</h2></div>
+        <hr/>
+        <div>
+            <p>Il rapporto di sovrapposizione massimo per due feature sovrapposte, definito come il rapporto dell'area di intersezione rispetto all'area di unione. L'impostazione predefinita &egrave; 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

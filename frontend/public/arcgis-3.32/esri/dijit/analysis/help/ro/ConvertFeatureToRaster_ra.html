@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Convertire obiect spaţial în raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Instrument convertire obiect spaţial &icirc;n raster"></h2>
+        <hr/>
+    <p>Acest instrument converteşte obiectele spaţiale &icirc;ntr-un set de date raster.
+    </p>
+    <p>Orice obiect spaţial care conţine puncte, linii sau poligoane poate fi convertit &icirc;n set de date raster.
+    </p>
+    <p>Centrul celulei este utilizat pentru a decide valoarea pixelului rasterului de ieşire.
+    </p>
+    <p>Tipul c&acirc;mpului de intrare determină tipul de raster de ieşire. Dacă c&acirc;mpul este un număr &icirc;ntreg, rasterul de ieşire va fi un număr &icirc;ntreg; dacă este un punct mobil, ieşirea va fi un punct mobil.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic de obiecte spaţiale pentru convertire</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de obiecte spaţiale de intrare care va fi convertit &icirc;ntr-un set de date raster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Alegere câmp</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi c&acirc;mpul care va fi utilizat pentru a atribui valori rasterului de ieşire.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensiune celulă ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea celulei şi unitatea de măsură pentru rasterele de ieşire.
+            </p>
+            <p>The available units are Miles, Feet, Kilometers, and Meters. The default is Feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

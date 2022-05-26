@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Die Toolbox &quot;Raster-Analyse&quot; erm&ouml;glicht Ihnen die Analyse gro&szlig;er Raster-Datasets mit  ArcGIS Image Server. Dadurch k&ouml;nnen gr&ouml;&szlig;ere Datenmengen schneller analysiert werden, indem das Potenzial des Servers genutzt wird. Zu den Toolsets, die derzeit &uuml;ber die Web-Benutzeroberfl&auml;che von  Portal for ArcGIS verf&uuml;gbar sind, geh&ouml;ren  <b>Daten zusammenfassen</b>, <b>Muster analysieren</b>, <b>Nachbarschaftsanalyse verwenden</b>, <b>Bild analysieren</b>, <b>Terrain analysieren</b>, <b>Daten verwalten</b> und <b>Deep Learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Daten zusammenfassen</h2>
+        <hr/>
+        <p>Dieses Toolset enth&auml;lt ein Werkzeug zum Berechnen einiger Statistiken f&uuml;r einen Raster-Layer innerhalb von Fl&auml;chengrenzen, die Sie definieren. 
+            <ul>
+                <li> <b>Zusammenfassen (innerhalb)</b> berechnet Statistiken f&uuml;r Raster-Zellen, die in definierten Fl&auml;chengrenzen liegen.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raster zusammenfassen (innerhalb)</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Werkzeug &quot;Raster zusammenfassen (innerhalb)&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berechnet einige Summenstatistiken f&uuml;r Raster-Zellen, die sich innerhalb definierter Fl&auml;chen befinden.
+            </p>
+            <p>Folgende Beispielanwendungen sind verf&uuml;gbar: 
+
+                <ul>
+                    <li>Berechnen Sie anhand eines Abflussgebiet-Layers und eines H&ouml;hen-Raster-Layers den H&ouml;henbereich in jedem Abflussgebiet, um zu ermitteln, welche den h&ouml;chsten Energiestrom aufweisen.
+                        
+
+                    </li>
+                    <li>Berechnen Sie anhand eines Layers mit Verwaltungseinheiten und eines Raster-Layers mit Landnutzungskategorien die verschiedenen Landnutzungswerte in jedem Verwaltungsbereich, um herauszufinden, welche den gr&ouml;&szlig;ten Arbeitsaufwand zur Bestimmung eines Verwaltungsplans fordern.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Muster analysieren</h2>
+        <hr/>
+        <p>Mit diesen Werkzeugen k&ouml;nnen Sie r&auml;umliche Muster in Daten identifizieren, quantifizieren und visualisieren. 
+
+            <ul>
+                <li>Das Werkzeug  <b>Dichte berechnen</b> stellt bekannte Mengen eines Ph&auml;nomens als Dichtekarte auf der Karte dar. Hierzu werden die Mengen auf der Karte verteilt.
+                    
+
+                </li>
+                <li>Mit dem Werkzeug  <b>Punkte interpolieren</b> k&ouml;nnen Sie Werte an neuen Positionen basierend auf Messwerten aus einer Sammlung von Punkten vorhersagen.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dichte berechnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Das Werkzeug &quot;Dichte berechnen&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bei der Dichteanalyse werden bekannte Mengen eines Ph&auml;nomens als Dichtekarte auf der Karte dargestellt. Hierzu werden die Mengen auf der Karte verteilt. Mit diesem Werkzeug k&ouml;nnen beispielsweise Konzentrationen von Blitzeinschl&auml;gen oder Tornados, die Erreichbarkeit von Gesundheitseinrichtungen und Bev&ouml;lkerungsdichten angezeigt werden.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Punkte interpolieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Punkte interpolieren (Werkzeug)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mit dem Werkzeug k&ouml;nnen Sie Werte an neuen Positionen basierend auf Messwerten aus einer Sammlung von Punkten vorhersagen. Das Werkzeug verwendet Punktdaten mit Werten an jedem Punkt und gibt Fl&auml;chen zur&uuml;ck, die nach vorhergesagten Werten klassifiziert werden. Mit diesem Werkzeug k&ouml;nnen Sie beispielsweise Niederschlagsmengen in einem Abflussgebiet basierend auf den Messwerten einzelner Niederschlagsmesser vorhersagen.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Nachbarschaftsanalyse verwenden</h2>
+        <hr/>
+        <p>Mit diesen Werkzeugen k&ouml;nnen Sie eine der am h&auml;ufigsten gestellten Fragen im Zusammenhang mit r&auml;umlichen Analysen beantworten: &quot;Welche Elemente befinden sich in r&auml;umlicher N&auml;he zueinander?&quot;
+
+            <ul>
+                <li> <b>Entfernung berechnen</b> berechnet die euklidische Entfernung, Richtung und Zuordnung von einer einzelnen oder verschiedenen Quellen.
+                    
+
+                </li>
+                <li> <b>Optimales Reisekosten-Netzwerk ermitteln</b> berechnet das optimale Kostennetzwerk von verschiedenen Eingaberegionen.
+                    
+
+                </li>
+                <li> <b>Reisekostenpfad als Polylinie ermitteln</b> berechnet den kosteng&uuml;nstigsten Pfad zwischen Quellen und bekannten Zielen als Polylinie.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Entfernung berechnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Entfernung berechnen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berechnet die euklidische Entfernung, Richtung und Zuordnung von einer einzelnen oder verschiedenen Quellen. Mit diesem Werkzeug k&ouml;nnen Sie die Entfernung einer Position von einer Stra&szlig;e, einem Geb&auml;ude oder einem Park ermitteln. Dar&uuml;ber hinaus k&ouml;nnen Sie feststellen, in welche Richtung Sie von einer Position aus fahren m&uuml;ssen, um auf direktestem Weg zu einer Quelle zur&uuml;ckzukehren. F&uuml;r jede Position im Untersuchungsgebiet wird die n&auml;chstgelegene Quelle angezeigt.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Optimales Reisekosten-Netzwerk ermitteln</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Abbildung: Werkzeug &quot; Optimales Reisekosten-Netzwerk ermitteln&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berechnet das optimale Kostennetzwerk von verschiedenen Eingaberegionen.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Reisekostenpfad als Polylinie ermitteln</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Abbildung zum Werkzeug &quot;Reisekostenpfad als Polylinie ermitteln&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berechnet den kosteng&uuml;nstigsten Pfad zwischen Quellen und bekannten Zielen als Polylinie.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Bild analysieren</h2>
+        <hr/>
+        <p>Das folgende Werkzeug unterst&uuml;tzt Sie bei der Analyse von Bildern. 
+            <ul>
+                <li> <b>Vorlage f&uuml;r Raster-Funktionen anwenden</b> bearbeitet Ihre Bilddaten mit der Funktionskette, die in der Vorlage f&uuml;r Raster-Funktionen angegeben wurde.
+                </li>
+                <li> <b>Vegetation &uuml;berwachen</b> erkennt Vegetation in einem Bild basierend auf arithmetischen Operationen f&uuml;r die B&auml;nder.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vorlage für Raster-Funktionen anwenden</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Vorlage f&uuml;r Raster-Funktionen anwenden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bearbeitet Ihre Bilddaten mit der Funktionskette, die in der Vorlage f&uuml;r Raster-Funktionen angegeben wurde.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vegetation überwachen</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Das Werkzeug &quot;Vegetation &uuml;berwachen&quot; f&uuml;r Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&uuml;hrt eine arithmetische Operation f&uuml;r die B&auml;nder eines Multiband-Raster-Layers durch, um die Informationen zur Vegetationsabdeckung des Einzugsgebiets aufzudecken.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Terrain analysieren</h2>
+        <hr/>
+        <p>Diese Werkzeuge unterst&uuml;tzen Sie beim Analysieren von Raster-Oberfl&auml;chen. 
+            <ul>
+                <li>Mit dem Werkzeug  <b>Neigung berechnen</b> k&ouml;nnen Sie die Steilheit des Terrains berechnen.
+                    
+
+                </li>
+                <li>Das Werkzeug  <b>Ausrichtung ableiten</b> berechnet die Richtung der steilsten Neigung f&uuml;r jede Position.
+                    
+
+                </li>
+                <li>Das Werkzeug  <b>Sichtfelder erstellen</b> identifiziert, was von einem gegebenen Punkt in der Landschaft aus sichtbar ist.
+                    
+
+                </li>
+                <li> <b>Abflussgebiet</b> berechnet die relevante Fl&auml;che oberhalb der identifizierten Positionen auf einer Oberfl&auml;che.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Neigung berechnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Werkzeug &quot;Neigung berechnen&quot; f&uuml;r Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifiziert eine Oberfl&auml;che, die die Neigung der Eingabeh&ouml;hendaten anzeigt. Mit der Funktion &quot;Neigung&quot; wird die &Auml;nderungsrate der H&ouml;he f&uuml;r jede digitale H&ouml;henmodell (DEM)-Zelle dargestellt.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ausrichtung ableiten</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Werkzeug &quot;Ausrichtung ableiten&quot; f&uuml;r Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestimmt die Neigungsrichtung der maximalen &Auml;nderungsrate des Wertes jeder einzelnen Zelle zur jeweiligen Nachbarzelle. Sie k&ouml;nnen sich die Ausrichtung also als Neigungsrichtung vorstellen.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sichtfelder erstellen</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Das Werkzeug &quot;Sichtfelder erstellen&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestimmt die Positionen auf einer Raster-Oberfl&auml;che, die f&uuml;r verschiedene Beobachter sichtbar sind.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Abflussgebiet</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Task &quot;Abflussgebiet&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ermittelt die relevante Fl&auml;che &uuml;ber einer Gruppe von Zellen in einem Raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Daten verwalten</h2>
+        <hr/>
+        <p>Diese Werkzeuge werden f&uuml;r die t&auml;gliche Verwaltung geographischer Daten und zum Kombinieren von Daten vor Analysen herangezogen. 
+            <ul>
+                <li> <b>Raster extrahieren</b> schneidet Teile aus einem Raster-Dataset zur sp&auml;teren Analyse heraus.
+                    
+
+                </li>
+                <li> <b>Neuzuordnungswerte</b> weist Raster-Zellen verschiedene Werte zu.
+                    
+
+                </li>
+                <li> <b>Feature in Raster konvertieren</b> rastert Vektordaten.
+                    
+
+                </li>
+                <li> <b>Raster in Feature konvertieren</b> vektorisiert Raster-Daten.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raster extrahieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Werkzeug &quot;Raster extrahieren&quot; f&uuml;r Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extrahiert Zellen aus einem Raster basierend auf dem Wert, der Form oder der Ausdehnung eines anderen Datasets.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Werte neu zuordnen</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Werkzeug &quot;Werte neu zuordnen&quot; f&uuml;r Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Auml;ndert die einzelnen oder Bereiche von Zellenwerten in neue Werte.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Feature in Raster konvertieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Werkzeug &quot;Feature in Raster konvertieren&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Erstellt ein neues Raster-Dataset aus einem vorhandenen Feature-Dataset.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Raster in Feature konvertieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Werkzeug &quot;Raster in Feature konvertieren&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Erstellt ein neues Feature-Dataset aus einem vorhandenen Raster-Dataset.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Toolset "Deep Learning"</h2>
+        <hr/>
+        <p>Mit diesen Werkzeugen k&ouml;nnen bestimmte Features in einem Bild erkannt oder Pixel in einem Raster-Dataset klassifiziert werden. Deep Learning ist eine Art maschinelles Lernverfahren der k&uuml;nstlichen Intelligenz, bei dem mehrere Layer in neuralen Netzwerken verwendet werden, in denen die einzelnen Layer in der Lage sind, mindestens ein eindeutiges Feature im Bild zu extrahieren. Diese Werkzeuge verwenden die Modelle, die f&uuml;r die Erkennung bestimmter Features in Deep-Learning-Frameworks von Drittanbietern, wie etwa TensorFlow, CNTK und Keras, sowie in Ausgabe-Features oder Klassenkarten trainiert wurden.
+            <ul>
+                <li> <b>Pixel mit Deep Learning klassifizieren</b> erzeugt ein klassifiziertes Raster mithilfe eines trainierten Deep-Learning-Modells.
+                </li>
+                <li> <b>Objekte mit Deep Learning ermitteln</b> erzeugt eine Feature-Class mit Objekten, die mithilfe eines Deep-Learning-Modells in einem Eingabe-Raster gefunden werden.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pixel mit Deep Learning klassifizieren</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Pixel mit Deep Learning klassifizieren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&uuml;hrt ein trainiertes Deep-Learning-Modell auf einem Eingabe-Raster zur Erstellung eines klassifizierten Rasters aus, wobei jedem g&uuml;ltigen Pixel eine Klassenbeschriftung zugewiesen ist.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Objekte mit Deep Learning ermitteln</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Objekte mit Deep Learning ermitteln">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&uuml;hrt ein trainiertes Deep-Learning-Modell auf einem Eingabe-Raster zur Erstellung einer Feature-Class aus, die die gefundenen Objekte enth&auml;lt. Bei den Features kann es sich um Rahmen oder Polygone um die gefundenen Objekte oder um Punkte im Mittelpunkt der Objekte handeln.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

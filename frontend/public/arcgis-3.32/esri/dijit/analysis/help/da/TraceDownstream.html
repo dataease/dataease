@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Gå med strømmen</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="G&aring; med str&oslash;mmen"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j bestemmer den sporing, eller vandl&oslash;bsretning, i &quot;nedstr&oslash;ms-retning&quot; fra punkterne i dit inputlag.
+    </p>
+    <p>Forestil dig f.eks., at du har punktobjekter, der repr&aelig;senterer forureningskilder, og du &oslash;nsker at finde ud af, hvor forureningen vil flyde hen i dit unders&oslash;gelsesomr&aring;de. Du kan bruge G&aring; med str&oslash;mmen til at identificere den retning, som forureningen vil tage. Denne sporing kan ogs&aring; inddeles i individuelle linjesegmenter ved at angive en afstandsv&aelig;rdi samt m&aring;leenheder. Den returnerede linje kan v&aelig;re den samlede l&aelig;ngde af vandl&oslash;bsretningen, en angivet maksimal sporingsl&aelig;ngde eller &quot;fastl&aring;st til omr&aring;de&quot;-objekter, f.eks. dit unders&oslash;gelsesomr&aring;de. Hvis den samlede sporingsl&aelig;ngde returneres, vil der i mange tilf&aelig;lde v&aelig;re tale om hele l&aelig;ngden fra kilden til havet.
+    </p>
+    <p>Resultatet er en linje, der repr&aelig;senterer &quot;nedstr&oslash;ms-sporingen&quot;. Hvis der er angivet en afstand for  <b>Opdel sporing i linjesegmenter</b>, opdeles sporingslinjen i flere linjer, hvor hver linje har den angivne l&aelig;ngde. Hvis dine inputpunkter f.eks. repr&aelig;senterer et forureningsudslip, der l&oslash;ber ud i en flod, og floden bev&aelig;ger sig med en hastighed p&aring; 0,6 miles pr. time, eller 15 miles om dagen, s&aring; &oslash;nsker du m&aring;ske at opdele floden i 15 segmenter &aacute; 1 mile. Ved at opdele sporingen i 15 mile-intervaller kan du finde frem til, hvor langt forureningen vil komme hver dag. Linjen vil v&aelig;re symboliseret med graduerede farver baseret p&aring; afstanden, og den vil v&aelig;re forsynet med m&aelig;rkater med afstanden fra starten af sporingen.
+    </p>
+    <p>Den resulterende sporing vil have alle dine inputpunkters attributter samt disse supplerende attributter: 
+        <ul>
+            <li> <i>PointID</i> &ndash; Indeholder ID-v&aelig;rdien fra inputpunktet.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; Indeholder l&aelig;ngden i kilometer for den samlede &quot;nedstr&oslash;ms-sporing&quot;.
+                
+
+            </li>
+            <li> <i>Description</i> og <i>DataResolution</i> &ndash; Indeholder oplysninger vedr&oslash;rende de hydrologiske data, der benyttes til at beregne sporingen.
+                
+
+            </li>
+            <li> <i>FromDistance</i> og <i>ToDistance</i> &ndash; Indeholder Fra- og Til-afstand for hvert linjesegment. Disse attributter skal angives, hvis <b>Opdel sporing i linjesegmenter</b> benyttes.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun punktobjekterne i det inputlag, der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis feltet ikke er markeret, anvendes alle objekter i inputlaget, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktobjekter, der anvendes som udgangspunkter for hver "nedstrøms-sporing"</h2></div>
+        <hr/>
+        <div>
+            <p>De punktobjekter, der anvendes som udgangspunkter for hver &quot;nedstr&oslash;ms-sporing&quot;. Outputtet vil indeholde en linje for hvert inputpunkt.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Opdel sporing i linjesegmenter</h2></div>
+        <hr/>
+        <div>
+            <p>Sporingslinjen vil blive opdelt i flere linjer, hvor hver linje har den angivne l&aelig;ngde. Hvis dine inputpunkter f.eks. repr&aelig;senterer et forureningsudslip, der l&oslash;ber ud i en flod, og floden bev&aelig;ger sig med en hastighed p&aring; 0,6 miles pr. time, eller 15 miles om dagen, s&aring; &oslash;nsker du m&aring;ske at opdele floden i 15 segmenter &aacute; 1 mile. Ved at opdele sporingen i 15 mile-intervaller kan du finde frem til, hvor langt forureningen vil komme hver dag. Linjen vil v&aelig;re symboliseret med graduerede farver baseret p&aring; afstanden, og den vil v&aelig;re forsynet med m&aelig;rkater med afstanden fra starten af sporingen. Den resulterende sporing vil have flere linjesegmenter, hvor hver af dem indeholder felterne  <i>FromDistance</i> og <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimal sporingsafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Bestemmer den samlede l&aelig;ngde af den linje, der returneres. Hvis du angiver omr&aring;deobjekter, der skal l&aring;ses til sporingen, vil resultatet v&aelig;re fastl&aring;st til omr&aring;deobjektet, uanset hvilken afstand du angiver.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Klip output til</h2></div>
+        <hr/>
+        <div>
+            <p>Tegn eller angiv et lag for det omr&aring;de, hvor du &oslash;nsker, at resultatet skal fastl&aring;ses. Hvis du f.eks. &oslash;nsker at sporingsresultatet udelukkende skal v&aelig;re inden for dit unders&oslash;gelsesomr&aring;de, s&aring;som din region, skal du bruge et regionsobjekt som inputobjekt, s&aring; sporingen stopper ved regionsgr&aelig;nsen.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+            <p> Brug af dette v&aelig;rkt&oslash;j forbruger ikke credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

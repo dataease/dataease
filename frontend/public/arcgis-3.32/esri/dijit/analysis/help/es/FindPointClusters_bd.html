@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Buscar clústeres de puntos</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Buscar cl&uacute;steres de puntos"></h2>
+        <hr/>
+    <p>La herramienta  Buscar cl&uacute;steres de puntos encuentra cl&uacute;steres de entidades de punto dentro del ruido colindante en funci&oacute;n de su distribuci&oacute;n espacial.
+    </p>
+    <p>Por ejemplo, una organizaci&oacute;n no gubernamental est&aacute; estudiando una enfermedad concreta propagada por las plagas. Tiene un dataset de puntos que representa a los hogares de su &aacute;rea de estudio, algunas de ellas infestadas y otras no. Mediante la herramienta  Buscar cl&uacute;steres de puntos, un analista puede determinar qu&eacute; cl&uacute;steres de hogares est&aacute;n infestados para ayudarle a delimitar un &aacute;rea en la que iniciar el tratamiento y la erradicaci&oacute;n de las plagas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa cuyos clústeres se buscarán</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos en las que se buscar&aacute;n los cl&uacute;steres.  Las capas deben estar en una referencia espacial proyectada o tener una referencia espacial de procesamiento definida en un sistema de coordenadas proyectadas mediante  <b>Entornos de an&aacute;lisis</b>.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Elegir el método de clúster a utilizar</h2></div>
+        <hr/>
+        <div>
+            <p>El m&eacute;todo de clustering que se utilizar&aacute; para distinguir cl&uacute;steres de entidades de puntos de entre el ruido colindante. Puede optar por utilizar una distancia definida o un algoritmo de clustering de autoajuste.
+            </p>
+            <p>Distancia definida (DBSCAN) utiliza un rango de b&uacute;squeda especificado para separar los cl&uacute;steres densos del ruido m&aacute;s disperso. Distancia definida (DBSCAN) es m&aacute;s r&aacute;pido, pero solo es apropiado si se puede utilizar un rango de b&uacute;squeda muy claro y que funcione bien para definir todos los cl&uacute;steres que puedan estar presentes. Distancia definida (DBSCAN) encuentra cl&uacute;steres que presentan densidades similares.
+            </p>
+            <p>El autoajuste (HDBSCAN) no exige que se especifique un rango de b&uacute;squeda, pero es un m&eacute;todo que lleva m&aacute;s tiempo. El autoajuste (HDBSCAN) busca cl&uacute;steres de puntos similares a la distancia definida (DBSCAN), pero utiliza rangos de b&uacute;squeda variables teniendo en cuenta los cl&uacute;steres con densidades variables. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Número mínimo de puntos que se deben considerar como un clúster</h2></div>
+        <hr/>
+        <div>
+            <p>Este par&aacute;metro se utiliza de manera diferente en funci&oacute;n del m&eacute;todo de clustering elegido:
+            </p>
+            <p>
+                <ul>
+                    <li>Distancia definida (DBSCAN): especifica el n&uacute;mero de entidades que se deben encontrar dentro de una distancia determinada de un punto para que este pueda empezar a formar un cl&uacute;ster. La distancia se define con el par&aacute;metro  <b>Limitar el rango de b&uacute;squeda a</b>.
+                    </li>
+                    <li>Autoajuste (HDBSCAN): especifica el n&uacute;mero de entidades vecinas de cada punto (incluido el propio punto) que se tendr&aacute;n en cuenta a la hora de estimar la densidad. Este n&uacute;mero es adem&aacute;s el tama&ntilde;o de cl&uacute;ster m&iacute;nimo permitido al extraer los cl&uacute;steres.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitar el rango de búsqueda a</h2></div>
+        <hr/>
+        <div>
+            <p>Si utiliza Distancia definida (DBSCAN), este par&aacute;metro es la distancia dentro de la cual se debe encontrar el  <b>N&uacute;mero m&iacute;nimo de puntos que se deben considerar como un cl&uacute;ster</b>. Este par&aacute;metro no se utiliza si se elige Autoajuste (HDBSCAN) como el m&eacute;todo de clustering.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

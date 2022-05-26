@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea Campo di Vista</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Strumento Crea campo di vista"></h2>
+        <hr/>
+    <p>Questo strumento identifica le aree visibili per un osservatore, tenendo conto della topografia della superficie. Le posizioni dei punti di input possono rappresentare osservatori (ad esempio, persone sul suolo o i punti di osservazione in una torretta di avvistamento degli incendi) oppure oggetti sotto osservazione (come turbine eoliche, serbatoi d'acqua, veicoli o altre persone). I risultati definiscono le aree visibili dalle posizioni dell'osservatore.
+    </p>
+    <p>Sia gli osservatori che gli oggetti osservati possono essere pi&ugrave; in alto rispetto al suolo e tali altezze sono usate per stabilire la visibilit&agrave;. Ad esempio, un campo di vista calcolato per turbine eoliche di 300 piedi (91 metri) e per persone alte 6 piedi (182 cm) posizionate sul suolo sar&agrave; pi&ugrave; grande rispetto a un campo di vista calcolato per turbine di 200 piedi (61 metri) e per persone alte 5 piedi (152 cm).
+    </p>
+    <p>Il layer dei risultati registra per quante volte la posizione di ciascuna cella nel raster di superficie di input pu&ograve; essere vista dai punti di osservazione di input. Alle celle non visibili vengono dati valori NoData.
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verranno analizzati solo l'area raster e i punti di osservazione visibili nell'estensione mappa corrente. Se l'opzione &egrave; deselezionata, verranno analizzati tutti i punti di osservazione nel layer di input, anche se sono esterni all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Superficie di elevazione</h2></div>
+        <hr/>
+        <div>
+            <p>La superficie di elevazione da utilizzare per il calcolo del campo di vista.
+            </p>
+            <p>Se l'unit&agrave; verticale della superficie di input &egrave; diversa dall'unit&agrave; orizzontale, ad esempio quando i valori di elevazione sono rappresentati in piedi ma il sistema di coordinate &egrave; in metri, &egrave; necessario definire per la superficie un sistema di coordinate verticale. Il motivo di ci&ograve; &egrave; che lo strumento utilizza le unit&agrave; verticali (Z) e orizzontali (XY) per calcolare un fattore Z per l'analisi del campo visivo. Senza un sistema di coordinate verticale, quindi senza informazioni sull'unit&agrave; Z, lo strumento riterr&agrave; che l'unit&agrave; Z corrisponda all'unit&agrave; XY. In seguito a ci&ograve;, verr&agrave; utilizzato un fattore Z interno di 1,0 per l'analisi, che potrebbe dare risultati imprevisti.
+            </p>
+            <p>La superficie di elevazione pu&ograve; essere un valore intero o a virgola mobile.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Feature puntuali che rappresentano le posizioni dell'osservatore</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali che rappresentano le posizioni dell'osservatore quando si calcolano i campi di vista.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Ottimizza per</h2></div>
+        <hr/>
+        <div>
+            <p>Il metodo di ottimizzazione da utilizzare per il calcolo del campo di vista.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Questo metodo ottimizza la velocit&agrave; di elaborazione e le prestazioni a scapito della precisione dei risultati. Questa &egrave; l'impostazione predefinita.
+
+                </li>
+                <li>Accuracy &mdash; 
+Questo metodo &egrave; ottimizzato per la precisione dei risultati, a scapito di un tempo di elaborazione pi&ugrave; lungo.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distanza di visualizzazione massima</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere una distanza in cui terminer&agrave; il calcolo delle aree visibili. Oltre questa distanza, non sar&agrave; possibile determinare se i punti di osservazione e gli altri oggetti possono vedersi reciprocamente.
+            </p>
+            <p>&Egrave; possibile specificare un valore numerico che rappresenta una distanza lineare o selezionare un campo numerico dalle feature osservatori di input. Se viene fornito un campo, i valori contenuti in quel campo devono essere delle stesse unit&agrave; xy della superficie di elevazione di input.
+            </p>
+            <p>Si tenga presente che valori alti aumenteranno i tempi di calcolo. A meno che non sia diversamente specificato, verr&agrave; calcolata una distanza massima predefinita in base alla risoluzione e all'estensione della superficie di elevazione di input.
+            </p>
+            <p>Questo parametro &egrave; utile per modellare alcuni fenomeni. Ad esempio, limitando l'estensione della visibilit&agrave;, &egrave; possibile modellare alcune condizioni meteorologiche, come una nebbia leggera. Allo stesso modo, limitando l'estensione della visibilit&agrave; &egrave; possibile avere il controllo dell'ora del giorno approssimando l'effetto crepuscolare.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distanza di visualizzazione massima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distanza di visualizzazione minima</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere una distanza in cui il calcolo delle aree visibili ha inizio. Le celle sulla superficie pi&ugrave; vicine di questa distanza non sono visibili nell'output ma possono comunque bloccare la visibilit&agrave; delle celle tra la distanza di visualizzazione minima e quella massima.
+            </p>
+            <p>&Egrave; possibile specificare un valore numerico che rappresenta una distanza lineare o selezionare un campo numerico dalle feature osservatori di input. Se viene fornito un campo, i valori contenuti in quel campo devono essere delle stesse unit&agrave; xy della superficie di elevazione di input.
+            </p>
+            <p>Questo parametro &egrave; utile per controllare l'area dell'analisi del campo visivo a una distanza specifica dall'osservatore. Ad esempio, se si sta valutando la visibilit&agrave; dalla cima di un edificio a un parco distante, &egrave; possibile impostare una distanza di visualizzazione minima per escludere le aree vicine a quelle che non sono di alcun interesse e ottenere una migliore velocit&agrave; di elaborazione.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distanza di visualizzazione minima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Distanza è 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare se i parametri della distanza di visualizzazione minima e massima sono misurati in modo tridimensionale o in modo bidimensionale pi&ugrave; semplice. Quando l'opzione &egrave; selezionata, le distanze di visualizzazione sono considerate come distanze 3D. Quando &egrave; deselezionata, sono considerate come distanze 2D.
+            </p> 
+            <p>Una distanza 2D &egrave; la distanza lineare semplice misurata tra un osservatore e la destinazione utilizzando le loro posizioni proiettate al livello del mare. Una distanza 3D fornisce un valore pi&ugrave; realistico prendendo in considerazione le loro altezze relative.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevazione delle posizioni dell'osservatore</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere l'elevazione delle posizioni dell'osservatore.
+            </p>
+            <p>&Egrave; possibile specificare un valore numerico che rappresenti l'elevazione di tutti gli osservatori oppure un campo che rappresenti l'elevazione di ciascun osservatore. Se viene fornito un campo, il valore contenuto in quel campo deve essere della stessa unit&agrave; Z della superficie di elevazione di input.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevazione delle posizioni dell'osservatore</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Altezza degli osservatori</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere l'altezza dal suolo per le posizioni dell'osservatore.
+            </p> 
+            <p>&Egrave; possibile specificare un valore numerico per l'altezza o un campo dalle feature osservatori di input. Se viene fornito un campo, il valore contenuto in quel campo deve essere della stessa unit&agrave; z della superficie di elevazione di input.
+            </p>
+            <p>Il valore predefinito &egrave; 6 piedi (182 cm). Se si osserva da una posizione elevata, ad esempio una torre di osservazione o un edificio alto, utilizzare invece tale altezza. Durante il calcolo del punto di vista, questo valore viene aggiunto all'elevazione dell'osservatore, se &egrave; specificato, altrimenti viene aggiunto al valore z della superficie interpolata.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Altezza degli osservatori</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Altezza del target</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere l'altezza di strutture o persone rispetto al suolo usata per stabilire la visibilit&agrave;.
+            </p>
+            <p>&Egrave; possibile specificare un valore numerico per l'altezza o un campo dalle feature osservatori di input. Se viene fornito un campo, il valore contenuto in quel campo deve essere della stessa unit&agrave; z della superficie di elevazione di input.
+            </p>
+            <p>Il campo di vista risultante identifica le aree in cui un punto di osservazione pu&ograve; vedere tali oggetti sul suolo. &Egrave; vero anche il contrario: gli oggetti sul suolo possono vedere un punto di osservazione. 
+            </p>
+            <p>Di seguito sono riportati alcuni esempi di impostazioni dell'altezza target:
+            </p>
+            <ul>
+                <li>Se i punti di input rappresentano turbine eoliche e si desidera stabilire se le persone sul suolo possono vederle, &egrave; necessario inserire l'altezza media di una persona (circa 6 piedi, 182 cm).
+                    
+
+                </li>
+                <li>Se i punti di input rappresentano le torrette di avvistamento incendi e si desidera stabilire quali torrette di avvistamento possono vedere un pennacchio di fumo alto 20 piedi (6 metri) o pi&ugrave;, &egrave; necessario inserire 20 piedi (6 metri) per l'altezza target.
+                    
+
+                </li>
+                <li>Se i punti di input rappresentano punti panoramici su alcune strade o sentieri e si desidera stabilire dove &egrave; possibile vedere turbine eoliche alte 400 piedi (121 metri) o anche pi&ugrave;, &egrave; necessario inserire 400 piedi (121 metri) per l'altezza.
+                    
+
+                </li>
+                <li>Se i punti di input rappresentano punti panoramici e si desidera stabilire l'area sul suolo che una persona pu&ograve; vedere da un punto panoramico, &egrave; necessario inserire zero per l'altezza target. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Altezza degli osservatori</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Altezza di output per diventare visibile</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome dell'output superiore al risultato del livello suolo (AGL). Il risultato AGL &egrave; un raster in cui ciascun valore di cella &egrave; l'altezza minima che deve essere aggiunta a una cella non visibile per renderla visibile da almeno un osservatore. Alle celle che erano gi&agrave; visibili verr&agrave; assegnato 0 in questo raster di output.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

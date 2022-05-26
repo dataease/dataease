@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/printing/PageOptionsDialog/PageOptionsDialog","dojo/_base/declare dojo/aspect ./PageOptionsDialogContent dijit/Dialog esri/dijit/geoenrichment/ReportPlayer/PlayerCommands dojo/i18n!esri/nls/jsapi".split(" "),function(g,h,k,l,m,a){a=a.geoenrichment.dijit.ReportPlayer.PageOptionsDialog;var d;return g(null,{_dialog:null,show:function(f){function e(a){c._dialog&&(d=b.getSettings(),a&&c.onCancel(),c._dialog.destroy(),c._dialog=null)}var c=this;if(!this._dialog||
+!this._dialog.open){var b=new k({onPrint:function(){c.onPrint(b.getSettings());e(!1)},onCancel:function(){e(!0)}});this._dialog=new l({title:f.commandId===m.PRINT?a.dialogTitlePrint:a.dialogTitleExport,content:b});this._dialog.own(b);this._dialog.show();this._dialog.own(h.after(this._dialog,"hide",function(){e(!0)}));b.update(f);d&&b.setState(d)}},onPrint:function(a){},onCancel:function(){}})});

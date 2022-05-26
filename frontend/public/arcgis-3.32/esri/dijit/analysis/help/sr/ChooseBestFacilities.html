@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Odaberite najbolje objekte</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Odaberite najbolje objekte"></h2>
+        <hr/>
+    <p>Alatka Odaberite najbolje objekte omogućava da odaberete najbolje lokacije za objekte. Ova alatka dodeljuje lokacije na kojima su potrebni objekti na način koji zadovoljava određeni cilj.
+    </p>
+    <p>Objekti predstavljaju lokacije koje nude neku vrstu usluge kao &scaron;to su vatrogasne stanice, &scaron;kole, biblioteke, prodavnice ili distributivni centri. Lokacije zahteva predstavljaju lokacije na kojima postoji zahtev za uslugama koje pružaju objekti, kao &scaron;to su tačke popisnih blokova koji sumiraju populaciju u datoj oblasti.
+    </p>
+    <p>Alatka Odaberite najbolje objekte može da vam pomogne da odgovorite na pitanja kao &scaron;to su
+        <ul>
+            <li>U slučaju vanredne situacije, kako domaćinstva mogu da budu raspoređena u odgovarajući centar za prihvat ako je kapacitet kreveta ograničen i ne sme da bude prema&scaron;en?
+            </li>
+            <li>Kako možete da rasporedite susedstva najbližem ogranku biblioteke i da pronađete broj potencijalnih posetilaca koji svaki ogranak uslužuje? 
+            </li>
+            <li>Kako možete da pronađete najbolje lokacije za distributivni centar namirnica koji umanjuje ukupno vreme putovanja (a time i tro&scaron;kove) za isporuku lancu bakalnica?
+            </li>
+            <li>Gde bi trebalo da se nalazi novi park tako da najveći broj stanovnika grada živi na pet minuta hoda od parka?
+            </li>
+            <li>Koje su najbolje lokacije za nekoliko prodavnica za kućne ljubimce u okrugu tako da se 40 procenata vlasnika kućnih ljubimaca nalazi na udaljenosti ne vi&scaron;e od deset minuta vožnje od jedne od prodavnica?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cilj</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite cilj koji mora da bude postignut prilikom dodeljivanja lokacija zahteva za objekte.
+            </p>
+            <p>Pomoću opcije Odaberite najbolje objekte možete da navedete tip problema koji re&scaron;avate &ndash; cilj. Alatka je optimizovana da obezbedi re&scaron;enje za taj određeni cilj. Bez obzira na to koji je cilj, za postizanje cilja koristi se metod čija je osnova su&scaron;tinski ista &ndash; količina zahteva za datu lokaciju zahteva dodeljena je najbližem objektu. Ciljevi se razlikuju po načinu na koji je međusprega između razdaljine (ili vremena) i zahteva re&scaron;ena. Alatka uzima u obzir razdaljinu/vreme putovanja i količinu zahteva, i &ndash; u nekim slučajevima &ndash; kapacitet objekata. Na primer, ako cilj favorizuje smanjivanje vremena putovanja, alatka će i dalje sekundarno poku&scaron;avati da poveća zahtev koji je dodeljen. Slično tome, ako je cilj povećavanje dodeljenog zahteva, alatka će to uraditi smanjivanjem vremena putovanja (dodeljivanjem lokacija zahteva najbližem objektu, umesto bilo kojem objektu).
+            </p>
+            <p>U zavisnosti od podataka i postavki koje koristite, različiti ciljevi mogu da proizvedu iste ili slične rezultate. Međutim, trebalo bi da navedete cilj koji je najprikladniji za va&scaron;u analizu.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Dodeli postojećim objektima</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj cilj ako ne želite da locirate nove objekte i ako želite da dodelite zahtev postojećim objektima koji mogu da imaju ograničen ili neograničen kapacitet.    
+            </p>
+            <p>Ovaj cilj dodeljuje zahtev objektima na osnovu kapaciteta u objektu i količine zahteva iz okolne oblasti. Zahtev se dodeljuje najbližem objektu dok se dostupni kapacitet ne ispuni. Ako navedete maksimalni opseg putovanja, bilo koje lokacije zahteva izvan opsega neće biti dodeljene objektu, čak i ako celokupni zahtev nije potpuno dodeljen.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Umanji putovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj cilj ako želite da pronađete objekte za koje je ukupno vreme putovanja ili razdaljina putovanja između lokacija zahteva i objekata minimizirano.
+            </p>
+            <p>Ovaj cilj je često primenljiv kada redovno postoji putovanje između objekta i svih lokacija zahteva. Ovaj cilj biste koristili, na primer, za smanjenje ukupne razdaljine pređene za prevoženje dobara od distributivnih centara do prodavnica ili za biranje prostora za konferenciju na način koji smanjuje vreme putovanja za sve učesnike.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Uvećaj pokrivenost</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj cilj ako želite da povećate količinu zahteva pokrivenu u okviru određenog vremena ili razdaljine od objekata.    
+            </p>
+            <p>Ovaj cilj odabira objekte kojima je dodeljena maksimalna količina zahteva, sa svim zahtevima od svake lokacije zahteva koja je dodeljena jednom objektu koji mu je najbliži.
+            </p>
+            <p>Konačni maksimalni opseg putovanja potreban je za ovaj cilj; u suprotnom, svi zahtevi mogu da budu dodeljeni jednom objektu. Lokacije zahteva koje su izvan opsega razdaljine ili vremena putovanja od bilo kojeg od objekata neće biti dodeljene (ovo će vam prikazati gde zahtev nije ispunjen i gde postoji potreba za dodatnim objektima).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Uvećaj pokrivenost kapacitetom</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj cilj ako želite da povećate količinu zahteva pokrivenih objektima, ali gde objekti imaju ograničeni kapacitet.    
+            </p>
+            <p>Ovaj cilj bira objekte tako da maksimalni broj zahteva bude dodeljen bez prema&scaron;ivanja kapaciteta bilo kojeg objekta. Svi zahtevi sa svake lokacije zahteva dodeljeni su jednom najbližem objektu koji ima dostupan kapacitet (to jest, ako bi dodeljivanje lokacije zahteva objektu prema&scaron;ilo dostupni kapacitet objekta, lokacija zahteva ne bi bila dodeljena umesto dodeljivanja dela zahteva).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Pokrij procenat zahteva</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj cilj ako želite da saznate minimalni broj objekata koji je potreban za pokrivanje datog procenta zahteva.
+            </p>
+            <p>Ovaj cilj bira minimalni broj objekata potrebnih za dostizanje navedenog procenta zahteva. U slučaja lokacije zahteva koja je unutar maksimalnog opsega putovanja od dva ili vi&scaron;e objekata, zahtev će biće podeljen proporcijalno između objekata na osnovu njegove udaljenosti od svakog od njih. Ovaj cilj se često koristi kada postoji mogućnost izbora objekta koji ljudi žele da posete i pretpostavlja se, uop&scaron;teno govoreći, da će posetiti najbliži objekat (ako su sve ostale stvari jednake).
+            </p>
+            <p>Za razliku drugih ciljeva koji biraju objekte, kod kojih navodite koliko objekata želite da odaberete, ovaj cilj bira broj objekata umesto vas na osnovu procenta zahteva koje želite da ispunite. U ovom cilju se pretpostavlja da objekti nemaju ograničeni kapacitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Merenja</h2></div>
+        <hr/>
+        <div>
+            <p>Kao i sa drugim alatkama koje u analizu uključuju putovanje, možete definisati da li se putovanje meri koristeći razdaljinu ili vreme, kao i da izaberete neki od različitih režima putovanja kao &scaron;to je vreme pe&scaron;ačenja, vreme vožnje, dužina vožnje u ruralnoj sredini i tako dalje. Dostupne režime putovanja određuje administrator organizacije. Kada koristite  <b>Vreme vožnje</b>, <b>Vreme vožnje ruralnim predelima</b> ili <b>Vreme vožnje kamionom</b> možete opciono da uključite saobraćaj za određeni dan u nedelji i doba dana.
+            </p>
+            <p> Da biste objektima precizno dodelili lokacije zahteva, navedite da li se putuje od objekata do lokacija zahteva (na primer, od vatrogasnih stanica do kuća) ili od lokacija zahteva do objekata (kao u slučaju posetilaca do biblioteke). Alatka Odaberite najbolje objekte uzeće u obzir smer putovanja u jednosmernim ulicama, da li je moguće skrenuti iz jedne ulice u drugu, da li je na raskrsnicama dozvoljeno skretanje ulevo ili ne i tako dalje, u zavisnosti od toga da li se putuje ka spolja - od objekta do lokacija zahteva ili ka unutra - od lokacija zahteva ka objektima.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Sloj lokacija zahteva</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji predstavljaju lokacije na kojima postoje zahtevi za uslugama koje nude objekti. Alatka dodeljuje ove lokacije zahteva odgovarajućim objektima na osnovu izabranog cilja.
+            </p>
+            <p>Lokacije zahteva imaju povezanu količinu zahteva. Koristite konstantu da biste definisali vrednost ako sve lokacije zahteva imaju isti zahtev. Ako se količina zahteva razlikuje po lokaciji zahteva, koristite polje na sloju lokacija zahteva da biste naveli vrednost za svaku lokaciju zahteva.
+            </p>
+            <p>Zahtevi će se dodeljivati objektima dok svi ne budu dodeljeni, bez obzira na to koliko su daleko lokacije zahteva od objekata. Možete da dodelite maksimalni opseg putovanja za sloj lokacija zahteva da biste kreirali granicu razdaljine ili vremena &ndash; sve lokacije zahteva izvan granične vrednosti neće biti dodeljene. Koristite konstantu da biste definisali vrednost ako sve lokacije zahteva imaju isti maksimalni opseg putovanja. Ako se maksimalni opseg putovanja razlikuje po lokaciji zahteva, koristite polje u sloju lokacija zahteva da biste definisali vrednost za svaku lokaciju zahteva.
+            </p>
+            <p>Ako je cilj tipa  <b>Pokrij procenat zahteva</b>, treba da navedete minimalni procenat zahteva koji želite da objekti obuhvate.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+            <p>Alatka podržava do 10.000 geoobjekata u sloju lokacija zahteva.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Sloj obaveznih objekata</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji predstavljaju lokacije koje imaju ulogu objekata jer pružaju neku vrstu usluge. Obavezni objekti obično predstavljaju lokacije koje već postoje u poređenju sa objektima kandidatima koji obično predstavljaju lokacije na kojima će novi objekti biti izgrađeni ili postavljeni. Prilikom dodeljivanja lokacija zahteva, alatka koristi objekte iz  <b>sloja obaveznih objekata</b> pre bilo kojeg objekta iz <b>sloja objekata kandidata</b>.
+            </p>
+            <p>Obavezni objekti mogu da imaju neograničeni kapacitet (to jest, mogu da zadovolje sve zahteve koji su im dodeljeni) ili mogu da imaju ograničeni kapacitet. Ako svi objekti imaju isti ograničeni kapacitet (kao &scaron;to je broj domaćinstava koje vatrogasna stanica može da opsluži &ndash; recimo 4000), defini&scaron;ite konstantnu vrednost. Ako se kapacitet razlikuje od objekta do objekta (kao &scaron;to je broj dostupnih mesta za učenike prvog razreda u svakoj srednjoj &scaron;koli), defini&scaron;ite polje koje sadrži vrednost kapaciteta za svaki objekat.
+            </p>
+            <p>Alatka podržava do 100 geoobjekata u  <b>sloju obaveznih objekata</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Sloj objekata kandidata</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji predstavljaju lokacije koje imaju ulogu objekata jer pružaju neku vrstu usluge. Objekti kandidati obično predstavljaju lokacije na kojima će novi objekti biti izgrađeni ili postavljeni, za razliku od obaveznih objekata koji obično predstavljaju lokacije koje već postoje.
+            </p>
+            <p>U zavisnosti od cilja analize, potrebno je da defini&scaron;ete broj objekata kandidata koje je potrebno izabrati iz skupa kandidata. Ako navedete obavezne objekte i objekte kandidate, alatka će koristiti objekte iz  <b>sloja obaveznih objekata</b> pre bilo kojeg objekta iz <b>sloja objekata kandidata</b>.
+            </p>
+            <p>Objekti kandidati mogu da imaju neograničeni kapacitet (to jest, mogu da zadovolje sve zahteve koji su im dodeljeni) ili mogu da imaju ograničeni kapacitet. Ako svi objekti imaju isti ograničeni kapacitet (kao &scaron;to je broj domaćinstava koje vatrogasna stanica može da opsluži &ndash; recimo 4000), defini&scaron;ite konstantnu vrednost. Ako se kapacitet razlikuje od objekta do objekta (kao &scaron;to je broj dostupnih mesta za učenike prvog razreda u svakoj srednjoj &scaron;koli), defini&scaron;ite polje koje sadrži vrednost kapaciteta za svaki objekat.
+            </p>
+            <p>Alatka podržava do 1000 geoobjekata u  <b>sloju objekata kandidata</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izaberite slojeve barijera</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji će da predstavljaju privremena ograničenja (barijere) prilikom putovanja po pozadinskim ulicama. Barijere možete da navedete kori&scaron;ćenjem tačkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Tačkasta barijera može da predstavlja oboreno drvo, nezgodu, oboreni električni vod ili bilo &scaron;ta &scaron;to u potpunosti blokira saobraćaj na određenom mestu duž ulice. Kretanje je dozvoljeno na ulici, ali ne kroz barijeru. Možete da navedete do 250 geoobjekata koji će da predstavljaju tačkaste barijere.
+            </p>
+            <p>Linijska barijera zabranjuje kretanje svuda kuda barijera preseca ulice. Na primer, parada ili protest koji blokiraju saobraćaj duž nekoliko segmenta ulica mogu da budu predstavljeni linijskom barijerom. Ako broj ulica koje su presečene linijskom barijerom prema&scaron;uje 500, alatka će prikazati gre&scaron;ku.
+            </p>
+            <p>Poligonalna barijera zabranjuje kretanje svuda gde poligon preseca ulice. Jedan vid kori&scaron;ćenja ovog tipa barijere je da predstavi poplave koje pokrivaju oblasti cele mreže ulica i onemogućavaju drumski saobraćaj. Ako broj ulica koje su presečene poligonalnom barijerom prema&scaron;uje 2000, alatka će prikazati gre&scaron;ku.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Sloj sa rezultatima sadržaće sloj za svaki od sledećih: objekti kojima su dodeljeni zahtevi, lokacije zahteva koje su dodeljene objektima i linije dodeljivanja koje povezuju lokacije zahteva sa njihovim dodeljenim objektima. Linije dodeljivanja nacrtane su kao prave linije, međutim, vreme putovanja ili razdaljina putovanja između objekta i lokacije zahteva uvek je zasnovana na režimu putovanja koji navedete, a ne koristeći pravolinijske razdaljine.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/ClipLayer",{inputLayerLabel:"Zvolit prvky k o\u0159\u00edznut\u00ed",filterSelectLabel:"O\u0159\u00edznout v\u0161echny prvky nebo ur\u010dit podmno\u017einu (voliteln\u00e9)",targetArea:"Zvolit plochu k o\u0159\u00edznut\u00ed na",outputLayerName:"O\u0159\u00edznout ${inputLayerName} na ${clipLayerName}",itemDescription:"Vrstva prvk\u016f vygenerovan\u00e1 n\u00e1strojem O\u0159\u00edznout. Prvky z ${inputLayerName} byly o\u0159\u00edznuty na ${clipLayerName}.",
+itemTags:"V\u00fdsledky anal\u00fdzy, ClipLayer, ${inputLayerName}, ${clipLayerName}, ${outputLayerGeometry}",itemSnippet:"Vrstva prvk\u016f vygenerovan\u00e1 z O\u0159\u00edznout vrstvu"});
