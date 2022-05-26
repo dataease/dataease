@@ -67,7 +67,7 @@ export default {
     showDetails(params) {
       this.$store.commit('initCurMultiplexingComponents')
       const _this = this
-      _this.selectedPanel = params
+      _this.selectedPanel = null
       if (params.showType === 'panel') {
         _this.showPosition = 'multiplexing'
         _this.panelLoading = true
@@ -76,6 +76,7 @@ export default {
           panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), function(rsp) {
             _this.componentData = rsp.componentData
             _this.canvasStyleData = rsp.componentStyle
+            _this.selectedPanel = params
           })
         })
       } else if (params.showType === 'view') {
@@ -95,6 +96,7 @@ export default {
         }
         _this.$nextTick(() => {
           _this.componentData.push(userView)
+          _this.selectedPanel = params
         })
       }
     }

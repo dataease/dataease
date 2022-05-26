@@ -1331,7 +1331,7 @@ export default {
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集'
   },
-  driver:{
+  driver: {
     driver: '驱动',
     please_choose_driver: '请选择驱动',
     mgm: '驱动管理',
@@ -1904,6 +1904,10 @@ export default {
   },
   detextselect: {
     label: '文本下拉',
+    placeholder: '请选择'
+  },
+  detextselectTree: {
+    label: '下拉树',
     placeholder: '请选择'
   },
   detextgridselect: {

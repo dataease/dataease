@@ -5,6 +5,7 @@
     </el-row>
     <chart-style
       v-if="mixProperties&&batchOptChartInfo"
+      class="chart-style-main"
       :param="param"
       :view="batchOptChartInfo"
       :chart="batchOptChartInfo"
@@ -81,10 +82,10 @@ export default {
       this.batchOptChange('customStyle', 'xAxis', val)
     },
     onChangeYAxisForm(val) {
-      this.batchOptChange('customStyle', 'xAxis', val)
+      this.batchOptChange('customStyle', 'yAxis', val)
     },
     onChangeYAxisExtForm(val) {
-      this.batchOptChange('customStyle', 'yAxis', val)
+      this.batchOptChange('customStyle', 'yAxisExt', val)
     },
     onChangeSplitForm(val) {
       this.batchOptChange('customStyle', 'split', val)
@@ -128,6 +129,10 @@ export default {
     overflow-y: hidden;
     width: 100%;
     border-left: 1px solid #E6E6E6
+  }
+
+  .chart-style-main{
+    height:  calc(100% - 40px)!important;
   }
 
   .view-title-name {

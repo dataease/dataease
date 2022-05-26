@@ -810,25 +810,42 @@ public class MongoQueryProvider extends QueryProvider {
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            DatasetTableField field = request.getDatasetTableField();
-            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                continue;
+
+            List<String> whereNameList = new ArrayList<>();
+            List<DatasetTableField> fieldList = new ArrayList<>();
+            if (request.getIsTree()) {
+                fieldList.addAll(request.getDatasetTableFieldList());
+            } else {
+                fieldList.add(request.getDatasetTableField());
             }
+
+            for (DatasetTableField field : fieldList) {
+                if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    continue;
+                }
+                String whereName = "";
+
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_INT) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_TIME) {
+                    originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
+                whereName = originName;
+                whereNameList.add(whereName);
+            }
+
             String whereName = "";
+            if (request.getIsTree()) {
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+            } else {
+                whereName = whereNameList.get(0);
+            }
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_INT) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_TIME) {
-                originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-
-            whereName = originName;
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
@@ -844,7 +861,7 @@ public class MongoQueryProvider extends QueryProvider {
                     whereValue = String.format(MongoConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                if (field.getDeType() == DeTypeConstants.DE_STRING) {
+                if (!request.getIsTree() && fieldList.get(0).getDeType() == DeTypeConstants.DE_STRING) {
                     whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
                 } else {
                     whereValue = value.get(0);

@@ -17,9 +17,19 @@
           <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('color')" />
           </el-form-item>
-          <el-form-item v-show="showProperty('position') && chart.type !== 'map'" :label="$t('chart.label_position')" class="form-item">
+          <el-form-item v-show="showProperty('position-pie') " :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
-              <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
+              <el-option v-for="option in labelPositionPie" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('position-h') " :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
+              <el-option v-for="option in labelPositionH" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('position-v') " :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
+              <el-option v-for="option in labelPositionV" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
           <el-form-item v-show="showProperty('formatter')" class="form-item">

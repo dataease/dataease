@@ -786,48 +786,66 @@ public class RedshiftQueryProvider extends QueryProvider {
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            DatasetTableField field = request.getDatasetTableField();
-            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                continue;
+
+            List<String> whereNameList = new ArrayList<>();
+            List<DatasetTableField> fieldList = new ArrayList<>();
+            if (request.getIsTree()) {
+                fieldList.addAll(request.getDatasetTableFieldList());
+            } else {
+                fieldList.add(request.getDatasetTableField());
             }
+
+            for (DatasetTableField field : fieldList) {
+                if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    continue;
+                }
+                String whereName = "";
+
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                    originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
+
+                if (field.getDeType() == 1) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                        whereName = String.format(PgConstants.CAST, originName, "timestamp");
+                    }
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        String cast = String.format(PgConstants.CAST, originName, "bigint");
+                        whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        whereName = originName;
+                    }
+                } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                        whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
+                    }
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        whereName = originName;
+                    }
+                } else {
+                    whereName = originName;
+                }
+                whereNameList.add(whereName);
+            }
+
             String whereName = "";
+            if (request.getIsTree()) {
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+            } else {
+                whereName = whereNameList.get(0);
+            }
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-
-            if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.CAST, originName, "timestamp");
-                }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(PgConstants.CAST, originName, "bigint");
-                    whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
-                }
-                if (field.getDeExtractType() == 1) {
-                    whereName = originName;
-                }
-            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
-                }
-                if (field.getDeExtractType() == 1) {
-                    whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
-                }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    whereName = originName;
-                }
-            } else {
-                whereName = originName;
-            }
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
