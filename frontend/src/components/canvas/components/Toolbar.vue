@@ -20,7 +20,7 @@
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
         <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
-      <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')">
+      <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')+'12321'">
         <el-button class="icon iconfont-tb icon-shujujuzhen" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.style')">
@@ -266,6 +266,16 @@ export default {
       // 清理联动信息
       this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
+      console.log('this.canvasStyleData', this.componentData)
+      this.componentData.forEach(ele => {
+        console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
+        ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
+        ele.commonBackground.boxHeight = document.getElementById('eleId' + ele.id).offsetHeight
+        ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
+        ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
+
+        console.log('获取盒子到左边和右边的距离', document.getElementById('eleId' + ele.id).offsetTop, document.getElementById('eleId' + ele.id).offsetLeft)
+      })
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
         panelStyle: JSON.stringify(this.canvasStyleData),
@@ -369,7 +379,7 @@ export default {
       this.$store.commit('clearLinkageSettingInfo')
     },
     auxiliaryMatrixChange() {
-      this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
+      this.canvasStyleData.auxiliaryMatrix = false
     },
     // 启用移动端布局
     openMobileLayout() {

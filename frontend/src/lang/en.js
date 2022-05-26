@@ -653,6 +653,8 @@ export default {
     kettle_setting: 'Kettle Setting'
   },
   chart: {
+    canvasSize: 'canvas size',
+    canvasWith: 'canvas width',
     title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
@@ -784,8 +786,9 @@ export default {
     filter: 'Filter',
     none: 'None',
     background: 'Background',
-    canvasSize: 'canvas size',
-    canvasWith: 'canvas width',
+    // canvasSize: 'canvas size',
+    // canvasWith: 'canvas width',
+    canvasHeight: 'canvas height',
     border: 'Corner',
     border_width: 'Border width',
     border_radius: 'Border radius',
@@ -1402,6 +1405,8 @@ export default {
     json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
+    box_width: 'Component width',
+    box_height: 'Component height',
     background: 'Background',
     component_style: 'component Style',
     web_set_tips: 'Some Websites Cannot Be Displayed Because Of Not Allow Embedded ',
@@ -1970,7 +1975,6 @@ export default {
     tel: 'Tel:',
     web: 'Web:',
     add_datasource: 'Add a datasource'
-
   },
   kettle: {
     add: 'Add Kettle',

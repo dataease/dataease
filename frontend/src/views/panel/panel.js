@@ -18,7 +18,7 @@ export const CANVAS_STYLE = {
   scaleWidth: 100,
   scaleHeight: 100,
   selfAdaption: true,
-  auxiliaryMatrix: true,
+  auxiliaryMatrix: false,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
   refreshViewLoading: true, // 仪表板视图loading提示

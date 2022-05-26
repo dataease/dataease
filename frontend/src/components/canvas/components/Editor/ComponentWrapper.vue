@@ -101,6 +101,8 @@ export default {
         height: '100%'
       }
       if (this.config.commonBackground) {
+        // style['width'] = (this.config.commonBackground.boxWidth || 0) + 'px'
+        // style['height'] = (this.config.commonBackground.boxHeight || 0) + 'px'
         style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
         if (this.config.commonBackground.enable) {
@@ -206,6 +208,7 @@ export default {
       }
       // 阻止冒泡事件
       e.stopPropagation()
+      console.log('修改缓存数据')
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
     showViewDetails() {

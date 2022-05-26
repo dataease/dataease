@@ -16,6 +16,7 @@
     "@antv/g2plot": "^2.4.9",
     "@antv/s2": "^1.11.0",
     "@antv/util": "^2.0.17",
+    "@liveqing/liveplayer": "^2.6.7",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.1",

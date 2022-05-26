@@ -556,6 +556,7 @@ export default {
       }
 
       style.width = this.canvasStyleData.width + 'px'
+      style.height = this.canvasStyleData.height + 'px'
       console.log('shezhi===', style, this.canvasStyleData)
       return style
     },
@@ -898,7 +899,11 @@ export default {
       this.show = false
     },
     previewFullScreen() {
-      this.previewVisible = true
+      console.log('触发全屏功能=====')
+      // this.previewVisible = true
+      this.$nextTick(() => {
+        this.previewVisible = true
+      })
     },
     changeAidedDesign() {
       this.aidedButtonActive = !this.aidedButtonActive
@@ -937,88 +942,180 @@ export default {
         toast('只能插入图片')
         return
       }
-      this.$prompt('请输入图片宽高(例如：400*200)', '图片宽高', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPattern: /^([1-9][0-9]*\*[1-9][0-9]*)$/,
-        inputErrorMessage: '请输入宽高并且是非零开头的整数'
-      }).then(({ value }) => {
-        // this.$message({
-        //   type: 'success',
-        //   message: '宽高: ' + value
-        // });
-        let arr = value.split('*');
-        const reader = new FileReader()
-        reader.onload = (res) => {
-          const fileResult = res.target.result
-          const img = new Image()
-          img.src = fileResult
-          img.onload = () => {
-            console.log('宽高',arr)
-            const component = {
-              ...commonAttr,
-              id: generateID(),
-              component: 'Picture',
-              type: 'picture-add',
-              label: '图片',
-              icon: '',
-              hyperlinks: HYPERLINKS,
-              mobileStyle: BASE_MOBILE_STYLE,
-              propValue: fileResult,
-              style: {
-                ...commonStyle
-              }
+      //
+      const reader = new FileReader()
+      // reader.onload = (res) => {
+      //   const fileResult = res.target.result
+      //   const img = new Image()
+      //   img.src = fileResult
+      //   img.onload = () => {
+      //     console.log('宽高', img.width, img.height)
+      //     const ratio = img.height / img.width
+      //     const component = {
+      //       ...commonAttr,
+      //       id: generateID(),
+      //       component: 'Picture',
+      //       type: 'picture-add',
+      //       label: '图片',
+      //       icon: '',
+      //       hyperlinks: HYPERLINKS,
+      //       mobileStyle: BASE_MOBILE_STYLE,
+      //       propValue: fileResult,
+      //       style: {
+      //         ...commonStyle
+      //       },
+      //       commonBackground: {
+      //         alpha: 100,
+      //         backgroundType: 'color',
+      //         borderRadius: 0,
+      //         boxHeight: 238,
+      //         boxWidth: 239,
+      //         color: '#FFFFFF',
+      //         enable: false
+      //       }
+      //     }
+      //     component.auxiliaryMatrix = false
+      //     component.style.top = _this.dropComponentInfo.shadowStyle.y
+      //     component.style.left = _this.dropComponentInfo.shadowStyle.x
+      //     component.style.width = img.width < 400 ? img.width : 400
+      //     component.style.height = img.height < parseInt(400 * ratio) ? img.height : parseInt(400 * ratio)
+      //     this.$store.commit('addComponent', {
+      //       component: component
+      //     })
+      //     this.$store.commit('recordSnapshot', 'handleFileChange')
+      //   }
+      //   // img.src = fileResult
+      // }
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        const img = new Image()
+
+        img.onload = () => {
+          const component = {
+            ...commonAttr,
+            id: generateID(),
+            component: 'Picture',
+            type: 'picture-add',
+            label: '图片',
+            icon: '',
+            hyperlinks: HYPERLINKS,
+            mobileStyle: BASE_MOBILE_STYLE,
+            propValue: fileResult,
+            style: {
+              ...commonStyle
+            },
+            commonBackground: {
+              alpha: 100,
+              backgroundType: 'color',
+              borderRadius: 0,
+              boxHeight: img.width,
+              boxWidth: img.height,
+              color: '#FFFFFF',
+              enable: false
             }
-            component.auxiliaryMatrix = false
-            component.style.top = _this.dropComponentInfo.shadowStyle.y
-            component.style.left = _this.dropComponentInfo.shadowStyle.x
-            component.style.width = arr[0]
-            component.style.height = arr[1]
-            this.$store.commit('addComponent', {
-              component: component
-            })
-            this.$store.commit('recordSnapshot', 'handleFileChange')
           }
-          // img.src = fileResult
+          console.log('图片的样式', img.width, img.height)
+          component.auxiliaryMatrix = false
+          component.style.top = _this.dropComponentInfo.shadowStyle.y
+          component.style.left = _this.dropComponentInfo.shadowStyle.x
+          // component.style.width = _this.dropComponentInfo.shadowStyle.width
+          // component.style.height = _this.dropComponentInfo.shadowStyle.height
+          component.style.width = img.width
+          component.style.height = img.height
+          this.$store.commit('addComponent', {
+            component: component
+          })
+          this.$store.commit('recordSnapshot', 'handleFileChange')
         }
-        reader.readAsDataURL(file)
-      }).catch(() => {
-        const reader = new FileReader()
-        reader.onload = (res) => {
-          const fileResult = res.target.result
-          const img = new Image()
-          img.src = fileResult
-          img.onload = () => {
-            console.log( '宽高', img.width, img.height )
-            let ratio = img.height / img.width
-            const component = {
-              ...commonAttr,
-              id: generateID(),
-              component: 'Picture',
-              type: 'picture-add',
-              label: '图片',
-              icon: '',
-              hyperlinks: HYPERLINKS,
-              mobileStyle: BASE_MOBILE_STYLE,
-              propValue: fileResult,
-              style: {
-                ...commonStyle
-              }
-            }
-            component.auxiliaryMatrix = false
-            component.style.top = _this.dropComponentInfo.shadowStyle.y
-            component.style.left = _this.dropComponentInfo.shadowStyle.x
-            component.style.width = img.width < 400 ? img.width : 400
-            component.style.height = img.height < parseInt(400 * ratio) ? img.height : parseInt(400 * ratio)
-            this.$store.commit('addComponent', {
-              component: component
-            })
-            this.$store.commit('recordSnapshot', 'handleFileChange')
-          }
-          // img.src = fileResult
-        }
-        reader.readAsDataURL(file)
-      })
+
+        img.src = fileResult
+      }
+      reader.readAsDataURL(file)
+
+      //
+
+      // this.$prompt('请输入图片宽高(例如：400*200)', '图片宽高', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   inputPattern: /^([1-9][0-9]*\*[1-9][0-9]*)$/,
+      //   inputErrorMessage: '请输入宽高并且是非零开头的整数'
+      // }).then(({ value }) => {
+      //   // this.$message({
+      //   //   type: 'success',
+      //   //   message: '宽高: ' + value
+      //   // });
+      //   const arr = value.split('*')
+      //   const reader = new FileReader()
+      //   reader.onload = (res) => {
+      //     const fileResult = res.target.result
+      //     const img = new Image()
+      //     img.src = fileResult
+      //     img.onload = () => {
+      //       console.log('宽高', arr)
+      //       const component = {
+      //         ...commonAttr,
+      //         id: generateID(),
+      //         component: 'Picture',
+      //         type: 'picture-add',
+      //         label: '图片',
+      //         icon: '',
+      //         hyperlinks: HYPERLINKS,
+      //         mobileStyle: BASE_MOBILE_STYLE,
+      //         propValue: fileResult,
+      //         style: {
+      //           ...commonStyle
+      //         }
+      //       }
+      //       component.auxiliaryMatrix = false
+      //       component.style.top = _this.dropComponentInfo.shadowStyle.y
+      //       component.style.left = _this.dropComponentInfo.shadowStyle.x
+      //       component.style.width = arr[0]
+      //       component.style.height = arr[1]
+      //       this.$store.commit('addComponent', {
+      //         component: component
+      //       })
+      //       this.$store.commit('recordSnapshot', 'handleFileChange')
+      //     }
+      //     // img.src = fileResult
+      //   }
+      //   reader.readAsDataURL(file)
+      // }).catch(() => {
+      //   const reader = new FileReader()
+      //   reader.onload = (res) => {
+      //     const fileResult = res.target.result
+      //     const img = new Image()
+      //     img.src = fileResult
+      //     img.onload = () => {
+      //       console.log('宽高', img.width, img.height)
+      //       const ratio = img.height / img.width
+      //       const component = {
+      //         ...commonAttr,
+      //         id: generateID(),
+      //         component: 'Picture',
+      //         type: 'picture-add',
+      //         label: '图片',
+      //         icon: '',
+      //         hyperlinks: HYPERLINKS,
+      //         mobileStyle: BASE_MOBILE_STYLE,
+      //         propValue: fileResult,
+      //         style: {
+      //           ...commonStyle
+      //         }
+      //       }
+      //       component.auxiliaryMatrix = false
+      //       component.style.top = _this.dropComponentInfo.shadowStyle.y
+      //       component.style.left = _this.dropComponentInfo.shadowStyle.x
+      //       component.style.width = img.width < 400 ? img.width : 400
+      //       component.style.height = img.height < parseInt(400 * ratio) ? img.height : parseInt(400 * ratio)
+      //       this.$store.commit('addComponent', {
+      //         component: component
+      //       })
+      //       this.$store.commit('recordSnapshot', 'handleFileChange')
+      //     }
+      //     // img.src = fileResult
+      //   }
+      //   reader.readAsDataURL(file)
+      // })
     },
     getPositionX(x) {
       if (this.canvasStyleData.selfAdaption) {

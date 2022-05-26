@@ -656,6 +656,8 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    canvasSize: '画布尺寸',
+    canvasWith: '画布宽度',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
@@ -788,6 +790,9 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
+    // canvasSize: '画布尺寸',
+    // canvasWith: '画布宽度',
+    canvasHeight: '画布高度',
     border: '边角',
     border_width: '边框宽度',
     border_radius: '边框半径',
@@ -1415,6 +1420,8 @@ export default {
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
     board_radio: '边框半径',
+    box_width: '组件宽',
+    box_height: '组件高',
     background: '背景',
     component_style: '组件样式',
     web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
@@ -1988,7 +1995,11 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：',
-    add_datasource: '添加一个数据源'
+    add_datasource: '添加一个数据源',
+    data_connection: '数据连接',
+    data_preparation: '数据准备',
+    analysis_display: '分析展现',
+    resource_publishing: '资源发布'
   },
   kettle: {
     add: '添加 Kettle 服务',
