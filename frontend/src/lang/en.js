@@ -1885,6 +1885,10 @@ export default {
     label: 'Text selector',
     placeholder: 'Please select'
   },
+  detextselectTree: {
+    label: 'Tree selector',
+    placeholder: 'Please select'
+  },
   detextgridselect: {
     label: 'Text list',
     placeholder: 'Please select'

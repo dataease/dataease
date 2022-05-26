@@ -1897,6 +1897,10 @@ export default {
     label: '文本下拉',
     placeholder: '請選擇'
   },
+  detextselectTree: {
+    label: '下拉树',
+    placeholder: '請選擇'
+  },
   detextgridselect: {
     label: '文本列錶',
     placeholder: '請選擇'
