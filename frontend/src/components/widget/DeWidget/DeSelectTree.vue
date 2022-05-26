@@ -5,7 +5,6 @@
     ref="deSelectTree"
     v-model="value"
     popover-class="test-class-wrap"
-    :is-single="isSingle"
     :data="datas"
     :select-params="selectParams"
     :tree-params="treeParams"
@@ -45,9 +44,8 @@ export default {
   },
   data() {
     return {
-      showNumber: false,
-      selectOptionWidth: 0,
       show: true,
+      selectOptionWidth: 0,
       datas: [],
       value: this.isSingle ? '' : [],
       selectParams: {
@@ -135,14 +133,17 @@ export default {
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
+
       if (!this.inDraw) {
         this.value = value ? [] : null
         this.element.options.value = ''
       }
-
       this.show = false
       this.$nextTick(() => {
         this.show = true
+        this.$nextTick(() => {
+          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+        })
       })
     }
 
@@ -212,25 +213,14 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.showNumber = false
-
-      this.$nextTick(() => {
-        if (!this.element.options.attrs.multiple || !this.$refs.deSelect || !this.$refs.deSelect.$refs.tags) {
-          return
-        }
-        const kids = this.$refs.deSelect.$refs.tags.children[0].children
-        let contentWidth = 0
-        kids.forEach(kid => {
-          contentWidth += kid.offsetWidth
-        })
-        this.showNumber = contentWidth > ((this.$refs.deSelectTree.$refs.tags.clientWidth - 30) * 0.9)
-      })
     },
 
     setCondition() {
+      const val = this.formatFilterValue()
+
       const param = {
         component: this.element,
-        value: this.formatFilterValue(),
+        value: val,
         operator: this.operator,
         isTree: true
       }
@@ -267,7 +257,8 @@ export default {
         return results
         // return this.value
       }
-      return this.value.split(',')
+      const result = this.value.split(',').map(v => v.replaceAll(SEPARATOR, ','))
+      return result
     },
 
     fillValueDerfault() {
@@ -286,14 +277,6 @@ export default {
       return datas.filter(item => !!item)
     },
 
-    setOptionWidth(event) {
-      // 下拉框弹出时，设置弹框的宽度
-      this.$nextTick(() => {
-        // this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
-        this.selectOptionWidth = event.srcElement.parentElement.parentElement.offsetWidth + 'px'
-      })
-    },
-
     /* 下面是树的渲染方法 */
 
     _filterFun(value, data, node) {
@@ -308,9 +291,9 @@ export default {
     _searchFun(value) {
       console.log(value, '<--_searchFun')
       // 自行判断 是走后台查询，还是前端过滤
-      this.$refs.treeSelect.filterFun(value)
+      this.$refs.deSelectTree.filterFun(value)
       // 后台查询
-      // this.$refs.treeSelect.treeDataUpdateFun(treeData);
+      // this.$refs.deSelectTree.treeDataUpdateFun(treeData);
     },
     // 自定义render
     _renderFun(h, { node, data, store }) {
