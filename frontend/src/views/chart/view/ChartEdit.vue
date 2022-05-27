@@ -277,7 +277,7 @@
                       </span>
                     </el-row>
 
-                    <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                    <!-- <el-row v-if="view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.arc_map_update') }}</span>
                       </span>
@@ -297,7 +297,7 @@
                           </div>
                         </el-upload>
                       </span>
-                    </el-row>
+                    </el-row> -->
                     <el-row v-if="view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.arc_map_url') }}</span>
@@ -1389,7 +1389,7 @@ export default {
         render: 'antv',
         isPlugin: false,
         file: '',
-        urlMap: 'http://www.sdmap.gov.cn/tileservice/SDPubMap?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=0&STYLE=default&FORMAT=image/png&TILEMATRIXSET=taishannew&TILEMATRIX=10&TILEROW=152&TILECOL=851'
+        urlMap: ''
       },
       urlMap1: '',
       moveId: -1,
