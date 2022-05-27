@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./number"],function(d,h){function l(a,b){Array.isArray(b)?(a[0]=b[0],a[1]=b[1],a[2]=b[2],a[3]=b[3]):(a[0]=b.r,a[1]=b.g,a[2]=b.b,a[3]=b.a);return a}function k(a,b=0,f=!1){const e=a[b+3];a[b+0]*=e;a[b+1]*=e;a[b+2]*=e;f||(a[b+3]*=255);return a}const g=[0,0,0,0];d.copyAndPremultiply=function(a){return k(l([],a))};d.premultiplyAlpha=k;d.premultiplyAlphaRGBA=function(a){if(!a)return 0;const {r:b,g:f,b:e,a:c}=a;return h.i8888to32(b*c,f*c,e*c,255*c)};d.premultiplyAlphaRGBAArray=function(a){if(!a)return 0;
+const [b,f,e,c]=a;return h.i8888to32(c/255*b,c/255*f,c/255*e,c)};d.premultiplyAlphaUint32=function(a){k(l(g,a));return h.i8888to32(g[0],g[1],g[2],g[3])};d.white=[255,255,255,1];Object.defineProperty(d,"__esModule",{value:!0})});

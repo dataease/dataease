@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/has","../../core/screenUtils"],function(c,g,d){function e(a){return d.createScreenPoint(a.x,a.y)}function f(a,b){a=(a instanceof HTMLElement?a:a.surface).getBoundingClientRect();return d.createScreenPoint(b.clientX-a.left,b.clientY-a.top)}c.createScreenPointFromEvent=e;c.createScreenPointFromNativeEvent=f;c.createScreenPointFromSupportedEvent=function(a,b){return b instanceof Event?f(a,b):e(b)};c.isSupportedScreenPointEvent=function(a){if(a instanceof Event)return!0;
+if("object"===typeof a&&"type"in a)switch(a.type){case "click":case "double-click":case "pointer-down":case "pointer-drag":case "pointer-enter":case "pointer-leave":case "pointer-up":case "pointer-move":case "immediate-click":case "immediate-double-click":case "hold":case "drag":case "mouse-wheel":return!0}return!1};Object.defineProperty(c,"__esModule",{value:!0})});

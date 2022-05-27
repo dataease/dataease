@@ -1,0 +1,2 @@
+//>>built
+define(["./_base"],function(){dojox.uuid.generateRandomUuid=function(){function a(){for(var b=Math.floor(Math.random()%1*Math.pow(2,32)).toString(16);8>b.length;)b="0"+b;return b}var e=a(),c=a();c=c.substring(0,4)+"-4"+c.substring(5,8);var d=a();d="8"+d.substring(1,4)+"-"+d.substring(4,8);var f=a();return(e+"-"+c+"-"+d+f).toLowerCase()};return dojox.uuid.generateRandomUuid});

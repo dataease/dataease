@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../webgl-engine/lib/lodRendering/LodResources"],function(c,f){function d(a){const b=[];a.stageResources.geometries.forEach((g,h)=>{b.push({material:a.stageResources.materials[h],geometry:g,textures:a.stageResources.textures})});return{components:b,minScreenSpaceRadius:a.lodThreshold,pivotOffset:a.pivotOffset}}function e(a,b=.05){a=f.computeFaceCount(a);return Math.sqrt(a/(b*Math.PI))}c.estimateMinScreenSpaceRadius=e;c.fillEstimatedMinScreenSpaceRadius=function(a){a.levels.forEach(b=>
+{b.minScreenSpaceRadius||(b.minScreenSpaceRadius=e(b))})};c.makeLodLevelResources=d;c.makeLodResources=function(a){return{levels:a.map(b=>d(b))}};Object.defineProperty(c,"__esModule",{value:!0})});

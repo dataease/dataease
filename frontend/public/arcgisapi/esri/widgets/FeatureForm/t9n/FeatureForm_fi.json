@@ -1,0 +1,1 @@
+{"widgetLabel":"Ominaisuuslomake","empty":"- tyhjä -","validationErrors":{"cannotBeNull":"Kirjoita arvo","outsideRange":"Arvon on oltava välillä min}–{max}","invalidCodedValue":"Arvon on oltava jokin luetelluista arvoista.","invalidType":"Ei ole kelvollinen arvo","tooShort":"Kenttä edellyttää vähintään {min} merkkiä"}}

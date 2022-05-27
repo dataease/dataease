@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ../../tasks/support/fileFormat ../../tasks/support/layoutTemplate".split(" "),function(g,c,a,n,p,d,q,h,r,t,u,k,l,m){a=function(e){function f(b){b=e.call(this,
+b)||this;b.description=null;b.format=null;b.label=null;b.layout=null;b.layoutOptions=null;return b}g._inheritsLoose(f,e);return f}(k.JSONSupport);c.__decorate([d.property()],a.prototype,"description",void 0);c.__decorate([d.property({json:{read:l.fromJSON}})],a.prototype,"format",void 0);c.__decorate([d.property()],a.prototype,"label",void 0);c.__decorate([d.property({json:{read:m.fromJSON}})],a.prototype,"layout",void 0);c.__decorate([d.property()],a.prototype,"layoutOptions",void 0);return a=c.__decorate([h.subclass("esri.widgets.Print.CustomTemplate")],
+a)});

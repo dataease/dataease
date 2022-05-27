@@ -1,0 +1,1 @@
+{"widgetLabel":"Objectvorm","empty":"- leeg -","validationErrors":{"cannotBeNull":"Voer een waarde in","outsideRange":"De waarde moet liggen tussen {min} en {max}","invalidCodedValue":"Waarde moet een van de vermelde waarden zijn.","invalidType":"Geen geldige waarde","tooShort":"Dit veld vereist een minimum van {min} tekens"}}

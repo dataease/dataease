@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../chunks/_rollupPluginBabelHelpers ../chunks/tslib.es6 ../core/has ../core/Logger ../core/accessorSupport/decorators/property ../core/accessorSupport/decorators/cast ../core/jsonMap ../core/accessorSupport/decorators/subclass ../core/urlUtils ../core/uuid ../portal/support/resourceExtension ../core/JSONSupport ../core/Collection ../core/collectionUtils ./Slide".split(" "),function(e,f,b,u,l,m,v,n,w,x,y,p,q,g,r){const d=q.ofType(r);b=function(h){function c(a){a=h.call(this,a)||this;a.slides=
+new d;return a}e._inheritsLoose(c,h);var k=c.prototype;k.destroy=function(){this.slides.forEach(a=>a.destroy());this.slides.removeAll()};k.clone=function(){return new this.constructor({slides:this.slides.clone()})};e._createClass(c,[{key:"slides",set:function(a){a&&(a=a.filter(t=>!!t.viewpoint));this._set("slides",g.referenceSetter(a,this._get("slides"),d))}}]);return c}(p.JSONSupport);f.__decorate([l.property({type:d,nonNullable:!0,json:{write:!0}}),m.cast(g.castForReferenceSetter)],b.prototype,
+"slides",null);return b=f.__decorate([n.subclass("esri.webscene.Presentation")],b)});

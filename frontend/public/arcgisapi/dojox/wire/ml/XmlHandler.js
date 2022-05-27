@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox","dojo/require!dojox/wire/ml/RestHandler,dojox/xml/parser,dojox/wire/_base,dojox/wire/ml/util"],function(c,f,d){c.provide("dojox.wire.ml.XmlHandler");c.require("dojox.wire.ml.RestHandler");c.require("dojox.xml.parser");c.require("dojox.wire._base");c.require("dojox.wire.ml.util");c.declare("dojox.wire.ml.XmlHandler",d.wire.ml.RestHandler,{contentType:"text/xml",handleAs:"xml",_getContent:function(a,e){var b=null;if("POST"==a||"PUT"==a)if(a=e[0])c.isString(a)?b=a:(b=a,
+b instanceof d.wire.ml.XmlElement?b=b.element:9===b.nodeType&&(b=b.documentElement),b='\x3c?xml version\x3d"1.0"?\x3e'+d.xml.parser.innerXML(b));return b},_getResult:function(a){a&&(a=new d.wire.ml.XmlElement(a));return a}})});

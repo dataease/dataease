@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/_rollupPluginBabelHelpers"],function(f,g){let h=function(){function e(a){this._resourcesCreated=this._attached=!1;this._visible=!0;this.view=a;this.view.watch("ready",c=>{this._resourcesCreated&&(c?this._createResources():this._destroyResources())})}var d=e.prototype;d.applyProps=function(a){let c=!1;for(const b in a)b in this?"attached"===b?c=a[b]:this[b]=a[b]:console.error("Cannot set unknown property",b);this.attached=c};d.destroy=function(){this.attached=
+!1};d._createResources=function(){this.createResources();this._resourcesCreated=!0;this.visible||this.updateVisibility(!1)};d._destroyResources=function(){this.destroyResources();this._resourcesCreated=!1};g._createClass(e,[{key:"attached",get:function(){return this._attached},set:function(a){a!==this._attached&&((this._attached=a)&&!this._resourcesCreated?this._createResources():!this._attached&&this._resourcesCreated&&this._destroyResources())}},{key:"visible",get:function(){return this._visible},
+set:function(a){a!==this._visible&&(this._visible=a,this.attached&&this.updateVisibility(a))}}]);return e}();f.VisualElement=h;Object.defineProperty(f,"__esModule",{value:!0})});

@@ -1,0 +1,2 @@
+//>>built
+define({createLinkTitle:"Thu\u1ed9c t\u00ednh Li\u00ean k\u1ebft",insertImageTitle:"Thu\u1ed9c t\u00ednh H\u00ecnh \u1ea3nh",url:"URL:",text:"M\u00f4 t\u1ea3:",target:"\u0110\u00edch:",set:"T\u1eadp h\u1ee3p",currentWindow:"C\u1eeda s\u1ed5 hi\u1ec7n t\u1ea1i",parentWindow:"C\u1eeda s\u1ed5 Ch\u00ednh",topWindow:"C\u1eeda s\u1ed5 Tr\u00ean c\u00f9ng",newWindow:"C\u1eeda s\u1ed5 M\u1edbi"});

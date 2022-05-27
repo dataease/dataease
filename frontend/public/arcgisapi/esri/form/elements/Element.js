@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/accessorSupport/decorators/property ../../core/accessorSupport/decorators/subclass ../../core/JSONSupport".split(" "),function(c,h,d,f,k,m){const l=a=>{a=function(e){function b(){var g=e.apply(this,arguments)||this;g.description=null;g.label=null;g.visibilityExpression=null;return g}h._inheritsLoose(b,e);return b}(a);d.__decorate([f.property({type:String,json:{write:!0}})],a.prototype,"description",void 0);d.__decorate([f.property({type:String,
+json:{write:!0}})],a.prototype,"label",void 0);d.__decorate([f.property({type:String,json:{write:!0}})],a.prototype,"visibilityExpression",void 0);return a=d.__decorate([k.subclass("esri.form.elements.ElementMixin")],a)};c.Element=function(a){function e(b){b=a.call(this,b)||this;b.type=null;return b}h._inheritsLoose(e,a);return e}(l(m.JSONSupport));d.__decorate([f.property()],c.Element.prototype,"type",void 0);c.Element=d.__decorate([k.subclass("esri.form.elements.Element")],c.Element);c.ElementMixin=
+l;Object.defineProperty(c,"__esModule",{value:!0})});

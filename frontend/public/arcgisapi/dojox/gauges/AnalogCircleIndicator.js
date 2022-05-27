@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","./AnalogIndicatorBase"],function(c,d){return c("dojox.gauges.AnalogCircleIndicator",[d],{_getShapes:function(e){var a=this.color?this.color:"black",b={color:this.strokeColor?this.strokeColor:a,width:1};this.color.type&&!this.strokeColor&&(b.color=this.color.colors[0].color);return[e.createCircle({cx:0,cy:-this.offset,r:this.length}).setFill(a).setStroke(b)]}})});

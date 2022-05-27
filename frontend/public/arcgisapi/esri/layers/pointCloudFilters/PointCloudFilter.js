@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport".split(" "),function(g,c,a,l,m,e,n,h,p,q,r,k){a=function(f){function d(b){b=f.call(this,b)||this;b.field=null;b.type=null;return b}g._inheritsLoose(d,
+f);d.prototype.clone=function(){console.warn(".clone() is not implemented for "+this.declaredClass);return null};return d}(k.JSONSupport);c.__decorate([e.property({type:String,json:{write:{enabled:!0,isRequired:!0}}})],a.prototype,"field",void 0);c.__decorate([e.property({readOnly:!0,nonNullable:!0,json:{read:!1}})],a.prototype,"type",void 0);return a=c.__decorate([h.subclass("esri.layers.pointCloudFilters.PointCloudFilter")],a)});

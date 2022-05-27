@@ -1,0 +1,1 @@
+{"widgetLabel":"Formulaire d’entité","empty":"- vide -","validationErrors":{"cannotBeNull":"Entrez une valeur","outsideRange":"La valeur doit être comprise entre {min} et {max}","invalidCodedValue":"La valeur doit figurer dans la liste des valeurs répertoriées.","invalidType":"Pas une valeur valide","tooShort":"Ce champ nécessite au minimum {min} caractères"}}

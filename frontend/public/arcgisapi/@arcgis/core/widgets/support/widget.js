@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import"../../chunks/ArrayPool.js";import"../../chunks/object.js";import"../../core/lang.js";import"../../config.js";import"../../chunks/Logger.js";import"../../chunks/string.js";export{b as additionalAllowedTags,c as classes,a as cssTransition,d as discardNode,g as getThemeName,f as isDarkTheme,i as isRTL,k as keepMenuItemWithinView,r as renderingSanitizer,e as safeAttrs,s as storeNode}from"../../chunks/widgetUtils.js";export{a as accessibleHandler}from"../../chunks/accessibleHandler.js";export{m as messageBundle}from"../../chunks/messageBundle.js";export{r as renderable}from"../../chunks/renderable.js";export{v as vmEvent}from"../../chunks/vmEvent.js";export{j as tsx}from"../../chunks/index.js";function n(e){return e&&"function"==typeof e.render}function t(e){return e&&"function"==typeof e.postMixInProperties&&"function"==typeof e.buildRendering&&"function"==typeof e.postCreate&&"function"==typeof e.startup}export{t as hasDomNode,n as isWidget};

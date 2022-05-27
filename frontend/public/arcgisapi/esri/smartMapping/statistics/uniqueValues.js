@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../../core/maybe","../../core/Error","../support/utils","./support/utils","../support/adapters/support/layerUtils"],function(f,d,g,h,e){async function k(a){if(!a||!a.layer||!a.field&&!a.valueExpression)throw new d("unique-values:missing-parameters","'layer' and 'field' or 'valueExpression' parameters are required");var b=a.valueExpression||a.sqlExpression,c=b&&!a.sqlExpression;if(b)if(c){if(!a.view)throw new d("unique-values:missing-parameters","View is required when 'valueExpression' is specified");
+}else if(!a.valueExpression)throw new d("unique-values:missing-parameters","'valueExpression' parameters are required");c=[0,2,1,3,4];const {layer:l,...m}=a;b=e.createLayerAdapter(l,c);a={layerAdapter:b,...m};if(!b)throw new d("unique-values:invalid-parameters","'layer' must be one of these types: "+e.getLayerTypeLabels(c).join(", "));c=f.isSome(a.signal)?{signal:a.signal}:null;await b.load(c);c=await g.getFieldsList({field:a.field,valueExpression:a.valueExpression});if(b=h.verifyBasicFieldValidity(b,
+c,"unique-values:invalid-parameters"))throw b;return a}return async function(a){const {layerAdapter:b,...c}=await k(a);return b.uniqueValues(c)}});

@@ -1,0 +1,2 @@
+//>>built
+define({instructions:"Do\u011frudan kopyalama ge\u00e7ersiz k\u0131l\u0131nd\u0131. L\u00fctfen bu ileti\u015fim kutusundaki i\u00e7eri\u011fi standart taray\u0131c\u0131 klavyesini ya da men\u00fcde yer alan yap\u0131\u015ft\u0131rma se\u00e7eneklerini kullanarak  yap\u0131\u015ft\u0131r\u0131n. Eklenecek i\u00e7eri\u011fe karar verdikten sonra yap\u0131\u015ft\u0131r d\u00fc\u011fmesine bas\u0131n. \u0130\u00e7eri\u011fi eklemeyi durdurmak i\u00e7in iptal d\u00fc\u011fmesine bas\u0131n."});

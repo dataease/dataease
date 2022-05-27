@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(b){function c(a){return a.valueExpression?"expression":a.field&&"string"===typeof a.field?"field":"unknown"}b.getInputValueType=c;b.getTransformationType=function(a,d){return"unknown"===(d||c(a))?"constant":a.stops?"stops":null!=a.minSize&&null!=a.maxSize&&null!=a.minDataValue&&null!=a.maxDataValue?"clamped-linear":"unknown"===(a.valueUnit||"unknown")?null!=a.minSize&&null!=a.minDataValue?a.minSize&&a.minDataValue?"proportional":"additive":"identity":"real-world-size"};
+b.isSizeVariable=function(a){return a&&"esri.renderers.visualVariables.SizeVariable"===a.declaredClass};b.isValidNumber=function(a){return null!=a&&!isNaN(a)&&isFinite(a)};Object.defineProperty(b,"__esModule",{value:!0})});

@@ -1,0 +1,1 @@
+{"widgetLabel":"Meranie oblasti","hint":"Začnite meranie kliknutím na mapu pre umiestnenie vášho prvého bodu","unsupported":"2D meranie oblasti je podporované iba v Mapovom pohľade.","perimeter":"Obvod","area":"Oblasť","newMeasurement":"Nové meranie","mode":"Režim","modes":{"auto":"Automaticky","planar":"Rovinný","geodesic":"Geodetický"},"unit":"Jednotka"}

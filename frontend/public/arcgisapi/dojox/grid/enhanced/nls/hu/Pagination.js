@@ -1,0 +1,3 @@
+//>>built
+define({descTemplate:"${2} - ${3} / ${1} ${0}",firstTip:"Els\u0151 oldal",lastTip:"Utols\u00f3 oldal",nextTip:"K\u00f6vetkez\u0151 oldal",prevTip:"El\u0151z\u0151 oldal",itemTitle:"elemek",singularItemTitle:"t\u00e9tel",pageStepLabelTemplate:"${0}. oldal",pageSizeLabelTemplate:"${0} elem oldalank\u00e9nt",allItemsLabelTemplate:"\u00d6sszes elem",gotoButtonTitle:"Ugr\u00e1s adott oldalra",dialogTitle:"Ugr\u00e1s adott oldalra",dialogIndication:"Adja meg az oldalsz\u00e1mot",pageCountIndication:" (${0} oldal)",
+dialogConfirm:"Mehet",dialogCancel:"M\u00e9gse",all:"Mind"});

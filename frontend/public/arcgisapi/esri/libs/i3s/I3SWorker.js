@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["require","exports","../../core/promiseUtils","../../assets"],function(g,e,f,h){function k(a){return h.getAssetUrl(`esri/libs/i3s/${a}`)}let d;e.getWorkerModule=function(){d||(d=f.create(a=>(new Promise(function(b,c){g(["../../chunks/i3s"],b,c)})).then(function(b){return b.i3s}).then(({default:b})=>{const c=b({locateFile:k,onRuntimeInitialized:()=>a(c)});delete c.then})).catch(a=>f.reject(a)));return d};Object.defineProperty(e,"__esModule",{value:!0})});

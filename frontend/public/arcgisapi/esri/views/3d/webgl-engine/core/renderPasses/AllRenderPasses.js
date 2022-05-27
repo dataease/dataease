@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../../chunks/mat3f64 ../../../../../chunks/vec2f64 ../../../../../chunks/vec4f64 ../../../support/geometryUtils ../shaderLibrary/attributes/VertexPosition.glsl".split(" "),function(a,e,b,f,c,d){a.HighlightPassParameters=function(){this.identifier=2;this.viewTransform=new d.VertexPosition.ViewProjectionTransform;this.slicePlane=c.boundedPlane.create();this.inverseViewport=b.create();this.viewport=f.create()};a.MaterialPassesParameters=function(){this.identifier=0;this.integratedMesh=
+this.transparent=!1;this.viewTransform=new d.VertexPosition.ViewProjectionTransform;this.transformNormal_ViewFromGlobal=e.create();this.cameraNearFar=b.create();this.slicePlane=c.boundedPlane.create();this.shadowsEnabled=this.ambientOcclusionEnabled=this.slicePlaneEnabled=!0;this.sceneHasOcludees=!1;this.transparencyPassType=3};a.ShadowMapPassParameters=function(){this.identifier=1;this.viewTransform=new d.VertexPosition.ViewProjectionTransform;this.cameraNearFar=b.create();this.slicePlane=c.boundedPlane.create()};
+Object.defineProperty(a,"__esModule",{value:!0})});

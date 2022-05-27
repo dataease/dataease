@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/_rollupPluginBabelHelpers","../../../../chunks/vec4f64"],function(d,g,h){let f=function(b,c){this.id=b;this.mbs=c;this.renderMbs=h.fromArray([0,0,0,-1]);this.imModificationImpact=4},u=function(b){function c(a,e,k,l,m,n,p,q,r,t){a=b.call(this,a,k)||this;a.index=e;a.childCount=l;a.level=m;a.resources=n;a.version=p;a.lodMetric=q;a.maxError=r;a.numFeatures=t;a.failed=!1;a.hasModifications=!1;a.cacheState=0;a.vertexCount=0;a.memory=0;return a}g._inheritsLoose(c,b);
+return c}(f);d.Node=u;d.NodeBase=f;d.NodeTraversalState=function(b,c,a,e){this.nodeHasLOD=b;this.isChosen=c;this.lodLevel=a;this.version=e};Object.defineProperty(d,"__esModule",{value:!0})});

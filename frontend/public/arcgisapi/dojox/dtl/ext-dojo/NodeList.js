@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","dojo/query","../_base"],function(f,a,b){f.getObject("dojox.dtl.ext-dojo.NodeList",!0);a=a.NodeList;f.extend(a,{dtl:function(c,g){var h=this,m=function(d,e){var k=d.render(new b._Context(e));h.forEach(function(l){l.innerHTML=k})};b.text._resolveTemplateArg(c).addCallback(function(d){c=new b.Template(d);b.text._resolveContextArg(g).addCallback(function(e){m(c,e)})});return this}});return a});

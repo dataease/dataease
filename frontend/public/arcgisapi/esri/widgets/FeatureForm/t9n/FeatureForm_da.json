@@ -1,0 +1,1 @@
+{"widgetLabel":"Objektform","empty":"- tom -","validationErrors":{"cannotBeNull":"Indtast en værdi.","outsideRange":"Værdien skal være mellem {min} og {max}","invalidCodedValue":"Værdien skal være en af de angivne værdier.","invalidType":"Ikke en gyldig værdi","tooShort":"Dette felt kræver mindst {min} tegn"}}

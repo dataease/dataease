@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/Evented","../../../../core/Handles"],function(c,g,h){let f=function(){function e(b){this.handles=new h;this.events=new g;this.contentLayerViews=b.contentLayerViews;this.handles.add(this.contentLayerViews.on("change",a=>this.layerViewsChanged(a)));this.layerViewsChanged({added:this.contentLayerViews.toArray(),removed:[],moved:[],target:this.contentLayerViews})}var d=e.prototype;d.destroy=function(){this.handles&&(this.handles.destroy(),this.handles=null)};d.layerViewsChanged=
+function(b){b.added.forEach(a=>{"esri.views.3d.layers.SceneLayerView3D"===a.declaredClass&&this.handles.add(a.on("visible-geometry-changed",()=>this.contentChanged()),a.uid)});b.removed.forEach(a=>this.handles.remove(a.uid))};d.contentChanged=function(){this.events.emit("request-update",k)};return e}();const k={};c.ContentGeometryUpdates=f;c.default=f;Object.defineProperty(c,"__esModule",{value:!0})});

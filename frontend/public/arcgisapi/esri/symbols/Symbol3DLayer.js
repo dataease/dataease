@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../chunks/_rollupPluginBabelHelpers ../chunks/tslib.es6 ../core/has ../core/Logger ../core/accessorSupport/ensureType ../core/accessorSupport/decorators/property ../core/jsonMap ../core/accessorSupport/decorators/subclass ../core/accessorSupport/decorators/writer ../core/urlUtils ../core/uuid ../portal/support/resourceExtension ../core/JSONSupport".split(" "),function(g,c,b,p,q,e,r,h,k,t,u,v,l){b=function(f){function d(a){a=f.call(this,a)||this;a.enabled=!0;a.type=null;return a}g._inheritsLoose(d,
+f);d.prototype.writeEnabled=function(a,m,n){a||(m[n]=a)};return d}(l.JSONSupport);c.__decorate([e.property({type:Boolean,json:{read:{source:"enable"},write:{target:"enable"}}})],b.prototype,"enabled",void 0);c.__decorate([k.writer("enabled")],b.prototype,"writeEnabled",null);c.__decorate([e.property({type:"icon object line path fill water extrude text".split(" "),readOnly:!0})],b.prototype,"type",void 0);return b=c.__decorate([h.subclass("esri.symbols.Symbol3DLayer")],b)});

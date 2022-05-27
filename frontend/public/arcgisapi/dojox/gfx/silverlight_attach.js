@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/lang","./_base","./silverlight"],function(b,c,e,a){c.getObject("dojox.gfx.silverlight_attach",!0);b.experimental("dojox.gfx.silverlight_attach");a.attachNode=function(d){return null};a.attachSurface=function(d){return null};return a});

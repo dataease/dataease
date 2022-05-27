@@ -1,0 +1,1 @@
+{"widgetLabel":"Områdemåling","hint":"Start måling ved at klikke i kortet for at placere det første punkt","unsupported":"2D-områdemåling understøttes kun i MapView.","perimeter":"Omkreds","area":"Område","newMeasurement":"Nye målinger","mode":"Tilstand","modes":{"auto":"Auto","planar":"Plan","geodesic":"Geodætisk"},"unit":"Enhed"}

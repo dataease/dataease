@@ -1,0 +1,1 @@
+{"widgetLabel":"Форма об'єктів","empty":"- пусто -","validationErrors":{"cannotBeNull":"Введіть значення","outsideRange":"Значення має знаходитися в діапазоні від {min} до {max}","invalidCodedValue":"Значення має бути одним з перелічених значень.","invalidType":"Не припустиме значення","tooShort":"Це поле потребує щонайменше {min} символів"}}

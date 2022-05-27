@@ -1,0 +1,3 @@
+//>>built
+define({AUD_displayName:"\u0110\u00f4 la Australia",AUD_symbol:"AU$",CAD_displayName:"\u0110\u00f4 la Canada",CAD_symbol:"CA$",CHF_displayName:"Franc Th\u1ee5y s\u0129",CHF_symbol:"CHF",CNY_displayName:"Nh\u00e2n d\u00e2n t\u1ec7",CNY_symbol:"CN\u00a5",EUR_displayName:"Euro",EUR_symbol:"\u20ac",GBP_displayName:"B\u1ea3ng Anh",GBP_symbol:"\u00a3",HKD_displayName:"\u0110\u00f4 la H\u1ed3ng K\u00f4ng",HKD_symbol:"HK$",JPY_displayName:"Y\u00ean Nh\u1eadt",JPY_symbol:"JP\u00a5",USD_displayName:"\u0110\u00f4 la M\u1ef9",
+USD_symbol:"US$"});

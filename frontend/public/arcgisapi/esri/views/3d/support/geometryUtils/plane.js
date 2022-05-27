@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../core/maybe ../../../../core/mathUtils ../../../../chunks/vec3f64 ../../../../chunks/vec3 ../stack ../../../../chunks/plane".split(" "),function(a,c,d,e,f,g,b){a.UP=b.UP;a.clip=b.clip;a.clipInfinite=b.clipInfinite;a.copy=b.copy;a.create=b.create;a.distance=b.distance;a.fromManyPoints=b.fromManyPoints;a.fromManyPointsSampleAt=b.fromManyPointsSampleAt;a.fromNormalAndOffset=b.fromNormalAndOffset;a.fromPoints=b.fromPoints;a.fromPositionAndNormal=b.fromPositionAndNormal;a.fromValues=
+b.fromValues;a.fromVectorsAndPoint=b.fromVectorsAndPoint;a.intersectLineSegment=b.intersectLineSegment;a.intersectLineSegmentClamp=b.intersectLineSegmentClamp;a.intersectRay=b.intersectRay;a.isAABBFullyInside=b.isAABBFullyInside;a.isPointInside=b.isPointInside;a.isPointOutside=b.isPointOutside;a.isSphereFullyInside=b.isSphereFullyInside;a.isSphereFullyOutside=b.isSphereFullyOutside;a.negate=b.negate;a.normal=b.normal;a.projectPoint=b.projectPoint;a.projectVector=b.projectVector;a.setOffsetFromPoint=
+b.setOffsetFromPoint;a.signedDistance=b.signedDistance;a.wrap=b.wrap;Object.defineProperty(a,"__esModule",{value:!0})});

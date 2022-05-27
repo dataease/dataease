@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/array dojo/_base/declare dojo/dom-class ./_DatePickerMixin ./SpinWheel ./SpinWheelSlot".split(" "),function(d,e,c,f,g,b){return e("dojox.mobile.SpinWheelDatePicker",[g,f],{slotClasses:[b,b,b],slotProps:[{labelFrom:1970,labelTo:2038},{},{}],buildRendering:function(){this.initSlots();this.inherited(arguments);c.add(this.domNode,"mblSpinWheelDatePicker");this._conn=[this.connect(this.slots[0],"onFlickAnimationEnd","_onYearSet"),this.connect(this.slots[1],"onFlickAnimationEnd","_onMonthSet"),
+this.connect(this.slots[2],"onFlickAnimationEnd","_onDaySet")]},disableValues:function(h){d.forEach(this.slots[2].panelNodes,function(k){for(var a=27;31>a;a++)c.toggle(k.childNodes[a],"mblSpinWheelSlotLabelGray",a>=h)})}})});

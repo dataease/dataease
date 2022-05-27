@@ -4,9 +4,9 @@
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
-    <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}" />
-    <div v-if="chart.type === 'arc_map'">
-      <ArcGIS :chart-id="chartId" />
+    <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
+    <div v-if="chart.type === 'arc_map'" :style="{height:chartHeight}">
+      <ArcGIS :chartId="chartId" :chartHeight="chartHeight" />
     </div>
   </div>
 </template>

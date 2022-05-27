@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ./ClipArea".split(" "),function(e,b,a,l,m,f,n,h,p,q,r,k){a=function(g){function c(){var d=g.apply(this,arguments)||this;d.type="path";d.path=
+[];return d}e._inheritsLoose(c,g);e._createClass(c,[{key:"version",get:function(){return(this._get("version")||0)+1}}]);return c}(k);b.__decorate([f.property({type:[[[Number]]],json:{write:!0}})],a.prototype,"path",void 0);b.__decorate([f.property({readOnly:!0,dependsOn:["path"]})],a.prototype,"version",null);return a=b.__decorate([h.subclass("esri.views.layers.support.Path")],a)});

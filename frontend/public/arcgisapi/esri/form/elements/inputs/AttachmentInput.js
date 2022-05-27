@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/JSONSupport".split(" "),function(g,e,a,m,n,h,p,k,q,r,t,l){var c;a=c=function(f){function d(b){b=f.call(this,b)||this;b.type=null;
+return b}g._inheritsLoose(d,f);d.prototype.clone=function(){return new c({type:this.type})};return d}(l.JSONSupport);e.__decorate([h.property({type:"attachment audio document image signature video".split(" "),json:{write:!0}})],a.prototype,"type",void 0);return a=c=e.__decorate([k.subclass("esri.form.elements.inputs.AttachmentInput")],a)});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/compilerUtils"],function(c,e){const d={baseColorFactor:[1,1,1,1],metallicFactor:1,roughnessFactor:1},f={pbrMetallicRoughness:d,emissiveFactor:[0,0,0],alphaMode:"OPAQUE",alphaCutoff:.5,doubleSided:!1},g={ESRI_externalColorMixMode:"tint"},h={magFilter:9729,minFilter:9987,wrapS:10497,wrapT:10497};c.material=(a={})=>{const k={...d,...a.pbrMetallicRoughness};var b={...g,...a.extras};switch(b.ESRI_externalColorMixMode){case "multiply":case "tint":case "ignore":case "replace":break;
+default:e.neverReached(b.ESRI_externalColorMixMode),b.ESRI_externalColorMixMode="tint"}return{...f,...a,pbrMetallicRoughness:k,extras:b}};c.textureSampler=a=>({...h,...a});Object.defineProperty(c,"__esModule",{value:!0})});

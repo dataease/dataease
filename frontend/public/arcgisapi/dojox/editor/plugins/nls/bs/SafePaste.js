@@ -1,0 +1,2 @@
+//>>built
+define({instructions:"Izravno lijepljenje nije mogu\u0107e. Molimo zalijepite sadr\u017eaj u ovaj dijalog koriste\u0107i standardnu tastaturu pretra\u017eiva\u010da ili meni kontrola lijepljena. Kad ste jednom zadovoljni sa sadr\u017eajem koji ume\u0107ete, pritisnite dugme za lijepljenje. Za prekid umetanja sadr\u017eaja pritisnite dugme odustani."});

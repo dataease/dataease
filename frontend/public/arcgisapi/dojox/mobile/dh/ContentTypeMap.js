@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang"],function(c){var a={};c.setObject("dojox.mobile.dh.ContentTypeMap",a);a.map={html:"dojox/mobile/dh/HtmlContentHandler",json:"dojox/mobile/dh/JsonContentHandler"};a.add=function(b,d){this.map[b]=d};a.getHandlerClass=function(b){return this.map[b]};return a});

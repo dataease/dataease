@@ -1,0 +1,3 @@
+//>>built
+require({cache:{"url:dijit/templates/MenuBarItem.html":'\x3cdiv class\x3d"dijitReset dijitInline dijitMenuItem dijitMenuItemLabel" data-dojo-attach-point\x3d"focusNode"\r\n\t \trole\x3d"menuitem" tabIndex\x3d"-1"\x3e\r\n\t\x3cspan data-dojo-attach-point\x3d"containerNode,textDirNode"\x3e\x3c/span\x3e\r\n\x3c/div\x3e\r\n'}});
+define(["dojo/_base/declare","./MenuItem","dojo/text!./templates/MenuBarItem.html"],function(a,c,b){b=a("dijit._MenuBarItemMixin",null,{templateString:b,_setIconClassAttr:null});a=a("dijit.MenuBarItem",[c,b],{});a._MenuBarItemMixin=b;return a});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../../chunks/_rollupPluginBabelHelpers ../../../../chunks/tslib.es6 ../../../../core/has ../../../../core/Logger ../../../../core/accessorSupport/ensureType ../../../../core/accessorSupport/decorators/property ../../../../core/jsonMap ../../../../core/accessorSupport/decorators/subclass ../../../../core/urlUtils ../../../../core/uuid ../../../../portal/support/resourceExtension ../../../../core/Evented ../../../../core/HandleOwner".split(" "),function(d,e,a,l,m,n,p,f,q,r,t,g,h){a=function(c){function b(){return c.apply(this,
+arguments)||this}d._inheritsLoose(b,c);b.prototype.onFeature=function(k){this.emit("feature",k)};return b}(g.EventedMixin(h.HandleOwner));return a=e.__decorate([f.subclass("esri.layers.graphics.sources.connections.StreamConnection")],a)});

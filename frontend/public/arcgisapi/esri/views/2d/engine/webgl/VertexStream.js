@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../webgl/Program ../../../webgl/BufferObject ../../../webgl/Texture ../../../webgl/VertexArrayObject ../../../webgl/Renderbuffer ../../../webgl/FramebufferObject ../../../webgl/ProgramCache ../../../webgl/RenderingContext ../../../webgl/ShaderCompiler".split(" "),function(g,d,h,e,k,l,m,n,p){return function(){function c(b,f){this.rctx=b;this._vertexBuffer=d.createVertex(b,35044,new Uint16Array(f));this._vao=new e(b,{a_position:0},{geometry:[{name:"a_position",count:2,type:5122,offset:0,
+stride:4,normalized:!1}]},{geometry:this._vertexBuffer})}var a=c.prototype;a.bind=function(){this._vao.bind()};a.unbind=function(){this._vao.unbind()};a.dispose=function(){this._vao.dispose(!1);this._vertexBuffer.dispose()};a.draw=function(){this.rctx.bindVAO(this._vao);this.rctx.drawArrays(5,0,4)};return c}()});

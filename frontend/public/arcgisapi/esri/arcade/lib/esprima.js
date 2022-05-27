@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./syntax","./comment-handler","./parser","./tokenizer"],function(e,n,p,q,r){function h(b,a,d){let c=null;const l=(f,k)=>{d&&d(f,k);c&&c.visit(f,k)};let m="function"===typeof d?l:null,g=!1;if(a){g="boolean"===typeof a.comment&&a.comment;const f="boolean"===typeof a.attachComment&&a.attachComment;if(g||f)c=new p.CommentHandler,c.attach=f,a.comment=!0,m=l}b=new q.Parser(b,a,m);a=b.parseScript();g&&c&&(a.comments=c.comments);b.config.tokens&&(a.tokens=b.tokens);b.config.tolerant&&(a.errors=
+b.errorHandler.errors);return a}e.Syntax=n.Syntax;e.parse=h;e.parseScript=function(b,a,d){a=a||{};a.sourceType="script";return h(b,a,d)};e.tokenize=function(b,a,d){b=new r.Tokenizer(b,a);a=[];try{for(;;){let c=b.getNextToken();if(!c)break;d&&(c=d(c));a.push(c)}}catch(c){b.errorHandler.tolerate(c)}b.errorHandler.tolerant&&(a.errors=b.errors());return a};e.version="4.0.0-dev";Object.defineProperty(e,"__esModule",{value:!0})});

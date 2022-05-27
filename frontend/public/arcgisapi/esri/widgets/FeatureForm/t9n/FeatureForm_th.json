@@ -1,0 +1,1 @@
+{"widgetLabel":"ฟีเจอร์ฟอร์ม","empty":"- ว่างเปล่า -","validationErrors":{"cannotBeNull":"โปรดกรอกค่า","outsideRange":"ค่าควรอยู่ระหว่าง {min} และ {max}","invalidCodedValue":"ค่าควรเป็นหนึ่งในค่าที่แสดงในรายการ","invalidType":"ไม่ใช่ค่าที่ถูกต้อง","tooShort":"ฟิลด์นี้ต้องการอย่างน้อย {min} อักขระ"}}

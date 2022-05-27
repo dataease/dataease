@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/decorators/property ../../core/accessorSupport/decorators/cast ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor ./FieldConfig".split(" "),function(h,c,b,p,d,k,q,l,r,t,u,m,n){b=function(g){function e(a){a=g.call(this,a)||this;a.description=null;a.fieldConfig=null;
+a.label=null;a.state="expanded";a.visibilityExpression=null;return a}h._inheritsLoose(e,g);e.prototype.castFieldConfig=function(a){return a?a.map(f=>f.declaredClass?f:new n(f)):null};return e}(m);c.__decorate([d.property()],b.prototype,"description",void 0);c.__decorate([d.property()],b.prototype,"fieldConfig",void 0);c.__decorate([k.cast("fieldConfig")],b.prototype,"castFieldConfig",null);c.__decorate([d.property()],b.prototype,"label",void 0);c.__decorate([d.property()],b.prototype,"state",void 0);
+c.__decorate([d.property()],b.prototype,"visibilityExpression",void 0);return b=c.__decorate([l.subclass("esri.widgets.FeatureForm.FieldGroupConfig")],b)});

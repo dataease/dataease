@@ -1,0 +1,2 @@
+//>>built
+define({redLabel:"r",greenLabel:"g",blueLabel:"b",hueLabel:"g.",saturationLabel:"s",valueLabel:"jas.",degLabel:"\u00b0",hexLabel:"szesnastkowe",huePickerTitle:"Selektor barwy",saturationPickerTitle:"Selektor nasycenia"});

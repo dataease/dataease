@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(m){function*p(b,d,e){let a=0;for(;a<=b.length;){var c=b.indexOf(d,a);c=b.substring(a,-1<c?c:void 0);a+=c.length+1;if(!e||c.trim())yield c}}function q(b,d){return p(b,d,!1)}const t=/^\s*"([\S\s]*)"\s*$/,u=/""/g,v=[","," ",";","|","\t"];m.inferDelimiter=function(b){b=b.trim();let d=0,e="";for(const a of v){const c=b.split(a).length;c>d&&(d=c,e=a)}return""===e?null:e};m.parseRows=function*(b,d,e){var a="";let c="";var k=0,f=[];a:for(;;){const {value:w,done:x}=b.next();if(x)break;
+var n=q(w,e);b:for(;;){const {value:r,done:y}=n.next();if(y)break b;a+=c+r;c="";var l=void 0;var g=r;var h=0;for(l=g.indexOf('"',0);0<=l;)h++,l=g.indexOf('"',l+1);g=h;k+=g;if(0===k%2){if(0<k)if(a=t.exec(a))f.push(a[1].replace(u,'"'));else{f=[];a="";k=0;continue a}else f.push(a);a="";k=0}else c=e}if(0===k){n=d;g={};l=n.length;for(h=0;h<l;h++)g[n[h]]=f[h];f=g;yield f;f=[]}else c="\n"}};m.readRowParts=q;m.readRows=function(b){const d=b.includes("\r\n")?"\r\n":"\n";return p(b,d,!0)};Object.defineProperty(m,
+"__esModule",{value:!0})});

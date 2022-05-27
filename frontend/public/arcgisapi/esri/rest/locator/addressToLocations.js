@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../request ../utils ./utils ../../tasks/support/AddressCandidate ../../tasks/support/AddressToLocationsParameters".split(" "),function(g,l,f,h,m,n){function p({data:b}){if(!b)return[];const {candidates:a,spatialReference:c}=b;return a?a.map(e=>{if(e){var {extent:d,location:k}=e,q=d?h.isValidExtent(d):!0;if(h.isValidLocation(k)&&q)return d&&(d.spatialReference=c),k.spatialReference=c,m.fromJSON(e)}}):[]}g.addressToLocations=async function(b,a,c){a=n.from(a);b=f.parseUrl(b);const {address:e,
+...d}=a.toJSON();a=f.encode({...b.query,...e,...d,f:"json"});c=f.asValidOptions(a,c);return l(`${b.path}/findAddressCandidates`,c).then(p)};Object.defineProperty(g,"__esModule",{value:!0})});

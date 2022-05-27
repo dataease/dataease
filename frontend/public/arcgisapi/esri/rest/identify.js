@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../request ../geometry/support/normalizeUtils ./utils ../tasks/operations/identify ../tasks/support/IdentifyParameters ../tasks/support/IdentifyResult".split(" "),function(g,h,k,e,l,m,n){function p(a){a=a.data;a.results=a.results||[];const b={results:[]};b.results=a.results.map(f=>n.fromJSON(f));return b}function q(a){return a=m.from(a)}g.identify=async function(a,b,f){b=q(b);const r=b.geometry?[b.geometry]:[],d=e.parseUrl(a);d.path+="/identify";return k.normalizeCentralMeridian(r).then(c=>
+{c=l.identifyToIdentifyRESTParameters(b,{geometry:c&&c[0]});c=e.encode({...d.query,f:"json",...c});c=e.asValidOptions(c,f);return h(d.path,c).then(p)})};Object.defineProperty(g,"__esModule",{value:!0})});

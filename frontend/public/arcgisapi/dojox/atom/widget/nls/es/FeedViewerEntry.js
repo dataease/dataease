@@ -1,0 +1,2 @@
+//>>built
+define({deleteButton:"[Suprimir]"});

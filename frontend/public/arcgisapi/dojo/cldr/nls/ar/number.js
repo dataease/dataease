@@ -1,0 +1,3 @@
+//>>built
+define({decimal:".",group:",",list:";",percentSign:"\u200e%\u200e",plusSign:"\u200e+",minusSign:"\u200e-",exponential:"E",superscriptingExponent:"\u00d7",perMille:"\u2030",infinity:"\u221e",nan:"\u0644\u064a\u0633\u00a0\u0631\u0642\u0645\u064b\u0627",timeSeparator:":",decimalFormat:"#,##0.###","decimalFormat-long":"000 \u062a\u0631\u064a\u0644\u064a\u0648\u0646","decimalFormat-short":"000\u00a0\u062a\u0631\u0644\u064a\u0648",scientificFormat:"#E0",percentFormat:"#,##0%",currencyFormat:"\u00a4#,##0.00;(\u00a4#,##0.00)",
+"currencyFormat-short":"\u00a4\u00a0000\u00a0\u062a\u0631\u0644\u064a\u0648"});

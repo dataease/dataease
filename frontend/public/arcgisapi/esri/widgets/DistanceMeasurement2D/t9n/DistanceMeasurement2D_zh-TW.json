@@ -1,0 +1,1 @@
+{"widgetLabel":"距離測量","hint":"按一下地圖來放置第一個點，以開始測量","unsupported":"僅 MapView 支援 2D 距離測量。","distance":"距離","newMeasurement":"新測量","mode":"模式","modes":{"auto":"自動","planar":"平面","geodesic":"測地線"},"unit":"單位"}

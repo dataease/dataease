@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","../_base"],function(d,c){c=d.getObject("filter.integers",!0,c);d.mixin(c,{add:function(a,b){a=parseInt(a,10);b=parseInt(b,10);return isNaN(b)?a:a+b},get_digit:function(a,b){a=parseInt(a,10);b=parseInt(b,10)-1;0<=b&&(a+="",a=b<a.length?parseInt(a.charAt(b),10):0);return isNaN(a)?0:a}});return c});

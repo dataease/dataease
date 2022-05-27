@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../core/has ../../core/maybe ../FillSymbol3DLayer ../LineSymbol3D ../MeshSymbol3D ../PointSymbol3D ../PolygonSymbol3D ./defaultsJSON ./defaults".split(" "),function(b,r,e,f,g,h,k,l,c,a){const m=k.fromSimpleMarkerSymbol(a.defaultPointSymbol2D),n=g.fromSimpleLineSymbol(a.defaultPolylineSymbol2D),p=l.fromSimpleFillSymbol(a.defaultPolygonSymbol2D),q=new h({symbolLayers:[new f({material:{color:c.defaultColor},edges:{type:"solid",size:"1px",color:c.defaultOutlineColor}})]});b.getDefaultSymbol3D=
+function(d){if(e.isNone(d))return null;switch(d.type){case "mesh":return q;case "point":case "multipoint":return m;case "polyline":return n;case "polygon":case "extent":return p}return null};Object.defineProperty(b,"__esModule",{value:!0})});

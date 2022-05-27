@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/declare","./_base"],function(g,d,e){return d("dojox.geo.openlayers.Feature",null,{constructor:function(){this._layer=null;this._coordSys=e.EPSG4326},getCoordinateSystem:function(){return this._coordSys},setCoordinateSystem:function(a){this._coordSys=a},getLayer:function(){return this._layer},_setLayer:function(a){this._layer=a},render:function(){},remove:function(){},_getLocalXY:function(a){var f=a.x;a=a.y;var b=this.getLayer(),c=b.olLayer.map.getResolution();
+b=b.olLayer.getExtent();return[f/c+-b.left/c,b.top/c-a/c]}})});

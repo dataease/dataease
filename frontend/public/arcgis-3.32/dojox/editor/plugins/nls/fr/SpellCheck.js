@@ -1,2 +1,0 @@
-//>>built
-define("dojox/editor/plugins/nls/fr/SpellCheck",{widgetLabel:"V\u00e9rification orthographique par lots",unfound:"Introuvable",skip:"Ignorer",skipAll:"Ignorer tout",toDic:"Ajouter au dictionnaire",suggestions:"Suggestions",replace:"Remplacer",replaceWith:"Remplacer par",replaceAll:"Remplacer tout",cancel:"Annuler",msg:"Aucune faute d'orthographe trouv\u00e9e",iSkip:"Ignorer une fois",iSkipAll:"Ignorer chaque fois",iMsg:"Aucune suggestion orthographique"});

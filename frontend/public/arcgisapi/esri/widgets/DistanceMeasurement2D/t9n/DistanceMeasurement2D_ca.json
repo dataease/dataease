@@ -1,0 +1,1 @@
+{"widgetLabel":"Mesura de distància","hint":"Per iniciar la mesura, feu clic al mapa i col·loqueu el primer punt","unsupported":"La mesura de distància 2D només s'admet al MapView.","distance":"Distància","newMeasurement":"Mesura nova","mode":"Mode","modes":{"auto":"Automàtic","planar":"Pla","geodesic":"Geodèsic"},"unit":"Unitat"}

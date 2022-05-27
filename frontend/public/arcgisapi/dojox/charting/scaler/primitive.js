@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang"],function(e){var f=e.getObject("dojox.charting.scaler.primitive",!0);return e.mixin(f,{buildScaler:function(a,b,c,d){a==b&&(a-=.5,b+=.5);return{bounds:{lower:a,upper:b,from:a,to:b,scale:c/(b-a),span:c},scaler:f}},buildTicks:function(a,b){return{major:[],minor:[],micro:[]}},getTransformerFromModel:function(a){var b=a.bounds.from,c=a.bounds.scale;return function(d){return(d-b)*c}},getTransformerFromPlot:function(a){var b=a.bounds.from,c=a.bounds.scale;return function(d){return d/
+c+b}}})});

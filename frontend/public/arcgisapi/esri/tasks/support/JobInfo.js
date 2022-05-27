@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ./GPMessage".split(" "),function(h,c,e,n,p,d,k,l,q,r,t,a,m){e=new k.JSONMap({esriJobCancelled:"job-cancelled",esriJobCancelling:"job-cancelling",esriJobDeleted:"job-deleted",
+esriJobDeleting:"job-deleting",esriJobTimedOut:"job-timed-out",esriJobExecuting:"job-executing",esriJobFailed:"job-failed",esriJobNew:"job-new",esriJobSubmitted:"job-submitted",esriJobSucceeded:"job-succeeded",esriJobWaiting:"job-waiting"});a=function(f){function g(b){b=f.call(this,b)||this;b.jobId=null;b.jobStatus=null;b.messages=null;return b}h._inheritsLoose(g,f);return g}(a.JSONSupport);c.__decorate([d.property()],a.prototype,"jobId",void 0);c.__decorate([d.property({json:{read:e.read}})],a.prototype,
+"jobStatus",void 0);c.__decorate([d.property({type:[m]})],a.prototype,"messages",void 0);return a=c.__decorate([l.subclass("esri.tasks.support.JobInfo")],a)});

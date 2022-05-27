@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../chunks/_rollupPluginBabelHelpers","../../../../../chunks/vec3f64","../../../../../chunks/vec3","../../../../../chunks/vec3f32"],function(g,l,m,b,h){let n=function(){function e(a){this._low=h.create();this._high=h.create();a&&this.set(a)}var c=e.prototype;c.set=function(a){const d=this._low,f=this._high;b.copy(d,a);b.sub(f,a,d)};c.setElements=function(a,d,f){b.set(k,a,d,f);this.set(k)};c.get=function(a){return b.add(a,this._low,this._high)};c.getLowScaled=function(a){return b.scale(a,
+this._low,1)};l._createClass(e,[{key:"low",get:function(){return this._low}},{key:"high",get:function(){return this._high}}]);return e}();const k=m.create();g.TwoVectorPosition=n;Object.defineProperty(g,"__esModule",{value:!0})});

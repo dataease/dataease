@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ./renderers/Renderer ./renderers/ClassBreaksRenderer ./renderers/UniqueValueRenderer ./renderers/DictionaryRenderer ./renderers/DotDensityRenderer ./renderers/HeatmapRenderer ./renderers/SimpleRenderer ./renderers/support/types ./renderers/support/jsonUtils".split(" "),function(a,c,e,f,g,h,k,l,d,b){a.BaseRenderer=c;a.ClassBreaksRenderer=e;a.UniqueValueRenderer=f;a.DictionaryRenderer=g;a.DotDensityRenderer=h;a.HeatmapRenderer=k;a.SimpleRenderer=l;a.rendererTypes=d.rendererTypes;a.webSceneRendererTypes=
+d.webSceneRendererTypes;a.fromJSON=b.fromJSON;a.read=b.read;a.write=b.write;a.isRenderer=function(m){return m instanceof c};Object.defineProperty(a,"__esModule",{value:!0})});

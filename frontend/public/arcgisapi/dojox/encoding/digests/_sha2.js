@@ -1,0 +1,3 @@
+//>>built
+define([],function(){return function(a,e,k,g){function h(b,c){c=c||a.outputTypes.Base64;b=a.digest(a.toWord(b),8*b.length,g,e);switch(c){case a.outputTypes.Raw:return b;case a.outputTypes.Hex:return a.toHex(b);case a.outputTypes.String:return a._toString(b);default:return a.toBase64(b)}}h.hmac=function(b,c,l){l=l||a.outputTypes.Base64;var f=a.toWord(c);16<f.length&&(f=a.digest(f,8*c.length,g,e));var m=k/32,n=Array(m);c=Array(m);for(var d=0;d<m;d++)n[d]=f[d]^909522486,c[d]=f[d]^1549556828;b=a.digest(n.concat(a.toWord(b)),
+k+8*b.length,g,e);b=a.digest(c.concat(b),k+e,g,e);switch(l){case a.outputTypes.Raw:return b;case a.outputTypes.Hex:return a.toHex(b);case a.outputTypes.String:return a._toString(b);default:return a.toBase64(b)}};h._hmac=h.hmac;return h}});

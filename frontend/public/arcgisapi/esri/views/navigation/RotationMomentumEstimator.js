@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../chunks/_rollupPluginBabelHelpers","./MomentumEstimator"],function(g,h,c){c=function(d){function e(a=3,f=.01,b=.95,k=12){return d.call(this,a,f,b,k)||this}h._inheritsLoose(e,d);e.prototype.add=function(a,f){if(this.value.hasLastValue){const b=this.value.lastValue;for(a-=b;a>Math.PI;)a-=2*Math.PI;for(;a<-Math.PI;)a+=2*Math.PI;a=b+a}d.prototype.add.call(this,a,f)};return e}(c.MomentumEstimator);g.RotationMomentumEstimator=c;Object.defineProperty(g,"__esModule",{value:!0})});

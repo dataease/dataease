@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/_rollupPluginBabelHelpers","../../../../core/has","../../../input/InputHandler"],function(g,m,h,n){h=function(k){function f(c,b,d){var a=k.call(this,!0)||this;a.view=c;a.keys=b;a._keysToZoomAction={};a.registerIncoming("key-down",d,e=>a._handleKeyDown(e));b.zoomIn.forEach(e=>a._keysToZoomAction[e]=0);b.zoomOut.forEach(e=>a._keysToZoomAction[e]=1);return a}m._inheritsLoose(f,k);var l=f.prototype;l._handleKeyDown=function(c){this._handleKey(c)};l._handleKey=function(c){var b=
+c.modifiers;if(!(0<b.size)||b.has("Shift"))if({key:b}=c.data,b in this._keysToZoomAction){b=this._keysToZoomAction[b];var {mapViewNavigation:d}=this.view,a=null;switch(b){case 0:a=d.zoomIn();break;case 1:a=d.zoomOut();break;default:return}d.begin();a.then(()=>d.end());c.stopPropagation()}};return f}(n.InputHandler);g.KeyZoom=h;Object.defineProperty(g,"__esModule",{value:!0})});

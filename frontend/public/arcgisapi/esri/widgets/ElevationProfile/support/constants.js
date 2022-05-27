@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(a){var b=a.ElevationProfileState||(a.ElevationProfileState={});b.Disabled="disabled";b.Ready="ready";b.Creating="creating";b.Created="created";b.Selecting="selecting";b.Selected="selected";a.DEFAULT_DEM_RESOLUTION=.1;a.DEFAULT_ELEVATION_PROFILE_QUERY_OPTIONS={noDataValue:-5E5,demResolution:"auto",maximumAutoTileRequests:150};a.DELAY_AFTER_PREVIEW_MILLIS=500;a.FORMAT_PRECISION=1;a.HOVERED_POINTS_STYLE_3D={size:12,outlineSize:2,outlineColor:[1,1,1,1]};a.INPUT_LINE_SELECTED_STYLE_3D=
+{width:6,outlineSize:4,color:[1,1,1,1],outlineColor:[1,.5,0,1],falloff:0};a.MAX_SAMPLES=2E3;a.NOT_AVAILABLE=" \u2015 ";a.PORTRAIT_MODE_PIXEL_BREAKPOINT=400;a.PROFILE_LINES_STYLE_3D={width:3,outlineSize:0,falloff:0,outlineColor:[1,1,1,0]};a.UPDATE_THROTTLE_MILLIS=80;Object.defineProperty(a,"__esModule",{value:!0})});

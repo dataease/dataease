@@ -1,3 +1,0 @@
-//>>built
-define("dgrid/util/mouse",["dojo/_base/lang","dojo/on","dojo/dom","dojo/query"],function(b,d,e){function a(a,b){return function(c,f){return d(c,a+":"+b,function(a){if(!e.isDescendant(a.relatedTarget,this))return f.call(this,a)})}}var c={enterRow:a(".dgrid-content .dgrid-row","mouseover"),enterCell:a(".dgrid-content .dgrid-cell","mouseover"),enterHeaderCell:a(".dgrid-header .dgrid-cell","mouseover"),leaveRow:a(".dgrid-content .dgrid-row","mouseout"),leaveCell:a(".dgrid-content .dgrid-cell","mouseout"),
-leaveHeaderCell:a(".dgrid-header .dgrid-cell","mouseout"),createDelegatingHandler:a};b.getObject("dgrid.util.mouse",!0);b.mixin(dgrid.util.mouse,c);return c});

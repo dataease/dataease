@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../core/has ../../../../core/maybe ../../../../core/Logger ../../../../core/mathUtils ../../../../chunks/vec3f64 ../../../../chunks/vec3 ../mathUtils ../../../../chunks/mat4 ../../../../core/ObjectStack ../stack ../../../../chunks/vector ../../../../chunks/ray ../../../../chunks/sphere".split(" "),function(a,c,d,e,f,g,h,k,l,m,n,p,q,b){a.altitudeAt=b.altitudeAt;a.angleToSilhouette=b.angleToSilhouette;a.axisAt=b.axisAt;a.closestPoint=b.closestPoint;a.closestPointOnSilhouette=
+b.closestPointOnSilhouette;a.copy=b.copy;a.create=b.create;a.distanceToSilhouette=b.distanceToSilhouette;a.elevate=b.elevate;a.fromValues=b.fromValues;a.intersectRay=b.intersectRay;a.intersectRayClosestSilhouette=b.intersectRayClosestSilhouette;a.intersectScreen=b.intersectScreen;a.intersectsRay=b.intersectsRay;a.projectPoint=b.projectPoint;a.setAltitudeAt=b.setAltitudeAt;a.setExtent=b.setExtent;a.wrap=b.wrap;Object.defineProperty(a,"__esModule",{value:!0})});

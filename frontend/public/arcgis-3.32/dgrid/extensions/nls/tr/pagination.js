@@ -1,2 +1,0 @@
-//>>built
-define("dgrid/extensions/nls/tr/pagination",{status:"${start} - ${end} / ${total} sonu\u00e7lar",gotoFirst:"\u0130lk sayfaya git",gotoNext:"Sonraki sayfaya git",gotoPrev:"\u00d6nceki sayfaya git",gotoLast:"Son sayfaya git",gotoPage:"Sayfaya git",jumpPage:"Sayfaya atla"});

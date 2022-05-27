@@ -1,0 +1,1 @@
+{"widgetLabel":"スライス","cancel":"キャンセル","hint":"シーン内のサーフェスをクリックおよびドラッグしてスライスを開始します。","excludeHint":"ビュー内のレイヤーを選択してスライスから除外","unsupported":"MapView でスライスはサポートされていません。","multipleDisabled":"一度にアクティブにできるスライスは 1 つだけです","newSlice":"新しいスライス","excludedLayers":"除外されたレイヤー","pickLayer":"ビューからレイヤーを選択","excludeLayer":"スライスからレイヤーを除外","includeLayer":"レイヤーをスライスに含める","ground":"地表"}

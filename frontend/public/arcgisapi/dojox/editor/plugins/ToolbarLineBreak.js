@@ -1,0 +1,3 @@
+//>>built
+define("dojo dijit dojox dijit/_Widget dijit/_TemplatedMixin dijit/_editor/_Plugin dojo/_base/declare".split(" "),function(b,e,m,f,g,h,k){var c=k("dojox.editor.plugins.ToolbarLineBreak",[f,g],{templateString:"\x3cspan class\x3d'dijit dijitReset'\x3e\x3cbr\x3e\x3c/span\x3e",postCreate:function(){b.setSelectable(this.domNode,!1)},isFocusable:function(){return!1}});b.subscribe(e._scopeName+".Editor.getPlugin",null,function(a){if(!a.plugin){var d=a.args.name.toLowerCase();if("||"===d||"toolbarlinebreak"===
+d)a.plugin=new h({button:new c,setEditor:function(l){this.editor=l}})}});return c});

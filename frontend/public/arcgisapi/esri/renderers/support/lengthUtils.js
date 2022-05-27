@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../geometry/support/Ellipsoid","../../core/unitUtils"],function(c,b,a){b={inches:a.convertUnit(1,"meters","inches"),feet:a.convertUnit(1,"meters","feet"),"us-feet":a.convertUnit(1,"meters","us-feet"),yards:a.convertUnit(1,"meters","yards"),miles:a.convertUnit(1,"meters","miles"),"nautical-miles":a.convertUnit(1,"meters","nautical-miles"),millimeters:a.convertUnit(1,"meters","millimeters"),centimeters:a.convertUnit(1,"meters","centimeters"),decimeters:a.convertUnit(1,"meters",
+"decimeters"),meters:a.convertUnit(1,"meters","meters"),kilometers:a.convertUnit(1,"meters","kilometers"),"decimal-degrees":1/a.lengthToDegrees(1,"meters",b.earth.radius)};c.meterIn=b;Object.defineProperty(c,"__esModule",{value:!0})});

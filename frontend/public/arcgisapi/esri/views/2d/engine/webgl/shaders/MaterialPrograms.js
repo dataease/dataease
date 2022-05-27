@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../webgl/Program ../../../../webgl/BufferObject ../../../../webgl/Texture ../../../../webgl/VertexArrayObject ../../../../webgl/Renderbuffer ../../../../webgl/FramebufferObject ../../../../webgl/programUtils ../../../../webgl/ProgramCache ../../../../webgl/RenderingContext ../../../../webgl/ShaderCompiler ./sources/resolver".split(" "),function(h,n,p,q,r,t,u,m,v,w,x,k){const l=c=>{const d={};for(const f in c){{let a=void 0;var b=f;a=""+b[0].toUpperCase();for(let e=1;e<b.length;e++){const g=
+b[e];g===g.toUpperCase()?(a+="_",a+=g):a+=g.toUpperCase()}b=a}d[b]=c[f]}return m.glslifyDefineMap(d)};h.createProgramTemplate=(c,d,b)=>{const f=c+c.substring(c.lastIndexOf("/")),a=d+d.substring(d.lastIndexOf("/"));return{name,attributes:b,shaders:e=>({vertexShader:l(e)+k.resolveIncludes(`${f}.vert`),fragmentShader:l(e)+k.resolveIncludes(`${a}.frag`)})}};Object.defineProperty(h,"__esModule",{value:!0})});

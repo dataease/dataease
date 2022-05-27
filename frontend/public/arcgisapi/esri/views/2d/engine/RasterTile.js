@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../chunks/_rollupPluginBabelHelpers","./webgl/TiledDisplayObject","./RasterBitmap"],function(h,k,e,m){e=function(f){function d(a,g,l,n=null){var b=f.call(this,a,g,l)||this;b.bitmap=new m.RasterBitmap(n,null,null);b.bitmap.coordScale=l;b.bitmap.once("isReady",()=>b.ready());return b}k._inheritsLoose(d,f);var c=d.prototype;c.getMemoryUsage=function(){return this.bitmap.getMemoryUsage()};c.setTransform=function(a,g){f.prototype.setTransform.call(this,a,g);this.bitmap.transforms.dvs=
+this.transforms.dvs};c.release=function(){this.destroy();this.stage=this.bitmap=null;return!0};c.onAttach=function(){this.bitmap.stage=this.stage};c.onDetach=function(){this.bitmap.stage=null};k._createClass(d,[{key:"stencilRef",set:function(a){this.bitmap.stencilRef=a},get:function(){return this.bitmap.stencilRef}}]);return d}(e.TiledDisplayObject);h.RasterTile=e;Object.defineProperty(h,"__esModule",{value:!0})});

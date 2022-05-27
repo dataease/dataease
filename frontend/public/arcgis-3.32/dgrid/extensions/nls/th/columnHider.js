@@ -1,2 +1,0 @@
-//>>built
-define("dgrid/extensions/nls/th/columnHider",{popupLabel:"\u0e41\u0e2a\u0e14\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e0b\u0e48\u0e2d\u0e19\u0e04\u0e2d\u0e25\u0e31\u0e21\u0e19\u0e4c"});

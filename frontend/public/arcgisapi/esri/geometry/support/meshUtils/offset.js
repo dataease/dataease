@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../chunks/vec3f64 ../../../chunks/vec3 ../../projectionEllipsoid ../../projection ../../../chunks/mat3f64 ../../../chunks/mat4f64 ../../../chunks/mat3 ./projection".split(" "),function(l,u,v,w,x,y,z,A,e){function m(a,h){if(a)for(let b=0;b<a.length;b+=3)for(let c=0;3>c;c++)a[b+c]+=h[c]}const n=u.create(),p=z.create(),q=y.create();l.offset=function(a,h,b){if(a.vertexAttributes&&a.vertexAttributes.position){var c=a.spatialReference;if(c.isWGS84||c.isWebMercator&&(!b||!1!==b.geographic)){{b=
+a.spatialReference;c=a.vertexAttributes.position;const f=a.vertexAttributes.normal,g=a.vertexAttributes.tangent,d=new Float64Array(c.length),r=new Float32Array(f?f.length:0),t=new Float32Array(g?g.length:0),k=a.extent.center;x.computeLinearTransformation(b,[k.x,k.y,k.z],p,w.getSphericalPCPF(b));A.fromMat4(q,p);v.transformMat3(n,h,q);e.projectToECEF(c,b,d);f&&e.projectNormalToECEF(f,c,d,b,r);g&&e.projectTangentToECEF(g,c,d,b,t);m(d,n);e.projectFromECEF(d,c,b);f&&e.projectNormalFromECEF(r,c,d,b,f);
+g&&e.projectTangentFromECEF(t,c,d,b,g);a.clearCache()}}else m(a.vertexAttributes.position,h),a.clearCache()}};Object.defineProperty(l,"__esModule",{value:!0})});
