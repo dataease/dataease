@@ -308,10 +308,10 @@ export default {
       return this.outStyle.width * this.outStyle.height
     },
     resultMode() {
-      return this.canvasStyleData.panel.resultMode
+      return this.canvasStyleData.panel && this.canvasStyleData.panel.resultMode || null
     },
     resultCount() {
-      return this.canvasStyleData.panel.resultCount
+      return this.canvasStyleData.panel && this.canvasStyleData.panel.resultCount || null
     },
     innerPadding() {
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0

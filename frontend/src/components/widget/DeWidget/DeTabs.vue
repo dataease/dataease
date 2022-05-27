@@ -79,6 +79,7 @@
             :element="item.content"
             :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
             :out-style="outStyle"
+            :canvas-style-data="canvasStyleData"
           />
         </div>
 
@@ -233,7 +234,8 @@ export default {
     ...mapState([
       'componentData',
       'curComponent',
-      'mobileLayoutStatus'
+      'mobileLayoutStatus',
+      'canvasStyleData'
     ]),
     fontColor() {
       return this.element && this.element.style && this.element.style.headFontColor || 'none'
