@@ -2,22 +2,19 @@ package io.dataease.service.sys.log;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.write.metadata.WriteSheet;
+
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CustomCellWriteUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.SysLogGridDTO;
 import io.dataease.dto.log.FolderItem;
-import io.dataease.dto.log.LogExcel;
+import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtSysLogMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
@@ -26,10 +23,12 @@ import io.dataease.plugins.common.base.mapper.SysLogMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,8 +56,8 @@ public class LogService {
     // 授权相关操作
     private static Integer[] AUTH_OPERATE = {6, 7};
 
-    // 授权相关资源 数据源 仪表板 数据集
-    private static Integer[] AUTH_SOURCE = {1, 2, 3};
+    // 授权相关资源 数据源 仪表板 数据集 菜单
+    private static Integer[] AUTH_SOURCE = {1, 2, 3, 11};
 
 
 
@@ -212,33 +211,74 @@ public class LogService {
         sysLogMapper.insert(sysLogWithBLOBs);
     }
 
-    public void exportExcel(BaseGridRequest request) throws Exception{
+
+
+    public void exportExcel(BaseGridRequest request) throws Exception {
         request = detailRequest(request);
         HttpServletResponse response = ServletUtils.response();
+        OutputStream outputStream = response.getOutputStream();
+        try {
+            GridExample gridExample = request.convertExample();
+            List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
+            List<String[]> details = lists.stream().map(item -> {
+                String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
+                String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());
+                String[] row = new String[4];
+                row[0] = Translator.get(operateTypeName) + " " + Translator.get(sourceTypeName);
+                row[1] = logManager.detailInfo(item);
+                row[2] = item.getNickName();
+                row[3] = DateUtil.formatDateTime(new Date(item.getTime()));
+                return row;
+            }).collect(Collectors.toList());
+            String[] headArr = {"操作类型", "详情", "用户", "时间"};
+            details.add(0, headArr);
 
-        GridExample gridExample = request.convertExample();
-        List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
-        List<LogExcel> excels = lists.stream().map(item -> {
-            LogExcel logExcel = new LogExcel();
-            String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
-            String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());
-            logExcel.setOptype(Translator.get(operateTypeName) + " " + Translator.get(sourceTypeName));
-            logExcel.setDetail(logManager.detailInfo(item));
-            logExcel.setUser(item.getNickName());
-            logExcel.setTime(DateUtil.formatDateTime(new Date(item.getTime())));
-            return logExcel;
-        }).collect(Collectors.toList());
-        // 导出时候会出现中⽂⽆法识别问题，需要转码
-        String name = "log.xlsx";
-        String fileName = new String(name.getBytes("gb2312"),"ISO8859-1");
-        response.setContentType("application/vnd.ms-excel;chartset=utf-8");
-        response.setHeader("Content-Disposition","attachment;filename=" + fileName);
-        //调⽤⼯具类
-        ExcelWriter writer = EasyExcel.write(response.getOutputStream()).build();
-        WriteSheet sheet = EasyExcel.writerSheet(0,"sheet").head(LogExcel.class).registerWriteHandler(new CustomCellWriteUtil()).build();
-        writer.write(excels,sheet);
-        writer.finish(); // 使⽤完毕之后要关闭
 
+            HSSFWorkbook wb = new HSSFWorkbook();
+            //明细sheet
+            HSSFSheet detailsSheet = wb.createSheet("数据");
+
+            //给单元格设置样式
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
+            //设置字体大小
+            font.setFontHeightInPoints((short) 12);
+            //设置字体加粗
+            font.setBold(true);
+            //给字体设置样式
+            cellStyle.setFont(font);
+            //设置单元格背景颜色
+            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            //设置单元格填充样式(使用纯色背景颜色填充)
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            if (CollectionUtils.isNotEmpty(details)) {
+                for (int i = 0; i < details.size(); i++) {
+                    HSSFRow row = detailsSheet.createRow(i);
+                    String[] rowData = details.get(i);
+                    if (rowData != null) {
+                        for (int j = 0; j < rowData.length; j++) {
+                            HSSFCell cell = row.createCell(j);
+                            cell.setCellValue(rowData[j]);
+                            if (i == 0) {// 头部
+                                cell.setCellStyle(cellStyle);
+                                //设置列的宽度
+                                detailsSheet.setColumnWidth(j, 255 * 20);
+                            }
+                        }
+                    }
+                }
+            }
+
+            response.setContentType("application/vnd.ms-excel");
+            //文件名称
+            response.setHeader("Content-disposition", "attachment;filename=log.xlsx");
+            wb.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
     }
 
 
