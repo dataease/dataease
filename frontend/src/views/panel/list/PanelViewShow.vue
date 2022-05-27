@@ -97,6 +97,7 @@
               :active-tab="activeTab"
               :in-screen="!fullscreen"
               :show-type="'width'"
+              :panel-info="panelInfo"
               :screen-shot="dataLoading"
             />
           </fullscreen>

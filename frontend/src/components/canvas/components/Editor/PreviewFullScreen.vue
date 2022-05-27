@@ -5,6 +5,7 @@
         v-if="fullscreen"
         :component-data="componentData"
         :canvas-style-data="canvasStyleData"
+        :panel-info="panelInfo"
         :in-screen="!fullscreen"
       />
     </fullscreen>
@@ -20,6 +21,9 @@ import { mapState } from 'vuex'
 export default {
   components: { Preview },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     ...mapState([
       'canvasStyleData',
       'componentData'

@@ -5,6 +5,7 @@
       :component-data="componentData"
       :canvas-style-data="canvasStyleData"
       :back-screen-shot="backScreenShot"
+      :panel-info="panelInfo"
       @mainHeightChange="mainHeightChange"
     />
   </div>
@@ -35,6 +36,9 @@ export default {
       } else {
         return { height: '100vh!important' }
       }
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     },
     ...mapState([
       'canvasStyleData',

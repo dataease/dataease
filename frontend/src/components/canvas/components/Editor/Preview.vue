@@ -136,6 +136,10 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    panelInfo: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -176,14 +180,13 @@ export default {
     },
     showUnpublishedArea() {
       // return this.panelInfo.status === 'unpublished'
-      if (this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') {
+      if (this.panelInfo && this.panelInfo.showType === 'view') {
+        return false
+      } else if ((this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') || this.showPosition.includes('multiplexing')) {
         return this.panelInfo.status === 'unpublished' && !hasDataPermission('manage', this.panelInfo.privileges)
       } else {
         return this.panelInfo.status === 'unpublished'
       }
-    },
-    panelInfo() {
-      return this.$store.state.panel.panelInfo
     },
     showExportImgButton() {
       return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
