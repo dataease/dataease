@@ -140,8 +140,24 @@ export default {
       }
       this.show = false
       this.$nextTick(() => {
+        // this.value = value ? [] : null
+
         this.show = true
         this.$nextTick(() => {
+          const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+          if (value) {
+            if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') {
+              this.value = []
+            } else {
+              this.value = defaultV.split(',')
+            }
+          } else {
+            if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') {
+              this.value = ''
+            } else {
+              this.value = defaultV.split(',')[0]
+            }
+          }
           this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
         })
       })
