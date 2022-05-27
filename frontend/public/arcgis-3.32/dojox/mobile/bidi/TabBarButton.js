@@ -1,2 +1,0 @@
-//>>built
-define("dojox/mobile/bidi/TabBarButton",["dojo/_base/declare","./common","dojo/dom-class"],function(b,c,a){return b(null,{_setBadgeAttr:function(a){this.inherited(arguments);this.badgeObj.setTextDir(this.textDir)},_setIcon:function(b,c){this.inherited(arguments);this.iconDivNode&&!this.isLeftToRight()&&(a.remove(this.iconDivNode,"mblTabBarButtonIconArea"),a.add(this.iconDivNode,"mblTabBarButtonIconAreaRtl"))}})});

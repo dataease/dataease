@@ -333,7 +333,7 @@ export const TYPE_CONFIGS = [
     value: 'diagram',
     title: 'chart.heat_map',
     icon: 'diagram'
-  }
+  },
   /* 下面是highcharts图表类型 */
   // highcharts
   {

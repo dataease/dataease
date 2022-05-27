@@ -1,2 +1,0 @@
-//>>built
-define("dojox/mobile/uacss",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/window","./sniff"],function(c,d,b,a){b=b.doc.documentElement;b.className=d.trim(b.className+" "+[a("bb")?"dj_bb":"",a("android")?"dj_android":"",a("ios")?"dj_ios":"",6<=a("ios")?"dj_ios6":"",a("ios")?"dj_iphone":"",a("ipod")?"dj_ipod":"",a("ipad")?"dj_ipad":"",a("ie")?"dj_ie":""].join(" ").replace(/ +/g," "));return c});

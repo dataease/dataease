@@ -1497,8 +1497,16 @@ export default {
 
   ::-webkit-scrollbar {
     width: 2px !important;
-    height: 10px !important;
+    height: 14px !important;
+    // background: #999;
   }
+
+::-webkit-scrollbar-thumb {
+  // width: 10px;
+  // height: 10px;
+  background: #999;
+  border-radius: 4px;
+}
 
   .tools-window-main {
     width: 300px;
