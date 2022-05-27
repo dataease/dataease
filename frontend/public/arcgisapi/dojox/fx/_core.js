@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","dojo/_base/array","./_base"],function(k,e,l){var n=function(c,f){this.start=c;this.end=f;var g=k.isArray(c),d=g?[]:f-c;g?(e.forEach(this.start,function(a,b){d[b]=this.end[b]-a},this),this.getValue=function(a){var b=[];e.forEach(this.start,function(m,h){b[h]=d[h]*a+m},this);return b}):this.getValue=function(a){return d*a+this.start}};return l._Line=n});

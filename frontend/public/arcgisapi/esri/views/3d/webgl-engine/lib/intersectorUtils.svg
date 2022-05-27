@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="358.131px" height="205.837px" viewBox="0 0 358.131 205.837" enable-background="new 0 0 358.131 205.837"
+	 xml:space="preserve">
+<circle fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" cx="215.758" cy="120.717" r="66.667"/>
+<text transform="matrix(1 0 0 1 281.7227 155.3633)" font-family="'MyriadPro-Regular'" font-size="6">earth radius</text>
+<text transform="matrix(1 0 0 1 189.9106 104.9185)" font-family="'MyriadPro-Regular'" font-size="6">world z</text>
+<g>
+	<g>
+		<g>
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="215.757" y1="120.717" x2="215.757" y2="104.72"/>
+			<g>
+				<polygon points="218.236,105.449 215.744,101.131 213.25,105.449 				"/>
+			</g>
+		</g>
+	</g>
+	<circle stroke="#000000" stroke-miterlimit="10" cx="215.757" cy="119.157" r="1.56"/>
+	<g>
+		<g>
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="217.317" y1="119.157" x2="230.652" y2="119.157"/>
+			<g>
+				<polygon points="229.922,121.636 234.24,119.144 229.922,116.65 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<text transform="matrix(1 0 0 1 240.1548 120.7173)" font-family="'MyriadPro-Regular'" font-size="6">world x</text>
+<g>
+	
+		<rect x="271.779" y="49.442" transform="matrix(0.7071 0.7071 -0.7071 0.7071 129.4706 -189.1521)" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" width="42.565" height="24.534"/>
+	<g>
+		<g>
+			<g>
+				<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="291.736" y1="62.65" x2="303.048" y2="51.338"/>
+				<g>
+					<polygon points="304.285,53.607 305.575,48.792 300.759,50.082 					"/>
+				</g>
+			</g>
+		</g>
+		<circle stroke="#000000" stroke-miterlimit="10" cx="292.839" cy="61.547" r="1.56"/>
+		<g>
+			<g>
+				<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="293.942" y1="62.65" x2="303.371" y2="72.079"/>
+				<g>
+					<polygon points="301.102,73.316 305.917,74.606 304.627,69.791 					"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+<text transform="matrix(1 0 0 1 308.4932 85.4316)" font-family="'MyriadPro-Regular'" font-size="6">i3s component</text>
+<g>
+	<rect x="194.475" y="15.922" fill="#FFFFFF" width="42.565" height="24.534"/>
+	<g>
+		<polyline fill="none" stroke="#000000" stroke-miterlimit="10" points="237.04,38.956 237.04,40.456 235.54,40.456 		"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3.0435,3.0435" x1="232.496" y1="40.456" x2="197.497" y2="40.456"/>
+		<polyline fill="none" stroke="#000000" stroke-miterlimit="10" points="195.975,40.456 194.475,40.456 194.475,38.956 		"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3.0762,3.0762" x1="194.475" y1="35.88" x2="194.475" y2="18.96"/>
+		<polyline fill="none" stroke="#000000" stroke-miterlimit="10" points="194.475,17.422 194.475,15.922 195.975,15.922 		"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3.0435,3.0435" x1="199.018" y1="15.922" x2="234.018" y2="15.922"/>
+		<polyline fill="none" stroke="#000000" stroke-miterlimit="10" points="235.54,15.922 237.04,15.922 237.04,17.422 		"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3.0762,3.0762" x1="237.04" y1="20.499" x2="237.04" y2="37.418"/>
+	</g>
+</g>
+<g>
+	<g>
+		<g>
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="215.485" y1="29.792" x2="215.485" y2="13.795"/>
+			<g>
+				<polygon points="217.964,14.525 215.472,10.207 212.979,14.524 				"/>
+			</g>
+		</g>
+	</g>
+	<circle stroke="#000000" stroke-miterlimit="10" cx="215.485" cy="28.233" r="1.56"/>
+	<g>
+		<g>
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="217.045" y1="28.233" x2="230.379" y2="28.233"/>
+			<g>
+				<polygon points="229.65,30.712 233.967,28.219 229.65,25.726 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<text transform="matrix(0.9982 0 0 1 7.3267 20.6519)"><tspan x="0" y="0" fill="#ED1C24" font-family="'MyriadPro-Regular'" font-size="6">transformation at which global offsets are computed is not the true</tspan><tspan x="0" y="7.2" fill="#ED1C24" font-family="'MyriadPro-Regular'" font-size="6">i3s world transformation. The component is moved along world z to</tspan><tspan x="0" y="14.4" fill="#ED1C24" font-family="'MyriadPro-Regular'" font-size="6">the right elevation of the components local origin.</tspan></text>
+<g>
+	<g>
+		<line fill="none" stroke="#ED1C24" stroke-miterlimit="10" x1="179.261" y1="26.672" x2="186.314" y2="26.672"/>
+		<g>
+			<polygon fill="#ED1C24" points="185.584,29.151 189.902,26.658 185.584,24.165 			"/>
+		</g>
+	</g>
+</g>
+<text transform="matrix(1 0 0 1 167.3262 44.271)" font-family="'MyriadPro-Regular'" font-size="6">world min</text>
+<text transform="matrix(1 0 0 1 240.1548 16.7446)" font-family="'MyriadPro-Regular'" font-size="6">world max</text>
+<g>
+	<g opacity="0.49">
+		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="188.933" y1="20" x2="189.18" y2="20.969"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="1.9672,1.9672" x1="189.666" y1="22.875" x2="213.707" y2="117.235"/>
+		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="213.95" y1="118.188" x2="214.197" y2="119.157"/>
+	</g>
+</g>
+<g>
+	<g opacity="0.48">
+		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="240.155" y1="0.945" x2="239.953" y2="1.925"/>
+		
+			<line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="2.0119,2.0119" x1="239.546" y1="3.895" x2="216.163" y2="117.193"/>
+		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="215.959" y1="118.178" x2="215.757" y2="119.157"/>
+	</g>
+</g>
+</svg>

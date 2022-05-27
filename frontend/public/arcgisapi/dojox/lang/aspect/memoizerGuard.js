@@ -1,0 +1,2 @@
+//>>built
+define(["dojo","dijit","dojox"],function(b,k,f){b.provide("dojox.lang.aspect.memoizerGuard");(function(){var d=f.lang.aspect,h=function(a){var e=d.getContext().instance,c;if(c=e.__memoizerCache)0==arguments.length?delete e.__memoizerCache:b.isArray(a)?b.forEach(a,function(g){delete c[g]}):delete c[a]};d.memoizerGuard=function(a){return{after:function(){h(a)}}}})()});

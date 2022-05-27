@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox"],function(e,p,m){e.provide("dojox.lang.functional.listcomp");(function(){var f=/\bfor\b|\bif\b/gm,d=function(a){var g=a.split(f);a=a.match(f);for(var h=["var r \x3d [];"],k=[],c=0,n=a.length;c<n;){var l=a[c],b=g[++c];"for"!=l||/^\s*\(\s*(;|var)/.test(b)||(b=b.replace(/^\s*\(/,"(var "));h.push(l,b,"{");k.push("}")}return h.join("")+"r.push("+g[0]+");"+k.join("")+"return r;"};e.mixin(m.lang.functional,{buildListcomp:function(a){return"function(){"+d(a)+"}"},compileListcomp:function(a){return new Function([],
+d(a))},listcomp:function(a){return(new Function([],d(a)))()}})})()});

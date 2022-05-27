@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../chunks/_rollupPluginBabelHelpers","../../../../../chunks/vec3f64","../../../../../chunks/quatf64","../../../../../chunks/quat"],function(d,f,b,g,h){let k=function(){function c(){this.name="";this.mesh=null;this.translation=b.create();this.rotation=g.create();this.scale=b.clone(b.ONES);this.nodes=[]}var e=c.prototype;e.addNode=function(a){if(0<=this.nodes.indexOf(a))throw Error("Node already added");this.nodes.push(a)};e.forEachNode=function(a){this.nodes.forEach(a)};
+f._createClass(c,[{key:"rotationAngles",set:function(a){h.fromEuler(this.rotation,a[0],a[1],a[2])}}]);return c}();d.Node=k;Object.defineProperty(d,"__esModule",{value:!0})});

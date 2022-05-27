@@ -1,0 +1,1 @@
+{"widgetLabel":"Formulário de elemento","empty":"- vazio -","validationErrors":{"cannotBeNull":"Por favor introduza um valor","outsideRange":"O valor deverá estar entre {min} e {max}","invalidCodedValue":"O valor deve ser um dos valores listados.","invalidType":"Não é um valor válido","tooShort":"Este campo tem de ter um mínimo de {min} caracteres"}}

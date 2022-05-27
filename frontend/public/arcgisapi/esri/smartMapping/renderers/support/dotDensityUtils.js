@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(g){g.roundValue=function(a,n=5){let c=Math.round(a);if(1>=c)return 1;var d=c.toString().length;for(d=3<=d-1?3:d-1;0<=d;d--){var b=Math.pow(10,d);const f=Math.floor(a/b)*b;b*=Math.ceil(a/b);const h=Math.round((f+b)/2),k=Math.abs(a-f)/a*100,l=Math.abs(a-b)/a*100,m=Math.abs(a-h)/a*100,e=Math.min(k,l,m);if(e<=n){if(e===k){c=f;break}if(e===l){c=b;break}if(e===m){c=h;break}}}return c};Object.defineProperty(g,"__esModule",{value:!0})});

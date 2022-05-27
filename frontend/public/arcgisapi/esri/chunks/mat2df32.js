@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(f){function l(){const b=new Float32Array(6);b[0]=1;b[3]=1;return b}function m(b){const a=new Float32Array(6);a[0]=b[0];a[1]=b[1];a[2]=b[2];a[3]=b[3];a[4]=b[4];a[5]=b[5];return a}function n(b,a,c,d,e,h){const g=new Float32Array(6);g[0]=b;g[1]=a;g[2]=c;g[3]=d;g[4]=e;g[5]=h;return g}function p(b,a){return new Float32Array(b,a,6)}function k(b,a,c,d){const e=a[d];a=a[d+1];b[d]=c[0]*e+c[2]*a+c[4];b[d+1]=c[1]*e+c[3]*a+c[5]}function q(b,a,c,d=0,e=0,h=2){for(e=e||a.length/h;d<e;d++)k(b,
+a,c,d*h)}var r=Object.freeze({__proto__:null,create:l,clone:m,fromValues:n,createView:p,transform:k,transformMany:q});f.clone=m;f.create=l;f.createView=p;f.fromValues=n;f.mat2df32=r;f.transform=k;f.transformMany=q});

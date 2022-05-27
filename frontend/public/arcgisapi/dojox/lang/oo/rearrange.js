@@ -1,0 +1,2 @@
+//>>built
+define(["dojo","dijit","dojox"],function(h,p,n){h.provide("dojox.lang.oo.rearrange");(function(){var k=h._extraNames,l=k.length,m=Object.prototype.toString,e={};n.lang.oo.rearrange=function(b,g){var f;for(a in g){var c=g[a];if(!c||"[object String]"==m.call(c)){var d=b[a];a in e&&e[a]===d||(delete b[a]||(b[a]=void 0),c&&(b[c]=d))}}if(l)for(f=0;f<l;++f){var a=k[f];c=g[a];c&&"[object String]"!=m.call(c)||(d=b[a],a in e&&e[a]===d||(delete b[a]||(b[a]=void 0),c&&(b[c]=d)))}return b}})()});

@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/lang","dojo/_base/fx","dojox/fx","dojo/NodeList-fx"],function(d,e,f,b,c){d.experimental("dojox.fx.ext-dojo.NodeList");e.extend(c,{sizeTo:function(a){return this._anim(b,"sizeTo",a)},slideBy:function(a){return this._anim(b,"slideBy",a)},highlight:function(a){return this._anim(b,"highlight",a)},fadeTo:function(a){return this._anim(f,"_fade",a)},wipeTo:function(a){return this._anim(b,"wipeTo",a)}});return c});

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension".split(" "),function(d,h,b,l,m,n,e,p,k,q,r,t){d.BlendLayer=a=>{a=function(f){function g(){var c=f.apply(this,arguments)||this;c.blendMode="normal";c.effect=null;return c}
+h._inheritsLoose(g,f);return g}(a);b.__decorate([e.property({type:"average color-burn color-dodge color darken destination-atop destination-in destination-out destination-over difference exclusion hard-light hue invert lighten lighter luminosity minus multiply normal overlay plus reflect saturation screen soft-light source-atop source-in source-out vivid-light xor".split(" "),nonNullable:!0,json:{read:!1,write:!1,origins:{"web-map":{default:"normal",read:!0,write:!0}}}})],a.prototype,"blendMode",
+void 0);b.__decorate([e.property()],a.prototype,"effect",void 0);return a=b.__decorate([k.subclass("esri.layers.mixins.BlendLayer")],a)};Object.defineProperty(d,"__esModule",{value:!0})});

@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/lang","./lambda"],function(h,l,f){var g={};l.mixin(f,{keys:function(c){var b=[],a;for(a in c)a in g||b.push(a);return b},values:function(c){var b=[],a;for(a in c)a in g||b.push(c[a]);return b},filterIn:function(c,b,a){a=a||h.global;b=f.lambda(b);var e={},d;for(d in c)if(!(d in g)){var k=c[d];b.call(a,k,d,c)&&(e[d]=k)}return e},forIn:function(c,b,a){a=a||h.global;b=f.lambda(b);for(var e in c)e in g||b.call(a,c[e],e,c);return a},mapIn:function(c,b,a){a=a||h.global;
+b=f.lambda(b);var e={},d;for(d in c)d in g||(e[d]=b.call(a,c[d],d,c));return e}});return f});

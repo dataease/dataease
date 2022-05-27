@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./Util"],function(k,f){k.splitRenderGeometryChangeSetByMaterial=function(c){const g=new Map;let l=null,m=null;const h=d=>{if(d===l)return m;let e=g.get(d);e||(e={toAdd:[],numToAdd:-1,toRemove:[],numToRemove:-1,toUpdate:[],numToUpdate:-1},g.set(d,e));l=d;return m=e};for(var a=0;a<c.numToAdd;a++){var b=c.toAdd[a];1<=f.getFirstObjectValue(b.data.indices).length&&h(b.material).toAdd.push(b)}for(a=0;a<c.numToRemove;a++)b=c.toRemove[a],1<=f.getFirstObjectValue(b.data.indices).length&&
+h(b.material).toRemove.push(b);for(a=0;a<c.numToUpdate;a++)b=c.toUpdate[a],1<=f.getFirstObjectValue(b.renderGeometry.data.indices).length&&h(b.renderGeometry.material).toUpdate.push(b);return g};Object.defineProperty(k,"__esModule",{value:!0})});

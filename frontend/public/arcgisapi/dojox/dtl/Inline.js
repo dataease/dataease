@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang","./_base","dijit/_WidgetBase","dojo/query"],function(d,c,e,f){return c.Inline=d.extend(function(b,a){this.create(b,a)},e.prototype,{context:null,render:function(b){this.context=b||this.context;this.postMixInProperties();f("*",this.domNode).orphan();this.domNode.innerHTML=this.template.render(this.context)},declaredClass:"dojox.dtl.Inline",buildRendering:function(){var b=this.domNode=document.createElement("div"),a=this.srcNodeRef;a.parentNode&&a.parentNode.replaceChild(b,
+a);this.template=new c.Template(d.trim(a.text),!0);this.render()},postMixInProperties:function(){this.context=this.context.get===c._Context.prototype.get?this.context:new c._Context(this.context)}})});

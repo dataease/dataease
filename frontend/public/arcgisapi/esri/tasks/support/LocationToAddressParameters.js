@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ../../geometry/SpatialReference ../../geometry/Point ../../geometry".split(" "),function(g,d,a,p,h,f,q,k,r,t,u,l,m,n,v){a=function(b){function e(c){c=
+b.call(this,c)||this;c.location=null;c.locationType=null;c.outSpatialReference=null;return c}g._inheritsLoose(e,b);return e}(l.JSONSupport);d.__decorate([f.property({type:n,json:{write:{writer:(b,e)=>{b=b?b.clone().normalize():null;e.location="undefined"!==typeof b?b:null}}}})],a.prototype,"location",void 0);d.__decorate([f.property({type:String,json:{write:!0}})],a.prototype,"locationType",void 0);d.__decorate([f.property({type:m,json:{read:{source:"outSR"},write:{target:"outSR"}}})],a.prototype,
+"outSpatialReference",void 0);a=d.__decorate([k.subclass("esri.tasks.support.LocationToAddressParameters")],a);a.from=h.ensureType(a);return a});

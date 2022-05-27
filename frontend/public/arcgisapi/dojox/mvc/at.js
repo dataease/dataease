@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/lang","./sync","./_atBindingExtension"],function(a,d,c){a.experimental("dojox.mvc");a=function(e,f){return{atsignature:"dojox.mvc.at",target:e,targetProp:f,bindDirection:c.both,direction:function(b){this.bindDirection=b;return this},transform:function(b){this.converter=b;return this},equals:function(b){this.equalsCallback=b;return this}}};a.from=c.from;a.to=c.to;a.both=c.both;return d.setObject("dojox.mvc.at",a)});

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(function(){let h=function(){function e(a,b,f,c=1,g=0){this.ctor=a;this.acquireFunction=b;this.releaseFunction=f;this.allocationSize=c;this._pool=Array(g);this._initialSize=g;if(this.ctor)for(a=0;a<g;a++)this._pool[a]=new this.ctor;this.allocationSize=Math.max(c,1)}var d=e.prototype;d.destroy=function(){this.prune(0)};d.acquire=function(...a){var b=this.ctor;if(e.test.disabled)b=new b;else{if(0===this._pool.length){const f=this.allocationSize;for(let c=0;c<f;c++)this._pool[c]=new b}b=this._pool.pop()}this.acquireFunction?
+this.acquireFunction(b,...a):b&&b.acquire&&"function"===typeof b.acquire&&b.acquire(...a);return b};d.release=function(a){a&&!e.test.disabled&&(this.releaseFunction?this.releaseFunction(a):a&&a.release&&"function"===typeof a.release&&a.release(),this._pool.push(a))};d.prune=function(a=this._initialSize){if(!(a>=this._pool.length)){for(let b=a;b<this._pool.length;++b)this._dispose(this._pool[b]);this._pool.length=a}};d._dispose=function(a){a.dispose&&"function"===typeof a.dispose&&a.dispose()};return e}();
+h.test={disabled:!1};return h});

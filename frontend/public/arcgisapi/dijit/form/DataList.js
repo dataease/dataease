@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/declare dojo/dom dojo/_base/lang dojo/query dojo/store/Memory ../registry".split(" "),function(f,g,c,b,h,d){function e(a){return{id:a.value,value:a.value,name:c.trim(a.innerText||a.textContent||"")}}return f("dijit.form.DataList",h,{constructor:function(a,k){this.domNode=g.byId(k);c.mixin(this,a);this.id&&d.add(this);this.domNode.style.display="none";this.inherited(arguments,[{data:b("option",this.domNode).map(e)}])},destroy:function(){d.remove(this.id)},fetchSelectedItem:function(){var a=
+b("\x3e option[selected]",this.domNode)[0]||b("\x3e option",this.domNode)[0];return a&&e(a)}})});

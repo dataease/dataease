@@ -1,0 +1,1 @@
+{"widgetLabel":"Pindala mõõtmine","hint":"Mõõtmise alustamiseks klõpsake kohta, kuhu soovite asetada oma esimese punkti","unsupported":"2D-pindala mõõtmist toetab ainult MapView.","perimeter":"Ümbermõõt","area":"Piirkond","newMeasurement":"Uus mõõtmine","mode":"Režiim","modes":{"auto":"Automaatne","planar":"Tasapinnaline","geodesic":"Geodeetiline"},"unit":"Ühik"}

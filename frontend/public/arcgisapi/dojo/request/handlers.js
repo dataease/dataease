@@ -1,0 +1,2 @@
+//>>built
+define(["../json","../_base/kernel","../_base/array","../has","../has!dom?../selector/_loader"],function(f,g,b,h){function d(a){var c=e[a.options.handleAs];a.data=c?c(a):a.data||a.text;return a}b=function(a){return a.xhr.response};var e={javascript:function(a){return g.eval(a.text||"")},json:function(a){return f.parse(a.text||null)},xml:void 0,blob:b,arraybuffer:b,document:b};d.register=function(a,c){e[a]=c};return d});

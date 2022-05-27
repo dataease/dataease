@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dijit/_WidgetBase"],function(c,d){return c("dojox.mvc.Element",d,{_setInnerTextAttr:{node:"domNode",type:"innerText"},_setInnerHTMLAttr:{node:"domNode",type:"innerHTML"},buildRendering:function(){this.inherited(arguments);if(/select|input|textarea/i.test(this.domNode.tagName)){var b=this,e=this.focusNode=this.domNode;this.on("change",function(a){a=/^checkbox$/i.test(e.getAttribute("type"))?"checked":"value";b._set(a,b.get(a))})}},_getCheckedAttr:function(){return this.domNode.checked},
+_getValueAttr:function(){return this.domNode.value}})});

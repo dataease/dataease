@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport".split(" "),function(h,c,d,m,n,e,k,l,p,q,r,a){d=new k.JSONMap({esriMeters:"meters",esriFeet:"feet",esriKilometers:"kilometers",esriMiles:"miles",esriNauticalMiles:"nautical-miles",
+esriYards:"yards"},{ignoreUnknown:!1});a=function(f){function g(b){b=f.call(this,b)||this;b.distance=0;b.units=null;return b}h._inheritsLoose(g,f);return g}(a.JSONSupport);c.__decorate([e.property({json:{write:!0}})],a.prototype,"distance",void 0);c.__decorate([e.property({json:{read:d.read,write:d.write}})],a.prototype,"units",void 0);return a=c.__decorate([l.subclass("esri/tasks/support/LinearUnit")],a)});

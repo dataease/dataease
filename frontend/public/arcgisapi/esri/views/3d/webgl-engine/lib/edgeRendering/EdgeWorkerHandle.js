@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../../../../../chunks/_rollupPluginBabelHelpers","../../../../../core/typedArrayUtil","../../../support/WorkerHandle","../../../support/buffer/workerHelper","./EdgeProcessingWorker"],function(g,h,k,e,l){return function(f){function d(a){return f.call(this,"EdgeProcessingWorker","wrappedWork",a)||this}g._inheritsLoose(d,f);var c=d.prototype;c.process=async function(a,b,m){if(m)return l.work(a);a=this._packInput(a);b=await this.invoke(a,b);return this._unpackOutput(b)};c.getTransferList=function(a){return[a.dataBuffer]};
+c._packInput=function(a){const b={dataBuffer:a.data.buffer,writerSettings:a.writerSettings,skipDeduplicate:a.skipDeduplicate};a.originalIndices&&(b.originalIndicesBuffer=a.originalIndices.buffer,b.originalIndicesType=h.isUint32Array(a.originalIndices)?"Uint32Array":"Uint16Array");return b};c._unpackOutput=function(a){return{regular:{instancesData:e.unpackInterleavedBuffer(a.regular.instancesData),lodInfo:{lengths:new Float32Array(a.regular.lodInfo.lengths)}},silhouette:{instancesData:e.unpackInterleavedBuffer(a.silhouette.instancesData),
+lodInfo:{lengths:new Float32Array(a.silhouette.lodInfo.lengths)}},averageEdgeLength:a.averageEdgeLength}};return d}(k.WorkerHandle)});

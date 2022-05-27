@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dojo/dom-style","dojo/dom-attr","./_bidiutils"],function(f,g,c,h){return f(null,{direction:"",isMirrored:!1,postscript:function(a,b,d,k,e){b="ltr";c.has(a,"direction")&&(b=c.get(a,"direction"));this.chartBaseDirection=e?e:b},generate:function(){this.inherited(arguments);this.isMirrored=!1;return this},applyMirroring:function(a,b,d){this.isMirrored&&h.reverseMatrix(a,b,d,"rtl"==this.dir);g.set(this.node,"direction","ltr");return this},setDir:function(a){if("rtl"==a||"ltr"==
+a)this.dir!=a&&(this.isMirrored=!0),this.dir=a;return this},isRightToLeft:function(){return"rtl"==this.dir}})});

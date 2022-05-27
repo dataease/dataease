@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../../chunks/_rollupPluginBabelHelpers ../../../../chunks/tslib.es6 ../../../../core/has ../../../../core/Logger ../../../../core/accessorSupport/decorators/property ../../../../core/accessorSupport/decorators/cast ../../../../core/jsonMap ../../../../core/accessorSupport/decorators/subclass ../../../../core/urlUtils ../../../../core/uuid ../../../../portal/support/resourceExtension ../../../../core/Accessor ./ButtonMenuItem".split(" "),function(k,c,b,p,f,l,q,m,r,t,u,n,g){b=function(h){function d(a){a=
+h.call(this,a)||this;a.items=null;a.open=!1;return a}k._inheritsLoose(d,h);d.prototype.castItems=function(a){return a?a.map(e=>e instanceof g?e:new g(e)):null};return d}(n);c.__decorate([f.property()],b.prototype,"items",void 0);c.__decorate([l.cast("items")],b.prototype,"castItems",null);c.__decorate([f.property()],b.prototype,"open",void 0);return b=c.__decorate([m.subclass("esri.widgets.FeatureTable.Grid.support.ButtonMenuViewModel")],b)});

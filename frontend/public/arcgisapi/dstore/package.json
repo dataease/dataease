@@ -1,0 +1,25 @@
+{
+  "name": "dojo-dstore",
+  "author": "Kris Zyp",
+  "version": "1.2.1",
+  "description": "A data collection infrastructure",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SitePen/dstore"
+  },
+  "dependencies": {
+    "@types/dojo": "^1.9.0",
+    "dojo": "^1.9.0"
+  },
+  "devDependencies": {
+    "intern-geezer": "^2",
+    "rql": "~0.3.3"
+  },
+  "directories": {
+    "lib": "."
+  },
+  "main": "./Store",
+  "types": "./typings/dstore.d.ts",
+  "dojoBuild": "package.js"
+}

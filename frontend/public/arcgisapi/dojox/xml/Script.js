@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/declare","dojo/parser","./widgetParser"],function(a,b,c){dojo.getObject("xml",!0,dojox);a("dojox.xml.Script",null,{constructor:function(e,d){b.instantiate(c._processScript(d))}});return dojox.xml.Script});

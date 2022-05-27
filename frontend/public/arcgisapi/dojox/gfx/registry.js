@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/has","./shape"],function(g,e){g.add("gfxRegistry",1);var c={},f={},d={};c.register=e.register=function(a){var b=a.declaredClass.split(".").pop(),h=b in f?++f[b]:f[b]=0;b+=h;d[b]=a;return b};c.byId=e.byId=function(a){return d[a]};c.dispose=e.dispose=function(a,b){if(b&&a.children)for(b=0;b<a.children.length;++b)c.dispose(a.children[b],!0);a=a.getUID();d[a]=null;delete d[a]};return c});

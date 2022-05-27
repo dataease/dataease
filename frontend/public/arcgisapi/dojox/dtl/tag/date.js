@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang","../_base","../utils/date"],function(d,e,f){var c=d.getObject("tag.date",!0,e);c.NowNode=function(a,b){this._format=a;this.format=new f.DateFormat(a);this.contents=b};d.extend(c.NowNode,{render:function(a,b){this.contents.set(this.format.format(new Date));return this.contents.render(a,b)},unrender:function(a,b){return this.contents.unrender(a,b)},clone:function(a){return new this.constructor(this._format,this.contents.clone(a))}});c.now=function(a,b){b=b.split_contents();
+if(2!=b.length)throw Error("'now' statement takes one argument");return new c.NowNode(b[1].slice(1,-1),a.create_text_node())};return c});

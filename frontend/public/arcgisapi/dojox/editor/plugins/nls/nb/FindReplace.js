@@ -1,0 +1,3 @@
+//>>built
+define({findLabel:"S\u00f8k:",findTooltip:"Skriv inn teksten du vil s\u00f8ke etter",replaceLabel:"Erstatt med:",replaceTooltip:"Skriv inn teksten du vil erstatte med",findReplace:"S\u00f8k og erstatt",matchCase:"Skill mellom store og sm\u00e5 bokstaver",matchCaseTooltip:"Skill mellom store og sm\u00e5 bokstaver",backwards:"Bakover",backwardsTooltip:"S\u00f8k bakover etter tekst",replaceAllButton:"Erstatt alle",replaceAllButtonTooltip:"Erstatt all tekst",findButton:"S\u00f8k",findButtonTooltip:"S\u00f8k etter teksten",
+replaceButton:"Erstatt",replaceButtonTooltip:"Erstatt teksten",replaceDialogText:"Erstattet ${0} forekomster.",eofDialogText:"Siste forekomst ${0}",eofDialogTextFind:"funnet",eofDialogTextReplace:"erstattet"});

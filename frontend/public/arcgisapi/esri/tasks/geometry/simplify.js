@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/urlUtils","../../geometry/support/jsonUtils","../../request"],function(g,h,e,k){function l(a){return{geometryType:e.getJsonType(a[0]),geometries:a.map(b=>b.toJSON())}}function m(a,b,f){const d=e.getGeometryType(b);return a.map(c=>{c=d.fromJSON(c);c.spatialReference=f;return c})}g.simplify=async function(a,b,f){const d="string"===typeof a?h.urlToObject(a):a;a=b[0].spatialReference;const c=e.getJsonType(b[0]);b={...f,query:{...d.query,f:"json",sr:a.wkid?a.wkid:JSON.stringify(a),
+geometries:JSON.stringify(l(b))}};b=await k(d.path+"/simplify",b);return m(b.data,c,a)};Object.defineProperty(g,"__esModule",{value:!0})});

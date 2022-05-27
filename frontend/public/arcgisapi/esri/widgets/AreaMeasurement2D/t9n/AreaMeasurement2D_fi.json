@@ -1,0 +1,1 @@
+{"widgetLabel":"Alueen mittaus","hint":"Aloita mittaus napsauttamalla karttaa ja sijoita ensimmäinen pisteesi","unsupported":"Kaksiulotteista alueen mittausta tuetaan vain MapView-sovelluksessa.","perimeter":"Ympärysmitta","area":"Alue","newMeasurement":"Uusi mittaus","mode":"Tila","modes":{"auto":"Autom","planar":"Planaarinen","geodesic":"Geodeettinen"},"unit":"Yksikkö"}

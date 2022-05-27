@@ -1,0 +1,2 @@
+//>>built
+define(["./_base/kernel","./_base/lang"],function(h,g){var c={};g.setObject("dojo.regexp",c);c.escapeString=function(a,b){return a.replace(/([\.$?*|{}\(\)\[\]\\\/\+\-^])/g,function(d){return b&&-1!=b.indexOf(d)?d:"\\"+d})};c.buildGroupRE=function(a,b,d){if(!(a instanceof Array))return b(a);for(var f=[],e=0;e<a.length;e++)f.push(b(a[e]));return c.group(f.join("|"),d)};c.group=function(a,b){return"("+(b?"?:":"")+a+")"};return c});

@@ -1,0 +1,2 @@
+//>>built
+define({instructions:"A k\u00f6zvetlen beilleszt\u00e9s le van tiltva. A b\u00f6ng\u00e9sz\u0151 szokv\u00e1nyos beilleszt\u00e9si billenty\u0171kombin\u00e1ci\u00f3j\u00e1val vagy men\u00fcparancs\u00e1val illessze be a tartalmat ebbe a p\u00e1rbesz\u00e9dpanelbe. Ha a beilleszteni k\u00edv\u00e1nt tartalom megfelel\u0151, kattintson a beilleszt\u00e9si gombra. A tartalom beilleszt\u00e9s\u00e9nek megszak\u00edt\u00e1s\u00e1hoz kattintson a M\u00e9gse gombra."});

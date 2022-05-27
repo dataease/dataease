@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../core/Error","../../../renderers/support/rasterRendererHelper","./adapters/ImageryLayerAdapter","./adapters/ImageryTileLayerAdapter"],function(c,f,g,m,h){function d(a){var b;if("raster-layer-adapter"===a.type)return a;const k=null==(b=e[a.type])?void 0:b.adapter;return null==k?null:new k({layer:a})}async function l(a){var {layer:b}=a;if(!b)throw new f("raster-renderer-creator:missing-parameters","'layer' parameter is required");b=d(b);if(null==b)throw new f("raster-renderer-creator:invalid-parameters",
+"'layer' must be one of these types: "+n.join(", "));await b.load();await b.updateRasterInfo({renderingRule:a.renderingRule,signal:a.signal});return{...a,layer:b}}const e={imagery:{adapter:m,label:"ImageryLayer"},"imagery-tile":{adapter:h,label:"ImageryTileLayer"},wcs:{adapter:h,label:"WCSLayer"}},n=Object.keys(e).map(a=>e[a].label);c.createRasterLayerAdapter=d;c.getSupportedRendererInfo=async function(a){l(a);var b=await d(a.layer).generateRasterInfo(a);a=g.getSupportedRendererTypes(b);b=g.createDefaultRenderer(b);
+return{supportedTypes:a,defaultRenderer:b}};c.processRasterRendererParameters=l;Object.defineProperty(c,"__esModule",{value:!0})});

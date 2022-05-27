@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ./DefaultVertexAttributeLocations ../../../webgl/BufferObject ../../../webgl/Texture ../../../webgl/VertexArrayObject ./DefaultVertexBufferLayouts".split(" "),function(f,l,m,g,n,k){f.createColorTexture=function(d,c,e=4){const a=new Uint8Array(e*e*4);for(let b=0;b<a.length;b+=4)a[b+0]=255*c[0],a[b+1]=255*c[1],a[b+2]=255*c[2],a[b+3]=255*c[3];return new g(d,{target:3553,pixelFormat:6408,dataType:5121,samplingMode:9728,width:e,height:e},a)};f.createEmptyDepthTexture=function(d){return new g(d,
+{target:3553,pixelFormat:6408,dataType:5121,samplingMode:9728,width:1,height:1},new Uint8Array([255,255,255,255]))};f.createEmptyTexture=function(d,c=4){return new g(d,{target:3553,pixelFormat:6408,dataType:5121,samplingMode:9728,width:c,height:c})};f.createQuadVAO=function(d,c=k.Pos2,e=l.Default3D,a=-1,b=1){let h=null;switch(c){case k.Pos2Tex:h=new Float32Array([a,a,0,0,b,a,1,0,a,b,0,1,b,b,1,1]);break;default:h=new Float32Array([a,a,b,a,a,b,b,b])}return new n(d,e,{geometry:c},{geometry:m.createVertex(d,
+35044,h)})};Object.defineProperty(f,"__esModule",{value:!0})});

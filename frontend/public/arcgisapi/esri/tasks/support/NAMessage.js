@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ./GPMessage".split(" "),function(g,d,c,m,n,h,k,l,p,q,r,a){c=new k.JSONMap({0:"informative",1:"process-definition",2:"process-start",3:"process-stop",50:"warning",100:"error",
+101:"empty",200:"abort"});a=function(e){function f(b){b=e.call(this,b)||this;b.type=null;return b}g._inheritsLoose(f,e);return f}(a);d.__decorate([h.property({type:String,json:{read:c.read,write:c.write}})],a.prototype,"type",void 0);return a=d.__decorate([l.subclass("esri.tasks.support.NAMessage")],a)});

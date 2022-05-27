@@ -1,2 +1,0 @@
-//>>built
-define("dgrid/extensions/nls/pt-br/pagination",{status:"${start} - ${end} of ${total} resultados",gotoFirst:"Ir para primeira p\u00e1gina",gotoNext:"Ir para pr\u00f3xima p\u00e1gina",gotoPrev:"Ir para p\u00e1gina anterior",gotoLast:"Ir para \u00faltima p\u00e1gina",gotoPage:"Ir para p\u00e1gina",jumpPage:"Pular para p\u00e1gina"});

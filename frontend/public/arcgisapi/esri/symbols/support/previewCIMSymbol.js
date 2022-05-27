@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/screenUtils","./cimSymbolUtils","../cim/CIMSymbolRasterizer"],function(g,n,h,p){const q=new p.CIMSymbolRasterizer(null,!0);g.previewCIMSymbol=async function(a,d={}){const {size:f,maxSize:k,feature:r,fieldMap:t,geometryType:u,style:v,node:l,opacity:m}=d;var b=h.getCIMSymbolSize(a),c=Math.min(null!=f?f:b,null!=k?k:n.px2pt(120));c!==b&&(a=a.clone(),h.scaleCIMSymbolTo(a,c,{preserveOutlineWidth:!0}));b=3;a&&a.data&&a.data.symbol&&"CIMPointSymbol"!==a.data.symbol.type&&(b=
+1);var e=await q.rasterizeCIMSymbolAsync(a,r,t,u,{scaleFactor:b,style:v});a=document.createElement("canvas");a.width=e.imageData.width;a.height=e.imageData.height;a.getContext("2d").putImageData(e.imageData,0,0);e=a.width/b;b=a.height/b;if(null==f?0:null!=(null==d?void 0:d.scale)?null==d?0:d.scale:1)d=e/b,e=1>=d?Math.ceil(c*d):c,b=1>=d?c:Math.ceil(c/d);c=new Image(e,b);c.src=a.toDataURL();null!=m&&(c.style.opacity=`${m}`);l&&l.appendChild(c);return c};Object.defineProperty(g,"__esModule",{value:!0})});

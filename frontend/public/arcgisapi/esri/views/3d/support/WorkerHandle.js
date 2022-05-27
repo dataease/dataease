@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../chunks/_rollupPluginBabelHelpers","../../../core/Logger","../../../core/promiseUtils","../../../core/workers/workers"],function(k,m,e,c,n){const p=e.getLogger("esri.views.3d.support.WorkerHandle");e=function(){function f(a,b,g,l={}){this._methodName=b;this._promise=n.open(a,{...l,scheduler:g}).then(d=>{void 0===this._thread?(this._thread=d,this._promise=null,l.hasInitialize&&this.broadcast({},"initialize")):d.close()});this._promise.catch(d=>p.error(`Failed to initialize ${a} worker: ${d}`))}
+var h=f.prototype;h.destroy=function(){this._thread&&(this._thread.close(),this._thread=null);this._promise=null};h.invoke=function(a,b){if(this._thread){const g=this.getTransferList(a);return this._thread.invoke(this._methodName,a,{transferList:g,signal:b})}return this._promise?this._promise.then(()=>{c.throwIfAborted(b);return this.invoke(a,b)}):c.reject(null)};h.broadcast=function(a,b){return this._thread?c.all(this._thread.broadcast(b,a)).then(()=>{}):this._promise?this._promise.then(()=>this.broadcast(a,
+b)):c.reject()};m._createClass(f,[{key:"promise",get:function(){return this._promise}}]);return f}();k.WorkerHandle=e;Object.defineProperty(k,"__esModule",{value:!0})});

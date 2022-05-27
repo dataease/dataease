@@ -1,0 +1,1 @@
+{"widgetLabel":"Objekti vorm","empty":"- tühi -","validationErrors":{"cannotBeNull":"Palun sisestage väärtus","outsideRange":"Väärtus peab olema vahemikus: {min} kuni {max}","invalidCodedValue":"Väärtus peab olema üks nimetatud väärtustest.","invalidType":"See väärtus ei kehti","tooShort":"Selle välja pikkus peab olema vähemalt {min} märki"}}

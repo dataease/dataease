@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../Color","../../../chunks/vec4f64","../../../views/3d/interactive/visualElements/PointVisualElement","./constants"],function(e,l,f,m,c){let n=function(){function g(a){this._params=a;this._visualElements=[]}var d=g.prototype;d.destroy=function(){this._destroyVisualElements()};d.update=function(a){for(;this._visualElements.length>a.length;)this._visualElements.pop().destroy();for(;this._visualElements.length<a.length;){var b=new m.PointVisualElement({view:this._params.view,
+elevationInfo:{mode:"absolute-height",offset:0},size:c.HOVERED_POINTS_STYLE_3D.size,outlineSize:c.HOVERED_POINTS_STYLE_3D.outlineSize,outlineColor:f.fromArray(c.HOVERED_POINTS_STYLE_3D.outlineColor)});b.primitive="circle";b.attached=!0;this._visualElements.push(b)}for(b=0;b<a.length;++b){const h=a[b],k=this._visualElements[b];k.geometry=h.hoveredPoint;k.color=f.fromArray(l.toUnitRGBA(h.color))}};d._destroyVisualElements=function(){this._visualElements.forEach(a=>a.destroy());this._visualElements.length=
+0};return g}();e.HoveredPoints3D=n;Object.defineProperty(e,"__esModule",{value:!0})});

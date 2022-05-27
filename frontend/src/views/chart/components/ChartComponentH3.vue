@@ -5,8 +5,8 @@
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
     <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
-    <div v-if="chart.type === 'arc_map'">
-      <ArcGIS :chartId="chartId" />
+    <div v-if="chart.type === 'arc_map'" :style="{height:chartHeight}">
+      <ArcGIS :chartId="chartId" :chartHeight="chartHeight" />
     </div>
   </div>
 </template>

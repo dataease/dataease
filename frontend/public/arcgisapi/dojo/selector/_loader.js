@@ -1,0 +1,2 @@
+//>>built
+define(["../has","require"],function(e,g){"undefined"!==typeof document&&document.createElement("div");var c;return{load:function(a,h,d,b){if(b&&b.isBuild)d();else{b=g;a="default"==a?e("config-selectorEngine")||"css3":a;a="css2"==a||"lite"==a?"./lite":"css2.1"==a?"./lite":"css3"==a?"./lite":"acme"==a?"./acme":(b=h)&&a;if("?"==a.charAt(a.length-1)){a=a.substring(0,a.length-1);var k=!0}if(k&&(e("dom-compliant-qsa")||c))return d(c);b([a],function(f){"./lite"!=a&&(c=f);d(f)})}}}});

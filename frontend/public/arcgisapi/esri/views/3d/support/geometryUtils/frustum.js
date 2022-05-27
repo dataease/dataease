@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../chunks/vec3f64 ../../../../chunks/vec3 ../../../../chunks/mat4 ../../../../core/ObjectStack ../../../../chunks/vec4f64 ../../../../chunks/vec4 ../stack ../../../../chunks/plane ../../../../chunks/clipRay ../../../../chunks/frustum".split(" "),function(a,c,d,e,f,g,h,k,l,m,b){a.copy=b.copy;a.create=b.create;a.fromMatrix=b.fromMatrix;a.fromValues=b.fromValues;a.intersectClipRay=b.intersectClipRay;a.intersectsAABB=b.intersectsAABB;a.intersectsLineSegment=b.intersectsLineSegment;
+a.intersectsPoint=b.intersectsPoint;a.intersectsRay=b.intersectsRay;a.intersectsSphere=b.intersectsSphere;a.planePointIndices=b.planePointIndices;a.recomputePlanes=b.recomputePlanes;Object.defineProperty(a,"__esModule",{value:!0})});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport".split(" "),function(f,b,a,k,l,c,m,g,n,p,q,h){a=function(d){function e(){return d.apply(this,arguments)||this}f._inheritsLoose(e,d);return e}(h.JSONSupport);
+b.__decorate([c.property({type:Boolean,json:{write:!0}})],a.prototype,"timeDataCumulative",void 0);b.__decorate([c.property({type:Number,json:{write:!0}})],a.prototype,"timeOffset",void 0);b.__decorate([c.property({type:String,json:{write:!0}})],a.prototype,"timeOffsetUnits",void 0);b.__decorate([c.property({type:Boolean,json:{write:!0}})],a.prototype,"useTime",void 0);return a=b.__decorate([g.subclass("esri.layers.support.LayerTimeOptions")],a)});

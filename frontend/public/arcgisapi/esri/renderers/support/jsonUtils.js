@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../core/has ../../core/object ../../core/Warning ../../core/accessorSupport/extensions/serializableProperty/reader ../../core/Error ./types".split(" "),function(e,q,g,h,k,l,m){function n(a,b){if(!b||"web-scene"!==b.origin)return!0;switch(a.type){case "simple":case "unique-value":case "class-breaks":return!0;case "heatmap":case "dictionary":case "dot-density":return!1;default:return!1}}function f(a,b,c){return a?a&&(a.styleName||a.styleUrl)&&"uniqueValue"!==a.type?(c&&c.messages&&
+c.messages.push(new h("renderer:unsupported","Only UniqueValueRenderer can be referenced from a web style, but found '"+a.type+"'",{definition:a,context:c})),null):p(a,b,c):null}const p=k.createTypeReader({types:m.rendererTypes});e.fromJSON=function(a,b){return f(a,null,b)};e.read=f;e.write=function(a,b,c,d){a?n(a,d)?a=a.write({},d):(d.messages&&d.messages.push(new l("renderer:unsupported",`Renderer of type '${a.declaredClass}' are not supported in scenes.`,{renderer:a,context:d})),a=null):a=null;
+a&&g.setDeepValue(c,a,b)};Object.defineProperty(e,"__esModule",{value:!0})});

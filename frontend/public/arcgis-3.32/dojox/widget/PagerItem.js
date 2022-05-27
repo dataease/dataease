@@ -1,2 +1,0 @@
-//>>built
-define("dojox/widget/PagerItem","dojo/_base/declare dojo/dom-geometry dojo/dom-style dojo/parser dijit/_WidgetBase dijit/_TemplatedMixin".split(" "),function(b,c,d,e,f,g){return b("dojox.widget._PagerItem",[f,g],{templateString:'\x3cli class\x3d"pagerItem" data-dojo-attach-point\x3d"containerNode"\x3e\x3c/li\x3e',resizeChildren:function(){var a=c.getMarginBox(this.containerNode);d.set(this.containerNode.firstChild,{width:a.w+"px",height:a.h+"px"})},parseChildren:function(){e.parse(this.containerNode)}})});

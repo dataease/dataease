@@ -1,0 +1,3 @@
+//>>built
+define(["./_base/kernel","./has","require","./has!host-browser?./domReady","./_base/lang"],function(b,l,e,f,m){var q=0,g=[],n=0;l=function(){q=1;b._postLoad=b.config.afterOnLoad=!0;k()};var k=function(){if(!n){for(n=1;q&&(!f||0==f._Q.length)&&(e.idle?e.idle():1)&&g.length;){var c=g.shift();try{c()}catch(a){if(a.info=a.message,e.signal)e.signal("error",a);else throw a;}}n=0}};e.on&&e.on("idle",k);f&&(f._onQEmpty=k);var r=b.ready=b.addOnLoad=function(c,a,h){var d=m._toArray(arguments);"number"!=typeof c?
+(h=a,a=c,c=1E3):d.shift();h=h?m.hitch.apply(b,d):function(){a()};h.priority=c;for(d=0;d<g.length&&c>=g[d].priority;d++);g.splice(d,0,h);k()},p=b.config.addOnLoad;if(p)r[m.isArray(p)?"apply":"call"](b,p);f?f(l):l();return r});

@@ -1,0 +1,1 @@
+{"widgetLabel":"Měření plochy","hint":"Začněte měření kliknutím na mapu pro umístění prvního bodu","unsupported":"Měření plochy ve 2D je podporováno pouze v MapView.","perimeter":"Obvod","area":"Plocha","newMeasurement":"Nové měření","mode":"Režim","modes":{"auto":"Automatický","planar":"Rovinný","geodesic":"Geodetický"},"unit":"Jednotky"}

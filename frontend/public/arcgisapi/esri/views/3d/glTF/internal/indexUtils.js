@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/typedArrayUtil","../../webgl-engine/lib/geometryDataUtils"],function(k,l,n){function m(a){return n.generateDefaultIndexArray(a)}k.linearIndexArray=m;k.triangleFanToTriangles=function(a){var d="number"===typeof a?a:a.length;if(3>d)return new Uint32Array(0);d-=2;const c=new Uint32Array(3*d);if("number"===typeof a){a=0;for(var b=0;b<d;++b)c[a++]=0,c[a++]=b+1,c[a++]=b+2;return c}{b=a[0];let h=a[1],f=0;for(let g=0;g<d;++g){const e=a[g+2];c[f++]=b;c[f++]=h;h=c[f++]=e}return c}};
+k.triangleStripToTriangles=function(a){var d="number"===typeof a?a:a.length;if(3>d)return new Uint32Array(0);d-=2;const c=new Uint32Array(3*d);if("number"===typeof a){a=0;for(var b=0;b<d;b+=1)0===b%2?(c[a++]=b,c[a++]=b+1):(c[a++]=b+1,c[a++]=b),c[a++]=b+2}else{b=0;for(let e=0;e<d;e+=1)if(0===e%2){var h=a[e],f=a[e+1],g=a[e+2];c[b++]=h;c[b++]=f;c[b++]=g}else h=a[e+1],f=a[e],g=a[e+2],c[b++]=h,c[b++]=f,c[b++]=g}return c};k.trianglesToTriangles=function(a){return"number"===typeof a?m(a):l.isUint16Array(a)||
+l.isUint8Array(a)?new Uint32Array(a):a};Object.defineProperty(k,"__esModule",{value:!0})});

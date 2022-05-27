@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/on"],function(a,b){return a("dojox.mobile.TransitionEvent",null,{constructor:function(c,d,e){this.transitionOptions=d;this.target=c;this.triggerEvent=e||null},dispatch:function(){b.emit(this.target,"startTransition",{bubbles:!0,cancelable:!0,detail:this.transitionOptions,triggerEvent:this.triggerEvent})}})});

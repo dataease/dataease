@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../chunks/_rollupPluginBabelHelpers","../InputHandler"],function(f,h,c){c=function(g){function d(b){var a=g.call(this,!0)||this;a._onChange=b;a._value="mouse";a.registerIncoming("pointer-down",e=>{a._setValue("touch"===e.data.native.pointerType?"touch":"mouse")});a._moveHandler=a.registerIncoming("pointer-move",e=>{a._setValue("touch"===e.data.native.pointerType?"touch":"mouse")});a._moveHandler.pause();return a}h._inheritsLoose(d,g);d.prototype._setValue=function(b){b!==
+this._value&&("touch"===b?this._moveHandler.resume():this._moveHandler.pause(),this._value=b,this._onChange(b))};return d}(c.InputHandler);f.LatestPointerType=c;Object.defineProperty(f,"__esModule",{value:!0})});

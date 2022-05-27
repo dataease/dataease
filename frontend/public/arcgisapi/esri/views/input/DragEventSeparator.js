@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(d){let g=function(){function e(a){this.callbacks=a;this.currentCount=0;this.callbacks.condition||(this.callbacks.condition=()=>!0)}var b=e.prototype;b.handle=function(a){const f=a.data,c=f.pointers.size;switch(f.action){case "start":this.currentCount=c;this.emitStart(a);break;case "added":this.emitEnd(this.previousEvent);this.currentCount=c;this.emitStart(a);break;case "update":this.emitUpdate(a);break;case "removed":this.startEvent&&this.emitEnd(this.previousEvent);this.currentCount=
+c;this.emitStart(a);break;case "end":this.emitEnd(a),this.currentCount=0}this.previousEvent=a};b.emitStart=function(a){this.startEvent=a;this.callbacks.condition(this.currentCount,a)&&this.callbacks.start(this.currentCount,a,this.startEvent)};b.emitUpdate=function(a){this.callbacks.condition(this.currentCount,a)&&this.callbacks.update(this.currentCount,a,this.startEvent)};b.emitEnd=function(a){this.callbacks.condition(this.currentCount,a)&&this.callbacks.end(this.currentCount,a,this.startEvent);this.startEvent=
+null};return e}();d.DragEventSeparator=g;Object.defineProperty(d,"__esModule",{value:!0})});

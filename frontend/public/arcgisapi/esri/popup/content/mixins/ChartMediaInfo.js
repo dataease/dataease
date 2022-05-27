@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ./MediaInfo ../support/ChartMediaInfoValue".split(" "),function(g,c,a,m,n,d,p,h,q,r,t,k,l){a=function(e){function f(b){b=e.call(this,b)||this;
+b.type=null;b.value=null;return b}g._inheritsLoose(f,e);return f}(k);c.__decorate([d.property({type:["bar-chart","column-chart","line-chart","pie-chart"],readOnly:!0,json:{read:!1,write:!0}})],a.prototype,"type",void 0);c.__decorate([d.property({type:l,json:{write:!0}})],a.prototype,"value",void 0);return a=c.__decorate([h.subclass("esri.popup.content.mixins.ChartMediaInfo")],a)});

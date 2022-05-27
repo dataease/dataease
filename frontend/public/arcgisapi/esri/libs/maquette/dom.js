@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./projection"],function(f,d){const e={namespace:void 0,performanceLogger:()=>{},eventHandlerInterceptor:void 0,styleApplyer:(b,c,a)=>{b.style[c]=a}};f.applyDefaultProjectionOptions=b=>d.extend(e,b);f.dom={create:(b,c)=>{c=d.extend(e,c);d.createDom(b,document.createElement("div"),void 0,c);return d.createProjection(b,c)},append:(b,c,a)=>{a=d.extend(e,a);d.createDom(c,b,void 0,a);return d.createProjection(c,a)},insertBefore:(b,c,a)=>{a=d.extend(e,a);d.createDom(c,b.parentNode,b,a);
+return d.createProjection(c,a)},merge:(b,c,a)=>{a=d.extend(e,a);c.domNode=b;d.initPropertiesAndChildren(b,c,a);return d.createProjection(c,a)},replace:(b,c,a)=>{a=d.extend(e,a);d.createDom(c,b.parentNode,b,a);b.parentNode.removeChild(b);return d.createProjection(c,a)}};Object.defineProperty(f,"__esModule",{value:!0})});

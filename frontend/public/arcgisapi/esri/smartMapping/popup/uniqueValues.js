@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../core/Error ../../core/promiseUtils ../../PopupTemplate ../../intl/messages ./support/utils".split(" "),function(g,k,l,m,n,f){async function p(a){const {layer:b,renderer:c}=a;await b.load();a=c||b.renderer;if("unique-value"!==a.type)throw new k("unique-values-popup:invalid-parameters","renderer.type must be 'unique-value'");return{layer:b,renderer:a}}async function h(a,b,c="divide"){const {fieldInfos:d,expressionInfos:e}=await f.getFieldAndExpressionInfos({renderer:a,layer:b,
+normFieldExpressionTemplate:c});return new m({content:await f.getContentFromFieldInfos(b,{fieldInfos:d,expressionInfos:e}),fieldInfos:d,expressionInfos:e})}g.getTemplates=async function(a){const [{renderer:b,layer:c},d]=await l.all([p(a),n.fetchMessageBundle("esri/smartMapping/t9n/smartMapping")]);a={name:"unique-values",title:d.uniqueValues,value:await h(b,c)};const e=[];f.hasNormalizedField(b)&&e.push({name:"unique-values-percent",title:d.uniqueValuesNormFieldAsPercent,value:await h(b,c,"percentage")});
+return{primaryTemplate:a,secondaryTemplates:e}};Object.defineProperty(g,"__esModule",{value:!0})});

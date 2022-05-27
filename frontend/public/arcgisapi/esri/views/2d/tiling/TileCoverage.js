@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../../../core/ObjectPool"],function(h){let e=function(){function f(){this.spans=[]}var b=f.prototype;b.acquire=function(c){this.lodInfo=c};b.release=function(){this.lodInfo=null;this.spans.length=0};b.forEach=function(c,k){const {spans:g,lodInfo:d}=this,{level:l}=d;if(0!==g.length)for(const {row:m,colFrom:n,colTo:p}of g)for(let a=n;a<=p;a++)c.call(k,l,m,d.normalizeCol(a),d.getWorldForColumn(a))};return f}();e.pool=new h(e);return e});

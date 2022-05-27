@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../object","./type"],function(h,k,n){function p(a,b,d,c){k.setDeepValue(d,g(a,c),b)}function g(a,b){return a&&"function"===typeof a.write?a.write({},b):a&&"function"===typeof a.toJSON?a.toJSON():"number"===typeof a?l(a):a}function l(a){return-Infinity===a?-Number.MAX_VALUE:Infinity===a?Number.MAX_VALUE:isNaN(a)?null:a}function q(a,b,d,c){null===a?a=null:a&&"function"===typeof a.map?(a=a.map(e=>g(e,c)),"function"===typeof a.toArray&&(a=a.toArray())):a=[g(a,c)];k.setDeepValue(d,
+a,b)}function m(a,b,d){return 0!==d&&Array.isArray(a)?a.map(c=>m(c,b,d-1)):g(a,b)}function r(a){return function(b,d,c,e){if(null===b)b=null;else{b=m(b,e,a);e=a;for(var f=b;0<e&&Array.isArray(f);)e--,f=f[0];if(void 0!==f)for(f=0;f<e;f++)b=[b]}k.setDeepValue(c,b,d)}}h.create=function(a,b){var d;if(b.write&&!b.write.writer&&(!1!==b.write.enabled||b.write.overridePolicy)){var c=null!=(d=null==a?void 0:a.ndimArray)?d:0;a&&(1===c||"type"in a&&n.isCollection(a.type))?b.write.writer=q:b.write.writer=1<c?
+r(c):p}};h.numberToJSON=l;Object.defineProperty(h,"__esModule",{value:!0})});

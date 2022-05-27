@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","../_base"],function(d,c){c=d.getObject("filter.logic",!0,c);d.mixin(c,{default_:function(b,a){return b||a||""},default_if_none:function(b,a){return null===b?a||"":b||""},divisibleby:function(b,a){return 0===parseInt(b,10)%parseInt(a,10)},_yesno:/\s*,\s*/g,yesno:function(b,a){a||(a="yes,no,maybe");a=a.split(dojox.dtl.filter.logic._yesno);return 2>a.length?b:b?a[0]:!b&&null!==b||3>a.length?a[1]:a[2]}});return c});

@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/declare dojo/dom-style dojo/_base/kernel dojo/_base/lang dojo/on ../_Plugin ../../form/ToggleButton".split(" "),function(f,n,p,g,q,b,h){var e=f("dijit._editor.plugins.ToggleDir",b,{useDefaultCommand:!1,command:"toggleDir",buttonClass:h,_initButton:function(){function c(a){k.set("checked",a&&a!==l,!1)}this.inherited(arguments);var k=this.button,d=this.editor.isLeftToRight();this.own(this.button.on("change",g.hitch(this,function(a){this.editor.set("textDir",d^a?"ltr":"rtl")})));var l=
+d?"ltr":"rtl";c(this.editor.get("textDir"));this.editor.watch("textDir",function(a,r,m){c(m)})},updateState:function(){this.button.set("disabled",this.get("disabled"))}});b.registry.toggleDir=function(){return new e({command:"toggleDir"})};return e});

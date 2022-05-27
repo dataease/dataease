@@ -1,0 +1,2 @@
+//>>built
+define({decimal:".",group:",",list:";",percentSign:"%",plusSign:"\u200e+",minusSign:"\u200e-",exponential:"E",superscriptingExponent:"\u00d7",perMille:"\u2030",infinity:"\u221e",nan:"NaN",timeSeparator:":",decimalFormat:"#,##0.###","decimalFormat-long":"\u200f000 \u05d8\u05e8\u05d9\u05dc\u05d9\u05d5\u05df","decimalFormat-short":"000T",scientificFormat:"#E0",percentFormat:"#,##0%",currencyFormat:"#,##0.00\u00a0\u00a4","currencyFormat-short":"\u00a4000T"});

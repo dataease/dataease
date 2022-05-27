@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Identifiable".split(" "),function(e,h,b,m,n,p,c,q,k,r,t,u,l){e.GraphicsView=a=>{a=function(f){function g(){var d=f.apply(this,arguments)||this;d.graphics=
+null;d.renderer=null;d.view=null;return d}h._inheritsLoose(g,f);return g}(l.IdentifiableMixin(a));b.__decorate([c.property()],a.prototype,"graphics",void 0);b.__decorate([c.property()],a.prototype,"renderer",void 0);b.__decorate([c.property()],a.prototype,"updating",void 0);b.__decorate([c.property()],a.prototype,"view",void 0);return a=b.__decorate([k.subclass("esri.views.layers.GraphicsView")],a)};Object.defineProperty(e,"__esModule",{value:!0})});

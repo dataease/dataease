@@ -1,0 +1,2 @@
+//>>built
+define(["dojo","dojox"],function(g,d){g.getObject("math.round",!0,d);g.experimental("dojox.math.round");d.math.round=function(b,e,c){c=10/(c||10);var a=Math.pow(10,-15+Math.log(Math.abs(b))/Math.log(10));return(c*(+b+(0<b?a:-a))).toFixed(e)/c};if(0==(.9).toFixed()){var h=d.math.round;d.math.round=function(b,e,c){var a=Math.pow(10,-e||0),f=Math.abs(b);if(!b||f>=a)a=0;else if(f/=a,.5>f||.95<=f)a=0;return h(b,e,c)+(0<b?a:-a)}}return d.math.round});

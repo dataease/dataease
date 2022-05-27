@@ -1,0 +1,1 @@
+{"widgetLabel":"Oblika geoobjekta","empty":"- prazno -","validationErrors":{"cannotBeNull":"Vnesite vrednost","outsideRange":"Vrednost mora biti med {min} in {max}","invalidCodedValue":"Vrednost mora biti ena od navedenih vrednosti.","invalidType":"Vrednost ni veljavna","tooShort":"To polje zahteva najmanj {min} znakov"}}

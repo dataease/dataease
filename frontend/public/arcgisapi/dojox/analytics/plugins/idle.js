@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/lang ../_base dojo/_base/config dojo/ready dojo/aspect dojo/_base/window".split(" "),function(a,c,e,f,g,h){return c.plugins.idle=new function(){this.addData=a.hitch(c,"addData","idle");this.idleTime=e.idleTime||6E4;this.idle=!0;this.setIdle=function(){this.addData("isIdle");this.idle=!0};f(a.hitch(this,function(){for(var d=["onmousemove","onkeydown","onclick","onscroll"],b=0;b<d.length;b++)g.after(h.doc,d[b],a.hitch(this,function(k){this.idle?(this.idle=!1,this.addData("isActive")):
+clearTimeout(this.idleTimer);this.idleTimer=setTimeout(a.hitch(this,"setIdle"),this.idleTime)}),!0)}))}});

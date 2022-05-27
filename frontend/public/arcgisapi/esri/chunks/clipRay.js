@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./vec3","../core/ObjectStack","../views/3d/support/stack","./ray"],function(d,h,l,w,g){function f(a){return a?{ray:g.create(a.ray),c0:a.c0,c1:a.c1}:{ray:g.create(),c0:0,c1:Number.MAX_VALUE}}function p(a,b,c){const e=x.get();e.ray=a;e.c0=b;e.c1=c;return e}function q(a,b=f()){return m(a.ray,a.c0,a.c1,b)}function m(a,b,c,e=f()){g.copy(a,e.ray);e.c0=b;e.c1=c;return e}function r(a,b=f()){g.copy(a,b.ray);b.c0=0;b.c1=Number.MAX_VALUE;return b}function t(a,b=f()){const c=h.normalize(w.sv3d.get(),
+a.vector);return n(a,c,b)}function n(a,b,c=f()){const e=h.length(a.vector);g.fromValues(a.origin,b,c.ray);c.c0=0;c.c1=e;return c}function u(a,b){return k(a,a.c0,b)}function v(a,b){return k(a,a.c1,b)}function k(a,b,c){return h.add(c,a.ray.origin,h.scale(c,a.ray.direction,b))}const x=new l.ObjectStack(()=>({c0:0,c1:0,ray:null}));l=Object.freeze({__proto__:null,create:f,wrap:p,copy:q,fromValues:m,fromRay:r,fromLineSegment:t,fromLineSegmentAndDirection:n,getStart:u,getEnd:v,getAt:k});d.clipRayModule=
+l;d.copy=q;d.create=f;d.fromLineSegment=t;d.fromLineSegmentAndDirection=n;d.fromRay=r;d.fromValues=m;d.getAt=k;d.getEnd=v;d.getStart=u;d.wrap=p});

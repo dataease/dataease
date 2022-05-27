@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../../../../core/ObjectPool","../../../../chunks/vec3","./IdGen"],function(e,f,g){let c=function(){function d(){}var b=d.prototype;b.acquire=function(a,h,k,l,m,n){this.id=d._idGen.gen(a&&a.id);this.geometry=a;this.material=h;this.transformation=k;this.instanceParameters=l;this.origin=m;this.shaderTransformation=n};b.getStaticTransformation=function(){return this.transformation};b.getShaderTransformation=function(){return this.shaderTransformation?this.shaderTransformation(this.transformation):
+this.transformation};b.computeAttachmentOrigin=function(a){return(this.material.computeAttachmentOrigin?this.material.computeAttachmentOrigin(this.geometry,a):this.geometry.computeAttachmentOrigin(a))?(f.transformMat4(a,a,this.getStaticTransformation()),!0):!1};return d}();c._idGen=new g.IdGen;c.pool=new e(c);return c});

@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","../_base","dojo/_base/config","dojo/ready"],function(b,e,d,f){return b.getObject("dojox.analytics.plugins",!0).dojo=new function(){this.addData=b.hitch(e,"addData","dojo");f(b.hitch(this,function(){var c={},a;for(a in dojo)if("version"==a||"object"!=typeof dojo[a]&&"function"!=typeof dojo[a]&&"_"!=a[0])c[a]=dojo[a];d&&(c.djConfig=d);this.addData(c)}))}});

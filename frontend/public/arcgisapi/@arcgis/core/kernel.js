@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import{h as e}from"./chunks/object.js";import"./core/lang.js";import"./config.js";import"./chunks/Logger.js";import"./chunks/string.js";import"./chunks/Message.js";import"./core/Error.js";import{addQueryParameter as r}from"./core/urlUtils.js";const t="04b0ac713d5a6c53f149e0d4f0ca80be5fbac0de",s="4.18",o={request:(e,r)=>import("./request.js").then((function(e){return e.r})).then((({default:t})=>{const s=e.options||{};return s.responseType="array-buffer",s.signal=null==r?void 0:r.signal,t(e.url,s)})).then((e=>({result:{data:e.data,ssl:e.ssl},transferList:[e.data]})))};let n;function i(e){n=e}function a(e){const t=n&&n.findCredential(e);return t&&t.token?r(e,"token",t.token):e}e("host-webworker")||(console.debug(`Using ArcGIS API for JavaScript 4.18 [Date: 20210114, Revision: ${t.slice(0,8)}]`),(e("edge")||e("trident"))&&console.warn("Deprecated browser - see http://esriurl.com/oldbrowser"));export{a as addTokenParameter,n as id,t as revision,i as setId,s as version,o as workerMessages};

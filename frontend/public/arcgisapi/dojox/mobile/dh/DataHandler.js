@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/_base/lang","dojo/_base/Deferred","./ContentTypeMap"],function(f,d,e,g){return f("dojox.mobile.dh.DataHandler",null,{ds:null,target:null,refNode:null,constructor:function(a,b,c){this.ds=a;this.target=b;this.refNode=c},processData:function(a,b){a=g.getHandlerClass(a);require([a],d.hitch(this,function(c){e.when(this.ds.getData(),d.hitch(this,function(){e.when((new c).parse(this.ds.text,this.target,this.refNode),function(h){b(h)})}))}))}})});

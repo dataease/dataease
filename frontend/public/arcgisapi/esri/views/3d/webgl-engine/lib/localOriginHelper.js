@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(e){e.applyToModelMatrix=function(b,a){const c=-b[0],d=-b[1];b=-b[2];const f=a[3],g=a[7],h=a[11],k=a[15];a[0]+=f*c;a[1]+=f*d;a[2]+=f*b;a[4]+=g*c;a[5]+=g*d;a[6]+=g*b;a[8]+=h*c;a[9]+=h*d;a[10]+=h*b;a[12]+=k*c;a[13]+=k*d;a[14]+=k*b};e.applyToViewMatrix=function(b,a){const c=b[0],d=b[1];b=b[2];a[12]+=c*a[0]+d*a[4]+b*a[8];a[13]+=c*a[1]+d*a[5]+b*a[9];a[14]+=c*a[2]+d*a[6]+b*a[10];a[14]+=c*a[3]+d*a[7]+b*a[11]};Object.defineProperty(e,"__esModule",{value:!0})});

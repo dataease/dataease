@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","dojo/_base/array"],function(c,k){var l=c.getObject("dojox.mvc",!0);return c.mixin(l,{bind:function(d,e,a,b,g,m){var f;return d.watch(e,function(n,p,h){f=c.isFunction(g)?g(h):h;m&&f==a.get(b)||a.set(b,f)})},bindInputs:function(d,e){var a=[];k.forEach(d,function(b){a.push(b.watch("value",e))});return a}})});

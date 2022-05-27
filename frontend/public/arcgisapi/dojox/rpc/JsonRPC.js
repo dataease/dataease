@@ -1,0 +1,3 @@
+//>>built
+define("dojox/rpc/JsonRPC",["dojo","dojox","dojox/rpc/Service","dojo/errors/RequestError"],function(c,e,k,g){function f(b){return{serialize:function(a,d,h,l){a={id:this._requestId++,method:d.name,params:h};b&&(a.jsonrpc=b);return{data:c.toJson(a),handleAs:"json",contentType:"application/json",transport:"POST"}},deserialize:function(a){if("Error"==a.name||a instanceof g)a=c.fromJson(a.responseText);if(a.error){var d=Error(a.error.message||a.error);d._rpcErrorObject=a.error;return d}return a.result}}}
+e.rpc.envelopeRegistry.register("JSON-RPC-1.0",function(b){return"JSON-RPC-1.0"==b},c.mixin({namedParams:!1},f()));e.rpc.envelopeRegistry.register("JSON-RPC-2.0",function(b){return"JSON-RPC-2.0"==b},c.mixin({namedParams:!0},f("2.0")))});

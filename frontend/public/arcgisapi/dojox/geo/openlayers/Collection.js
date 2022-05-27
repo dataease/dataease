@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","./Geometry"],function(a,b){return a("dojox.geo.openlayers.Collection",b,{coordinates:null,setGeometries:function(c){this.coordinates=c},getGeometries:function(){return this.coordinates}})});

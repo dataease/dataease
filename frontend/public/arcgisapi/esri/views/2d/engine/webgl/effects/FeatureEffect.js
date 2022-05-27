@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../chunks/_rollupPluginBabelHelpers","./Effect"],function(h,n,f){f=function(k){function g(a){var b=k.call(this)||this;b.name=b.constructor.name;b.defines=[a];return b}n._inheritsLoose(g,k);var d=g.prototype;d.dispose=function(){};d.bind=function({context:a,painter:b}){this._prev=a.getBoundFramebufferObject();const {width:c,height:e}=a.getViewport();b=b.getFbos(c,e).effect0;a.bindFramebuffer(b);a.setClearColor(0,0,0,0);a.clear(a.gl.COLOR_BUFFER_BIT)};d.unbind=function(){};
+d.draw=function(a,b){const {context:c,painter:e,state:p,deltaTime:q}=a,l=e.getPostProcessingEffects(b.effects),m=c.getBoundFramebufferObject();l.length&&b.transitionStep(q,p.scale);for(const {postProcessingEffect:r,effect:t}of l)r.draw(a,m,t);c.bindFramebuffer(this._prev);c.setStencilTestEnabled(!1);e.blitTexture(c,m.colorTexture,9728);c.setStencilTestEnabled(!0)};return g}(f.Effect);h.FeatureEffect=f;Object.defineProperty(h,"__esModule",{value:!0})});

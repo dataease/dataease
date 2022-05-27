@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor ./gamepad/GamepadSettings".split(" "),function(f,b,a,m,n,g,p,h,q,r,t,k,l){a=function(c){function d(){var e=c.apply(this,arguments)||this;e.gamepad=new l;
+return e}f._inheritsLoose(d,c);return d}(k);b.__decorate([g.property({readOnly:!0})],a.prototype,"gamepad",void 0);return a=b.__decorate([h.subclass("esri.views.input.Input")],a)});

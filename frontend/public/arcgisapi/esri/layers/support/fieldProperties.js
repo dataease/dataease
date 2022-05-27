@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/Logger","./fieldUtils","./Field"],function(b,e,c,f){const g=e.getLogger("esri.layers.support.fieldProperties");b.defineFieldProperties=function(){return{fields:{type:[f],value:null},outFields:{type:[String],dependsOn:["fields"],json:{read:!1},set:function(a){this._userOutFields=a;this.notifyChange("outFields")},get:function(){const a=this._userOutFields;if(!a||!a.length)return null;if(a.includes("*"))return["*"];if(!this.fields)return a;for(const d of a)c.hasField(this.fields,
+d)||g.error("field-attributes-layer:invalid-field",`Invalid field ${d} found in outFields`,{layer:this,outFields:a});return c.fixFields(this.fields,a)}}}};Object.defineProperty(b,"__esModule",{value:!0})});

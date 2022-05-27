@@ -1,8 +1,0 @@
-.#{$theme-name} {
-  .dijitTreeNodeRtl {
-    .dijitTreeExpandoClosed:before {
-      @include icon-get-content(esri-icon-left-triangle-arrow);
-    }
-  }
-}
-

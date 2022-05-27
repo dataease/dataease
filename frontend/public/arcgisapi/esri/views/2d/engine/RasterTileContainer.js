@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../chunks/_rollupPluginBabelHelpers ../../../geometry/support/aaBoundingRect ./webgl/enums ./brushes ./webgl/TileContainer ./RasterTile".split(" "),function(g,k,l,h,m,d,n){d=function(b){function e(){return b.apply(this,arguments)||this}k._inheritsLoose(e,b);var c=e.prototype;c.createTile=function(a){const f=this._tileInfoView.getTileBounds(l.create(),a);return new n.RasterTile(a,f,this._tileInfoView.tileInfo.size)};c.destroyTile=function(){};c.prepareRenderPasses=function(a){const f=
+a.registerRenderPass({name:"bitmap (tile)",brushes:[m.brushes.raster],target:()=>this.children.map(p=>p.bitmap),drawPhase:h.WGLDrawPhase.MAP});return[...b.prototype.prepareRenderPasses.call(this,a),f]};c.doRender=function(a){this.visible&&a.drawPhase===h.WGLDrawPhase.MAP&&b.prototype.doRender.call(this,a)};return e}(d["default"]);g.RasterTileContainer=d;Object.defineProperty(g,"__esModule",{value:!0})});

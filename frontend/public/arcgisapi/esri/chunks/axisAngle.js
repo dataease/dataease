@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./vec3","../views/3d/support/stack","./vector"],function(d,h,m,v){function e(a=k){return[a[0],a[1],a[2],a[3]]}function n(a,c,b,l){return f(a,c,b,l,m.sv4d.get())}function p(a,c){return f(a[0],a[1],a[2],c,m.sv4d.get())}function q(a,c=e()){return f(a[0],a[1],a[2],a[3],c)}function f(a,c,b,l,g=e()){g[0]=a;g[1]=c;g[2]=b;g[3]=l;return g}function r(a,c,b=e()){h.copy(b,a);b[3]=c;return b}function t(a,c,b=e()){h.cross(b,a,c);h.normalize(b,b);b[3]=v.angle(a,c);return b}function u(a){return a}
+const k=[0,0,1,0];var w=Object.freeze({__proto__:null,create:e,wrap:n,wrapAxisAngle:p,copy:q,fromValues:f,fromAxisAndAngle:r,fromPoints:t,axis:u,UP:k});d.UP=k;d.axis=u;d.axisAngleModule=w;d.copy=q;d.create=e;d.fromAxisAndAngle=r;d.fromPoints=t;d.fromValues=f;d.wrap=n;d.wrapAxisAngle=p});
