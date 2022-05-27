@@ -17,7 +17,7 @@
       <span :title="$t('panel.matrix')">
         <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
       </span>
-      <span :title="$t('panel.suspension')+'cheshi'">
+      <span :title="$t('panel.suspension')">
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">

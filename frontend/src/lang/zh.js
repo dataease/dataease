@@ -1003,6 +1003,8 @@ export default {
     chart_type_distribute: '分布',
     chart_type_relation: '关系',
     chart_type_space: '空间位置',
+    texture_pie: '纹理饼图',
+    heat_map: '热力图',
     preview: '上一步',
     next: '下一步',
     select_dataset: '选择数据集',
@@ -1974,7 +1976,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用DataIns',
+    welcome_title: '欢迎使用可视化配置平台',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

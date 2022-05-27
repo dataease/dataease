@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       myChart: null,
+      timer: null,
       chartId: uuid.v1(),
       showTrackBar: true,
       trackBarStyle: {
@@ -206,6 +207,32 @@ export default {
       if (this.myChart && this.antVRenderStatus) {
         this.myChart.render()
       }
+      clearInterval(this.timer)
+      console.log('触发重新渲染、、、、、、、')
+      this.$nextTick(() => {
+        console.log('触发事件', this.myChart)
+        // var valus = 20
+        // this.timer = setInterval(() => {
+        //   console.log('???????????this.s2', this.myChart)
+        //   valus = valus + 20
+        //   this.myChart.facet.updateScrollOffset({
+        //     offsetX: {},
+        //     offsetY: {
+        //       value: valus,
+        //       animate: true
+        //     }
+        //   })
+        // }, 2000)
+        // setInterval(() => {
+        //   this.s2.facet.updateScrollOffset({
+        //     offsetX: {},
+        //     offsetY: {
+        //       value: 20,
+        //       animate: true
+        //     }
+        //   })
+        // }, 200)
+      })
       this.setBackGroundBorder()
     },
 

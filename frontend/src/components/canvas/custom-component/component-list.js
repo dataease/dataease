@@ -110,25 +110,24 @@ export const STREAMMEDIALINKS = {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true,
+    loop: true
     // url: null // 网络动画视频
   },
   hls: {
     type: 'hls',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true,
+    loop: true
     // url: null // 网络动画视频
   },
   rtmp: {
     type: 'rtmp',
-    isLive: false,
-    cors: true, // 允许跨域
-    loop: true,
+    cors: true // 允许跨域
     // url: null // 网络动画视频
   },
   webrtc: {
     type: 'webrtc',
+    cors: true // 允许跨域
     // url: null // 网络动画视频
   }
 }
@@ -160,6 +159,14 @@ export const assistList = [
     component: 'de-tabs',
     type: 'de-tabs',
     label: '选项卡',
+    icon: 'iconfont icon-tabs',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '10007',
+    component: 'de-banner',
+    type: 'de-banner',
+    label: '轮播组件',
     icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
@@ -352,6 +359,35 @@ const list = [
     propValue: '',
     icon: 'tabs',
     type: 'de-tabs',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 200,
+      borderStyle: 'solid',
+      borderWidth: 0,
+      borderColor: '#000000'
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }]
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '10007',
+    component: 'de-banner',
+    label: '轮播组件',
+    propValue: '',
+    icon: 'tabs',
+    type: 'de-banner',
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 200,

@@ -32,6 +32,7 @@ import {
   HORIZONTAL_BAR,
   BASE_PIE,
   BASE_FUNNEL,
+  THERMODYNAMIC_DIAGRAM,
   BASE_RADAR,
   BASE_GAUGE,
   BASE_MAP,
@@ -47,11 +48,14 @@ import {
 } from '../chart/bar/bar'
 import {
   baseLineOption,
-  stackLineOption
+  stackLineOption,
+  heatMapOption
 } from '../chart/line/line'
 import {
   basePieOption,
-  rosePieOption
+  rosePieOption,
+  texturePieOption
+  // newHartOption
 } from '../chart/pie/pie'
 import {
   baseMapOption
@@ -205,6 +209,11 @@ export default {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
       } else if (chart.type === 'pie-rose') {
         chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+      } else if (chart.type === 'pie-txture') {
+        chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+      } else if (chart.type === 'diagram') {
+        chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
+        // chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
       } else if (chart.type === 'radar') {

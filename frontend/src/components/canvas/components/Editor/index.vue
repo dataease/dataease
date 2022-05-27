@@ -99,6 +99,18 @@
       />
       <component
         :is="item.component"
+        v-else-if="renderOk&&item.type==='de-banner'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      />
+      <component
+        :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
         ref="wrapperChild"
@@ -946,6 +958,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     dragComponentInfo() {
+      console.log('是否触发这个事件------')
       return this.$store.state.dragComponentInfo
     },
 
@@ -982,7 +995,11 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
+<<<<<<< HEAD
+        console.log('++++++this.componentData', this.componentData)
+=======
         console.log('组件：',newVal)
+>>>>>>> 8822f794c0d28a47d29bd3633f1a3c9ab8830aeb
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
@@ -1303,6 +1320,7 @@ export default {
       }
     },
     handleDragOver(e) {
+      console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth

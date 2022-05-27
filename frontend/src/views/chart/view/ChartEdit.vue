@@ -303,12 +303,12 @@
                         <span>{{ $t('chart.arc_map_url') }}</span>
                       </span>
                       <span class="tree-select-span">
-                        <el-input 
-                          v-model="view.urlMap" 
-                          :placeholder="$t('chart.arc_map_url_place')" 
+                        <el-input
+                          v-model="view.urlMap"
+                          :placeholder="$t('chart.arc_map_url_place')"
+                          size="small"
                           @Change="calcData"
-                          size="small">
-                        </el-input>
+                        />
                       </span>
                     </el-row>
 
@@ -762,6 +762,13 @@
                       :chart="chart"
                       @onLabelChange="onLabelChange"
                     />
+                    <label-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
@@ -777,6 +784,13 @@
                     />
                     <tooltip-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTooltipChange="onTooltipChange"
+                    />
+                    <tooltip-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -895,6 +909,13 @@
                       :chart="chart"
                       @onTextChange="onTextChange"
                     />
+                    <title-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTextChange="onTextChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
@@ -910,6 +931,13 @@
                     />
                     <legend-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLegendChange="onLegendChange"
+                    />
+                    <legend-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -1360,8 +1388,8 @@ export default {
         customFilter: [],
         render: 'antv',
         isPlugin: false,
-        file: "",
-        urlMap: "http://www.sdmap.gov.cn/tileservice/SDPubMap?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=0&STYLE=default&FORMAT=image/png&TILEMATRIXSET=taishannew&TILEMATRIX=10&TILEROW=152&TILECOL=851",
+        file: '',
+        urlMap: 'http://www.sdmap.gov.cn/tileservice/SDPubMap?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=0&STYLE=default&FORMAT=image/png&TILEMATRIXSET=taishannew&TILEMATRIX=10&TILEROW=152&TILECOL=851'
       },
       urlMap1: '',
       moveId: -1,
@@ -1455,7 +1483,7 @@ export default {
     },
     'view.type': function(newVal, oldVal) {
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
-    },
+    }
   },
   created() {
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
@@ -1501,7 +1529,7 @@ export default {
     },
     chartInit() {
       this.urlMap1 = this.view.urlMap
-      console.log('chartInit::::::::::',this.urlMap1,this.view)
+      console.log('chartInit::::::::::', this.urlMap1, this.view)
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
@@ -1714,11 +1742,11 @@ export default {
           ele.filter = []
         }
       })
-      
-      if(view.type === 'arc_map') {
+
+      if (view.type === 'arc_map') {
         view.urlMap = view.urlMap
       }
-      
+
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -1733,8 +1761,8 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
-      
-      console.log('buildParam：',view)
+
+      console.log('buildParam：', view)
       delete view.data
       return view
     },
@@ -1783,7 +1811,7 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
-      console.log('calcData：',view)
+      console.log('calcData：', view)
       if (!view) return
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
@@ -1920,7 +1948,7 @@ export default {
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           this.view.file = this.view.file ? this.view.file : ''
           this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
-          console.log('getChart::::::::::',this.view)
+          console.log('getChart::::::::::', this.view)
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1935,32 +1963,31 @@ export default {
     },
 
     // 上传成功
-    handleAvatarSuccess(res,file) {
-      console.log(res,file)
+    handleAvatarSuccess(res, file) {
+      console.log(res, file)
     },
     // 上传之前
     beforeAvatarUpload(file) {
-      console.log('file',file)
-      if(file.type !== 'application/x-tar' && file.type !== 'application/x-zip-compressed') {
-        this.$message.error("支持格式为：.tar .zip")
+      console.log('file', file)
+      if (file.type !== 'application/x-tar' && file.type !== 'application/x-zip-compressed') {
+        this.$message.error('支持格式为：.tar .zip')
         return
       }
     },
     // 获取上传数据
-    httpRequestUpdate(data){
-      console.log(data,this.view.file)
-      // let _this = this 
+    httpRequestUpdate(data) {
+      console.log(data, this.view.file)
+      // let _this = this
       // let rd = new FileReader() // 创建文件读取对象
       // let file = data.file
       // rd.readAsDataURL(file) // 文件读取转化为base64类型
       // rd.onloadend = function(e) {
 
       // }
-
     },
     // move回调方法
     onMove(e, originalEvent) {
-      console.log('拖动',e)
+      console.log('拖动', e)
       this.moveId = e.draggedContext.element.id
       return true
     },

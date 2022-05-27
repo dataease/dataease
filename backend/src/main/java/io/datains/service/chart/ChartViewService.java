@@ -728,7 +728,8 @@ public class ChartViewService {
         Map<String, Object> map = new TreeMap<>();
         // 图表组件可再扩展
         Map<String, Object> mapChart = new HashMap<>();
-        if (StringUtils.equalsIgnoreCase(view.getRender(), "echarts")) {
+        if (StringUtils.equalsIgnoreCase(view.getRender(), "echarts")
+                || StringUtils.equalsIgnoreCase(view.getRender(), "highcharts")) {
             if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 mapChart = ChartDataBuild.transStackChartData(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {

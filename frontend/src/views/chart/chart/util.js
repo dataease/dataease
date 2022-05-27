@@ -320,13 +320,28 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-txture',
+    title: 'chart.texture_pie',
+    icon: 'pie-txture'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'diagram',
+    title: 'chart.heat_map',
+    icon: 'diagram'
+  }
   /* 下面是highcharts图表类型 */
+  // highcharts
   {
     render: 'highcharts',
     category: 'chart.chart_type_distribute',
-    value: '3Dpie',
-    title: 'chart.chart_3Dpie',
-    icon: '3Dpie'
+    value: '3dpie',
+    title: 'chart.chart_pie',
+    icon: '3dpie'
   },
   {
     render: 'highcharts',
@@ -334,5 +349,5 @@ export const TYPE_CONFIGS = [
     value: 'arc_map',
     title: 'chart.chart_arcgis_map',
     icon: 'arc_map'
-  },
+  }
 ]

@@ -10,7 +10,7 @@
     </div>
   </div>
 </template>
- 
+
 <script>
 import highcharts from 'highcharts'
 import highcharts3d from 'highcharts/highcharts-3d'
@@ -21,8 +21,15 @@ import ArcGIS from './arcgis/index.vue'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar.vue'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {BASE_PIE, basePieOption} from "@/views/chart/chart/pie/3dpie_hc"
+import { BASE_PIE, basePieOption } from '@/views/chart/chart/pie/3dpie_hc'
 export default {
+  components: {
+    ViewTrackBar
+  },
+  components: {
+    ViewTrackBar,
+    ArcGIS
+  },
   props: {
     chart: {
       type: Object,
@@ -47,10 +54,6 @@ export default {
       required: false,
       default: 0
     }
-  },
-  components: {
-    ViewTrackBar,
-    ArcGIS
   },
   data() {
     return {
@@ -101,7 +104,7 @@ export default {
   },
   watch: {
     chart: {
-      handler(newVal,oldVal){
+      handler(newVal, oldVal) {
         this.initTitle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
@@ -122,26 +125,26 @@ export default {
   },
   mounted() {
     this.preDraw()
-    console.log('饼数据。。。',this.chart)
+    console.log('饼数据。。。', this.chart)
   },
   methods: {
-    preDraw(){
+    preDraw() {
       this.initTitle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
       })
     },
-    drawView(){
+    drawView() {
       const chart = this.chart
       this.antVRenderStatus = true
-      if(chart.type === "3Dpie") {
-        this.myChart = this.$highcharts.chart(this.chartId,JSON.parse(JSON.stringify(BASE_PIE)))
+      if (chart.type === '3Dpie') {
+        this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
         this.drawEcharts()
       } else if (chart.type === 'arc_map') {
-        
+
       }
-      
+
       // else {
       //   if(this.myChart) {
       //     this.antVRenderStatus = false
@@ -201,7 +204,7 @@ export default {
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
         }
       }
-    }, 
+    },
     chartResize() {
       this.calcHeightDelay()
     },
@@ -240,10 +243,10 @@ export default {
           break
       }
     },
-    initTitle(){
-      if(this.chart.customStyle){
+    initTitle() {
+      if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        if(customStyle.text) {
+        if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = customStyle.text.fontSize + 'px'
           this.title_class.color = customStyle.text.color
@@ -262,11 +265,11 @@ export default {
         this.calcHeightRightNow()
       }, 100)
     },
-    calcHeightRightNow(){
+    calcHeightRightNow() {
       this.$nextTick(() => {
-        if(this.$refs.chartContainer) {
+        if (this.$refs.chartContainer) {
           const currentHeight = this.$refs.chartContainer.offsetHeight
-          if(this.$refs.title) {
+          if (this.$refs.title) {
             const titleHeight = this.$refs.title.offsetHeight
             this.chartHeight = (currentHeight - titleHeight) + 'px'
           }

@@ -11,26 +11,31 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'hls'">
       <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-        <video
-          ref="videoPlayer"
-          class="video-js vjs-default-skin vjs-big-play-centered"
-          :loop="pOption.loop"
-          controls
-          muted
-        />
+        <video id="myPlayerHls" ref="myPlayerHls" :destroyOnClose="true" class="video-js vjs-default-skin" controls preload="auto" width="500px">
+          <!-- <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8" type="application/x-mpegURL" /> -->
+        </video>
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
-      <canvas id="video" />
+      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+        <video id="myPlayerRtmp" ref="myPlayerRtmp" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto" width="500px">
+          <!-- <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8" type="application/x-mpegURL" /> -->
+        </video>
+      </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
       <video id="remote-video" />
     </div>
+
   </el-row>
 </template>
 <script>
+// RTMP || HLS
 import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
+import 'videojs-contrib-hls'
 
+// FLV
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
 import bus from '@/utils/bus'
@@ -66,7 +71,11 @@ export default {
       videoShow: true,
       playerHlv: null,
       Webplayer: null,
-      // web
+      // hls
+      myPlayerHls: null,
+      // rtmp
+      myPlayerRtmp: null,
+      // webrtc
       tt: null,
       heartCheck: null,
       timeoutObj: null,
@@ -97,20 +106,20 @@ export default {
           this.initOption()
         }
         if (this.element.streamMediaLinks.videoType === 'webrtc') {
-          console.log('webrtc')
           this.initOptionWeb('offer')
         }
       },
       deep: true
     }
   },
-  created() {},
+  created() {
+  },
   mounted() {
     if (this.element.streamMediaLinks.videoType === 'flv') {
       this.initOption()
       bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-        this.flvPlayer = null,
+        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+        this.flvPlayer = null
         this.videoShow = false
         this.$nextTick(() => {
           this.videoShow = true
@@ -119,16 +128,59 @@ export default {
       })
     }
     if (this.element.streamMediaLinks.videoType === 'hls') {
-      this.initOptionHlv()
+      // this.initOptionHlv()
+      this.myPlayerHls = videojs(
+        'myPlayerHls', {
+          bigPlayButton: false,
+          textTrackDisplay: false,
+          posterImage: true,
+          errorDisplay: false,
+          controlBar: true,
+          sources: [{
+            type: 'application/x-mpegURL',
+            src: this.pOption.url
+          }]
+        },
+        function() {
+          this.play()
+        }
+      )
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
-      this.getVideos()
+      this.myPlayerRtmp = videojs('myPlayerRtmp', {
+        sources: [{
+          type: 'rtmp/flv',
+          src: this.pOption.url.substring(7)
+        }],
+        // 属性可以去查中文文档
+        controls: true,
+        // 自动播放属性,muted:静音播放
+        autoplay: true,
+        preload: 'auto',
+        textTrackDisplay: false,
+        errorDisplay: false,
+        controlBar: false,
+        bigPlayButton: false
+      })
     }
     if (this.element.streamMediaLinks.videoType === 'webrtc') {
       this.initOptionWeb()
     }
   },
+  beforeDestroy() {
+    if (this.myPlayerHls) {
+      const myPlayerHls = this.$refs.myPlayerHls // 不能用document 获取节点
+      videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+      this.myPlayerHls.dispose()
+    }
+    if (this.myPlayerRtmp) {
+      const myPlayerRtmp = this.$refs.myPlayerRtmp // 不能用document 获取节点
+      videojs(myPlayerRtmp).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+      this.myPlayerRtmp.dispose()
+    }
+  },
   methods: {
+    // FLV
     initOption() {
       if (flvjs.isSupported() && this.pOption.url) {
         const video = this.$refs.player
@@ -144,6 +196,7 @@ export default {
         }
       }
     },
+    // HLV
     initOptionHlv() {
       const videoPlayer = this.$refs.videoPlayer
       if (videoPlayer) {
@@ -172,9 +225,6 @@ export default {
         })
       }
     },
-    getVideos() {
-
-    },
     initOptionWeb() {
       const that = this
       if (!this.pOption.url) {
@@ -187,10 +237,10 @@ export default {
       this.createWebSocket()
 
       this.remoteVideo = document.querySelector('#remote-video')
-      this.remoteVideo.onloadeddata = () => {
-        console.log('播放对方视频')
-        this.remoteVideo.play()
-      }
+      // this.remoteVideo.onloadeddata = () => {
+      //   console.log('播放对方视频')
+      //   this.remoteVideo.play()
+      // }
       const PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window
         .webkitRTCPeerConnection
 
@@ -205,10 +255,27 @@ export default {
     },
     // 创建websocket
     createWebSocket() {
+      var that = this
       try {
         this.ws = new WebSocket(this.wsUrl)
+        console.log('开始连接', this.ws)
         this.initWebScoketFun()
+        this.ws.onclose = () => {
+          console.log('链接关闭', this.wsUrl)
+          this.reconnect(this.wsUrl)
+        }
+        this.ws.onerror = () => {
+          console.log('链接失败', this.wsUrl)
+          setTimeout(() => {
+            that.reconnect(that.wsUrl)
+          }, 10000)
+        }
+        this.ws.onopen = () => {
+          console.log('链接成功', this.wsUrl)
+          this.heartCheck.start()
+        }
       } catch (e) {
+        console.log('链接错误', e)
         this.reconnect(this.wsUrl)
       }
     },
@@ -229,18 +296,20 @@ export default {
           }, timeout)
         }
       }
-      this.ws.onclose = () => {
-        console.log('链接关闭', this.wsUrl)
-        this.reconnect(this.wsUrl)
-      }
-      this.ws.onerror = () => {
-        console.log('链接失败', this.wsUrl)
-        this.reconnect(this.wsUrl)
-      }
-      this.ws.onopen = () => {
-        console.log('链接成功', this.wsUrl)
-        this.heartCheck.start()
-      }
+      // this.ws.onclose = () => {
+      //   console.log('链接关闭', this.wsUrl)
+      //   this.reconnect(this.wsUrl)
+      // }
+      // this.ws.onerror = () => {
+      //   console.log('链接失败', this.wsUrl)
+      //   setTimeout(() => {
+      //     that.reconnect(that.wsUrl)
+      //   }, that.$global.delay)
+      // }
+      // this.ws.onopen = () => {
+      //   console.log('链接成功', this.wsUrl)
+      //   this.heartCheck.start()
+      // }
       this.ws.onmessage = (e) => {
         console.log(e, 'webScoket心跳链接')
         const {
@@ -270,12 +339,8 @@ export default {
         this.createWebSocket(url)
         this.lockReconnect = false
       }, 60000)
-    },
-    beforeDestroy() {
-      if (this.playerHlv) {
-        this.playerHlv.dispose()
-      }
     }
+
   }
 }
 </script>

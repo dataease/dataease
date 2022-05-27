@@ -34,6 +34,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
+    <chart-component-hc
+      v-else-if="charViewHcShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <chart-component-g2
       v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
@@ -54,7 +65,7 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <chart-component-H3 
+    <chart-component-H3
       v-else-if="charViewH3ShowFlag"
       :ref="element.propValue.id"
       class="chart-class"
@@ -97,6 +108,7 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import ChartComponentHc from '@/views/chart/components/ChartComponentHc.vue'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
@@ -105,7 +117,7 @@ import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentH3 from '@/views/chart/components/ChartComponentH3'
 export default {
   name: 'UserView',
-  components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2, ChartComponentH3},
+  components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2, ChartComponentH3, ChartComponentHc },
   props: {
     element: {
       type: Object,
@@ -198,6 +210,9 @@ export default {
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
+    },
+    charViewHcShowFlag() {
+      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'highcharts'
     },
     charViewG2ShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'antv'
@@ -500,8 +515,9 @@ export default {
         method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
-            console.log('查出的数据',response.data)
+            console.log('查出的数据', response.data)
             this.chart = response.data
+            console.log('this.chart: ', this.chart)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
