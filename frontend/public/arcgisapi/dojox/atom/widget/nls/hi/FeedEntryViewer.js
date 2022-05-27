@@ -1,0 +1,2 @@
+//>>built
+define({displayOptions:"[display options]",title:"\u0936\u0940\u0930\u094d\u0937\u0915",authors:"\u0932\u0947\u0916\u0915",contributors:"\u0938\u0939\u092f\u094b\u0917\u0940",id:"ID",close:"[close]",updated:"\u0905\u092a\u0921\u0947\u091f \u0915\u093f\u092f\u093e",summary:"\u0938\u093e\u0930",content:"\u0938\u093e\u092e\u0917\u094d\u0930\u0940"});

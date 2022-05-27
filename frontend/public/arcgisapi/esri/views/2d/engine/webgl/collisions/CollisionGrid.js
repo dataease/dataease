@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../definitions"],function(d,e){let g=function(){function f(a,b=2){this._bucketSize=a;this._rowsLength=e.TILE_SIZE/a;this._colsLength=e.TILE_SIZE/a;this._elementsPerBucket=b;this._grid=this._initGrid()}var c=f.prototype;c.checkOverlap=function(a,b){a=Math.floor(a/this._bucketSize);b=Math.floor(b/this._bucketSize);return 0>a||a>=this._rowsLength||0>b||b>=this._colsLength?!0:this._grid[b*this._colsLength+a]>=this._elementsPerBucket};c.markUsed=function(a,b){this._grid[Math.floor(b/
+this._bucketSize)*this._colsLength+Math.floor(a/this._bucketSize)]+=1};c.reset=function(){this._grid=this._initGrid()};c._initGrid=function(){return new Uint8Array(this._rowsLength*this._colsLength)};return f}();d.CollisionGrid=g;Object.defineProperty(d,"__esModule",{value:!0})});

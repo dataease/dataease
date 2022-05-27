@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../core/maybe ../../../geometry/Point ../../../geometry ../../../symbols/SimpleMarkerSymbol ../../../chunks/symbols ../../../Graphic".split(" "),function(c,d,h,e,k,n,l){const m={red:[255,0,0],green:[0,255,0],blue:[0,0,255]};e=function(){function f(a,b){this.graphics=a;this._symbol=new k({color:m[b],outline:{color:[255,255,255],width:2}})}var g=f.prototype;g.showPoint=function(a,b){d.isNone(b)||(this.remove(),a=new h({x:a[0],y:a[1],z:a[2],spatialReference:b}),this._graphic=new l({geometry:a,
+symbol:this._symbol}),this.graphics.add(this._graphic))};g.remove=function(){d.isSome(this._graphic)&&(this.graphics.remove(this._graphic),this._graphic=null)};return f}();c.GraphicsHandle=e;Object.defineProperty(c,"__esModule",{value:!0})});

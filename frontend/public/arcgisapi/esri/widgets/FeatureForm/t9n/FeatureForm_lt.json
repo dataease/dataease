@@ -1,0 +1,1 @@
+{"widgetLabel":"Elemento forma","empty":"- tuščia -","validationErrors":{"cannotBeNull":"Įveskite reikšmę","outsideRange":"Reikšmė turi būti nuo {min} iki {max}","invalidCodedValue":"Reikšmė turi būti viena iš šių nurodytų reikšmių.","invalidType":"Netinkama reikšmė","tooShort":"Lauko ilgis turi būti mažiausiai tiek simbolių: {min}"}}

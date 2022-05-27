@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/_base/lang","./Columns","./commonStacked"],function(c,d,e,b){return c("dojox.charting.plot2d.StackedColumns",e,{getSeriesStats:function(){var a=b.collectStats(this.series,d.hitch(this,"isNullValue"));a.hmin-=.5;a.hmax+=.5;return a},rearrangeValues:function(a,f,g){return b.rearrangeValues.call(this,a,f,g)}})});

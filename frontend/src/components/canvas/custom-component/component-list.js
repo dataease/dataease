@@ -110,25 +110,23 @@ export const STREAMMEDIALINKS = {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true,
+    loop: true
     // url: null // 网络动画视频
   },
   hls: {
     type: 'hls',
-    isLive: false,
     cors: true, // 允许跨域
-    loop: true,
+    loop: true
     // url: null // 网络动画视频
   },
   rtmp: {
     type: 'rtmp',
-    isLive: false,
-    cors: true, // 允许跨域
-    loop: true,
+    cors: true // 允许跨域
     // url: null // 网络动画视频
   },
   webrtc: {
     type: 'webrtc',
+    cors: true // 允许跨域
     // url: null // 网络动画视频
   }
 }

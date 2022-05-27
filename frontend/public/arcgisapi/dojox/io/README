@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------------
+DojoX IO
+-------------------------------------------------------------------------------
+Version 0.4.0
+Release date: 07/04/2008
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Bryan Forbes (bryan AT reigndropsfall.net)
+	Kris Zyp (kris AT sitepen.com)
+	James Burke (jburke AT dojotoolkit.org)
+	Tom Trenka (ttrenka AT gmail.com)
+	
+-------------------------------------------------------------------------------
+Project description
+
+	A Collection of advanced and experimental IO modules:
+	
+	* scriptFrame.js - Uses an iframe for dojo.io.script requests. Useful in some
+	long-polling comet situations in Firefox and Opera. Those browsers execute scripts
+	in DOM order, not network-receive order, so a long-polling script will block other
+	dynamically appended scripts from running until it completes. By using an iframe
+	for the dojo.io.script requests, this issue can be avoided.
+
+	* xhrMultiPart.js - Constructs multi-part mime XHR requests. Useful when wanting
+	multi-part requests but not using a form with a file input. Note that it does not
+	allow you to send files from local disks -- a form with a file input is required
+	for that use case. xhrMultipart is not useful in that use case.
+
+	* xhrPlugins.js - An adapter registry for having multiple XHR handlers (like
+	XDomainRequest, CS-XHR, proxy, and window.name)
+
+	* windowName.js - Cross-domain transport using window.name
+	xhrWindowNamePlugin.js - window.name plugin for XHR adapter registry
+
+	* httpParse.js - HTTP message parser. Parses to an XHR like interface.
+	
+	* OAuth.js - Object to be used for signing OpenAuth requests.  Includes easy
+		wrappers for xhr.
+	
+-------------------------------------------------------------------------------
+Dependencies:
+
+DojoX IO xhrMultiPart depends on Dojo Core and DojoX UUID's generateRandomUuid 
+function.
+
+xhrWindowNamePlugin depends on dojox.secure.capability for safe JSON parsing
+
+OAuth depends on dojox.encoding.digests.SHA1.
+-------------------------------------------------------------------------------
+Documentation
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid/*
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/secure/*
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/encoding/digests/*
+
+Install into the following directory structure:
+/dojox/uuid/
+/dojox/secure/
+/dojox/encoding/digests/
+
+AND
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/io/*
+
+Install into the following directory structure:
+/dojox/io/
+
+...both of which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------
+Additional Notes
+
+The information contained in this README does not pertain to DojoX XHR IFrame Proxy.  
+For that information see proxy/README.

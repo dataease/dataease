@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","./AnalogIndicatorBase"],function(b,c){return b("dojox.gauges.AnalogLineIndicator",[c],{_getShapes:function(d){var a=this.length;"inside"==this.direction&&(a=-a);return[d.createLine({x1:0,y1:-this.offset,x2:0,y2:-a-this.offset}).setStroke({color:this.color,width:this.width})]}})});

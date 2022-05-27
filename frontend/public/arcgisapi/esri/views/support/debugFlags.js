@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor".split(" "),function(f,b,a,l,m,g,n,h,p,q,r,k){a=function(c){function d(){var e=c.apply(this,arguments)||this;e.SCHEDULER_LOG_SLOW_TASKS=!1;return e}f._inheritsLoose(d,
+c);return d}(k);b.__decorate([g.property()],a.prototype,"SCHEDULER_LOG_SLOW_TASKS",void 0);a=b.__decorate([h.subclass("esri.views.support.DebugFlags")],a);return new a});

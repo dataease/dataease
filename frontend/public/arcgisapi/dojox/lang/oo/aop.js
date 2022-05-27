@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox","dojo/require!dojox/lang/oo/Decorator,dojox/lang/oo/general"],function(e,n,m){e.provide("dojox.lang.oo.aop");e.require("dojox.lang.oo.Decorator");e.require("dojox.lang.oo.general");(function(){var a=m.lang.oo,f=a.makeDecorator,h=a.general;a=a.aop;var g=e.isFunction;a.before=h.before;a.around=h.wrap;a.afterReturning=f(function(k,c,b){return g(b)?function(){var d=b.apply(this,arguments);c.call(this,d);return d}:function(){c.call(this)}});a.afterThrowing=f(function(k,c,
+b){return g(b)?function(){try{var d=b.apply(this,arguments)}catch(l){throw c.call(this,l),l;}return d}:b});a.after=f(function(k,c,b){return g(b)?function(){try{var d=b.apply(this,arguments)}finally{c.call(this)}return d}:function(){c.call(this)}})})()});

@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","dojo/query","dojo/NodeList-fx","dojo/fx","../style"],function(g,d,k,e,f){d=d.NodeList;g.extend(d,{addClassFx:function(a,b){return e.combine(this.map(function(c){return f.addClass(c,a,b)}))},removeClassFx:function(a,b){return e.combine(this.map(function(c){return f.removeClass(c,a,b)}))},toggleClassFx:function(a,b,c){return e.combine(this.map(function(h){return f.toggleClass(h,a,b,c)}))}});return d});

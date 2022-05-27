@@ -1,0 +1,2 @@
+//>>built
+define(["dojo"],function(c){return c.declare("dojox.math.random.Simple",null,{destroy:function(){},nextBytes:function(b){for(var a=0,d=b.length;a<d;++a)b[a]=Math.floor(256*Math.random())}})});

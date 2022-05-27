@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../chunks/_rollupPluginBabelHelpers ../../../core/handleUtils ../../../Color ./Settings ../../3d/interactive/visualElements/PointVisualElement ./SnappingCandidate ./SnappingConstraint".split(" "),function(f,m,g,n,p,q,d,r){d=function(h){function e(a,c,b,k){a=h.call(this,a,c,new r.LineLikeIntersectionConstraint(b.constraint,k.constraint))||this;a.left=b;a.right=k;return a}m._inheritsLoose(e,h);var l=e.prototype;l.visualizeTargetHints=function(a,c,b){return g.handlesGroup([this.left.visualize(a,
+c,b),this.right.visualize(a,c,b)])};l.visualizeReferenceHints=function(a,c,b){return g.destroyHandle(new q.PointVisualElement({view:a,primitive:"circle",geometry:this.coordinateHelper.createPoint(b),elevationInfo:c,size:20,outlineSize:2,color:[0,0,0,0],outlineColor:n.toUnitRGBA(p.defaults.orange),pixelSnappingEnabled:!1}))};return e}(d.SnappingCandidate);f.IntersectionSnappingCandidate=d;Object.defineProperty(f,"__esModule",{value:!0})});

@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------------
+Project Name:  dojox.mvc
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: May 16th, 2011
+-------------------------------------------------------------------------------
+Project state: experimental (code and API subject to change in future releases)
+-------------------------------------------------------------------------------
+Credits:
+       Rahul Akolkar (original author)
+       Ed Chatelain
+       Akira Sudoh
+       Charlie Wiecha
+
+-------------------------------------------------------------------------------
+Project description:
+
+Enterprise Rich Internet Applications (RIAs) often focus more on rich data
+vs. the rich media aspects of RIAs more typical of consumer applications.
+For example, such RIAs depend on implementing the well-known CRUD operations
+on data stored in back-end systems. The dojox.mvc project focuses on
+separation of MVC concerns on the client, thereby on easing development
+of data-rich applications and accelerating the authoring of applications to
+Create, Read, Update, and Delete data using a set of Dojo-based patterns.
+
+This project is useful across form factors. For example, it may be used with
+dijit as well as dojox.mobile.
+
+We begin by introducing a first-class client-side data model based on
+dojo/Stateful and extending Dojo Form widgets with support for the
+Model-View-Control (MVC) pattern key to separating data from presentation in
+user interface design. This basic MVC pattern allows for the flexible reuse of
+each of the Model, View, and Control artifacts by application authors in
+varying configurations.
+
+We also add support for a set of commonly needed MVC widgets and containers
+such as:
+- Output: a data-bound output widget
+- Group: an aggregation of widgets with the same parent data binding context
+- Repeat: a model-bound repeater widget that binds to a data collection
+- Generate: an example of UI generation from a supplied data model
+
+For more, see descriptive class documentation at the top of the following
+files:
+dojox/mvc/at.js
+dojox/mvc/sync.js
+
+For an introductory page on the included samples, see:
+dojox/mvc/tests/mvc_index.html
+
+For mobile demos, see:
+dojox/mvc/tests/mobile/demo/demo.html
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+    Dojo Core (base, dojo/Stateful)
+    Dijit (dijit/_WidgetBase, dijit/form.*)
+
+-------------------------------------------------------------------------------
+Documentation:
+
+Documentation resides at:
+    http://dojotoolkit.org/reference-guide/dojox/mvc.html
+
+-------------------------------------------------------------------------------
+Installation instructions:
+
+Grab the following from the Dojo SVN Repository:
+  http://svn.dojotoolkit.org/src/dojox/trunk/mvc.js
+  http://svn.dojotoolkit.org/src/dojox/trunk/mvc/*
+
+Install into the following directory structure:
+/dojox/mvc.js
+/dojox/mvc/*
+
+...which should be at the same level as your Dojo checkout.
+
+then add the requires for the "dojox/mvc/at" or one of the other "dojox/mvc/xxx" classes in your application to load support for
+data bindings. Other components (such as MVC containers i.e. Group, Repeat)
+should be required as per application need.
+
+-------------------------------------------------------------------------------

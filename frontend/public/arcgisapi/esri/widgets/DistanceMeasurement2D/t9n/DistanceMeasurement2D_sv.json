@@ -1,0 +1,1 @@
+{"widgetLabel":"Avståndsmätning","hint":"Börja mäta genom att klicka i kartan för att placera den första punkten","unsupported":"2D-avståndsmätning stöds bara i MapView.","distance":"Avstånd","newMeasurement":"Ny mätning","mode":"Läge","modes":{"auto":"Auto","planar":"Plan","geodesic":"Geodetisk"},"unit":"Enhet"}

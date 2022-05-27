@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport".split(" "),function(a,g,d,m,n,p,h,q,k,r,t,u,l){var b;a.LegendOptions=b=function(e){function c(){var f=e.apply(this,arguments)||this;f.title=
+null;return f}g._inheritsLoose(c,e);c.prototype.clone=function(){return new b({title:this.title})};return c}(l.JSONSupport);d.__decorate([h.property({type:String,json:{write:!0}})],a.LegendOptions.prototype,"title",void 0);a.LegendOptions=b=d.__decorate([k.subclass("esri.renderers.support.LegendOptions")],a.LegendOptions);a.default=a.LegendOptions;Object.defineProperty(a,"__esModule",{value:!0})});

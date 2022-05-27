@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../core/Logger","../../../core/deprecate","../../../smartMapping/renderers/color"],function(a,c,d,b){c=c.getLogger("esri.renderers.smartMapping.creators.color");d.deprecatedModule(c,"esri/renderers/smartMapping/creators/color",{replacement:"esri/smartMapping/renderers/color"});a.createAgeRenderer=b.createAgeRenderer;a.createClassBreaksRenderer=b.createClassBreaksRenderer;a.createContinuousRenderer=b.createContinuousRenderer;a.createPCContinuousRenderer=b.createPCContinuousRenderer;
+a.createPCTrueColorRenderer=b.createPCTrueColorRenderer;a.createVisualVariable=b.createVisualVariable;Object.defineProperty(a,"__esModule",{value:!0})});

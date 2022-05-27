@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang"],function(a){a=a.getObject("dojox.fx._arg",!0);a.StyleArgs=function(b){this.node=b.node;this.cssClass=b.cssClass};a.ShadowResizeArgs=function(b){this.x=b.x;this.y=b.y};return a});

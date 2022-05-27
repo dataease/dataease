@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../../chunks/mat4","../../../../../../chunks/mat4f32"],function(e,h,k){(function(c){function f(b,a,d){h.translate(g,d,a);b.setUniform3fv("localOrigin",a);b.setUniformMatrix4fv("view",g)}c.bindCamPosition=function(b,a,d){b.setUniform3f("camPos",d[3]-a[0],d[7]-a[1],d[11]-a[2])};c.bindProjectionMatrix=function(b,a){b.setUniformMatrix4fv("proj",a)};c.bindNearFar=function(b,a){b.setUniform2fv("nearFar",a)};c.bindViewCustomOrigin=f;c.bindView=function(b,a){f(b,a.origin,a.camera.viewMatrix)};
+c.bindViewport=function(b,a){b.setUniform4fv("viewport",a.camera.fullViewport)}})(e.View||(e.View={}));const g=k.create();Object.defineProperty(e,"__esModule",{value:!0})});

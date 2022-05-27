@@ -1,0 +1,44 @@
+/* ColorPalette
+ * 
+ * Styling of the ColorPalette consists of the following:
+ * 
+ * 1. the whole color palette
+ *		.dijitColorPalette - for outline, border, and background color of the whole color palette
+ *		Note: outline does not work for IE
+ *
+ * 2. the color swatch 
+ *		.dijitColorPalette .dijitPaletteImg
+ *		transparent (but clickable) <img> node inside of each <td>, overlaying the color swatch.
+ *		displays border around a color swatch
+ *
+ * 3. hovered swatch
+ * 		.dijitColorPalette .dijitPaletteCell:hover .dijitPaletteImg
+ *		the hovered state of the color swatch - adds border
+ * 	
+ * 4. active and selected swatch
+ * 		.dijitColorPalette .dijitPaletteCell:active .dijitPaletteImg
+ *		.dijitColorPalette .dijitPaletteCellSelected .dijitPaletteImg
+ *		adds border for active or selected state
+ */
+
+@import "variables";
+
+.claro  .dijitColorPalette {
+	border: 1px solid @border-color;
+	background: @colorpalette-background-color;
+	.border-radius(0);
+}
+
+.claro .dijitColorPalette .dijitPaletteImg {
+	/* transparent (but clickable) <img> node inside of each <td>, overlaying the color swatch.
+	 * displays border around a color swatch
+	 * overrides border color in dijit.css */
+	border: 1px solid @minor-border-color;
+}
+.claro .dijitColorPalette .dijitPaletteCell:hover .dijitPaletteImg {
+	border: 1px solid @swatch-hovered-border-color;
+}
+.claro .dijitColorPalette .dijitPaletteCell:active .dijitPaletteImg,
+.claro .dijitColorPalette .dijitPaletteTable .dijitPaletteCellSelected .dijitPaletteImg {
+	border: 2px solid @swatch-selected-border-color;
+}

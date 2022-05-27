@@ -1,0 +1,1 @@
+{"widgetLabel":"Μορφή στοιχείου","empty":"- κενό -","validationErrors":{"cannotBeNull":"Εισαγάγετε μια τιμή","outsideRange":"Η τιμή πρέπει να είναι από {min} έως {max}.","invalidCodedValue":"Η τιμή πρέπει να είναι μία από τις παρατιθέμενες.","invalidType":"Μη έγκυρη τιμή","tooShort":"Στο πεδίο αυτό απαιτούνται τουλάχιστον {min} χαρακτήρες."}}

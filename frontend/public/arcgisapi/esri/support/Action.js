@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../chunks/_rollupPluginBabelHelpers ../chunks/tslib.es6 ../core/has ../core/Logger ../core/accessorSupport/ensureType ../core/accessorSupport/decorators/property ../core/jsonMap ../core/accessorSupport/decorators/subclass ../core/urlUtils ../core/uuid ../portal/support/resourceExtension ./actions/ActionButton".split(" "),function(e,f,a,g,m,n,p,h,q,r,t,k){const l=g.getLogger("esri.support.Action");a=function(c){function d(b){b=c.call(this,b)||this;l.warn("DEPRECATED: 'esri/support/Action' -- use 'esri/support/actions/ActionButton' instead.");
+return b}e._inheritsLoose(d,c);return d}(k);return a=f.__decorate([h.subclass("esri.support.Action")],a)});

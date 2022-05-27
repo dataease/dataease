@@ -1,0 +1,1 @@
+{"widgetLabel":"Formulari d'entitats","empty":"- buit -","validationErrors":{"cannotBeNull":"Introduïu un valor","outsideRange":"El valor ha d'estar entre {min} i {max}","invalidCodedValue":"El valor ha de ser un dels de la llista.","invalidType":"No és un valor vàlid","tooShort":"Aquest camp necessita com a mínim {min} caràcters"}}

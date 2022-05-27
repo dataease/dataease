@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/dom-construct","dojo/dom-class","dojo/dom-style"],function(b,d,a,c){return b(null,{buildRendering:function(){this.inherited(arguments);this.isLeftToRight()||(this.containerNode.style.left="auto",c.set(this.containerNode,{position:"absolute",top:0,right:0}),a.remove(this.previousButton,"mblComboBoxMenuItem"),a.add(this.previousButton,"mblComboBoxMenuItemRtl"),a.remove(this.nextButton,"mblComboBoxMenuItem"),a.add(this.nextButton,"mblComboBoxMenuItemRtl"))}})});

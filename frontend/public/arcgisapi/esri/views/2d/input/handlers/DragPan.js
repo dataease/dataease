@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/_rollupPluginBabelHelpers","../../../input/InputHandler","../../../input/handlers/support","../../../input/DragEventSeparator"],function(k,n,e,p,q){e=function(l){function f(g,d,r){var a=l.call(this,!0)||this;a.view=g;a.pointerAction=d;a.registerIncoming("drag",r,c=>a._handleDrag(c));a.registerIncoming("pointer-down",()=>a.stopMomentumNavigation());const h=a.view.mapViewNavigation;a.dragEventSeparator=new q.DragEventSeparator({start:(c,b)=>{h.pan.begin(a.view,
+b.data);b.stopPropagation()},update:(c,b)=>{h.pan.update(a.view,b.data);b.stopPropagation()},end:(c,b)=>{h.pan.end(a.view,b.data);b.stopPropagation()},condition:(c,b)=>1===c&&p.eventMatchesPointerAction(b.data,a.pointerAction)});return a}n._inheritsLoose(f,l);var m=f.prototype;m._handleDrag=function(g){const d=this.view.mapViewNavigation;d.pinch.zoomMomentum||d.pinch.rotateMomentum?this.stopMomentumNavigation():this.dragEventSeparator.handle(g)};m.stopMomentumNavigation=function(){this.view.mapViewNavigation.pan.stopMomentumNavigation()};
+return f}(e.InputHandler);k.DragPan=e;Object.defineProperty(k,"__esModule",{value:!0})});

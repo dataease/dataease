@@ -1,0 +1,207 @@
+-------------------------------------------------------------------------------
+DojoX Django Template Language
+-------------------------------------------------------------------------------
+Version 0.0
+Release date: 09/20/2007
+-------------------------------------------------------------------------------
+Project state: experimental/feature incomplete
+-------------------------------------------------------------------------------
+Project authors
+	Neil Roberts (pottedmeat@dojotoolkit.org)
+-------------------------------------------------------------------------------
+Project description
+
+The Django Template language uses a system of templates that can be compiled
+once and rendered indefinitely afterwards. It uses a simple system of tags
+and filters.
+
+This is a 1:1 match with the Django Template Language as outlined in
+http://www.djangoproject.com/documentation/templates/. All applicable tags and
+filters have been implemented (see below), along with new filters and tags as
+necessary (see below).
+
+The Django Template Language is intended within Django to only handle text.
+Our implementation is able to handle HTML in addition to text. Actually, the
+text and HTML portions of dojox.dtl are two separate layers, the HTML layer
+sits on top of the text layer (base). It's also been implemented in such a way
+that you have little to fear when moving your code from Django to dojox.dtl.
+Your existing templates should work, and will benefit from the massive
+performance gain of being able to manipulate nodes, rather than having to do
+clunky innerHTML swaps you would have to do with a text-only system. It also
+allows for new HTML-centric abilities, outlined below.
+
+Despite having two levels of complexity, if you write your tags correctly, they
+will work in both environments.
+-------------------------------------------------------------------------------
+Dependencies
+
+Base:
+dojox.string.Builder
+
+Date filters and tags:
+dojox.date.php
+
+Widget:
+dijit._Widget
+dijit._Container
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/dtl.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/dtl/*
+
+Install into the following directory structure:
+/dojox/dtl/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------
+What's Been Done
+
+Note: HTML Unit Tests should only be around for the oddities of HTML, tag/filter
+code is the same for each environment with minor exceptions. Cloning of all tags
+should be tested inside a for loop.
+
+| Implemented |     Tag     | Text Unit Test | HTML Unit Test |
+|      X      | block       |       X        |                |
+|      X      | comment     |       X        |                |
+|      X      | cycle       |       X        |                |
+|      X      | debug       |       X        |                |
+|      X      | extends     |       X        |                |
+|      X      | filter      |       X        |                |
+|      X      | firstof     |       X        |                |
+|      X      | for         |       X        |                |
+|      X      | if          |       X        |                |
+|      X      | ifchanged   |       X        |       X        |
+|      X      | ifequal     |       X        |                |
+|      X      | ifnotequal  |       X        |                |
+|      X      | include     |       X        |       X        |
+|      X      | load        |       X        |                |
+|      X      | now         |       X        |                |
+|      X      | regroup     |       X        |                |
+|      X      | spaceless   |       X        |       X        |
+|      X      | ssi         |       X        |       X        |
+|      X      | templatetag |       X        |                |
+|     N/A     | url         |                |                |
+|      X      | widthratio  |       X        |                |
+|      X      | with        |       X        |                |
+
+| Implemented | Filter             | Text Unit Test | HTML Unit Test |
+|      X      | add                |       X        |                |
+|      X      | addslashes         |       X        |                |
+|      X      | capfirst           |       X        |                |
+|      X      | center             |       X        |                |
+|      X      | cut                |       X        |                |
+|      X      | date               |       X        |                |
+|      X      | default            |       X        |                |
+|      X      | default_if_none    |       X        |                |
+|      X      | dictsort           |       X        |                |
+|      X      | dictsort_reversed  |       X        |                |
+|      X      | divisibleby        |       X        |                |
+|      X      | escape             |       X        |                |
+|      X      | filesizeformat     |       X        |                |
+|      X      | first              |       X        |                |
+|      X      | fix_ampersands     |       X        |                |
+|      X      | floatformat        |       X        |                |
+|      X      | get_digit          |       X        |                |
+|      X      | iriencode          |       X        |                |
+|      X      | join               |       X        |                |
+|      X      | length             |       X        |                |
+|      X      | length_is          |       X        |                |
+|      X      | linebreaks         |       X        |                |
+|      X      | linebreaksbr       |       X        |                |
+|      X      | linenumbers        |       X        |                |
+|      X      | ljust              |       X        |                |
+|      X      | lower              |       X        |                |
+|      X      | make_list          |       X        |                |
+|      X      | phone2numeric      |       X        |                |
+|      X      | pluralize          |       X        |                |
+|      X      | pprint             |       X        |                |
+|      X      | random             |       X        |                |
+|      X      | removetags         |       X        |                |
+|      X      | rjust              |       X        |                |
+|      X      | slice              |       X        |                |
+|      X      | slugify            |       X        |                |
+|      X      | stringformat       |       X        |                |
+|      X      | striptags          |       X        |                |
+|      X      | time               |       X        |                |
+|      X      | timesince          |       X        |                |
+|      X      | timeuntil          |       X        |                |
+|      X      | title              |       X        |                |
+|      X      | truncatewords      |       X        |                |
+|      X      | truncatewords_html |       X        |                |
+|      X      | unordered_list     |       X        |                |
+|      X      | upper              |       X        |                |
+|      X      | urlencode          |       X        |                |
+|      X      | urlize             |       X        |                |
+|      X      | urlizetrunc        |       X        |                |
+|      X      | wordcount          |       X        |                |
+|      X      | wordwrap           |       X        |                |
+|      X      | yesno              |       X        |                |
+-------------------------------------------------------------------------------
+HTML-Specific Additions
+-------------------------------------------------------------------------------
+{%extends "shared:templates/template.html" %}
+
+When using the {% extends %} tag, we don't always want to replace the parent
+node in DOM. For example, if we have a list view and a detail view, but both
+share the same base template, we want it to share the parent template. This
+basically means that the same nodes will be used in the parent for both views.
+
+To use this, simply add "shared:" to the beginning of the specified template.
+-------------------------------------------------------------------------------
+<!--{% commented markup %}-->
+
+Some browsers treat comment nodes as full fledged nodes. If performance is
+important to you, you can wrap your markup in comments. The comments will be
+automatically stripped for browsers that cannot support this.
+-------------------------------------------------------------------------------
+Attribute Tags
+
+If a tag name begins with "attr:" then it will be able to inject an object
+into the parsed template. (See dojox.dtl.tag.event.EventNode)
+
+onclick/onmouseover/etc attributes work by attaching to the rendering object.
+
+tstyle attribute allows for styles to be changed dynamically. Use them just
+like a "style" attribute.
+
+attach attribute attaches the node to the rendering object.
+-------------------------------------------------------------------------------
+New Context Functions
+
+setThis() and getThis() returns the object "in charge" of the current rendering.
+This is used so that we can attach events.
+
+mixin() and filter() clone the current context, and either add to or reduce
+the keys in the context.
+-------------------------------------------------------------------------------
+Buffers
+
+Both the base and HTML versions of dojox.dtl use buffers. The base version uses
+dojox.string.Builder and the HTML version uses dojox.dtl.DomBuffer.
+
+The HTML buffer has several calls important to rendering:
+
+setParent/getParent/concat/remove:
+
+setParent and concat are used in order to render our HTML. As we move through
+the parsed template, different nodes change the parent or add on to the
+current parent. getParent is useful in things like the attribute tags, since
+they can use getParent to find the node that they're an attribute on. remove is
+used during unrendering.
+
+setAttribute:
+
+Sets an attribute on the current parent
+-------------------------------------------------------------------------------
+Tags Need clone/unrender Functions.
+
+One of the biggest challenges of getting dojox.dtl to work in an HTML
+environment was logic blocks. Nodes and objects inside a for loop need to be
+cloned, they can't simply be re-rendered, especially if they involve a Node.
+Also, in the case of an if/else block, we need to be able to not just render
+one of the blocks, but also unrender the second.
+
+This is really simple code, a good example is the dojox.dtl.DomNode
+object. Each function in this object is only one line long.

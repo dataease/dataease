@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------------
+dojox.gantt
+-------------------------------------------------------------------------------
+Version 0.100
+Release date: 12/23/2010
+-------------------------------------------------------------------------------
+Project state:
+alpha
+-------------------------------------------------------------------------------
+Credits
+Tom Trenka (ttrenka@dojotoolkit.org)
+Xiang Zhou (xiangxz@cn.ibm.com) - IBM, CCLA
+Adam Peller (peller@dojotoolkit.org)
+Dylan Schiemann (dylan@dojotoolkit.org)
+Bill Keese (bill@dojotoolkit.org)
+Peter Higgins (dante@dojotoolkit.org)
+
+-------------------------------------------------------------------------------
+Project description
+
+GanttChart(dojox.gantt.GanttChart) is an integrated widget for project and resource management use. It includes a set of features as follows.
+
+        Toolbar - Providing general time line control and save/load button.
+        Project Tree - Listing projects and their tasks.
+        Task Cascade View - A task view with dependency, that can be modified visually.
+        Resource View - A read-only view shows people resource occupation.
+
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core, Dijit.
+-------------------------------------------------------------------------------
+Documentation
+
+[TODO]
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/src/dojox/trunk/gantt/*
+
+Install into the following directory structure:
+/dojox/gantt/
+-------------------------------------------------------------------------------

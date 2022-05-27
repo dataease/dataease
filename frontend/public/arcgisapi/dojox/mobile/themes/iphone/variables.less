@@ -1,0 +1,779 @@
+@import "../common/css3.less";
+
+@default-blue-button-color: white;
+@default-blue-button-background-color: #366edf;
+.default-blue-button-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#7a9de9, #2362dd, 0.5, #366edf, 0.5, #215fdc); }
+@default-blue-button-background-image-gecko: -moz-linear-gradient(top, #7a9de9 0%, #366edf 50%, #215fdc 50%, #2362dd 100%);
+
+.mbl-color-blue-45 () { .background-image-linear-gradient-top-left-bottom-right-2-stops(#7a9de9, #2362dd, 0.5, #366edf, 0.5, #215fdc); }
+.mbl-color-default-45 () { .background-image-linear-gradient-top-left-bottom-right-3-stops(#222222, #4a6c9b, 0.02, #8ea4c1, 0.5, #5877a2, 0.5, #476999); }
+.mbl-color-default-sel-45 () { .background-image-linear-gradient-top-left-bottom-right-2-stops(#7c87a4, #263e6c, 0.5, #394d77, 0.5, #243b69); }
+
+@mbl-color-blue-45-gecko: -moz-linear-gradient(top left, #7a9de9 0%, #366edf 50%, #215fdc 50%, #2362dd 100%);
+@mbl-color-default-45-gecko: -moz-linear-gradient(top left, #222222 0%, #8ea4c1 2%, #5877a2 50%, #476999 50%, #4a6c9b 100%);
+@mbl-color-default-sel-45-gecko: -moz-linear-gradient(top left, #7c87a4 0%, #394d77 50%, #243b69 50%, #263e6c 100%);
+
+@default-button-color: white;
+@default-button-background-color: #5877a2;
+.default-button-background-image () { .background-image-linear-gradient-top-bottom-3-stops(#222, #4a6c9b, .02, #8ea4c1, 0.5, #5877a2, 0.5, #476999); }
+@default-button-background-image-gecko: -moz-linear-gradient(top, #222 0%, #8ea4c1 2%, #5877a2 50%, #476999 50%, #4a6c9b 100%);
+@default-button-border-radius: 5px;
+
+@default-button-selected-color: white;
+@default-button-selected-background-color: #394d77;
+.default-button-selected-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#7c87a4, #263e6c, 0.5, #394d77, 0.5, #243b69); }
+@default-button-selected-background-image-gecko: -moz-linear-gradient(top, #7c87a4 0%, #394d77 50%, #243b69 50%, #263e6c 100%);
+
+@default-selected-color: white;
+@default-selected-background-color: #048bf4;
+.default-selected-background-image () { .background-image-linear-gradient-top-bottom(#048bf4, #005ce5); }
+@default-selected-background-image-gecko: -moz-linear-gradient(top, #048bf4 0%, #005ce5 100%);
+
+@heading-background-color: #889bb3;
+.heading-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#b0bccd, #6d84a2, 0.5, #889bb3, 0.5, #8195af); }
+@heading-background-image-gecko: -moz-linear-gradient(top, #b0bccd 0%, #889bb3 50%, #8195af 50%, #6d84a2 100%);
+@heading-border-top-color: #cdd5df;
+@heading-border-bottom-color: #2d3642;
+
+.default-button-border-styles () {
+	border-color: #9cacc0;
+	border-radius: @default-button-border-radius;
+}
+
+.mblToolBarButtonBodyInLeftArrow-styles () {
+  border-left-width: 0;
+}
+
+.mblToolBarButtonBodyInRightArrow-styles () {
+  border-right-width: 0;
+}
+
+// background styles of form controls
+.mbl-button-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#fdfdfd, #cecece, 0.5, #f8f8f8, 0.5, #eeeeee); }
+.mbl-button-selected-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#f0f0f0, #bfbfbf, 0.5, #ebebeb, 0.5, #dedede); }
+.mbl-blue-button-background-image () { .default-blue-button-background-image(); }
+.mbl-blue-button-selected-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#8ea4c1, #4a6c9b, 0.5, #5877a2, 0.5, #476999); }
+.mbl-red-button-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#fa9d58, #ee4115, 0.5, #ff4d25, 0.5, #ed4d15); }
+.mbl-red-button-selected-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#c1a48e, #9b6c4a, 0.5, #a27758, 0.5, #996947); }
+.mbl-button-checked-background-image () { .default-blue-button-background-image(); }
+
+// background styles of form controls (for gecko)
+@mbl-button-background-image-gecko: -moz-linear-gradient(top, #fdfdfd 0%, #f8f8f8 50%, #eeeeee 50%, #cecece 100%);
+@mbl-button-selected-background-image-gecko: -moz-linear-gradient(top, #f0f0f0 0%, #ebebeb 50%, #dedede 50%, #bfbfbf 100%);
+@mbl-blue-button-background-image-gecko: @default-blue-button-background-image-gecko;
+@mbl-blue-button-selected-background-image-gecko: -moz-linear-gradient(top, #8ea4c1 0%, #5877a2 50%, #476999 50%, #4a6c9b 100%);
+@mbl-red-button-background-image-gecko: -moz-linear-gradient(top, #fa9d58 0%, #ff4d25 50%, #ed4d15 50%, #ee4115 100%);
+@mbl-red-button-selected-background-image-gecko: -moz-linear-gradient(top, #c1a48e 0%, #a27758 50%, #996947 50%, #9b6c4a 100%);
+@mbl-button-checked-background-image-gecko: @default-blue-button-background-image-gecko;
+
+// common.less
+.mobile-body-styles () {
+	font-family: Helvetica;
+	font-size: 17px;
+}
+
+.mblBackground-styles () {
+	background-color: #c5ccd3;
+}
+
+.mblView-styles () {
+}
+
+.mblColorBlue-styles () {
+	color: @default-blue-button-color;
+	background-color: @default-blue-button-background-color;
+	.default-blue-button-background-image();
+}
+.mblColorDefault-styles () {
+	color: @default-button-color;
+	background-color: @default-button-background-color;
+	.default-button-background-image();
+}
+.mblColorDefaultSel-styles () {
+	color: @default-button-selected-color;
+	background-color: @default-button-selected-background-color;
+	.default-button-selected-background-image();
+}
+
+// Heading.less
+.mblHeading-styles () {
+	.heading-background-image();
+	border-top: 1px solid @heading-border-top-color;
+	border-bottom: 1px solid @heading-border-bottom-color;
+	color: white;
+	text-shadow: rgba(0,0,0,0.6) 0 -1px 0;
+}
+
+// ToolBarButton.less
+@mbl-tool-bar-button-body-border-radius: 5px;
+//
+.mblToolBarButton-styles () {
+}
+.mblToolBarButtonArrow-styles () {
+  .transform(scale(0.75, 1.0) rotate(45deg));
+	border: 1px solid #9cacc0;
+	border-top-left-radius: 1px;
+  border-bottom-right-radius: 1px;
+}
+.mblToolBarButtonArrowInHeading-styles () {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #405a7e #405a7e #3a4755 #3a4755;
+}
+.mblToolBarButtonHasLeftArrowInHeading-styles () {
+	.box-shadow(0 1px 0 rgba(255, 255, 255, 0.305));
+}
+.mblToolBarButtonHasLeftArrowInHeading-compat-gecko () {
+	-moz-box-shadow: 0 1px 0 rgba(255,255,255,0.305);
+}
+.mblToolBarButtonHasRightArrowInHeading-styles () {
+	.box-shadow(1px 0 0 rgba(255, 255, 255, 0.305));
+}
+.mblToolBarButtonHasRightArrowInHeading-compat-gecko () {
+	-moz-box-shadow: 1px 0 0 rgba(255,255,255,0.305);
+}
+.mblToolBarButtonArrowInLeftArrow-styles () {
+  left: 1px;
+}
+.mblToolBarButtonArrowInRightArrow-styles () {
+  right: 0px;
+}
+.mblToolBarButtonBody-styles () {
+	border: 1px outset #9cacc0;
+}
+.mblToolBarButtonBodyInHeading-styles () {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #2f3740 #405a7e #375073 #3a4755;
+	.box-shadow(0 1px 0 rgba(255,255,255,0.305));
+}
+.mblToolBarButtonBodyInHeading-compat-gecko () {
+	-moz-box-shadow: 0 1px 0 rgba(255,255,255,0.305);
+}
+
+// RoundRect.less & RoundRectList.less
+@mbl-round-rect-border-color: #adaaad;
+@mbl-round-rect-border-radius: 8px;
+@mbl-round-rect-background-color: white;
+@mbl-round-rect-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+//
+.mblRoundRect-styles () {
+}
+
+// EdgeToEdgeCategory.less
+.mblEdgeToEdgeCategory-styles () {
+	height: 22px;
+	border-top: 1px solid #a4b0b9;
+	border-bottom: 1px solid #979da3;
+	.background-image-linear-gradient-top-bottom(#8f9ea9, #b7c0c7);
+	color: white;
+	line-height: 22px;
+	text-shadow: rgba(0,0,0,0.6) 0 -1px 0;
+}
+
+// RoundRectCategory.less
+.mblRoundRectCategory-styles () {
+	color: #4c566c;
+	text-shadow: rgba(255, 255, 255, 1) 0 1px 0;
+}
+
+// EdgeToEdgeList.less
+.mblEdgeToEdgeList-styles () {
+	background-color: white;
+}
+.mblEdgeToEdgeList-LastListItem-styles () {
+	border-bottom-color: #707c84;
+}
+
+// ListItem.less
+@mbl-list-item-height: 43px;
+//
+.mblListItem-styles () {
+	border-bottom: 1px solid #adaaad;
+	font-weight: bold;
+	color: black;
+}
+.mblListItemSelected-styles () {
+	color: @default-selected-color;
+	.default-selected-background-image();
+}
+.mblListItemLabelSelected-styles () {
+	background-color: #048bf4;
+}
+.mblListItemChecked-styles () {
+	color: #314e84;
+}
+.mblListItemRightText-styles () {
+	color: #324f85;
+	margin-top: 12px;
+}
+.mblListItemSubText-styles () {
+}
+
+// Switch.less
+@mbl-switch-bg-left-background-color: #2859b1;
+.mbl-switch-bg-left-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#2859b1, #75acfb, 0.5, #3f84eb, 0.5, #4c8eee); }
+@mbl-switch-bg-right-background-color: #cecece;
+.mbl-switch-bg-right-background-image () { .background-image-linear-gradient-top-bottom-2-stops(#cecece, #fdfdfd, 0.5, #eeeeee, 0.5, #f8f8f8); }
+.mbl-switch-knob-background-image () { .background-image-linear-gradient-top-bottom(#cccccc, #fafafa); }
+//
+@mbl-switch-bg-left-background-image-gecko: -moz-linear-gradient(top, #2859b1 0%, #3f84eb 50%, #4c8eee 50%, #75acfb 100%);
+@mbl-switch-bg-right-background-image-gecko: -moz-linear-gradient(top, #cecece 0%, #eeeeee 50%, #f8f8f8 50%, #fdfdfd 100%);
+@mbl-switch-knob-background-image-gecko: -moz-linear-gradient(top, #cccccc 0%, #fafafa 100%);
+//
+@mbl-switch-square-border-radius: 5px;
+//
+.mblSwitchBg-styles () {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #939393 #aaaaaa #cbcbcb #767676;
+}
+.mblSwitchKnob-styles () {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #5e5e5e #9e9e9e #828282 #797979;
+}
+
+// Button.less
+.mblButton-styles () {
+	.default-button-border-styles;
+	color: black;
+	font-size: 13px;
+}
+.mblButtonSelected-styles () {
+	color: black;
+}
+.mblButton-mblBlueButton-styles () {
+	color: white;
+}
+.mblButton-mblRedButton-styles () {
+	color: white;
+}
+
+// CheckBox.less
+.mblCheckBox-styles () {
+	.default-button-border-styles;
+}
+.mblCheckBoxChecked-after-styles () {
+	border-color: white;
+}
+.mblCheckBoxChecked-mblCheckBoxSelected-after-styles () {
+}
+
+// ComboBox.less
+@mbl-combo-box-popup-box-shadow: 0 0 50px black;
+//
+.dijitPopup-styles () {
+	border-radius: 0;
+}
+.mblComboBoxMenu-styles () {
+	border-radius: 0;
+	background-color: white;
+}
+.mblComboBoxMenuItem-styles () {
+	border-color: #ffffff;
+	color: inherit;
+}
+.mblComboBoxMenuItemSelected-styles () {
+	.default-selected-background-image();
+	color: white;
+}
+
+// IconContainer.less
+.mblIconItemSub-styles () {
+	background-color: white;
+}
+.mblIconArea-styles () {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	width: 74px;
+}
+.mblIconItemDeleteIcon-styles () {
+	top: -4px;
+	left: -2px;
+}
+
+// RadioButton.less
+.mblRadioButton-styles () {
+	border-color: #9cacc0;
+}
+.mblRadioButtonChecked-after-styles () {
+	border-color: white;
+}
+.mblRadioButtonChecked-Selected-after-styles () {
+	border-color: white;
+}
+
+// Slider.less
+@mbl-slider-bar-border-radius: 8px;
+@mbl-slider-knob-border-radius: 10px;
+//
+.mblSlider-styles () {
+	border-color: #b0b0b0;
+}
+.mblSliderHandle-styles () {
+	border-color: #9d9d9d;
+}
+
+// TabBar.less
+.mblTabBar-styles () {
+	text-shadow: rgba(0,0,0,0.6) 0 -1px 0;
+}
+
+// barType="tabBar"
+.mblTabBarTabBar-styles () {
+	.background-image-linear-gradient-top-bottom-2-stops(#2d2d2d, #000000, 0.5, #141414, 0.5, #000000);
+}
+.mblTabBarTabBar-compat () {
+	background-color: #000000;
+}
+.mblTabBarTabBarButton-styles () {
+}
+.mblTabBarTabBarButtonIconArea-styles () {
+}
+.mblTabBarTabBarButtonLabel-styles () {
+	color: #979797;
+}
+.mblTabBarTabBarButtonSelected-styles () {
+	background-color: #404040;
+	.background-image-linear-gradient-top-bottom-2-stops(#484848, #242424, 0.5, #353535, 0.5, #242424);
+}
+.mblTabBarTabBarButtonLabelSelected-styles () {
+	color: white;
+}
+
+// barType="segmentedControl"
+@mbl-tab-bar-segmented-control-border-radius: 5px;
+//
+.mblTabBarSegmentedControl-styles () {
+}
+.mblTabBarSegmentedControlButton-styles () {
+	border-style: solid;
+	border-color: #2f3740 #405a7e #375073 #3a4755;
+	color: @default-button-color;
+	.heading-background-image();
+	.box-shadow(0 1px 0 rgba(255, 255, 255, 0.305));
+}
+.mblTabBarSegmentedControlButton-compat-gecko () {
+	-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.305);
+}
+.mblTabBarSegmentedControlButtonSelected-styles () {
+	.default-button-background-image();
+}
+
+// barType="standardTab"
+.mblTabBarStandardTab-styles () {
+}
+.mblTabBarStandardTabButton-styles () {
+	color: @default-button-color;
+	.heading-background-image();
+}
+.mblTabBarStandardTabButtonIconArea-styles () {
+}
+.mblTabBarStandardTabButtonLabel-styles () {
+}
+.mblTabBarStandardTabButtonSelected-styles () {
+	background-color: @default-button-background-color;
+	.default-button-background-image();
+}
+.mblTabBarStandardTabButtonLabelSelected-styles () {
+}
+
+// barType="tallTab"
+.mblTabBarTallTab-styles () {
+	.background-image-linear-gradient-top-bottom-2-stops(#2d2d2d, #000000, 0.5, #141414, 0.5, #000000);
+}
+.mblTabBarTallTabButton-styles () {
+	background-color: #212421;
+	background-image: none;
+}
+.mblTabBarTallTabButton-FirstChild-styles () {
+}
+.mblTabBarTallTabButton-LastChild-styles () {
+}
+.mblTabBarTallTabButtonIconArea-styles () {
+}
+.mblTabBarTallTabButtonLabel-styles () {
+}
+.mblTabBarTallTabButtonSelected-styles () {
+	background-color: #636363;
+	background-image: none;
+}
+.mblTabBarTallTabButtonLabelSelected-styles () {
+}
+
+// TextArea.less
+.mblTextArea-styles () {
+	.default-button-border-styles;
+}
+
+// TextBox.less
+.mblTextBox-styles () {
+	.default-button-border-styles;
+}
+
+// ToggleButton.less
+.mblToggleButton-styles () {
+	.default-button-border-styles;
+	font-size: 13px;
+	color: black;
+}
+.mblToggleButtonSelected-styles () {
+}
+.mblToggleButtonChecked-styles () {
+	color: white;
+}
+.mblToggleButtonChecked-after-styles () {
+	border-color: white;
+}
+.mblToggleButtonCheckedSelected-styles () {
+}
+.mblToggleButtonCheckedSelected-after-styles () {
+}
+
+// Overlay.less
+.mblOverlay-styles () {
+	.background-image-linear-gradient-top-bottom(#fdfdfd, #cecece);
+}
+.mblOverlay-compat () {
+	background-color: #cecece;
+	background-image: none;
+}
+.mblOverlay-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #fdfdfd 0%, #cecece 100%);
+}
+
+// Tooltip.less
+@mbl-tooltip-border-radius: 8px;
+//
+.mblTooltip-styles () {
+	border-color: #5a5a5a;
+	border-radius: @mbl-tooltip-border-radius;
+	background-color: #121b2f;
+	.background-image-linear-gradient-top-bottom-2-stops(#656872, #121b2f, 0.1, #2c3345, 0.1, #161f32);
+}
+.mblTooltipBubble-styles () {
+	background-color: #f9f7ba;
+	background-image: none;
+}
+.mblTooltipInnerArrow-Bubble-Above-styles () {
+	border-bottom-color: #f9f7ba;
+}
+.mblTooltipInnerArrow-Bubble-Below-styles () {
+	border-top-color: #f9f7ba;
+}
+.mblTooltipInnerArrow-Bubble-After-styles () {
+	border-left-color: #f9f7ba;
+}
+.mblTooltipInnerArrow-Bubble-Before-styles () {
+	border-right-color: #f9f7ba;
+}
+.mblTooltipArrow-Before-styles () {
+	border-left-width: 0;
+	border-right-color: #5a5a5a;
+}
+.mblTooltipArrow-After-styles () {
+	border-right-width: 0;
+	border-left-color: #5a5a5a;
+}
+.mblTooltipArrow-Above-styles () {
+	border-top-width: 0;
+	border-bottom-color: #5a5a5a;
+}
+.mblTooltipArrow-Below-styles () {
+	border-bottom-width: 0;
+	border-top-color: #5a5a5a;
+}
+.mblTooltipInnerArrow-Before-styles () {
+	border-left-width: 0;
+	border-right-color: #192235;
+}
+.mblTooltipInnerArrow-After-styles () {
+	border-right-width: 0;
+	border-left-color: #192235;
+}
+.mblTooltipInnerArrow-Above-styles () {
+	border-top-width: 0;
+	border-bottom-color: #656872;
+}
+.mblTooltipInnerArrow-Below-styles () {
+	border-bottom-width: 0;
+	border-top-color: #172035;
+}
+.mblTooltip-Heading-styles () {
+	border-top: 3px solid #4f5055;
+	border-bottom: 1px solid #2d3642;
+	border-left: 1px solid #2a2d47;
+	border-radius: 3px 3px 0 0;
+	background-color: #889bb3;
+	.background-image-linear-gradient-top-bottom-1-stop(#5e6167, #1a1d24, 0.5, #2e322b);
+	font-weight: normal;
+}
+.mblTooltip-Heading-compat () {
+	background-image: url(compat/tooltip-heading-bg.png);
+}
+.mblTooltip-Heading-ToolbarButton-styles () {
+	border: 1px inset #434450;
+	.background-image-linear-gradient-top-bottom-1-stop(#686f80, #000924, 0.5, #000b29);
+	font-weight: normal;
+}
+.mblTooltip-Heading-ToolbarButton-compat () {
+	background-color: #000924;
+	background-image: url(compat/tooltip-button-bg.png);
+}
+
+// Accordion.less
+.mblAccordion-styles () {
+	border-color: #8c8f91;
+}
+.mblAccordionTitle-styles () {
+	border-top: 1px solid #8c8f91;
+	.background-image-linear-gradient-top-bottom-1-stop(#fcfcfc, #e1e5e8, 0.2, #f0f2f3);
+}
+.mblAccordionTitle-compat () {
+	background-color: #f0f2f3;
+}
+.mblAccordionTitle-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #fcfcfc 0%, #f0f2f3 20%, #e1e5e8 100%);
+}
+.mblAccordionTitleSelected-styles () {
+	border-bottom: 1px solid #8c8f91;
+	.background-image-linear-gradient-top-bottom-1-stop(#97afc0, #46708e, 0.2, #7796ac);
+	color: white;
+}
+.mblAccordionTitleSelected-compat () {
+	background-color: #7796ac;
+}
+.mblAccordionTitleSelected-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #97afc0 0%, #7796ac 20%, #46708e 100%);
+}
+.mblAccordionTitleAnchor-styles () {
+	color: black;
+}
+.mblAccordionTitleAnchorSelected-styles () {
+	color: white;
+}
+
+// SimpleDialog.less
+@mbl-simple-dialog-border-radius: 10px;
+//
+.mblSimpleDialog-styles () {
+	padding: 5px;
+	width: 262px;
+}
+.mblSimpleDialogDecoration-styles () {
+	background-color: rgba(35,50,96,0.85);
+	.background-image-linear-gradient-top-bottom-2-stops(rgba(150,150,170,0.85), rgba(18,29,68,0.85), 0.15, rgba(77,85,119,0.85), 0.15, rgba(35,50,96,0.85));
+	border: 2px solid #bac1d3;
+	border-top-color: #eaeaf2;
+	.box-shadow(0 3px 2px #000000);
+	color: white;
+}
+.mblSimpleDialogDecoration-compat () {
+	background-color: #233260;
+}
+.mblSimpleDialogDecoration-compat-gecko () {
+	background-color: rgba(35,50,96,0.85);
+	background-image: -moz-linear-gradient(top, rgba(150,150,170,0.85) 0%, rgba(77,85,119,0.85) 15%, rgba(35,50,96,0.85) 15%, rgba(18,29,68,0.85) 100%);
+	-moz-box-shadow: 0 3px 2px #000000;
+}
+.mblSimpleDialogTitle-styles () {
+	margin: 14px 0 7px;
+	width: 262px;
+	font-weight: bold;
+}
+.mblSimpleDialogText-styles () {
+	margin: 7px 0 14px;
+	width: 262px;
+}
+
+// IconMenu.less
+@mbl-icon-menu-border-radius: 10px;
+@mbl-icon-menu-item-border-radius: 10px;
+//
+.mblIconMenu-styles () {
+	padding: 0;
+	.background-image-linear-gradient-top-bottom-1-stop(rgba(102,102,119,0.85), rgba(4,4,4,0.85), 0.35, rgba(22,22,30,0.85));
+	border: 2px solid #9a9a9e;
+	border-top-color: #f2f2f3;
+	.box-shadow(1px 3px 5px rgba(0,0,0,0.5));
+}
+.mblIconMenu-compat () {
+	background-color: #040404;
+}
+.mblIconMenu-compat-gecko () {
+	background-color: transparent;
+	background-image: -moz-linear-gradient(top, rgba(102,102,119,0.85) 0%, rgba(22,22,30,0.85) 35%, rgba(4,4,4,0.85) 100%);
+	-moz-box-shadow: 1px 3px 5px rgba(0,0,0,0.5);
+}
+.mblIconMenuItem-styles () {
+	border-left: 1px solid #6b6c6f;
+	border-bottom: 1px solid #6b6c6f;
+}
+.mblIconMenuItemAnchor-styles () {
+	font-size: 11px;
+	color: #b8bbc0;
+}
+.mblIconMenuItemSel-styles () {
+  .background-image-linear-gradient-top-bottom-1-stop(rgba(139,157,229,0.6), rgba(10,54,233,0.8), 0.6, rgba(10,54,233,0.8));
+}
+.mblIconMenuItemSel-compat () {
+	background-color: #0a36e9;
+}
+.mblIconMenuItemSel-compat-gecko () {
+	background-color: transparent;
+	background-image: -moz-linear-gradient(top, rgba(139,157,229,0.6) 0%, rgba(10,54,233,0.8) 60%, rgba(10,54,233,0.8) 100%);
+}
+
+// dijit.Calendar
+.dijitCalendar-styles () {
+	border: solid 1px #b5bcc7;
+	background-color: #dddde0;
+}
+.dijitCalendar-thead-styles () {
+	.background-image-linear-gradient-top-bottom(#f6f6f6, #ccccd1);
+}
+.dijitCalendar-thead-compat () {
+	background-image: url(compat/calendar-month-bg.png);
+}
+.dijitCalendar-thead-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #f6f6f6 0%, #ccccd1 100%);
+}
+.dijitCalendarMonthLabel-styles () {
+	color: #545454;
+	font-size: 22px;
+}
+.dijitCalendarMonthMenu-styles () {
+}
+.dijitCalendarMonthMenu-compat-ff3 () {
+}
+.dijitCalendarMonthMenu-Label-styles () {
+}
+.dijitCalendarDecrease-styles () {
+	border-right: 6px solid #545454 !important;
+}
+.dijitCalendarIncrease-styles () {
+	border-left: 6px solid #545454 !important;
+}
+.dijitCalendarDayLabelTemplate-styles () {
+	font-size: 9px;
+	color: #545454;
+}
+.dijitCalendarDateTemplate-styles () {
+	background-color: #dddde0;
+	color: #4a5b6e;
+	text-shadow: rgba(231,231,233,1.0) 0 1px 0;
+}
+.dijitCalendarDateTemplate-LastChild-styles () {
+}
+.dijitCalendarDateLabel-DateTemplate-styles () {
+	border-top: solid 1px #eceeef; 
+	border-bottom: solid 1px #a6aab3; 
+	border-left: solid 1px #a0a4ad; 
+	border-right: solid 1px #ececed; 
+	background-color: rgba(171, 212, 251, 0);
+	.transition-property-2(background-color, border);
+	.transition-duration(0.35s);
+}
+.dijitCalendarDateLabel-PrevMonth-styles () {
+	color: #9099a4;
+}
+.dijitCalendarDateLabel-Hovered-styles () {
+	border: solid 1px #769dc0;
+	color: black;
+}
+.dijitCalendarDateLabel-Selected-styles () {
+	border: solid 1px #1037b3; 
+	background-color: #1a80e5;
+	color: white;
+	text-shadow: rgba(0,0,0,0.4) 0 1px 0;
+}
+.dijitCalendarDateLabel-Selected-compat () {
+}
+.dijitCalendarDateLabel-Selected-compat-gecko () {
+}
+.dijitCalendarDateLabel-Active-styles () {
+	border: solid 1px white;
+	background-color: #1a80e5;
+	.transition-duration(0.1s);
+}
+.dijitCalendarDateLabel-Active-compat () {
+}
+.dijitCalendarDateLabel-Active-compat-gecko () {
+}
+.dijitCalendarYearLabel-styles () {
+	padding: 2px 0 0 0;
+	.background-image-linear-gradient-top-bottom(#f6f6f6, #ccccd1);
+}
+.dijitCalendarYearLabel-compat () {
+	background-image: url(compat/calendar-year-bg.png);
+}
+.dijitCalendarYearLabel-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #f6f6f6 0%, #ccccd1 100%);
+}
+.dijitCalendarSelectedYear-styles () {
+	color: #545454;
+	font-size: 1.091em;
+}
+.dijitCalendarNextYear-styles () {
+	padding: 1px 6px 1px 6px;
+	color: #545454;
+	font-size: 0.909em;
+}
+
+// SearchBox.less
+@mbl-searchbox-cancel-button-color: white;
+@mbl-searchbox-cancel-button-bg-color: #b2b2b2;
+.mblSearchBox-Cancel-Button-styles () {
+	border-radius: 1em;
+}
+@mbl-searchbox-results-decoration-color: #93989c;
+
+// ProgressBar.less
+.mblProgressBar-styles () {
+	border-radius: 6px;
+	height: 9px;
+	.background-image-linear-gradient-top-bottom-3-stops(#a5a6a5, #b5b6b5, 0.5, #d6d7d6, 0.5, #ffffff, 0.9, #ffffff);
+}
+.mblProgressBarProgress-styles () {
+	height: 7px;
+	border:1px solid #5e6fa3;
+	border-radius: 6px;
+	.background-image-linear-gradient-top-bottom-2-stops(#b0c0ff, #2f83e1, 0.6, #70b2ff, 0.6, #3470b6);
+}
+.mblProgressBarComplete-styles () {
+}
+.mblProgressBarNotStarted-styles () {
+}
+.mblProgressBarMsg-styles () {
+	top: -1px;
+	font-size: 10px;
+}
+.mblProgressBar-compat () {
+	background-color: white;
+}
+.mblProgressBarProgress-compat () {
+	background-color: #3186e7;
+}
+.mblProgressBar-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #a5a6a5 0%, #d6d7d6 50%, #ffffff 50%, #ffffff 90%, #b5b6b5 100%);
+}
+.mblProgressBarProgress-compat-gecko () {
+	background-image: -moz-linear-gradient(top, #b0c0ff 0%, #70b2ff 60%, #3470b6 60%, #2f83e1 100%);
+}
+
+// ValuePicker.less
+.mbl-value-picker-slot-button-background-image () { .background-image-linear-gradient-top-bottom-4-stops-no-from-to(0.1, #9cb1c9, 0.35, #f0f1f5, 0.65, #f0f1f5, 0.9, #9cb1c9); }
+@mbl-value-picker-slot-button-background-image-gecko: -moz-linear-gradient(top, #9cb1c9 10%, #f0f1f5 35%, #f0f1f5 65%, #9cb1c9 90%);
+@mbl-value-picker-slot-button-radius: 0;
+.mbl-value-picker-slot-input-area-background-image () { .background-image-linear-gradient-top-bottom-4-stops-no-from-to(0.1, #eaeaea, 0.2, #fafafa, 0.5, #ffffff, 0.9, #efefef); }
+@mbl-value-picker-slot-input-area-background-image-gecko: -moz-linear-gradient(top, #eaeaea 10%, #fafafa 20%, #ffffff 50%, #efefef 90%);
+.mblValuePickerSlot-style () {
+  margin: 0 3px;
+  border-left: solid 2px #000000;
+  border-right: solid 2px #000000;
+  border-radius: 3px;
+}
+.mblValuePickerSlot-input-style () {
+  font: bold 24px/44px Helvetica, sans-serif;
+}

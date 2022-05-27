@@ -1,0 +1,1 @@
+{"widgetLabel":"圖徵表單","empty":"- 空 -","validationErrors":{"cannotBeNull":"請輸入一個值","outsideRange":"值必須介於 {min} 與 {max} 之間","invalidCodedValue":"值必須是其中一個列出值。","invalidType":"不是有效值","tooShort":"此欄位至少需要 {min} 個字元"}}

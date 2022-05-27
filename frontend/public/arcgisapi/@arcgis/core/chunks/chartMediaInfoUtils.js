@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import{_ as r}from"./tslib.es6.js";import"./object.js";import"./Logger.js";import{property as o}from"../core/accessorSupport/decorators/property.js";import"./ensureType.js";import{subclass as t}from"../core/accessorSupport/decorators/subclass.js";import"../core/urlUtils.js";import{s as e}from"./jsonMap.js";import"./resourceExtension.js";import{M as s}from"./MediaInfo.js";import p from"../popup/content/support/ChartMediaInfoValue.js";let a=class extends s{constructor(r){super(r),this.type=null,this.value=null}};r([o({type:["bar-chart","column-chart","line-chart","pie-chart"],readOnly:!0,json:{read:!1,write:!0}})],a.prototype,"type",void 0),r([o({type:p,json:{write:!0}})],a.prototype,"value",void 0),a=r([t("esri.popup.content.mixins.ChartMediaInfo")],a);var c=a;const i=e()({barchart:"bar-chart",columnchart:"column-chart",linechart:"line-chart",piechart:"pie-chart"});export{c as C,i as c};

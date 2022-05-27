@@ -1,0 +1,1 @@
+{"title":"Edges","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Specifies an edge visualization style (only applies to MeshSymbol3D). Edges describe the style applied to visually important edges of 3D objects.","oneOf":[{"$ref":"sketchEdges_schema.json"},{"$ref":"solidEdges_schema.json"}]}

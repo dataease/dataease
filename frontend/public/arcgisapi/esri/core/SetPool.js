@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(function(){let e=function(){function b(){this._pool=[];this._set=new Set}var c=b.prototype;c.acquire=function(){if(0===this._pool.length)return new Set;const a=this._pool.pop();this._set.delete(a);return a};c.release=function(a){a&&!this._set.has(a)&&(a.clear(),5E4>this._pool.length&&(this._pool.push(a),this._set.add(a)))};b.acquire=function(){return d.acquire()};b.release=function(a){return d.release(a)};return b}();const d=new e;return e});

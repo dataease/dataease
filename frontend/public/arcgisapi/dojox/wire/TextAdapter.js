@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox","dojo/require!dojox/wire/CompositeWire"],function(c,g,e){c.provide("dojox.wire.TextAdapter");c.require("dojox.wire.CompositeWire");c.declare("dojox.wire.TextAdapter",e.wire.CompositeWire,{_wireClass:"dojox.wire.TextAdapter",constructor:function(a){this._initializeChildren(this.segments);this.delimiter||(this.delimiter="")},_getValue:function(a){if(!a||!this.segments)return a;var b="",d;for(d in this.segments){var f=this.segments[d].getValue(a);b=this._addSegment(b,f)}return b},
+_setValue:function(a,b){throw Error("Unsupported API: "+this._wireClass+"._setValue");},_addSegment:function(a,b){return b?a?a+this.delimiter+b:b:a}})});

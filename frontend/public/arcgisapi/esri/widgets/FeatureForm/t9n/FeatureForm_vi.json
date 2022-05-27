@@ -1,0 +1,1 @@
+{"widgetLabel":"Mẫu đối tượng","empty":"- trống -","validationErrors":{"cannotBeNull":"Vui lòng nhập một giá trị","outsideRange":"Giá trị phải nằm trong khoảng {min} và {max}","invalidCodedValue":"Giá trị phải là một trong các giá trị được liệt kê.","invalidType":"Không phải là giá trị hợp lệ","tooShort":"Trường này yêu cầu nhập tối thiểu {min} ký tự"}}

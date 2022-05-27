@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../core/maybe ../../../core/Error ../../../core/urlUtils ../../../core/promiseUtils ../../../request ../../../core/asyncUtils".split(" "),function(d,h,k,e,f,l,m){let q=function(){function g(a){this.streamDataRequester=a}var c=g.prototype;c.loadJSON=async function(a,b){return this.load("json",a,b)};c.loadBinary=async function(a,b){return e.isDataProtocol(a)?(f.throwIfAborted(b),e.dataToArrayBuffer(a)):this.load("binary",a,b)};c.loadImage=async function(a,b){return this.load("image",
+a,b)};c.load=async function(a,b,n){if(h.isNone(this.streamDataRequester))return(await l(b,{responseType:p[a]})).data;a=await m.result(this.streamDataRequester.request(b,a,n));if(!0===a.ok)return a.value;f.throwIfAbortError(a.error);throw new k("",`Request for resource failed: ${a.error}`);};return g}();const p={image:"image",binary:"array-buffer",json:"json"};d.DefaultLoadingContext=q;Object.defineProperty(d,"__esModule",{value:!0})});

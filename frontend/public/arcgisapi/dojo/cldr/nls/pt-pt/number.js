@@ -1,0 +1,2 @@
+//>>built
+define({group:"\u00a0","decimalFormat-long":"000 bili\u00f5es","decimalFormat-short":"000\u00a0Bi",currencyFormat:"#,##0.00\u00a0\u00a4;(#,##0.00\u00a0\u00a4)","currencyFormat-short":"\u00a4000\u00a0B"});

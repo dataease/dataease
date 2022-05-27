@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../core/Error ../../core/promiseUtils ../../PopupTemplate ../../intl/messages ./support/utils".split(" "),function(d,f,g,h,k,e){async function l(a){const {layer:b,renderer:c}=a;await b.load();a=c||b.renderer;if("heatmap"!==a.type)throw new f("heatmap-popup:invalid-parameters","renderer.type must be 'heatmap'");return{layer:b,renderer:a}}d.getTemplates=async function(a){const [{renderer:b,layer:c},m]=await g.all([l(a),k.fetchMessageBundle("esri/smartMapping/t9n/smartMapping")]);
+if(!b.field)return null;({fieldInfos:a}=await e.getFieldAndExpressionInfos({renderer:b,layer:c}));a=new h({content:await e.getContentFromFieldInfos(c,{fieldInfos:a}),fieldInfos:a});return{primaryTemplate:{name:"heatmap",title:m.heatmap,value:a},secondaryTemplates:[]}};Object.defineProperty(d,"__esModule",{value:!0})});

@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/array","dojo/_base/lang","dojo/Stateful"],function(f,e,g){var d=function(a,b){return(b||d)["getPlain"+(b||d).getType(a).replace(/^[a-z]/,function(c){return c.toUpperCase()})](a)};return e.setObject("dojox.mvc.getPlainValue",e.mixin(d,{getType:function(a){return e.isArray(a)?"array":null!=a&&"[object Object]"=={}.toString.call(a)?"object":"value"},getPlainArray:function(a){return f.map(a,function(b){return d(b,this)},this)},getPlainObject:function(a){var b={},c;for(c in a)c in g.prototype||
+"_watchCallbacks"==c||(b[c]=d(a[c],this));return b},getPlainValue:function(a){return a}}))});

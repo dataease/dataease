@@ -1,0 +1,44 @@
+/* dojox.mobile.IconMenu */
+.mblIconMenu {
+	.mblIconMenu-compat;
+}
+.mblIconMenuItemSel {
+	.mblIconMenuItemSel-compat;
+}
+
+.dj_gecko {
+	.mblIconMenu {
+		.mblIconMenu-compat-gecko;
+	}
+	.mblIconMenuItem {
+		-moz-box-sizing: border-box;
+	}
+	.mblIconMenuItemSel {
+		.mblIconMenuItemSel-compat-gecko;
+	}
+}
+
+.dj_ff3 {
+	.mblIconMenu {
+		-moz-border-radius: @mbl-icon-menu-border-radius;
+	}
+	.mblIconMenuItemIcon img {
+	  border: 1px solid red;
+	}
+	.mblIconMenuItemFirstRow {
+		&.mblIconMenuItemFirstColumn {
+			-moz-border-top-left-radius: @mbl-icon-menu-item-border-radius;
+		}
+		&.mblIconMenuItemLastColumn {
+			-moz-border-top-right-radius: @mbl-icon-menu-item-border-radius;
+		}
+	}
+	.mblIconMenuItemLastRow {
+		&.mblIconMenuItemFirstColumn {
+			-moz-border-bottom-left-radius: @mbl-icon-menu-item-border-radius;
+		}
+		&.mblIconMenuItemLastColumn {
+			-moz-border-bottom-right-radius: @mbl-icon-menu-item-border-radius;
+		}
+	}
+}

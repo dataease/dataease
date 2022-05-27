@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang","../_base","dojo/ready","dojo/_base/config","dojo/aspect"],function(c,e,f,g,h){return e.plugins.window=new function(){this.addData=c.hitch(e,"addData","window");this.windowConnects=g.windowConnects||["open","onerror"];for(var b=0;b<this.windowConnects.length;b++)h.after(window,this.windowConnects[b],c.hitch(this,"addData",this.windowConnects[b]),!0);f(c.hitch(this,function(){var d={},a;for(a in window)if("object"==typeof window[a]||"function"==typeof window[a])switch(a){case "location":case "console":d[a]=
+window[a]}else d[a]=window[a];this.addData(d)}))}});

@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/array","dojo/aspect","dojo/_base/declare"],function(c,f,k){return k("dijit.Destroyable",null,{destroy:function(g){this._destroyed=!0},own:function(){var g=["destroyRecursive","destroy","remove"];c.forEach(arguments,function(b){function d(){l.remove();c.forEach(h,function(a){a.remove()})}var l=f.before(this,"destroy",function(a){b[e](a)}),h=[];if(b.then){var e="cancel";b.then(d,d)}else c.forEach(g,function(a){"function"===typeof b[a]&&(e||(e=a),h.push(f.after(b,a,d,!0)))})},this);
+return arguments}})});

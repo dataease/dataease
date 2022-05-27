@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/vec2f64","../../../../chunks/vec2"],function(e,g,d){function k(b,a,c){a=d.dot(c,a)/d.squaredLength(c);return d.scale(b,c,a)}const f=g.create(),l=g.create(),m=g.create();e.cross=function(b,a){return b[0]*a[1]-b[1]*a[0]};e.pointToLineDistance=function(b,a,c){return Math.abs((a[0]-b[0])*(c[1]-b[1])-(a[1]-b[1])*(c[0]-b[0]))/d.distance(a,c)};e.projectPoint=k;e.projectPointToCircle=function(b,a,c,h){d.subtract(f,a,c);a=h/d.length(f);return d.scaleAndAdd(b,c,f,a)};e.projectPointToLine=
+function(b,a,c,h,n=c){d.subtract(f,h,c);d.subtract(l,a,n);k(m,l,f);return d.add(b,n,m)};Object.defineProperty(e,"__esModule",{value:!0})});

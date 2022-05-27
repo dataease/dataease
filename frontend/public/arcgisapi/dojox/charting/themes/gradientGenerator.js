@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/lang dojo/_base/array dojo/_base/Color ../Theme dojox/color/_base ./common".split(" "),function(e,g,l,h,m,n){e=e.getObject("gradientGenerator",!0,n);e.generateFills=function(a,f,c,b){return g.map(a,function(d){return h.generateHslGradient(d,f,c,b)})};e.updateFills=function(a,f,c,b){g.forEach(a,function(d){d.fill&&!d.fill.type&&(d.fill=h.generateHslGradient(d.fill,f,c,b))})};e.generateMiniTheme=function(a,f,c,b,d){return g.map(a,function(k){k=new m.Color(k);return{fill:h.generateHslGradient(k,
+f,c,b),stroke:{color:h.generateHslColor(k,d)}}})};e.generateGradientByIntensity=function(a,f){a=new l(a);return g.map(f,function(c){var b=c.i/255;return{offset:c.o,color:new l([a.r*b,a.g*b,a.b*b,a.a])}})};return e});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../global","../Error"],function(k,p,l){let f;k.execute=function(e,b={}){let a=b.responseType;a?"json"!==a&&"text"!==a&&"blob"!==a&&"array-buffer"!==a&&(a="text"):a="json";const q=b&&b.signal;delete b.signal;return p.invokeStaticMessage("request",{url:e,options:b},{signal:q}).then(m=>{var c=m.data;let g,h,d;if(c&&("json"===a||"text"===a||"blob"===a)&&(g=new Blob([c]),"json"===a||"text"===a)&&(f||(f=new FileReaderSync),h=f.readAsText(g),"json"===a)){try{d=JSON.parse(h||null)}catch(n){throw new l("request:server",
+n.message,{...n,url:e,requestOptions:b});}if(d.error)throw new l("request:server",d.error.message,{...d.error,url:e,requestOptions:b});}switch(a){case "json":c=d;break;case "text":c=h;break;case "blob":c=g}return{data:c,requestOptions:b,ssl:m.ssl,url:e}})};Object.defineProperty(k,"__esModule",{value:!0})});

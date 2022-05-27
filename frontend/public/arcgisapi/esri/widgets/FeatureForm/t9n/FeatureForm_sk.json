@@ -1,0 +1,1 @@
+{"widgetLabel":"Forma prvku","empty":"- prázdne -","validationErrors":{"cannotBeNull":"Prosím zadajte hodnotu","outsideRange":"Hodnota by mala byť medzi {min} a {max}","invalidCodedValue":"Hodnota by mala byť jednou z hodnôt na zozname.","invalidType":"Nie je platná hodnota","tooShort":"Toto pole požaduje minimálne {min} znakov"}}

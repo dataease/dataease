@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(k){function q(a,b){return e(a,b[0],b[1])}function e(a,b,c,d){return b>=a.xmin&&b<=a.xmax&&c>=a.ymin&&c<=a.ymax?null!=d&&a.hasZ?d>=a.zmin&&d<=a.zmax:!0:!1}function r(a,b){if(a=a.rings)if(Array.isArray(a[0][0])){var c=!1;for(let d=0,f=a.length;d<f;d++)c=t(c,a[d],b);b=c}else b=t(!1,a,b);else b=!1;return b}function t(a,b,c){const [d,f]=c;c=0;for(let g=0,h=b.length;g<h;g++){c++;c===h&&(c=0);const [l,m]=b[g],[u,n]=b[c];(m<f&&n>=f||n<f&&m>=f)&&l+(f-m)/(n-m)*(u-l)<d&&(a=!a)}return a}
+const p=[0,0];k.extentContainsCoords2D=q;k.extentContainsCoords3D=function(a,b){return e(a,b[0],b[1],b[2])};k.extentContainsExtent=function(a,b){const {xmin:c,ymin:d,zmin:f,xmax:g,ymax:h,zmax:l}=b;return a.hasZ&&b.hasZ?e(a,c,d,f)&&e(a,c,h,f)&&e(a,g,h,f)&&e(a,g,d,f)&&e(a,c,d,l)&&e(a,c,h,l)&&e(a,g,h,l)&&e(a,g,d,l):e(a,c,d)&&e(a,c,h)&&e(a,g,h)&&e(a,g,d)};k.extentContainsMultipoint=function(a,b){if(!b.points||b.points.length)return!1;for(const c of b.points)if(!q(a,c))return!1;return!0};k.extentContainsPoint=
+function(a,b){return e(a,b.x,b.y,b.z)};k.polygonContainsCoords=r;k.polygonContainsPoint=function(a,b){p[1]=b.y;p[0]=b.x;return r(a,p)};Object.defineProperty(k,"__esModule",{value:!0})});

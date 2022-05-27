@@ -1,0 +1,151 @@
+-------------------------------------------------------------------------------
+dojox.grid
+-------------------------------------------------------------------------------
+Version 1.00
+Release date: 10/04/2007
+-------------------------------------------------------------------------------
+Project state:
+beta
+-------------------------------------------------------------------------------
+Credits
+	Scott J. Miles (sjmiles@activegrid.com)
+	Steve Orvell (sorvell@activegrid.com)
+	Bryan Forbes (bryan AT reigndropsfall.net)
+	Nathan Toone (toonetown AT dojotoolkit.org)
+-------------------------------------------------------------------------------
+Project description
+
+TurboGrid has been made available in Dojo and is now the dojox.grid!
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core
+Dojo Base (dnd)
+Dijit Templated Widget
+dojox.html (metrics)
+-------------------------------------------------------------------------------
+Documentation
+
+None available for this version yet.
+
+See http://www.turboajax.com/products/turbogrid/ for legacy documentation.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/grid/*
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/html/*
+
+Install into the following directory structure:
+/dojox/grid/
+/dojox/html/
+
+...which should be at the same level as your Dojo checkout.
+
+If you wish us use the old (compat / 1.2) grid, you can untar the
+compatGrid.tar.gz archive.  This version of the grid is no longer maintained
+or updated - but should work with any newer version of the dojo library.
+
+dojox.grid.* is a11y enabled, please see the following doc page for more details
+- http://dojotoolkit.org/reference-guide/dojox/grid/DataGrid.html#accessibility-in-1-3-and-beyond
+-------------------------------------------------------------------------------
+
+
+
+-------------------------------------------------------------------------------
+Sub-projects:									  
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+1. dojox.grid.EnhancedGrid
+-------------------------------------------------------------------------------
+Version 0.9
+Release date: 12/11/2009
+-------------------------------------------------------------------------------
+Project state
+
+alpha
+-------------------------------------------------------------------------------
+Credits
+	David Schwartz (drschwar@us.ibm.com, IBM, CCLA) - Author, UX design
+	Wei Huang (evan@dojotoolkit.org) - Author, IndirectSelection, Menus
+	Xiao Wen Zhu (xwzhu@cn.ibm.com, IBM, CCLA) 
+	  - Filter, Exporter, Printer, Selector, DnD, CellMerge, Cookie, Search
+	Qiang Wang (wangqsh@cn.ibm.com, IBM, CCLA) - Pagination
+	Pei Wang (wpei@cn.ibm.com, IBM, CCLA) - NestedSorting
+-------------------------------------------------------------------------------
+Project description
+
+Enhanced Grid inherits base DataGrid and provides the following enhanced features:
+ 1. Nested Sorting
+ 2. Built-in declarative Indirect Selection (radio buttons and check boxes)
+ 3. Context menu for header, row, column and selected region
+ 4. Advanced Selector: support selecting rows/columns/cells via swipe
+ 5. Drag-n-drop: columns,rows - MOVE, cells - MOVE/COPY
+ 6. Filter: filter grid content in various data types
+ 7. Exporter: export grid content to various formats
+ 8. Printer: provide convenient ways for printing grid
+ 9. Pagination: an alternative to deal with huge data set besides the default virtual scrolling way
+ 10.CellMerge: merge adjacent cells within a row
+ 11.Cookie: persist grid preferences including column width, column order, sorting order etc.
+ 12.Search: a handy way for searching grid content by regular expressions
+-------------------------------------------------------------------------------
+Dependencies
+
+Dojo Core, dojox.grid.DataGrid
+-------------------------------------------------------------------------------
+Documentation
+
+http://dojotoolkit.org/reference-guide/dojox/grid/EnhancedGrid.html
+-------------------------------------------------------------------------------
+Installation instructions
+
+Same as dojox.grid, for detail sample usages, please refer to /dojox/grid/tests/enhanced/*.html
+-------------------------------------------------------------------------------
+Known issues
+
+ - 'Claro' is the major supported theme for EnhancedGrid features
+ - EnhancedGrid features are not fully compatible with complicated layouts (e.g. multiple rows in column header) and TreeGrid(SubGrid).
+ - Indirect Selection is not fully compatible with Advanced Selector(for selecting row/column/cells) and DnD
+ - RTL support is still in progress for Nested Sorting 
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+2. dojox.grid.LazyTreeGrid
+-------------------------------------------------------------------------------
+Version 0.9
+Release date: 
+-------------------------------------------------------------------------------
+Project state
+
+alpha
+-------------------------------------------------------------------------------
+Credits
+	Qiang Wang (wangqsh@cn.ibm.com, IBM, CCLA)
+	Wei Huang (evan@dojotoolkit.org)
+-------------------------------------------------------------------------------
+Project description
+
+LazyTreeGrid applies virtual scrolling mechanism to nested children rows so that it's possible to 
+deal with large data set specifically in tree structure with large number of children rows.  
+It's also compatible with dijit.tree.ForestStoreModel
+-------------------------------------------------------------------------------
+Dependencies
+
+Dojo Core, dojox.grid.TreeGrid
+-------------------------------------------------------------------------------
+Documentation
+
+http://dojotoolkit.org/reference-guide/dojox/grid/LazyTreeGrid.html
+-------------------------------------------------------------------------------
+Installation instructions
+
+Same as dojox.grid, for detail sample usages, please refer to /dojox/grid/tests/test_treegrid_lazyloading.html
+-------------------------------------------------------------------------------
+Known issues
+
+LazyTreeGrid is not compatible with:
+ - Most Enhanced Grid features
+ - Complicated layouts (e.g. multiple rows in column header)
+-------------------------------------------------------------------------------

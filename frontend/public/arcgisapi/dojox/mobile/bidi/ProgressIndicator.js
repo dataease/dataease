@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/dom-class"],function(b,a){return b(null,{buildRendering:function(){this.inherited(arguments);this.isLeftToRight()||(this.closeButton&&(this.closeButtonNode.style.left=-Math.round(this.closeButtonNode.offsetHeight/2)+"px"),this.center&&a.add(this.domNode,"mblProgressIndicatorCenterRtl"),a.add(this.containerNode,"mblProgContainerRtl"))}})});

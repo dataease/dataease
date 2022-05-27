@@ -1,0 +1,1 @@
+{"title":"viewing","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"View-specific properties of application and UI elements.","properties":{"search":{"type":"object","$ref":"search_schema.json"}},"additionalProperties":false}

@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/array","dojo/_base/lang","dojo/Stateful","./StatefulArray"],function(f,e,g,h){var c=function(a,b){return(b||c)["getStateful"+(b||c).getType(a).replace(/^[a-z]/,function(d){return d.toUpperCase()})](a)};return e.setObject("dojox.mvc.getStateful",e.mixin(c,{getType:function(a){return e.isArray(a)?"array":null!=a&&"[object Object]"=={}.toString.call(a)?"object":"value"},getStatefulArray:function(a){return new h(f.map(a,function(b){return c(b,this)},this))},getStatefulObject:function(a){var b=
+new g,d;for(d in a)b[d]=c(a[d],this);return b},getStatefulValue:function(a){return a}}))});

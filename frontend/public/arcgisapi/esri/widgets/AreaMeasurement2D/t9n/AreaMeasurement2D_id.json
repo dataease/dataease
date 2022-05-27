@@ -1,0 +1,1 @@
+{"widgetLabel":"Pengukuran Area","hint":"Mulai mengukur dengan mengklik peta untuk menempatkan titik pertama Anda","unsupported":"Pengukuran area 2D hanya didukung di MapView.","perimeter":"Keliling","area":"Area","newMeasurement":"Pengukuran baru","mode":"Mode","modes":{"auto":"Otomatis","planar":"Planar","geodesic":"Geodesik"},"unit":"Unit"}

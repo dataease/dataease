@@ -1,0 +1,55 @@
+{
+	"description":"A representation of an Application",
+	"type": "object",
+	"properties":{
+		"author": {"$ref": "http://json-schema.org/card"},
+
+		"description": {
+			"description": "Description of the application represented here",
+			"type": "string"
+		},
+
+		"modules": {
+			"type": "array",
+			"description": "Modules this application requires ",
+			"default": [],
+			"items":{
+				"type": "string",
+				"description": "Module to be loaded and mixed into the application"
+			}
+		},
+
+
+		"defaultScene": {
+			"type": "string",
+			"description": "id of scene to load for this application at startup"
+		},
+
+		"scenes": {
+			"type": "object",
+			"description": "This object contains references to scene objects, which are collections of views and models making up a closely related set of the ui",
+			"additionalProperties":{"$ref":"/jdoe/test/schema/scene.json"}
+		},
+
+		"stores": { 
+			"type": "object",
+			"description":"This object contains references to store instances that the rest of the application will use.",
+			"additionalProperties": {"$ref":"/jdoe/test/schema/scene.json"},
+			"default": {}
+		},
+
+		"models": { 
+			"type": "object",
+			"description": "This object contains references to model instances the application uses",
+			"additionalProperties":{"$ref":"/jdoe/test/schema/model.json"},
+			"default": {}
+		},
+
+		"views": { 
+			"type": "object",
+			"description": "This object contains references to view instances the application uses",
+			"additionalProperties":{"$ref":"/jdoe/test/schema/view.json"},
+			"default": {}
+		}
+	}
+}

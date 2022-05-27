@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../chunks/vec3f64 ../../../../chunks/common ../../../../chunks/mat4 ../../../../chunks/quatf64 ../../../../chunks/quat ../../../../chunks/quat2".split(" "),function(a,c,d,e,f,g,b){a.add=b.add;a.conjugate=b.conjugate;a.copy=b.copy;a.dot=b.dot;a.equals=b.equals;a.exactEquals=b.exactEquals;a.fromMat4=b.fromMat4;a.fromRotation=b.fromRotation;a.fromRotationTranslation=b.fromRotationTranslation;a.fromTranslation=b.fromTranslation;a.getDual=b.getDual;a.getReal=b.getReal;a.getTranslation=
+b.getTranslation;a.identity=b.identity;a.invert=b.invert;a.len=b.len;a.length=b.length;a.lerp=b.lerp;a.mul=b.mul;a.multiply=b.multiply;a.normalize=b.normalize;a.rotateAroundAxis=b.rotateAroundAxis;a.rotateByQuatAppend=b.rotateByQuatAppend;a.rotateByQuatPrepend=b.rotateByQuatPrepend;a.rotateX=b.rotateX;a.rotateY=b.rotateY;a.rotateZ=b.rotateZ;a.scale=b.scale;a.set=b.set;a.setDual=b.setDual;a.setReal=b.setReal;a.sqrLen=b.sqrLen;a.squaredLength=b.squaredLength;a.str=b.str;a.translate=b.translate;Object.defineProperty(a,
+"__esModule",{value:!0})});

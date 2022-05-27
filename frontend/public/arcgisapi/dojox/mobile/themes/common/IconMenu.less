@@ -1,0 +1,62 @@
+/* dojox.mobile.IconMenu */
+.mblIconMenu {
+	width: 100%;
+	height: 100%;
+	border-radius: @mbl-icon-menu-border-radius;
+	text-align: center;
+	.tap-highlight-color(rgba(255, 255, 255, 0));
+	.mblIconMenu-styles;
+}
+
+/* dojox.mobile.IconMenuItem */
+.mblIconMenuItem {
+	float: left;
+	list-style-type: none;
+	.box-sizing(border-box);
+	.mblIconMenuItem-styles;
+}
+.mblIconMenuItemIcon {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+}
+.mblIconMenuItemFirstColumn {
+	border-left: none;
+}
+.mblIconMenuItemLastRow {
+	border-bottom: none;
+}
+.mblIconMenuItemFirstRow {
+	&.mblIconMenuItemFirstColumn {
+		border-top-left-radius: @mbl-icon-menu-item-border-radius;
+	}
+	&.mblIconMenuItemLastColumn {
+		border-top-right-radius: @mbl-icon-menu-item-border-radius;
+	}
+}
+.mblIconMenuItemLastRow {
+	&.mblIconMenuItemFirstColumn {
+		border-bottom-left-radius: @mbl-icon-menu-item-border-radius;
+	}
+	&.mblIconMenuItemLastColumn {
+		border-bottom-right-radius: @mbl-icon-menu-item-border-radius;
+	}
+}
+.mblIconMenuItemAnchor {
+	display: block;
+	height: 100%;
+	font-family: Helvetica;
+	text-decoration: none;
+	.mblIconMenuItemAnchor-styles;
+  cursor: pointer;
+}
+.mblIconMenuItemTable {
+	width: 100%;
+	height: 100%;
+	img {
+		border: none;
+	}
+}
+.mblIconMenuItemSel {
+	.mblIconMenuItemSel-styles;
+}

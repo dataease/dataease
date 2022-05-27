@@ -1,0 +1,2 @@
+//>>built
+define(["require","dojo/Deferred"],function(e,h){return function(a,k){if(a=a.nls){var b=new h;try{var f=a,g=f.indexOf("./");0<=g&&(f=a.substring(g+2));var d=e.on?e.on("error",function(c){!b.isResolved()&&!b.isRejected()&&c.info[0]&&0<=c.info[0].indexOf(f)&&(b.resolve(!1),d&&d.remove())}):null;0==a.indexOf("./")&&(a="app/"+a);e(["dojo/i18n!"+a],function(c){b.resolve(c);d.remove()})}catch(c){b.reject(c),d&&d.remove()}return b}return!1}});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../Utils"],function(g,k){let h=function(){function b(a,c,d){this.data=a;this.stride=c;this.vertexCount=d}b.decode=function(a){const c=k.allocateTypedArrayBufferwithData(a.data,a.stride);return new b(c,a.stride,a.vertexCount)};b.fromVertexVector=function(a){const c=k.allocateTypedArrayBufferwithData(a.data.buffer(),a.stride);return new b(c,a.stride,a.vertexCount)};return b}(),l=function(){function b(a,c,d){this.geometryType=a;this.indexBuffer=new Uint32Array(c);this.namedBuffers=
+d}b.decode=function(a){const c=a.geometryType,d=a.indexBuffer,e={};for(const f in a.namedBuffers)e[f]=h.decode(a.namedBuffers[f]);return new b(c,d,e)};b.fromVertexVectors=function(a){const c=a.geometryType,d=a.indexVector.buffer(),e={};for(const f in a.namedVectors)e[f]=h.fromVertexVector(a.namedVectors[f]);return new b(c,d,e)};return b}();g.VertexBuffers=l;g.default=h;Object.defineProperty(g,"__esModule",{value:!0})});

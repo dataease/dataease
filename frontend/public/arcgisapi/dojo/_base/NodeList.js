@@ -1,0 +1,2 @@
+//>>built
+define(["./kernel","../query","./array","./html","../NodeList-dom"],function(b,a,e){a=a.NodeList;var c=a.prototype;c.connect=a._adaptAsForEach(function(){return b.connect.apply(this,arguments)});c.coords=a._adaptAsMap(b.coords);a.events="blur focus change click error keydown keypress keyup load mousedown mouseenter mouseleave mousemove mouseout mouseover mouseup submit".split(" ");e.forEach(a.events,function(f){var d="on"+f;c[d]=function(g,h){return this.connect(d,g,h)}});return b.NodeList=a});

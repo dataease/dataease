@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../../core/promiseUtils ./asset ./scene ./node ./index".split(" "),function(g,h,m,n,p,k){let q=function(){function e(d,c){this.file={type:"model/gltf-binary",data:d};this.origin=c}var f=e.prototype;f.buffer=function(){return h.resolve(this.file)};f.download=function(d){return h.create(()=>{const c=new Blob([this.file.data],{type:this.file.type});let a=d;a||(a="model.glb");"glb"!==a.split(".").pop()&&(a+=".glb");if(window.navigator.msSaveOrOpenBlob)window.navigator.msSaveOrOpenBlob(c,
+a);else{const b=document.createElement("a"),l=URL.createObjectURL(c);b.href=l;b.download=a;document.body.appendChild(b);b.click();setTimeout(function(){document.body.removeChild(b);window.URL.revokeObjectURL(l)},0)}})};return e}();g.toBinaryGLTF=function(e,f){const d=new m.Asset,c=new n.Scene;d.addScene(c);const a=new p.Node;c.addNode(a);a.mesh=e;return k.exportGLB(d,f).then(b=>new q(b[k.MODEL_NAME_GLB],b.origin))};Object.defineProperty(g,"__esModule",{value:!0})});

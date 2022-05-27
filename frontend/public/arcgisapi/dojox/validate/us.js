@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang","./_base","./regexp"],function(a,c,d){a=a.getObject("us",!0,c);a.isState=function(b,e){return(new RegExp("^"+d.us.state(e)+"$","i")).test(b)};a.isPhoneNumber=function(b){return c.isNumberFormat(b,{format:"###-###-####;(###) ###-####;(###) ### ####;###.###.####;###/###-####;### ### ####;###-###-#### x#???;(###) ###-#### x#???;(###) ### #### x#???;###.###.#### x#???;###/###-#### x#???;### ### #### x#???;##########".split(";")})};a.isSocialSecurityNumber=function(b){return c.isNumberFormat(b,
+{format:["###-##-####","### ## ####","#########"]})};a.isZipCode=function(b){return c.isNumberFormat(b,{format:["#####-####","##### ####","#########","#####"]})};return a});

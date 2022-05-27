@@ -1,0 +1,1 @@
+{"widgetLabel":"面积测量","hint":"通过单击地图以放置您的第一个点来开始测量","unsupported":"仅 MapView 支持 2D 面积测量。","perimeter":"周长","area":"面积","newMeasurement":"新测量","mode":"模式","modes":{"auto":"自动","planar":"平面","geodesic":"测地线"},"unit":"单位"}

@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../Color","../../../../../chunks/expression"],function(a,c,b){a.Assert=b.Assert;a.BooleanType=b.BooleanType;a.Coerce=b.Coerce;a.ColorType=b.ColorType;a.ErrorType=b.ErrorType;a.Literal=b.Literal;a.NullType=b.NullType;a.NumberType=b.NumberType;a.ObjectType=b.ObjectType;a.StringType=b.StringType;a.TypeOf=b.TypeOf;a.ValueType=b.ValueType;a.array=b.array;a.typeToString=b.typeToString;a.valueToString=b.valueToString;Object.defineProperty(a,"__esModule",{value:!0})});

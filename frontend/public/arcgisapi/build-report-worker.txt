@@ -1,0 +1,1210 @@
+Build started: Thu Jan 14 2021 13:19:06 GMT-0800 (Pacific Standard Time)
+Build application version: 1.16.3 (bf14072)
+Messages:
+info(100) Assumed module uses legacy loader API.
+	module: dojox/jq
+	module: dojox/rails
+	module: dojox/data/ItemExplorer
+	module: dojox/data/restListener
+	module: dojox/data/StoreExplorer
+	module: dojox/drawing/plugins/drawing/Silverlight
+	module: dojox/flash/_base
+	module: dojox/help/console
+	module: dojox/help/_base
+	module: dojox/image/Gallery
+	module: dojox/image/SlideShow
+	module: dojox/image/ThumbnailPicker
+	module: dojox/lang/aspect
+	module: dojox/lang/async
+	module: dojox/lang/docs
+	module: dojox/lang/observable
+	module: dojox/lang/typed
+	module: dojox/lang/aspect/cflow
+	module: dojox/lang/aspect/counter
+	module: dojox/lang/aspect/memoizer
+	module: dojox/lang/aspect/memoizerGuard
+	module: dojox/lang/aspect/profiler
+	module: dojox/lang/aspect/timer
+	module: dojox/lang/aspect/tracer
+	module: dojox/lang/async/event
+	module: dojox/lang/async/timeout
+	module: dojox/lang/async/topic
+	module: dojox/lang/functional/binrec
+	module: dojox/lang/functional/linrec
+	module: dojox/lang/functional/listcomp
+	module: dojox/lang/functional/multirec
+	module: dojox/lang/functional/numrec
+	module: dojox/lang/functional/tailrec
+	module: dojox/lang/functional/util
+	module: dojox/lang/oo/aop
+	module: dojox/lang/oo/Decorator
+	module: dojox/lang/oo/Filter
+	module: dojox/lang/oo/general
+	module: dojox/lang/oo/mixin
+	module: dojox/lang/oo/rearrange
+	module: dojox/layout/BorderContainer
+	module: dojox/layout/dnd/Avatar
+	module: dojox/layout/dnd/PlottedDnd
+	module: dojox/layout/ext-dijit/layout/StackContainer-touch
+	module: dojox/mobile/app/AlertDialog
+	module: dojox/mobile/app/compat
+	module: dojox/mobile/app/ImageThumbView
+	module: dojox/mobile/app/ImageView
+	module: dojox/mobile/app/List
+	module: dojox/mobile/app/ListSelector
+	module: dojox/mobile/app/SceneAssistant
+	module: dojox/mobile/app/SceneController
+	module: dojox/mobile/app/StageController
+	module: dojox/mobile/app/TextBox
+	module: dojox/mobile/app/_base
+	module: dojox/mobile/app/_event
+	module: dojox/mobile/app/_FormWidget
+	module: dojox/mobile/app/_Widget
+	module: dojox/robot/recorder
+	module: dojox/secure/capability
+	module: dojox/secure/DOM
+	module: dojox/secure/fromJson
+	module: dojox/secure/sandbox
+	module: dojox/sql/_base
+	module: dojox/sql/_crypto
+	module: dojox/storage/AirDBStorageProvider
+	module: dojox/storage/AirEncryptedLocalStorageProvider
+	module: dojox/storage/AirFileStorageProvider
+	module: dojox/storage/BehaviorStorageProvider
+	module: dojox/storage/CookieStorageProvider
+	module: dojox/storage/FlashStorageProvider
+	module: dojox/storage/GearsStorageProvider
+	module: dojox/storage/WhatWGStorageProvider
+	module: dojox/storage/_common
+	module: dojox/widget/AnalogGauge
+	module: dojox/widget/BarGauge
+	module: dojox/widget/DataPresentation
+	module: dojox/widget/DocTester
+	module: dojox/widget/DynamicTooltip
+	module: dojox/widget/FeedPortlet
+	module: dojox/widget/FilePicker
+	module: dojox/widget/Iterator
+	module: dojox/widget/Loader
+	module: dojox/widget/RollingList
+	module: dojox/widget/SortList
+	module: dojox/widget/gauge/AnalogArcIndicator
+	module: dojox/widget/gauge/AnalogArrowIndicator
+	module: dojox/widget/gauge/AnalogNeedleIndicator
+	module: dojox/widget/gauge/BarIndicator
+	module: dojox/widget/gauge/_Gauge
+	module: dojox/wire/CompositeWire
+	module: dojox/wire/DataWire
+	module: dojox/wire/TableAdapter
+	module: dojox/wire/TextAdapter
+	module: dojox/wire/TreeAdapter
+	module: dojox/wire/Wire
+	module: dojox/wire/XmlWire
+	module: dojox/wire/_base
+	module: dojox/wire/ml/Action
+	module: dojox/wire/ml/Data
+	module: dojox/wire/ml/DataStore
+	module: dojox/wire/ml/Invocation
+	module: dojox/wire/ml/JsonHandler
+	module: dojox/wire/ml/RestHandler
+	module: dojox/wire/ml/Service
+	module: dojox/wire/ml/Transfer
+	module: dojox/wire/ml/util
+	module: dojox/wire/ml/XmlHandler
+	module: dojox/xmpp/bosh
+	module: dojox/xmpp/ChatService
+	module: dojox/xmpp/PresenceService
+	module: dojox/xmpp/RosterService
+	module: dojox/xmpp/sasl
+	module: dojox/xmpp/TransportSession
+	module: dojox/xmpp/UserService
+	module: dojox/xmpp/util
+	module: dojox/xmpp/xmppSession
+	module: dojox/xmpp/widget/ChatSession
+info(107) Package Version:
+	package: dojo; version: 1.16.3
+	package: dijit; version: 1.16.3
+	package: dojox; version: 1.16.3
+	package: dgrid; version: 1.3.3
+	package: dstore; version: 1.2.1
+	package: esri; version: 4.18
+	package: tslib; version: 1.14.1
+warn(202) AMD module specified and absolute module identifier that is not consistent with the configuration and filename
+	module: tslib/tslib; specified: tslib
+warn(205) Module not tagged as pure AMD yet it contains AMD API applications.
+	module: moment/moment
+	module: moment/locale/af
+	module: moment/locale/ar-dz
+	module: moment/locale/ar-kw
+	module: moment/locale/ar-ly
+	module: moment/locale/ar-ma
+	module: moment/locale/ar-sa
+	module: moment/locale/ar-tn
+	module: moment/locale/ar
+	module: moment/locale/az
+	module: moment/locale/be
+	module: moment/locale/bg
+	module: moment/locale/bm
+	module: moment/locale/bn-bd
+	module: moment/locale/bn
+	module: moment/locale/bo
+	module: moment/locale/br
+	module: moment/locale/bs
+	module: moment/locale/ca
+	module: moment/locale/cs
+	module: moment/locale/cv
+	module: moment/locale/cy
+	module: moment/locale/da
+	module: moment/locale/de-at
+	module: moment/locale/de-ch
+	module: moment/locale/de
+	module: moment/locale/dv
+	module: moment/locale/el
+	module: moment/locale/en-au
+	module: moment/locale/en-ca
+	module: moment/locale/en-gb
+	module: moment/locale/en-ie
+	module: moment/locale/en-il
+	module: moment/locale/en-in
+	module: moment/locale/en-nz
+	module: moment/locale/en-sg
+	module: moment/locale/eo
+	module: moment/locale/es-do
+	module: moment/locale/es-mx
+	module: moment/locale/es-us
+	module: moment/locale/es
+	module: moment/locale/et
+	module: moment/locale/eu
+	module: moment/locale/fa
+	module: moment/locale/fi
+	module: moment/locale/fil
+	module: moment/locale/fo
+	module: moment/locale/fr-ca
+	module: moment/locale/fr-ch
+	module: moment/locale/fr
+	module: moment/locale/fy
+	module: moment/locale/ga
+	module: moment/locale/gd
+	module: moment/locale/gl
+	module: moment/locale/gom-deva
+	module: moment/locale/gom-latn
+	module: moment/locale/gu
+	module: moment/locale/he
+	module: moment/locale/hi
+	module: moment/locale/hr
+	module: moment/locale/hu
+	module: moment/locale/hy-am
+	module: moment/locale/id
+	module: moment/locale/is
+	module: moment/locale/it-ch
+	module: moment/locale/it
+	module: moment/locale/ja
+	module: moment/locale/jv
+	module: moment/locale/ka
+	module: moment/locale/kk
+	module: moment/locale/km
+	module: moment/locale/kn
+	module: moment/locale/ko
+	module: moment/locale/ku
+	module: moment/locale/ky
+	module: moment/locale/lb
+	module: moment/locale/lo
+	module: moment/locale/lt
+	module: moment/locale/lv
+	module: moment/locale/me
+	module: moment/locale/mi
+	module: moment/locale/mk
+	module: moment/locale/ml
+	module: moment/locale/mn
+	module: moment/locale/mr
+	module: moment/locale/ms-my
+	module: moment/locale/ms
+	module: moment/locale/mt
+	module: moment/locale/my
+	module: moment/locale/nb
+	module: moment/locale/ne
+	module: moment/locale/nl-be
+	module: moment/locale/nl
+	module: moment/locale/nn
+	module: moment/locale/oc-lnc
+	module: moment/locale/pa-in
+	module: moment/locale/pl
+	module: moment/locale/pt-br
+	module: moment/locale/pt
+	module: moment/locale/ro
+	module: moment/locale/ru
+	module: moment/locale/sd
+	module: moment/locale/se
+	module: moment/locale/si
+	module: moment/locale/sk
+	module: moment/locale/sl
+	module: moment/locale/sq
+	module: moment/locale/sr-cyrl
+	module: moment/locale/sr
+	module: moment/locale/ss
+	module: moment/locale/sv
+	module: moment/locale/sw
+	module: moment/locale/ta
+	module: moment/locale/te
+	module: moment/locale/tet
+	module: moment/locale/tg
+	module: moment/locale/th
+	module: moment/locale/tk
+	module: moment/locale/tl-ph
+	module: moment/locale/tlh
+	module: moment/locale/tr
+	module: moment/locale/tzl
+	module: moment/locale/tzm-latn
+	module: moment/locale/tzm
+	module: moment/locale/ug-cn
+	module: moment/locale/uk
+	module: moment/locale/ur
+	module: moment/locale/uz-latn
+	module: moment/locale/uz
+	module: moment/locale/vi
+	module: moment/locale/x-pseudo
+	module: moment/locale/yo
+	module: moment/locale/zh-cn
+	module: moment/locale/zh-hk
+	module: moment/locale/zh-mo
+	module: moment/locale/zh-tw
+	module: tslib/tslib
+warn(216) dojo/has plugin resource could not be resolved during build-time.
+	plugin resource id: config-deferredInstrumentation?./promise/instrumentation; reference module id: dojo/Deferred
+	plugin resource id: host-browser?./_base/xhr; reference module id: dojo/i18n
+	plugin resource id: host-browser?./_base/browser; reference module id: dojo/main
+	plugin resource id: host-browser?./domReady; reference module id: dojo/ready
+	plugin resource id: host-browser?./request; reference module id: dojo/text
+	plugin resource id: host-browser?../dom-construct; reference module id: dojo/on/asyncEventListener
+	plugin resource id: host-browser?../domReady!; reference module id: dojo/on/asyncEventListener
+	plugin resource id: dom?../selector/_loader; reference module id: dojo/request/handlers
+	plugin resource id: host-browser?../_base/window:; reference module id: dojo/request/watch
+	plugin resource id: host-browser?dom-addeventlistener?:../on:; reference module id: dojo/request/watch
+	plugin resource id: dojo-bidi?./_BidiMixin; reference module id: dijit/_WidgetBase
+	plugin resource id: dojo-bidi?./bidi/Chart; reference module id: dojox/charting/Chart
+	plugin resource id: dojo-bidi?./bidi/Chart3D; reference module id: dojox/charting/Chart3D
+	plugin resource id: dojo-bidi?../bidi/action2d/ZoomAndPan; reference module id: dojox/charting/action2d/MouseZoomAndPan
+	plugin resource id: dojo-bidi?../bidi/action2d/Tooltip; reference module id: dojox/charting/action2d/Tooltip
+	plugin resource id: dojo-bidi?../bidi/action2d/ZoomAndPan; reference module id: dojox/charting/action2d/TouchZoomAndPan
+	plugin resource id: dojo-bidi?../bidi/axis2d/Default; reference module id: dojox/charting/axis2d/Default
+	plugin resource id: dojo-bidi?../bidi/widget/Chart; reference module id: dojox/charting/widget/Chart
+	plugin resource id: dojo-bidi?../bidi/widget/Legend; reference module id: dojox/charting/widget/Legend
+	plugin resource id: dojo-bidi?./bidi/_BidiMixin; reference module id: dojox/grid/DataGrid
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Accordion; reference module id: dojox/mobile/Accordion
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Badge; reference module id: dojox/mobile/Badge
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Button; reference module id: dojox/mobile/Button
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Carousel; reference module id: dojox/mobile/Carousel
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/CarouselItem; reference module id: dojox/mobile/CarouselItem
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/FormLayout; reference module id: dojox/mobile/FormLayout
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Heading; reference module id: dojox/mobile/Heading
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Icon; reference module id: dojox/mobile/Icon
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/IconItem; reference module id: dojox/mobile/IconItem
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/IconMenu; reference module id: dojox/mobile/IconMenu
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/ListItem; reference module id: dojox/mobile/ListItem
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/ProgressIndicator; reference module id: dojox/mobile/ProgressIndicator
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Rating; reference module id: dojox/mobile/Rating
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/RoundRectCategory; reference module id: dojox/mobile/RoundRectCategory
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Scrollable; reference module id: dojox/mobile/scrollable
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/SimpleDialog; reference module id: dojox/mobile/SimpleDialog
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/SpinWheelSlot; reference module id: dojox/mobile/SpinWheelSlot
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/SwapView; reference module id: dojox/mobile/SwapView
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Switch; reference module id: dojox/mobile/Switch
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/TabBar; reference module id: dojox/mobile/TabBar
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/TabBarButton; reference module id: dojox/mobile/TabBarButton
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/TextBox; reference module id: dojox/mobile/TextBox
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/ToolBarButton; reference module id: dojox/mobile/ToolBarButton
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/Tooltip; reference module id: dojox/mobile/Tooltip
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/TreeView; reference module id: dojox/mobile/TreeView
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/ValuePickerSlot; reference module id: dojox/mobile/ValuePickerSlot
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/_ComboBoxMenu; reference module id: dojox/mobile/_ComboBoxMenu
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/_StoreListMixin; reference module id: dojox/mobile/_DataListMixin
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/_ItemBase; reference module id: dojox/mobile/_ItemBase
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/_PickerBase; reference module id: dojox/mobile/_PickerBase
+	plugin resource id: dojo-bidi?dojox/mobile/bidi/_StoreListMixin; reference module id: dojox/mobile/_StoreListMixin
+	plugin resource id: dojo-parser?:dojo/_base/window; reference module id: dojox/mvc/parserExtension
+	plugin resource id: dojo-mobile-parser?:dojo/parser; reference module id: dojox/mvc/parserExtension
+	plugin resource id: dojo-parser?:dojox/mobile/parser; reference module id: dojox/mvc/parserExtension
+	plugin resource id: touch?dojox/gesture/tap; reference module id: dojox/treemap/DrillDownUp
+	plugin resource id: touch?./util/touch; reference module id: dgrid/Selection
+	plugin resource id: touch?./util/touch; reference module id: dgrid/Tree
+	plugin resource id: touch?../util/touch; reference module id: dgrid/extensions/DnD
+warn(224) A plugin dependency was encountered but there was no build-time plugin resolver.
+	module: dojo/request; plugin: dojo/request/default
+	module: dojo/request/node; plugin: dojo/node
+	module: dojo/request/node; plugin: dojo/node
+	module: dojo/request/node; plugin: dojo/node
+	module: dojo/request/node; plugin: dojo/node
+	module: dojo/request/registry; plugin: dojo/request/default
+	module: dijit/Fieldset; plugin: dojo/query
+	module: dijit/RadioMenuItem; plugin: dojo/query
+	module: dijit/Tree; plugin: dojo/query
+	module: dijit/form/_RadioButtonMixin; plugin: dojo/query
+	module: dojox/mobile/DatePicker; plugin: dojox/mobile/_PickerChooser
+	module: dojox/mobile/TimePicker; plugin: dojox/mobile/_PickerChooser
+	module: dojox/store/LocalDB; plugin: dojox/store/db/has
+	module: dstore/LocalDB; plugin: dstore/db/has
+warn(226) A package without a profile could throw errors or warnings.
+	package: undefined
+	package: tslib
+Layer Contents:
+dojo/dojo:
+	dojo/dojo
+	esri/config
+	esri/core/global
+	esri/core/has
+	esri/core/object
+	esri/core/lang
+	esri/core/typedArrayUtil
+	esri/kernel
+	esri/core/urlUtils
+	esri/core/maybe
+	esri/core/Logger
+	esri/chunks/_rollupPluginBabelHelpers
+	esri/core/string
+	esri/core/Error
+	esri/core/Message
+	esri/support/revision
+	esri/core/workers/RemoteClient
+	esri/core/events
+	esri/core/promiseUtils
+	esri/core/clock
+	esri/core/workers/registry
+	esri/core/workers/utils
+	esri/views/support/Scheduler
+	esri/chunks/tslib.es6
+	esri/core/accessorSupport/ensureType
+	esri/core/accessorSupport/decorators/property
+	esri/core/accessorSupport/get
+	esri/core/accessorSupport/utils
+	esri/core/handleUtils
+	esri/core/accessorSupport/metadata
+	esri/core/accessorSupport/set
+	esri/core/jsonMap
+	esri/core/accessorSupport/decorators/subclass
+	esri/core/accessorSupport/extensions
+	esri/core/accessorSupport/extensions/serializableProperty
+	esri/core/accessorSupport/extensions/serializableProperty/originAliases
+	esri/core/accessorSupport/extensions/serializableProperty/reader
+	esri/core/Warning
+	esri/core/accessorSupport/extensions/serializableProperty/type
+	esri/core/accessorSupport/extensions/serializableProperty/shorthands
+	esri/core/accessorSupport/extensions/serializableProperty/writer
+	esri/core/uuid
+	esri/portal/support/resourceExtension
+	esri/core/PerformanceSampler
+	esri/core/PooledArray
+	esri/core/arrayUtils
+	esri/core/RandomLCG
+	esri/core/HeapSort
+	esri/core/Accessor
+	esri/core/deprecate
+	esri/core/accessorSupport/Properties
+	esri/core/accessorSupport/PropertyOrigin
+	esri/core/ObjectPool
+	esri/core/accessorSupport/Property
+	esri/core/accessorSupport/Store
+	esri/core/accessorSupport/tracking
+	esri/core/accessorSupport/watch
+	esri/core/ArrayPool
+	esri/core/ReentrantObjectPool
+	esri/core/scheduling
+	esri/core/nextTick
+	esri/core/accessorSupport/wire
+	esri/core/watchUtils
+	esri/layers/support/PromiseQueue
+	esri/views/support/debugFlags
+	esri/core/workers/request
+	esri/views/2d/engine/vectorTiles/WorkerTileHandler
+	esri/views/2d/engine/vectorTiles/style/StyleRepository
+	esri/views/2d/engine/vectorTiles/style/StyleLayer
+	esri/views/2d/engine/vectorTiles/style/Filter
+	esri/chunks/expression
+	esri/Color
+	esri/colorUtils
+	esri/core/mathUtils
+	esri/views/2d/engine/vectorTiles/expression/data
+	esri/views/2d/unitBezier
+	esri/views/2d/engine/vectorTiles/GeometryUtils
+	esri/views/2d/engine/vectorTiles/style/StyleDefinition
+	esri/views/2d/engine/vectorTiles/style/StyleProperty
+	esri/views/2d/engine/webgl/definitions
+	esri/views/2d/engine/vectorTiles/WorkerTile
+	esri/views/2d/tiling/enums
+	esri/views/2d/engine/vectorTiles/Placement
+	esri/views/2d/engine/vectorTiles/decluttering/config
+	esri/views/2d/engine/webgl/Geometry
+	esri/views/2d/engine/vectorTiles/TextShaping
+	esri/views/2d/engine/webgl/Rect
+	esri/views/2d/engine/vectorTiles/ScriptUtils
+	esri/views/2d/engine/vectorTiles/TileParser
+	esri/core/pbf
+	esri/views/2d/engine/webgl/TileClipper
+	esri/views/2d/engine/webgl/GeometryUtils
+	esri/views/2d/engine/vectorTiles/CircleBucket
+	esri/views/2d/engine/vectorTiles/BaseBucket
+	esri/views/2d/engine/vectorTiles/Feature
+	esri/views/2d/engine/vectorTiles/FillBucket
+	esri/core/libs/earcut/earcut
+	esri/views/2d/engine/webgl/mesh/Tesselator
+	esri/chunks/_commonjsHelpers
+	esri/views/2d/engine/vectorTiles/IndexMemoryBuffer
+	esri/views/2d/engine/vectorTiles/MemoryBuffer
+	esri/views/2d/engine/vectorTiles/LineBucket
+	esri/views/2d/engine/webgl/mesh/templates/util
+	esri/views/2d/engine/webgl/TurboLine
+	esri/views/2d/engine/vectorTiles/SourceLayerData
+	esri/views/2d/engine/vectorTiles/SymbolBucket
+	esri/core/BidiEngine
+	esri/core/bidiEngineTables
+	esri/views/2d/engine/vectorTiles/VertexMemoryBuffer
+	esri/geometry
+	esri/geometry/SpatialReference
+	esri/core/accessorSupport/decorators/writer
+	esri/core/JSONSupport
+	esri/core/accessorSupport/read
+	esri/core/accessorSupport/write
+	esri/geometry/support/spatialReferenceUtils
+	esri/geometry/support/WKIDUnitConversion
+	esri/geometry/Geometry
+	esri/core/accessorSupport/decorators/reader
+	esri/geometry/Point
+	esri/core/accessorSupport/decorators/cast
+	esri/geometry/support/offset
+	esri/geometry/support/pointUtils
+	esri/geometry/support/webMercatorUtils
+	esri/geometry/support/Ellipsoid
+	esri/geometry/Extent
+	esri/geometry/support/contains
+	esri/geometry/support/intersects
+	esri/geometry/Multipoint
+	esri/geometry/support/zmUtils
+	esri/geometry/Polygon
+	esri/geometry/support/coordsUtils
+	esri/geometry/support/centroid
+	esri/geometry/support/extentUtils
+	esri/geometry/support/boundsUtils
+	esri/geometry/Polyline
+	esri/geometry/support/typeUtils
+	esri/geometry/support/jsonUtils
+
+esri/geometry/support/meshUtils/ElevationSamplerWorker:
+	esri/geometry/support/meshUtils/ElevationSamplerWorker
+	esri/core/libs/rbush/PooledRBush
+	esri/chunks/quickselect
+
+esri/layers/graphics/sources/geojson/GeoJSONSourceWorker:
+	esri/layers/graphics/sources/geojson/GeoJSONSourceWorker
+	esri/layers/support/fieldUtils
+	esri/layers/support/domains
+	esri/layers/support/Domain
+	esri/core/accessorSupport/decorators/enumeration
+	esri/layers/support/CodedValueDomain
+	esri/layers/support/CodedValue
+	esri/layers/support/InheritedDomain
+	esri/layers/support/RangeDomain
+	esri/support/arcadeOnDemand
+	esri/request
+	esri/support/requestUtils
+	esri/layers/support/fieldType
+	esri/layers/graphics/featureConversionUtils
+	esri/layers/graphics/OptimizedFeature
+	esri/layers/graphics/OptimizedFeatureSet
+	esri/layers/graphics/OptimizedGeometry
+	esri/layers/support/FieldsIndex
+	esri/layers/graphics/data/projectionSupport
+	esri/geometry/projection
+	esri/chunks/vec3f64
+	esri/chunks/vec3
+	esri/chunks/common
+	esri/geometry/projectionEllipsoid
+	esri/core/unitUtils
+	esri/chunks/mat4
+	esri/chunks/pe
+	esri/assets
+	esri/geometry/support/aaBoundingRect
+	esri/geometry/support/geodesicConstants
+	esri/geometry/support/GeographicTransformation
+	esri/geometry/support/GeographicTransformationStep
+	esri/geometry/geometryAdapters/json
+	esri/layers/graphics/sources/geojson/geojson
+	esri/layers/graphics/sources/support/clientSideDefaults
+	esri/symbols/support/defaultsJSON
+	esri/layers/graphics/data/FeatureStore
+	esri/core/Evented
+	esri/geometry/support/aaBoundingBox
+	esri/layers/graphics/data/BoundsStore
+	esri/chunks/rbush
+	esri/chunks/quickselect
+	esri/layers/graphics/data/optimizedFeatureQueryEngineAdapter
+	esri/layers/graphics/centroid
+	esri/layers/graphics/data/QueryEngine
+	esri/core/MemCache
+	esri/layers/graphics/data/QueryEngineCapabilities
+	esri/layers/graphics/data/attributeSupport
+	esri/core/sql/WhereClauseCache
+	esri/core/ItemCache
+	esri/core/sql/WhereClause
+	esri/core/sql/AggregateFunctions
+	esri/core/sql/StandardizedFunctions
+	esri/core/sql/WhereGrammar
+	esri/chunks/spatialQuerySupport
+	esri/geometry/support/normalizeUtils
+	esri/tasks/geometry/cut
+	esri/tasks/geometry/simplify
+	esri/layers/graphics/contains
+	esri/layers/graphics/data/timeSupport
+	esri/layers/graphics/data/QueryEngineResult
+	esri/geometry/support/quantizationUtils
+	esri/layers/graphics/data/AttributesBuilder
+	esri/layers/graphics/sources/support/sourceUtils
+
+esri/layers/graphics/sources/support/CSVSourceWorker:
+	esri/layers/graphics/sources/support/CSVSourceWorker
+	esri/request
+	esri/support/requestUtils
+	esri/geometry/projection
+	esri/chunks/vec3f64
+	esri/chunks/vec3
+	esri/chunks/common
+	esri/geometry/projectionEllipsoid
+	esri/core/unitUtils
+	esri/chunks/mat4
+	esri/chunks/pe
+	esri/assets
+	esri/geometry/support/aaBoundingRect
+	esri/geometry/support/geodesicConstants
+	esri/geometry/support/GeographicTransformation
+	esri/geometry/support/GeographicTransformationStep
+	esri/core/number
+	esri/intl/locale
+	esri/layers/graphics/OptimizedFeature
+	esri/layers/graphics/OptimizedGeometry
+	esri/layers/support/FieldsIndex
+	esri/geometry/geometryAdapters/json
+	esri/layers/graphics/data/projectionSupport
+	esri/layers/graphics/sources/support/clientSideDefaults
+	esri/symbols/support/defaultsJSON
+	esri/layers/graphics/data/FeatureStore
+	esri/core/Evented
+	esri/layers/graphics/featureConversionUtils
+	esri/layers/graphics/OptimizedFeatureSet
+	esri/geometry/support/aaBoundingBox
+	esri/layers/graphics/data/BoundsStore
+	esri/chunks/rbush
+	esri/chunks/quickselect
+	esri/layers/graphics/data/optimizedFeatureQueryEngineAdapter
+	esri/layers/graphics/centroid
+	esri/layers/graphics/data/QueryEngine
+	esri/core/MemCache
+	esri/layers/graphics/data/QueryEngineCapabilities
+	esri/layers/graphics/data/attributeSupport
+	esri/core/sql/WhereClauseCache
+	esri/core/ItemCache
+	esri/core/sql/WhereClause
+	esri/core/sql/AggregateFunctions
+	esri/core/sql/StandardizedFunctions
+	esri/core/sql/WhereGrammar
+	esri/chunks/spatialQuerySupport
+	esri/geometry/support/normalizeUtils
+	esri/tasks/geometry/cut
+	esri/tasks/geometry/simplify
+	esri/layers/graphics/contains
+	esri/layers/graphics/data/timeSupport
+	esri/layers/graphics/data/QueryEngineResult
+	esri/geometry/support/quantizationUtils
+	esri/layers/graphics/data/AttributesBuilder
+	esri/layers/graphics/sources/csv/csv
+
+esri/layers/graphics/sources/support/MemorySourceWorker:
+	esri/layers/graphics/sources/support/MemorySourceWorker
+	esri/layers/support/fieldUtils
+	esri/layers/support/domains
+	esri/layers/support/Domain
+	esri/core/accessorSupport/decorators/enumeration
+	esri/layers/support/CodedValueDomain
+	esri/layers/support/CodedValue
+	esri/layers/support/InheritedDomain
+	esri/layers/support/RangeDomain
+	esri/support/arcadeOnDemand
+	esri/layers/support/fieldType
+	esri/layers/graphics/featureConversionUtils
+	esri/layers/graphics/OptimizedFeature
+	esri/layers/graphics/OptimizedFeatureSet
+	esri/layers/graphics/OptimizedGeometry
+	esri/layers/support/FieldsIndex
+	esri/layers/graphics/data/projectionSupport
+	esri/geometry/projection
+	esri/chunks/vec3f64
+	esri/chunks/vec3
+	esri/chunks/common
+	esri/geometry/projectionEllipsoid
+	esri/core/unitUtils
+	esri/chunks/mat4
+	esri/chunks/pe
+	esri/assets
+	esri/request
+	esri/support/requestUtils
+	esri/geometry/support/aaBoundingRect
+	esri/geometry/support/geodesicConstants
+	esri/geometry/support/GeographicTransformation
+	esri/geometry/support/GeographicTransformationStep
+	esri/geometry/geometryAdapters/json
+	esri/layers/graphics/sources/support/clientSideDefaults
+	esri/symbols/support/defaultsJSON
+	esri/layers/graphics/data/FeatureStore
+	esri/core/Evented
+	esri/geometry/support/aaBoundingBox
+	esri/layers/graphics/data/BoundsStore
+	esri/chunks/rbush
+	esri/chunks/quickselect
+	esri/layers/graphics/data/optimizedFeatureQueryEngineAdapter
+	esri/layers/graphics/centroid
+	esri/layers/graphics/data/QueryEngine
+	esri/core/MemCache
+	esri/layers/graphics/data/QueryEngineCapabilities
+	esri/layers/graphics/data/attributeSupport
+	esri/core/sql/WhereClauseCache
+	esri/core/ItemCache
+	esri/core/sql/WhereClause
+	esri/core/sql/AggregateFunctions
+	esri/core/sql/StandardizedFunctions
+	esri/core/sql/WhereGrammar
+	esri/chunks/spatialQuerySupport
+	esri/geometry/support/normalizeUtils
+	esri/tasks/geometry/cut
+	esri/tasks/geometry/simplify
+	esri/layers/graphics/contains
+	esri/layers/graphics/data/timeSupport
+	esri/layers/graphics/data/QueryEngineResult
+	esri/geometry/support/quantizationUtils
+	esri/layers/graphics/data/AttributesBuilder
+	esri/layers/graphics/sources/support/sourceUtils
+
+esri/layers/support/LercWorker:
+	esri/layers/support/LercWorker
+	esri/chunks/LercCodec
+
+esri/layers/support/RasterWorker:
+	esri/layers/support/RasterWorker
+	esri/layers/support/PixelBlock
+	esri/layers/support/rasterFormats/RasterCodec
+	esri/chunks/Zlib
+	esri/layers/support/rasterFormats/ImageCanvasDecoder
+	esri/layers/support/rasterFormats/JpgPlus
+	esri/chunks/Jpg
+	esri/chunks/LercCodec
+	esri/layers/support/rasterFormats/Raw
+	esri/layers/support/rasterFormats/utils
+	esri/layers/support/rasterFormats/TiffDecoder
+	esri/layers/support/rasterDatasets/byteStreamUtils
+	esri/layers/support/rasterFormats/Lzw
+	esri/layers/support/rasterFormats/TiffTags
+	esri/layers/support/rasterFunctions/pixelUtils
+	esri/renderers/support/RasterSymbolizer
+	esri/core/colorUtils
+	esri/renderers/support/colorRampUtils
+	esri/layers/support/RasterInfo
+	esri/layers/support/rasterFunctions/surfaceUtils
+
+esri/views/2d/layers/features/Pipeline:
+	esri/views/2d/layers/features/Pipeline
+	esri/core/HandleOwner
+	esri/core/Handles
+	esri/core/Collection
+	esri/core/Evented
+	esri/views/support/WatchUpdatingTracking
+	esri/layers/support/TileInfo
+	esri/core/unitUtils
+	esri/geometry/projectionEllipsoid
+	esri/geometry/support/aaBoundingRect
+	esri/layers/support/LOD
+	esri/views/2d/ViewState
+	esri/chunks/common
+	esri/Viewpoint
+	esri/Camera
+	esri/views/3d/support/mathUtils
+	esri/chunks/vec3f64
+	esri/chunks/vec3
+	esri/chunks/vec2f64
+	esri/chunks/mat3
+	esri/chunks/vec2
+	esri/chunks/mat2d
+	esri/chunks/mat2df64
+	esri/views/2d/viewpointUtils
+	esri/chunks/mat2df32
+	esri/chunks/mat3f32
+	esri/chunks/vec2f32
+	esri/core/libs/gl-matrix-2/types/vec2
+	esri/views/2d/tiling/TileInfoView
+	esri/views/2d/tiling/TileKey
+	esri/views/2d/tiling/LODInfo
+	esri/views/2d/tiling/TileCoverage
+	esri/views/2d/tiling/TileSpan
+	esri/views/2d/layers/features/support/TileStore
+	esri/chunks/rbush
+	esri/chunks/quickselect
+	esri/views/2d/layers/features/support/Tile
+	esri/tasks/support/QuantizationParameters
+	esri/views/2d/layers/features/processors
+	esri/views/2d/layers/features/support/UpdateToken
+	esri/views/2d/layers/features/controllers/FeatureController2D
+	esri/layers/graphics/featureConversionUtils
+	esri/layers/graphics/OptimizedFeature
+	esri/layers/graphics/OptimizedFeatureSet
+	esri/layers/graphics/OptimizedGeometry
+	esri/layers/support/FieldsIndex
+	esri/views/2d/layers/features/support/FeatureSetReaderJSON
+	esri/views/2d/layers/features/support/FeatureSetReader
+	esri/layers/graphics/centroid
+	esri/views/support/QueueProcessor
+	esri/core/Queue
+	esri/views/2d/layers/features/support/AttributeStore
+	esri/core/accessorSupport/diffUtils
+	esri/views/2d/engine/webgl/Utils
+	esri/core/screenUtils
+	esri/views/webgl/Program
+	esri/views/webgl/ShaderTranspiler
+	esri/views/webgl/reservedWordsGLSL3
+	esri/views/webgl/BufferObject
+	esri/views/webgl/Texture
+	esri/views/webgl/VertexArrayObject
+	esri/views/webgl/Util
+	esri/views/webgl/Renderbuffer
+	esri/views/webgl/FramebufferObject
+	esri/views/webgl/ProgramCache
+	esri/views/webgl/programUtils
+	esri/views/webgl/RenderingContext
+	esri/views/webgl/renderState
+	esri/views/webgl/enums
+	esri/views/webgl/InstanceCounter
+	esri/views/webgl/capabilities/isWebGL2Context
+	esri/views/webgl/capabilities/load
+	esri/views/webgl/capabilities/DisjointTimerQuery
+	esri/views/webgl/capabilities/DrawBuffers
+	esri/views/webgl/capabilities/Instancing
+	esri/views/webgl/capabilities/LoseContext
+	esri/views/webgl/capabilities/VertexArrayObjects
+	esri/views/webgl/ShaderCompiler
+	esri/views/2d/engine/webgl/enums
+	esri/views/2d/engine/webgl/color
+	esri/views/2d/engine/webgl/number
+	esri/views/2d/engine/webgl/SymbolProperties
+	esri/views/2d/engine/webgl/util/debug
+	esri/views/2d/layers/features/tileRenderers/support/visualVariablesUtils
+	esri/views/2d/engine/webgl/visualVariablesUtils
+	esri/views/2d/layers/features/support/ComputedAttributeStorage
+	esri/views/2d/layers/features/support/displayIdUtils
+	esri/views/2d/layers/features/support/StaticBitSet
+	esri/views/2d/layers/features/FeatureStore2D
+	esri/geometry/support/aaBoundingBox
+	esri/views/2d/layers/features/Store2D
+	esri/support/arcadeOnDemand
+	esri/views/2d/arcade/callExpressionWithCursor
+	esri/layers/graphics/data/QueryEngine
+	esri/core/MemCache
+	esri/layers/graphics/data/QueryEngineCapabilities
+	esri/layers/graphics/data/projectionSupport
+	esri/geometry/projection
+	esri/chunks/mat4
+	esri/chunks/pe
+	esri/assets
+	esri/request
+	esri/support/requestUtils
+	esri/geometry/support/geodesicConstants
+	esri/geometry/support/GeographicTransformation
+	esri/geometry/support/GeographicTransformationStep
+	esri/geometry/geometryAdapters/json
+	esri/layers/graphics/data/attributeSupport
+	esri/core/sql/WhereClauseCache
+	esri/core/ItemCache
+	esri/core/sql/WhereClause
+	esri/core/sql/AggregateFunctions
+	esri/core/sql/StandardizedFunctions
+	esri/core/sql/WhereGrammar
+	esri/chunks/spatialQuerySupport
+	esri/geometry/support/normalizeUtils
+	esri/tasks/geometry/cut
+	esri/tasks/geometry/simplify
+	esri/layers/graphics/contains
+	esri/layers/graphics/data/timeSupport
+	esri/layers/graphics/data/QueryEngineResult
+	esri/geometry/support/quantizationUtils
+	esri/layers/graphics/data/AttributesBuilder
+	esri/views/2d/layers/features/Source2D
+	esri/TimeExtent
+	esri/layers/support/timeUtils
+	esri/tasks/support/Query
+	esri/chunks/symbols
+	esri/symbols/Symbol
+	esri/symbols/CIMSymbol
+	esri/core/accessorSupport/decorators/enumeration
+	esri/layers/support/fieldUtils
+	esri/layers/support/domains
+	esri/layers/support/Domain
+	esri/layers/support/CodedValueDomain
+	esri/layers/support/CodedValue
+	esri/layers/support/InheritedDomain
+	esri/layers/support/RangeDomain
+	esri/symbols/Symbol3DLayer
+	esri/symbols/ExtrudeSymbol3DLayer
+	esri/symbols/edges/utils
+	esri/symbols/edges/Edges3D
+	esri/symbols/support/materialUtils
+	esri/webdoc/support/opacityUtils
+	esri/symbols/edges/SketchEdges3D
+	esri/symbols/edges/SolidEdges3D
+	esri/symbols/support/Symbol3DMaterial
+	esri/symbols/SimpleLineSymbol
+	esri/symbols/LineSymbol
+	esri/symbols/LineSymbolMarker
+	esri/symbols/FillSymbol
+	esri/symbols/FillSymbol3DLayer
+	esri/symbols/patterns/StylePattern3D
+	esri/symbols/patterns/Pattern3D
+	esri/symbols/patterns/styles
+	esri/symbols/patterns/utils
+	esri/symbols/support/colors
+	esri/symbols/support/Symbol3DFillMaterial
+	esri/symbols/support/Symbol3DOutline
+	esri/symbols/Font
+	esri/symbols/IconSymbol3DLayer
+	esri/symbols/support/IconSymbol3DLayerResource
+	esri/chunks/persistableUrlUtils
+	esri/symbols/support/Symbol3DAnchorPosition2D
+	esri/symbols/LineSymbol3DLayer
+	esri/symbols/ObjectSymbol3DLayer
+	esri/symbols/support/ObjectSymbol3DLayerResource
+	esri/symbols/support/Symbol3DAnchorPosition3D
+	esri/symbols/PathSymbol3DLayer
+	esri/symbols/TextSymbol3DLayer
+	esri/symbols/support/Symbol3DHalo
+	esri/symbols/WaterSymbol3DLayer
+	esri/symbols/Symbol3D
+	esri/core/collectionUtils
+	esri/portal/Portal
+	esri/intl/locale
+	esri/intl
+	esri/intl/date
+	esri/intl/number
+	esri/intl/substitute
+	esri/intl/messages
+	esri/intl/t9n
+	esri/core/Loadable
+	esri/core/Promise
+	esri/portal/PortalQueryParams
+	esri/portal/PortalQueryResult
+	esri/portal/PortalUser
+	esri/portal/PortalFolder
+	esri/portal/PortalGroup
+	esri/symbols/support/StyleOrigin
+	esri/symbols/support/Thumbnail
+	esri/chunks/LineCallout3DBorder
+	esri/symbols/callouts/LineCallout3D
+	esri/symbols/callouts/Callout3D
+	esri/symbols/support/Symbol3DVerticalOffset
+	esri/symbols/LabelSymbol3D
+	esri/symbols/callouts/calloutUtils
+	esri/symbols/LineSymbol3D
+	esri/symbols/MarkerSymbol
+	esri/symbols/MeshSymbol3D
+	esri/symbols/PictureFillSymbol
+	esri/symbols/support/urlUtils
+	esri/symbols/PictureMarkerSymbol
+	esri/symbols/PointSymbol3D
+	esri/symbols/PolygonSymbol3D
+	esri/symbols/SimpleFillSymbol
+	esri/symbols/SimpleMarkerSymbol
+	esri/symbols/TextSymbol
+	esri/symbols/WebStyleSymbol
+	esri/chunks/DataLayerSource
+	esri/layers/support/Field
+	esri/layers/support/fieldType
+	esri/layers/support/source/MapLayerSource
+	esri/layers/support/source/QueryTableDataSource
+	esri/layers/support/source/RasterDataSource
+	esri/layers/support/source/TableDataSource
+	esri/tasks/support/StatisticDefinition
+	esri/views/2d/layers/features/sources/createSource
+	esri/layers/support/arcgisLayerUrl
+	esri/views/2d/layers/features/sources/DrillDownFeatureSource
+	esri/views/2d/layers/features/sources/BaseFeatureSource
+	esri/views/2d/layers/features/controllers/support/sources
+	esri/core/workers/workers
+	esri/core/workers/Connection
+	esri/core/workers/WorkerOwner
+	esri/core/workers/workerFactory
+	esri/core/workers/loaderConfig
+	esri/core/workers/WorkerFallback
+	esri/tasks/operations/query
+	esri/tasks/operations/queryZScale
+	esri/tasks/operations/zscale
+	esri/tasks/operations/pbfQueryUtils
+	esri/tasks/operations/pbfFeatureServiceParser
+	esri/tasks/operations/pbfOptimizedFeatureSet
+	esri/tasks/operations/urlUtils
+	esri/layers/ogc/ogcFeatureUtils
+	esri/tasks/support/FeatureSet
+	esri/Graphic
+	esri/PopupTemplate
+	esri/popup/content/Content
+	esri/popup/content/AttachmentsContent
+	esri/popup/content/CustomContent
+	esri/popup/FieldInfo
+	esri/popup/support/FieldInfoFormat
+	esri/core/date
+	esri/popup/content/FieldsContent
+	esri/popup/content/support/mediaInfoTypes
+	esri/popup/content/mixins/MediaInfo
+	esri/popup/content/BarChartMediaInfo
+	esri/popup/content/mixins/ChartMediaInfo
+	esri/popup/content/support/ChartMediaInfoValue
+	esri/popup/content/support/ChartMediaInfoValueSeries
+	esri/core/accessorSupport/decorators/aliasOf
+	esri/popup/content/support/chartMediaInfoUtils
+	esri/popup/content/ColumnChartMediaInfo
+	esri/popup/content/ImageMediaInfo
+	esri/popup/content/support/ImageMediaInfoValue
+	esri/popup/content/LineChartMediaInfo
+	esri/popup/content/PieChartMediaInfo
+	esri/popup/content/MediaContent
+	esri/popup/content/TextContent
+	esri/popup/content
+	esri/popup/ExpressionInfo
+	esri/popup/LayerOptions
+	esri/popup/RelatedRecordsInfo
+	esri/popup/support/RelatedRecordsInfoFieldOrder
+	esri/support/actions/ActionBase
+	esri/core/Identifiable
+	esri/support/actions/ActionButton
+	esri/support/actions/ActionToggle
+	esri/core/uid
+	esri/layers/graphics/sources/geojson/geojson
+	esri/layers/graphics/sources/support/clientSideDefaults
+	esri/symbols/support/defaultsJSON
+	esri/views/2d/layers/features/support/FeatureSetReaderPBF
+	esri/views/2d/layers/features/support/FeatureSetReaderPBFHeader
+	esri/views/2d/layers/features/sources/DataTileSource
+	esri/views/2d/layers/features/sources/GeoEventSource
+	esri/layers/graphics/data/StreamFeatureManager
+	esri/core/CircularArray
+	esri/layers/graphics/sources/connections/createConnection
+	esri/layers/graphics/sources/connections/WebSocketConnection
+	esri/layers/graphics/sources/connections/StreamConnection
+	esri/layers/graphics/sources/connections/GeoEventConnection
+	esri/views/2d/layers/features/sources/PagedFeatureSource
+	esri/views/2d/layers/features/support/tileUtils
+	esri/views/2d/layers/features/support/ClusterStore
+	esri/geohash/geohashUtils
+	esri/geohash/GeohashTree
+	esri/views/2d/layers/features/processors/SymbolProcessor
+	esri/views/2d/engine/webgl/util/BidiText
+	esri/views/2d/engine/webgl/mesh/factories/matcherUtils
+	esri/views/2d/engine/webgl/util/Matcher
+	esri/symbols/cim/utils
+	esri/core/LRUCache
+	esri/views/2d/arcade/callExpressionWithFeature
+	esri/symbols/cim/cimSymbolUtils
+	esri/symbols/cim/cimAnalyzer
+	esri/symbols/cim/CIMSymbolHelper
+	esri/symbols/cim/CIMPlacements
+	esri/symbols/cim/CIMSymbolDrawHelper
+	esri/symbols/cim/CIMEffects
+	esri/symbols/cim/CIMOperators
+	esri/symbols/cim/effects/EffectAddControlPoints
+	esri/symbols/cim/CIMCursor
+	esri/symbols/cim/effects/EffectArrow
+	esri/symbols/cim/CurveHelper
+	esri/symbols/cim/effects/EffectBuffer
+	esri/symbols/cim/effects/EffectCut
+	esri/symbols/cim/effects/EffectDashes
+	esri/symbols/cim/GeometryWalker
+	esri/symbols/cim/effects/EffectDonut
+	esri/symbols/cim/effects/EffectJog
+	esri/symbols/cim/effects/EffectMove
+	esri/symbols/cim/effects/EffectOffset
+	esri/symbols/cim/effects/EffectReverse
+	esri/symbols/cim/effects/EffectRotate
+	esri/symbols/cim/effects/EffectScale
+	esri/symbols/cim/effects/EffectWave
+	esri/symbols/cim/placements/PlacementAlongLineSameSize
+	esri/symbols/cim/enums
+	esri/symbols/cim/placements/PlacementAtExtremities
+	esri/symbols/cim/placements/PlacementAtRatioPositions
+	esri/symbols/cim/placements/PlacementInsidePolygon
+	esri/symbols/cim/placements/PlacementOnLine
+	esri/symbols/cim/placements/PlacementOnVertices
+	esri/symbols/cim/placements/PlacementPolygonCenter
+	esri/symbols/cim/Rect
+	esri/symbols/cim/packingUtils
+	esri/symbols/cim/SDFHelper
+	esri/symbols/cim/ExpandedCIM
+	esri/views/2d/engine/webgl/materialKey/MaterialKey
+	esri/views/2d/engine/webgl/mesh/templates/meshUtils
+	esri/views/2d/layers/features/schemaUtils
+	esri/views/2d/layers/support/clusterUtils
+	esri/renderers/visualVariables/support/SizeStop
+	esri/renderers/visualVariables/SizeVariable
+	esri/renderers/visualVariables/VisualVariable
+	esri/renderers/visualVariables/support/VisualVariableLegendOptions
+	esri/renderers/support/LegendOptions
+	esri/renderers/visualVariables/support/SizeVariableLegendOptions
+	esri/renderers/visualVariables/support/sizeVariableUtils
+	esri/renderers/visualVariables/support/visualVariableUtils
+	esri/core/compilerUtils
+	esri/renderers/support/lengthUtils
+	esri/core/MD5
+	esri/views/2d/engine/LevelDependentSizeVariable
+	esri/views/2d/engine/webgl/util/vvFlagUtils
+	esri/views/2d/layers/features/support/rendererUtils
+	esri/views/2d/layers/support/util
+	esri/views/2d/layers/features/textUtils
+	esri/views/2d/engine/webgl/mesh/templates/WGLTemplateStore
+	esri/symbols/support/defaults
+	esri/views/2d/engine/webgl/util/Result
+	esri/views/2d/engine/webgl/mesh/templates/WGLTextTemplate
+	esri/views/2d/engine/webgl/alignmentUtils
+	esri/views/2d/engine/webgl/mesh/templates/WGLBaseTextTemplate
+	esri/views/2d/engine/webgl/mesh/templates/shapingUtils
+	esri/views/2d/engine/webgl/collisions/BoundingBox
+	esri/symbols/cim/placements/CIMMarkerPlacementHelper
+	esri/views/2d/engine/webgl/mesh/templates/WGLMeshTemplate
+	esri/symbols/cim/effects/CIMEffectHelper
+	esri/views/2d/engine/webgl/mesh/templates/WGLMarkerTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLBaseMarkerTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLDynamicFillTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLBaseFillTemplate
+	esri/views/2d/engine/webgl/mesh/templates/templateUtils
+	esri/views/2d/engine/webgl/mesh/bufcut
+	esri/views/2d/engine/webgl/mesh/templates/WGLDynamicMeshTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLDynamicLineTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLBaseLineTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLDynamicMarkerTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLDynamicTextTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLFillTemplate
+	esri/views/2d/engine/webgl/mesh/templates/WGLLineTemplate
+	esri/views/2d/engine/webgl/util/Lock
+	esri/views/2d/engine/webgl/mesh/factories/WGLMeshFactory
+	esri/views/2d/engine/webgl/mesh/MeshData
+	esri/views/2d/engine/webgl/WGLDisplayRecord
+	esri/views/2d/engine/webgl/MeshData
+	esri/views/2d/engine/webgl/util/serializationUtils
+	esri/views/2d/engine/webgl/collisions/Metric
+	esri/views/2d/engine/webgl/WGLDisplayObject
+	esri/views/2d/engine/webgl/util/Reader
+	esri/views/2d/engine/webgl/util/Writer
+	esri/views/2d/engine/webgl/mesh/VertexVector
+	esri/views/2d/engine/webgl/mesh/VertexBuffer
+	esri/views/2d/engine/webgl/mesh/templates/WGLLabelTemplate
+	esri/views/2d/engine/webgl/mesh/templates/segmentUtils
+	esri/views/2d/engine/webgl/collisions/CollisionGrid
+	esri/views/2d/layers/features/processors/BaseProcessor
+
+esri/views/3d/layers/PointCloudWorker:
+	esri/views/3d/layers/PointCloudWorker
+	esri/chunks/vec3
+	esri/chunks/vec3f64
+	esri/chunks/common
+	esri/geometry/projection
+	esri/geometry/projectionEllipsoid
+	esri/core/unitUtils
+	esri/chunks/mat4
+	esri/chunks/pe
+	esri/assets
+	esri/request
+	esri/support/requestUtils
+	esri/geometry/support/aaBoundingRect
+	esri/geometry/support/geodesicConstants
+	esri/geometry/support/GeographicTransformation
+	esri/geometry/support/GeographicTransformationStep
+	esri/chunks/quat
+	esri/chunks/mat3f64
+	esri/chunks/quatf64
+	esri/chunks/vec4
+	esri/chunks/vec3f32
+	esri/chunks/quatf32
+	esri/views/3d/layers/i3s/PointCloudWorkerUtil
+	esri/renderers/PointCloudClassBreaksRenderer
+	esri/core/accessorSupport/decorators/enumeration
+	esri/renderers/PointCloudRenderer
+	esri/renderers/support/pointCloud/ColorModulation
+	esri/renderers/support/pointCloud/pointSizeAlgorithmTypeUtils
+	esri/renderers/support/pointCloud/PointSizeAlgorithm
+	esri/renderers/support/pointCloud/PointSizeFixedSizeAlgorithm
+	esri/renderers/support/pointCloud/PointSizeSplatAlgorithm
+	esri/renderers/support/LegendOptions
+	esri/renderers/support/pointCloud/ColorClassBreakInfo
+	esri/renderers/PointCloudStretchRenderer
+	esri/renderers/support/pointCloud/StopInfo
+	esri/renderers/PointCloudUniqueValueRenderer
+	esri/renderers/support/pointCloud/ColorUniqueValueInfo
+	esri/views/3d/layers/i3s/LEPCC
+	esri/views/3d/layers/i3s/I3SBinaryReader
+
+esri/views/3d/layers/SceneLayerWorker:
+	esri/views/3d/layers/SceneLayerWorker
+	esri/libs/i3s/I3SWorker
+	esri/assets
+	esri/request
+	esri/support/requestUtils
+
+esri/views/3d/support/PBFDecoderWorker:
+	esri/views/3d/support/PBFDecoderWorker
+	esri/tasks/operations/pbfQueryUtils
+	esri/tasks/operations/pbfFeatureServiceParser
+	esri/layers/graphics/OptimizedGeometry
+	esri/tasks/operations/pbfOptimizedFeatureSet
+	esri/core/unitUtils
+	esri/geometry/projectionEllipsoid
+	esri/layers/graphics/OptimizedFeature
+	esri/layers/graphics/OptimizedFeatureSet
+	esri/tasks/operations/pbfDehydratedFeatureSet
+	esri/core/compilerUtils
+	esri/core/uid
+	esri/layers/support/Field
+	esri/core/accessorSupport/decorators/enumeration
+	esri/layers/support/domains
+	esri/layers/support/Domain
+	esri/layers/support/CodedValueDomain
+	esri/layers/support/CodedValue
+	esri/layers/support/InheritedDomain
+	esri/layers/support/RangeDomain
+	esri/layers/support/fieldType
+	esri/layers/graphics/featureConversionUtils
+	esri/tasks/operations/zscale
+	esri/layers/graphics/dehydratedFeatures
+	esri/geometry/support/aaBoundingRect
+	esri/core/byteSizeEstimations
+	esri/geometry/support/aaBoundingBox
+	esri/geometry/support/quantizationUtils
+	esri/layers/graphics/dehydratedFeatureComparison
+
+esri/views/3d/webgl-engine/lib/edgeRendering/EdgeProcessingWorker:
+	esri/views/3d/webgl-engine/lib/edgeRendering/EdgeProcessingWorker
+	esri/geometry/support/meshUtils/deduplicate
+	esri/views/3d/webgl-engine/lib/edgeRendering/bufferLayouts
+	esri/views/3d/support/buffer/glUtil
+	esri/views/3d/support/buffer/InterleavedLayout
+	esri/views/3d/support/buffer/BufferView
+	esri/views/3d/support/buffer/internals/Mat3
+	esri/views/3d/support/buffer/internals/Mat4
+	esri/views/3d/support/buffer/internals/Scalar
+	esri/views/3d/support/buffer/internals/Vec2
+	esri/chunks/vec2
+	esri/chunks/common
+	esri/views/3d/support/buffer/internals/Vec3
+	esri/chunks/vec3
+	esri/chunks/vec3f64
+	esri/views/3d/support/buffer/internals/Vec4
+	esri/chunks/vec4
+	esri/views/3d/support/buffer/types
+	esri/views/3d/webgl-engine/lib/edgeRendering/edgeBufferWriters
+	esri/views/3d/support/buffer/workerHelper
+	esri/views/3d/support/meshProcessing
+	esri/views/3d/webgl-engine/lib/edgeRendering/edgePreprocessing
+	esri/views/3d/support/mathUtils
+
+
+
+Process finished normally
+	errors: 0
+	warnings: 212
+	build time: 62.032 seconds

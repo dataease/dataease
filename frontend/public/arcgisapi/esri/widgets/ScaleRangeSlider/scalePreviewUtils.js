@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../intl/locale","../../assets","../../intl"],function(b,e,f,l){function c(a){return`url(${f.getAssetUrl(`esri/widgets/ScaleRangeSlider/images/scalePreview/${a}.jpg`)})`}const d=e.getLocale().substr(0,2),g={ae:"en",ar:"es",at:"de",au:"en",be:"nl",bg:"bg",bo:"es",br:"pt",ca:"en",ch:"de",ci:"fr",cl:"es",cn:"zh",co:"es",cr:"es",cz:"cs",de:"de",dk:"da",ee:"et",eg:"en",es:"es",fi:"fi",fr:"fr",gb:"en",gl:"da",gr:"el",gt:"es",hk:"en",id:"en",ie:"en",il:"en",in:"en",iq:"ar",is:"is",it:"it",
+jp:"ja",ke:"en",kr:"ko",kw:"ar",li:"de",lt:"lt",lu:"en",lv:"lv",ma:"fr",mg:"fr",ml:"fr",mo:"en",mx:"es",my:"en",ni:"es",nl:"nl",no:"nn",nz:"en",pe:"es",pl:"pl",pr:"es",pt:"pt",ro:"ro",ru:"ru",rw:"en",se:"sv",sg:"en",sk:"sk",sr:"nl",sv:"es",th:"th",tn:"fr",tw:"zh",us:"en",ve:"es",vi:"en",wo:"en",za:"en"};b.fallbackSpriteSheetFileName="en-wo";b.getScalePreviewSource=function(a){a=a.toLowerCase();const h=c(`${d}-${a}`);a=c(`${g[a]}-${a}`);const k=c("en-wo");return`${h}, ${a}, ${k}`};b.getScalePreviewSpriteBackgroundPosition=
+function(a){return 0>a||25<=a?null:`-${a%5*128}px -${128*Math.floor(a/5)}px`};b.languageCode=d;Object.defineProperty(b,"__esModule",{value:!0})});

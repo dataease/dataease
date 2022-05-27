@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dojo/_base/kernel","../_Plugin","../../form/ToggleButton"],function(d,e,b,f){e.experimental("dijit._editor.plugins.TabIndent");var c=d("dijit._editor.plugins.TabIndent",b,{useDefaultCommand:!1,buttonClass:f,command:"tabIndent",_initButton:function(){this.inherited(arguments);var a=this.editor;this.own(this.button.on("change",function(g){a.set("isTabIndent",g)}));this.updateState()},updateState:function(){var a=this.get("disabled");this.button.set("disabled",a);a||this.button.set("checked",
+this.editor.isTabIndent,!1)}});b.registry.tabIndent=function(){return new c({command:"tabIndent"})};return c});

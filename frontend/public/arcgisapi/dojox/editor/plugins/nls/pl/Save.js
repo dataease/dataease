@@ -1,0 +1,2 @@
+//>>built
+define({save:"Zapisz"});

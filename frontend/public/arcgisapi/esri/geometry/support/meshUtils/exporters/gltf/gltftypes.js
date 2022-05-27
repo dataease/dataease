@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./types"],function(a,b){Object.defineProperty(a,"AlphaMode",{enumerable:!0,get:function(){return b.AlphaMode}});Object.defineProperty(a,"BufferOutputType",{enumerable:!0,get:function(){return b.BufferOutputType}});Object.defineProperty(a,"ColorMode",{enumerable:!0,get:function(){return b.ColorMode}});Object.defineProperty(a,"ComponentType",{enumerable:!0,get:function(){return b.ComponentType}});Object.defineProperty(a,"DataType",{enumerable:!0,get:function(){return b.DataType}});
+Object.defineProperty(a,"FilterMode",{enumerable:!0,get:function(){return b.FilterMode}});Object.defineProperty(a,"ImageOutputType",{enumerable:!0,get:function(){return b.ImageOutputType}});Object.defineProperty(a,"MeshMode",{enumerable:!0,get:function(){return b.MeshMode}});Object.defineProperty(a,"TargetBuffer",{enumerable:!0,get:function(){return b.TargetBuffer}});Object.defineProperty(a,"__esModule",{value:!0})});

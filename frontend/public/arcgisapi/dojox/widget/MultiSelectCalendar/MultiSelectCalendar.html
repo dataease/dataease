@@ -1,0 +1,38 @@
+<table cellspacing="0" cellpadding="0" class="dijitCalendarContainer" role="grid" dojoAttachEvent="onkeydown: _onKeyDown" aria-labelledby="${id}_year">
+	<thead>
+		<tr class="dijitReset dijitCalendarMonthContainer" valign="top">
+			<th class='dijitReset dijitCalendarArrow' dojoAttachPoint="decrementMonth">
+				<img src="${_blankGif}" alt="" class="dijitCalendarIncrementControl dijitCalendarDecrease" role="presentation"/>
+				<span dojoAttachPoint="decreaseArrowNode" class="dijitA11ySideArrow">-</span>
+			</th>
+			<th class='dijitReset' colspan="5">
+				<div dojoType="dijit.form.DropDownButton" dojoAttachPoint="monthDropDownButton"
+					id="${id}_mddb" tabIndex="-1">
+				</div>
+			</th>
+			<th class='dijitReset dijitCalendarArrow' dojoAttachPoint="incrementMonth">
+				<img src="${_blankGif}" alt="" class="dijitCalendarIncrementControl dijitCalendarIncrease" role="presentation"/>
+				<span dojoAttachPoint="increaseArrowNode" class="dijitA11ySideArrow">+</span>
+			</th>
+		</tr>
+		<tr>
+			<th class="dijitReset dijitCalendarDayLabelTemplate" role="columnheader"><span class="dijitCalendarDayLabel"></span></th>
+		</tr>
+	</thead>
+	<tbody dojoAttachEvent="onclick: _onDayClick, onmouseover: _onDayMouseOver, onmouseout: _onDayMouseOut, onmousedown: _onDayMouseDown, onmouseup: _onDayMouseUp" class="dijitReset dijitCalendarBodyContainer">
+		<tr class="dijitReset dijitCalendarWeekTemplate" role="row">
+			<td class="dijitReset dijitCalendarDateTemplate" role="gridcell"><span class="dijitCalendarDateLabel"></span></td>
+		</tr>
+	</tbody>
+	<tfoot class="dijitReset dijitCalendarYearContainer">
+		<tr>
+			<td class='dijitReset' valign="top" colspan="7">
+				<h3 class="dijitCalendarYearLabel">
+					<span dojoAttachPoint="previousYearLabelNode" class="dijitInline dijitCalendarPreviousYear"></span>
+					<span dojoAttachPoint="currentYearLabelNode" class="dijitInline dijitCalendarSelectedYear" id="${id}_year"></span>
+					<span dojoAttachPoint="nextYearLabelNode" class="dijitInline dijitCalendarNextYear"></span>
+				</h3>
+			</td>
+		</tr>
+	</tfoot>
+</table>

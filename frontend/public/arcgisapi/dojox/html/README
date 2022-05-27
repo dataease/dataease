@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------------
+dojox.html
+-------------------------------------------------------------------------------
+Version 0.2
+Release date: 04/24/2008
+-------------------------------------------------------------------------------
+Project state:
+beta
+-------------------------------------------------------------------------------
+Credits
+	Eugene Lazutkin (eugene.lazutkin AT gmail.com)
+	Scott J. Miles (sjmiles AT activegrid.com)
+	Steve Orvell (sorvell AT activegrid.com)
+	Tom Trenka (ttrenka AT gmail.com)
+	Bryan Forbes (bryan AT reigndropsfall.net)
+	Mike Wilcox - dojox.html.styles (anm8tr AT yahoo.com)
+	Jared Jurkiewicz - dojox.html.entites, dojox.html.format (jared.jurkiewicz AT gmail.com)
+-------------------------------------------------------------------------------
+Project description
+
+This project aims to add html functions that aren't used often enough to
+warrant going into Dojo Core but should not be duplicated.  For instance, font
+measurement routines aren't used by the majority of developers, but are complex
+enough to not be duplicated.
+Styles adds the ability to create and remove dynamic cssRules, as well as 
+manipulate document style sheets.
+Ellipsis adds support to match text-overflow: ellipsis for Firefox.
+-------------------------------------------------------------------------------
+Dependencies:
+
+dojox.html nor dojox.html.styles have dependencies, outside of Dojo Core.
+-------------------------------------------------------------------------------
+Documentation
+
+To automatically initialize the font resize callback, add "fontSizeWatch: true"
+to your djConfig.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/html.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/html/*
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/html/styles.js
+Install into the following directory structure:
+/dojox/html/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

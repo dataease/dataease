@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(f){let h=function(){function g(){this.errors=[];this.tolerant=!1}var d=g.prototype;d.recordError=function(a){this.errors.push(a)};d.tolerate=function(a){if(this.tolerant)this.recordError(a);else throw a;};d.constructError=function(a,c){a=Error(a);try{throw a;}catch(b){Object.create&&Object.defineProperty&&(a=Object.create(b),Object.defineProperty(a,"column",{value:c}))}return a};d.createError=function(a,c,b,e){b=this.constructError("Line "+c+": "+e,b);b.index=a;b.lineNumber=
+c;b.description=e;return b};d.throwError=function(a,c,b,e){throw this.createError(a,c,b,e);};d.tolerateError=function(a,c,b,e){a=this.createError(a,c,b,e);if(this.tolerant)this.recordError(a);else throw a;};return g}();f.ErrorHandler=h;Object.defineProperty(f,"__esModule",{value:!0})});

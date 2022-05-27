@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dojo/dom-construct","../_StoreMixin"],function(e,d,f){return e(f,{refresh:function(){var a=this;this.inherited(arguments);if(this._renderedCollection)return this._trackError(function(){var g=a.loadingNode=d.create("div",{className:"dgrid-loading",innerHTML:a.loadingMessage},a.contentNode),b=a._renderedCollection.fetch();b.totalLength.then(function(c){(a._total=c)||a._insertNoDataNode()});b.always(function(){d.destroy(g);a.loadingNode=null});return a.renderQueryResults(b).then(function(c){a._emitRefreshComplete();
+return c})})},renderArray:function(){var a=this.inherited(arguments);this._lastCollection=null;return a}})});

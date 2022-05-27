@@ -1,0 +1,2 @@
+//>>built
+define({smiley:"Umetni emotikon",emoticonSmile:"smije\u0161ak",emoticonLaughing:"nasmijan",emoticonWink:"namigivanje",emoticonGrin:"cerenje",emoticonCool:"hladan",emoticonAngry:"ljut",emoticonHalf:"napola",emoticonEyebrow:"obrva",emoticonFrown:"namrgo\u0111en",emoticonShy:"stidan",emoticonGoofy:"budalast",emoticonOops:"ups",emoticonTongue:"jezik",emoticonIdea:"ideja",emoticonYes:"da",emoticonNo:"ne",emoticonAngel:"an\u0111eo",emoticonCrying:"plakanje",emoticonHappy:"sretan"});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/maybe","../../../../chunks/vec4f64","../support/edgeUtils"],function(c,e,h,k){var f=null,g=null;c.applyFilterMode=function(a,b){if(e.isNone(b))a.color[3]=0,a.edgeMaterial=null,a.pickable=!1;else switch(b.mode){case 1:a.color[3]=0;a.edgeMaterial=b.edgeMaterial;a.pickable=!1;break;case 2:a.color[0]=1;a.color[1]=1;a.color[2]=1;a.color[3]*=.15;a.colorMixMode=3;a.castShadows=!1;a.pickable=!1;b=a.edgeMaterial;if(e.isNone(b))b=null;else{if(g!==b){{const d=h.clone(b.color);
+d[3]*=.075;f={...b,color:d}}g=b}b=f}a.edgeMaterial=b}};c.parseFilterMode=function(a){switch(a.filterMode.type){case "solid":return{mode:0};case "wire-frame":return{mode:1,edgeMaterial:k.createMaterialFromEdges(a.filterMode.edges,{})};case "x-ray":return{mode:2}}};Object.defineProperty(c,"__esModule",{value:!0})});

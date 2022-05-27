@@ -1,0 +1,1 @@
+{"widgetLabel":"Vahemaa mõõtmine","hint":"Mõõtmise alustamiseks klõpsake kohta, kuhu soovite asetada oma esimese punkti","unsupported":"2D-kauguse mõõtmist toetab ainult MapView.","distance":"Vahemaa","newMeasurement":"Uus mõõtmine","mode":"Režiim","modes":{"auto":"Automaatne","planar":"Tasapinnaline","geodesic":"Geodeetiline"},"unit":"Ühik"}

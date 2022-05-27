@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dijit/_WidgetBase","dojo/_base/lang"],function(b,c,d){return b("dojox.mvc.Group",c,{target:null,startup:function(){d.isFunction(this.getParent)&&this.getParent()&&this.getParent().removeRepeatNode&&(this.select=this.getParent().select,this.onCheckStateChanged=this.getParent().onCheckStateChanged);this.inherited(arguments)},_setTargetAttr:function(a){this._set("target",a);this.binding!=a&&this.set("ref",a)}})});

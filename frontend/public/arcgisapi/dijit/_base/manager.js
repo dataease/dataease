@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/array","dojo/_base/config","dojo/_base/lang","../registry","../main"],function(e,f,b,g,c){var a={};e.forEach("byId getUniqueId findWidgets _destroyAll byNode getEnclosingWidget".split(" "),function(d){a[d]=g[d]});b.mixin(a,{defaultDuration:f.defaultDuration||200});b.mixin(c,a);return c});

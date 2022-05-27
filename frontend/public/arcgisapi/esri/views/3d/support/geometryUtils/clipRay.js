@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../chunks/vec3 ../../../../core/ObjectStack ../stack ../../../../chunks/ray ../../../../chunks/clipRay".split(" "),function(a,c,d,e,f,b){a.copy=b.copy;a.create=b.create;a.fromLineSegment=b.fromLineSegment;a.fromLineSegmentAndDirection=b.fromLineSegmentAndDirection;a.fromRay=b.fromRay;a.fromValues=b.fromValues;a.getAt=b.getAt;a.getEnd=b.getEnd;a.getStart=b.getStart;a.wrap=b.wrap;Object.defineProperty(a,"__esModule",{value:!0})});

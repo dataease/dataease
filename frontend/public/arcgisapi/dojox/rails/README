@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------------
+Project Name:  dojox.rails
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 03/23/2010
+-------------------------------------------------------------------------------
+Project state:
+        experimental
+-------------------------------------------------------------------------------
+Credits:
+       Bob Remeika (bob.remeika@gmail.com)
+       ttilley (This code is based a lot on what he contributed).
+
+-------------------------------------------------------------------------------
+Project description
+
+This is a dojo plugin for Rails 3.x UJS support
+
+-------------------------------------------------------------------------------
+Dependencies:
+        dojo base
+-------------------------------------------------------------------------------
+Documentation
+        Apparently none
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/src/dojox/trunk/rails.js
+
+Install into the following directory structure:
+/dojox/rails.js
+
+...which should be at the same level as your Dojo checkout.
+
+then dojo.require("dojox.rails") in your application to load it.
+
+-------------------------------------------------------------------------------
+

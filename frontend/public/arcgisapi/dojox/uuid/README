@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------------
+DojoX UUID
+-------------------------------------------------------------------------------
+Version 0.9
+Release date: 06/21/2007
+-------------------------------------------------------------------------------
+Project state: production
+-------------------------------------------------------------------------------
+Project authors
+	Brian Douglas Skinner (skinner@dojotoolkit.org)
+-------------------------------------------------------------------------------
+Project description
+
+DojoX UUID is the port of the original Dojo 0.4.x UUID classes.  The UUID 
+classes can be used to represent Universally Unique IDentifiers (UUIDs), as
+described in the IETF's RFC 4122: 
+  http://tools.ietf.org/html/rfc4122
+
+The DojoX UUID classes provide support for generating both "time-based" UUIDs
+and lightweight "random" UUIDs.  DojoX UUID does not yet have support for 
+generating new "name-based" UUIDs, but the dojo.uuid.Uuid class can represent
+existing name-based UUIDs, such as UUIDs read from a file or from a server. 
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+DojoX UUID has no dependencies, outside of Dojo Core.
+-------------------------------------------------------------------------------
+Documentation
+
+See the API documentation for Dojo (http://dojotoolkit.org/api).
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid/*
+
+Install into the following directory structure:
+/dojox/uuid/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

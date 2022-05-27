@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","./_Indicator"],function(e,f){return e("dojox.gauges.TextIndicator",[f],{x:0,y:0,align:"middle",fixedPrecision:!0,precision:0,draw:function(g,a){a=this.value;a<this._gauge.min&&(a=this._gauge.min);a>this._gauge.max&&(a=this._gauge.max);var b=this._gauge?this._gauge._getNumberModule():null;a=b?this.fixedPrecision?b.format(a,{places:this.precision}):b.format(a):this.fixedPrecision?a.toFixed(this.precision):a.toString();b=this.x?this.x:0;var c=this.y?this.y:0,d=this.align?
+this.align:"middle";this.shape?this.shape.setShape({x:b,y:c,text:a,align:d}):this.shape=g.createText({x:b,y:c,text:a,align:d});this.shape.setFill(this.color);this.font&&this.shape.setFont(this.font)}})});

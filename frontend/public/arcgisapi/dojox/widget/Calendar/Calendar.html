@@ -1,0 +1,24 @@
+<div class="dojoxCalendar">
+    <div tabindex="0" class="dojoxCalendarContainer" style="visibility: visible;" dojoAttachPoint="container">
+		<div style="display:none">
+			<div dojoAttachPoint="previousYearLabelNode"></div>
+			<div dojoAttachPoint="nextYearLabelNode"></div>
+			<div dojoAttachPoint="monthLabelSpacer"></div>
+		</div>
+        <div class="dojoxCalendarHeader">
+            <div>
+                <div class="dojoxCalendarDecrease" dojoAttachPoint="decrementMonth"></div>
+            </div>
+            <div class="">
+                <div class="dojoxCalendarIncrease" dojoAttachPoint="incrementMonth"></div>
+            </div>
+            <div class="dojoxCalendarTitle" dojoAttachPoint="header" dojoAttachEvent="onclick: onHeaderClick">
+            </div>
+        </div>
+        <div class="dojoxCalendarBody" dojoAttachPoint="containerNode"></div>
+        <div class="">
+            <div class="dojoxCalendarFooter" dojoAttachPoint="footer">                        
+            </div>
+        </div>
+    </div>
+</div>

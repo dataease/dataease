@@ -1,0 +1,1 @@
+{"title":"Filter mode solid","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Draw elements of this filter block in solid mode. This mode does not change the display of features.","properties":{"type":{"type":"string","description":"Declares filter mode of type solid.","enum":["solid"]}},"required":["type"],"additionalProperties":false}

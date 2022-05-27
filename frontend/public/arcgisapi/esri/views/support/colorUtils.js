@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/maybe","../../Color"],function(k,v,l){async function n(a){await a.whenReady();var b=a.basemapView.baseLayerViews.map(d=>d.layer);if(!b.length)return b=(b=getComputedStyle(a.container).backgroundColor)&&new l(b),a.get("background.color")||(b&&0!==b.a?b:null)||null;a=(await a.takeScreenshot({format:"png",layers:b.toArray()})).data.data;b=a.length;let e=0,f=0,c=0,p=0,g=0,q=0;for(let d=0;d<b;d+=4){const r=a[d],t=a[d+1],u=a[d+2],m=a[d+3],h=m/255;e+=r*r*h;f+=t*t*h;c+=u*u*h;
+g+=h;m&&(p+=m,q++)}e=Math.round(Math.sqrt(e/g));f=Math.round(Math.sqrt(f/g));c=Math.round(Math.sqrt(c/g));return new l([e,f,c,p/q/255])}k.getBackgroundColor=n;k.getBackgroundColorTheme=async function(a){if(!a)return null;a=await n(a);if(v.isSome(a)){{let {r:b,g:e,b:f,a:c}=a;1>c&&(b=Math.round(c*b+255*(1-c)),e=Math.round(c*e+255*(1-c)),f=Math.round(c*f+255*(1-c)));a=new l({r:b,g:e,b:f})}a=a.isBright?"light":"dark"}else a=null;return a};Object.defineProperty(k,"__esModule",{value:!0})});

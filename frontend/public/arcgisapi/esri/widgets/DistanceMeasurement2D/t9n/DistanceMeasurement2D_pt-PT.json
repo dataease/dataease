@@ -1,0 +1,1 @@
+{"widgetLabel":"Medição de Distância","hint":"Inicie a medição clicando no mapa para posicionar o seu primeiro ponto","unsupported":"A medição da distância 2D só é suportada em MapView.","distance":"Distância","newMeasurement":"Nova medição","mode":"Modo","modes":{"auto":"Auto","planar":"planar","geodesic":"Geodésica"},"unit":"Unidade"}

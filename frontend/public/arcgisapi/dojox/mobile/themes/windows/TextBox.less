@@ -1,0 +1,16 @@
+@import "variables.less";
+@import "../common/TextBox.less";
+
+.mblTextBox {
+	&:active, &:focus {
+	  .mblTextInputFocused-styles;
+	}
+
+	&[disabled] {
+	  .mblTextInputDisabled-styles;
+	}
+
+	&::-ms-clear {
+	  display: none;
+	}
+}

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/maybe"],function(h,k){let l=function(){function b(a){this.timer=a;this.start=a.createQuery();a.createTimestamp(this.start)}var d=b.prototype;d.stop=function(a,c=50){this.end=this.timer.createQuery();this.timer.createTimestamp(this.end);this.checkQueryResult(a,c)};d.checkQueryResult=function(a,c){if(this.timer.resultAvailable(this.end))if(this.timer.disjoint())a(null);else{var e=this.timer.getResult(this.start),f=this.timer.getResult(this.end);a((f-e)/1E6)}else setTimeout(()=>
+this.checkQueryResult(a,c),c)};return b}(),m=function(){function b(a){this.timer=a;this.query=a.createQuery();g=!0;this.timer.beginTimeElapsed(this.query)}var d=b.prototype;d.stop=function(a,c=50){this.timer.endTimeElapsed();g=!1;this.checkQueryResult(a,c)};d.checkQueryResult=function(a,c){var e=this.timer.resultAvailable(this.query);const f=this.timer.disjoint();e&&!f?(e=this.timer.getResult(this.query),a(e/1E6)):f?a(null):setTimeout(()=>this.checkQueryResult(a,c),c)};return b}(),g=!1;h.startMeasurement=
+function(b){b=b.capabilities.disjointTimerQuery;return k.isNone(b)?null:0<b.timestampBits()?new l(b):g?null:new m(b)};Object.defineProperty(h,"__esModule",{value:!0})});

@@ -1,0 +1,1 @@
+{"widgetLabel":"Forma de entidad","empty":"- vacío -","validationErrors":{"cannotBeNull":"Introduce un valor","outsideRange":"El valor debería estar entre {min} y {max}","invalidCodedValue":"El valor debería ser uno de los valores enumerados.","invalidType":"No es un valor válido","tooShort":"Este campo requiere un mínimo de {min} caracteres."}}

@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/declare","dojo/_base/window","dojo/dom-construct"],function(c,d,e,f){return d("dojox.mobile._ExecScriptMixin",null,{execScript:function(a){a=a.replace(/\f/g," ").replace(/<\/script>/g,"\f");a=a.replace(/<script [^>]*src=['"]([^'"]+)['"][^>]*>([^\f]*)\f/ig,function(g,b){f.create("script",{type:"text/javascript",src:b},e.doc.getElementsByTagName("head")[0]);return""});return a=a.replace(/<script>([^\f]*)\f/ig,function(g,b){c.eval(b);return""})}})});

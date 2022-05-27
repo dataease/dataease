@@ -1,0 +1,1 @@
+{"widgetLabel":"Geoobjektets form","empty":"- tom -","validationErrors":{"cannotBeNull":"Ange ett värde","outsideRange":"Värdet ska vara mellan: {min} och {max}","invalidCodedValue":"Värdet ska vara ett av värdena i listan.","invalidType":"Inte ett giltigt värde","tooShort":"Minst {min} tecken krävs i fältet"}}

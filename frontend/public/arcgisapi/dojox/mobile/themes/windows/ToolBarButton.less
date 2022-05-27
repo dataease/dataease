@@ -1,0 +1,22 @@
+@import "variables.less";
+@import "../common/ToolBarButton.less";
+
+.mblToolBarButton{
+	border: @default-border-width solid @win-foreground-color;
+}
+
+.mblToolBarButtonHasLeftArrow,
+.mblToolBarButtonHasRightArrow {
+  .mblToolBarButtonHasArrow-styles;
+	  & * {
+		  display: none;
+	  }
+
+	  &:active {
+		  background-color: @win-accent-color;
+	  }
+}
+
+.mblToolBarButtonHasRightArrow {
+	transform:rotate(180deg);
+}

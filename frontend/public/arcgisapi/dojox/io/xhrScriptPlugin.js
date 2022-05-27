@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/kernel","dojo/_base/window","dojo/io/script","dojox/io/xhrPlugins","dojox/io/scriptFrame"],function(d,m,g,h,n){d.getObject("io.xhrScriptPlugin",!0,dojox);dojox.io.xhrScriptPlugin=function(e,k,b){h.register("script",function(c,a){return!0!==a.sync&&("GET"==c||b)&&a.url.substring(0,e.length)==e},function(c,a,l){var f=function(){a.callbackParamName=k;d.body()&&(a.frameDoc="frame"+Math.random());return g.get(a)};return(b?b(f,!0):f)(c,a,l)})};return dojox.io.xhrScriptPlugin});

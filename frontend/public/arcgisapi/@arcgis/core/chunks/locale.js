@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import{a as n}from"./object.js";var o,l,e;let a,t;const u=null!=(o=null==(l=n.esriConfig)?void 0:l.locale)?o:null==(e=n.dojoConfig)?void 0:e.locale;function r(){var o,l;return null!=(o=null!=u?u:null==(l=n.navigator)?void 0:l.language)?o:"en"}function i(){return void 0===t&&(t=r()),t}function c(n){a=n||void 0,h()}const s={he:!0,ar:!0};function v(n=i()){const o=/^([a-zA-Z]{2,3})(?:[_\-]\w+)*$/.exec(n),l=null==o?void 0:o[1].toLowerCase();return void 0!==l&&(s[l]||!1)}const d=[];function f(n){return d.push(n),{remove(){d.splice(d.indexOf(n),1)}}}const g=[];function p(n){return g.push(n),{remove(){d.splice(g.indexOf(n),1)}}}function h(){var n;const o=null!=(n=a)?n:r();t!==o&&(t=o,[...g].forEach((n=>{n.call(null,o)})),[...d].forEach((n=>{n.call(null,o)})))}null==n.addEventListener||n.addEventListener("languagechange",h);export{p as b,i as g,f as o,v as p,c as s};

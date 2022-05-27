@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/connect","dojo/_base/declare","./Base","dojo/fx/easing","dojox/lang/functional"],function(e,f,g,h,b){var k=h.backOut;return f("dojox.charting.action2d.PlotAction",g,{overOutEvents:{onmouseover:1,onmouseout:1},constructor:function(c,d,a){this.anim={};a||(a={});this.duration=a.duration?a.duration:400;this.easing=a.easing?a.easing:k},connect:function(){this.handle=this.chart.connectToPlot(this.plot.name,this,"process")},disconnect:function(){this.handle&&(e.disconnect(this.handle),
+this.handle=null)},reset:function(){},destroy:function(){this.inherited(arguments);b.forIn(this.anim,function(c){b.forIn(c,function(d){d.action.stop(!0)})});this.anim={}}})});

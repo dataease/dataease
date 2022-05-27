@@ -1,0 +1,1 @@
+{"widgetLabel":"Formulir fitur","empty":"- kosong -","validationErrors":{"cannotBeNull":"Harap masukkan nilai","outsideRange":"Nilai harus di antara {min} dan {max}","invalidCodedValue":"Nilai harus salah satu dari nilai yang dicantumkan.","invalidType":"Bukan nilai yang valid","tooShort":"Kolom ini memerlukan minimal {min} karakter"}}

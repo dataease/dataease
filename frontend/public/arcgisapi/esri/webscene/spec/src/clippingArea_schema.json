@@ -1,0 +1,1 @@
+{"title":"clippingArea","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Defines area to be clipped for display.","properties":{"clip":{"type":"boolean","description":"enable / disable clipping"},"geometry":{"type":"object","description":"envelope of clip area","$ref":"extent_schema.json"}}}

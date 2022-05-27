@@ -1,0 +1,59 @@
+@import "../Base.less";
+
+@outer-border: 1px solid #B5BCC7;
+@inner-border: 1px solid #CCC;
+@sub-column-border: 1px solid #DDD;
+
+@row-color:#EFEFEF;
+@row-color-hover: #E5F2FE;
+@row-color-active: #A5D1FB;
+
+@today-color: #FFF0B4;
+@today-label-color: #FF0000;
+
+@subcolumn-text-color: #777;
+
+@week-end-color: #E5F2FE;
+@week-end-label-color:#759DC0;
+
+@expand-up-color: #E5F2FE;
+@expand-down-color: #A5D1FB;
+
+@label-color: #000;
+@secondary-label-color: #555;
+
+@event-border: 1px solid #260000;
+@event-border-focused: dashed 1px #FFFFFF;
+
+@event-bg-color: #9F0000;
+@event-selected-bg-color: #660000;
+@event-hovered-bg-color: #CC0000;
+
+@event-header-bg-color: @event-bg-color - #330000;
+@event-header-selected-bg-color: @event-selected-bg-color - #330000;
+@event-header-hovered-bg-color: @event-hovered-bg-color  - #330000;
+
+@hour-stroke: 1px solid #C7BEBE;
+@half-hour-stroke: dotted 1px #C7BEBE;
+@quarter-hour-stroke: dotted 1px #C7BEBE;
+
+.header-background(){
+	background-color: #efefef;
+	background-image: url("images/titlebar.png");
+	background-repeat: repeat-x;
+}
+
+.header-hover-background(){
+	background-image: url("images/titlebar.png");
+  	background-repeat: repeat-x;  	
+	background-color: #abd6ff;
+  	border-color: #769dc0;
+}
+
+.header-active-background(){
+	cursor: pointer;		
+	background-color: #7dbefa;
+	border-color: #769dc0;
+	background-position: 0 -136px;
+	.transition-duration(0s);
+}

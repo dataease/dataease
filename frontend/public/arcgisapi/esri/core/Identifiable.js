@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../chunks/_rollupPluginBabelHelpers","../chunks/tslib.es6","./accessorSupport/decorators/subclass"],function(b,e,f,g){let l=0;const k=a=>{a=function(c){function h(...d){d=c.call(this,...d)||this;Object.defineProperty(e._assertThisInitialized(d),"uid",{writable:!1,configurable:!1,value:Date.now().toString(16)+"-object-"+l++});return d}e._inheritsLoose(h,c);return h}(a);return a=f.__decorate([g.subclass("esri.core.Identifiable")],a)};b.Identifiable=function(a){function c(){return a.apply(this,
+arguments)||this}e._inheritsLoose(c,a);return c}(k(function(){return function(){}}()));b.Identifiable=f.__decorate([g.subclass("esri.core.Identifiable")],b.Identifiable);b.IdentifiableMixin=k;Object.defineProperty(b,"__esModule",{value:!0})});

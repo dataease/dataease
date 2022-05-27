@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../chunks/geometryEngineBase","./geometryAdapters/json","../chunks/geometryEngineJSON"],function(a,c,d,b){a.buffer=b.buffer;a.clip=b.clip;a.contains=b.contains;a.convexHull=b.convexHull;a.crosses=b.crosses;a.cut=b.cut;a.densify=b.densify;a.difference=b.difference;a.disjoint=b.disjoint;a.distance=b.distance;a.equals=b.equals;a.extendedSpatialReferenceInfo=b.extendedSpatialReferenceInfo;a.flipHorizontal=b.flipHorizontal;a.flipVertical=b.flipVertical;a.generalize=b.generalize;a.geodesicArea=
+b.geodesicArea;a.geodesicBuffer=b.geodesicBuffer;a.geodesicDensify=b.geodesicDensify;a.geodesicLength=b.geodesicLength;a.intersect=b.intersect;a.intersects=b.intersects;a.isSimple=b.isSimple;a.nearestCoordinate=b.nearestCoordinate;a.nearestVertex=b.nearestVertex;a.nearestVertices=b.nearestVertices;a.offset=b.offset;a.overlaps=b.overlaps;a.planarArea=b.planarArea;a.planarLength=b.planarLength;a.relate=b.relate;a.rotate=b.rotate;a.simplify=b.simplify;a.symmetricDifference=b.symmetricDifference;a.touches=
+b.touches;a.union=b.union;a.within=b.within;Object.defineProperty(a,"__esModule",{value:!0})});

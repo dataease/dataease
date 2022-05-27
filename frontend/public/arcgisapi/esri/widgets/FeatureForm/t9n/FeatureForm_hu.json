@@ -1,0 +1,1 @@
+{"widgetLabel":"Vektoroselem-űrlap","empty":"- üres -","validationErrors":{"cannotBeNull":"Adjon meg egy értéket","outsideRange":"Az értéknek {min} és {max} között kell lennie","invalidCodedValue":"Az érték a listában szereplő értékek egyike lehet.","invalidType":"Nem érvényes érték","tooShort":"A mező tartalma legalább {min} karakter terjedelmű kell legyen"}}

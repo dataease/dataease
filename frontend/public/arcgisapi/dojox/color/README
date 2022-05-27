@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------------
+DojoX Color
+-------------------------------------------------------------------------------
+Version 0.9
+Release date: 10/20/2007
+-------------------------------------------------------------------------------
+Project state:
+dojox.color._base: 			production
+dojox.color.Colorspace:		experimental
+dojox.color.Generator:		beta
+-------------------------------------------------------------------------------
+Credits
+	Cal Henderson
+	Tom Trenka (ttrenka AT gmail.com)
+-------------------------------------------------------------------------------
+Project description
+
+Both a port of the older dojo.gfx.color work (Cal Henderson) as well as some
+new additions (Generator, Tom Trenka).  Everything is applied to an alias of
+dojo.Color or dojo.color, so that you can just use dojox.color.Color instead
+with extended methods.
+-------------------------------------------------------------------------------
+Dependencies:
+
+Depends on the Dojo Core, v1.0
+-------------------------------------------------------------------------------
+Documentation
+
+See the API documentation.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/color.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/color/*
+
+Install into the following directory structure:
+/dojox/color/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

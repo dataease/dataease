@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../core/maybe"],function(e,d){let g=function(){function f(a){this._params=a;this._graphic=this._visualElementHandle=null}var b=f.prototype;b.destroy=function(){this.remove()};b.remove=function(){this._visualElementHandle=d.removeMaybe(this._visualElementHandle)};b.update=function(a){this.remove();d.isNone(a)||d.isSome(a.geometry)&&"polyline"===a.geometry.type&&this._highlightedGraphic(a)};b._highlightedGraphic=async function(a){this._graphic=a;var c=a.layer;"feature"===c.type&&
+(c=await this._params.view.whenLayerView(c),this._graphic===a&&(this._visualElementHandle=c.highlight(a)))};return f}();e.InputRepresentation2D=g;Object.defineProperty(e,"__esModule",{value:!0})});

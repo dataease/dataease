@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/array","dojo/aspect","dojo/_base/lang","dijit/_WidgetBase","./_DataBindingMixin"],function(c,d,e,a,f){e.extend(a,new f);d.before(a.prototype,"startup",function(){this._dbstartup()});d.before(a.prototype,"destroy",function(){this._modelWatchHandles&&c.forEach(this._modelWatchHandles,function(b){b.unwatch()});this._viewWatchHandles&&c.forEach(this._viewWatchHandles,function(b){b.unwatch()})})});

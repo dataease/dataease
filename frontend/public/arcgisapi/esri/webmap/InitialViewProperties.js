@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../chunks/_rollupPluginBabelHelpers ../chunks/tslib.es6 ../core/has ../core/lang ../core/Logger ../core/accessorSupport/ensureType ../core/accessorSupport/decorators/property ../core/jsonMap ../core/accessorSupport/decorators/subclass ../core/urlUtils ../core/uuid ../portal/support/resourceExtension ../core/Accessor ../geometry/SpatialReference ../Viewpoint ../webdoc/RangeInfo ./background/ColorBackground".split(" "),function(h,c,a,k,t,u,d,v,l,w,x,y,m,n,p,q,r){var e;a=e=function(g){function f(b){b=
+g.call(this,b)||this;b.background=null;b.rangeInfo=null;b.spatialReference=null;b.viewpoint=null;return b}h._inheritsLoose(f,g);f.prototype.clone=function(){return new e(k.clone({background:this.background,rangeInfo:this.rangeInfo,spatialReference:this.spatialReference,viewpoint:this.viewpoint}))};return f}(m);c.__decorate([d.property({type:r})],a.prototype,"background",void 0);c.__decorate([d.property({type:q})],a.prototype,"rangeInfo",void 0);c.__decorate([d.property({type:n})],a.prototype,"spatialReference",
+void 0);c.__decorate([d.property({type:p})],a.prototype,"viewpoint",void 0);return a=e=c.__decorate([l.subclass("esri.webmap.InitialViewProperties")],a)});

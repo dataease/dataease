@@ -1,0 +1,1 @@
+{"title":"Color Ramp","$schema":"http://json-schema.org/draft-07/schema","description":"A colorRamp object is used to specify a range of colors that are applied to a group of symbols.","oneOf":[{"$ref":"colorRamp_algorithmic_schema.json"},{"$ref":"colorRamp_multipart_schema.json"}]}
