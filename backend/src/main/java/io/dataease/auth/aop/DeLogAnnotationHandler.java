@@ -44,7 +44,6 @@ public class DeLogAnnotationHandler {
         befores.add(SysLogConstants.OPERATE_TYPE.DELETE.getValue());
         befores.add(SysLogConstants.OPERATE_TYPE.UNSHARE.getValue());
         befores.add(SysLogConstants.OPERATE_TYPE.UNAUTHORIZE.getValue());
-        befores.add(SysLogConstants.OPERATE_TYPE.UPLOADFILE.getValue());
     }
 
     private SysLogDTO exec(JoinPoint point, DeLog deLog) throws Exception{

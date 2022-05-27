@@ -1,10 +1,12 @@
 package io.dataease.service.datasource;
 
 import com.google.gson.Gson;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeFileUtils;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.dto.DriverDTO;
-import io.dataease.dto.datasource.SqlServerConfiguration;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.domain.DeDriver;
@@ -97,6 +99,8 @@ public class DriverService {
     public void deleteDriverFile(String driverFileId) {
         DeDriverDetails deDriverDetails = deDriverDetailsMapper.selectByPrimaryKey(driverFileId);
         DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), deDriverDetails.getDeDriverId(), null, null);
+        DeLogUtils.save(sysLogDTO);
         deDriverDetailsMapper.deleteByPrimaryKey(driverFileId);
     }
 
@@ -123,6 +127,8 @@ public class DriverService {
         deDriverDetails.setFileName(filename);
         deDriverDetails.setDriverClass(String.join(",", jdbcList));
         deDriverDetailsMapper.insert(deDriverDetails);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.UPLOADFILE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), driverId, null, null);
+        DeLogUtils.save(sysLogDTO);
         return deDriverDetails;
     }
 

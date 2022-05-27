@@ -92,13 +92,6 @@ public class DriverMgmController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("删除驱动文件")
     @PostMapping("/deleteDriverFile")
-    @DeLog(
-            operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
-            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER_FILE,
-            positionIndex = 0,
-            positionKey = "deDriverId",
-            value = "id"
-    )
     public void deleteDriverFile(@RequestBody DeDriverDetails deDriverDetails) throws Exception{
         driverService.deleteDriverFile(deDriverDetails.getId());
     }
@@ -106,13 +99,6 @@ public class DriverMgmController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("驱动文件上传")
     @PostMapping("file/upload")
-    @DeLog(
-            operatetype = SysLogConstants.OPERATE_TYPE.UPLOADFILE,
-            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER_FILE,
-            positionIndex = 0,
-            positionKey = "deDriverId",
-            value = "id"
-    )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
             @ApiImplicitParam(name = "id", value = "驱动D", required = true, dataType = "String")

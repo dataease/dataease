@@ -143,8 +143,8 @@
         </if>
 
         <if test="type == 10">
-            id, name
-            from de_driver
+            id, file_name as name
+            from de_driver_details
             <where>
                 id in
                 <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
