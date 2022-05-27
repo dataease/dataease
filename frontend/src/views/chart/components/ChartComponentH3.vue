@@ -1,7 +1,7 @@
 <template>
   <div ref="chartContainer" style="padding: 0;widht: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+    <span v-if="chart.type&&chart.type==='arc_map'" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
     <div v-if="chart.type === '3dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>

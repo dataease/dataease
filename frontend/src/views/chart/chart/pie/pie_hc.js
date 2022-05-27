@@ -65,7 +65,8 @@ export const BASE_PIE = {
       enabled: true,
       alpha: 45,
       beta: 0
-    }
+    },
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   credits: {
     enabled: false
@@ -148,9 +149,13 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
 
   // 处理data
   if (chart.data) {
-    chart_option.title.text = chart.title
+    // chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
+      if (customAttr.color) {
+        chart_option.series[0].opacity = customAttr.color.alpha / 100
+      }
+
       // size
       /* if (customAttr.size) {
           chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
