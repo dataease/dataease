@@ -1,10 +1,10 @@
 <template>
   <div ref="chartContainer" style="padding: 0;widht: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+    <span v-if="chart.type&&chart.type==='arc_map'" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
-    <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"/>
+    <div v-if="chart.type === '3dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
     <div v-if="chart.type === 'arc_map'" :style="{height:chartHeight}">
       <ArcGIS :chart-id="chartId" :chart-height="chartHeight" />
     </div>
@@ -23,7 +23,7 @@ import newMap from './arcgis/newMap'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar.vue'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { BASE_PIE, basePieOption } from '@/views/chart/chart/pie/3dpie_hc'
+import { BASE_PIE, basePieOption } from '@/views/chart/chart/pie/pie_hc'
 export default {
   // components: {
   //   ViewTrackBar
@@ -141,7 +141,8 @@ export default {
     drawView() {
       const chart = this.chart
       this.antVRenderStatus = true
-      if (chart.type === '3Dpie') {
+      if (chart.type === '3dpie') {
+        console.log('3dpie...')
         this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
         this.drawEcharts()
       } else if (chart.type === 'arc_map') {
