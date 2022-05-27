@@ -59,7 +59,7 @@ export default {
           privileges: res.data.privileges,
           status: res.data.status
         }
-        this.$store.dispatch('panel/setPanelInfo', panelInfo)
+        this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 
         panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))
         // 设置浏览器title为当前仪表板名称
