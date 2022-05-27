@@ -2,7 +2,15 @@
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks.videoType == 'flv'">
       <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-        <video ref="player" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+        <video
+          :id="myPlayer[3]"
+          :ref="myPlayer[3]"
+          class="centered-video"
+          name="centeredVideo"
+          :loop="pOption.loop"
+          controls
+          muted
+        />
         <div v-if="editMode==='edit'" class="stream-mask" />
       </div>
       <div v-else class="info-stream-class">
@@ -47,12 +55,7 @@
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
-      <video
-        :id="myPlayer[2]"
-        :ref="myPlayer[2]"
-        controls
-        style="width: 100%;height: 100%;object-fit: fill"
-      >
+      <video :id="myPlayer[2]" :ref="myPlayer[2]" controls style="width: 100%;height: 100%;object-fit: fill">
         <!--  -->
       </video>
     </div>
@@ -99,8 +102,8 @@ export default {
       pOption: this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
       flvPlayer: null,
       videoShow: true,
-      playerHlv: null,
-      Webplayer: null,
+
+      myPlayerFLV: null,
       // hls -- rtmp
       myPlayer: [],
       // hls
@@ -132,72 +135,81 @@ export default {
     }
   },
   watch: {
-    pOption: {
+    element: {
       handler: function() {
+        var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
-          this.initOption()
+          console.log('FLV', url !== this.pOption.url)
+          if (url !== this.pOption.url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            console.log('FLV', url !== this.pOption.url)
+            this.myPlayerFlv = null
+            this.initOption(url, true)
+          }
+        }
+        if (this.element.streamMediaLinks.videoType === 'hls') {
+          if (url !== this.pOption.url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.initOptionHls(url, true)
+          }
+        }
+        if (this.element.streamMediaLinks.videoType === 'rtmp') {
+          if (url !== this.pOption.url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.initOptionRtmp(url, true)
+          }
+        }
+        if (this.element.streamMediaLinks.videoType === 'webrtc') {
+          if (url !== this.pOption.url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.initOptionWeb(url.substring(7))
+          }
         }
       },
       deep: true
     }
+    // pOption: {
+    //   handler: function() {
+    //     console.log('1111this.element.streamMediaLinks.videoType', this.element.streamMediaLinks.videoType)
+    //     if (this.element.streamMediaLinks.videoType === 'flv') {
+    //       this.initOption(this.pOption.url)
+    //     }
+    //   },
+    //   deep: true
+    // }
   },
   created() {
-    if (this.element.streamMediaLinks.videoType === 'hls' || this.element.streamMediaLinks.videoType === 'rtmp' ||
-        this.element.streamMediaLinks.videoType === 'webrtc') {
-      var timestamp = new Date().getTime()
-      var myPlayerHls = 'myPlayerHls' + timestamp
-      var myPlayerRtmp = 'myPlayerRtmp' + timestamp
-      var myPlayerWebrtc = 'myPlayerWebrtc' + timestamp
-      this.myPlayer.push(myPlayerHls)
-      this.myPlayer.push(myPlayerRtmp)
-      this.myPlayer.push(myPlayerWebrtc)
-    }
+    var timestamp = new Date().getTime()
+    var myPlayerHls = 'myPlayerHls' + timestamp
+    var myPlayerRtmp = 'myPlayerRtmp' + timestamp
+    var myPlayerWebrtc = 'myPlayerWebrtc' + timestamp
+    var myPlayerFlv = 'myPlayerFlv' + timestamp
+    this.myPlayer.push(myPlayerHls)
+    this.myPlayer.push(myPlayerRtmp)
+    this.myPlayer.push(myPlayerWebrtc)
+    this.myPlayer.push(myPlayerFlv)
   },
   mounted() {
     if (this.element.streamMediaLinks.videoType === 'flv') {
-      this.initOption()
-      bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-        this.flvPlayer = null,
-        this.videoShow = false
-        this.$nextTick(() => {
-          this.videoShow = true
-          this.initOption()
-        })
-      })
+      this.initOption(this.pOption.url)
+      // bus.$on('streamMediaLinksChange-' + this.element.id, () => {
+      //   if (this.pOption.url !== this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url) {
+      //     this.pOption.url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
+      //   }
+      //   this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+      //   this.flvPlayer = null
+      //   this.videoShow = false
+      //   this.$nextTick(() => {
+      //     this.videoShow = true
+      //     this.initOption(this.pOption.url, true)
+      //   })
+      // })
     }
     if (this.element.streamMediaLinks.videoType === 'hls') {
-      this.myPlayerHls = videojs(
-        this.myPlayer[0], {
-          bigPlayButton: false,
-          textTrackDisplay: false,
-          posterImage: true,
-          errorDisplay: false,
-          sources: [{
-            type: 'application/x-mpegURL',
-            src: this.pOption.url
-          }]
-        },
-        function() {
-          // this.play()
-        }
-      )
+      this.initOptionHls(this.pOption.url)
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
-      this.myPlayerRtmp = videojs(this.myPlayer[1], {
-        sources: [{
-          type: 'rtmp/flv',
-          src: this.pOption.url.substring(7)
-        }],
-        controls: true,
-        muted: true,
-        autoplay: true,
-        preload: 'auto',
-        textTrackDisplay: false,
-        errorDisplay: false,
-        controlBar: false,
-        bigPlayButton: false
-      })
+      this.initOptionRtmp(this.pOption.url)
     }
     if (this.element.streamMediaLinks.videoType === 'webrtc') {
       this.initOptionWeb(this.pOption.url.substring(7))
@@ -216,25 +228,97 @@ export default {
       const myPlayerWebrtc = this.$refs[this.myPlayer[2]] // 不能用document 获取节点
       videojs(myPlayerWebrtc).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
     }
+    if (this.myPlayerFlv) {
+      const myPlayerFlv = this.$refs[this.myPlayer[3]] // 不能用document 获取节点
+      videojs(myPlayerFlv).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+    }
   },
   methods: {
     // FLV
-    initOption() {
-      if (flvjs.isSupported() && this.pOption.url) {
-        const video = this.$refs.player
-        if (video) {
-          this.flvPlayer = flvjs.createPlayer(this.pOption)
-          this.flvPlayer.attachMediaElement(video)
-          try {
-            this.flvPlayer.load()
-            this.flvPlayer.play()
-          } catch (error) {
-            console.log(error)
+    initOption(url, status) {
+      this.$nextTick(() => {
+        if (flvjs.isSupported() && url) {
+          const video = this.$refs[this.myPlayer[3]]
+          if (video) {
+            if (this.pOption.segments) {
+              this.pOption.segments[0].url = this.pOption.url
+            }
+            this.myPlayerFlv = flvjs.createPlayer(this.pOption)
+            this.myPlayerFlv.attachMediaElement(video)
+            try {
+              this.myPlayerFlv.load()
+              this.myPlayerFlv.play()
+            } catch (error) {
+              console.log(error)
+            }
+          } else {
+            console.log('video失败')
           }
         }
-      }
+      })
     },
-    initOptionWeb(url) {
+    initOptionHls(url, status) {
+      if (status) {
+        this.myPlayerHls.reset() // 重置 video
+        this.myPlayerHls.src([{
+          type: 'application/x-mpegURL',
+          src: url
+        }])
+        this.myPlayerHls.load()
+        this.myPlayerHls.play()
+        return false
+      }
+      this.myPlayerHls = videojs(
+        this.myPlayer[0], {
+          bigPlayButton: false,
+          textTrackDisplay: false,
+          posterImage: true,
+          errorDisplay: false,
+          sources: [{
+            type: 'application/x-mpegURL',
+            src: url
+          }]
+        },
+        function() {
+          if (status) {
+            this.play()
+          }
+        }
+      )
+    },
+    initOptionRtmp(url, status) {
+      if (status) {
+        this.myPlayerRtmp.reset() // 重置 video
+        this.myPlayerRtmp.src([{
+          type: 'rtmp/flv',
+          src: url.substring(7)
+        }])
+        this.myPlayerRtmp.load()
+        this.myPlayerRtmp.play()
+        return false
+      }
+      this.myPlayerRtmp = videojs(this.myPlayer[1], {
+        sources: [{
+          type: 'rtmp/flv',
+          src: this.pOption.url.substring(7)
+        }],
+        controls: true,
+        muted: true,
+        autoplay: true,
+        preload: 'auto',
+        textTrackDisplay: false,
+        errorDisplay: false,
+        controlBar: false,
+        bigPlayButton: false
+      })
+    },
+    initOptionWeb(url, status) {
+      if (this.myPlayerWebrtc && status) {
+        this.myPlayerWebrtc.destroy()
+        this.myPlayerWebrtc = null
+        this.initOptionWeb(url)
+        return false
+      }
       // 获取承载元素dom
       const videoDom = document.getElementById(this.myPlayer[2])
       // 初始化播放器

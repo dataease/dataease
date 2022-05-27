@@ -6,7 +6,7 @@
     </span>
     <div v-if="chart.type === '3dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
     <div v-if="chart.type === 'arc_map'" :style="{height:chartHeight}">
-      <ArcGIS :chartId="chartId" :chartHeight="chartHeight" />
+      <ArcGIS :chart-id="chartId" :chart-height="chartHeight" />
     </div>
   </div>
 </template>
@@ -18,17 +18,20 @@ highcharts3d(highcharts)
 
 import ArcGIS from './arcgis/index.vue'
 
+import newMap from './arcgis/newMap'
+
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar.vue'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { BASE_PIE, basePieOption } from '@/views/chart/chart/pie/pie_hc'
 export default {
-  components: {
-    ViewTrackBar
-  },
+  // components: {
+  //   ViewTrackBar
+  // },
   components: {
     ViewTrackBar,
-    ArcGIS
+    // ArcGIS,
+    newMap
   },
   props: {
     chart: {
@@ -143,7 +146,7 @@ export default {
         this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
         this.drawEcharts()
       } else if (chart.type === 'arc_map') {
-
+        //
       }
 
       // else {

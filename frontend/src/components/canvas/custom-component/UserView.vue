@@ -39,17 +39,6 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <!-- <chart-component-hc
-      v-else-if="charViewHcShowFlag"
-      :ref="element.propValue.id"
-      class="chart-class"
-      :chart="chart"
-      :track-menu="trackMenu"
-      :search-count="searchCount"
-      :terminal-type="scaleCoefficientType"
-      @onChartClick="chartClick"
-      @onJumpClick="jumpClick"
-    /> -->
     <chart-component-g2
       v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
@@ -77,6 +66,17 @@
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
+    <chart-component-hc
+      v-else-if="charViewHcShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -572,12 +572,14 @@ export default {
       if (this.chart.type === "map" && this.scaleCoefficientType === "mobile") {
         customAttrChart.label.show = false;
       }
+      console.log('88888888customAttrChart', customAttrChart, this.chart)
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
-        customStyle: JSON.stringify(customStyleChart),
-      };
-      this.mergeStyle();
+        customStyle: JSON.stringify(customStyleChart)
+      }
+      console.log('this.chart====', this.chart)
+      this.mergeStyle()
     },
     mergeStyle() {
       if (
@@ -597,6 +599,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color;
         }
+        console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -966,7 +969,8 @@ export default {
     },
 
     renderComponent() {
-      return this.chart.render;
+      console.log('this.chart.render', this.chart)
+      return this.chart.render
     },
     getDataEdit(param) {
       this.$store.state.styleChangeTimes++;
