@@ -11,6 +11,7 @@
         v-if="selectedPanel"
         :component-data="componentData"
         :canvas-style-data="canvasStyleData"
+        :panel-info="panelInfo"
         :show-position="showPosition"
       />
       <el-col v-else style="height: 100%;">
@@ -54,7 +55,8 @@ export default {
       msgPanelIds: null,
       componentData: [],
       canvasStyleData: {},
-      selectedPanel: null
+      selectedPanel: null,
+      panelInfo: {}
     }
   },
   watch: {
@@ -73,6 +75,13 @@ export default {
         _this.panelLoading = true
         findOne(params.showId).then(response => {
           _this.panelLoading = false
+          this.panelInfo = {
+            id: response.data.id,
+            name: response.data.name,
+            privileges: response.data.privileges,
+            sourcePanelName: response.data.sourcePanelName,
+            status: response.data.status
+          }
           panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), function(rsp) {
             _this.componentData = rsp.componentData
             _this.canvasStyleData = rsp.componentStyle
@@ -93,6 +102,9 @@ export default {
         userView['propValue'] = {
           'viewId': params.showId,
           'id': componentId
+        }
+        this.panelInfo = {
+          'showType': 'view'
         }
         _this.$nextTick(() => {
           _this.componentData.push(userView)

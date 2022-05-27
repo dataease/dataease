@@ -4,6 +4,7 @@
       v-if="show"
       :component-data="componentData"
       :canvas-style-data="canvasStyleData"
+      :panel-info="panelInfo"
     />
   </div>
 </template>
@@ -33,7 +34,8 @@ export default {
   },
   data() {
     return {
-      show: false
+      show: false,
+      panelInfo: {}
     }
   },
   computed: {
@@ -51,12 +53,13 @@ export default {
       loadResource(this.resourceId).then(res => {
         this.show = false
         let loadingCount = 0
-        this.$store.dispatch('panel/setPanelInfo', {
+        this.panelInfo = {
           id: res.data.id,
           name: res.data.name,
           privileges: res.data.privileges,
           status: res.data.status
-        })
+        }
+        this.$store.dispatch('panel/setPanelInfo', panelInfo)
 
         panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))
         // 设置浏览器title为当前仪表板名称
