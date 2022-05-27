@@ -1,10 +1,11 @@
 package io.dataease.commons.utils;
 
 import static io.dataease.commons.constants.StaticResourceConstants.*;
+
+import cn.hutool.core.codec.Base64Encoder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import sun.misc.BASE64Encoder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -91,7 +92,8 @@ public class StaticResourceUtils {
         }
         // Encode byte array as Base64
         if(buffer!=null){
-            return new BASE64Encoder().encode(buffer);
+
+             return Base64Encoder.encode(buffer);
         }else{
             return null;
         }
