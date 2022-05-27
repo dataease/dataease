@@ -1,5 +1,6 @@
 package io.dataease.service.staticResource;
 
+import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import io.dataease.commons.utils.FileUtils;
@@ -10,11 +11,8 @@ import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,7 +63,7 @@ public class StaticResourceService {
                         String content = entry.getValue();
                         if(StringUtils.isNotEmpty(content)){
                             Files.createFile(uploadPath);
-                            FileCopyUtils.copy(new BASE64Decoder().decodeBuffer(content),Files.newOutputStream(uploadPath));
+                            FileCopyUtils.copy(Base64Decoder.decode(content),Files.newOutputStream(uploadPath));
                         }
                     }
                 }catch (Exception e){
