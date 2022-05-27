@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import com.alibaba.fastjson.JSONArray;
+import com.google.gson.JsonArray;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.constants.DatasourceCalculationMode;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,7 +16,7 @@ public class DatasourceDTO extends Datasource {
 
     @ApiModelProperty("权限")
     private String privileges;
-    private JSONArray apiConfiguration;
+    private JsonArray apiConfiguration;
     private String typeDesc;
     private DatasourceCalculationMode calculationMode;
 }

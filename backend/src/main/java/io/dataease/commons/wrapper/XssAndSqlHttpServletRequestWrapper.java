@@ -13,7 +13,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -346,9 +345,8 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
 
     private static String orders(String json) {
         if (StringUtils.isEmpty(json)) return null;
-
         try{
-            Map<String, Object> map = JSONObject.parseObject(json, Map.class);
+            Map<String, Object> map = new Gson().fromJson(json, Map.class);
             Object orders = map.get("orders");
 
             if (orders != null) {

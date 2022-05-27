@@ -1,16 +1,13 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.plugins.common.base.domain.*;
-import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
-import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
-import io.dataease.plugins.common.base.mapper.DatasourceMapper;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -435,7 +432,7 @@ public class ExtractDataService {
     }
 
     private void extractApiData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType) throws Exception {
-        List<ApiDefinition> lists = JSONObject.parseArray(datasource.getConfiguration(), ApiDefinition.class);
+        List<ApiDefinition> lists = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>(){}.getType());
         lists = lists.stream().filter(item -> item.getName().equalsIgnoreCase(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(lists)) {
             throw new Exception("未找到API数据表");

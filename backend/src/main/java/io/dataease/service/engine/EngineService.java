@@ -1,8 +1,9 @@
 package io.dataease.service.engine;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
@@ -34,15 +35,15 @@ import java.util.regex.Pattern;
 @Transactional(rollbackFor = Exception.class)
 public class EngineService {
     @Resource
-        private Environment env;
+    private Environment env;
     @Resource
     private DeEngineMapper deEngineMapper;
     @Resource
     private DatasourceService datasource;
 
-    static private List<String>simple_engine = Arrays.asList("engine_mysql");
+    static private List<String> simple_engine = Arrays.asList("engine_mysql");
 
-    static private List<String>cluster_engine = Arrays.asList("engine_doris");
+    static private List<String> cluster_engine = Arrays.asList("engine_doris");
 
     public Boolean isLocalMode() {
         return env.getProperty("engine_mode", "local").equalsIgnoreCase("local");
@@ -96,24 +97,28 @@ public class EngineService {
             String response;
             try {
                 response = HttpClientUtil.get("http://" + dorisConfiguration.getHost() + ":" + dorisConfiguration.getHttpPort() + "/api/backends", httpClientConfig);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return ResultHolder.error("Engine is invalid: " + e.getMessage());
             }
 
-            JSONArray backends =  Optional.ofNullable(JSONObject.parseObject(response).getJSONObject("data")).orElse(new JSONObject()).getJSONArray("backends");
-            if(CollectionUtils.isEmpty(backends)){
+            JsonArray backends = null;
+            JsonObject data = JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("data");
+            if (data != null) {
+                backends = data.getAsJsonArray("backends");
+            }
+            if (backends == null || backends.size() == 0) {
                 return ResultHolder.error("Engine is invalid: no backends found.");
             }
 
             Integer alives = 0;
             for (int i = 0; i < backends.size(); i++) {
-                JSONObject kv = backends.getJSONObject(i);
-                if (kv.getBoolean("is_alive")) {
-                    alives ++;
+                JsonObject kv = backends.get(i).getAsJsonObject();
+                if (kv.get("is_alive").getAsBoolean()) {
+                    alives++;
                 }
             }
 
-            if(alives  < dorisConfiguration.getReplicationNum()){
+            if (alives < dorisConfiguration.getReplicationNum()) {
                 return ResultHolder.error("Engine params is invalid: 副本数量不能大于节点数量.");
             }
         }
@@ -135,17 +140,17 @@ public class EngineService {
         return ResultHolder.success(engine);
     }
 
-    private void checkValid(DeEngine engine)throws Exception{
-        if(isLocalMode()){
+    private void checkValid(DeEngine engine) throws Exception {
+        if (isLocalMode()) {
             throw new Exception("Setting engine is not supported.");
         }
-        if(isSimpleMode()){
-            if(!simple_engine.contains(engine.getType())){
+        if (isSimpleMode()) {
+            if (!simple_engine.contains(engine.getType())) {
                 throw new Exception("Engine type not supported.");
             }
         }
-        if(isClusterMode()){
-            if(!cluster_engine.contains(engine.getType())){
+        if (isClusterMode()) {
+            if (!cluster_engine.contains(engine.getType())) {
                 throw new Exception("Engine type not supported.");
             }
         }
@@ -160,21 +165,21 @@ public class EngineService {
         Datasource datasource = new Datasource();
 
         if (isLocalMode()) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("dataSourceType", "jdbc");
-            jsonObject.put("dataBase", env.getProperty("doris.db", "doris"));
-            jsonObject.put("username", env.getProperty("doris.user", "root"));
-            jsonObject.put("password", env.getProperty("doris.password", "dataease"));
-            jsonObject.put("host", env.getProperty("doris.host", "doris"));
-            jsonObject.put("port", env.getProperty("doris.port", "9030"));
-            jsonObject.put("httpPort", env.getProperty("doris.httpPort", "8030"));
+            Map jsonObjectMap = new HashMap();
+            jsonObjectMap.put("dataSourceType", "jdbc");
+            jsonObjectMap.put("dataBase", env.getProperty("doris.db", "doris"));
+            jsonObjectMap.put("username", env.getProperty("doris.user", "root"));
+            jsonObjectMap.put("password", env.getProperty("doris.password", "dataease"));
+            jsonObjectMap.put("host", env.getProperty("doris.host", "doris"));
+            jsonObjectMap.put("port", env.getProperty("doris.port", "9030"));
+            jsonObjectMap.put("httpPort", env.getProperty("doris.httpPort", "8030"));
 
             DeEngine engine = new DeEngine();
             engine.setId("doris");
             engine.setName("doris");
             engine.setDesc("doris");
             engine.setType("engine_doris");
-            engine.setConfiguration(jsonObject.toJSONString());
+            engine.setConfiguration(new Gson().toJson(jsonObjectMap));
             BeanUtils.copyBean(datasource, engine);
         }
         if (isClusterMode()) {
@@ -198,7 +203,7 @@ public class EngineService {
         return datasource;
     }
 
-    public void initSimpleEngine(){
+    public void initSimpleEngine() {
         if (!isSimpleMode()) {
             return;
         }
@@ -214,9 +219,10 @@ public class EngineService {
         MysqlConfiguration mysqlConfiguration = new MysqlConfiguration();
         Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
         Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-        if(!matcher.find()){
-           return;
-        };
+        if (!matcher.find()) {
+            return;
+        }
+        ;
         mysqlConfiguration.setHost(matcher.group(1));
         mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
         mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);

@@ -2,7 +2,7 @@ package io.dataease.service.staticResource;
 
 import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import io.dataease.commons.utils.FileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.StaticResourceUtils;
@@ -51,8 +51,9 @@ public class StaticResourceService {
     }
 
     public void saveFilesToServe(String staticResource){
+        Gson gson = new Gson();
         if(StringUtils.isNotEmpty(staticResource)){
-            Map<String,String> resource = JSON.parseObject(staticResource,Map.class);
+            Map<String,String> resource = gson.fromJson(staticResource,Map.class);
             for(Map.Entry<String,String> entry:resource.entrySet()){
                 String path = entry.getKey();
                 Path uploadPath = Paths.get(staticDir.toString(), path.substring(path.lastIndexOf("/")+1,path.length()));
