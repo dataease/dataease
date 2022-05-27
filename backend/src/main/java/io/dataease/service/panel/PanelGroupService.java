@@ -1,6 +1,6 @@
 package io.dataease.service.panel;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.AuthUtils;
@@ -384,6 +384,7 @@ public class PanelGroupService {
     }
 
     public String newPanel(PanelGroupRequest request) {
+        Gson gson = new Gson();
         String newPanelId = UUIDUtil.getUUIDAsString();
         String newFrom = request.getNewFrom();
         String templateStyle = null;
@@ -405,13 +406,13 @@ public class PanelGroupService {
                 dynamicData = request.getDynamicData();
                 staticResource = request.getStaticResource();
             }
-            Map<String, String> dynamicDataMap = JSON.parseObject(dynamicData, Map.class);
+            Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
             for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
-                ChartViewDTO chartView = JSON.parseObject(originViewData, ChartViewDTO.class);
+                ChartViewDTO chartView = gson.fromJson(originViewData, ChartViewDTO.class);
                 String position = chartView.getPosition();
                 String newViewId = UUIDUtil.getUUIDAsString();
                 chartView.setId(newViewId);
@@ -472,7 +473,6 @@ public class PanelGroupService {
                     extPanelViewLinkageMapper.copyViewLinkageField(copyId);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("错误===》panel:" + panelGroupDTO.getId() + ";panelView:" + JSON.toJSONString(panelViewtemp));
                 }
             }
         }

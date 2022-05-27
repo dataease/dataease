@@ -1,7 +1,7 @@
 package io.dataease.provider.datasource;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.es.EsReponse;
@@ -254,13 +254,14 @@ public class EsProvider extends Provider {
 
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Gson gson = new Gson();
         EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
         String response = exexGetQuery(datasourceRequest);
 
-        if (JSONObject.parseObject(response).getJSONObject("error") != null) {
-            throw new Exception(JSONObject.parseObject(response).getJSONObject("error").getString("reason"));
+        if (JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("error") != null) {
+            throw new Exception(JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("error").get("reason").getAsString());
         }
-        String version = JSONObject.parseObject(response).getJSONObject("version").getString("number");
+        String version = JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("version").get("number").getAsString();
         String[] versionList = version.split("\\.");
         if (Integer.valueOf(versionList[0]) < 7 && Integer.valueOf(versionList[1]) < 3) {
             throw new Exception(Translator.get("i18n_es_limit"));

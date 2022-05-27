@@ -1,6 +1,7 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
@@ -46,7 +47,7 @@ public class PermissionService {
                 if (StringUtils.isEmpty(datasetRowPermissions.getFilter())) {
                     continue;
                 }
-                List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
+                List<ChartCustomFilterItemDTO> lists = new Gson().fromJson(datasetRowPermissions.getFilter(), new TypeToken<ArrayList<ChartCustomFilterItemDTO>>(){}.getType());
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
                     if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
@@ -77,7 +78,7 @@ public class PermissionService {
         List<DatasetTableField> result = new ArrayList<>();
         List<ColumnPermissionItem> allColumnPermissionItems = new ArrayList<>();
         for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTableId, user)) {
-            ColumnPermissions columnPermissions = JSONObject.parseObject(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
+            ColumnPermissions columnPermissions = new Gson().fromJson(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
             if(!columnPermissions.getEnable()){continue;}
             allColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
         }

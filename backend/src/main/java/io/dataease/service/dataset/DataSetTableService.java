@@ -1,8 +1,8 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.dto.SysLogDTO;
@@ -1341,8 +1341,8 @@ public class DataSetTableService {
         String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
 
         String configuration = ds.getConfiguration();
-        JSONObject jsonObject = JSON.parseObject(configuration);
-        String schema = jsonObject.getString("schema");
+        JsonObject jsonObject = JsonParser.parseString(configuration).getAsJsonObject();
+        String schema = jsonObject.get("schema").getAsString();
         String joinPrefix = "";
         if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||

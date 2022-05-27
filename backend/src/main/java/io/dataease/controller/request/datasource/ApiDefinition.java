@@ -1,6 +1,6 @@
 package io.dataease.controller.request.datasource;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import lombok.Data;
 
@@ -17,5 +17,5 @@ public class ApiDefinition {
     private String request;
     private String dataPath;
     private String status;
-    private List<JSONObject> datas = new ArrayList<>();
+    private List<JsonObject> datas = new ArrayList<>();
 }

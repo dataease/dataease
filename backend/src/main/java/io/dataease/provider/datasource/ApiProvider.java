@@ -1,7 +1,9 @@
 package io.dataease.provider.datasource;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
@@ -23,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("apiProvider")
-public class ApiProvider extends Provider{
+public class ApiProvider extends Provider {
 
 
     @Override
@@ -36,7 +38,8 @@ public class ApiProvider extends Provider{
     @Override
     public List<TableDesc> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<TableDesc> tableDescs = new ArrayList<>();
-        List<ApiDefinition> lists = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
+        List<ApiDefinition> lists = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+        }.getType());
         for (ApiDefinition apiDefinition : lists) {
             TableDesc tableDesc = new TableDesc();
             tableDesc.setName(apiDefinition.getName());
@@ -54,7 +57,7 @@ public class ApiProvider extends Provider{
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
-        List<TableField> fieldList = new ArrayList<>();;
+        List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
         String response = execHttpRequest(apiDefinition);
 
@@ -80,10 +83,11 @@ public class ApiProvider extends Provider{
     }
 
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        List<ApiDefinition> lists = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
+        List<ApiDefinition> lists = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+        }.getType());
         List<TableField> tableFields = new ArrayList<>();
         for (ApiDefinition apiDefinition : lists) {
-            if(datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())){
+            if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())) {
                 String response = ApiProvider.execHttpRequest(apiDefinition);
                 for (DatasetTableField field : checkApiDefinition(apiDefinition, response).getFields()) {
                     TableField tableField = new TableField();
@@ -99,64 +103,66 @@ public class ApiProvider extends Provider{
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        List<ApiDefinition> apiDefinitionList = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
-        JSONObject apiItemStatuses = new JSONObject();
+        Gson gson = new Gson();
+        List<ApiDefinition> apiDefinitionList = gson.fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+        }.getType());
+        JsonObject apiItemStatuses = new JsonObject();
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             datasourceRequest.setTable(apiDefinition.getName());
-           try {
-               getData(datasourceRequest);
-               apiItemStatuses.put(apiDefinition.getName(), "Success");
-           }catch (Exception ignore){
-               apiItemStatuses.put(apiDefinition.getName(), "Error");
-           }
+            try {
+                getData(datasourceRequest);
+                apiItemStatuses.addProperty(apiDefinition.getName(), "Success");
+            } catch (Exception ignore) {
+                apiItemStatuses.addProperty(apiDefinition.getName(), "Error");
+            }
         }
-        return JSONObject.toJSONString(apiItemStatuses);
+        return gson.toJson(apiItemStatuses);
     }
 
-    static public String execHttpRequest(ApiDefinition apiDefinition) throws Exception{
+    static public String execHttpRequest(ApiDefinition apiDefinition) throws Exception {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        ApiDefinitionRequest apiDefinitionRequest = JSONObject.parseObject(apiDefinition.getRequest(), ApiDefinitionRequest.class);
+        ApiDefinitionRequest apiDefinitionRequest = new Gson().fromJson(apiDefinition.getRequest(), ApiDefinitionRequest.class);
         //headers
-        for (JSONObject header : apiDefinitionRequest.getHeaders()) {
-            if(StringUtils.isNotEmpty(header.getString("name")) && StringUtils.isNotEmpty(header.getString("value"))){
-                httpClientConfig.addHeader(header.getString("name"), header.getString("value"));
+        for (JsonObject header : apiDefinitionRequest.getHeaders()) {
+            if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").getAsString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").getAsString())) {
+                httpClientConfig.addHeader(header.get("name").getAsString(), header.get("value").getAsString());
             }
         }
 
-        if(apiDefinitionRequest.getAuthManager() != null
+        if (apiDefinitionRequest.getAuthManager() != null
                 && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getUsername())
                 && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getPassword())
-                && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")){
+                && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")) {
             String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((apiDefinitionRequest.getAuthManager().getUsername()
                     + ":" + apiDefinitionRequest.getAuthManager().getPassword()).getBytes());
             httpClientConfig.addHeader("Authorization", authValue);
         }
 
-        switch (apiDefinition.getMethod()){
+        switch (apiDefinition.getMethod()) {
             case "GET":
                 response = HttpClientUtil.get(apiDefinition.getUrl(), httpClientConfig);
                 break;
             case "POST":
-                if (!apiDefinitionRequest.getBody().containsKey("type")) {
-                   throw new Exception("请求类型不能为空");
+                if (apiDefinitionRequest.getBody().get("type") == null) {
+                    throw new Exception("请求类型不能为空");
                 }
-                String type = apiDefinitionRequest.getBody().getString("type");
+                String type = apiDefinitionRequest.getBody().get("type").getAsString();
                 if (StringUtils.equalsAny(type, "JSON", "XML", "Raw")) {
                     String raw = null;
-                    if (apiDefinitionRequest.getBody().containsKey("raw")) {
-                        raw = apiDefinitionRequest.getBody().getString("raw");
+                    if (apiDefinitionRequest.getBody().get("raw") != null) {
+                        raw = apiDefinitionRequest.getBody().get("raw").getAsString();
                         response = HttpClientUtil.post(apiDefinition.getUrl(), raw, httpClientConfig);
                     }
                 }
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
-                    if (apiDefinitionRequest.getBody().containsKey("kvs")) {
+                    if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JSONArray kvsArr = apiDefinitionRequest.getBody().getJSONArray("kvs");
+                        JsonArray kvsArr = apiDefinitionRequest.getBody().getAsJsonArray("kvs");
                         for (int i = 0; i < kvsArr.size(); i++) {
-                            JSONObject kv = kvsArr.getJSONObject(i);
-                            if (kv.containsKey("name")) {
-                                body.put(kv.getString("name"), kv.getString("value"));
+                            JsonObject kv = kvsArr.get(i).getAsJsonObject();
+                            if (kv.get("name") != null) {
+                                body.put(kv.get("name").getAsString(), kv.get("value").getAsString());
                             }
                         }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), body, httpClientConfig);
@@ -169,30 +175,30 @@ public class ApiProvider extends Provider{
         return response;
     }
 
-    static public ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response)throws Exception{
-        if(StringUtils.isEmpty(response)){
+    static public ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws Exception {
+        if (StringUtils.isEmpty(response)) {
             throw new Exception("该请求返回数据为空");
         }
         List<LinkedHashMap> datas = new ArrayList<>();
         try {
-            Object object = JsonPath.read(response,apiDefinition.getDataPath());
-            if(object instanceof List){
-                datas = (List<LinkedHashMap>)object;
-            }else {
-                datas.add((LinkedHashMap)object);
+            Object object = JsonPath.read(response, apiDefinition.getDataPath());
+            if (object instanceof List) {
+                datas = (List<LinkedHashMap>) object;
+            } else {
+                datas.add((LinkedHashMap) object);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("jsonPath 路径错误：" + e.getMessage());
         }
 
-        List<JSONObject> dataList = new ArrayList<>();
+        List<JsonObject> dataList = new ArrayList<>();
         List<DatasetTableField> fields = new ArrayList<>();
         Set<String> fieldKeys = new HashSet<>();
         //第一遍获取 field
         for (LinkedHashMap data : datas) {
             Set<String> keys = data.keySet();
             for (String key : keys) {
-                if(!fieldKeys.contains(key)){
+                if (!fieldKeys.contains(key)) {
                     fieldKeys.add(key);
                     DatasetTableField tableField = new DatasetTableField();
                     tableField.setOriginName(key);
@@ -207,9 +213,9 @@ public class ApiProvider extends Provider{
         }
         //第二遍获取 data
         for (LinkedHashMap data : datas) {
-            JSONObject jsonObject = new JSONObject();
+            JsonObject jsonObject = new JsonObject();
             for (String key : fieldKeys) {
-                jsonObject.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                jsonObject.addProperty(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
             }
             dataList.add(jsonObject);
         }
@@ -218,15 +224,15 @@ public class ApiProvider extends Provider{
         return apiDefinition;
     }
 
-    private List<String[]> fetchResult(String result, ApiDefinition apiDefinition){
+    private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
         List<String[]> dataList = new LinkedList<>();
         List<LinkedHashMap> datas = new ArrayList<>();
 
-        Object object = JsonPath.read(result,apiDefinition.getDataPath());
-        if(object instanceof List){
-            datas = (List<LinkedHashMap>)object;
-        }else {
-            datas.add((LinkedHashMap)object);
+        Object object = JsonPath.read(result, apiDefinition.getDataPath());
+        if (object instanceof List) {
+            datas = (List<LinkedHashMap>) object;
+        } else {
+            datas.add((LinkedHashMap) object);
         }
         for (LinkedHashMap data : datas) {
             String[] row = new String[apiDefinition.getFields().size()];
@@ -240,16 +246,26 @@ public class ApiProvider extends Provider{
         return dataList;
     }
 
-    private ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest)throws Exception{
-        List<ApiDefinition> apiDefinitionList = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class).stream().filter(item -> item.getName().equalsIgnoreCase(datasourceRequest.getTable())).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(apiDefinitionList)){
+    private ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
+        List<ApiDefinition> apiDefinitionList = new ArrayList<>();
+        List<ApiDefinition> apiDefinitionListTemp = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+        }.getType());
+        if (CollectionUtils.isEmpty(apiDefinitionListTemp)) {
+            for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
+                if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
+                    apiDefinitionList.add(apiDefinition);
+                }
+
+            }
+        }
+        if (CollectionUtils.isEmpty(apiDefinitionList)) {
             throw new Exception("未找到API数据表");
         }
-        if(apiDefinitionList.size() > 1 ){
+        if (apiDefinitionList.size() > 1) {
             throw new Exception("存在重名的API数据表");
         }
         for (ApiDefinition apiDefinition : apiDefinitionList) {
-            if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())){
+            if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
                 return apiDefinition;
             }
         }
