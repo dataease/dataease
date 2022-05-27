@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../DefaultUI".split(" "),function(f,c,a,l,m,g,n,h,p,q,r,k){a=function(d){function e(b){b=d.call(this,b)||this;b.components=["attribution","zoom"];
+return b}f._inheritsLoose(e,d);return e}(k);c.__decorate([g.property()],a.prototype,"components",void 0);return a=c.__decorate([h.subclass("esri.views.ui.2d.DefaultUI2D")],a)});

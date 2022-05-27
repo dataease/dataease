@@ -1,7 +1,7 @@
 export default {
   // load配置
   loadConfig: {
-      url: "http://2.40.7.227:8080/arcgis-3.32/init.js", //托管 API 地址
+      url: "http://localhost:9528/arcgisapi/init.js", //托管 API 地址
   },
   
   // 初始化位置

@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dojox/gfx","./BarLineIndicator"],function(e,f,g){return e("dojox.gauges.BarCircleIndicator",[g],{_getShapes:function(b){var c=this.color?this.color:"black",d={color:this.strokeColor?this.strokeColor:c,width:1};this.color.type&&!this.strokeColor&&(d.color=this.color.colors[0].color);var h=this._gauge.dataY+this.offset+this.length/2,a=this.value;a<this._gauge.min&&(a=this._gauge.min);a>this._gauge.max&&(a=this._gauge.max);a=this._gauge._getPosition(a);b=[b.createCircle({cx:0,
+cy:h,r:this.length/2}).setFill(c).setStroke(d)];b[0].setTransform(f.matrix.translate(a,0));return b}})});

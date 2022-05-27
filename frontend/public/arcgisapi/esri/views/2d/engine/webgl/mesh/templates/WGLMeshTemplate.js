@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../../../../../../chunks/_rollupPluginBabelHelpers","../../../../../../core/maybe","../../../../../../geometry/support/jsonUtils","../../enums","../../../../../../symbols/cim/effects/CIMEffectHelper"],function(m,n,p,f,g){return function(){function h(){}var k=h.prototype;k.writeMesh=function(d,e,a,b,l){if(n.isNone(this.effects))return this.writeMeshWithGeometry(d,e,a,b,l);b=g.CIMEffectHelper.executeEffects(this.effects,a.readLegacyGeometry());let c=g.CIMEffectHelper.next(b);for(;c;)this.writeMeshWithGeometry(d,
+e,a,p.getJsonType(c),l,c),c=g.CIMEffectHelper.next(b)};k.writeMeshWithGeometry=function(d,e,a,b,l,c){};k.bindFeature=function(d,e,a){};m._createClass(h,[{key:"needsPixelBuffer",get:function(){return!!this.effects||this.geometryType===f.WGLGeometryType.MARKER||this.geometryType===f.WGLGeometryType.TEXT||this.geometryType===f.WGLGeometryType.LABEL}}]);return h}()});

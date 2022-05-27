@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","./Request","./Cache"],function(b,c,d){return b([c,d],{isValidFetchCache:!0,postscript:function(){this.inherited(arguments);this.fetch()},refresh:function(a){this.fetchRequest&&(this.fetchRequest.cancel(),this.fetchRequest=null);a&&(this.target=a);this.invalidate();return this.fetch()}})});

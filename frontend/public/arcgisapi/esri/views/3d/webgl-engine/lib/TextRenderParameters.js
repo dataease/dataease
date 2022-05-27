@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/maybe","../../../../Color","../../../../core/screenUtils","../../../../chunks/vec4f64"],function(g,d,h,k,l){let n=function(){function e(a){this.definition=a;this.key=JSON.stringify(a);this.haloSize=Math.round(a.halo.size);this.fillStyle=this.colorToRGBA(a.color);this.haloStyle=this.colorToRGB(a.halo.color)}var m=e.prototype;m.colorToRGB=function(a){return`rgb(${a.slice(0,3).map(c=>Math.floor(255*c)).toString()})`};m.colorToRGBA=function(a){return`rgba(${a.slice(0,
+3).map(c=>Math.floor(255*c)).toString()},${a[3]})`};e.fromSymbol=function(a,c=1){var f=d.get(a,"material","color");f=d.isSome(f)?h.toUnitRGBA(f):l.ZEROS;var b=a.halo;const p=null!=a.size?k.pt2px(a.size):12;a={family:a.font&&a.font.family?a.font.family:"sans-serif",weight:a.font&&a.font.weight?a.font.weight:"normal",style:a.font&&a.font.style?a.font.style:"normal"};b=d.isSome(b)&&d.isSome(b.color)&&0<b.size?{size:k.pt2px(b.size),color:h.toUnitRGBA(b.color)}:{size:0,color:l.ZEROS};return new e({size:p,
+color:f,font:a,halo:b,pixelRatio:c})};return e}();g.TextRenderParameters=n;g.default=n;Object.defineProperty(g,"__esModule",{value:!0})});

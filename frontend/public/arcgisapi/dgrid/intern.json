@@ -1,0 +1,122 @@
+{
+	"$schema": "./node_modules/intern/schemas/config.json",
+	"name": "dgrid",
+
+	"basePath": "../",
+	"leaveRemoteOpen": "fail",
+
+	"configs": {
+		"browserstack": {
+			"comment": "BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY environment variables must be set",
+			"capabilities": {
+				"buildName": "dgrid 1.3.2-pre",
+				"projectName": "dgrid",
+				"resolution": "1366x768"
+			},
+			"environments": [
+				{
+					"browser": "chrome",
+					"version": [ "latest", "latest-3" ],
+					"platform": [ "WINDOWS", "MAC" ]
+				},
+				{
+					"browser": "firefox",
+					"version": [ "latest", "latest-3" ],
+					"platform": [ "WINDOWS", "MAC" ]
+				},
+				{
+					"browser": "safari",
+					"version": "latest"
+				},
+				{
+					"browser": "MicrosoftEdge",
+					"version": "latest"
+				},
+				{
+					"browser": "internet explorer",
+					"version": "11"
+				}
+			],
+			"tunnel": "browserstack",
+			"maxConcurrency": 4,
+			"leaveRemoteOpen": false
+		},
+
+		"chrome": {
+			"environments": "chrome"
+		},
+
+		"firefox": {
+			"environments": "firefox"
+		},
+
+		"safari": {
+			"environments": "safari"
+		},
+
+		"edge": {
+			"environments": "MicrosoftEdge"
+		},
+
+		"ie": {
+			"environments": "internet explorer"
+		}
+	},
+
+	"functionalSuites": [
+		"./test/intern/functional/*.js",
+		"!dgrid/test/intern/functional/util.js"
+	],
+
+	"browser": {
+		"suites": [
+			"dgrid/test/intern/browserSuites"
+		],
+
+		"loader": {
+			"script": "dojo",
+			"options": {
+				"internLoaderPath": "dojo/dojo.js",
+				"packages": [
+					{ "name": "dojo", "location": "dojo" },
+					{ "name": "dijit", "location": "dijit" },
+					{ "name": "dgrid", "location": "dgrid" },
+					{ "name": "dstore", "location": "dstore" }
+				]
+			}
+		}
+	},
+
+	"node": {
+		"reporters": [
+			"htmlcoverage",
+			"pretty"
+		]
+	},
+
+	"tunnel": "selenium",
+
+	"functionalTimeouts": {
+		"executeAsync": 10000,
+		"find": 10000,
+		"pageLoad": 10000
+	},
+
+	"coverage": [
+		"./extensions/*.js",
+		"./_StoreMixin.js",
+		"./CellSelection.js",
+		"./ColumnSet.js",
+		"./Editor.js",
+		"./Grid.js",
+		"./GridFromHtml.js",
+		"./GridWithColumnSetsFromHtml.js",
+		"./Keyboard.js",
+		"./List.js",
+		"./OnDemandGrid.js",
+		"./OnDemandList.js",
+		"./Selection.js",
+		"./Selector.js",
+		"./Tree.js"
+	]
+}

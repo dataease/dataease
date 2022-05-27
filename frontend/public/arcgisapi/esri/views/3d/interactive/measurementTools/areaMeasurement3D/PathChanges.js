@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["../support/setUtils"],function(d){return function(){function c(){this.change="none";this.updatedVertices=new Set}var b=c.prototype;b.fullChange=function(){this.change="full"};b.incrementalChange=function(a){"none"===this.change&&(this.change="incremental");this.updatedVertices.add(a)};b.clear=function(){this.change="none";this.updatedVertices.clear()};b.assign=function(a){this.change=a.change;this.updatedVertices=d.clone(a.updatedVertices)};b.merge=function(a){switch(this.change){case "none":this.assign(a);
+break;case "incremental":"incremental"===a.change?a.updatedVertices.forEach(e=>{this.updatedVertices.add(e)}):"full"===a.change&&(this.change="full")}};return c}()});

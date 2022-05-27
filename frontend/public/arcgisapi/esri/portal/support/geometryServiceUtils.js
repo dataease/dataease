@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("require exports ../../config ../../core/Error ../Portal ../../tasks/support/ProjectParameters".split(" "),function(h,e,k,f,m,n){async function l(a=null,g){if(k.geometryServiceUrl)return new (await new Promise(function(b,d){h(["../../tasks/GeometryService"],function(c){b(Object.freeze({__proto__:null,"default":c}))},d)})).default({url:k.geometryServiceUrl});if(!a)throw new f("internal:geometry-service-url-not-configured");a="portal"in a?a.portal||m.getDefault():a;await a.load({signal:g});if(a.helperServices&&
+a.helperServices.geometry&&a.helperServices.geometry.url)return new (await new Promise(function(b,d){h(["../../tasks/GeometryService"],function(c){b(Object.freeze({__proto__:null,"default":c}))},d)})).default({url:a.helperServices.geometry.url});throw new f("internal:geometry-service-url-not-configured");}e.create=l;e.projectGeometry=async function(a,g,b=null,d){b=await l(b,d);const c=new n;c.geometries=[a];c.outSpatialReference=g;if((a=await b.project(c,{signal:d}))&&Array.isArray(a)&&1===a.length)return a[0];
+throw new f("internal:geometry-service-projection-failed");};Object.defineProperty(e,"__esModule",{value:!0})});

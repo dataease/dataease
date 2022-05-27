@@ -1,0 +1,1 @@
+{"title":"Filter Mode","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Filter mode represents the way elements draw when participating in a filter block.","oneOf":[{"$ref":"buildingSceneLayer_filterModeSolid_schema.json"},{"$ref":"buildingSceneLayer_filterModeWireFrame_schema.json"},{"$ref":"buildingSceneLayer_filterModeXray_schema.json"}]}

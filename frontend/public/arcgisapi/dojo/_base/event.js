@@ -1,0 +1,2 @@
+//>>built
+define(["./kernel","../on","../has","../dom-geometry"],function(e,b,c,f){if(b._fixEvent){var g=b._fixEvent;b._fixEvent=function(a,d){(a=g(a,d))&&f.normalizeEvent(a);return a}}c={fix:function(a,d){return b._fixEvent?b._fixEvent(a,d):a},stop:function(a){a.preventDefault();a.stopPropagation()}};e.fixEvent=c.fix;e.stopEvent=c.stop;return c});

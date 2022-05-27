@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["./WGLDisplayRecord","./util/serializationUtils","./collisions/Metric"],function(h,d,k){return function(){function c(a){this.insertAfter=null;this.id=a;this.displayRecords=[];this.metrics=[]}var e=c.prototype;e.copy=function(){const a=new c(this.id);a.set(this);return a};e.clone=function(){const a=new c(this.id);a.displayRecords=this.displayRecords.map(b=>b.clone());a.metrics=this.metrics.map(b=>b.clone());a.insertAfter=this.insertAfter;return a};e.set=function(a){this.id=a.id;this.displayRecords=
+a.displayRecords;this.metrics=a.metrics;this.insertAfter=a.insertAfter};e.serialize=function(a){a.push(this.id);d.serializeList(a,this.metrics);d.serializeList(a,this.displayRecords);return a};c.deserialize=function(a){var b=a.readInt32();const f=new c(b);b={id:b};const g=d.deserializeList(a,k);g.length&&(f.metrics=g);f.displayRecords=d.deserializeList(a,h,b);return f};return c}()});

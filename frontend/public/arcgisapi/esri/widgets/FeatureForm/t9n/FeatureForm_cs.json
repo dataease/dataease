@@ -1,0 +1,1 @@
+{"widgetLabel":"Atributy prvku","empty":"- prázdné -","validationErrors":{"cannotBeNull":"Zadejte hodnotu.","outsideRange":"Hodnota by měla být mezi {min} a {max}","invalidCodedValue":"Hodnota by měla být jednou z uvedených hodnot.","invalidType":"Neplatná hodnota","tooShort":"Toto pole vyžaduje minimálně {min} znaků"}}

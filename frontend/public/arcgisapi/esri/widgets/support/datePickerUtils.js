@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../core/Error","../../intl/date"],function(h,q,k){function f(a){const d=[/\u0660/g,/\u0661/g,/\u0662/g,/\u0663/g,/\u0664/g,/\u0665/g,/\u0666/g,/\u0667/g,/\u0668/g,/\u0669/g];for(let b=0;10>b;b++)a=a.replace(d[b],b.toString());return Number(a)}function l(a){return new q(`could not parse date input, expecting the following format: ${k.formatDate(Date.now(),a)}`)}h.parseDateIntoParts=function(a,d){var b=k.getDateTimeFormatter(d),e=Date.now();e=b.formatToParts(e);const m=new Set;
+e.filter(({type:c})=>"literal"===c).forEach(({value:c})=>m.add(c));let g=0;for(b={};0<e.length;){const {type:c,value:r}=e.shift();for(let n=0;n<r.length;n++,g++){const p=a.charAt(g);if(m.has(p)){g++;break}if("literal"===c)break;b[c]||(b[c]=[]);b[c].push(p)}}a={};try{a.day=f(b.day.join("")),a.month=f(b.month.join(""))-1,a.year=f((b.year||b.relatedYear).join(""))}catch(c){throw l(d);}if(isNaN(a.day)||isNaN(a.month)||isNaN(a.year))throw l(d);return a};Object.defineProperty(h,"__esModule",{value:!0})});

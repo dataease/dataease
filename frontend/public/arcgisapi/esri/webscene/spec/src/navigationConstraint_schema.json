@@ -1,0 +1,1 @@
+{"title":"Navigation Constraint","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Object determining whether the camera is constrained to navigate only above, or also under the ground surface.","properties":{"type":{"type":"string","enum":["none","stayAbove"]}},"required":["type"],"additionalProperties":false}

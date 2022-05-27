@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import{_ as t}from"./tslib.es6.js";import"./object.js";import"./Logger.js";import{property as r}from"../core/accessorSupport/decorators/property.js";import"./ensureType.js";import{subclass as o}from"../core/accessorSupport/decorators/subclass.js";import{a as e}from"./JSONSupport.js";import"../core/urlUtils.js";import"./resourceExtension.js";let s=class extends e{constructor(t){super(t),this.altText=null,this.caption="",this.title="",this.type=null}};t([r({type:String,json:{write:!0}})],s.prototype,"altText",void 0),t([r({type:String,json:{write:!0}})],s.prototype,"caption",void 0),t([r({type:String,json:{write:!0}})],s.prototype,"title",void 0),t([r({type:["image","bar-chart","column-chart","line-chart","pie-chart"],readOnly:!0,json:{read:!1,write:!0}})],s.prototype,"type",void 0),s=t([o("esri.popup.content.mixins.MediaInfo")],s);var p=s;export{p as M};

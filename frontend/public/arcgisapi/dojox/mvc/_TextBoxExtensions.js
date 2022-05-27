@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/lang","dijit/_WidgetBase","dijit/form/ValidationTextBox","dijit/form/NumberTextBox"],function(e,b,c,d){var f=c.prototype.isValid;c.prototype.isValid=function(a){return!1!==this.inherited("isValid",arguments)&&f.apply(this,[a])};var g=d.prototype.isValid;d.prototype.isValid=function(a){return!1!==this.inherited("isValid",arguments)&&g.apply(this,[a])};e.isFunction(b.prototype.isValid)||(b.prototype.isValid=function(){var a=this.get("valid");return"undefined"==typeof a?!0:a});b.prototype._setValidAttr=
+function(a){this._set("valid",a);this.validate()}});

@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/declare dojo/_base/lang dojo/dom-class dojo/dom-construct ./iconUtils dojo/has dojo/has!dojo-bidi?dojox/mobile/bidi/Icon".split(" "),function(b,e,a,f,g,c,h){a=b(c("dojo-bidi")?"dojox.mobile.NonBidiIcon":"dojox.mobile.Icon",null,{icon:"",iconPos:"",alt:"",tag:"div",constructor:function(d,k){d&&e.mixin(this,d);this.domNode=k||f.create(this.tag);g.createIcon(this.icon,this.iconPos,null,this.alt,this.domNode);this._setCustomTransform()},_setCustomTransform:function(){}});return c("dojo-bidi")?
+b("dojox.mobile.Icon",[a,h]):a});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../webgl/Program ../../../../webgl/BufferObject ../../../../webgl/Texture ../../../../webgl/VertexArrayObject ../../../../webgl/Renderbuffer ../../../../webgl/FramebufferObject ../../../../webgl/programUtils ../../../../webgl/ProgramCache ../../../../webgl/RenderingContext ../../../../webgl/ShaderCompiler ./sources/resolver".split(" "),function(a,f,g,h,k,l,m,d,n,p,q,b){const c={name:"magnifier",shaders:{vertexShader:b.resolveIncludes("magnifier/magnifier.vert"),fragmentShader:b.resolveIncludes("magnifier/magnifier.frag")},
+attributes:{a_pos:0}};a.createMagnifierProgram=function(e){return d.createProgram(e,c)};a.magnifierProgramTemplate=c;Object.defineProperty(a,"__esModule",{value:!0})});

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(c){function e(a){return a?72*a/96:0}const f=/^-?(\d+(\.\d+)?)\s*((px)|(pt))?$/i;c.castRenderScreenPointArray=function(a){return a};c.castRenderScreenPointArray3=function(a){return a};c.castScreenPointArray=function(a){return a};c.createRenderScreenPoint=function(a=0,b=0){return{x:a,y:b}};c.createRenderScreenPointArray=function(a=0,b=0){return[a,b]};c.createRenderScreenPointArray3=function(a=0,b=0,d=0){return[a,b,d]};c.createScreenPoint=function(a=0,b=0){return{x:a,y:b}};
+c.createScreenPointArray=function(a=0,b=0){return[a,b]};c.pt2px=function(a){return a?a/72*96:0};c.px2pt=e;c.screenPointArrayToObject=function(a,b){return b?(b.x=a[0],b.y=a[1],b):{x:a[0],y:a[1]}};c.screenPointObjectToArray=function(a,b){return b?(b[0]=a.x,b[1]=a.y,2<b.length&&(b[2]=0),b):[a.x,a.y]};c.toPt=function(a){if("string"===typeof a){if(f.test(a)){var b=a.match(f),d=Number(b[1]);b=b[3]&&b[3].toLowerCase();a="-"===a.charAt(0);d="px"===b?e(d):d;return a?-d:d}console.warn("screenUtils.toPt: input not recognized!");
+return null}return a};Object.defineProperty(c,"__esModule",{value:!0})});

@@ -1,0 +1,1 @@
+{"widgetLabel":"Arealmåling","hint":"Klikk i kartet for å plassere det første punktet for målingen.","unsupported":"2D-arealmåling støttes bare i MapView.","perimeter":"Omkrets","area":"Areal","newMeasurement":"Ny måling","mode":"Modus","modes":{"auto":"Auto","planar":"Plant","geodesic":"Geodetisk"},"unit":"Enhet"}

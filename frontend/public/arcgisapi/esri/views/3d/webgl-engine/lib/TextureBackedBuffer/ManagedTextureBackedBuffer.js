@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../chunks/_rollupPluginBabelHelpers","./SimpleIndexManager","./TextureBackedBuffer"],function(b,e,f,g){let k=function(){function c(a,h=1){this.textureBuffer=new g.TextureBackedBuffer(a,h);this.indexManager=new f.SimpleIndexManager(65536)}var d=c.prototype;d.dispose=function(){this.textureBuffer.dispose();this.textureBuffer=void 0};d.acquireIndex=function(){const a=this.indexManager.acquire();this.textureBuffer.resizeToFit(a);return a};d.releaseIndex=function(a){this.indexManager.release(a)};
+e._createClass(c,[{key:"availableCount",get:function(){return this.indexManager.availableCount}},{key:"activeCount",get:function(){return this.indexManager.activeCount}}]);return c}();b.MAX_INDEX_COUNT=65536;b.ManagedTextureBackedBuffer=k;Object.defineProperty(b,"__esModule",{value:!0})});

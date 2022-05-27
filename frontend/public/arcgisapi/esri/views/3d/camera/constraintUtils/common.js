@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/mathUtils","../../../../chunks/vec3"],function(d,k,f){d.adjustRangeForInteraction=function(e,b,g,c,h,a){0!==e&&(g?(a.min=Math.min(a.min,b),a.max=Math.max(a.max,b)):null!=c?(a.min-=Math.max(0,(b-a.min)*(1-c)),a.max+=Math.max(0,(b-a.max)*(1-c))):h&&(a.min-=Math.max(0,b-a.min-h),a.max+=Math.max(0,b-a.max-h)))};d.defaultApplyOptions={selection:0,interactionType:0,interactionFactor:0,interactionStartCamera:null,interactionDirection:null,tiltMode:0};d.hasConstraintType=
+function(e,b){return 0!==(e&b)};d.interactionDirectionTowardsConstraintMinimization=function(e,b,g,c){b=b||e.viewForward;f.copy(c,b);f.scale(c,c,k.sign(f.dot(b,g)));return c};Object.defineProperty(d,"__esModule",{value:!0})});

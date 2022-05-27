@@ -1,0 +1,2 @@
+//>>built
+define(["./aspect","./on"],function(f,b){function d(){}var g=f.after;d.prototype={on:function(e,c){return b.parse(this,e,c,function(a,h){return g(a,"on"+h,c,!0)})},emit:function(e,c){var a=[this];a.push.apply(a,arguments);return b.emit.apply(b,a)}};return d});

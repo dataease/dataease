@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/deprecate ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/Accessor".split(" "),function(a,c,d,n,f,p,g,h,q,k,r,t,u,l){a.CollisionConstraint=function(e){function b(){return e.apply(this,
+arguments)||this}c._inheritsLoose(b,e);c._createClass(b,[{key:"enabled",set:function(m){h.deprecated(f.getLogger(this.declaredClass),"SceneView.constraint.collision.enabled",{replacement:"Map.ground.navigationConstraint",version:"4.8"});this._set("enabled",m)}}]);return b}(l);d.__decorate([g.property({value:!0})],a.CollisionConstraint.prototype,"enabled",null);a.CollisionConstraint=d.__decorate([k.subclass("esri.views.3d.constraints.CollisionConstraint")],a.CollisionConstraint);a.default=a.CollisionConstraint;
+Object.defineProperty(a,"__esModule",{value:!0})});

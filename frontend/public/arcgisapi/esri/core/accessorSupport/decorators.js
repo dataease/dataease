@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ./decorators/property ./decorators/aliasOf ./decorators/autoDestroy ./decorators/cast ./decorators/declared ./decorators/enumeration ./decorators/reader ./decorators/shared ./decorators/subclass ./decorators/writer ./decorators/persistable".split(" "),function(a,b,d,e,f,g,h,k,l,c,m,n){a.ensureRange=b.ensureRange;a.property=b.property;a.propertyJSONMeta=b.propertyJSONMeta;a.aliasOf=d.aliasOf;a.autoDestroy=e.autoDestroy;a.cast=f.cast;a.declared=g.declared;a.enumeration=h.enumeration;
+a.reader=k.reader;a.shared=l.shared;a.processClass=c.processClass;a.subclass=c.subclass;a.writer=m.writer;a.persistable=n.persistable;Object.defineProperty(a,"__esModule",{value:!0})});

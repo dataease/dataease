@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor".split(" "),function(g,b,a,l,m,d,n,h,p,q,r,k){a=function(e){function f(){var c=e.apply(this,arguments)||this;c.state="ready";c.value=new Date;return c}g._inheritsLoose(f,
+e);return f}(k);b.__decorate([d.property()],a.prototype,"state",void 0);b.__decorate([d.property()],a.prototype,"value",void 0);return a=b.__decorate([h.subclass("esri.widgets.support.MomentElementViewModel")],a)});

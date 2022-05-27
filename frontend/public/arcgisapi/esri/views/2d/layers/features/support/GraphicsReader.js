@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../../chunks/_rollupPluginBabelHelpers ../../../../../geometry/support/jsonUtils ../../../../../layers/graphics/featureConversionUtils ./FeatureSetReader ./FeatureSetReaderJSON".split(" "),function(g,h,m,n,p,d){d=function(k){function b(a,e){return k.call(this,a,e,null)||this}h._inheritsLoose(b,k);b.from=function(a){const e=p.FeatureSetReader.createInstance(),l=[];a=a.filter(c=>!!c.geometry);for(const c of a)a=m.getJsonType(c.geometry),n.convertFromGraphics(l,[c],a,!1,!1,"uid");
+return new b(e,l)};var f=b.prototype;f.readGraphic=function(){return this._current};f.getCursor=function(){return this.copy()};f.copy=function(){const a=new b(this.instance,this._features);this.copyInto(a);return a};h._createClass(b,[{key:"geometryType",get:function(){const a=this._current;return a?a.geometryType:null}}]);return b}(d.FeatureSetReaderJSON);g.GraphicsReader=d;Object.defineProperty(g,"__esModule",{value:!0})});

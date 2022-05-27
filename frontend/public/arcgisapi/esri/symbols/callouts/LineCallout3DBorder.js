@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/lang ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ../../Color ../support/materialUtils ../../chunks/LineCallout3DBorder".split(" "),function(a,c,d,e,f,g,h,k,l,m,n,p,q,r,t,u,b){Object.defineProperty(a,
+"LineCallout3DBorder",{enumerable:!0,get:function(){return b.LineCallout3DBorder$2}});a.default=b.LineCallout3DBorder$1;Object.defineProperty(a,"__esModule",{value:!0})});

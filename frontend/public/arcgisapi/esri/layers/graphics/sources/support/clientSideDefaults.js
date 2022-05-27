@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/has","../../../../core/lang","../../../../symbols/support/defaultsJSON"],function(b,g,h,d){b.createDefaultAttributesFunction=function(a,e){if(g("csp-restrictions"))return()=>({[e]:null,...a});try{let f=`this.${e} = null;`;for(const c in a){const k=c.indexOf(".")?`["${c}"]`:`.${c}`;f+=`this${k} = ${JSON.stringify(a[c])};`}const l=new Function(f);return()=>new l}catch(f){return()=>({[e]:null,...a})}};b.createDefaultTemplate=function(a={}){return[{name:"New Feature",
+description:"",prototype:{attributes:h.clone(a)}}]};b.createDrawingInfo=function(a){return{renderer:{type:"simple",symbol:"esriGeometryPoint"===a||"esriGeometryMultipoint"===a?d.defaultPointSymbolJSON:"esriGeometryPolyline"===a?d.defaultPolylineSymbolJSON:d.defaultPolygonSymbolJSON}}};Object.defineProperty(b,"__esModule",{value:!0})});

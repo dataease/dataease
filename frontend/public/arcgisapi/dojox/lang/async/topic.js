@@ -1,0 +1,2 @@
+//>>built
+define(["dojo","dijit","dojox"],function(a,h,g){a.provide("dojox.lang.async.topic");(function(){var f=g.lang.async.topic;f.from=function(e){return function(){var c=function(){b&&(a.unsubscribe(b),b=null)},d=new a.Deferred(c);var b=a.subscribe(e,function(){c();d.callback(arguments)});return d}};f.failOn=function(e){return function(){var c=function(){b&&(a.unsubscribe(b),b=null)},d=new a.Deferred(c);var b=a.subscribe(e,function(k){c();d.errback(Error(arguments))});return d}}})()});

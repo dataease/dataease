@@ -1,0 +1,1 @@
+{"title":"PointCloud Renderers","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"Renderers for PointCloud Layers.","oneOf":[{"$ref":"pointCloudClassBreaksRenderer_schema.json"},{"$ref":"pointCloudRGBRenderer_schema.json"},{"$ref":"pointCloudStretchRenderer_schema.json"},{"$ref":"pointCloudUniqueValueRenderer_schema.json"}]}

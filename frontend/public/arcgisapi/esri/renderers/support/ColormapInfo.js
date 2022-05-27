@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ../../Color".split(" "),function(g,b,a,n,h,d,p,k,q,r,t,l,m){a=function(e){function f(){var c=e.apply(this,arguments)||this;c.value=null;c.label=null;
+c.color=null;return c}g._inheritsLoose(f,e);return f}(l.JSONSupport);b.__decorate([d.property({type:Number,json:{write:!0}})],a.prototype,"value",void 0);b.__decorate([d.property({type:String,json:{write:!0}})],a.prototype,"label",void 0);b.__decorate([d.property({type:m,json:{type:[h.Integer],write:!0}})],a.prototype,"color",void 0);return a=b.__decorate([k.subclass("esri.renderers.support.ColormapInfo")],a)});

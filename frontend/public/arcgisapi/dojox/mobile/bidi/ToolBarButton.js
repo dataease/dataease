@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","dojo/_base/lang","dojo/dom-class"],function(c,f,a){return c(null,{buildRendering:function(){this.inherited(arguments);if(!this.isLeftToRight()&&this.arrow){var b="left"===this.arrow?"mblToolBarButtonHasLeftArrow":"mblToolBarButtonHasRightArrow",d="left"===this.arrow?"mblToolBarButtonRightArrow":"mblToolBarButtonLeftArrow",e="left"===this.arrow?"mblToolBarButtonHasRightArrow":"mblToolBarButtonHasLeftArrow";a.remove(this.arrowNode,"left"===this.arrow?"mblToolBarButtonLeftArrow":
+"mblToolBarButtonRightArrow");a.add(this.arrowNode,d);a.remove(this.domNode,b);a.add(this.domNode,e)}},_setLabelAttr:function(b){this.inherited(arguments);this.isLeftToRight()||a.toggle(this.tableNode,"mblToolBarButtonTextRtl",b||this.arrow)}})});

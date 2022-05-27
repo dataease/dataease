@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/kernel dojo/_base/array dojo/_base/declare dojo/_base/Deferred dojo/dom-class dojo/dom-construct dijit/registry ../lazyLoadUtils".split(" "),function(r,t,k,l,m,n,p,q){return k("dojox.mobile.dh.HtmlContentHandler",null,{parse:function(c,d,e){this.execScript&&(c=this.execScript(c));var a=n.create("div",{innerHTML:c,style:{visibility:"hidden"}});d.insertBefore(a,e);return l.when(q.instantiateLazyWidgets(a),function(){var b,f;var g=0;for(f=a.childNodes.length;g<f;g++){var h=a.firstChild;
+b||1!==h.nodeType||(b=p.byNode(h));d.insertBefore(a.firstChild,e)}d.removeChild(a);return b&&m.contains(b.domNode,"mblView")?b.id:(console.log("HtmlContentHandler.parse: invalid view content"),null)})}})});

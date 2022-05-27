@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../core/Error ../../../core/promiseUtils ../../../geometry/support/spatialReferenceUtils ../../../geometry/support/contains ../../../geometry/support/intersects ../../../geometry/support/jsonUtils ../OptimizedGeometry ../featureConversionUtils ./projectionSupport ../contains ../../../chunks/spatialQuerySupport".split(" "),function(a,c,d,e,f,g,h,k,l,m,n,b){a.canQueryWithRBush=b.canQueryWithRBush;a.checkSpatialQuerySupport=b.checkSpatialQuerySupport;a.getGeodesicBufferOperator=
+b.getGeodesicBufferOperator;a.getSpatialQueryOperator=b.getSpatialQueryOperator;a.importGeometryEngine=b.importGeometryEngine;Object.defineProperty(a,"__esModule",{value:!0})});

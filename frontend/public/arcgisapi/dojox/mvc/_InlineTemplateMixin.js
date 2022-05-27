@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/_base/lang","dojo/has"],function(d,e,g){return d("dojox.mvc._InlineTemplateMixin",null,{buildRendering:function(){var a=this.srcNodeRef;if(a){a=a.querySelectorAll("script[type\x3d'dojox/mvc/InlineTemplate']");for(var c=[],b=0,f=a.length;b<f;++b)c.push(a[b].innerHTML);if(a=e.trim(c.join("")))this.templateString=a}this.inherited(arguments)}})});

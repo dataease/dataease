@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox"],function(a,d,f){a.provide("dojox.mobile.app.SceneAssistant");a.experimental("dojox.mobile.app.SceneAssistant");a.declare("dojox.mobile.app.SceneAssistant",null,{constructor:function(){},setup:function(){},activate:function(b){},deactivate:function(){},destroy:function(){var b=a.query("\x3e [widgetId]",this.containerNode).map(d.byNode);a.forEach(b,function(c){c.destroyRecursive()});this.disconnect()},connect:function(b,c,e){this._connects||(this._connects=[]);this._connects.push(a.connect(b,
+c,e))},disconnect:function(){a.forEach(this._connects,a.disconnect);this._connects=[]}})});

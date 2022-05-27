@@ -1,0 +1,3 @@
+//>>built
+define(["dojo/_base/declare","./AnalogIndicatorBase"],function(g,h){return g("dojox.gauges.AnalogNeedleIndicator",[h],{_getShapes:function(f){if(!this._gauge)return null;var c=Math.floor(this.width/2),d=[],a=this.color?this.color:"black",e={color:this.strokeColor?this.strokeColor:a,width:this.strokeWidth?this.strokeWidth:1};a.type&&!this.strokeColor&&(e.color=a.colors[0].color);var b=Math.sqrt(2)*c;d[0]=f.createPath().setStroke(e).setFill(a).moveTo(b,-b).arcTo(2*c,2*c,0,0,0,-b,-b).lineTo(0,-this.length).closePath();
+d[1]=f.createCircle({cx:0,cy:0,r:this.width}).setStroke(e).setFill(a);return d}})});

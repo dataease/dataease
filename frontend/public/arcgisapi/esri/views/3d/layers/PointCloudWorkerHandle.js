@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../chunks/_rollupPluginBabelHelpers","../../../core/maybe","../support/WorkerHandle"],function(g,k,d,e){e=function(h){function f(a){return h.call(this,"PointCloudWorker","transform",a)||this}k._inheritsLoose(f,h);f.prototype.getTransferList=function(a){const c=[a.geometryBuffer];d.isSome(a.primaryAttributeData)&&a.primaryAttributeData.buffer&&c.push(a.primaryAttributeData.buffer);d.isSome(a.modulationAttributeData)&&a.modulationAttributeData.buffer&&c.push(a.modulationAttributeData.buffer);
+if(d.isSome(a.filterAttributesData))for(const b of a.filterAttributesData)d.isSome(b)&&b.buffer&&c.push(b.buffer);for(const b of a.userAttributesData)b.buffer&&c.push(b.buffer);return c};return f}(e.WorkerHandle);g.PointCloudWorkerHandle=e;Object.defineProperty(g,"__esModule",{value:!0})});

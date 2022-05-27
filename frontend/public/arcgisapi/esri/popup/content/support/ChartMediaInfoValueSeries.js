@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/accessorSupport/decorators/aliasOf ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/Accessor".split(" "),function(k,c,a,n,p,f,g,q,l,r,t,u,m){var d;a=d=function(h){function e(b){b=
+h.call(this,b)||this;b.tooltip=null;b.value=null;b.x=null;b.y=null;return b}k._inheritsLoose(e,h);e.prototype.clone=function(){return new d({tooltip:this.tooltip,value:this.value})};return e}(m);c.__decorate([f.property()],a.prototype,"tooltip",void 0);c.__decorate([f.property()],a.prototype,"value",void 0);c.__decorate([g.aliasOf("value")],a.prototype,"x",void 0);c.__decorate([g.aliasOf("tooltip")],a.prototype,"y",void 0);return a=d=c.__decorate([l.subclass("esri.popup.content.support.ChartMediaInfoValueSeries")],
+a)});

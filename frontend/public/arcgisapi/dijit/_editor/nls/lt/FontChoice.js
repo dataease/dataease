@@ -1,0 +1,2 @@
+//>>built
+define({fontSize:"Dydis",fontName:"\u0160riftas",formatBlock:"Formatuoti",serif:"serif","sans-serif":"sans-serif",monospace:"monospace",cursive:"cursive",fantasy:"fantasy",noFormat:"N\u0117ra",p:"Pastraipa",h1:"Antra\u0161t\u0117",h2:"Paantra\u0161t\u0117",h3:"Antrin\u0117 paantra\u0161t\u0117",pre:"I\u0161 anksto suformatuota",1:"xx ma\u017eas",2:"x ma\u017eas",3:"ma\u017eas",4:"vidutinis",5:"didelis",6:"x didelis",7:"xx didelis"});

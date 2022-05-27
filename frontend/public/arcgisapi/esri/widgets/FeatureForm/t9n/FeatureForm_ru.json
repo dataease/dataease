@@ -1,0 +1,1 @@
+{"widgetLabel":"Объект из","empty":"- пусто -","validationErrors":{"cannotBeNull":"Введите числовое значение","outsideRange":"Значение должно быть между {min} и { {max}","invalidCodedValue":"Значение должно быть одним из следующих значений.","invalidType":"Недопустимое значение","tooShort":"Это поле требует, как минимум, {min} символов"}}

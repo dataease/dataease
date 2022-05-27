@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","dojo/_base/declare","./Element"],function(b,c,d){return c("dojox.charting.Series",d,{constructor:function(a,e,f){b.mixin(this,f);"string"!=typeof this.plot&&(this.plot="default");this.update(e)},clear:function(){this.dyn={}},update:function(a){b.isArray(a)?this.data=a:(this.source=a,this.data=this.source.data,this.source.setSeriesObject&&this.source.setSeriesObject(this));this.dirty=!0;this.clear()}})});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../core/ObjectPool"],function(b,e){let a=function(){function c(){this.color=[0,0,0,0];this.haloColor=[0,0,0,0];this.haloSize=0;this.size=12;this.vAnchor=this.hAnchor=this.offsetY=this.offsetX=this.angle=0}var d=c.prototype;d.acquire=function(f,g,h,k,l,m,n,p,q){this.color=f;this.haloColor=g;this.haloSize=h;this.size=k;this.angle=l;this.offsetX=m;this.offsetY=n;this.hAnchor=p;this.vAnchor=q};d.release=function(){this.color[0]=this.color[1]=this.color[2]=this.color[3]=0;this.vAnchor=
+this.hAnchor=this.offsetY=this.offsetX=this.angle=this.size=this.haloSize=this.haloColor[0]=this.haloColor[1]=this.haloColor[2]=this.haloColor[3]=0};return c}();a.pool=new e(a);b.TextProperties=a;Object.defineProperty(b,"__esModule",{value:!0})});

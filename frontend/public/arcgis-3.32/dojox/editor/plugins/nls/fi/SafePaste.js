@@ -1,2 +1,0 @@
-//>>built
-define("dojox/editor/plugins/nls/fi/SafePaste",{instructions:"Suora liitt\u00e4minen ei ole k\u00e4yt\u00f6ss\u00e4. Liit\u00e4 sis\u00e4lt\u00f6 t\u00e4h\u00e4n valintaikkunaan k\u00e4ytt\u00e4m\u00e4ll\u00e4 tavallisia selaimen pikan\u00e4pp\u00e4imi\u00e4 tai valikon vaihtoehtoja. Kun lis\u00e4tt\u00e4v\u00e4 sis\u00e4lt\u00f6 on mielest\u00e4si valmis, napsauta Liit\u00e4-painiketta. Voit peruuttaa lis\u00e4yksen napsauttamalla Peruuta-painiketta."});

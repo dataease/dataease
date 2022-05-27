@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ./core/Warning ./renderers/ClassBreaksRenderer ./renderers/RasterColormapRenderer ./renderers/RasterShadedReliefRenderer ./renderers/RasterStretchRenderer ./renderers/UniqueValueRenderer ./renderers/VectorFieldRenderer".split(" "),function(a,q,e,f,g,h,k,l){function n(b,c){if(!b)return null;var d=b?r[b.type]||null:null;if(d)return d=new d,d.read(b,c),d;c&&c.messages&&b&&c.messages.push(new q("renderer:unsupported","Renderers of type '"+(b.type||"unknown")+"' are not supported",{definition:b,
+context:c}));return null}const m={key:"type",base:null,typeMap:{"unique-value":k,"class-breaks":e,"raster-colormap":f,"raster-stretch":h,"vector-field":l,"raster-shaded-relief":g}},p={...m,typeMap:{...m.typeMap}};delete p.typeMap["vector-field"];const r={uniqueValue:k,classBreaks:e,rasterStretch:h,rasterColormap:f,vectorField:l,rasterShadedRelief:g};a.ClassBreaksRenderer=e;a.RasterColormapRenderer=f;a.RasterShadedReliefRenderer=g;a.RasterStretchRenderer=h;a.UniqueValueRenderer=k;a.VectorFieldRenderer=
+l;a.fromJSON=function(b,c){return n(b,c)};a.rasterRendererTypes=m;a.read=n;a.websceneRasterRendererTypes=p;Object.defineProperty(a,"__esModule",{value:!0})});

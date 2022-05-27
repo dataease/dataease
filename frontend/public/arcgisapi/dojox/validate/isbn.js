@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/lang","./_base"],function(g,f){f.isValidIsbn=function(a){var c=0;g.isString(a)||(a=String(a));a=a.replace(/[- ]/g,"");var e=a.length;switch(e){case 10:var d=e;for(var b=0;9>b;b++)c+=parseInt(a.charAt(b))*d,d--;a=a.charAt(9).toUpperCase();c+="X"==a?10:parseInt(a);return 0==c%11;case 13:d=-1;for(b=0;b<e;b++)c+=parseInt(a.charAt(b))*(2+d),d*=-1;return 0==c%10}return!1};return f.isValidIsbn});

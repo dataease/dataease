@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../../chunks/_rollupPluginBabelHelpers ../lib/GLMaterial ./internal/MaterialUtil ../lib/Material ./internal/DefaultBufferWriter ../shaders/SlicePlaneMaterialTechnique".split(" "),function(f,g,l,m,h,k,n){let w=function(d){function b(a,e){return d.call(this,e,a,p)||this}g._inheritsLoose(b,d);var c=b.prototype;c.intersect=function(a,e,x,q,r,t,u){return m.intersectTriangleGeometry(a,e,q,r,t,void 0,u)};c.createBufferWriter=function(){return new k.DefaultBufferWriter(k.PositionUVLayout)};
+c.getGLMaterial=function(a){return 0===a.output?new v(a):void 0};return b}(h.Material),v=function(d){function b(a){a=d.call(this,a)||this;a.technique=new n.SlicePlaneMaterialTechnique(a.techniqueRep.constructionContext,null);a.updateParameters();return a}g._inheritsLoose(b,d);var c=b.prototype;c.updateParameters=function(){};c.beginSlot=function(a){return 8===a};c.bind=function(a,e){a.bindProgram(this.technique.program);this.technique.bindPass(a,this.material.params,e)};return b}(l);const p={backgroundColor:[1,
+0,0,.5],gridColor:[0,1,0,.5],gridWidth:4,...h.materialParametersDefaults};f.SlicePlaneMaterial=w;Object.defineProperty(f,"__esModule",{value:!0})});

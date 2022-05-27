@@ -1,2 +1,0 @@
-//>>built
-define("dijit/_editor/nls/lv/FontChoice",{fontSize:"Lielums",fontName:"Fonts",formatBlock:"Form\u0101ts",serif:"serif","sans-serif":"sans-serif",monospace:"monospace",cursive:"cursive",fantasy:"fantasy",noFormat:"Nav",p:"Rindkopa",h1:"Virsraksts",h2:"Apak\u0161virsraksts",h3:"Apak\u0161apak\u0161virsraksts",pre:"Iepriek\u0161 format\u0113ts",1:"xx mazs",2:"x mazs",3:"mazs",4:"vid\u0113js",5:"liels",6:"x liels",7:"xx liels"});

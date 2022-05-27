@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../chunks/vec3f64","../../../../chunks/vec3","../lib/LongVectorMath","./SphericalHarmonics"],function(l,h,a,m,p){l.evaluateGroundTruth=function(d,f,g,b){const c=h.create(),e=h.create(),n=Math.max(-a.dot(f.direction,d),0);a.scale(e,f.intensity,n);a.add(c,c,e);for(const k of g)f=Math.max(-a.dot(k.direction,d),0),a.scale(e,k.intensity,f),a.add(c,c,e);for(const k of b)a.scale(e,k.intensity,Math.PI),a.add(c,c,e);return c};l.evaluateSphericalHarmonics=function(d,f,g){const b=
+h.create(),c=h.create(),e=p.orderFromNumberOfCoefficients(g.r.length),n=Math.max(-a.dot(f.direction,d),0);a.scale(c,f.intensity,n);a.add(b,b,c);d=p.computeCoefficients(d,e);b[0]+=m.dotProduct(d,g.r);b[1]+=m.dotProduct(d,g.g);b[2]+=m.dotProduct(d,g.b);return b};Object.defineProperty(l,"__esModule",{value:!0})});

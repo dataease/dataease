@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(g){function f(a,b){return b?"xoffset"in b&&b.xoffset?Math.max(a,Math.abs(b.xoffset)):"yoffset"in b&&b.yoffset?Math.max(a,Math.abs(b.yoffset||0)):a:a}function h(a,b){if("number"===typeof a)return a;if(a&&a.stops&&a.stops.length){{a=a.stops;let c=b=0;for(let d=0;d<a.length;d++){const e=a[d].size;"number"===typeof e&&(b+=e,c++)}a=b/c}return a}return b}function k(a,b){if(!b)return a;b=b.filter(e=>"size"===e.type).map(e=>{const {maxSize:l,minSize:m}=e;return(h(l,a)+h(m,a))/
+2});let c=0;const d=b.length;if(0===d)return a;for(let e=0;e<d;e++)c+=b[e];return Math.max(Math.floor(c/d),a)}g.calculateTolerance=function(a){const b=a&&a.renderer;a="touch"===(a&&a.event&&a.event.pointerType)?9:6;if(!b)return a;a="visualVariables"in b?k(a,b.visualVariables):a;if("simple"===b.type)return f(a,b.symbol);if("unique-value"===b.type){let c=a;b.uniqueValueInfos.forEach(d=>{c=f(c,d.symbol)});return c}if("class-breaks"===b.type){let c=a;b.classBreakInfos.forEach(d=>{c=f(c,d.symbol)});return c}return a};
+Object.defineProperty(g,"__esModule",{value:!0})});

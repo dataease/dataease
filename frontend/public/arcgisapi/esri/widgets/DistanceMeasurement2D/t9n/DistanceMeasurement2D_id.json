@@ -1,0 +1,1 @@
+{"widgetLabel":"Pengukuran Jarak","hint":"Mulai mengukur dengan mengklik peta untuk menempatkan titik pertama Anda","unsupported":"Pengukuran jarak 2D hanya didukung di MapView.","distance":"Jarak","newMeasurement":"Pengukuran baru","mode":"Mode","modes":{"auto":"Otomatis","planar":"Planar","geodesic":"Geodesik"},"unit":"Unit"}

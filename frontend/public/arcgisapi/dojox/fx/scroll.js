@@ -1,0 +1,3 @@
+//>>built
+define("dojo/_base/kernel dojo/_base/lang dojo/_base/fx dojo/_base/window dojox/fx/_base dojox/fx/_core dojo/dom-geometry dojo/_base/sniff".split(" "),function(c,e,n,p,f,q,g,r){c.experimental("dojox.fx.scroll");c=e.getObject("dojox.fx",!0);f.smoothScroll=function(a){a.target||(a.target=g.position(a.node));var d=a.win===p.global,h=a.target.x,k=a.target.y;if(!d){var l=g.position(a.win);h-=l.x;k-=l.y}var m=new n.Animation(e.mixin({beforeBegin:function(){this.curve&&delete this.curve;var b=d?dojo._docScroll():
+{x:a.win.scrollLeft,y:a.win.scrollTop};m.curve=new q([b.x,b.y],[b.x+h,b.y+k])},onAnimate:d?function(b){a.win.scrollTo(b[0],b[1])}:function(b){a.win.scrollLeft=b[0];a.win.scrollTop=b[1]}},a));return m};return c.smoothScroll=f.smoothScroll});

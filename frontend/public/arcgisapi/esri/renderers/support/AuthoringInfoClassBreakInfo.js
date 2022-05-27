@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport".split(" "),function(a,h,c,m,n,p,f,q,k,r,t,u,l){var d;a.AuthoringInfoClassBreakInfo=d=function(g){function e(b){b=g.call(this,b)||this;b.minValue=
+0;b.maxValue=0;return b}h._inheritsLoose(e,g);e.prototype.clone=function(){return new d({minValue:this.minValue,maxValue:this.maxValue})};return e}(l.JSONSupport);c.__decorate([f.property({type:Number,json:{write:!0}})],a.AuthoringInfoClassBreakInfo.prototype,"minValue",void 0);c.__decorate([f.property({type:Number,json:{write:!0}})],a.AuthoringInfoClassBreakInfo.prototype,"maxValue",void 0);a.AuthoringInfoClassBreakInfo=d=c.__decorate([k.subclass("esri.renderer.support.AuthoringInfoClassBreakInfo")],
+a.AuthoringInfoClassBreakInfo);a.default=a.AuthoringInfoClassBreakInfo;Object.defineProperty(a,"__esModule",{value:!0})});

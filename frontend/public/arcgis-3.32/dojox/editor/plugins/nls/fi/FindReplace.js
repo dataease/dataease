@@ -1,3 +1,0 @@
-//>>built
-define("dojox/editor/plugins/nls/fi/FindReplace",{findLabel:"Etsi:",findTooltip:"Anna etsitt\u00e4v\u00e4 teksti",replaceLabel:"Korvaa seuraavalla:",replaceTooltip:"Anna korvaava teksti",findReplace:"Etsi ja korvaa",matchCase:"Sama kirjainkoko",matchCaseTooltip:"Sama kirjainkoko",backwards:"Taaksep\u00e4in",backwardsTooltip:"Etsi teksti\u00e4 taaksep\u00e4in",replaceAllButton:"Korvaa kaikki",replaceAllButtonTooltip:"Korvaa kaikki teksti",findButton:"Etsi",findButtonTooltip:"Etsi teksti",replaceButton:"Korvaa",
-replaceButtonTooltip:"Korvaa teksti",replaceDialogText:"Korvattu ${0} esiintym\u00e4\u00e4.",eofDialogText:"Viimeinen esiintym\u00e4 ${0}",eofDialogTextFind:"l\u00f6ytynyt",eofDialogTextReplace:"korvattu"});

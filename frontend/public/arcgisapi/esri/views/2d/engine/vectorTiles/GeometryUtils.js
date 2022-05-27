@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(b){function f(a,c){a%=c;return 0<=a?a:a+c}const k=Number.POSITIVE_INFINITY,d=Math.PI,g=128/d,h=256/360,l=1/Math.LN2;b.C_256_TO_RAD=d/128;b.C_2PI=2*d;b.C_DEG_TO_256=h;b.C_DEG_TO_RAD=d/180;b.C_INFINITY=k;b.C_PI=d;b.C_PI_BY_2=d/2;b.C_RAD_TO_256=g;b.C_SQRT2=1.414213562;b.C_SQRT2_INV=1/1.414213562;b.between=function(a,c,e){return a>=c&&a<=e||a>=e&&a<=c};b.degToByte=function(a){return f(a*h,256)};b.interpolate=function(a,c,e){return a*(1-e)+c*e};b.log2=function(a){return Math.log(a)*
+l};b.positiveMod=f;b.radToByte=function(a){return f(a*g,256)};b.sqr=function(a){return a*a};Object.defineProperty(b,"__esModule",{value:!0})});

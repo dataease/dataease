@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor ../../geometry/Point ../../Graphic".split(" "),function(h,c,a,n,p,d,q,k,r,t,u,l,e,m){a=function(f){function g(b){b=f.call(this,b)||this;b.location=null;
+b.intersectedLocation=null;b.intersectedGraphic=null;b.visible=void 0;return b}h._inheritsLoose(g,f);return g}(l);c.__decorate([d.property({type:e})],a.prototype,"location",void 0);c.__decorate([d.property({type:e})],a.prototype,"intersectedLocation",void 0);c.__decorate([d.property({type:m})],a.prototype,"intersectedGraphic",void 0);c.__decorate([d.property({type:Boolean})],a.prototype,"visible",void 0);return a=c.__decorate([k.subclass("esri.widgets.lineOfSight.LineOfSightTarget")],a)});

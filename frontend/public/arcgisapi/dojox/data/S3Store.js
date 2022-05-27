@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojox/data/JsonRestStore","dojox/rpc/ProxiedPath"],function(e,f,l){return e("dojox.data.S3Store",f,{_processResults:function(a){a=a.getElementsByTagName("Key");for(var b=[],g=this,c=0;c<a.length;c++){var d={_loadObject:function(h,m){return function(k){delete this._loadObject;g.service(h).addCallback(k)}}(a[c].firstChild.nodeValue,d)};b.push(d)}return{totalCount:b.length,items:b}}})});

@@ -1,0 +1,2 @@
+//>>built
+define({status:"${start}\u2013${end}/${total} tulemust",gotoFirst:"Liigu esimesele lehele",gotoNext:"Liigu j\u00e4rgmisele lehele",gotoPrev:"Liigu eelmisele lehele",gotoLast:"Liigu viimasele lehele",gotoPage:"Liigu lehele",jumpPage:"H\u00fcppa lehele"});

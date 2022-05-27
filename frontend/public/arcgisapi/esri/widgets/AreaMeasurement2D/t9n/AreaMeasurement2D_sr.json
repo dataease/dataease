@@ -1,0 +1,1 @@
+{"widgetLabel":"Merenje oblasti","hint":"Otpočnite merenja klikom na mapu kako biste namestili prvu tačku","unsupported":"Merenje 2D površine je podržano samo u aplikaciji MapView.","perimeter":"Obim","area":"Površina","newMeasurement":"Novo merenje","mode":"Režim","modes":{"auto":"Automatski","planar":"Planarno","geodesic":"Geodetski"},"unit":"Jedinica"}

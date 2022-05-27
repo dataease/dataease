@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/JSONSupport".split(" "),function(g,c,a,l,m,d,n,h,p,q,r,k){a=function(e){function f(b){b=e.call(this,b)||this;b.altText=null;b.caption=
+"";b.title="";b.type=null;return b}g._inheritsLoose(f,e);return f}(k.JSONSupport);c.__decorate([d.property({type:String,json:{write:!0}})],a.prototype,"altText",void 0);c.__decorate([d.property({type:String,json:{write:!0}})],a.prototype,"caption",void 0);c.__decorate([d.property({type:String,json:{write:!0}})],a.prototype,"title",void 0);c.__decorate([d.property({type:["image","bar-chart","column-chart","line-chart","pie-chart"],readOnly:!0,json:{read:!1,write:!0}})],a.prototype,"type",void 0);return a=
+c.__decorate([h.subclass("esri.popup.content.mixins.MediaInfo")],a)});

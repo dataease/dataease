@@ -1,0 +1,1 @@
+{"title":"widgets","type":"object","$schema":"http://json-schema.org/draft-07/schema","description":"The widgets object contains widgets that should be exposed to the user.","properties":{"range":{"type":"object","description":"Active range.","$ref":"range_schema.json"}},"additionalProperties":false}

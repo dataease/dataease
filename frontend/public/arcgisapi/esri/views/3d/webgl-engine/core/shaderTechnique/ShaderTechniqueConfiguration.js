@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","../../../../../chunks/_rollupPluginBabelHelpers","../../../../../core/mathUtils"],function(h,p,q){let r=function(){function e(){this._key="";this._keyDirty=!1;this._parameterBits=this._parameterBits.map(()=>0)}e.prototype.snapshot=function(){const a=this._parameterNames,f={key:this.key};for(const b of a)f[b]=this[b];return f};p._createClass(e,[{key:"key",get:function(){this._keyDirty&&(this._keyDirty=!1,this._key=String.fromCharCode.apply(String,this._parameterBits));return this._key}}]);
+return e}();h.ShaderTechniqueConfiguration=r;h.parameter=function(e={}){return(a,f)=>{var b,l;a._parameterNames=null!=(b=a._parameterNames)?b:[];a._parameterNames.push(f);const k=a._parameterNames.length-1;b=Math.ceil(q.log2(e.count||2));const d=null!=(l=a._parameterBits)?l:[0];let c=0;for(;16<d[c]+b;)c++,c>=d.length&&d.push(0);a._parameterBits=d;const m=d[c],n=(1<<b)-1<<m;d[c]+=b;Object.defineProperty(a,f,{get(){return this[k]},set(g){if(this[k]!==g&&(this[k]=g,this._keyDirty=!0,this._parameterBits[c]=
+this._parameterBits[c]&~n|+g<<m&n,"number"!==typeof g&&"boolean"!==typeof g))throw"Configuration values must be booleans or numbers!";}})}};Object.defineProperty(h,"__esModule",{value:!0})});

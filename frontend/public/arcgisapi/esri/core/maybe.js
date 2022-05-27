@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(b){function f(a,c,d){return null!=a?d(a):c}b.andThen=function(a,c){return null!=a?c(a):null};b.applySome=function(a,c){return null!=a?c(a):null};b.assumeNonNull=function(a){return a};b.destroyMaybe=function(a){null!=a&&a.destroy();return null};b.disposeMaybe=function(a){null!=a&&a.dispose();return null};b.forEachSome=function(a,c){for(const d of a)f(d,null,c)};b.get=function(a,...c){let d=0;for(;d<c.length&&a;)a=a[c[d++]];return a};b.isNone=function(a){return null==a};
+b.isSome=function(a){return null!=a};b.isUndefined=function(a){return void 0===a};b.mapMany=function(a,c){const d=[];for(const e of a)d.push(f(e,null,c));return d};b.mapOr=f;b.mapSome=function(a,c){const d=[];a.forEach(e=>{e=c(e);null!=e&&d.push(e)});return d};b.mapSomeFirst=function(a,c){for(const d of a)if(a=c(d),null!=a)return a;return null};b.none=null;b.nullifyNonnullableForDispose=function(a){return null};b.removeMaybe=function(a){null!=a&&a.remove();return null};b.unwrap=function(a){return a};
+b.unwrapOr=function(a,c){return null!=a?a:"function"===typeof c?c():c};Object.defineProperty(b,"__esModule",{value:!0})});

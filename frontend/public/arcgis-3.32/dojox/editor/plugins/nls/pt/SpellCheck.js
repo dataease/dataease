@@ -1,2 +1,0 @@
-//>>built
-define("dojox/editor/plugins/nls/pt/SpellCheck",{widgetLabel:"Verifica\u00e7\u00e3o Ortogr\u00e1fica em Lote",unfound:"N\u00e3o localizado",skip:"Ignorar",skipAll:"Ignorar Todos",toDic:"Incluir no dicion\u00e1rio",suggestions:"Sugest\u00f5es",replace:"Substituir",replaceWith:"Substituir por",replaceAll:"Substituir Todos",cancel:"Cancelar",msg:"Nenhum erro de ortografia encontrado",iSkip:"Ignorar isto",iSkipAll:"Ignorar todos iguais a este",iMsg:"Nenhuma sugest\u00e3o de ortografia"});

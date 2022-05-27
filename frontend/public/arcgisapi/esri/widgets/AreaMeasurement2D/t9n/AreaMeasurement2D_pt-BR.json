@@ -1,0 +1,1 @@
+{"widgetLabel":"Medição de Área","hint":"Inicie a medição clicando em um mapa para posicionar seu primeiro ponto","unsupported":"A medição de área 2D é suportada somente no MapView.","perimeter":"Perímetro","area":"Área","newMeasurement":"Nova medição","mode":"Modo","modes":{"auto":"Automático","planar":"Planar","geodesic":"Geodésica"},"unit":"Unidade"}

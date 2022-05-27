@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../core/Handles ../../../core/watchUtils ./constants ./HoveredPoints3D ./InputRepresentation3D ./ProfileLines3D".split(" "),function(e,h,c,k,l,m,n){let p=function(){function f(a){this._handles=new h;const b=a.view;this._inputRepresentation=new m.InputRepresentation3D({view:b});this._hoveredPoints=new l.HoveredPoints3D({view:b});this._profileLines=new n.ProfileLines3D({view:b});this._handles.add([c.init(a,"hoveredPoints",d=>this._hoveredPoints.update(d)),c.init(a,"chartData",
+d=>this._profileLines.updateGeometry(d)),c.init(a,"input",()=>this._updateInputRepresentation(a))])}var g=f.prototype;g.destroy=function(){this._handles.destroy();this._handles=null;this._inputRepresentation.destroy();this._inputRepresentation=null;this._hoveredPoints.destroy();this._hoveredPoints=null;this._profileLines.destroy();this._profileLines=null};g._updateInputRepresentation=function({input:a,state:b}){b===k.ElevationProfileState.Selected?this._inputRepresentation.update(a):this._inputRepresentation.remove()};
+return f}();e.ElevationProfileVisualization3D=p;Object.defineProperty(e,"__esModule",{value:!0})});

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/Loadable".split(" "),function(f,b,a,l,m,c,n,g,p,q,r,h){a=function(d){function e(k){return d.call(this,k)||this}f._inheritsLoose(e,
+d);return e}(h);b.__decorate([c.property({constructOnly:!0})],a.prototype,"layer",void 0);b.__decorate([c.property()],a.prototype,"geometryType",void 0);b.__decorate([c.property()],a.prototype,"objectIdField",void 0);b.__decorate([c.property()],a.prototype,"supportsSQLExpression",void 0);b.__decorate([c.property()],a.prototype,"hasQueryEngine",void 0);b.__decorate([c.property()],a.prototype,"minScale",void 0);b.__decorate([c.property()],a.prototype,"maxScale",void 0);b.__decorate([c.property()],a.prototype,
+"fullExtent",void 0);return a=b.__decorate([g.subclass("esri.smartMapping.support.adapters.LayerAdapter")],a)});

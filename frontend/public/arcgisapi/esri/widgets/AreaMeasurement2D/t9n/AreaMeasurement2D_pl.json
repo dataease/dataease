@@ -1,0 +1,1 @@
+{"widgetLabel":"Pomiar pola powierzchni","hint":"Rozpocznij pomiar, klikając na mapie, aby umiejscowić pierwszy punkt.","unsupported":"Pomiar pola powierzchni 2D jest obsługiwany tylko w komponencie MapView.","perimeter":"Obwód","area":"Powierzchnia","newMeasurement":"Nowy pomiar","mode":"Tryb","modes":{"auto":"Auto","planar":"Płaskie","geodesic":"Geodezyjne"},"unit":"Jednostka"}

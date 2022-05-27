@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/maybe ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/JSONSupport ./materialUtils".split(" "),function(a,g,d,p,h,q,r,k,t,l,u,v,w,m,n){var b;a.Symbol3DMaterial=b=function(e){function c(){var f=
+e.apply(this,arguments)||this;f.color=null;return f}g._inheritsLoose(c,e);c.prototype.clone=function(){return new b({color:h.isSome(this.color)?this.color.clone():null})};return c}(m.JSONSupport);d.__decorate([k.property(n.colorAndTransparencyProperty)],a.Symbol3DMaterial.prototype,"color",void 0);a.Symbol3DMaterial=b=d.__decorate([l.subclass("esri.symbols.support.Symbol3DMaterial")],a.Symbol3DMaterial);a.default=a.Symbol3DMaterial;Object.defineProperty(a,"__esModule",{value:!0})});

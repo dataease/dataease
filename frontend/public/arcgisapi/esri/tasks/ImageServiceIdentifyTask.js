@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../chunks/_rollupPluginBabelHelpers ../chunks/tslib.es6 ../core/has ../core/Logger ../core/accessorSupport/ensureType ../core/accessorSupport/decorators/property ../core/deprecate ../core/jsonMap ../core/accessorSupport/decorators/subclass ../core/urlUtils ../core/uuid ../portal/support/resourceExtension ./Task ../rest/imageServiceIdentify".split(" "),function(e,f,c,g,p,q,a,r,h,t,u,v,k,l){c=g.getLogger("esri.tasks.ImageServiceIdentifyTask");a.deprecatedModule(c,"esri/tasks/ImageServiceIdentifyTask",
+{replacement:"esri/tasks/ImageIdentifyTask"});a=function(d){function b(){return d.apply(this,arguments)||this}e._inheritsLoose(b,d);b.prototype.execute=function(m,n){return l.imageServiceIdentify(this.url,m,n)};return b}(k);return a=f.__decorate([h.subclass("esri.tasks.ImageServiceIdentifyTask")],a)});

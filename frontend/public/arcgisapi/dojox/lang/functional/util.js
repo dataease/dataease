@@ -1,0 +1,3 @@
+//>>built
+define(["dojo","dijit","dojox","dojo/require!dojox/lang/functional/lambda"],function(g,m,l){g.provide("dojox.lang.functional.util");g.require("dojox.lang.functional.lambda");(function(){var h=l.lang.functional;g.mixin(h,{inlineLambda:function(b,e,f){b=h.rawLambda(b);f&&h.forEach(b.args,f);var k=(f="string"==typeof e)?b.args.length:Math.min(b.args.length,e.length),a=Array(4*k+4),d,c=1;for(d=0;d<k;++d)a[c++]=b.args[d],a[c++]="\x3d",a[c++]=f?e+"["+d+"]":e[d],a[c++]=",";a[0]="(";a[c++]="(";a[c++]=b.body;
+a[c]="))";return a.join("")}})})()});

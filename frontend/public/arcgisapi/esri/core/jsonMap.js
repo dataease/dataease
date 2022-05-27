@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports"],function(d){let g=function(){function e(a,c={ignoreUnknown:!1}){this.jsonToAPI=a;this.options=c;this.apiValues=[];this.jsonValues=[];this.apiToJSON=this.invertMap(a);this.apiValues=this.getKeysSorted(this.apiToJSON);this.jsonValues=this.getKeysSorted(this.jsonToAPI);this.read=b=>this.fromJSON(b);this.write=(b,h,k)=>{b=this.toJSON(b);void 0!==b&&(h[k]=b)};this.write.isJSONMapWriter=!0}var f=e.prototype;f.toJSON=function(a){return this.apiToJSON.hasOwnProperty(a)?this.apiToJSON[a]:
+this.options.ignoreUnknown?void 0:a};f.fromJSON=function(a){return this.jsonToAPI.hasOwnProperty(a)?this.jsonToAPI[a]:this.options.ignoreUnknown?void 0:a};f.invertMap=function(a){const c={};for(const b in a)c[a[b]]=b;return c};f.getKeysSorted=function(a){const c=[];for(const b in a)c.push(b);c.sort();return c};return e}();d.JSONMap=g;d.default=g;d.strict=function(){return function(e){return new g(e,{ignoreUnknown:!0})}};Object.defineProperty(d,"__esModule",{value:!0})});

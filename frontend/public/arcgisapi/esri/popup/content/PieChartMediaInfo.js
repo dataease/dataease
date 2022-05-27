@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ./mixins/ChartMediaInfo ./support/chartMediaInfoUtils".split(" "),function(g,e,a,n,p,h,q,k,r,t,u,l,m){var c;a=c=function(f){function d(b){b=f.call(this,b)||this;b.type="pie-chart";
+return b}g._inheritsLoose(d,f);d.prototype.clone=function(){return new c({altText:this.altText,title:this.title,caption:this.caption,value:this.value?this.value.clone():null})};return d}(l);e.__decorate([h.property({type:["pie-chart"],readOnly:!0,json:{type:["piechart"],read:!1,write:m.chartTypeKebabDict.write}})],a.prototype,"type",void 0);return a=c=e.__decorate([k.subclass("esri.popup.content.PieChartMediaInfo")],a)});

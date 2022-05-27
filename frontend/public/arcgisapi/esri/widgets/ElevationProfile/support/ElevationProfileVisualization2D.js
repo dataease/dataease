@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../core/Handles ../../../core/watchUtils ./constants ./HoveredPoints2D ./InputRepresentation2D".split(" "),function(c,g,d,h,k,l){let n=function(){function e(a){this._handles=new g;const b=a.view;this._inputRepresentation=new l.InputRepresentation2D({view:b});this._hoveredPoints=new k.HoveredPoints2D(b);this._handles.add([d.init(a,"hoveredPoints",m=>this._hoveredPoints.update(m)),d.init(a,"input",()=>this._updateInputRepresentation(a))])}var f=e.prototype;f.destroy=function(){this._handles.destroy();
+this._handles=null;this._inputRepresentation.destroy();this._inputRepresentation=null;this._hoveredPoints.destroy();this._hoveredPoints=null};f._updateInputRepresentation=function({input:a,state:b}){b===h.ElevationProfileState.Selected?this._inputRepresentation.update(a):this._inputRepresentation.remove()};return e}();c.ElevationProfileVisualization2D=n;Object.defineProperty(c,"__esModule",{value:!0})});

@@ -1,0 +1,5 @@
+/*
+All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+*/
+import"./object.js";import"./mathUtils2.js";import"./isWebGL2Context.js";import{P as t}from"./ProgramCache.js";import"./RenderingContext.js";import{t as r,o as e,l as s,i as a,f as o,c as i,a as u}from"./brushes.js";class c{constructor(r){this._cache=new Array(8);for(let t=0;t<8;t++)this._cache[t]={};this._programRepo=new t(r)}dispose(){this._programRepo&&(this._programRepo.dispose(),this._programRepo=null)}getProgram(t,r,e){const s=this._cache[t];if(!s[r]){const a=this._programRepo.getProgram(this._getProgramTemplate(t),e);s[r]=a}return s[r]}getProgramAttributes(t){switch(t){case 0:return u.attributes;case 5:return i.attributes;case 1:return o.attributes;case 4:return a.attributes;case 3:return s.attributes;case 2:return e.attributes;case 6:return r.attributes;default:return null}}_getProgramTemplate(t){switch(t){case 0:return u;case 5:return i;case 1:return o;case 4:return a;case 3:return s;case 2:return e;case 6:return r;default:return null}}}export{c as P};

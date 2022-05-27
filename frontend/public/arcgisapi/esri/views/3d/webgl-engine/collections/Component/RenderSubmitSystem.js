@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define(["exports","./DepthRange"],function(d,h){let k=function(){function e(a){this._objects=a}var f=e.prototype;f.submit=function(a,b){this._objects.preSubmit(b);b=this._objects.visibleObjects;for(let c=0;c<b.length;c++){const g=b[c];g.renderable.material.submit(a,g)}};f.queryShadowCasterDepthRange=function(a){return this._objects.visibleObjects.length?h.computeDepthRange(a,this._objects.visibleObjects):null};return e}();d.RenderSubmitSystem=k;Object.defineProperty(d,"__esModule",{value:!0})});

@@ -1,0 +1,2 @@
+//>>built
+define(["dojo/_base/declare","dojo/Deferred","./QueryResults","dojo/when"],function(c,d,e,f){function b(g,h){return function(){var a=new d;try{a.resolve(this[g].apply(this,arguments))}catch(k){a.reject(k)}return h?(a=new e(a.promise),a.totalLength=f(a.totalLength),a):a.promise}}return c(null,{get:b("getSync"),put:b("putSync"),add:b("addSync"),remove:b("removeSync"),fetch:b("fetchSync",!0),fetchRange:b("fetchRangeSync",!0)})});

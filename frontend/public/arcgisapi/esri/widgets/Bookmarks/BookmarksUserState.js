@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor".split(" "),function(f,b,a,l,m,d,n,h,p,q,r,k){a=function(g){function e(c){return g.call(this,c)||this}f._inheritsLoose(e,g);f._createClass(e,[{key:"editedBookmark",
+get:function(){var c;return(null==(c=this.bookmark)?void 0:c.clone())||null}},{key:"state",get:function(){return this._get("state")},set:function(c){this.loading=this.validationState=void 0;this._set("state",c)}}]);return e}(k);b.__decorate([d.property()],a.prototype,"bookmark",void 0);b.__decorate([d.property({readOnly:!0,dependsOn:["bookmark"]})],a.prototype,"editedBookmark",null);b.__decorate([d.property()],a.prototype,"state",null);b.__decorate([d.property()],a.prototype,"validationState",void 0);
+b.__decorate([d.property()],a.prototype,"loading",void 0);return a=b.__decorate([h.subclass("esri.widgets.Bookmarks.UserState")],a)});

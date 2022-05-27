@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../../chunks/_rollupPluginBabelHelpers ../../../chunks/tslib.es6 ../../../core/has ../../../core/Logger ../../../core/accessorSupport/ensureType ../../../core/accessorSupport/decorators/property ../../../core/jsonMap ../../../core/accessorSupport/decorators/subclass ../../../core/urlUtils ../../../core/uuid ../../../portal/support/resourceExtension ../../../core/Accessor".split(" "),function(a,d,e,m,n,p,h,q,k,r,t,u,l){var c;a.SceneViewAtmosphere=c=function(f){function b(){return f.apply(this,
+arguments)||this}d._inheritsLoose(b,f);b.prototype.clone=function(){return new c({quality:this.quality})};d._createClass(b,[{key:"quality",set:function(g){-1!==["low","high"].indexOf(g)&&this._set("quality",g)}}]);return b}(l);e.__decorate([h.property({type:["low","high"],value:"low"})],a.SceneViewAtmosphere.prototype,"quality",null);a.SceneViewAtmosphere=c=e.__decorate([k.subclass("esri.views.3d.environment.SceneViewAtmosphere")],a.SceneViewAtmosphere);a.default=a.SceneViewAtmosphere;Object.defineProperty(a,
+"__esModule",{value:!0})});

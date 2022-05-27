@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("../../chunks/_rollupPluginBabelHelpers ../../chunks/tslib.es6 ../../core/has ../../core/Logger ../../core/accessorSupport/ensureType ../../core/accessorSupport/decorators/property ../../core/jsonMap ../../core/accessorSupport/decorators/subclass ../../core/urlUtils ../../core/uuid ../../portal/support/resourceExtension ../../core/Accessor ../../portal/Portal".split(" "),function(h,b,a,n,p,c,q,k,r,t,u,l,m){var d;a=d=function(f){function e(){var g=f.apply(this,arguments)||this;g.portal=null;
+return g}h._inheritsLoose(e,f);e.prototype.clone=function(){return new d({name:this.name,styleUrl:this.styleUrl,styleName:this.styleName,portal:this.portal})};return e}(l);b.__decorate([c.property({type:String})],a.prototype,"name",void 0);b.__decorate([c.property({type:String})],a.prototype,"styleUrl",void 0);b.__decorate([c.property({type:String})],a.prototype,"styleName",void 0);b.__decorate([c.property({type:m})],a.prototype,"portal",void 0);return a=d=b.__decorate([k.subclass("esri.symbols.support.StyleOrigin")],
+a)});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See https://js.arcgis.com/4.18/esri/copyright.txt for details.
+//>>built
+define("exports ../../core/maybe ../../core/Error ../../core/promiseUtils ../../intl/messages ../../views/2d/layers/support/clusterUtils ./support/clusterUtils".split(" "),function(d,f,g,h,k,l,m){async function n(a){const {layer:b,renderer:c}=a;await b.load();a=c||b.renderer;if(!l.isClusterCompatibleRenderer(a))throw new g("clusters-popup:invalid-parameters","'renderer' is not valid");return{layer:b,renderer:a}}d.getTemplates=async function(a){const [{renderer:b,layer:c},p]=await h.all([n(a),k.fetchMessageBundle("esri/smartMapping/t9n/smartMapping")]);
+a=await m.createPopupTemplate(c,b);let e=null;if(f.isSome(a))e={name:"clusters",title:p.clusters.templateTitle,value:a};else return null;return{primaryTemplate:e,secondaryTemplates:[]}};Object.defineProperty(d,"__esModule",{value:!0})});

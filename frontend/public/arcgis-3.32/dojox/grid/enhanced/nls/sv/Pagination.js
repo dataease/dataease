@@ -1,3 +1,0 @@
-//>>built
-define("dojox/grid/enhanced/nls/sv/Pagination",{descTemplate:"${2} - ${3} av ${1} ${0}",firstTip:"F\u00f6rsta sidan",lastTip:"Sista sidan",nextTip:"N\u00e4sta sida",prevTip:"F\u00f6reg\u00e5ende sida",itemTitle:"objekt",singularItemTitle:"objekt",pageStepLabelTemplate:"Sida ${0}",pageSizeLabelTemplate:"${0} objekt per sida",allItemsLabelTemplate:"Alla objekt",gotoButtonTitle:"G\u00e5 till en viss sida",dialogTitle:"G\u00e5 till sidan",dialogIndication:"Ange sidnummer",pageCountIndication:" (${0} sidor)",
-dialogConfirm:"G\u00e5",dialogCancel:"Avbryt",all:"Alla"});
