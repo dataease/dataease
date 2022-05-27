@@ -115,7 +115,6 @@ export const STREAMMEDIALINKS = {
   },
   hls: {
     type: 'hls',
-    isLive: false,
     cors: true, // 允许跨域
     loop: true
     // url: null // 网络动画视频
