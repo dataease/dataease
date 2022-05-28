@@ -61,7 +61,7 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/validate")
-    public ResultHolder validate(@RequestBody DatasourceDTO datasource) throws Exception {
+    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
         return datasourceService.validate(datasource);
     }
 
