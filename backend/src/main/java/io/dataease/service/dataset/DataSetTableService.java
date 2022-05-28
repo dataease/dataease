@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -146,6 +147,7 @@ public class DataSetTableService {
         }
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public void saveExcel(DataSetTableRequest datasetTable) throws Exception {
         List<String> datasetIdList = new ArrayList<>();
@@ -357,7 +359,7 @@ public class DataSetTableService {
     public List<DatasetTable> list(List<String> datasetIds) {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdIn(datasetIds);
-        return datasetTableMapper.selectByExample(example);
+        return datasetTableMapper.selectByExampleWithBLOBs(example);
     }
 
     public List<DataSetTableDTO> listAndGroup(DataSetTableRequest dataSetTableRequest) {

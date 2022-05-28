@@ -432,7 +432,8 @@ public class ExtractDataService {
     }
 
     private void extractApiData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType) throws Exception {
-        List<ApiDefinition> lists = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>(){}.getType());
+        List<ApiDefinition> lists = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>() {
+        }.getType());
         lists = lists.stream().filter(item -> item.getName().equalsIgnoreCase(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(lists)) {
             throw new Exception("未找到API数据表");
