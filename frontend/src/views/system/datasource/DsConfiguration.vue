@@ -463,7 +463,6 @@ export default {
         this.$refs.apiItem.validate(valid => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem))
-            data.request = JSON.stringify(data.request)
             this.loading = true
             this.disabledNext = true
             checkApiDatasource(data).then(res => {
