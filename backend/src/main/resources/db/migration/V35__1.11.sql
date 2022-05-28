@@ -57,6 +57,8 @@ UPDATE `chart_view` SET `view_fields` = '[]';
 ALTER TABLE `chart_view_cache` ADD COLUMN `view_fields` LONGTEXT COMMENT '视图字段集合';
 UPDATE `chart_view_cache` SET `view_fields` = '[]';
 
+INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`, `ds_type`) VALUES (11, '符号地图插件', 'default', 0, 10000, 'view', '请购买正式许可', '1.0-SNAPSHOT', NULL, 'DATAEASE', 0, NULL, 1652174790928, 'view-symbolmap-backend', NULL, NULL);
+
 
 INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`,
                          `install_time`, `module_name`, `ds_type`)
