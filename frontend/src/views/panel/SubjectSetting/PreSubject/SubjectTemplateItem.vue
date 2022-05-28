@@ -158,7 +158,7 @@ export default {
     },
     chartBackground() {
       let style = {}
-      if (this.subjectItemDetails) {
+      if (this.subjectItemDetails && this.subjectItemDetails.chart.customStyle.background) {
         style = {
           background: this.subjectItemDetails.chart.customStyle.background.color,
           opacity: this.subjectItemDetails.chart.customStyle.background.alpha / 100

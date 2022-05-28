@@ -2,7 +2,7 @@
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
       <video :ref="'player-'+element.id" class="centered-video" name="centeredVideo" :loop="pOption.loop" :controls="inScreen" muted />
-      <div v-if="editMode==='edit'" class="stream-mask edit-mask" />
+      <div v-if="editMode==='edit'" class="stream-mask edit-mask-stream" />
       <div v-if="mobileLayoutStatus" class="stream-mask">
         <span style="opacity: 0.7;">
           <span style="color: lightgray;">{{ $t('panel.stream_mobile_tips') }}</span>
@@ -177,7 +177,7 @@ export default {
     justify-content: center;
   }
 
-  .edit-mask{
+  .edit-mask-stream{
     opacity: 0;
   }
 

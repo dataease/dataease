@@ -274,6 +274,7 @@
       <Preview
         v-if="previewVisible"
         :in-screen="!previewVisible"
+        :panel-info="panelInfo"
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
         :canvas-style-data="canvasStyleData"
         :component-data="componentData"

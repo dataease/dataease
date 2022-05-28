@@ -759,7 +759,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'de-rich-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
+      if (this.element.component !== 'de-frame' && this.element.component !== 'v-text' && this.element.component !== 'de-rich-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
         e.preventDefault()
       }
       // 阻止冒泡事件
