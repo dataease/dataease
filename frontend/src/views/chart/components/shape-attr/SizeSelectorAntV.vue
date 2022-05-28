@@ -118,7 +118,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="'轮播间隔时间'" class="form-item">
-          <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase">
+          <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
@@ -398,8 +398,9 @@ export default {
       }
       this.fontSize = arr
     },
-    changeBarSizeCase() {
-      if (this.sizeForm.automatic) {
+    changeBarSizeCase(e, key) {
+      console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)
+      if (this.sizeForm.automatic && e !== true) {
         this.$message.warning('修改前请关闭轮播效果')
         return
       }

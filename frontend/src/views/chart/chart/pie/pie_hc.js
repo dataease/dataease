@@ -65,7 +65,8 @@ export const BASE_PIE = {
       enabled: true,
       alpha: 45,
       beta: 0
-    }
+    },
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   credits: {
     enabled: false
@@ -106,6 +107,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
   console.log('apple......')
   terminalType = terminal
   let customAttr = {}
+  console.log('chart.customAttr: ', chart.customAttr)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -147,9 +149,13 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
 
   // 处理data
   if (chart.data) {
-    chart_option.title.text = chart.title
+    // chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
+      if (customAttr.color) {
+        chart_option.series[0].opacity = customAttr.color.alpha / 100
+      }
+
       // size
       /* if (customAttr.size) {
           chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
@@ -173,6 +179,7 @@ export function componentStyle(chart_option, chart) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
+    console.log('componentStyle: ', customStyle)
 
     if (customStyle.text) {
       chart_option.title.text = customStyle.text.show ? chart.title : ''
