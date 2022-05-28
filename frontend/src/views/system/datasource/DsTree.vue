@@ -2,13 +2,12 @@
   <el-col class="tree-style">
     <el-col>
       <el-row>
-        <el-tabs v-model="showView" @tab-click="changeTab" type="card">
-          <el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
-          </el-tab-pane>
+        <el-tabs v-model="showView" type="card" @tab-click="changeTab">
+          <el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name" />
         </el-tabs>
       </el-row>
       <el-row>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder"/>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder" />
       </el-row>
       <el-row>
         <el-form>
@@ -39,16 +38,16 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type !== 'folder' && data.status !== 'Error' && data.status !== 'Warning'">
-                  <svg-icon icon-class="datasource" class="ds-icon-scene"/>
+                  <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.status === 'Error'">
-                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene"/>
+                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.status === 'Warning'">
-                  <svg-icon icon-class="exclamationmark2" class="ds-icon-scene"/>
+                  <svg-icon icon-class="exclamationmark2" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.type === 'folder'">
-                  <i class="el-icon-folder"/>
+                  <i class="el-icon-folder" />
                 </span>
                 <span
                   v-if=" data.status === 'Error'"
@@ -109,10 +108,10 @@
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editDriver" :show-close="false" width="50%" append-to-body>
         <el-form ref="driverForm" :model="driverForm" label-position="right" label-width="100px" :rules="rule">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="driverForm.name"/>
+            <el-input v-model="driverForm.name" />
           </el-form-item>
           <el-form-item :label="$t('commons.description')">
-            <el-input v-model="driverForm.desc"/>
+            <el-input v-model="driverForm.desc" />
           </el-form-item>
           <el-form-item :label="$t('datasource.type')" prop="type">
             <el-select
@@ -138,14 +137,13 @@
         </div>
       </el-dialog>
 
-
     </el-col>
   </el-col>
 </template>
 <script>
 
-import {mapGetters} from 'vuex'
-import i18n from "@/lang";
+import { mapGetters } from 'vuex'
+import i18n from '@/lang'
 import {
   listDatasource,
   listDatasourceByType,
@@ -156,7 +154,7 @@ import {
   delDriver,
   listDriverByType
 } from '@/api/system/datasource'
-import {ApplicationContext} from "@/utils/ApplicationContext";
+import { ApplicationContext } from '@/utils/ApplicationContext'
 
 export default {
   name: 'DsTree',
@@ -184,11 +182,11 @@ export default {
       },
       disabledModifyType: false,
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}]
+        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur' }]
       },
       editableTabs: [{
         title: i18n.t('commons.datasource'),
@@ -215,7 +213,6 @@ export default {
         name: 'Driver'
       })
     }
-
   },
   methods: {
     filterNode(value, data) {
@@ -244,11 +241,11 @@ export default {
     datasourceTypes() {
       listDatasourceType().then(res => {
         this.dsTypes = res.data
-          this.dsTypes.forEach(item => {
-            if(item.isJdbc){
-              this.dsTypesForDriver.push(item)
-            }
-          })
+        this.dsTypes.forEach(item => {
+          if (item.isJdbc) {
+            this.dsTypesForDriver.push(item)
+          }
+        })
       })
     },
     refreshType(datasource) {
@@ -327,7 +324,7 @@ export default {
         this.editDriver = true
         // this.switchMain(switchMain'DriverForm', {}, this.tData, this.dsTypes)
       } else {
-        this.switchMain('DsForm', {type: data.id}, this.tData, this.dsTypes)
+        this.switchMain('DsForm', { type: data.id }, this.tData, this.dsTypes)
       }
     },
     nodeClick(node, data) {
@@ -336,7 +333,7 @@ export default {
     },
 
     clickFileMore(param) {
-      const {optType, data} = param
+      const { optType, data } = param
       switch (optType) {
         case 'edit':
           this.edit(data)
@@ -349,13 +346,13 @@ export default {
       }
     },
     beforeClickFile(optType, data, node) {
-      return {optType, data, node}
+      return { optType, data, node }
     },
     edit(row) {
       this.switchMain('DsForm', row, this.tData, this.dsTypes)
     },
     showInfo(row) {
-      const param = {...row.data, ...{showModel: 'show'}}
+      const param = { ...row.data, ...{ showModel: 'show' }}
       if (this.showView === 'Datasource') {
         this.switchMain('DsForm', param, this.tData, this.dsTypes)
       } else {
@@ -368,8 +365,12 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        const parma = {type: datasource.type, id: datasource.id}
-        const method = this.showView === 'Datasource' ? delDs : delDriver
+        let method = delDriver
+        let parma = { type: datasource.type, id: datasource.id }
+        if (this.showView === 'Datasource') {
+          method = delDs
+          parma = datasource.id
+        }
         method(parma).then(res => {
           if (res.success) {
             this.$success(this.$t('commons.delete_success'))
@@ -437,7 +438,7 @@ export default {
           return false
         }
       })
-    },
+    }
   }
 }
 </script>

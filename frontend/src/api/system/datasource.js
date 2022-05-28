@@ -61,12 +61,11 @@ export function editDs(data) {
   })
 }
 
-export function delDs(data) {
+export function delDs(id) {
   return request({
-    url: 'datasource/delete',
+    url: 'datasource/delete/' + id,
     loading: true,
-    method: 'post',
-    data
+    method: 'post'
   })
 }
 
