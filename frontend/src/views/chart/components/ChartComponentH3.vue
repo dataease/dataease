@@ -30,7 +30,7 @@ export default {
   // },
   components: {
     ViewTrackBar,
-    // ArcGIS,
+    ArcGIS,
     newMap
   },
   props: {

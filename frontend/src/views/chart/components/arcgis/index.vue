@@ -80,8 +80,8 @@ export default {
       )
         .then(([Map, MapView, MapImageLayer, Home, ScaleBar]) => {
           var ygyx = new MapImageLayer({
-            // url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
-            url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
+            url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
+            // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
             id: "ygyx",
           });
           console.log("啥玩意？？", ygyx);
