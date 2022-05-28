@@ -1,8 +1,6 @@
 package io.dataease.provider.datasource;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service("apiProvider")
 public class ApiProvider extends Provider {
@@ -122,11 +119,10 @@ public class ApiProvider extends Provider {
     static public String execHttpRequest(ApiDefinition apiDefinition) throws Exception {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        ApiDefinitionRequest apiDefinitionRequest = new Gson().fromJson(apiDefinition.getRequest(), ApiDefinitionRequest.class);
-        //headers
-        for (JsonObject header : apiDefinitionRequest.getHeaders()) {
-            if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").getAsString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").getAsString())) {
-                httpClientConfig.addHeader(header.get("name").getAsString(), header.get("value").getAsString());
+        ApiDefinitionRequest apiDefinitionRequest = apiDefinition.getRequest();
+        for (Map header : apiDefinitionRequest.getHeaders()) {
+            if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").toString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").toString())) {
+                httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
             }
         }
 
@@ -147,18 +143,18 @@ public class ApiProvider extends Provider {
                 if (apiDefinitionRequest.getBody().get("type") == null) {
                     throw new Exception("请求类型不能为空");
                 }
-                String type = apiDefinitionRequest.getBody().get("type").getAsString();
+                String type = apiDefinitionRequest.getBody().get("type").toString();
                 if (StringUtils.equalsAny(type, "JSON", "XML", "Raw")) {
                     String raw = null;
                     if (apiDefinitionRequest.getBody().get("raw") != null) {
-                        raw = apiDefinitionRequest.getBody().get("raw").getAsString();
+                        raw = apiDefinitionRequest.getBody().get("raw").toString();
                         response = HttpClientUtil.post(apiDefinition.getUrl(), raw, httpClientConfig);
                     }
                 }
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
                     if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JsonArray kvsArr = apiDefinitionRequest.getBody().getAsJsonArray("kvs");
+                        JsonArray kvsArr = JsonParser.parseString(apiDefinitionRequest.getBody().get("kvs").toString()).getAsJsonArray();
                         for (int i = 0; i < kvsArr.size(); i++) {
                             JsonObject kv = kvsArr.get(i).getAsJsonObject();
                             if (kv.get("name") != null) {
@@ -191,7 +187,7 @@ public class ApiProvider extends Provider {
             throw new Exception("jsonPath 路径错误：" + e.getMessage());
         }
 
-        List<JsonObject> dataList = new ArrayList<>();
+        List<Map<String,String>> dataList = new ArrayList<>();
         List<DatasetTableField> fields = new ArrayList<>();
         Set<String> fieldKeys = new HashSet<>();
         //第一遍获取 field
@@ -213,11 +209,11 @@ public class ApiProvider extends Provider {
         }
         //第二遍获取 data
         for (LinkedHashMap data : datas) {
-            JsonObject jsonObject = new JsonObject();
+            Map<String,String> mapData = new HashMap<>();
             for (String key : fieldKeys) {
-                jsonObject.addProperty(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                mapData.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
             }
-            dataList.add(jsonObject);
+            dataList.add(mapData);
         }
         apiDefinition.setDatas(dataList);
         apiDefinition.setFields(fields);
@@ -248,9 +244,8 @@ public class ApiProvider extends Provider {
 
     private ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
-        List<ApiDefinition> apiDefinitionListTemp = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
-        }.getType());
-        if (CollectionUtils.isEmpty(apiDefinitionListTemp)) {
+        List<ApiDefinition> apiDefinitionListTemp = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {}.getType());
+        if (CollectionUtils.isNotEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
                 if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
                     apiDefinitionList.add(apiDefinition);

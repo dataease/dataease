@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.RedisConstants;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.ext.ExtDataSourceMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.DePermissionType;
@@ -144,16 +145,15 @@ public class DatasourceService {
                 datasourceDTO.setConfiguration(datasourceDTO.getConfiguration());
             }
             if (datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())) {
-                JsonArray apiDefinitionList = JsonParser.parseString(datasourceDTO.getConfiguration()).getAsJsonArray();
-                JsonArray apiDefinitionListWithStatus = new JsonArray();
+               List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasourceDTO.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>() {}.getType());
+                List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
                 int success = 0;
                 if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
                     JsonObject apiItemStatuses = JsonParser.parseString(datasourceDTO.getStatus()).getAsJsonObject();
-                    for (Object apiDefinition : apiDefinitionList) {
-                        String status = apiItemStatuses.get(JsonParser.parseString(apiDefinition.toString()).getAsJsonObject().get("name").getAsString()).getAsString();
-                        JsonObject object = JsonParser.parseString(apiDefinition.toString()).getAsJsonObject();
-                        object.addProperty("status", status);
-                        apiDefinitionListWithStatus.add(object);
+                    for (ApiDefinition apiDefinition : apiDefinitionList) {
+                        String status = apiItemStatuses.get(apiDefinition.getName()).getAsString();
+                        apiDefinition.setStatus(status);
+                        apiDefinitionListWithStatus.add(apiDefinition);
                         if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
                             success++;
                         }
@@ -232,40 +232,41 @@ public class DatasourceService {
         }
     }
 
-    public ResultHolder validate(DatasourceDTO datasource) throws Exception {
+    public ResultHolder validate(Datasource datasource) throws Exception {
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(datasourceDTO, datasource);
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             String datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
             if (datasource.getType().equalsIgnoreCase("api")) {
-                Gson gson = new Gson();
                 int success = 0;
-                JsonArray apiDefinitionList = JsonParser.parseString(datasource.getConfiguration()).getAsJsonArray();
-                JsonArray apiDefinitionListWithStatus = new JsonArray();
+                List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {}.getType());
+                List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
+
                 if (StringUtils.isNotEmpty(datasourceStatus)) {
                     JsonObject apiItemStatuses = JsonParser.parseString(datasourceStatus).getAsJsonObject();
-                    for (Object apiDefinition : apiDefinitionList) {
-                        String status = apiItemStatuses.get(JsonParser.parseString(apiDefinition.toString()).getAsJsonObject().get("name").getAsString()).getAsString();
-                        JsonObject object = JsonParser.parseString(apiDefinition.toString()).getAsJsonObject();
-                        object.addProperty("status", status);
-                        apiDefinitionListWithStatus.add(object);
+                    for (ApiDefinition apiDefinition : apiDefinitionList) {
+                        String status = apiItemStatuses.get(apiDefinition.getName()).getAsString();
+                        apiDefinition.setStatus(status);
+                        apiDefinitionListWithStatus.add(apiDefinition);
                         if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
                             success++;
                         }
                     }
                 }
 
-                datasource.setApiConfiguration(apiDefinitionListWithStatus);
+                datasourceDTO.setApiConfiguration(apiDefinitionListWithStatus);
                 if (success == apiDefinitionList.size()) {
-                    return ResultHolder.success(datasource);
+                    return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
-                    return ResultHolder.error("Datasource has invalid tables", datasource);
+                    return ResultHolder.error("Datasource has invalid tables", datasourceDTO);
                 }
-                return ResultHolder.error("Datasource is invalid.", datasource);
+                return ResultHolder.error("Datasource is invalid.", datasourceDTO);
             }
-            return ResultHolder.success(datasource);
+            return ResultHolder.success(datasourceDTO);
         } catch (Exception e) {
             return ResultHolder.error("Datasource is invalid: " + e.getMessage());
         }
