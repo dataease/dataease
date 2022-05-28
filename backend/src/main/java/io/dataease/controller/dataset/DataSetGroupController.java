@@ -7,8 +7,10 @@ import io.dataease.auth.annotation.DePermissions;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.dataset.request.DeleteGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.plugins.common.base.domain.DatasetGroup;
 import io.dataease.service.dataset.DataSetGroupService;
@@ -60,15 +62,12 @@ public class DataSetGroupController {
 
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
-    @PostMapping("/delete")
-    @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
-        sourcetype = SysLogConstants.SOURCE_TYPE.DATASET,
-        positionIndex = 0,positionKey = "pid",
-        value = "id"
-    )
-    public void tree(@RequestBody DeleteGroupRequest request) throws Exception {
-        dataSetGroupService.delete(request.getId());
+    @PostMapping("/delete/{id}")
+    public void delete(@PathVariable String id) throws Exception {
+        DatasetGroup datasetGroup = dataSetGroupService.getScene(id);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATASET, id, datasetGroup.getPid(), null, null);
+        dataSetGroupService.delete(id);
+        DeLogUtils.save(sysLogDTO);
     }
 
     @ApiIgnore

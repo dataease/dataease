@@ -26,12 +26,11 @@ export function addGroup(data) {
   })
 }
 
-export function delGroup(data) {
+export function delGroup(groupId) {
   return request({
-    url: '/dataset/group/delete',
+    url: '/dataset/group/delete/' + groupId,
     loading: true,
-    method: 'post',
-    data
+    method: 'post'
   })
 }
 

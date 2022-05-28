@@ -4,7 +4,8 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.controller.datasource.request.DeleteDsRequest;
+import io.dataease.commons.utils.DeLogUtils;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
@@ -14,13 +15,12 @@ import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.dto.datasource.DBTableDTO;
-import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.DatasourceDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -90,15 +90,14 @@ public class DatasourceController {
     @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE, value = "id")
     @ApiOperation("删除数据源")
-    @PostMapping("/delete")
-    @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
-        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
-        positionIndex = 0,positionKey = "type",
-        value = "id"
-    )
-    public ResultHolder deleteDatasource(@RequestBody DeleteDsRequest request) throws Exception {
-        return datasourceService.deleteDatasource(request.getId());
+    @PostMapping("/delete/{datasourceID}")
+    public ResultHolder deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
+        Datasource datasource = datasourceService.get(datasourceID);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATASOURCE, datasourceID, datasource.getType(), null, null);
+        ResultHolder resultHolder = datasourceService.deleteDatasource(datasourceID);
+        if (ObjectUtils.isNotEmpty(resultHolder) && resultHolder.isSuccess())
+            DeLogUtils.save(sysLogDTO);
+        return resultHolder;
     }
 
     @RequiresPermissions("datasource:read")

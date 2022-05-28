@@ -461,8 +461,7 @@ export default {
         cancelButtonText: this.$t('dataset.cancel'),
         type: 'warning'
       }).then(() => {
-        const param = { id: data.id, pid: data.pid }
-        delGroup(param).then(response => {
+        delGroup(data.id).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('dataset.delete_success'),
