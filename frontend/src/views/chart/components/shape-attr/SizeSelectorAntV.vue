@@ -111,6 +111,18 @@
             <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item :label="'是否启用轮播'" class="form-item">
+          <el-radio-group v-model="sizeForm.automatic" @change="changeBarSizeCase">
+            <el-radio :label="true">是</el-radio>
+            <el-radio :label="false">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="'轮播间隔时间'" class="form-item">
+          <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -317,6 +329,17 @@ export default {
         { name: this.$t('chart.table_align_left'), value: 'left' },
         { name: this.$t('chart.table_align_center'), value: 'center' },
         { name: this.$t('chart.table_align_right'), value: 'right' }
+      ],
+      automaticTimeOptions: [
+        { name: '1秒', value: 1000 },
+        { name: '2秒', value: 2000 },
+        { name: '3秒', value: 3000 },
+        { name: '4秒', value: 4000 },
+        { name: '5秒', value: 5000 },
+        { name: '6秒', value: 6000 },
+        { name: '7秒', value: 7000 },
+        { name: '8秒', value: 8000 },
+        { name: '9秒', value: 9000 }
       ]
     }
   },
@@ -375,7 +398,12 @@ export default {
       }
       this.fontSize = arr
     },
-    changeBarSizeCase() {
+    changeBarSizeCase(e, key) {
+      console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)
+      if (this.sizeForm.automatic && e !== true) {
+        this.$message.warning('修改前请关闭轮播效果')
+        return
+      }
       this.$emit('onSizeChange', this.sizeForm)
     }
   }

@@ -11,6 +11,8 @@ export const DEFAULT_COLOR_CASE = {
   tableBorderColor: '#cfdaf4'
 }
 export const DEFAULT_SIZE = {
+  automatic: false,
+  automaticTime: 2000,
   barDefault: true,
   barWidth: 40,
   barGap: 0.4,
@@ -36,6 +38,7 @@ export const DEFAULT_SIZE = {
   tableColumnWidth: 100,
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
+
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,

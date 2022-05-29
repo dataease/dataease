@@ -160,6 +160,7 @@ export function getScaleValue(propValue, scale) {
 }
 
 export function recursionTransObj(template, infoObj, scale, terminal) {
+  console.log()
   for (const templateKey in template) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {

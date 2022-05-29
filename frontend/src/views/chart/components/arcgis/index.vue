@@ -12,7 +12,7 @@
     <!-- <Measurement :show="isShowMeasurement" @closMmeasurement="measurement" /> -->
     <!-- 地图部分 -->
     <div class="main">
-      <div :id="chartId" class="divView" :style="{height: chartHeight}"></div>
+      <div :id="chartId" class="divView" :style="{ height: chartHeight }" />
     </div>
   </div>
 </template>
