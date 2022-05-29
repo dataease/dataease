@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
@@ -148,7 +149,7 @@ public class SysUserController {
             DataEaseException.throwException(Translator.get("i18n_wrong_content"));
         }
         // 再次验证，匹配格式
-        if (!request.getPhone().isEmpty() && !request.getPhone().matches("^1[3|4|5|7|8][0-9]{9}$")) {
+        if (StringUtils.isNotBlank(request.getPhone()) && !request.getPhone().matches("^1[3|4|5|7|8][0-9]{9}$")) {
             DataEaseException.throwException(Translator.get("i18n_wrong_tel"));
         }
         if (!request.getEmail().matches("^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {

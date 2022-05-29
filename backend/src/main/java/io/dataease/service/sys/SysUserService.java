@@ -219,6 +219,8 @@ public class SysUserService {
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
     public int updatePersonBasicInfo(SysUserCreateRequest request) {
+        checkEmail(request);
+        checkNickName(request);
         SysUser user = new SysUser();
         long now = System.currentTimeMillis();
         user.setUserId(request.getUserId());
