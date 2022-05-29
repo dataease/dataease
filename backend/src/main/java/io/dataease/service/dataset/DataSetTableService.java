@@ -1614,6 +1614,7 @@ public class DataSetTableService {
                                 TableUtils.fieldName(field.getTableId() + "_" + field.getDataeaseName()),
                                 tableField.getFieldName())) {
                             tableField.setRemarks(field.getName());
+                            tableField.setFieldType(field.getType());
                             break;
                         }
                     }
