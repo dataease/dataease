@@ -1250,7 +1250,8 @@ export default {
       exec: '执行一次',
       confirm_exec: '手动触发执行？',
       change_success: '状态切换成功',
-      excel_replace_msg: '可能会影响计算字段、自定义数据集、关联数据集、仪表板等，确认替换？'
+      excel_replace_msg: '可能会影响自定义数据集、关联数据集、仪表板等，确认替换？',
+      effect_ext_field: '会影响计算字段'
     },
     field_group_type: '分类',
     location: '地理位置',

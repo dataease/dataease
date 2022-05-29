@@ -66,6 +66,8 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
@@ -1890,9 +1892,9 @@ public class DataSetTableService {
         List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
         List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
 
-        if (StringUtils.isNotEmpty(tableId) && editType == 1) {
-            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId)
-                    .stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(tableId)) {
+            List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(tableId);
+            List<DatasetTableField> datasetTableFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
                     return -1;
@@ -1904,18 +1906,57 @@ public class DataSetTableService {
             });
 
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
-            for (ExcelSheetData excelSheetData : excelSheetDataList) {
-                List<TableField> fields = excelSheetData.getFields();
-                List<String> newFields = fields.stream().map(TableField::getRemarks).collect(Collectors.toList());
-                if (oldFields.equals(newFields)) {
+
+            if(editType == 1){
+                for (ExcelSheetData excelSheetData : excelSheetDataList) {
+                    List<TableField> tableFields = excelSheetData.getFields();
+                    List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
+                    if (oldFields.equals(newFields)) {
+                        retrunSheetDataList.add(excelSheetData);
+                    }
+                }
+                if (retrunSheetDataList.size() == 0) {
+                    DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
+                }
+            }else {
+                List<DatasetTableField> extFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() > 0).collect(Collectors.toList());
+                List<String> extFieldsRefIds = new ArrayList<>();
+                for (DatasetTableField extField : extFields) {
+                    String originField = extField.getOriginName().replaceAll("[\\t\\n\\r]]", "");
+                    String regex = "\\[(.*?)]";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(originField);
+                    while (matcher.find()) {
+                        String id = matcher.group(1);
+                        if(!extFieldsRefIds.contains(id)){
+                            extFieldsRefIds.add(id);
+                        }
+                    }
+                }
+                List<String> extFieldsRefNames = datasetTableFields.stream().filter(datasetTableField -> extFieldsRefIds.contains(datasetTableField.getId())).map(DatasetTableField::getOriginName).collect(Collectors.toList());
+                for (ExcelSheetData excelSheetData : excelSheetDataList) {
+                    List<TableField> tableFields = excelSheetData.getFields();
+                    List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
+                    if (oldFields.equals(newFields)) {
+                        excelSheetData.setChangeFiled(false);
+                    }else {
+                        excelSheetData.setChangeFiled(true);
+                    }
+                    boolean effectExtField = false;
+                    for (String extFieldsRefName : extFieldsRefNames) {
+                        if(!newFields.contains(extFieldsRefName)){
+                            effectExtField = true;
+                        }
+                    }
+                    excelSheetData.setEffectExtField(effectExtField);
+
                     retrunSheetDataList.add(excelSheetData);
                 }
+                if (retrunSheetDataList.size() == 0) {
+                    DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
+                }
             }
-
-            if (retrunSheetDataList.size() == 0) {
-                DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
-            }
-        } else {
+        }else {
             retrunSheetDataList = excelSheetDataList;
         }
         retrunSheetDataList = retrunSheetDataList.stream()

@@ -1249,7 +1249,8 @@ export default {
       exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',
       change_success: 'State switch successful',
-      excel_replace_msg: 'Calculation fields, custom datasets, associated datasets, dashboards, etc. may be affected. Confirm the replacement？'
+      excel_replace_msg: 'Calculation fields, custom datasets, associated datasets, dashboards, etc. may be affected. Confirm the replacement？',
+      effect_ext_field: 'Affect calculated fields'
     },
     field_group_type: 'Type',
     location: 'Location',
