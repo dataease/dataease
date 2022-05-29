@@ -126,7 +126,8 @@ public class PluginCommonServer {
                         os.write(buffer, 0, i);
                         i = bis.read(buffer);
                     }
-                    response.setContentType("image/svg+xml");
+                    if (suffix.indexOf("svg") != -1)
+                        response.setContentType("image/svg+xml");
                     os.flush();
                 }catch (Exception e) {
                     e.printStackTrace();
