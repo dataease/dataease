@@ -6,7 +6,7 @@
     </span>
     <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
     <div v-if="chart.type === 'arc_map'" :style="{height:chartHeight}">
-      <ArcGIS :chartId="chartId" :chartHeight="chartHeight" />
+      <ArcGIS :chartId="chartId" :chartHeight="chartHeight" :chart="chart" />
     </div>
   </div>
 </template>

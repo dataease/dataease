@@ -298,6 +298,7 @@
                         </el-upload>
                       </span>
                     </el-row> -->
+
                     <el-row v-if="view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.arc_map_url') }}</span>
@@ -307,7 +308,7 @@
                           v-model="view.urlMap"
                           :placeholder="$t('chart.arc_map_url_place')"
                           size="small"
-                          @Change="calcData"
+                          @change="calcData"
                         />
                       </span>
                     </el-row>
@@ -1946,7 +1947,7 @@ export default {
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
-          this.view.file = this.view.file ? this.view.file : ''
+          // this.view.file = this.view.file ? this.view.file : ''
           this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
           console.log('getChart::::::::::', this.view)
           // 将视图传入echart组件

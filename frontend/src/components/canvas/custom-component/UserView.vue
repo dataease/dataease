@@ -34,7 +34,7 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <chart-component-hc
+    <!-- <chart-component-hc
       v-else-if="charViewHcShowFlag"
       :ref="element.propValue.id"
       class="chart-class"
@@ -44,7 +44,7 @@
       :terminal-type="scaleCoefficientType"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
-    />
+    /> -->
     <chart-component-g2
       v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
