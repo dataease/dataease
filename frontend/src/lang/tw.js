@@ -1249,7 +1249,8 @@ export default {
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',
       change_success: '狀態切換成功',
-      excel_replace_msg: '可能會影響計算欄位、自定義數据集、關聯數据集、儀錶板等，確認替換？'
+      excel_replace_msg: '可能會影響計算欄位、自定義數据集、關聯數据集、儀錶板等，確認替換？',
+      effect_ext_field: '會影響計算欄位'
     },
     field_group_type: '分類',
     location: '地理位置',

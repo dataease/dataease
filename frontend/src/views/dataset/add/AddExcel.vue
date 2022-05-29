@@ -310,6 +310,8 @@ export default {
       var validate = true
       var selectedSheet = []
       var sheetFileMd5 = []
+      var effectExtField = false
+      var changeFiled = false
       var selectNode = this.$refs.tree.getCheckedNodes()
       for (var i = 0; i < selectNode.length; i++) {
         if (selectNode[i].sheet) {
@@ -330,6 +332,12 @@ export default {
               type: 'error'
             })
             return
+          }
+          if(selectNode[i].effectExtField){
+            effectExtField = true
+          }
+          if(selectNode[i].changeFiled){
+            changeFiled = true
           }
           selectedSheet.push(selectNode[i])
           sheetFileMd5.push(selectNode[i].fieldsMd5)
@@ -366,8 +374,11 @@ export default {
           editType: this.param.editType ? this.param.editType : 0
         }
       }
-      if (this.param.editType === 0 && this.param.tableId) {
-        $confirm(i18n.t('dataset.task.excel_replace_msg'), () => {
+
+      if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
+
+        var msg = effectExtField ? i18n.t('dataset.task.effect_ext_field') + ', ' + i18n.t('dataset.task.excel_replace_msg') : i18n.t('dataset.task.excel_replace_msg')
+        $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
         })
       }else {
