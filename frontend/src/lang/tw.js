@@ -642,7 +642,7 @@ export default {
     login_type: '默認登錄方式',
     empty_front: '為空則默認取值10秒',
     empty_msg: '為空則默認取值30天',
-    front_error: '請填寫0-100正整數',
+    front_error: '請填寫0-300正整數',
     msg_error: '請填寫1-365正整數',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP賬戶',
