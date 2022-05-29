@@ -70,7 +70,7 @@ public class SystemParameterController {
         int timeout = Integer.parseInt(systemParameter.stream().filter(
                 parameter -> parameter.getParamKey().equals("basic.frontTimeOut")
         ).findFirst().get().getParamValue());
-        if (timeout < 0 || timeout > 300) {
+        if (timeout < 0 || timeout > 300) { //增加了合法性检验
             throw new NumberFormatException("Timeout Range Error!");
         }
         systemParameterService.editBasic(systemParameter);
