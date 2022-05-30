@@ -71,7 +71,7 @@
           </el-form-item>
           <span v-show="showProperty('axisLabel') && axisForm.axisLabel.show">
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
-              <el-color-picker class="el-color-picker" :predefine="predefineColors" @change="changeXAxisStyle('axisLabel')" />
+              <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" :predefine="predefineColors" @change="changeXAxisStyle('axisLabel')" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle('axisLabel')" />
