@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -266,7 +267,9 @@ public class LogService {
 
             response.setContentType("application/vnd.ms-excel");
             //文件名称
-            response.setHeader("Content-disposition", "attachment;filename=log.xlsx");
+            String fileName = "DataEase操作日志";
+            String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename="+encodeFileName+".xlsx");
             wb.write(outputStream);
             outputStream.flush();
             outputStream.close();
