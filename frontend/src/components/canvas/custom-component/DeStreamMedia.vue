@@ -18,14 +18,12 @@
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'hls'">
-      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <div v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
         <video
           :id="myPlayer[0]"
           :ref="myPlayer[0]"
           :destroyOnClose="true"
           class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js"
-          :loop="pOption.loop"
-          :autoplay="pOption.autoplay"
           controls
           preload="auto"
         >
@@ -35,7 +33,7 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
       <div
-        v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url"
+        v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url"
         class="video-container "
         style="position: relative;"
       >
@@ -139,30 +137,52 @@ export default {
       handler: function() {
         var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
-          console.log('FLV', url !== this.pOption.url)
-          if (url !== this.pOption.url) {
+          if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
-            console.log('FLV', url !== this.pOption.url)
+            this.pOption.url = url
+            this.initOption(url)
+          }
+          if (this.pOption.url !== undefined && this.pOption.url !== url) {
             this.myPlayerFlv = null
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
             this.initOption(url, true)
           }
         }
         if (this.element.streamMediaLinks.videoType === 'hls') {
-          if (url !== this.pOption.url) {
+          if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
+            this.initOptionHls(url)
+          }
+          if (this.pOption.url !== undefined && this.pOption.url !== url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
             this.initOptionHls(url, true)
           }
         }
         if (this.element.streamMediaLinks.videoType === 'rtmp') {
-          if (url !== this.pOption.url) {
+          if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
+            this.initOptionRtmp(url)
+          }
+          if (this.pOption.url !== undefined && this.pOption.url !== url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
             this.initOptionRtmp(url, true)
           }
         }
         if (this.element.streamMediaLinks.videoType === 'webrtc') {
-          if (url !== this.pOption.url) {
+          if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
             this.initOptionWeb(url.substring(7))
+          }
+          if (this.pOption.url !== undefined && this.pOption.url !== url) {
+            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+            this.pOption.url = url
+            this.initOptionWeb(url.substring(7), true)
           }
         }
       },
@@ -190,6 +210,9 @@ export default {
     this.myPlayer.push(myPlayerFlv)
   },
   mounted() {
+    if (!this.pOption.url) {
+      return false
+    }
     if (this.element.streamMediaLinks.videoType === 'flv') {
       this.initOption(this.pOption.url)
       // bus.$on('streamMediaLinksChange-' + this.element.id, () => {
@@ -247,7 +270,9 @@ export default {
             this.myPlayerFlv.attachMediaElement(video)
             try {
               this.myPlayerFlv.load()
-              this.myPlayerFlv.play()
+              if (this.pOption.autoplay) {
+                this.myPlayerFlv.play()
+              }
             } catch (error) {
               console.log(error)
             }
@@ -270,6 +295,8 @@ export default {
       }
       this.myPlayerHls = videojs(
         this.myPlayer[0], {
+          autoplay: this.pOption.autoplay,
+          loop: this.pOption.loop,
           bigPlayButton: false,
           textTrackDisplay: false,
           posterImage: true,
@@ -280,9 +307,9 @@ export default {
           }]
         },
         function() {
-          if (status) {
-            this.play()
-          }
+          this.on('error', function() {
+            console.log('视频播放失败')
+          })
         }
       )
     },
@@ -297,19 +324,24 @@ export default {
         this.myPlayerRtmp.play()
         return false
       }
-      this.myPlayerRtmp = videojs(this.myPlayer[1], {
-        sources: [{
-          type: 'rtmp/flv',
-          src: this.pOption.url.substring(7)
-        }],
-        controls: true,
-        muted: true,
-        autoplay: true,
-        preload: 'auto',
-        textTrackDisplay: false,
-        errorDisplay: false,
-        controlBar: false,
-        bigPlayButton: false
+      this.$nextTick(() => {
+        this.myPlayerRtmp = videojs(this.myPlayer[1], {
+          sources: [{
+            type: 'rtmp/flv',
+            src: url.substring(7)
+          }],
+          controls: true,
+          muted: true,
+          autoplay: true,
+          preload: 'auto',
+          textTrackDisplay: false,
+          errorDisplay: false,
+          controlBar: false,
+          bigPlayButton: false
+        }, function() {
+          this.load()
+          this.play()
+        })
       })
     },
     initOptionWeb(url, status) {
@@ -319,19 +351,21 @@ export default {
         this.initOptionWeb(url)
         return false
       }
-      // 获取承载元素dom
-      const videoDom = document.getElementById(this.myPlayer[2])
-      // 初始化播放器
-      this.myPlayerWebrtc = new JSWebrtc.Player(url, {
-        video: videoDom,
-        autoplay: true,
-        onPlay: (obj) => {
-          // 监听video元素状态，可播放时进行播放 。 某些情况下  autoplay 会失效
-          videoDom.addEventListener('canplay', function(e) {
-            videoDom.play()
-          })
-          console.log(obj, '播放器开始播放！')
-        }
+      this.$nextTick(() => {
+        // 获取承载元素dom
+        const videoDom = document.getElementById(this.myPlayer[2])
+        // 初始化播放器
+        this.myPlayerWebrtc = new JSWebrtc.Player(url, {
+          video: videoDom,
+          autoplay: true,
+          onPlay: (obj) => {
+            // 监听video元素状态，可播放时进行播放 。 某些情况下  autoplay 会失效
+            videoDom.addEventListener('canplay', function(e) {
+              videoDom.play()
+            })
+            console.log(obj, '播放器开始播放！')
+          }
+        })
       })
       // const that = this
       // if (!this.pOption.url) {
