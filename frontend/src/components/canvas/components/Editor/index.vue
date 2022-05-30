@@ -100,6 +100,7 @@
         :h="getShapeStyleIntDeDrag(item.style,'height')"
         :canvas-style-data="canvasStyleData"
         @input="handleInput"
+        @trigger-plugin-edit="pluginEditHandler"
       />
     </de-drag>
     <!--拖拽阴影部分-->
@@ -1067,6 +1068,21 @@ export default {
   created() {
   },
   methods: {
+    pluginEditHandler({ e, id }) {
+      let index = -1
+      for (let i = 0; i < this.componentData.length; i++) {
+        const item = this.componentData[i]
+        const itemId = item.id
+        if (id === itemId) {
+          index = i
+          break
+        }
+      }
+      if (index >= 0) {
+        const _this = this
+        _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].triggerPluginEdit && _this.$refs.deDragRef[index].triggerPluginEdit(e)
+      }
+    },
     linkageActiveCheck(item) {
       return this.linkageSettingStatus && item === this.curLinkageView
     },
