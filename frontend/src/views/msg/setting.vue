@@ -24,9 +24,7 @@
 
               <div>
                 <span v-for="channel in msg_channels" :key="channel.msgChannelId" class="auth-span">
-                  <!-- <a href="javascript:;" @click="clickAuth(node,channel)">
-                    <svg-icon style="width: 25px;height: 25px" :icon-class="checkBoxStatus(node, channel)?'lock_open':'lock_closed'" />
-                  </a> -->
+
                   <el-checkbox v-if="data.children && data.children.length > 0" v-model="data.check_all_map[channel.msgChannelId]" :indeterminate="data.indeterminate_map[channel.msgChannelId]" @change="parentBoxChange(node, channel)" />
                   <el-checkbox v-else v-model="data.check_map[channel.msgChannelId]" @change="childBoxChange(node, channel)" />
 
@@ -150,17 +148,7 @@ export default {
       const nodeId = node.id
       return this.setting_data[nodeId] && this.setting_data[nodeId].some(item => item.channelId === channel.msgChannelId && item.enable)
     },
-    clickAuth(node, channel) {
-      // const status = this.checkBoxStatus(nodeId, channel)
-      const param = {
-        typeId: node.data.id,
-        channelId: channel.msgChannelId
-      }
-      updateSetting(param).then(res => {
-        this.loadSettingData()
-        // node.checked = true
-      })
-    },
+
     nodeClick(data, node) {
     },
     getAllKidId(node, ids) {
@@ -190,7 +178,7 @@ export default {
         enable
       }
       batchUpdate(param).then(res => {
-        this.loadSettingData()
+        this.loadSettingData(this.loadTreeData)
       })
     },
     childBoxChange(node, channel) {
@@ -224,7 +212,7 @@ export default {
         channelId: channelId
       }
       updateSetting(param).then(res => {
-        this.loadSettingData()
+        this.loadSettingData(this.loadTreeData)
       })
     }
   }

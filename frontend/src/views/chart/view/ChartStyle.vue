@@ -214,7 +214,11 @@
               @onChangeSplitForm="onChangeSplitForm($event,'split-selector-ant-v')"
             />
           </el-collapse-item>
-          <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['title-selector','title-selector-ant-v'])"
+            name="title"
+            :title="$t('chart.title')"
+          >
             <title-selector
               v-if="showProperties('title-selector')"
               :param="param"

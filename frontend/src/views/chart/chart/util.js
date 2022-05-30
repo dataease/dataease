@@ -1536,7 +1536,7 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine'
       ],
-      'y-ext-axis-selector': [
+      'y-axis-ext-selector': [
         'show',
         'position',
         'name',
