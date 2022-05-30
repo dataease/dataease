@@ -117,11 +117,11 @@ export default {
     // console.log('aaaaaa')
     const { horizontal, vertical } = this.element.style
     this.$set(this.element.style, 'horizontal', horizontal || 'left')
-    this.$set(this.element.style, 'vertical', vertical || 'top')
+    this.$set(this.element.style, 'vertical', vertical || 'center')
   },
   methods: {
     handlerPositionChange(val) {
-      const { horizontal = 'left', vertical = 'top' } = val
+      const { horizontal = 'left', vertical = 'center' } = val
       this.titleStyle = {
         width: '100%',
         textAlign: horizontal
