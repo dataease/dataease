@@ -858,6 +858,9 @@ export default {
         this.chart.stylePriority = param.viewInfo.stylePriority
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
+        if (this.componentViewsData[this.chart.id]) {
+          this.componentViewsData[this.chart.id]['title'] = this.chart.title
+        }
         this.mergeScale()
       }
     }
