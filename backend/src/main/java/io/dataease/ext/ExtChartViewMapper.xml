@@ -365,6 +365,7 @@
                                 custom_filter,
                                 drill_fields,
                                 SNAPSHOT,
+                                senior,
                                 data_from)
         SELECT pv_copy.chart_view_id AS id,
                `name`,
@@ -392,6 +393,7 @@
                custom_filter,
                drill_fields,
                SNAPSHOT,
+               senior,
                data_from
         FROM (
                  SELECT panel_id,
