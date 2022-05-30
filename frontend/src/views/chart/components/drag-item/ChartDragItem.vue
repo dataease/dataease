@@ -272,6 +272,6 @@ export default {
     margin-left: 4px;
     color: #878d9f;
     position: absolute;
-    right: 25px;
+    right: 40px;
   }
 </style>
