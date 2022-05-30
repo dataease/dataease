@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -46,25 +47,20 @@ public class LogService {
     private static Integer[] driver_file_ope = {11, 3};
 
 
-
     // 排除驱动和驱动文件的公共操作的资源类型
     // 暂时屏蔽视图日志
     // private static Integer[] COMMON_SOURCE = {1, 2,3,4,6,7,8,9};
 
-    private static Integer[] COMMON_SOURCE = {1, 2,3,6,7,8,9};
+    private static Integer[] COMMON_SOURCE = {1, 2, 3, 6, 7, 8, 9};
 
     // 增 改 删  针对公共资源的操作
-    private static Integer[] COMMON_SOURCE_OPERATE = {1 ,2 , 3};
+    private static Integer[] COMMON_SOURCE_OPERATE = {1, 2, 3};
 
     // 授权相关操作
     private static Integer[] AUTH_OPERATE = {6, 7};
 
     // 授权相关资源 数据源 仪表板 数据集 菜单
     private static Integer[] AUTH_SOURCE = {1, 2, 3, 11};
-
-
-
-
 
 
     @Resource
@@ -75,7 +71,6 @@ public class LogService {
 
     @Resource
     private LogManager logManager;
-
 
 
     public List<SysLogGridDTO> query(BaseGridRequest request) {
@@ -90,8 +85,8 @@ public class LogService {
     private BaseGridRequest detailRequest(BaseGridRequest request) {
         List<ConditionEntity> conditions = request.getConditions();
         if (CollectionUtils.isNotEmpty(conditions)) {
-            ConditionEntity optypeCondition = null;
-            ConditionEntity sourceCondition = null;
+
+            ConditionEntity uninCondition = null;
             int matchIndex = -1;
             for (int i = 0; i < conditions.size(); i++) {
                 ConditionEntity conditionEntity = conditions.get(i);
@@ -100,23 +95,21 @@ public class LogService {
 
                 if (StringUtils.isNotBlank(field) && StringUtils.equals("optype", field) && ObjectUtils.isNotEmpty(value)) {
                     matchIndex = i;
-                    optypeCondition = new ConditionEntity();
-                    sourceCondition = new ConditionEntity();
+                    uninCondition = new ConditionEntity();
+
                     List<String> values = (List<String>) value;
-                    sourceCondition.setField("source_type");
-                    optypeCondition.setField("operate_type");
-                    List<Integer> opValue = values.stream().map(v -> Integer.parseInt(v.split("-")[0])).collect(Collectors.toList());
-                    List<Integer> soValue = values.stream().map(v -> Integer.parseInt(v.split("-")[1])).collect(Collectors.toList());
-                    optypeCondition.setValue(opValue);
-                    sourceCondition.setValue(soValue);
-                    optypeCondition.setOperator(conditionEntity.getOperator());
-                    sourceCondition.setOperator(conditionEntity.getOperator());
+                    uninCondition.setField("concat(operate_type, '-de-', source_type)");
+
+                    List<String> uninValue = values.stream().map(v -> v.replace("-", "-de-")).collect(Collectors.toList());
+
+                    uninCondition.setValue(uninValue);
+                    uninCondition.setOperator(conditionEntity.getOperator());
                 }
             }
-            if (matchIndex >= 0 ) {
+            if (matchIndex >= 0) {
                 conditions.remove(matchIndex);
-                if (ObjectUtils.isNotEmpty(optypeCondition))conditions.add(optypeCondition);
-                if (ObjectUtils.isNotEmpty(sourceCondition))conditions.add(sourceCondition);
+
+                if (ObjectUtils.isNotEmpty(uninCondition)) conditions.add(uninCondition);
             }
         }
         return request;
@@ -140,7 +133,7 @@ public class LogService {
                 String operateTypeName = SysLogConstants.operateTypeName(operateVal);
                 FolderItem folderItem = new FolderItem();
                 folderItem.setId(operateVal + "-" + sourceVal);
-                folderItem.setName( Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+                folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
                 results.add(folderItem);
             }
         }
@@ -152,7 +145,7 @@ public class LogService {
             folderItem.setId(driver_file_ope[i] + "-" + sourceType.getValue());
             String operateTypeName = SysLogConstants.operateTypeName(driver_file_ope[i]);
             String sourceTypeName = sourceType.getName();
-            folderItem.setName( Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+            folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
         }
 
@@ -166,7 +159,7 @@ public class LogService {
                 String operateTypeName = SysLogConstants.operateTypeName(operateVal);
                 FolderItem folderItem = new FolderItem();
                 folderItem.setId(operateVal + "-" + sourceVal);
-                folderItem.setName( Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+                folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
                 results.add(folderItem);
             }
         }
@@ -177,10 +170,9 @@ public class LogService {
             folderItem.setId(panel_ext_ope[i] + "-" + sourceType.getValue());
             String operateTypeName = SysLogConstants.operateTypeName(panel_ext_ope[i]);
             String sourceTypeName = sourceType.getName();
-            folderItem.setName( Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+            folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
         }
-
 
 
         return results;
@@ -213,7 +205,6 @@ public class LogService {
         // sysLogWithBLOBs.setIp(ip);
         sysLogMapper.insert(sysLogWithBLOBs);
     }
-
 
 
     public void exportExcel(BaseGridRequest request) throws Exception {
@@ -283,7 +274,6 @@ public class LogService {
             DataEaseException.throwException(e);
         }
     }
-
 
 
 }
