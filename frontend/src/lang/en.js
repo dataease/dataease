@@ -1334,6 +1334,7 @@ export default {
     driver: 'Driver',
     please_choose_driver: 'Please choose driver',
     mgm: 'Driver',
+    exit_mgm: 'Exit Driver',
     add: 'ADD Driver',
     modify: 'Modify',
     show_info: 'Driver info',

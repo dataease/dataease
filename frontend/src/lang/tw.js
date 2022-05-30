@@ -1334,6 +1334,7 @@ export default {
     driver: '驅動',
     please_choose_driver: '青選擇驅動',
     mgm: '驅動管理',
+    exit_mgm: '退出驅動管理',
     add: '添加驅動',
     modify: '修改',
     show_info: '驅動信息',

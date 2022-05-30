@@ -9,7 +9,7 @@ CREATE TABLE `de_driver` (
      `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
      `desc` varchar(255) DEFAULT NULL COMMENT '描述',
      PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='驱动';
 
 
 CREATE TABLE `de_driver_details` (
@@ -19,7 +19,7 @@ CREATE TABLE `de_driver_details` (
      `version` varchar(255) DEFAULT NULL COMMENT '版本',
      `driver_class` longtext DEFAULT NULL COMMENT '驱动类',
      PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动详情';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='驱动详情';
 
 
 UPDATE `sys_menu` SET `sub_count` = 1 WHERE `menu_id` = 40;
@@ -43,7 +43,7 @@ CREATE TABLE `sys_log` (
   `remark` longtext COMMENT '备注信息',
   `time` bigint(13) NOT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
