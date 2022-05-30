@@ -144,6 +144,7 @@ export default {
       if (chart.type === '3dpie') {
         console.log('3dpie...')
         this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+
         this.drawEcharts()
       } else if (chart.type === 'arc_map') {
         //
