@@ -79,19 +79,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
-                ExtendedJdbcClassLoader classLoader;
-                String driverClass;
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
                 if (isDefaultClassLoader(oracleConfiguration.getCustomDriver())) {
-                    classLoader = extendedJdbcClassLoader;
-                    driverClass = oracleConfiguration.getDriver();
-                } else {
-                    DeDriver deDriver = deDriverMapper.selectByPrimaryKey(oracleConfiguration.getCustomDriver());
-                    classLoader = getCustomJdbcClassLoader(deDriver);
-                    driverClass = deDriver.getDriverClass();
+                    Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting", boolean.class);
+                    setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
                 }
-                Method setRemarksReporting = classLoader.loadClass(driverClass).getMethod("setRemarksReporting", boolean.class);
-                setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
