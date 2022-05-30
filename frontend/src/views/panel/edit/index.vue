@@ -177,6 +177,8 @@
           @scroll="canvasScroll"
         >
           <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+          <!--矩形样式组件-->
+          <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
         </div>
         <!-- </vue-ruler-tool> -->
         <!--移动端画布区域 保持宽高比2.5-->
@@ -311,7 +313,7 @@
     >
 
     <!--矩形样式组件-->
-    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <!-- <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" /> -->
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -1399,6 +1401,7 @@ export default {
     height: calc(100vh - 35px);
     overflow-x: scroll;
     overflow-y: auto;
+    position:relative;
     // overflow: scroll;
     // overflow-y: auto;
     white-space: nowrap;

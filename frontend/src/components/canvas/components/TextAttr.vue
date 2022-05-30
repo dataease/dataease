@@ -1,6 +1,6 @@
 <template>
   <el-card class="el-card-main" :style="mainStyle">
-    <div id="main-attr" style="position: relative;">
+    <div id="main-attr" style="position: relative;" @mousedown.stop @mouseup.stop>
       <div v-if="attrShow('textAlign')" style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
           <el-radio-button
@@ -326,9 +326,15 @@ export default {
 
     mainStyle() {
       const style = {
-        left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
+
+        // left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
+        left: this.curComponent.style.left + 'px',
+        // top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
+        top: (this.curComponent.style.top - 40) + 'px'
       }
+      console.log('this.curComponent=====', this.curComponent)
+      console.log('this.scrollLeft', this.scrollLeft)
+      console.log('this.this.curComponent.style.left', this.curComponent.style.left)
       return style
     },
     styleInfo() {
@@ -413,6 +419,7 @@ export default {
       this.$refs.backgroundColorPicker.handleTrigger()
     },
     getPositionX(x) {
+      console.log('this.curCanvasScale.scalePointWidth', this.curCanvasScale.scalePointWidth)
       let ps = 0
       ps = (x * this.curCanvasScale.scalePointWidth) + 60
       // 防止toolbar超出边界
