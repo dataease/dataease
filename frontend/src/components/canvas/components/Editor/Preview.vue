@@ -2,10 +2,11 @@
   <div class="bg" :style="customStyle" @scroll="canvasScroll">
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
       <el-row v-if="showUnpublishedArea" class="custom-position">
-        <pre>
-            <svg-icon icon-class="unpublished" style="font-size: 75px" />
-            {{ $t('panel.panel_off') }}
-        </pre>
+        <div style="text-align: center">
+          <svg-icon icon-class="unpublished" style="font-size: 75px" />
+          <br>
+          <span>{{ $t('panel.panel_off') }}</span>
+        </div>
       </el-row>
       <el-row v-else-if="componentDataShow.length===0" class="custom-position">
         {{ $t('panel.panelNull') }}
