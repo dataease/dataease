@@ -987,8 +987,9 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
+        console.log('改变从这里开始-------------',)
         this.resizeParentBoundsRef()
-        this.changeScale()
+        // this.changeScale()  // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
@@ -1591,7 +1592,7 @@ export default {
     resizeParentBoundsRef() {
       const _this = this
       _this.componentData.forEach(function(data, index) {
-        _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
+        // _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
       })
     },
     canvasDragging(mY, offsetY) {

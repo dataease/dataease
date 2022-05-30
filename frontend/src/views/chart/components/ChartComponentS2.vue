@@ -166,15 +166,15 @@ export default {
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
       })
-      const that = this
-      window.onresize = function() {
-        that.initData()
-        that.initTitle()
-        that.calcHeightDelay()
-        new Promise((resolve) => { resolve() }).then(() => {
-          that.drawView()
-        })
-      }
+      // const that = this
+      // window.onresize = function() {
+      //   that.initData()
+      //   that.initTitle()
+      //   that.calcHeightDelay()
+      //   new Promise((resolve) => { resolve() }).then(() => {
+      //     that.drawView()
+      //   })
+      // }
     },
     drawView() {
       const chart = this.chart
@@ -224,6 +224,15 @@ export default {
           console.log('获取展示区域高度', parseInt((canvasHeig - customAttrSize.tableTitleHeight) / customAttrSize.tableItemHeight))
 
           console.log('样式数据', JSON.parse(chart.customAttr))
+          setTimeout(() => {
+            this.myChart.facet.updateScrollOffset({
+              offsetX: {},
+              offsetY: {
+                value: 0,
+                animate: true
+              }
+            })
+          }, 500)
           if (customAttrSize.automatic) {
             const showTabls = parseInt((canvasHeig - customAttrSize.tableTitleHeight) / customAttrSize.tableItemHeight)
             this.$nextTick(() => {
