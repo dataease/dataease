@@ -3,7 +3,7 @@
     <el-col>
       <el-form ref="sizeFormBar" :model="sizeForm" label-width="80px" size="mini">
         <!--bar-begin-->
-        <el-form-item v-show="showProperty('adapt')" :label="$t('chart.adapt')" class="form-item">
+        <el-form-item v-show="showProperty('barDefault')" :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase('barDefault')">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
         <el-form-item v-show="showProperty('barGap')" :label="$t('chart.bar_gap')" class="form-item form-item-slider">
