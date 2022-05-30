@@ -1336,6 +1336,7 @@ export default {
     driver: '驱动',
     please_choose_driver: '请选择驱动',
     mgm: '驱动管理',
+    exit_mgm: '退出驱动管理',
     add: '添加驱动',
     modify: '修改',
     show_info: '驱动信息',
