@@ -785,6 +785,7 @@ export default {
     // 检查父元素大小
     checkParentSize() {
       if (this.parent) {
+        console.log('通道0001------------------------')
         const [newParentWidth, newParentHeight] = this.getParentSize()
         // 修复父元素改变大小后，组件resizing时活动异常
         this.right = newParentWidth - this.width - this.left
@@ -1809,7 +1810,7 @@ export default {
       // this.snap = this.horizontal
       // this.snapTolerance = 5
       // this.grid = [10, 10]
-
+      console.log('是否走这里呢?????')
       if (!this.enableNativeDrag) {
         this.$el.ondragstart = () => false
       }
@@ -1839,7 +1840,7 @@ export default {
       addEvent(document.documentElement, 'mousedown', this.deselect)
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
-      addEvent(window, 'resize', this.checkParentSize)
+      // addEvent(window, 'resize', this.checkParentSize)
       // this.changeWidth(this.element.style.width)
       // this.changeHeight(this.element.style.height)
     },
@@ -1871,7 +1872,7 @@ export default {
       removeEvent(document.documentElement, 'touchmove', this.move)
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-      removeEvent(window, 'resize', this.checkParentSize)
+      // removeEvent(window, 'resize', this.checkParentSize)
     },
     showViewDetails() {
       this.$emit('showViewDetails')
