@@ -1,15 +1,14 @@
 <template>
   <layout-content>
     <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList"/>
+      <el-icon name="back" class="back-button" @click.native="backToList" />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('driver.show_info') : $t('driver.modify')
       }}
-      <el-button v-if="canEdit"  size="mini"   style="float: right;"type="primary" @click="save">{{ $t('commons.save') }}
+      <el-button v-if="canEdit" size="mini" style="float: right;"type="primary" @click="save">{{ $t('commons.save') }}
       </el-button>
-      <el-button v-else size="mini"  style="float: right;" type="primary" @click="changeEdit">{{ $t('commons.edit') }}
+      <el-button v-else size="mini" style="float: right;" type="primary" @click="changeEdit">{{ $t('commons.edit') }}
       </el-button>
-
 
     </template>
     <div>
@@ -24,16 +23,17 @@
         label-position="right"
       >
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="driverForm.name" autocomplete="off"/>
+          <el-input v-model="driverForm.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('commons.description')">
-          <el-input v-model="driverForm.desc" autocomplete="off"/>
+          <el-input v-model="driverForm.desc" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
           <el-select
             v-model="driverForm.type"
             :placeholder="$t('datasource.please_choose_type')"
             class="select-width"
+            style="width: 100%"
             disabled
             filterable
           >
@@ -46,26 +46,25 @@
           </el-select>
         </el-form-item>
 
-<!--        <el-form-item :label="$t('driver.driver')" >-->
-<!--          <el-select-->
-<!--            v-model="driverForm.driverClass"-->
-<!--            :placeholder="$t('driver.please_choose_driver')"-->
-<!--            class="select-width"-->
-<!--            filterable-->
-<!--          >-->
-<!--            <el-option-->
-<!--              v-for="item in driverClassList"-->
-<!--              :key="item"-->
-<!--              :label="item"-->
-<!--              :value="item"-->
-<!--            />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item :label="$t('driver.driver')" >-->
+        <!--          <el-select-->
+        <!--            v-model="driverForm.driverClass"-->
+        <!--            :placeholder="$t('driver.please_choose_driver')"-->
+        <!--            class="select-width"-->
+        <!--            filterable-->
+        <!--          >-->
+        <!--            <el-option-->
+        <!--              v-for="item in driverClassList"-->
+        <!--              :key="item"-->
+        <!--              :label="item"-->
+        <!--              :value="item"-->
+        <!--            />-->
+        <!--          </el-select>-->
+        <!--        </el-form-item>-->
 
         <el-form-item :label="$t('driver.driver')" prop="driverClass">
-          <el-input v-model="driverForm.driverClass" autocomplete="off"/>
+          <el-input v-model="driverForm.driverClass" autocomplete="off" />
         </el-form-item>
-
 
       </el-form>
 
@@ -83,16 +82,16 @@
         :headers="headers"
         style="float: right;"
       >
-        <el-button size="mini" type="primary"  style="float: right;" :disabled="uploading">
+        <el-button size="mini" type="primary" style="float: right;" :disabled="uploading">
           <span v-if="!uploading" style="font-size: 12px;">{{ $t('dataset.upload_file') }}</span>
           <span v-if="uploading" style="font-size: 12px;"><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
         </el-button>
       </el-upload>
-    <fu-table :data="driverFiles">
-      <el-table-column prop="fileName" :label="$t('driver.file_name')"/>
-<!--      <el-table-column prop="version" :label="$t('driver.version')"/>-->
-      <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix/>
-    </fu-table>
+      <fu-table :data="driverFiles">
+        <el-table-column prop="fileName" :label="$t('driver.file_name')" />
+        <!--      <el-table-column prop="version" :label="$t('driver.version')"/>-->
+        <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
+      </fu-table>
 
     </div>
   </layout-content>
@@ -102,13 +101,13 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
-import DsConfiguration from "@/views/system/datasource/DsConfiguration";
+import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import {deleteDriverFile, listDriverDetails, updateDriver} from "@/api/system/datasource";
-import {delUser} from "@/api/system/user";
-import {$alert} from "@/utils/message";
-import store from "@/store";
-import {getToken} from "@/utils/auth";
+import { deleteDriverFile, listDriverDetails, updateDriver } from '@/api/system/datasource'
+import { delUser } from '@/api/system/user'
+import { $alert } from '@/utils/message'
+import store from '@/store'
+import { getToken } from '@/utils/auth'
 
 const token = getToken()
 
@@ -138,7 +137,7 @@ export default {
     return {
       disabled: false,
       driverForm: {
-        id:'',
+        id: '',
         name: '',
         desc: '',
         type: '',
@@ -147,12 +146,12 @@ export default {
       datasourceType: {},
       driverClassList: [],
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
-        driverClass: [{required: true, message: i18n.t('driver.please_set_driverClass'), trigger: 'blur'}]
+        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur' }],
+        driverClass: [{ required: true, message: i18n.t('driver.please_set_driverClass'), trigger: 'blur' }]
       },
       canEdit: false,
       driverFiles: [],
@@ -179,7 +178,6 @@ export default {
   mounted() {
   },
 
-
   methods: {
     beforeUpload(file) {
       this.uploading = true
@@ -191,7 +189,7 @@ export default {
     uploadFail(response, file, fileList) {
       let myError = response.toString()
       myError = myError.replace('Error: ', '')
-      if(myError.indexOf('AuthenticationException') >= 0){
+      if (myError.indexOf('AuthenticationException') >= 0) {
         const message = i18n.t('login.tokenError')
         $alert(message, () => {
           store.dispatch('user/logout').then(() => {
@@ -211,13 +209,13 @@ export default {
         showClose: true
       })
     },
-    deleteDriverFile(row){
+    deleteDriverFile(row) {
       deleteDriverFile(row).then(res => {
         this.$success(this.$t('commons.delete_success'))
         this.listDriverDetails()
       })
     },
-    listDriverDetails(){
+    listDriverDetails() {
       listDriverDetails(this.driverForm.id).then(res => {
         this.driverFiles = res.data
         this.driverClassList = []
@@ -231,11 +229,11 @@ export default {
       this.formType = 'modify'
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     },
-    save(){
+    save() {
       this.$refs.driverForm.validate(valid => {
-          if (!valid) {
-            return false
-          }
+        if (!valid) {
+          return false
+        }
         updateDriver(this.driverForm).then(res => {
           this.$success(i18n.t('commons.success'))
           this.canEdit = false
@@ -256,13 +254,13 @@ export default {
 }
 </script>
 <style scoped>
-.el-input {
+/* .el-input {
   width: 300px;
 }
 
 .el-select {
   width: 300px;
-}
+} */
 
 .ms-http-input {
   width: 500px;

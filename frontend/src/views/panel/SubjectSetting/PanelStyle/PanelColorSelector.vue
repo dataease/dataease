@@ -6,7 +6,7 @@
         width="400"
         trigger="click"
       >
-        <color-selector :source-type="sourceType" :chart="chart" @onColorChange="onColorChange" />
+        <color-selector :chart="chart" :property-inner="propertyInner" @onColorChange="onColorChange" />
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
@@ -27,6 +27,14 @@ export default {
       type: String,
       default: 'view',
       required: false
+    }
+  },
+  data() {
+    return {
+      propertyInner: [
+        'value',
+        'alpha'
+      ]
     }
   },
   methods: {
