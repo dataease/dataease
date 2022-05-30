@@ -1,6 +1,6 @@
 <template>
   <el-card class="el-card-main" :style="mainStyle">
-    <div id="main-attr" style="position: relative;">
+    <div id="main-attr" style="position: relative;" @mousedown.stop @mouseup.stop>
       <div v-if="attrShow('textAlign')" style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
           <el-radio-button
