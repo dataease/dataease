@@ -148,7 +148,7 @@ export function checkViewTitle(opt, id, tile) {
     const curPanelViewsData = store.state.componentViewsData
     const curComponentViewNames = []
     store.state.componentData.forEach(item => {
-      if (item.type === 'view' && item.propValue && item.propValue.viewId) {
+      if (item.type === 'view' && item.propValue && item.propValue.viewId && curPanelViewsData[item.propValue.viewId]) {
         // 更新时自己的title不加入比较
         if ((opt === 'update' && id !== item.propValue.viewId) || opt === 'new') {
           curComponentViewNames.push(curPanelViewsData[item.propValue.viewId].title)

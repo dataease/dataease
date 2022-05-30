@@ -501,13 +501,17 @@ export default {
         const customStyleChart = JSON.parse(this.chart.customStyle)
         const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
-        // 组件样式-背景设置
-        customStyleChart.background = customStylePanel.background
+        if (customStyleChart.background) {
+          // 组件样式-背景设置
+          customStyleChart.background = customStylePanel.background
+        }
         // 图形属性-颜色设置
         if (this.chart.type.includes('table')) {
           customAttrChart.color = customAttrPanel.tableColor
         } else {
-          customAttrChart.color = customAttrPanel.color
+          customAttrChart.color['value'] = customAttrPanel.color['value']
+          customAttrChart.color['colors'] = customAttrPanel.color['colors']
+          customAttrChart.color['alpha'] = customAttrPanel.color['alpha']
         }
         this.chart = {
           ...this.chart,
