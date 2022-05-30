@@ -36,6 +36,7 @@
       class="chart-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
+      @trigger-edit-click="pluginEditHandler"
     />
     <chart-component
       v-else-if="charViewShowFlag"
@@ -417,6 +418,9 @@ export default {
     }
   },
   methods: {
+    pluginEditHandler(e) {
+      this.$emit('trigger-plugin-edit', { e, id: this.element.id })
+    },
     batchOptChange(param) {
       if (this.curBatchOptComponents.includes(this.element.propValue.viewId)) {
         this.$store.state.styleChangeTimes++
