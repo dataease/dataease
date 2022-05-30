@@ -411,8 +411,7 @@ const list = [
       verticalAlign: 'middle',
       borderStyle: 'solid',
       borderColor: '#000000',
-      time_margin: 0,
-      padding: 10
+      time_margin: 0
     },
     formatInfo: {
       openMode: '0',

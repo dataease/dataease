@@ -1191,7 +1191,7 @@ export default {
       return this.chartConfig ? this.chartConfig.propertyInner : null
     },
     chartType() {
-      return this.chart.type
+      return this.chart ? this.chart.type : null
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
@@ -1199,7 +1199,8 @@ export default {
     ...mapState([
       'curComponent',
       'panelViewEditInfo',
-      'allViewRender'
+      'allViewRender',
+      'componentViewsData'
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1238,6 +1239,9 @@ export default {
     }
   },
   created() {
+    this.bindPluginEvent()
+    this.initFromPanel()
+    this.chartInit()
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
     if (plugins) {
       this.loadPluginType()
@@ -1253,9 +1257,6 @@ export default {
     }
   },
   mounted() {
-    this.bindPluginEvent()
-    this.initFromPanel()
-    this.chartInit()
   },
   activated() {
   },
@@ -1282,7 +1283,9 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
-      this.getData(this.param.id)
+      if (this.componentViewsData[this.param.id]) {
+        this.chart = this.componentViewsData[this.param.id]
+      }
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
@@ -1599,7 +1602,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
-        this.getData(this.param.id)
+        // this.getData(this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },

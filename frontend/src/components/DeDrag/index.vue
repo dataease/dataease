@@ -751,6 +751,9 @@ export default {
       }
       return [null, null]
     },
+    triggerPluginEdit(e) {
+      this.elementMouseDown(e)
+    },
     // 元素触摸按下
     elementTouchDown(e) {
       eventsFor = events.touch
