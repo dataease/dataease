@@ -1,38 +1,19 @@
 <template>
   <div>
-    <!-- 工具条组件 -->
-    <!-- <toolbar1
-      @measurement="measurement"
-      @baseMapChange="baseMapChange"
-      @draw="draw"
-      @showLegend="showLegend"
-      @showLayerList="showLayerList"
-    /> -->
-    <!-- 测量组件 -->
-    <!-- <Measurement :show="isShowMeasurement" @closMmeasurement="measurement" /> -->
     <!-- 地图部分 -->
     <div class="main">
-      <div :id="chartId" class="divView" :style="{ height: chartHeight }" />
+      <div :id="chartId" class="divView" :style="{height: chartHeight}"></div>
     </div>
   </div>
 </template>
 
 <script>
-  // import toolbar1 from "./components/toolbar1.vue"; // 工具条组件
-  // import Measurement from "./components/Measurement.vue"; // 测量组件
-  // import ArcGIS from "@/map/index.js";
-
-  // import ArcGIS from "@/map/init.js"
-  // const Map = new ArcGIS();
-
   import { loadModules,loadCss } from 'esri-loader'
   import config from '@/map/config.js'
 
   export default {
     name: "ArcGIS",
     components: {
-      // toolbar1,
-      // Measurement,
     },
     props: {
       chartId:{
@@ -43,10 +24,10 @@
         type: String,
         default: '300px'
       },
-      // chart: {
-      //   type: Object,
-      //   required: true
-      // }
+      chart: {
+        type: Object,
+        required: true
+      }
     },
     data() {
       return {
@@ -57,14 +38,12 @@
     },
     mounted() {
       console.log('chartId:    ',this.chartId,this.chart)
-      // Map.init(this.chartId)
       this.loadArcGIS(this.chartId)
     },
     methods: {
       // 地图展示
       loadArcGIS($el){
         let that = this
-
         // 加载地图必备样式文件
         loadCss("http://localhost:9528/arcgisapi/esri/css/main.css");
         loadCss("http://localhost:9528/arcgisapi/dijit/themes/claro/claro.css");
@@ -88,18 +67,18 @@
           config.loadConfig
         ).then(
           ([
-             Map,
-             MapView,
-             esriLang,
-             MapImageLayer,
-             Home,
-             ScaleBar,
-             SpatialReference,
-             PictureMarkerSymbol,
-             Graphic,
-             GraphicsLayer,
-             FeatureLayer,
-             Point
+            Map,
+            MapView,
+            esriLang,
+            MapImageLayer,
+            Home,
+            ScaleBar,
+            SpatialReference,
+            PictureMarkerSymbol,
+            Graphic,
+            GraphicsLayer,
+            FeatureLayer,
+            Point
            ]) => {
             var ygyx = new MapImageLayer({
               url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
@@ -107,24 +86,7 @@
               // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
               id:'ygyx'
             });
-
-            // let layer = new FeatureLayer({
-            //   url: '', // 特性图层的请求api 可以是官方，也可以是自己发布的图层地址
-            //   objectIdField: "ObjectID", // 如果不是远程图层链接，而是自己定义的数据源，这个值必须定义
-            //   geometryType: 'point', // 地理属性
-            //   spatialReference: {wkid: 4326},
-            //   source: '', //地图数据库，当没有远程图层地址时，可以自己构造数据源，
-            //   popupTemplate: '',  // 自定义弹出窗的对象,
-            //   renderer: '', // 自定义render函数
-            // })
-            // let layer = new FeatureLayer({
-            //   portalItem: {
-            //     id:
-            //   }
-            // })
-
             // 创建地图
-
             var map=new Map({
               // layers:[ygyx]
               basemap: 'osm',
@@ -178,10 +140,9 @@
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
-                Foo: 'Hello world!'
+                
               },
             });
-            console.log('gggggggggggggg',graphic)
             // 将图形添加到视图的图形层
             this.view.graphics.addMany([graphic])
 
@@ -191,10 +152,9 @@
             let mouseOn = _this.view.on('click', function (event) {//在MapView中添加鼠标监控事件
               _this.view.hitTest(event).then((res) => {
                 if (res.results.length) {
+                  // 获取每个图形上的 ID
+                  // this.$message.info(JSON.stringify(res.results[0].graphic.attributes))
                   let results = res.results
-                  // let results = res.results.filter((result) => { // 检查图形是否属于感兴趣的图层
-                  //   return result.graphic.layer.id === gl.id
-                  // })
                   if (results.length > 0) {
                     let g = results[0].graphic
                     let geo = g.geometry

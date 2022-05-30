@@ -1814,6 +1814,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       console.log('calcData：', view)
       if (!view) return
+      // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
@@ -2360,6 +2361,7 @@ export default {
       }
     },
     dragMoveDuplicate(list, e, mode) {
+      console.log("dragMoveDuplicate::::::::::",list,e,mode)
       if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
       } else {
@@ -2383,6 +2385,7 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
+      console.log('维度添加：',e,this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2409,6 +2412,7 @@ export default {
       this.calcData(true)
     },
     moveToDimension(e) {
+      console.log("moveToDimension:::::::::::",e)
       this.dragMoveDuplicate(this.dimensionData, e, 'ds')
       this.calcData(true)
     },

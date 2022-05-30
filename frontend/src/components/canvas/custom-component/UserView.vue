@@ -973,6 +973,7 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
+      console.log('getDataEdit::::',param)
       this.$store.state.styleChangeTimes++;
       if (param.type === "propChange") {
         this.getData(param.viewId, false);
