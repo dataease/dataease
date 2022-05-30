@@ -545,14 +545,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
-            if (this.isEdit) {
-              this.componentViewsData[this.chart.id] = {
-                'title': this.chart.title,
-                'render': this.chart.render,
-                'type': this.chart.type,
-                'isPlugin': this.chart.isPlugin
-              }
-            }
+            this.getDataOnly(response.data)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -609,7 +602,6 @@ export default {
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
       eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
     },
-
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
         (this.chart.type === 'map' || this.chart.type === 'buddle-map') && this.sendToChildren(param)
@@ -862,6 +854,21 @@ export default {
           this.componentViewsData[this.chart.id]['title'] = this.chart.title
         }
         this.mergeScale()
+      }
+    },
+    getDataOnly(sourceResponseData) {
+      if (this.isEdit) {
+        if ((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) {
+          viewData(this.chart.id, this.panelInfo.id, {
+            filter: [],
+            drill: [],
+            queryFrom: 'panel'
+          }).then(response => {
+            this.componentViewsData[this.chart.id] = response.data
+          })
+        } else {
+          this.componentViewsData[this.chart.id] = sourceResponseData
+        }
       }
     }
   }
