@@ -342,6 +342,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -415,6 +416,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -488,6 +490,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -560,6 +563,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -625,6 +629,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -764,7 +769,6 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
-        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -1069,6 +1073,7 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
+        'axisValue',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -1367,18 +1372,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1441,18 +1451,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1527,14 +1542,17 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-ext-selector': [
         'show',
@@ -1605,18 +1623,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1679,18 +1702,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1753,19 +1781,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
         'axisValue',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1828,20 +1860,24 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
         'axisValue',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
         'axisValue',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -2134,18 +2170,23 @@ export const TYPE_CONFIGS = [
         'formatter'
       ],
       'x-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'splitLine',
+        'axisLabel'
       ],
       'y-axis-selector': [
+        'axisForm',
         'show',
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
