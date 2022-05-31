@@ -121,7 +121,7 @@ public class PanelGroupService {
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")
-    public PanelGroup saveOrUpdate(PanelGroupRequest request) {
+    public String saveOrUpdate(PanelGroupRequest request) {
         String panelId = request.getId();
         if (StringUtils.isNotEmpty(panelId)) {
             panelViewService.syncPanelViews(request);
@@ -191,19 +191,9 @@ public class PanelGroupService {
                     request.setPid(panel.getPid());
                 }
             }
-
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), request.getPid(), null, sourceType);
         }
-
-        //带有权限的返回
-        PanelGroupRequest authRequest = new PanelGroupRequest();
-        authRequest.setId(panelId);
-        authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
-        if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
-            DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
-        }
-        return panelGroupDTOList.get(0);
+        return panelId;
     }
 
 

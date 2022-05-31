@@ -23,7 +23,7 @@
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
     </el-row>
-        <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
+    <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
       <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { panelSave } from '@/api/panel/panel'
+import { panelSaveWithData } from '@/api/panel/panel'
 import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -147,7 +147,7 @@ export default {
       }
       this.editPanel.panelInfo['newFrom'] = this.inputType
       this.loading = true
-      panelSave(this.editPanel.panelInfo).then(response => {
+      panelSaveWithData(this.editPanel.panelInfo).then(response => {
         this.$message({
           message: this.$t('commons.save_success'),
           type: 'success',
