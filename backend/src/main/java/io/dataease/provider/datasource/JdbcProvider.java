@@ -111,7 +111,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
-            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")) {
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris") || datasourceRequest.getDatasource().getType().equalsIgnoreCase("StarRocks")) {
                 datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
                 return fetchResultField(datasourceRequest);
             } else {
