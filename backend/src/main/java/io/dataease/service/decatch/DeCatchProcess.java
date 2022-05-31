@@ -37,7 +37,6 @@ public class DeCatchProcess {
 
     }
 
-    @Async("taskExecutor")
     public void cleanDataSet(Object pid) {
         CurrentUserDto user = AuthUtils.getUser();
         CacheUtils.remove(AuthConstants.USER_DATASET_NAME, "user" + user.getUserId());
@@ -51,7 +50,6 @@ public class DeCatchProcess {
         });
     }
 
-    @Async("taskExecutor")
     public void cleanDataSource(Object pid) {
         CurrentUserDto user = AuthUtils.getUser();
         CacheUtils.remove(AuthConstants.USER_LINK_NAME, "user" + user.getUserId());
