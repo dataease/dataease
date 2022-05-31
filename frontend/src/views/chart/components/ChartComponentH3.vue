@@ -86,7 +86,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      tableData: []
+      tableData: [],
+      graphicData: "",
     }
   },
   computed: {
@@ -268,16 +269,18 @@ export default {
           //给“地图视图”绑定点击事件
 
           view.popup.autoOpenEnabled = false
+          let that = this
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
             view.hitTest(event).then((res) => {
+              console.log(res)
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
                   let g = results[0].graphic
                   view.graphics.remove(g)
                   g.symbol.url = require("@/assets/point.png")
-                  console.log(g)
+                  that.graphicData = g
                   view.graphics.addMany([g])
                   let geo = g.geometry
                   let attr = g.attributes
@@ -290,6 +293,13 @@ export default {
                 }
               } else {
                 view.popup.close()
+                console.log(that.graphicData)
+                if(that.graphicData !== '') {
+                  view.graphics.remove(that.graphicData)
+                  that.graphicData.symbol.url = require('@/assets/point2.png')
+                  console.log(that.graphicData)
+                  view.graphics.addMany([that.graphicData])
+                }
               }
             })
           })
