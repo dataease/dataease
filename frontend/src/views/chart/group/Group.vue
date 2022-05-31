@@ -412,7 +412,8 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' },
-        { name: 'HighCharts', value: 'highcharts' }
+        { name: 'HighCharts', value: 'highcharts' },
+        { name: '其他', value: 'other' }
       ],
       searchPids: [], // 查询命中的pid
       filterText: '',

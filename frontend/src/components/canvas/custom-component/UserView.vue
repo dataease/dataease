@@ -69,17 +69,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <!--    <chart-component-hc-->
-    <!--      v-else-if="charViewHcShowFlag"-->
-    <!--      :ref="element.propValue.id"-->
-    <!--      class="chart-class"-->
-    <!--      :chart="chart"-->
-    <!--      :track-menu="trackMenu"-->
-    <!--      :search-count="searchCount"-->
-    <!--      :terminal-type="scaleCoefficientType"-->
-    <!--      @onChartClick="chartClick"-->
-    <!--      @onJumpClick="jumpClick"-->
-    <!--    />-->
+        <chart-component-hc
+          v-else-if="charViewHcShowFlag"
+          :ref="element.propValue.id"
+          class="chart-class"
+          :chart="chart"
+          :track-menu="trackMenu"
+          :search-count="searchCount"
+          :terminal-type="scaleCoefficientType"
+          @onChartClick="chartClick"
+          @onJumpClick="jumpClick"
+        />
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
@@ -248,16 +248,16 @@ export default {
         this.renderComponent() === 'echarts'
       )
     },
-    // charViewHcShowFlag() {
-    //   return (
-    //     this.httpRequest.status &&
-    //     this.chart.type &&
-    //     !this.chart.type.includes("table") &&
-    //     !this.chart.type.includes("text") &&
-    //     this.chart.type !== "label" &&
-    //     this.renderComponent() === "highcharts"
-    //   );
-    // },
+    charViewHcShowFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        !this.chart.type.includes("table") &&
+        !this.chart.type.includes("text") &&
+        this.chart.type !== "label" &&
+        this.renderComponent() === "highcharts"
+      );
+    },
     charViewG2ShowFlag() {
       return (
         this.httpRequest.status &&
@@ -282,7 +282,7 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.renderComponent() === 'highcharts'
+        this.renderComponent() === 'other'
       )
     },
     tableShowFlag() {

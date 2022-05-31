@@ -25,7 +25,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { BASE_PIE, basePieOption } from '@/views/chart/chart/pie/pie_hc'
 export default {
   components: {
-    ViewTrackBar,
+    ViewTrackBar
   },
   props: {
     chart: {
@@ -138,6 +138,7 @@ export default {
       if (chart.type === '3dpie') {
         console.log('3dpie...')
         this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+
         this.drawEcharts()
       } else if (chart.type === 'arc_map') {
         console.log('arcMap......')
@@ -158,7 +159,7 @@ export default {
       //   this.myChart.render()
       // }
     },
-    
+
     // 实例化arcgis地图
     drawArcMap(container,chart){
       console.log('arcMap::::::::::',container,chart)
@@ -257,15 +258,15 @@ export default {
 
           if(arr.includes('经度') && arr.includes('纬度') && arr.includes('街道名称') && arr.includes('街道简介')){
             let arrGrap =  this.loadPoint(arrObj,chart.data.tableRow)
-            
+
             arrGrap.forEach(item => {
               graphicView(item)
             })
-            
+
           }
 
           //给“地图视图”绑定点击事件
-          
+
           view.popup.autoOpenEnabled = false
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
@@ -308,8 +309,8 @@ export default {
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
                 url: require("@/assets/point2.png"),
                 // 图片大小
-                width: '78px',
-                height: '78px'
+                width: '49px',
+                height: '39px'
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
@@ -329,7 +330,7 @@ export default {
     loadPoint(data,items) {
       console.log(data,items)
       let objs = {}
-      
+
       for(let item of data) {
         if(item){
           let key = item.datainsName || index
