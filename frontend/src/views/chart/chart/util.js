@@ -1934,7 +1934,7 @@ export const TYPE_CONFIGS = [
         'labelLine',
         'fontSize',
         'color',
-        'position-v',
+        'position-pie',
         'formatter'
       ],
       'tooltip-selector': [
