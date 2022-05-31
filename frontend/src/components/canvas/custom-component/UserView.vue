@@ -973,19 +973,20 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
-      this.$store.state.styleChangeTimes++
-      if (param.type === 'propChange') {
-        this.getData(param.viewId, false)
-      } else if (param.type === 'styleChange') {
-        this.chart.customAttr = param.viewInfo.customAttr
-        this.chart.customStyle = param.viewInfo.customStyle
-        this.chart.senior = param.viewInfo.senior
-        this.chart.title = param.viewInfo.title
-        this.chart.stylePriority = param.viewInfo.stylePriority
-        this.sourceCustomAttrStr = this.chart.customAttr
-        this.sourceCustomStyleStr = this.chart.customStyle
-        this.mergeScale()
-        this.mergeStyle()
+      console.log('getDataEdit::::',param)
+      this.$store.state.styleChangeTimes++;
+      if (param.type === "propChange") {
+        this.getData(param.viewId, false);
+      } else if (param.type === "styleChange") {
+        this.chart.customAttr = param.viewInfo.customAttr;
+        this.chart.customStyle = param.viewInfo.customStyle;
+        this.chart.senior = param.viewInfo.senior;
+        this.chart.title = param.viewInfo.title;
+        this.chart.stylePriority = param.viewInfo.stylePriority;
+        this.sourceCustomAttrStr = this.chart.customAttr;
+        this.sourceCustomStyleStr = this.chart.customStyle;
+        this.mergeScale();
+        this.mergeStyle();
       }
     }
   }
