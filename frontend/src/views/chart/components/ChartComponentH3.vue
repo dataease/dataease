@@ -191,6 +191,7 @@ export default {
           "esri/layers/GraphicsLayer",
           "esri/layers/FeatureLayer",
           "esri/geometry/Point",
+          "esri/symbols/TextSymbol"
         ],
         config.loadConfig
       ).then(
@@ -206,7 +207,8 @@ export default {
           Graphic,
           GraphicsLayer,
           FeatureLayer,
-          Point
+          Point,
+          TextSymbol
         ]) => {
           var ygyx = new MapImageLayer({
             url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
@@ -225,10 +227,11 @@ export default {
             center: [120.585294, 31.299758],
             zoom: 14,
             popup: {
-              dockEnabled: true,
+              // collapseEnabled : false, // 是否需title点击折叠功能
+              dockEnabled: true,  // 指示弹出窗口的位置是否停靠在视图的一侧
               dockOptions: {
-                buttonEnabled: false,
-                breakpoint: false
+                buttonEnabled: true, // 开启固定标签页
+                breakpoint: true  // 开启 点击停靠气泡窗
               }
             },
             // rotation: 45
@@ -265,17 +268,23 @@ export default {
           
           view.popup.autoOpenEnabled = false
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
+            console.log(event)
             view.hitTest(event).then((res) => {
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
                   let g = results[0].graphic
+                  view.graphics.remove(g)
+                  g.symbol.url = require("@/assets/point.png")
+                  console.log(g)
+                  view.graphics.addMany([g])
                   let geo = g.geometry
                   let attr = g.attributes
-                  let point = new Point(geo.x, geo.y, view.spatialReference)
-                  view.popup.open({ location: point,
+                  // let point = new Point(geo.x, geo.y, view.spatialReference)
+                  view.popup.open({ 
+                    location: event.mapPoint,
                     title: attr.name,
-                    content: `<p style="width:350px;overflow: auto;white-space:break-spaces;" class="attr_content">${attr.desc}</p>`
+                    content: `<p style="width:350px;overflow: auto;white-space:break-spaces;">${attr.desc}</p>`
                   })
                 }
               } else {
@@ -297,15 +306,16 @@ export default {
                 //类型有 图片标记 和 点
                 type: 'picture-marker',
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
-                url: require("@/assets/point.png"),
+                url: require("@/assets/point2.png"),
                 // 图片大小
                 width: '78px',
                 height: '78px'
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
-                name: data.name,
-                desc: data.desc,
+                // name: data.name,
+                // desc: data.desc,
+                ...data
               },
             });
             // 将图形添加到视图的图形层
@@ -464,8 +474,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.attr_content {
-  overflow: auto;
-  white-space: break-spaces;
-}
+
 </style>
