@@ -809,7 +809,8 @@ export default {
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
-        this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
+        this.currentFilterCom.mobileStyle = deepCopy(BASE_MOBILE_STYLE)
+        this.currentFilterCom['hyperlinks'] = deepCopy(HYPERLINKS)
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
         if (this.currentWidget.filterDialog) {
