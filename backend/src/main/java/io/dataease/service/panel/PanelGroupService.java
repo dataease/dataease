@@ -121,20 +121,22 @@ public class PanelGroupService {
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")
-    public String saveOrUpdate(PanelGroupRequest request) {
+    public String save(PanelGroupRequest request) {
+        checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
+        String panelId = newPanel(request);
+        panelGroupMapper.insertSelective(request);
+        // 清理权限缓存
+        clearPermissionCache();
+        sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
+        return panelId;
+    }
+
+
+    public String update(PanelGroupRequest request) {
         String panelId = request.getId();
-        if (StringUtils.isNotEmpty(panelId)) {
-            panelViewService.syncPanelViews(request);
-        }
-        if (StringUtils.isEmpty(panelId)) { // 新建
-            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
-            panelId = newPanel(request);
-            panelGroupMapper.insertSelective(request);
-            // 清理权限缓存
-            clearPermissionCache();
-            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
-            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
-        } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
+        panelViewService.syncPanelViews(request);
+        if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE.SYSTEM);

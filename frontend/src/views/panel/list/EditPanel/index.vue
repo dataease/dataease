@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { panelSaveWithData } from '@/api/panel/panel'
+import { panelSave, panelUpdate } from '@/api/panel/panel'
 import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -147,17 +147,31 @@ export default {
       }
       this.editPanel.panelInfo['newFrom'] = this.inputType
       this.loading = true
-      panelSaveWithData(this.editPanel.panelInfo).then(response => {
-        this.$message({
-          message: this.$t('commons.save_success'),
-          type: 'success',
-          showClose: true
+      if (this.editPanel.optType === 'new') {
+        panelSave(this.editPanel.panelInfo).then(response => {
+          this.$message({
+            message: this.$t('commons.save_success'),
+            type: 'success',
+            showClose: true
+          })
+          this.loading = false
+          this.$emit('closeEditPanelDialog', response.data)
+        }).catch(() => {
+          this.loading = false
         })
-        this.loading = false
-        this.$emit('closeEditPanelDialog', response.data)
-      }).catch(() => {
-        this.loading = false
-      })
+      } else {
+        panelUpdate(this.editPanel.panelInfo).then(response => {
+          this.$message({
+            message: this.$t('commons.save_success'),
+            type: 'success',
+            showClose: true
+          })
+          this.loading = false
+          this.$emit('closeEditPanelDialog', response.data)
+        }).catch(() => {
+          this.loading = false
+        })
+      }
     },
     handleFileChange(e) {
       const file = e.target.files[0]

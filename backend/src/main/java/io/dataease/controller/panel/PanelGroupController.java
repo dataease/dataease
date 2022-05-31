@@ -62,20 +62,20 @@ public class PanelGroupController {
             @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
-    public String saveOrUpdate(@RequestBody PanelGroupRequest request) {
-        return panelGroupService.saveOrUpdate(request);
+    public PanelGroup save(@RequestBody PanelGroupRequest request) throws Exception{
+        String panelId = panelGroupService.save(request);
+        return findOne(panelId);
     }
 
-    @ApiOperation("保存并返回数据")
-    @PostMapping("/saveWithData")
+    @ApiOperation("更新")
+    @PostMapping("/update")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.PANEL, value = "id"),
             @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
-    public PanelGroup saveOrUpdateWithData(@RequestBody PanelGroupRequest request) throws Exception {
-        String panelId = panelGroupService.saveOrUpdate(request);
-        return findOne(panelId);
+    public String update(@RequestBody PanelGroupRequest request) {
+        return panelGroupService.update(request);
     }
 
     @ApiOperation("删除")
