@@ -2521,8 +2521,7 @@ export default {
 .view-panel-Mask {
   display: flex;
   height: calc(100vh - 60px);
-  background-color: #5c5e61;
-  opacity: 0.7;
+  background-color: rgba(92,94,97, 0.7);
   position:absolute;
   top:0px;
   left: 0px;
