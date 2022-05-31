@@ -228,7 +228,7 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, panelSave, initPanelData } from '@/api/panel/panel'
+import {addGroup, delGroup, groupTree, defaultTree, panelSave, initPanelData, panelUpdate} from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
@@ -779,7 +779,7 @@ export default {
     saveMoveGroup() {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
-      panelSave(this.moveInfo).then(response => {
+      panelUpdate(this.moveInfo).then(response => {
         this.tree()
         this.closeMoveGroup()
       })

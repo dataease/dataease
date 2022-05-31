@@ -121,20 +121,22 @@ public class PanelGroupService {
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")
-    public PanelGroup saveOrUpdate(PanelGroupRequest request) {
+    public String save(PanelGroupRequest request) {
+        checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
+        String panelId = newPanel(request);
+        panelGroupMapper.insertSelective(request);
+        // 清理权限缓存
+        clearPermissionCache();
+        sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
+        return panelId;
+    }
+
+
+    public String update(PanelGroupRequest request) {
         String panelId = request.getId();
-        if (StringUtils.isNotEmpty(panelId)) {
-            panelViewService.syncPanelViews(request);
-        }
-        if (StringUtils.isEmpty(panelId)) { // 新建
-            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
-            panelId = newPanel(request);
-            panelGroupMapper.insertSelective(request);
-            // 清理权限缓存
-            clearPermissionCache();
-            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
-            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
-        } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
+        panelViewService.syncPanelViews(request);
+        if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE.SYSTEM);
@@ -191,19 +193,9 @@ public class PanelGroupService {
                     request.setPid(panel.getPid());
                 }
             }
-
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), request.getPid(), null, sourceType);
         }
-
-        //带有权限的返回
-        PanelGroupRequest authRequest = new PanelGroupRequest();
-        authRequest.setId(panelId);
-        authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
-        if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
-            DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
-        }
-        return panelGroupDTOList.get(0);
+        return panelId;
     }
 
 

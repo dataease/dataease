@@ -1,5 +1,6 @@
 package io.dataease.service.datasource;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
@@ -8,14 +9,13 @@ import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.dto.DriverDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.i18n.Translator;
-import io.dataease.plugins.common.base.domain.Datasource;
-import io.dataease.plugins.common.base.domain.DeDriver;
-import io.dataease.plugins.common.base.domain.DeDriverDetails;
-import io.dataease.plugins.common.base.domain.DeDriverDetailsExample;
+import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DeDriverDetailsMapper;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.provider.ProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -78,6 +75,15 @@ public class DriverService {
     }
 
     public DeDriver save(DeDriver deDriver) {
+        if(StringUtils.isEmpty(deDriver.getName()) || StringUtils.isEmpty(deDriver.getType())){
+            throw new RuntimeException("Name or Type cannot be empty.");
+        }
+        DeDriverExample example = new DeDriverExample();
+        example.createCriteria().andNameEqualTo(deDriver.getName());
+        if(CollectionUtil.isNotEmpty(deDriverMapper.selectByExample(example))){
+            throw new RuntimeException(Translator.get("I18N_DRIVER_REPEAT_NAME"));
+        }
+
         deDriver.setCreateTime(System.currentTimeMillis());
         deDriver.setId(UUID.randomUUID().toString());
         deDriverMapper.insert(deDriver);
@@ -96,12 +102,15 @@ public class DriverService {
         return deDriverDetailsMapper.selectByExampleWithBLOBs(example);
     }
 
-    public void deleteDriverFile(String driverFileId) {
+    public void deleteDriverFile(String driverFileId) throws Exception{
         DeDriverDetails deDriverDetails = deDriverDetailsMapper.selectByPrimaryKey(driverFileId);
+        DeDriver deDriver = deDriverMapper.selectByPrimaryKey(deDriverDetails.getDeDriverId());
         DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), deDriverDetails.getDeDriverId(), null, null);
         DeLogUtils.save(sysLogDTO);
         deDriverDetailsMapper.deleteByPrimaryKey(driverFileId);
+        DefaultJdbcProvider defaultJdbcProvider = (DefaultJdbcProvider)ProviderFactory.getProvider(deDriver.getType());
+        defaultJdbcProvider.reloadCustomJdbcClassLoader(deDriver);
     }
 
     public DeDriverDetails saveJar(MultipartFile file, String driverId) throws Exception {
@@ -129,6 +138,9 @@ public class DriverService {
         deDriverDetailsMapper.insert(deDriverDetails);
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.UPLOADFILE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), driverId, null, null);
         DeLogUtils.save(sysLogDTO);
+        DeDriver deDriver = deDriverMapper.selectByPrimaryKey(driverId);
+        DefaultJdbcProvider defaultJdbcProvider = (DefaultJdbcProvider)ProviderFactory.getProvider(deDriver.getType());
+        defaultJdbcProvider.reloadCustomJdbcClassLoader(deDriver);
         return deDriverDetails;
     }
 

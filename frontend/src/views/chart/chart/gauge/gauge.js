@@ -130,7 +130,7 @@ export function baseGaugeOption(chart_option, chart, scale = 1) {
       }
     }
   }
-  console.log(chart_option.series[0])
+  // console.log(chart_option.series[0])
   // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
