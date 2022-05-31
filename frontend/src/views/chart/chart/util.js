@@ -344,7 +344,7 @@ export const TYPE_CONFIGS = [
     icon: '3dpie'
   },
   {
-    render: 'highcharts',
+    render: 'other',
     category: 'chart.chart_type_distribute',
     value: 'arc_map',
     title: 'chart.chart_arcgis_map',

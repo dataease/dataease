@@ -69,17 +69,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <!--    <chart-component-hc-->
-    <!--      v-else-if="charViewHcShowFlag"-->
-    <!--      :ref="element.propValue.id"-->
-    <!--      class="chart-class"-->
-    <!--      :chart="chart"-->
-    <!--      :track-menu="trackMenu"-->
-    <!--      :search-count="searchCount"-->
-    <!--      :terminal-type="scaleCoefficientType"-->
-    <!--      @onChartClick="chartClick"-->
-    <!--      @onJumpClick="jumpClick"-->
-    <!--    />-->
+        <chart-component-hc
+          v-else-if="charViewHcShowFlag"
+          :ref="element.propValue.id"
+          class="chart-class"
+          :chart="chart"
+          :track-menu="trackMenu"
+          :search-count="searchCount"
+          :terminal-type="scaleCoefficientType"
+          @onChartClick="chartClick"
+          @onJumpClick="jumpClick"
+        />
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
@@ -248,16 +248,16 @@ export default {
         this.renderComponent() === 'echarts'
       )
     },
-    // charViewHcShowFlag() {
-    //   return (
-    //     this.httpRequest.status &&
-    //     this.chart.type &&
-    //     !this.chart.type.includes("table") &&
-    //     !this.chart.type.includes("text") &&
-    //     this.chart.type !== "label" &&
-    //     this.renderComponent() === "highcharts"
-    //   );
-    // },
+    charViewHcShowFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        !this.chart.type.includes("table") &&
+        !this.chart.type.includes("text") &&
+        this.chart.type !== "label" &&
+        this.renderComponent() === "highcharts"
+      );
+    },
     charViewG2ShowFlag() {
       return (
         this.httpRequest.status &&
@@ -282,7 +282,7 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.renderComponent() === 'highcharts'
+        this.renderComponent() === 'other'
       )
     },
     tableShowFlag() {
@@ -973,19 +973,20 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
-      this.$store.state.styleChangeTimes++
-      if (param.type === 'propChange') {
-        this.getData(param.viewId, false)
-      } else if (param.type === 'styleChange') {
-        this.chart.customAttr = param.viewInfo.customAttr
-        this.chart.customStyle = param.viewInfo.customStyle
-        this.chart.senior = param.viewInfo.senior
-        this.chart.title = param.viewInfo.title
-        this.chart.stylePriority = param.viewInfo.stylePriority
-        this.sourceCustomAttrStr = this.chart.customAttr
-        this.sourceCustomStyleStr = this.chart.customStyle
-        this.mergeScale()
-        this.mergeStyle()
+      console.log('getDataEdit::::',param)
+      this.$store.state.styleChangeTimes++;
+      if (param.type === "propChange") {
+        this.getData(param.viewId, false);
+      } else if (param.type === "styleChange") {
+        this.chart.customAttr = param.viewInfo.customAttr;
+        this.chart.customStyle = param.viewInfo.customStyle;
+        this.chart.senior = param.viewInfo.senior;
+        this.chart.title = param.viewInfo.title;
+        this.chart.stylePriority = param.viewInfo.stylePriority;
+        this.sourceCustomAttrStr = this.chart.customAttr;
+        this.sourceCustomStyleStr = this.chart.customStyle;
+        this.mergeScale();
+        this.mergeStyle();
       }
     }
   }
