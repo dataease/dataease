@@ -5,17 +5,18 @@
         <div class="field-content">
 
           <div class="field-content-right">
-            <el-row style="display:inline-flex;height: 32px;width: auto;">
+            <el-row style="display:inline-flex;height: 32px;width: 100%;">
               <draggable
                 v-model="element.options.attrs.dragItems"
+                tag="v-layout"
                 group="dimension"
                 animation="300"
                 :move="onMove"
-                class="theme-drag"
+                class="row wrap justify-space-around theme-drag"
                 style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
-                <div class="list-group-container">
+                <!-- <div class="list-group-container">
                   <drag-item
                     v-for="(item,index) in element.options.attrs.dragItems"
                     :key="item.id"
@@ -23,8 +24,21 @@
                     :index="index"
                     @closeItem="closeItem"
                   />
-                </div>
-                <transition-group class="list-group" :data-value="$t('panel.drag_here')" />
+                </div> -->
+                <v-flex v-for="(item,index) in element.options.attrs.dragItems" :key="item.id">
+
+                  <drag-item :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
+                </v-flex>
+                <!-- <transition-group class="list-group" :data-value="$t('panel.drag_here')">
+                  <drag-item
+                    v-for="(item,index) in element.options.attrs.dragItems"
+                    :key="item.id"
+                    :item="item"
+                    :index="index"
+                    @closeItem="closeItem"
+                  />
+                </transition-group> -->
+                <span solt="footer">{{ $t('panel.drag_here') }}</span>
               </draggable>
             </el-row>
           </div>

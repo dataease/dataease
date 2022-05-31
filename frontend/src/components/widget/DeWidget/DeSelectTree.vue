@@ -129,7 +129,8 @@ export default {
         this.$nextTick(() => {
           this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
         })
-      }) || (this.element.options.value = '')
+      })
+      this.element.options.value = ''
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
