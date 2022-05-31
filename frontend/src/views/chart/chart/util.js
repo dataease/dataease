@@ -944,6 +944,11 @@ export const TYPE_CONFIGS = [
         'orient',
         'textStyle',
         'hPosition'
+      ],
+      'split-selector-ant-v': [
+        'splitForm',
+        'name',
+        'lineStyle'
       ]
     }
   },
