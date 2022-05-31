@@ -299,8 +299,8 @@ export default {
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
                 url: require("@/assets/point.png"),
                 // 图片大小
-                width: '32px',
-                height: '48px'
+                width: '78px',
+                height: '78px'
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
