@@ -1349,7 +1349,7 @@ export default {
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     datasource: '數據源',
-    please_select_left: '請從左側選擇數據源',
+    please_select_left: '請從左側選擇',
     show_info: '數據源信息',
     create: '新建數據源',
     type: '類型',
