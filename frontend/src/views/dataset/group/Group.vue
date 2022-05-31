@@ -531,6 +531,9 @@ export default {
         if (!userCache) {
           this.tData = res.data
         }
+        this.$nextTick(() => {
+          this.$refs.datasetTreeRef.filter(this.filterText)
+        })
       })
     },
 
