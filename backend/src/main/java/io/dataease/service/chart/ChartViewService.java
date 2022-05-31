@@ -419,24 +419,18 @@ public class ChartViewService {
             }
             datasourceRequest.setQuery(sql);
             data = datasourceProvider.getData(datasourceRequest);
-
-            Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
-            Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-
             return data;
             // 如果是插件到此结束
         }
 
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
-            // Datasource ds = datasourceService.get(table.getDataSourceId());
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
             if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
-            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());

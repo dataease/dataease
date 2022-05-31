@@ -9,7 +9,6 @@
       <el-row v-show="showView === 'Datasource'">
         <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder"> {{ $t('datasource.create') }}</el-button>
         <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;" @click="driverMgm"> {{ $t('driver.mgm') }}</el-button>
-        </el-button>
       </el-row>
 
       <el-row class="title-css" v-show="showView === 'Driver'">
@@ -324,12 +323,14 @@ export default {
     },
 
     driverMgm() {
+      this.$emit('switch-main', {})
       this.showView = 'Driver'
       this.expandedArray = []
       this.tData = []
       this.queryTreeDatas()
     },
     dsMgm() {
+      this.$emit('switch-main', {})
       this.showView = 'Datasource'
       this.expandedArray = []
       this.tData = []
