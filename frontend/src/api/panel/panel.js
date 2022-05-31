@@ -72,6 +72,14 @@ export function panelSave(data) {
     data
   })
 }
+export function panelSaveWithData(data) {
+  return request({
+    url: 'panel/group/saveWithData',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
 export function findOne(id) {
   return request({
     url: 'panel/group/findOne/' + id,
