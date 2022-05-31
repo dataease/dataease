@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
+import Vuetify from 'vuetify'
 import Fit2CloudUI from 'fit2cloud-ui'
 
 import i18n from './lang' // internationalization
@@ -51,7 +52,7 @@ Vue.use(fullscreen)
 import VueFriendlyIframe from 'vue-friendly-iframe'
 
 Vue.use(VueFriendlyIframe)
-
+Vue.use(Vuetify)
 // import TEditor from '@/components/Tinymce/index.vue'
 // Vue.component('TEditor', TEditor)
 

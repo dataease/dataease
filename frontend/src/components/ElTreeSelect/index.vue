@@ -408,6 +408,7 @@ export default {
     // 树点击
     _treeNodeClickFun(data, node, vm) {
       const { multiple } = this.selectParams
+      if (multiple) return // 多选 不允许点击节点
       const { clickParent } = this.treeParams
       const checkStrictly = this.treeParams['check-strictly']
       const { propsValue, propsChildren, propsDisabled } = this
@@ -481,16 +482,42 @@ export default {
       this.$emit('check', data, node, vm)
       this._emitFun()
     },
+    allKidIds(node, ids) {
+      ids = ids || []
+      if (!node) {
+        return
+      }
+      const stack = []
+      stack.push(node)
+      let tmpNode
+      while (stack.length > 0) {
+        tmpNode = stack.pop()
+        ids.push(tmpNode.id)
+        if (tmpNode.children && tmpNode.children.length > 0) {
+          var i = tmpNode.children.length - 1
+          for (i = tmpNode.children.length - 1; i >= 0; i--) {
+            stack.push(tmpNode.children[i])
+          }
+        }
+      }
+      return ids
+    },
     // 下拉框移除tag时触发
     _selectRemoveTag(tag) {
       const { data, propsValue, propsLabel, propsChildren } = this
+      const { multiple } = this.selectParams
       each(
         data,
         item => {
           const labels = this.showParent ? this.cascadeLabels(item) : item[propsLabel]
           if (labels === tag) {
-            const value = item[propsValue]
-            this.ids = this.ids.filter(id => id !== value)
+            if (multiple && item.children && item.children.length) {
+              const needCancelIds = this.allKidIds(item) || []
+              this.ids = this.ids.filter(id => !needCancelIds.includes(id))
+            } else {
+              const value = item[propsValue]
+              this.ids = this.ids.filter(id => id !== value)
+            }
           }
         },
         propsChildren
