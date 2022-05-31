@@ -1,5 +1,6 @@
 package io.dataease.dto.chart;
 
+import com.google.gson.annotations.SerializedName;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,4 +33,12 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private List<ChartExtFilterRequest> drillFilters;
     @ApiModelProperty("视图存放位置")
     private String position;
+    @SerializedName("xaxis")
+    private String xAxis;
+    @SerializedName("xaxisExt")
+    private String xAxisExt;
+    @SerializedName("yaxis")
+    private String yAxis;
+    @SerializedName("yaxisExt")
+    private String yAxisExt;
 }

@@ -2355,13 +2355,15 @@ export function getColors(chart, colors, reset) {
     } else {
       series = JSON.parse(chart.yaxis)
     }
-    for (let i = 0; i < series.length; i++) {
-      const s = series[i]
-      seriesColors.push({
-        name: s.name,
-        color: colors[i % colors.length],
-        isCustom: false
-      })
+    if (series) {
+      for (let i = 0; i < series.length; i++) {
+        const s = series[i]
+        seriesColors.push({
+          name: s.name,
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
     }
   } else {
     if (chart.data) {
