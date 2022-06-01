@@ -1031,7 +1031,11 @@ public class MysqlQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(MySQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
-            } else {
+            }
+            else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(MySQLConstants.GROUP_CONCAT, originField);
+            }
+            else {
                 fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {

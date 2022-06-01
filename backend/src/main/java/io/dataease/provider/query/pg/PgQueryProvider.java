@@ -6,10 +6,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
-import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.constants.PgConstants;
-import io.dataease.plugins.common.constants.SQLConstants;
-import io.dataease.plugins.common.constants.SqlServerSQLConstants;
+import io.dataease.plugins.common.constants.*;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -1021,7 +1018,10 @@ public class PgQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(PgConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
-            } else {
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(PgConstants.GROUP_CONCAT, originField);
+            }
+            else {
                 fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {
