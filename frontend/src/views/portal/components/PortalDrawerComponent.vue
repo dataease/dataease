@@ -1,21 +1,15 @@
 <template>
   <div class="portal-drawer-container">
-    <el-drawer
-      :visible.sync="syncVisible"
-      size="80%"
-      direction="rtl"
-      :show-close="false"
-      :withHeader="false"
-    >
+    <el-drawer :visible.sync="syncVisible" size="80%" direction="rtl" :show-close="false" :withHeader="false">
       <div class="portal-drawer-container-container">
         <div class="header">
           <div class="left">
-            <i class="el-icon-close" @click="syncVisible = false"></i>
+            <i class="el-icon-close"></i>
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
           <div class="right">
             <div class="wrapper">
-              <i class="el-icon-setting"></i>
+              <i class="el-icon-setting" @click="handleOpenConfigDrawer"></i>
             </div>
             <div class="wrapper">
               <el-radio-group v-model="activeTab" size="mini" round>
@@ -30,46 +24,18 @@
         </div>
         <div class="content">
           <el-container class="config-container">
-            <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
-              v-if="
-                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'top'
-              "
-            >
+            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'top'">
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
-                <el-menu
-                  :default-active="topActiveTab"
-                  class="top-nav-menu"
-                  mode="horizontal"
-                  :background-color="themeColor"
-                  active-text-color="#fff"
-                  @select="handleTopSelect"
-                >
-                  <el-menu-item
-                    index="0"
-                    :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }"
-                    >一级菜单</el-menu-item
-                  >
+                <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
+                  <el-menu-item index="0" :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }">一级菜单</el-menu-item>
                   <!-- <el-menu-item index="1" :style="{ borderColor: topActiveTab == 1 ? '#429eff' : '' }">二级菜单</el-menu-item> -->
                 </el-menu>
               </div>
             </el-header>
             <el-container>
-              <el-aside
-                class="config-aside"
-                width="200px"
-                :style="{ backgroundColor: themeColor }"
-                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
-              >
-                <el-menu
-                  default-active="0-1"
-                  class="el-menu-vertical-demo"
-                  :background-color="themeColor"
-                  text-color="#fff"
-                >
+              <el-aside class="config-aside" width="200px" :style="{ backgroundColor: themeColor }" v-if="navLayoutStyle == 0 || navLayoutStyle == 1">
+                <el-menu default-active="0-1" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
                   <el-submenu index="0">
                     <template slot="title">
                       <i class="el-icon-menu"></i>
@@ -83,29 +49,11 @@
               </el-aside>
               <el-main class="config-main">Main</el-main>
             </el-container>
-            <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
-              v-if="
-                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'bottom'
-              "
-            >
+            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'bottom'">
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
-                <el-menu
-                  :default-active="topActiveTab"
-                  class="top-nav-menu"
-                  mode="horizontal"
-                  :background-color="themeColor"
-                  active-text-color="#fff"
-                  @select="handleTopSelect"
-                >
-                  <el-menu-item
-                    index="0"
-                    :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }"
-                    >一级菜单</el-menu-item
-                  >
+                <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
+                  <el-menu-item index="0" :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }">一级菜单</el-menu-item>
                   <!-- <el-menu-item index="1" :style="{ borderColor: topActiveTab == 1 ? '#429eff' : '' }">二级菜单</el-menu-item> -->
                 </el-menu>
               </div>
@@ -116,80 +64,62 @@
             <div class="config-wrapper">
               <div class="wrapper horization">
                 <div class="name">标题设置</div>
-                <input
-                  class="name-input"
-                  v-model="portalName"
-                  size="small"
-                  placeholder="未命名标题"
-                />
+                <input class="name-input" v-model="portalName" size="small" placeholder="未命名标题" />
               </div>
               <div class="wrapper">
                 <div class="name">PC端样式</div>
                 <div class="layout">
                   <div class="item" @click="setNavLayoutStyle(0)">
-                    <img
-                      :class="{ active: navLayoutStyle == 0 }"
-                      src="./left-top-layout.png"
-                      alt=""
-                    />
+                    <img :class="{ active: navLayoutStyle == 0 }" src="./left-top-layout.png" alt="" />
                     <span class="item-name">双导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(1)">
-                    <img
-                      :class="{ active: navLayoutStyle == 1 }"
-                      src="./only-left-layout.png"
-                      alt=""
-                    />
+                    <img :class="{ active: navLayoutStyle == 1 }" src="./only-left-layout.png" alt="" />
                     <span class="item-name">左导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(2)">
-                    <img
-                      :class="{ active: navLayoutStyle == 2 }"
-                      src="./only-top-layout.png"
-                      alt=""
-                    />
+                    <img :class="{ active: navLayoutStyle == 2 }" src="./only-top-layout.png" alt="" />
                     <span class="item-name">顶部导航布局</span>
                   </div>
                 </div>
               </div>
               <div class="wrapper">
                 <div class="name">一级导航位置</div>
-                <el-radio-group
-                  v-model="topNavPosRadio"
-                  @change="handleChangeTopNavPosRadio"
-                >
+                <el-radio-group v-model="topNavPosRadio" @change="handleChangeTopNavPosRadio">
                   <el-radio label="top">顶部</el-radio>
                   <el-radio label="bottom">底部</el-radio>
                 </el-radio-group>
               </div>
               <div class="wrapper">
                 <div class="name">主题设置</div>
-                <el-color-picker
-                  v-model="themeColor"
-                  size="small"
-                  @change="handleChangeThemeColor"
-                ></el-color-picker>
+                <el-color-picker v-model="themeColor" size="small" @change="handleChangeThemeColor"></el-color-picker>
               </div>
             </div>
           </div>
         </div>
       </div>
     </el-drawer>
+    <PortConfigDrawerComponent :portalName="portalName" :visible.sync="showPortConfigDrawerComponent" :themeColor="themeColor" :navLayoutStyle="navLayoutStyle" :topNavPosRadio="topNavPosRadio"></PortConfigDrawerComponent>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters } from "vuex";
+import PortConfigDrawerComponent from "./PortalConfigDrawerComponent.vue";
 export default {
+  components: {
+    PortConfigDrawerComponent,
+  },
   props: {
     visible: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
 
   data() {
     return {
+      showPortConfigDrawerComponent: false,
       activeTab: "edit", // 当前最顶部nav中是编辑还是预览
       topActiveTab: "0", // 当前顶部导航栏选择的下标选项
       topNavPosRadio: "top", //  当前一级导航的位置
@@ -236,6 +166,10 @@ export default {
     handleTopSelect(active) {
       console.log("active", active);
       this.topActiveTab = active;
+    },
+    // 打开配置
+    handleOpenConfigDrawer() {
+      this.showPortConfigDrawerComponent = true;
     },
   },
 };

@@ -1,0 +1,477 @@
+<template>
+  <div class="portal-config-drawer-container">
+    <el-drawer :visible.sync="syncVisible" size="80%" direction="rtl" :show-close="false" :withHeader="false">
+      <div class="portal-config-drawer-container-container">
+        <div class="header">
+          <div class="left">
+            <i class="el-icon-close" @click="syncVisible = false"></i>
+            <div class="name">{{ portalName || "未命名站点" }}</div>
+          </div>
+          <div class="right">
+            <div class="wrapper">
+              <el-radio-group v-model="activeTab" size="mini" round>
+                <el-radio-button label="edit">编辑</el-radio-button>
+                <el-radio-button label="preview">预览</el-radio-button>
+              </el-radio-group>
+            </div>
+            <div class="wrapper">
+              <el-button type="primary" round size="mini">保 存</el-button>
+            </div>
+          </div>
+        </div>
+        <div class="content">
+          <el-container class="config-container">
+            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'top'">
+              <div class="title">{{ portalName || "未命名站点" }}</div>
+              <div class="tabs">
+                <template v-if="navLayoutStyle == 0">
+                  <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
+                    <el-menu-item v-for="(item, index) in treeData" :key="item.id" :index="index">
+                      <template slot="title">
+                        <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+                        <span slot="title">{{ item.label }}</span>
+                      </template>
+                    </el-menu-item>
+                  </el-menu>
+                </template>
+                <template v-else-if="navLayoutStyle == 2">
+                  <el-menu :default-active="currentTreeNode.id" mode="horizontal" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
+                  </el-menu>
+                </template>
+              </div>
+            </el-header>
+            <el-container>
+              <el-aside class="config-aside" width="200px" :style="{ backgroundColor: themeColor }" v-if="navLayoutStyle == 0 || navLayoutStyle == 1">
+                <el-menu :default-active="currentTreeNode.id" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+                  <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
+                </el-menu>
+              </el-aside>
+              <el-main class="config-main">Main</el-main>
+            </el-container>
+            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'bottom'">
+              <div class="title">{{ portalName || "未命名站点" }}</div>
+              <div class="tabs">
+                <template v-if="navLayoutStyle == 0">
+                  <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
+                    <el-menu-item v-for="(item, index) in treeData" :key="item.id" :index="index">
+                      <template slot="title">
+                        <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+                        <span slot="title">{{ item.label }}</span>
+                      </template>
+                    </el-menu-item>
+                  </el-menu>
+                </template>
+                <template v-else-if="navLayoutStyle == 2">
+                  <el-menu :default-active="currentTreeNode.id" mode="horizontal" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
+                  </el-menu>
+                </template>
+              </div>
+            </el-header>
+          </el-container>
+          <div class="right-config-container">
+            <div class="left">
+              <div class="title">菜单配置</div>
+              <div class="left-content">
+                <el-button type="primary" size="mini" @click="handleAddMainMenu">+添加主菜单</el-button>
+                <el-tree
+                  node-key="id"
+                  draggable
+                  :data="treeData"
+                  :highlight-current="true"
+                  default-expand-all
+                  :expand-on-click-node="false"
+                  check-on-click-node
+                  @node-click="handleNodeClick"
+                  :allow-drop="handleAllowDrop"
+                >
+                  <span class="custom-tree-node" slot-scope="{ node, data }" @mouseenter="handleTreeNodeMouseEnter(node)" @mouseleave="handleTreeNodeMouseLeave(node)">
+                    <span>{{ node.label }}</span>
+                    <span v-if="node.data.showOption && data.level < 3">
+                      <i class="el-icon-plus" @click.stop="handleAddTreeSubNode(node)"></i>
+                      <i class="el-icon-delete" @click.stop="handleDeleteTreeNode(node)"></i>
+                    </span>
+                  </span>
+                </el-tree>
+              </div>
+            </div>
+            <div class="right">
+              <div class="title">内容设置</div>
+              <div class="right-content" v-if="currentTreeNode.id">
+                <div class="config-title">菜单显示名称</div>
+                <el-input class="config-input" v-model="currentTreeNode.label" size="mini" placeholder="显示名称"></el-input>
+                <el-checkbox class="config-checkbox" v-model="currentTreeNode.showMenuIcon">显示菜单icon</el-checkbox>
+                <el-select class="config-input" size="mini">
+                  <el-option></el-option>
+                </el-select>
+                <el-checkbox class="config-checkbox" v-model="currentTreeNode.isMenuFoldindg">菜单允许折叠</el-checkbox>
+                <el-checkbox class="config-checkbox" v-model="currentTreeNode.isMenuDefaultFolding">菜单默认折叠</el-checkbox>
+                <!-- <el-checkbox class="config-checkbox" v-model="currentTreeNode.isNodeNull">设为空节点</el-checkbox> -->
+                <div class="config-title">内容设置</div>
+                <el-select class="config-input" size="mini">
+                  <el-option></el-option>
+                </el-select>
+                <el-button class="config-btn" type="primary" size="mini">更新</el-button>
+                <div class="config-title">查看方式</div>
+                <el-radio-group v-model="currentTreeNode.viewMode">
+                  <el-radio class="config-radio" label="current">当前页面打开</el-radio>
+                  <el-radio class="config-radio" label="_blank">新窗口打开</el-radio>
+                </el-radio-group>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations, mapGetters } from "vuex";
+import PortalMenu from "./PortalMenu.vue";
+export default {
+  components: {
+    PortalMenu,
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+    themeColor: String,
+    topNavPosRadio: String,
+    navLayoutStyle: String,
+    portalName: String, // 当前门户的名称
+  },
+
+  data() {
+    return {
+      activeTab: "edit", // 当前最顶部nav中是编辑还是预览
+      topActiveTab: "0", // 当前顶部导航栏选择的下标选项
+      treeData: [],
+      treeId: 0,
+      currentTreeNode: {},
+    };
+  },
+  computed: {
+    // ...mapGetters([
+    //   "navLayoutStyle", // 0 top-left 1 left 2 top
+    // ]),
+    syncVisible: {
+      get() {
+        return this.visible;
+      },
+      set(val) {
+        this.$emit("update:visible", val);
+      },
+    },
+
+    subTreeDatas() {
+      const treeData = this.treeData.slice(0);
+      if (this.navLayoutStyle == 0) {
+        const subs = [];
+        treeData.forEach((item) => {
+          item.children.forEach((sub) => {
+            subs.push(sub);
+          });
+        });
+        return subs;
+      } else if (this.navLayoutStyle == 1 && this.navLayoutStyle == 2) {
+        return treeData;
+      }
+      return treeData;
+    },
+  },
+
+  methods: {
+    // ...mapMutations({
+    //   setTopNavPosRadio: "SET_TOP_NAV_POS_RADIO",
+    //   setThemeColor: "SET_THEME_COLOR",
+    //   setNavLayoutStyle: "SET_NAV_LAYOUT_STYLE",
+    // }),
+    // 一级导航位置
+    handleChangeTopNavPosRadio(radio) {
+      console.log("radio", radio);
+      // this.setTopNavPosRadio(radio);
+    },
+    // 选择主题设置
+    handleChangeThemeColor(color) {
+      console.log("color", color);
+      // this.setThemeColor(color);
+    },
+    setNavLayoutStyle(style) {
+      this.navLayoutStyle = style;
+    },
+    // 添加主菜单
+    handleAddMainMenu() {
+      this.treeData.push({
+        id: (this.treeId += 1),
+        label: "一级菜单",
+        children: [],
+        showMenuIcon: true, // 显示菜单icon
+        isMenuFoldindg: true, // 菜单允许折叠
+        isMenuDefaultFolding: true, // 菜单默认折叠
+        isNodeNull: false, // 设置为空节点
+        viewMode: "current", // _blank
+        showOption: false,
+        level: 1,
+        index: "1",
+      });
+    },
+    _checkArrayHasValue(arr) {
+      return arr && arr.length;
+    },
+    // 点击节点时候触发
+    handleNodeClick(node) {
+      // console.log("node", node);
+      this.currentTreeNode = node;
+    },
+    // 鼠标移入该节点的时候触发
+    handleTreeNodeMouseEnter(node) {
+      // console.log("node enter", node);
+      node.data.showOption = true;
+    },
+    // 鼠标移除该节点的时候触发
+    handleTreeNodeMouseLeave(node) {
+      // console.log("node leave", node);
+      node.data.showOption = false;
+    },
+    // 添加子节点
+    handleAddTreeSubNode(node) {
+      console.log("handleAddTreeSubNode node", node);
+      this.treeId += 1;
+      const treeId = this.treeId;
+      const level = node.data.level + 1;
+
+      if (node.data.level == 1) {
+        const foundIndex = this.treeData.findIndex((item) => item.id == node.data.id);
+        this.treeData[foundIndex].children.push({
+          id: treeId,
+          label: "二级菜单",
+          children: [],
+          showMenuIcon: true, // 显示菜单icon
+          isMenuFoldindg: true, // 菜单允许折叠
+          isMenuDefaultFolding: true, // 菜单默认折叠
+          isNodeNull: false, // 设置为空节点
+          viewMode: "current", // _blank
+          showOption: false,
+          level,
+        });
+      } else {
+        const foundIndex = this.treeData.findIndex((item) => item.id == node.parent.data.id);
+        console.log("foundINdex", foundIndex);
+        const children = this.treeData[foundIndex].children;
+        console.log("children", children);
+        const foundChildIndex = children.findIndex((item) => item.id == node.data.id);
+        console.log("foundChildIndex", foundChildIndex);
+        this.treeData[foundIndex].children[foundChildIndex].children.push({
+          id: treeId,
+          label: "三级菜单",
+          // children: [],
+          showMenuIcon: true, // 显示菜单icon
+          isMenuFoldindg: true, // 菜单允许折叠
+          isMenuDefaultFolding: true, // 菜单默认折叠
+          isNodeNull: false, // 设置为空节点
+          viewMode: "current", // _blank
+          showOption: false,
+          level,
+        });
+      }
+    },
+    // 删除一个节点
+    handleDeleteTreeSubNode(node) {
+      console.log("handleDeleteTreeSubNode node", node);
+    },
+    // 选择一级菜单
+    handleTopSelect(active) {
+      console.log("active", active);
+      this.topActiveTab = active;
+    },
+    // 节点拖拽进入到其他的节点
+    handleAllowDrop(node, targetNode, type) {
+      if (targetNode.level == 3) {
+        return false;
+      }
+      return true;
+    },
+  },
+};
+</script>
+
+<style lang="less" scoped>
+.portal-config-drawer-container {
+  ::v-deep .el-menu,
+  .el-menu.el-menu--horizontal {
+    border: unset;
+  }
+  ::v-deep .el-radio-group {
+    .el-radio__label {
+      color: #fff;
+    }
+  }
+  ::v-deep .el-header {
+    padding: 0;
+  }
+  ::v-deep .el-input__inner {
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0;
+    color: #fff;
+  }
+  ::v-deep .el-select .el-input__inner:focus {
+    border-color: transparent;
+  }
+  ::v-deep .el-tree {
+    margin-top: 20px;
+    background-color: transparent;
+    color: #fff;
+  }
+  ::v-deep .el-tree-node__content:hover {
+    background-color: #34425b;
+  }
+  ::v-deep .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #34425b;
+  }
+  i {
+    cursor: pointer;
+    color: #fff;
+  }
+  .el-icon-close,
+  .el-icon-setting {
+    color: unset;
+  }
+  .portal-config-drawer-container-container {
+    position: relative;
+    .header {
+      position: sticky;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--TopBG, #e6e6e6);
+      background-color: var(--TopBG, #f1f3f8);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .left {
+        display: flex;
+        align-items: center;
+        .name {
+          margin-left: 14px;
+        }
+      }
+      .right {
+        display: flex;
+        align-items: center;
+        .wrapper {
+          margin-right: 10px;
+        }
+        .wrapper:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+    .content {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #fff;
+      min-height: calc(100vh - 60px);
+
+      .config-container {
+        flex: 3;
+        .config-header {
+          background-color: #242834;
+          // min-height: 60px;
+          display: flex;
+          .title {
+            // background-color: green;
+            width: 200px;
+            line-height: 60px;
+            text-align: center;
+          }
+        }
+
+        .config-aside {
+          height: 100%;
+        }
+
+        .config-main {
+          background-color: red;
+        }
+      }
+
+      .right-config-container {
+        flex: 1;
+        background-color: #273551;
+        display: flex;
+        .left,
+        .right {
+          flex: 1;
+          .title {
+            // font-size: 16px;
+            text-align: center;
+            line-height: 60px;
+            border-bottom: 1px solid rgba(#fff, 0.1);
+            box-sizing: border-box;
+          }
+
+          box-sizing: border-box;
+        }
+        .right {
+          background-color: #34425b;
+        }
+        .left-content,
+        .right-content {
+          padding: 10px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          // align-items: center;
+          .config-title {
+            text-align: left;
+            align-self: left;
+            margin-bottom: 8px;
+          }
+          .config-input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: #1e2b47;
+            height: 28px;
+            line-height: 28px;
+            border-radius: 2px;
+            padding: 0 6px;
+            box-sizing: border-box;
+            color: #fff;
+            margin-bottom: 12px;
+          }
+          .config-checkbox {
+            margin-bottom: 10px;
+            color: #fff;
+          }
+          .config-btn {
+            margin-bottom: 12px;
+          }
+          .config-radio {
+            margin-bottom: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  .custom-tree-node {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    i {
+      margin-right: 8px;
+    }
+    i:last-child {
+      margin-right: 0;
+    }
+  }
+}
+</style>
