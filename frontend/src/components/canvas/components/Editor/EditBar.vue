@@ -1,12 +1,12 @@
 <template>
   <div class="bar-main">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
-      <el-checkbox v-model="linkageInfo.linkageActive" />
+    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
+      <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
-    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 18px;z-index: 5">
-      <el-checkbox @change="batchOptChange" />
+    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
+      <el-checkbox size="medium" @change="batchOptChange" />
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
@@ -295,6 +295,15 @@ export default {
     color: white;
     float: right;
     margin-right: 3px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner{
+    width: 16px;
+    height: 16px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner::after{
+    width: 4.5px;
   }
 
 </style>
