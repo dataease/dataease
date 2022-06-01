@@ -175,8 +175,8 @@ export default {
         }
       }
       // 加载地图必备样式文件
-      loadCss("http://localhost:9528/arcgisapi/esri/css/main.css");
-      loadCss("http://localhost:9528/arcgisapi/dijit/themes/claro/claro.css");
+      loadCss("/arcgisapi/esri/css/main.css");
+      loadCss("/arcgisapi/dijit/themes/claro/claro.css");
 
       // 异步加载对应 js 模块
       loadModules(
