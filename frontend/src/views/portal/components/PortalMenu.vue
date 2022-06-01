@@ -6,7 +6,7 @@
         <el-submenu :key="item.id" :index="item.id">
           <template slot="title">
             <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
-            <span slot="title">{{ item.label + "a" }}</span>
+            <span slot="title">{{ item.label  }}</span>
           </template>
           <template v-if="_checkArrayHasValue(item.children)">
             <template v-for="sub in item.children">
@@ -15,7 +15,7 @@
                 <el-submenu :key="sub.id" :index="sub.id">
                   <template slot="title">
                     <i class="el-icon-menu" v-if="sub.showMenuIcon"></i>
-                    <span slot="title">{{ sub.label + "b" }}</span>
+                    <span slot="title">{{ sub.label  }}</span>
                   </template>
                   <template v-if="_checkArrayHasValue(sub.children)">
                     <template v-for="subItem in sub.children">
@@ -23,7 +23,7 @@
                       <el-menu-item :key="subItem.id" :index="subItem.id">
                         <template slot="title">
                           <i class="el-icon-menu" v-if="subItem.showMenuIcon"></i>
-                          <span slot="title">{{ subItem.label + "c" }}</span>
+                          <span slot="title">{{ subItem.label }}</span>
                         </template>
                       </el-menu-item>
                     </template>
@@ -34,7 +34,7 @@
                 <el-menu-item :key="sub.id" :index="sub.id">
                   <template slot="title">
                     <i class="el-icon-menu" v-if="sub.showMenuIcon"></i>
-                    <span slot="title">{{ sub.label + "b" }}</span>
+                    <span slot="title">{{ sub.label }}</span>
                   </template>
                 </el-menu-item>
               </template>
@@ -47,7 +47,7 @@
         <el-menu-item :key="item.id" :index="item.id">
           <template slot="title">
             <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
-            <span slot="title">{{ item.label + "aa" }}</span>
+            <span slot="title">{{ item.label }}</span>
           </template>
         </el-menu-item>
       </template>

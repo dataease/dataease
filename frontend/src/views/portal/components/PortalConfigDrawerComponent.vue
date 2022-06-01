@@ -1,13 +1,19 @@
 <template>
   <div class="portal-config-drawer-container">
-    <el-drawer :visible.sync="syncVisible" size="80%" direction="rtl" :show-close="false" :withHeader="false">
+    <el-drawer
+      :visible.sync="syncVisible"
+      size="80%"
+      direction="rtl"
+      :show-close="false"
+      :withHeader="false"
+    >
       <div class="portal-config-drawer-container-container">
         <div class="header">
-          <div class="left">
+          <div class="headerleft">
             <i class="el-icon-close" @click="syncVisible = false"></i>
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
-          <div class="right">
+          <div class="headerright">
             <div class="wrapper">
               <el-radio-group v-model="activeTab" size="mini" round>
                 <el-radio-button label="edit">编辑</el-radio-button>
@@ -19,14 +25,32 @@
             </div>
           </div>
         </div>
-        <div class="content">
+        <div class="portal-config-drawer-container-container-content">
           <el-container class="config-container">
-            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'top'">
+            <el-header
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
+              v-if="
+                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
+                topNavPosRadio == 'top'
+              "
+            >
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
-                  <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
-                    <el-menu-item v-for="(item, index) in treeData" :key="item.id" :index="index">
+                  <el-menu
+                    :default-active="topActiveTab"
+                    class="top-nav-menu"
+                    mode="horizontal"
+                    :background-color="themeColor"
+                    active-text-color="#333"
+                    @select="handleTopSelect"
+                  >
+                    <el-menu-item
+                      v-for="(item, index) in treeData"
+                      :key="item.id"
+                      :index="index"
+                    >
                       <template slot="title">
                         <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
                         <span slot="title">{{ item.label }}</span>
@@ -35,26 +59,62 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu :default-active="currentTreeNode.id" mode="horizontal" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+                  <el-menu
+                    :default-active="currentTreeNode.id"
+                    mode="horizontal"
+                    class="el-menu-vertical-demo"
+                    :background-color="themeColor"
+                    active-text-color="#333"
+                  >
                     <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
                   </el-menu>
                 </template>
               </div>
             </el-header>
             <el-container>
-              <el-aside class="config-aside" width="200px" :style="{ backgroundColor: themeColor }" v-if="navLayoutStyle == 0 || navLayoutStyle == 1">
-                <el-menu :default-active="currentTreeNode.id" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+              <el-aside
+                class="config-aside"
+                width="200px"
+                :style="{ backgroundColor: themeColor }"
+                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
+              >
+                <el-menu
+                  :default-active="currentTreeNode.id"
+                  class="el-menu-vertical-demo"
+                  :background-color="themeColor"
+                  active-text-color="#333"
+                >
                   <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
                 </el-menu>
               </el-aside>
-              <el-main class="config-main">Main</el-main>
+              <el-main class="config-main">
+                <PanelViewShow></PanelViewShow>
+              </el-main>
             </el-container>
-            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'bottom'">
+            <el-header
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
+              v-if="
+                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
+                topNavPosRadio == 'bottom'
+              "
+            >
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
-                  <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
-                    <el-menu-item v-for="(item, index) in treeData" :key="item.id" :index="index">
+                  <el-menu
+                    :default-active="topActiveTab"
+                    class="top-nav-menu"
+                    mode="horizontal"
+                    :background-color="themeColor"
+                    active-text-color="#333"
+                    @select="handleTopSelect"
+                  >
+                    <el-menu-item
+                      v-for="(item, index) in treeData"
+                      :key="item.id"
+                      :index="index"
+                    >
                       <template slot="title">
                         <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
                         <span slot="title">{{ item.label }}</span>
@@ -63,7 +123,13 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu :default-active="currentTreeNode.id" mode="horizontal" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+                  <el-menu
+                    :default-active="currentTreeNode.id"
+                    mode="horizontal"
+                    class="el-menu-vertical-demo"
+                    :background-color="themeColor"
+                    text-color="#333"
+                  >
                     <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
                   </el-menu>
                 </template>
@@ -71,10 +137,12 @@
             </el-header>
           </el-container>
           <div class="right-config-container">
-            <div class="left">
+            <div class="right-config-container-left">
               <div class="title">菜单配置</div>
               <div class="left-content">
-                <el-button type="primary" size="mini" @click="handleAddMainMenu">+添加主菜单</el-button>
+                <el-button type="primary" size="mini" @click="handleAddMainMenu"
+                  >+添加主菜单</el-button
+                >
                 <el-tree
                   node-key="id"
                   draggable
@@ -86,37 +154,107 @@
                   @node-click="handleNodeClick"
                   :allow-drop="handleAllowDrop"
                 >
-                  <span class="custom-tree-node" slot-scope="{ node, data }" @mouseenter="handleTreeNodeMouseEnter(node)" @mouseleave="handleTreeNodeMouseLeave(node)">
+                  <span
+                    class="custom-tree-node"
+                    slot-scope="{ node, data }"
+                    @mouseenter="handleTreeNodeMouseEnter(node)"
+                    @mouseleave="handleTreeNodeMouseLeave(node)"
+                  >
                     <span>{{ node.label }}</span>
                     <span v-if="node.data.showOption && data.level < 3">
-                      <i class="el-icon-plus" @click.stop="handleAddTreeSubNode(node)"></i>
-                      <i class="el-icon-delete" @click.stop="handleDeleteTreeNode(node)"></i>
+                      <i
+                        class="el-icon-plus"
+                        @click.stop="handleAddTreeSubNode(node)"
+                      ></i>
+                      <i
+                        class="el-icon-delete"
+                        @click.stop="handleDeleteTreeNode(node)"
+                      ></i>
                     </span>
                   </span>
                 </el-tree>
               </div>
             </div>
-            <div class="right">
+            <div class="right-config-container-right">
               <div class="title">内容设置</div>
               <div class="right-content" v-if="currentTreeNode.id">
                 <div class="config-title">菜单显示名称</div>
-                <el-input class="config-input" v-model="currentTreeNode.label" size="mini" placeholder="显示名称"></el-input>
-                <el-checkbox class="config-checkbox" v-model="currentTreeNode.showMenuIcon">显示菜单icon</el-checkbox>
-                <el-select class="config-input" size="mini">
-                  <el-option></el-option>
+                <el-input
+                  class="config-input"
+                  v-model="currentTreeNode.label"
+                  size="mini"
+                  placeholder="显示名称"
+                ></el-input>
+                <el-checkbox
+                  class="config-checkbox"
+                  v-model="currentTreeNode.showMenuIcon"
+                  >显示菜单icon</el-checkbox
+                >
+                <el-select
+                  v-model="currentTreeNode.panelId"
+                  class="config-input"
+                  size="mini"
+                >
+                  <el-option
+                    v-for="item in tData"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.label"
+                  ></el-option>
                 </el-select>
-                <el-checkbox class="config-checkbox" v-model="currentTreeNode.isMenuFoldindg">菜单允许折叠</el-checkbox>
-                <el-checkbox class="config-checkbox" v-model="currentTreeNode.isMenuDefaultFolding">菜单默认折叠</el-checkbox>
+                <el-checkbox
+                  class="config-checkbox"
+                  v-model="currentTreeNode.isMenuFoldindg"
+                  >菜单允许折叠</el-checkbox
+                >
+                <el-checkbox
+                  class="config-checkbox"
+                  v-model="currentTreeNode.isMenuDefaultFolding"
+                  >菜单默认折叠</el-checkbox
+                >
                 <!-- <el-checkbox class="config-checkbox" v-model="currentTreeNode.isNodeNull">设为空节点</el-checkbox> -->
-                <div class="config-title">内容设置</div>
-                <el-select class="config-input" size="mini">
-                  <el-option></el-option>
+                <div class="config-title">选择仪表盘</div>
+                <el-select
+                  v-model="currentTreeNode.panelId"
+                  class="config-input"
+                  size="mini"
+                >
+                  <el-option
+                    v-for="item in tData"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.label"
+                  ></el-option>
                 </el-select>
-                <el-button class="config-btn" type="primary" size="mini">更新</el-button>
+                <div class="config-title">选择趋势图</div>
+                <el-select
+                  v-model="currentTreeNode.trendId"
+                  class="config-input"
+                  size="mini"
+                  @change="handleTrendChange"
+                >
+                  <el-option
+                    v-for="item in trendData"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.label"
+                  ></el-option>
+                </el-select>
+                <el-button
+                  class="config-btn"
+                  type="primary"
+                  size="mini"
+                  @click="handleUpdateTrend"
+                  >更新</el-button
+                >
                 <div class="config-title">查看方式</div>
                 <el-radio-group v-model="currentTreeNode.viewMode">
-                  <el-radio class="config-radio" label="current">当前页面打开</el-radio>
-                  <el-radio class="config-radio" label="_blank">新窗口打开</el-radio>
+                  <el-radio class="config-radio" label="current"
+                    >当前页面打开</el-radio
+                  >
+                  <el-radio class="config-radio" label="_blank"
+                    >新窗口打开</el-radio
+                  >
                 </el-radio-group>
               </div>
             </div>
@@ -130,9 +268,13 @@
 <script>
 import { mapState, mapMutations, mapGetters } from "vuex";
 import PortalMenu from "./PortalMenu.vue";
+import { groupTree, initPanelData } from "@/api/panel/panel";
+import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
+import bus from "@/utils/bus";
 export default {
   components: {
     PortalMenu,
+    PanelViewShow,
   },
   props: {
     visible: {
@@ -152,6 +294,15 @@ export default {
       treeData: [],
       treeId: 0,
       currentTreeNode: {},
+      groupForm: {
+        name: null,
+        pid: null,
+        panelType: "self",
+        nodeType: null,
+        children: [],
+        sort: "create_time desc,node_type desc,name asc",
+      },
+      tData: [],
     };
   },
   computed: {
@@ -182,6 +333,20 @@ export default {
       }
       return treeData;
     },
+
+    trendData() {
+      const found = this.tData.find(
+        (item) => item.id == this.currentTreeNode.panelId
+      );
+      if (found) {
+        return found.children;
+      }
+      return [];
+    },
+  },
+
+  mounted() {
+    this.tree(true);
   },
 
   methods: {
@@ -209,6 +374,8 @@ export default {
         id: (this.treeId += 1),
         label: "一级菜单",
         children: [],
+        panelId: "",
+        trendId: "",
         showMenuIcon: true, // 显示菜单icon
         isMenuFoldindg: true, // 菜单允许折叠
         isMenuDefaultFolding: true, // 菜单默认折叠
@@ -216,7 +383,6 @@ export default {
         viewMode: "current", // _blank
         showOption: false,
         level: 1,
-        index: "1",
       });
     },
     _checkArrayHasValue(arr) {
@@ -245,7 +411,9 @@ export default {
       const level = node.data.level + 1;
 
       if (node.data.level == 1) {
-        const foundIndex = this.treeData.findIndex((item) => item.id == node.data.id);
+        const foundIndex = this.treeData.findIndex(
+          (item) => item.id == node.data.id
+        );
         this.treeData[foundIndex].children.push({
           id: treeId,
           label: "二级菜单",
@@ -259,11 +427,15 @@ export default {
           level,
         });
       } else {
-        const foundIndex = this.treeData.findIndex((item) => item.id == node.parent.data.id);
+        const foundIndex = this.treeData.findIndex(
+          (item) => item.id == node.parent.data.id
+        );
         console.log("foundINdex", foundIndex);
         const children = this.treeData[foundIndex].children;
         console.log("children", children);
-        const foundChildIndex = children.findIndex((item) => item.id == node.data.id);
+        const foundChildIndex = children.findIndex(
+          (item) => item.id == node.data.id
+        );
         console.log("foundChildIndex", foundChildIndex);
         this.treeData[foundIndex].children[foundChildIndex].children.push({
           id: treeId,
@@ -295,6 +467,35 @@ export default {
       }
       return true;
     },
+    // 选择一个趋势图
+    handleTrendChange(data) {
+      console.log("data", data);
+      //   this.$store.commit("setComponentDataCache", null);
+      //   initPanelData(data, function (response) {
+      //     bus.$emit("set-panel-show-type", 0);
+      //   });
+    },
+
+    handleUpdateTrend() {
+      this.$store.commit("setComponentDataCache", null);
+      initPanelData(this.currentTreeNode.trendId, function (response) {
+        bus.$emit("set-panel-show-type", 0);
+      });
+    },
+
+    tree(cache = false) {
+      const modelInfo = localStorage.getItem("panel-main-tree");
+      const userCache = modelInfo && cache;
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo);
+      }
+      groupTree(this.groupForm, !userCache).then((res) => {
+        localStorage.setItem("panel-main-tree", JSON.stringify(res.data));
+        if (!userCache) {
+          this.tData = res.data;
+        }
+      });
+    },
   },
 };
 </script>
@@ -307,38 +508,43 @@ export default {
   }
   ::v-deep .el-radio-group {
     .el-radio__label {
-      color: #fff;
+      // color: #fff;
     }
   }
   ::v-deep .el-header {
     padding: 0;
   }
   ::v-deep .el-input__inner {
-    background-color: transparent;
-    border-color: transparent;
-    padding: 0;
-    color: #fff;
+    // background-color: transparent;
+    // border-color: transparent;
+    // padding: 0;
+    // color: #fff;
   }
   ::v-deep .el-select .el-input__inner:focus {
-    border-color: transparent;
+    // border-color: transparent;
   }
   ::v-deep .el-tree {
     margin-top: 20px;
     background-color: transparent;
-    color: #fff;
+    // color: #fff;
   }
   ::v-deep .el-tree-node__content:hover {
-    background-color: #34425b;
+    // background-color: #34425b;
   }
-  ::v-deep .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-    background-color: #34425b;
+  ::v-deep
+    .el-tree--highlight-current
+    .el-tree-node.is-current
+    > .el-tree-node__content {
+    // background-color: #34425b;
   }
-  i {
+  .el-icon-plus,
+  .el-icon-delete {
     cursor: pointer;
-    color: #fff;
+    color: #333;
   }
   .el-icon-close,
   .el-icon-setting {
+    cursor: pointer;
     color: unset;
   }
   .portal-config-drawer-container-container {
@@ -355,14 +561,14 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      .left {
+      .headerleft {
         display: flex;
         align-items: center;
         .name {
           margin-left: 14px;
         }
       }
-      .right {
+      .headerright {
         display: flex;
         align-items: center;
         .wrapper {
@@ -373,17 +579,17 @@ export default {
         }
       }
     }
-    .content {
+    .portal-config-drawer-container-container-content {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
-      color: #fff;
+      color: #333;
       min-height: calc(100vh - 60px);
 
       .config-container {
         flex: 3;
         .config-header {
-          background-color: #242834;
+          // background-color: #242834;
           // min-height: 60px;
           display: flex;
           .title {
@@ -391,6 +597,7 @@ export default {
             width: 200px;
             line-height: 60px;
             text-align: center;
+            border-bottom: 1px solid var(--TopBG, #e6e6e6);
           }
         }
 
@@ -399,29 +606,29 @@ export default {
         }
 
         .config-main {
-          background-color: red;
+          background-color: var(--TopBG, #e6e6e6);
         }
       }
 
       .right-config-container {
         flex: 1;
-        background-color: #273551;
+        background-color: var(--TopBG, #f1f3f8);
         display: flex;
-        .left,
-        .right {
+        .right-config-container-left,
+        .right-config-container-right {
           flex: 1;
+          border-left: 1px solid var(--TopBG, #e6e6e6);
+          box-sizing: border-box;
           .title {
             // font-size: 16px;
             text-align: center;
             line-height: 60px;
-            border-bottom: 1px solid rgba(#fff, 0.1);
+            border-bottom: 1px solid var(--TopBG, #e6e6e6);
             box-sizing: border-box;
           }
-
-          box-sizing: border-box;
         }
-        .right {
-          background-color: #34425b;
+        .right-config-container-right {
+          // background-color: var(--TopBG, #e6e6e6);
         }
         .left-content,
         .right-content {
@@ -436,20 +643,20 @@ export default {
             margin-bottom: 8px;
           }
           .config-input {
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background-color: #1e2b47;
-            height: 28px;
-            line-height: 28px;
-            border-radius: 2px;
-            padding: 0 6px;
-            box-sizing: border-box;
-            color: #fff;
+            // width: 100%;
+            // border: 1px solid rgba(255, 255, 255, 0.5);
+            // background-color: #1e2b47;
+            // height: 28px;
+            // line-height: 28px;
+            // border-radius: 2px;
+            // padding: 0 6px;
+            // box-sizing: border-box;
+            // color: #fff;
             margin-bottom: 12px;
           }
           .config-checkbox {
             margin-bottom: 10px;
-            color: #fff;
+            // color: #fff;
           }
           .config-btn {
             margin-bottom: 12px;

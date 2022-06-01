@@ -1,13 +1,19 @@
 <template>
   <div class="portal-drawer-container">
-    <el-drawer :visible.sync="syncVisible" size="80%" direction="rtl" :show-close="false" :withHeader="false">
+    <el-drawer
+      :visible.sync="syncVisible"
+      size="80%"
+      direction="rtl"
+      :show-close="false"
+      :withHeader="false"
+    >
       <div class="portal-drawer-container-container">
         <div class="header">
-          <div class="left">
-            <i class="el-icon-close"></i>
+          <div class="headerleft">
+            <i class="el-icon-close" @click="syncVisible = false"></i>
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
-          <div class="right">
+          <div class="headerright">
             <div class="wrapper">
               <i class="el-icon-setting" @click="handleOpenConfigDrawer"></i>
             </div>
@@ -24,18 +30,41 @@
         </div>
         <div class="content">
           <el-container class="config-container">
-            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'top'">
+            <el-header
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
+              v-if="
+                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
+                topNavPosRadio == 'top'
+              "
+            >
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
-                <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
-                  <el-menu-item index="0" :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }">一级菜单</el-menu-item>
-                  <!-- <el-menu-item index="1" :style="{ borderColor: topActiveTab == 1 ? '#429eff' : '' }">二级菜单</el-menu-item> -->
+                <el-menu
+                  :default-active="topActiveTab"
+                  class="top-nav-menu"
+                  mode="horizontal"
+                  :background-color="themeColor"
+                  active-text-color="#333"
+                  @select="handleTopSelect"
+                >
+                  <el-menu-item index="0">一级菜单</el-menu-item>
                 </el-menu>
               </div>
             </el-header>
             <el-container>
-              <el-aside class="config-aside" width="200px" :style="{ backgroundColor: themeColor }" v-if="navLayoutStyle == 0 || navLayoutStyle == 1">
-                <el-menu default-active="0-1" class="el-menu-vertical-demo" :background-color="themeColor" text-color="#fff">
+              <el-aside
+                class="config-aside"
+                width="200px"
+                :style="{ backgroundColor: themeColor }"
+                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
+              >
+                <el-menu
+                  default-active="0-1"
+                  class="el-menu-vertical-demo"
+                  :background-color="themeColor"
+                  text-color="#333"
+                >
                   <el-submenu index="0">
                     <template slot="title">
                       <i class="el-icon-menu"></i>
@@ -47,13 +76,33 @@
                   </el-submenu>
                 </el-menu>
               </el-aside>
-              <el-main class="config-main">Main</el-main>
+              <el-main class="config-main">
+                <img src="./portal-trend-bg.png" alt="" />
+              </el-main>
             </el-container>
-            <el-header class="config-header" :style="{ backgroundColor: themeColor }" v-if="(navLayoutStyle == 0 || navLayoutStyle == 2) && topNavPosRadio == 'bottom'">
+            <el-header
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
+              v-if="
+                (navLayoutStyle == 0 || navLayoutStyle == 2) &&
+                topNavPosRadio == 'bottom'
+              "
+            >
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
-                <el-menu :default-active="topActiveTab" class="top-nav-menu" mode="horizontal" :background-color="themeColor" active-text-color="#fff" @select="handleTopSelect">
-                  <el-menu-item index="0" :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }">一级菜单</el-menu-item>
+                <el-menu
+                  :default-active="topActiveTab"
+                  class="top-nav-menu"
+                  mode="horizontal"
+                  :background-color="themeColor"
+                  active-text-color="#333"
+                  @select="handleTopSelect"
+                >
+                  <el-menu-item
+                    index="0"
+                    :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }"
+                    >一级菜单</el-menu-item
+                  >
                   <!-- <el-menu-item index="1" :style="{ borderColor: topActiveTab == 1 ? '#429eff' : '' }">二级菜单</el-menu-item> -->
                 </el-menu>
               </div>
@@ -64,42 +113,74 @@
             <div class="config-wrapper">
               <div class="wrapper horization">
                 <div class="name">标题设置</div>
-                <input class="name-input" v-model="portalName" size="small" placeholder="未命名标题" />
+                <el-input
+                  v-model="portalName"
+                  size="mini"
+                  placeholder="未命名标题"
+                />
               </div>
               <div class="wrapper">
                 <div class="name">PC端样式</div>
                 <div class="layout">
                   <div class="item" @click="setNavLayoutStyle(0)">
-                    <img :class="{ active: navLayoutStyle == 0 }" src="./left-top-layout.png" alt="" />
+                    <!-- <img
+                      :class="{ active: navLayoutStyle == 0 }"
+                      src="./left-top-layout.png"
+                      alt=""
+                    /> -->
+                    <svg-icon icon-class="pltl" class="icon-layout" :class="{ active: navLayoutStyle == 0 }"></svg-icon>
                     <span class="item-name">双导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(1)">
-                    <img :class="{ active: navLayoutStyle == 1 }" src="./only-left-layout.png" alt="" />
+                    <!-- <img
+                      :class="{ active: navLayoutStyle == 1 }"
+                      src="./only-left-layout.png"
+                      alt=""
+                    /> -->
+                    <svg-icon icon-class="poll" class="icon-layout" :class="{ active: navLayoutStyle == 1 }"></svg-icon>
                     <span class="item-name">左导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(2)">
-                    <img :class="{ active: navLayoutStyle == 2 }" src="./only-top-layout.png" alt="" />
+                    <!-- <img
+                      :class="{ active: navLayoutStyle == 2 }"
+                      src="./only-top-layout.png"
+                      alt=""
+                    /> -->
+                    <svg-icon icon-class="potl" class="icon-layout" :class="{ active: navLayoutStyle == 2 }"></svg-icon>
                     <span class="item-name">顶部导航布局</span>
                   </div>
                 </div>
               </div>
               <div class="wrapper">
                 <div class="name">一级导航位置</div>
-                <el-radio-group v-model="topNavPosRadio" @change="handleChangeTopNavPosRadio">
+                <el-radio-group
+                  v-model="topNavPosRadio"
+                  @change="handleChangeTopNavPosRadio"
+                >
                   <el-radio label="top">顶部</el-radio>
                   <el-radio label="bottom">底部</el-radio>
                 </el-radio-group>
               </div>
               <div class="wrapper">
                 <div class="name">主题设置</div>
-                <el-color-picker v-model="themeColor" size="small" @change="handleChangeThemeColor"></el-color-picker>
+                <el-color-picker
+                  v-model="themeColor"
+                  size="small"
+                  @change="handleChangeThemeColor"
+                ></el-color-picker>
               </div>
             </div>
           </div>
         </div>
       </div>
     </el-drawer>
-    <PortConfigDrawerComponent :portalName="portalName" :visible.sync="showPortConfigDrawerComponent" :themeColor="themeColor" :navLayoutStyle="navLayoutStyle" :topNavPosRadio="topNavPosRadio"></PortConfigDrawerComponent>
+    <PortConfigDrawerComponent
+      :portalName="portalName"
+      :visible.sync="showPortConfigDrawerComponent"
+      :themeColor="themeColor"
+      :navLayoutStyle="navLayoutStyle"
+      :topNavPosRadio="topNavPosRadio"
+    ></PortConfigDrawerComponent>
   </div>
 </template>
 
@@ -113,7 +194,7 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
@@ -123,7 +204,7 @@ export default {
       activeTab: "edit", // 当前最顶部nav中是编辑还是预览
       topActiveTab: "0", // 当前顶部导航栏选择的下标选项
       topNavPosRadio: "top", //  当前一级导航的位置
-      themeColor: "#393c49", // 当前导航的颜色
+      themeColor: "#f1f3f8", // 当前导航的颜色
       navLayoutStyle: "0", // 0 top-left 1 left 2 top
       portalName: "", // 当前门户的名称
     };
@@ -181,11 +262,6 @@ export default {
   .el-menu.el-menu--horizontal {
     border: unset;
   }
-  ::v-deep .el-radio-group {
-    .el-radio__label {
-      color: #fff;
-    }
-  }
   ::v-deep .el-header {
     padding: 0;
   }
@@ -206,14 +282,14 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      .left {
+      .headerleft {
         display: flex;
         align-items: center;
         .name {
           margin-left: 14px;
         }
       }
-      .right {
+      .headerright {
         display: flex;
         align-items: center;
         .wrapper {
@@ -228,13 +304,13 @@ export default {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
-      color: #fff;
+      color: #333;
       min-height: calc(100vh - 60px);
 
       .config-container {
         flex: 3;
         .config-header {
-          background-color: #242834;
+          background-color: var(--TopBG, #f1f3f8);
           // min-height: 60px;
           display: flex;
           .title {
@@ -242,6 +318,7 @@ export default {
             width: 200px;
             line-height: 60px;
             text-align: center;
+            border-bottom: 1px solid var(--TopBG, #e6e6e6);
           }
         }
 
@@ -250,15 +327,23 @@ export default {
         }
 
         .config-main {
-          background-color: red;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--TopBG, #e6e6e6);
+          img {
+            width: 400px;
+          }
         }
       }
 
       .right-config-container {
         flex: 1;
-        background-color: #3b4760;
+        background-color: var(--TopBG, #f1f3f8);
         .title {
-          background-color: #273551;
+          // background-color: var(--TopBG, #e6e6e6);
+          border-bottom: 1px solid var(--TopBG, #e6e6e6);
+          border-left: 1px solid var(--TopBG, #e6e6e6);
           height: 60px;
           line-height: 60px;
           padding-left: 20px;
@@ -272,17 +357,6 @@ export default {
               margin-right: 10px;
               margin-bottom: 0;
               flex-shrink: 0;
-            }
-            .name-input {
-              width: 100%;
-              border: 1px solid rgba(255, 255, 255, 0.5);
-              background-color: #1e2b47;
-              height: 28px;
-              line-height: 28px;
-              border-radius: 2px;
-              padding: 0 6px;
-              box-sizing: border-box;
-              color: #fff;
             }
           }
           padding: 14px;
@@ -301,15 +375,17 @@ export default {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                img {
-                  width: 60px;
-                  height: 60px;
+                .icon-layout {
+                  font-size: 69px;
+                  font-weight: 400;
+                  color: #666;
                   margin-bottom: 8px;
                 }
                 .active {
-                  border: 4px solid #409eff;
-                  border-radius: 6px;
-                  box-sizing: border-box;
+                  color: #409eff;
+                  // border: 2px solid #409eff;
+                  // border-radius: 4px;
+                  // box-sizing: border-box;
                 }
               }
             }
