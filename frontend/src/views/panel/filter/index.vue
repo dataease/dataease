@@ -1,7 +1,7 @@
 <template>
 
   <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
-
+    <!-- <span>{{ widgetSubjects }}</span> -->
     <div v-for="(item, key) in widgetSubjects" :key="key" class="widget-subject">
       <div class="filter-header">
         <div class="filter-header-text"> {{ key }} </div>
@@ -47,7 +47,7 @@ export default {
         '时间过滤组件': [
           'timeYearWidget',
           'timeMonthWidget',
-          //   'timeQuarterWidget',
+          // 'timeQuarterWidget',
           'timeDateWidget',
           'timeDateRangeWidget'
 
@@ -55,7 +55,8 @@ export default {
         '文本过滤组件': [
           'textSelectWidget',
           'textSelectGridWidget',
-          'textInputWidget'
+          'textInputWidget',
+          'textRotation'
         ],
         '数字过滤组件': [
           'numberSelectWidget',
@@ -79,8 +80,10 @@ export default {
       const widgetNames = this.widgetSubjects[key]
       this.widgetSubjects[key] = widgetNames.map(widgetName => {
         const widget = ApplicationContext.getService(widgetName)
+        console.log('widget================', widget)
         const result = { widgetName: widgetName }
         Object.assign(result, widget.getLeftPanel())
+        console.log('合并展示效果----------------------', result)
         return result
       })
     }
