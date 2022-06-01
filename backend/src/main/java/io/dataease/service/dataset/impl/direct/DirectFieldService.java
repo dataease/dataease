@@ -76,7 +76,7 @@ public class DirectFieldService implements DataSetFieldService {
             fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
             Map<String, DatasetTableField> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableField::getId, node -> node));
             permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(permissionFields)) {
+            if (CollectionUtils.isEmpty(permissionFields) || permissionFields.get(0) == null) {
                 return new ArrayList<>();
             }
             if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {

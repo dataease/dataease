@@ -874,7 +874,13 @@ public class ChartDataBuild {
 
     // 表格
     public static Map<String, Object> transTableNormal(Map<String, List<ChartViewFieldDTO>> fieldMap, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
-        List<ChartViewFieldDTO> fields = fieldMap.entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream).collect(Collectors.toList());
+        // List<ChartViewFieldDTO> fields = fieldMap.entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream).collect(Collectors.toList());
+        // 上面乱序了
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fieldMap.get("xAxis")))fields.addAll(fieldMap.get("xAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("yAxis")))fields.addAll(fieldMap.get("yAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("labelAxis")))fields.addAll(fieldMap.get("labelAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("tooltipAxis")))fields.addAll(fieldMap.get("tooltipAxis"));
         return transTableNormal(fields, view, data, desensitizationList);
     }
 
@@ -888,7 +894,7 @@ public class ChartDataBuild {
                     d.put(fields.get(i).getDataeaseName(), ColumnPermissionConstants.Desensitization_desc);
                     continue;
                 }
-
+                if (i == ele.length) break;
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1 || chartViewFieldDTO.getDeType() == 5) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
