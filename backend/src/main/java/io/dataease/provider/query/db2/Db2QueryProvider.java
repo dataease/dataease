@@ -9,6 +9,7 @@ import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.dto.datasource.Db2Configuration;
 import io.dataease.plugins.common.constants.Db2Constants;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.constants.EsSqlLConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
@@ -1029,6 +1030,8 @@ public class Db2QueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(Db2Constants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(Db2Constants.GROUP_CONCAT, originField);
             } else {
                 fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), originField);
             }
