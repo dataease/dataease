@@ -1564,7 +1564,9 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
