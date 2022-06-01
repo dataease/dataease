@@ -1840,7 +1840,7 @@ export default {
       addEvent(document.documentElement, 'mousedown', this.deselect)
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
-      // addEvent(window, 'resize', this.checkParentSize)
+      addEvent(window, 'resize', this.checkParentSize)
       // this.changeWidth(this.element.style.width)
       // this.changeHeight(this.element.style.height)
     },
@@ -1872,7 +1872,7 @@ export default {
       removeEvent(document.documentElement, 'touchmove', this.move)
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-      // removeEvent(window, 'resize', this.checkParentSize)
+      removeEvent(window, 'resize', this.checkParentSize)
     },
     showViewDetails() {
       this.$emit('showViewDetails')

@@ -97,7 +97,7 @@
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
       />
-      <component
+      <!-- <component
         :is="item.component"
         v-else-if="renderOk&&item.type==='de-banner'"
         :id="'component' + item.id"
@@ -108,7 +108,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
-      />
+      /> -->
       <component
         :is="item.component"
         v-else-if="renderOk"
@@ -1169,7 +1169,7 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-      console.log('这里的style改变了什么======', style, result)
+      // console.log('这里的style改变了什么======', style, result)
       return result
     },
 
@@ -1180,8 +1180,9 @@ export default {
     },
 
     getComponentStyle(style) {
-      //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-      return style
+      console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // return style
     },
 
     handleInput(element, value) {
@@ -1258,8 +1259,8 @@ export default {
         return style['width']
       }
       if (prop === 'left') {
-        // return this.format(style['left'], this.scaleWidth)
-        return style['left']
+        return this.format(style['left'], this.scaleWidth)
+        // return style['left']
       }
       if (prop === 'height') {
         // conditions
@@ -1267,8 +1268,8 @@ export default {
         return style['height']
       }
       if (prop === 'top') {
-        // const top = this.format(style['top'], this.scaleHeight)
-        const top = style['top']
+        const top = this.format(style['top'], this.scaleHeight)
+        // const top = style['top']
         // console.log('top:' + top)
         return top
       }
@@ -1533,7 +1534,7 @@ export default {
      * @returns
      */
     getRenderState() {
-      // console.log('getRenderState:')
+      console.log('getRenderState:', this.moveAnimate)
 
       return this.moveAnimate
     },
