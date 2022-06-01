@@ -1,6 +1,6 @@
 <template>
   <div class="bar-main">
-    <div style="width: 18px">
+    <div style="width: 20px">
       <!--      <svg-icon icon-class="field_text" class="el-icon-close" />-->
       <el-checkbox v-model="element.mobileSelected" @change="onChange" />
     </div>
@@ -84,4 +84,12 @@ export default {
     margin-right: 3px;
   }
 
+  .bar-main ::v-deep .el-checkbox__inner{
+    width: 16px;
+    height: 16px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner::after{
+    width: 4.5px;
+  }
 </style>

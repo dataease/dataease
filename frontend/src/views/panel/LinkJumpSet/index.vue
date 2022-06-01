@@ -95,10 +95,13 @@
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span style="float: left">
+                          <span v-if="item.isPlugin" style="float: left">
+                            <svg-icon :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type" style="width: 14px;height: 14px" />
+                          </span>
+                          <span v-else style="float: left">
                             <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
                           </span>
-                          <span style="float: left; font-size: 12px"> {{ item.name }}</span>
+                          <span style="float: left; font-size: 12px">{{ item.name }}</span>
                         </el-option>
                       </el-select>
                     </div>
