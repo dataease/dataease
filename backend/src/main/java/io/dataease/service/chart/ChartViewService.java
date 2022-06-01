@@ -787,7 +787,7 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
 
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
-            Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+            Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
             return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
             // 如果是插件到此结束
