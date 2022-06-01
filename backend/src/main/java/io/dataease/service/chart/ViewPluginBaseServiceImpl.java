@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.constants.SQLConstants;
@@ -225,4 +226,17 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         return null;
     }
 
+    @Override
+    public String sqlLimit(String dsType, String sql, PluginViewLimit pluginViewLimit) {
+        QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
+        String methodName = "sqlLimit";
+        ChartViewWithBLOBs chartView = new ChartViewWithBLOBs();
+        chartView.setResultMode(pluginViewLimit.getResultMode());
+        chartView.setResultCount(pluginViewLimit.getResultCount());
+        Object result;
+        if ((result = execProviderMethod(queryProvider, methodName, sql, chartView)) != null) {
+            return result.toString();
+        }
+        return sql;
+    }
 }

@@ -7,6 +7,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.dto.datasource.OracleConfiguration;
+import io.dataease.plugins.common.constants.MySQLConstants;
 import io.dataease.plugins.common.constants.OracleConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
@@ -1104,7 +1105,10 @@ public class OracleQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
-            } else {
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(OracleConstants.GROUP_CONCAT, originField, originField);
+            }
+            else {
                 fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {
