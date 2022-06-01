@@ -333,13 +333,17 @@ export default {
             this.styleChange()
           }
         })
+        this.otherComponentDialogVisible = false
+        return
       }
-      this.otherComponentDialogVisible = false
+      this.$warning(this.$t('detabs.please') + this.$t('detabs.selectOthers'))
+      
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
       if (!nodes || nodes.length === 0) {
-        this.viewDialogVisible = false
+        this.$warning(this.$t('detabs.please') + this.$t('detabs.selectview'))
+        
         return
       }
       const node = nodes[0]
