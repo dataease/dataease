@@ -33,6 +33,7 @@
             chart_view.create_time,
             chart_view.update_time,
             chart_view.style_priority,
+            ifnull(chart_view.is_plugin,0) as 'is_plugin',
             panel_view.panel_id,
             dataset_table_field.id as 'field_id',
             dataset_table_field.origin_name,
