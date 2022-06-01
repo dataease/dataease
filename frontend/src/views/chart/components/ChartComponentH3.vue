@@ -175,15 +175,14 @@ export default {
         }
       }
       // 加载地图必备样式文件
-      loadCss("http://localhost:9528/arcgisapi/esri/css/main.css");
-      loadCss("http://localhost:9528/arcgisapi/dijit/themes/claro/claro.css");
+      loadCss("/arcgisapi/esri/css/main.css");
+      loadCss("/arcgisapi/dijit/themes/claro/claro.css");
 
       // 异步加载对应 js 模块
       loadModules(
         [
           'esri/Map',
           'esri/views/MapView',
-          "esri/core/lang",
           "esri/layers/MapImageLayer",
           "esri/widgets/Home",
           "esri/widgets/ScaleBar",
@@ -193,14 +192,12 @@ export default {
           "esri/layers/GraphicsLayer",
           "esri/layers/FeatureLayer",
           "esri/geometry/Point",
-          "esri/symbols/TextSymbol"
         ],
         config.loadConfig
       ).then(
         ([
           Map,
           MapView,
-          esriLang,
           MapImageLayer,
           Home,
           ScaleBar,
@@ -210,8 +207,8 @@ export default {
           GraphicsLayer,
           FeatureLayer,
           Point,
-          TextSymbol
         ]) => {
+          let that = this
           var ygyx = new MapImageLayer({
             url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
             // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
@@ -269,7 +266,6 @@ export default {
           //给“地图视图”绑定点击事件
 
           view.popup.autoOpenEnabled = false
-          let that = this
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
             view.hitTest(event).then((res) => {
@@ -277,12 +273,14 @@ export default {
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
+                  view.graphics.remove(results[0].graphic)
                   let g = results[0].graphic
-                  view.graphics.remove(g)
-                  g.symbol.url = require("@/assets/point.png")
+                  g.symbol.url = require('@/assets/point.png')
                   that.graphicData = g
-                  view.graphics.addMany([g])
-                  let geo = g.geometry
+                  console.log(g)
+                  graphicView1(g.attributes)
+                  // view.graphics.addMany([g])
+                  // let geo = g.geometry
                   let attr = g.attributes
                   // let point = new Point(geo.x, geo.y, view.spatialReference)
                   view.popup.open({ 
@@ -292,14 +290,13 @@ export default {
                   })
                 }
               } else {
-                view.popup.close()
                 console.log(that.graphicData)
                 if(that.graphicData !== '') {
                   view.graphics.remove(that.graphicData)
-                  that.graphicData.symbol.url = require('@/assets/point2.png')
-                  console.log(that.graphicData)
-                  view.graphics.addMany([that.graphicData])
+                  let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
+                  graphicView(g)
                 }
+                view.popup.close()
               }
             })
           })
@@ -318,6 +315,36 @@ export default {
                 type: 'picture-marker',
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
                 url: require("@/assets/point2.png"),
+                // 图片大小
+                width: '49px',
+                height: '39px'
+              },
+              // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
+              attributes: {
+                // name: data.name,
+                // desc: data.desc,
+                ...data
+              },
+            });
+            // 将图形添加到视图的图形层
+            view.graphics.addMany([graphic])
+            if(that.graphicData !== ''){
+              console.log('graphicData',that.graphicData)
+              that.graphicData = ''
+            }
+          }
+          function graphicView1(data) {
+            let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
+              geometry: {  //点位信息
+                type: 'point',
+                longitude: data.lng,
+                latitude: data.lat
+              },
+              symbol: {  //图像
+                //类型有 图片标记 和 点
+                type: 'picture-marker',
+                //图片地址，可以使用网络路径或本地路径 (base64也可以)
+                url: require("@/assets/point.png"),
                 // 图片大小
                 width: '49px',
                 height: '39px'

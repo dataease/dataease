@@ -917,6 +917,13 @@
                       :chart="chart"
                       @onTextChange="onTextChange"
                     />
+                    <title-selector
+                      v-else-if="view.render && view.render === 'other'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTextChange="onTextChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
