@@ -108,7 +108,11 @@ public class Db2QueryProvider extends QueryProvider {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(Db2Constants.UNIX_TIMESTAMP, originField);
                     } else {
-                        fieldName = originField;
+                        if(f.getType().equalsIgnoreCase("TIME")){
+                            fieldName = String.format(Db2Constants.FORMAT_TIME, originField, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
+                            fieldName = originField;
+                        }
                     }
                 } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
@@ -779,7 +783,11 @@ public class Db2QueryProvider extends QueryProvider {
                     whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                    whereName = originName;
+                    if(field.getType().equalsIgnoreCase("TIME")){
+                        whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }else {
+                        whereName = originName;
+                    }
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -883,7 +891,11 @@ public class Db2QueryProvider extends QueryProvider {
                         whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        whereName = originName;
+                        if(field.getType().equalsIgnoreCase("TIME")){
+                            whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
+                            whereName = originName;
+                        }
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -982,7 +994,11 @@ public class Db2QueryProvider extends QueryProvider {
                 fieldName = String.format(Db2Constants.UNIX_TIMESTAMP, originField) + "*1000";
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
+                if(x.getType().equalsIgnoreCase("TIME")){
+                    fieldName = String.format(Db2Constants.FORMAT_TIME, originField, format);
+                }else {
+                    fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
+                }
             } else {
                 fieldName = originField;
             }

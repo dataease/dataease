@@ -56,6 +56,17 @@ export default {
       this.showAsync = false
     }
   },
+  watch: {
+    'componentName': function () {
+      this.refId = uuid.v1
+      if (this.componentName) {
+        this.showAsync = true
+        this.url = this.baseUrl + this.componentName
+      } else {
+        this.showAsync = false
+      }
+    }
+  },
   methods: {
     // hasLicense
     executeAxios(options) {

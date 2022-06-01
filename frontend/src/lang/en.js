@@ -1349,7 +1349,7 @@ export default {
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     datasource: 'Data Source',
-    please_select_left: 'Please select the data source from the left',
+    please_select_left: 'Please select data from the left',
     show_info: 'Data Source Info',
     create: 'Create Data Source',
     type: 'Type',

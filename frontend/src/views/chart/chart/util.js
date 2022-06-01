@@ -1564,7 +1564,9 @@ export const TYPE_CONFIGS = [
         'position',
         'name',
         'nameTextStyle',
-        'splitLine'
+        'axisValue',
+        'splitLine',
+        'axisLabel'
       ],
       'title-selector': [
         'show',
@@ -1934,7 +1936,7 @@ export const TYPE_CONFIGS = [
         'labelLine',
         'fontSize',
         'color',
-        'position-v',
+        'position-pie',
         'formatter'
       ],
       'tooltip-selector': [

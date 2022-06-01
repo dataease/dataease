@@ -45,14 +45,14 @@ public class DirectFieldService implements DataSetFieldService {
     private EngineService engineService;
 
     @Override
-    public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions) throws Exception {
+    public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions, Boolean rowAndColumnMgm) throws Exception {
         List<String> filedIds = new ArrayList<>();
         filedIds.add(fieldId);
-        return fieldValues(filedIds, userId, userPermissions, false);
+        return fieldValues(filedIds, userId, userPermissions, false, rowAndColumnMgm);
     }
 
     @Override
-    public List<Object> fieldValues(List<String> fieldIds, Long userId, Boolean userPermissions, Boolean needMapping) throws Exception {
+    public List<Object> fieldValues(List<String> fieldIds, Long userId, Boolean userPermissions, Boolean needMapping, Boolean rowAndColumnMgm) throws Exception {
         String fieldId = fieldIds.get(0);
         DatasetTableField field = dataSetTableFieldsService.selectByPrimaryKey(fieldId);
         if (field == null || StringUtils.isEmpty(field.getTableId())) return null;
@@ -70,22 +70,15 @@ public class DirectFieldService implements DataSetFieldService {
 
         List<DatasetTableField> permissionFields = fields;
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        if(userPermissions){
+        if (userPermissions) {
             //列权限
             List<String> desensitizationList = new ArrayList<>();
             fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
-
             Map<String, DatasetTableField> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableField::getId, node -> node));
             permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
-            //permissionFields = fields.stream().filter(node -> fieldIds.stream().anyMatch(item -> StringUtils.equals(node.getId(), item))).collect(Collectors.toList());
-
             if (CollectionUtils.isEmpty(permissionFields)) {
                 return new ArrayList<>();
             }
-            //禁用的
-            /*if(!fields.stream().map(DatasetTableField::getId).collect(Collectors.toList()).contains(fieldId)){
-                return new ArrayList<>();
-            }*/
             if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
                 List<Object> results = new ArrayList<>();
                 results.add(ColumnPermissionConstants.Desensitization_desc);
@@ -93,6 +86,13 @@ public class DirectFieldService implements DataSetFieldService {
             }
             //行权限
             customFilter = permissionService.getCustomFilters(fields, datasetTable, userId);
+        }
+        if (rowAndColumnMgm) {
+            Map<String, DatasetTableField> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableField::getId, node -> node));
+            permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(permissionFields)) {
+                return new ArrayList<>();
+            }
         }
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -148,7 +148,7 @@ public class DirectFieldService implements DataSetFieldService {
 
     }
 
-    private List<BaseTreeNode> buildTreeNode(String [] row, Set<String> pkSet) {
+    private List<BaseTreeNode> buildTreeNode(String[] row, Set<String> pkSet) {
         List<BaseTreeNode> nodes = new ArrayList<>();
         List<String> parentPkList = new ArrayList<>();
         for (int i = 0; i < row.length; i++) {
