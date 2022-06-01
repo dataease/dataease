@@ -1399,7 +1399,7 @@ export default {
   .this_canvas {
     width: 100%;
     // height: calc(100vh - 35px);
-    overflow-x: auto;
+    // overflow-x: auto;
     // overflow-y: auto;
     // overflow:hidden;
     position:relative;

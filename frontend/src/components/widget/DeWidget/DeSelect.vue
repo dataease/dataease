@@ -164,6 +164,7 @@ export default {
       }
     },
     changeValue(value) {
+      console.log('下拉框的值', value)
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''

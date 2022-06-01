@@ -119,6 +119,7 @@ export default {
       scaleHeight: '100',
       timer: null,
       componentDataShow: [],
+      pageRatio: 0,
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
@@ -226,7 +227,7 @@ export default {
   watch: {
     componentData: {
       handler(newVal, oldVla) {
-        this.restore()
+        // this.restore()
       },
       deep: true
     },
@@ -247,7 +248,9 @@ export default {
     // 监听主div变动事件
     erd.listenTo(document.getElementById('canvasInfoMain'), element => {
       _this.$nextTick(() => {
+        console.log('获取到的元素宽度', document.getElementById('canvasInfoMain').offsetWidth)
         console.log('div变动变化==', document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+        _this.detectZoom()
         console.log('画布高度缩放 === ', this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width))
         // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
         _this.restore()
@@ -286,6 +289,33 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    detectZoom() {
+      var ratio = 0; var // 浏览器当前缩放比
+        screen = window.screen; var // 获取屏幕
+        ua = navigator.userAgent.toLowerCase()// 判断登陆端是pc还是手机
+
+      if (window.devicePixelRatio !== undefined) {
+        ratio = window.devicePixelRatio
+      } else if (~ua.indexOf('msie')) {
+        if (screen.deviceXDPI && screen.logicalXDPI) {
+          ratio = screen.deviceXDPI / screen.logicalXDPI
+        }
+      } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+        ratio = window.outerWidth / window.innerWidth
+      }
+
+      if (ratio) {
+        ratio = Math.round(ratio * 100)
+      }
+      this.pageRatio = ratio
+      // if (ratio !== 100) {
+      //   this.$message({
+      //     message: '您当前的窗口缩放比例为' + ratio + '%建议您的窗口比例调为100%，窗口比例不为100%可能导致页面排版错乱',
+      //     type: 'warning'
+      //   })
+      //   // layer.msg('您当前的窗口缩放比例为' + ratio + '%建议您的窗口比例调为100%，窗口比例不为100%可能导致页面排版错乱')/// 这里layer是layui框架自带弹窗，如果不是layui可以使用alert（）代替；
+      // }
+    },
     _isMobile() {
       const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
       this.terminal = flag ? 'mobile' : 'pc'
@@ -310,12 +340,16 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
+      this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
+      // const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
       // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
+
+      console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
       if (this.backScreenShot) {
         this.scaleHeight = this.scaleWidth * 100
       } else {
@@ -336,8 +370,8 @@ export default {
       return data
     },
     format(value, scale) {
-      console.log('value===', value, value * scale / 100)
-      return value * scale / 100
+      console.log('value===', value, value * scale / 100, this.pageRatio)
+      return (value * scale / 100)
     },
     handleScaleChange() {
       if (this.componentData) {

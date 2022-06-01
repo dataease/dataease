@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="block">
-      <el-carousel :height="element.style.height+'px'" trigger="click">
+      <el-carousel :height="element.style.height+'px'" trigger="click" @change="changeCarousel">
         <el-carousel-item v-for="(item,index) in datas" :key="index" class="banner_class" :style="bannerStyle">
           <!-- <h3 class="small">{{ item }}</h3> -->
           <span>{{ item.text }}</span>
@@ -157,6 +157,15 @@ export default {
   },
 
   methods: {
+    changeCarousel(e) {
+      if (JSON.stringify(this.datas) !== '[]') {
+        this.datas.forEach((item, index) => {
+          console.log('对数据进行解析----', item, index)
+        })
+      }
+      // JSON.str
+      console.log('轮播图事件触发------', e)
+    },
     initLoad() {
       console.log('this.element=======', this.element)
       this.value = this.element.options.attrs.multiple ? [] : null
