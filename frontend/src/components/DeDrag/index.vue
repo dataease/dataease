@@ -31,7 +31,19 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @bannerImg="bannerImg"
+        @boardSet="boardSet"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
@@ -1893,6 +1905,11 @@ export default {
     // 跳转设置
     boardSet() {
       this.$emit('boardSet')
+    },
+    // 跳转设置
+    bannerImg() {
+      console.log('-------------------------------------------------------2222222', this.element)
+      this.$emit('bannerImg')
     }
   }
 

@@ -51,6 +51,7 @@
       @onHandleUp="onMouseUp"
       @onDragging="onDragging"
       @onResizing="onResizing"
+      @bannerImg="bannerImg(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -193,6 +194,18 @@
     >
       <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
+    <el-dialog
+      :visible.sync="bannerSetVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <BannerSet v-if="bannerSetVisible" :element="bannerelement" @backgroundSetClose="bannerSetClose" />
+      <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -223,6 +236,7 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
+import BannerSet from '@/views/background/bannerSet'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -789,7 +803,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, BannerSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -855,6 +869,7 @@ export default {
   data() {
     return {
       boardSetVisible: false,
+      bannerSetVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1049,10 +1064,19 @@ export default {
     backgroundSetClose() {
       this.boardSetVisible = false
     },
+    bannerSetClose() {
+      this.bannerSetVisible = false
+    },
     boardSet(item) {
       console.log('itsm00001', item)
       this.$emit('boardSet', item)
+
       this.boardSetVisible = true
+    },
+    bannerImg(item) {
+      console.log('item-------------------------------------------', item)
+      this.bannerelement = item
+      this.bannerSetVisible = true
     },
     changeStyleWithScale,
     handleMouseDown(e) {
