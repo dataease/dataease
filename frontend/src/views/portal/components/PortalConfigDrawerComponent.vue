@@ -10,7 +10,7 @@
       <div class="portal-config-drawer-container-container">
         <div class="header">
           <div class="headerleft">
-            <i class="el-icon-close" @click="syncVisible = false"></i>
+            <i class="el-icon-close" @click="close"></i>
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
           <div class="headerright">
@@ -88,7 +88,7 @@
                 </el-menu>
               </el-aside>
               <el-main class="config-main">
-                <PanelViewShow></PanelViewShow>
+                <PanelViewShow ref="panelViewShow"></PanelViewShow>
               </el-main>
             </el-container>
             <el-header
@@ -303,12 +303,10 @@ export default {
         sort: "create_time desc,node_type desc,name asc",
       },
       tData: [],
+      showPanelView: false,
     };
   },
   computed: {
-    // ...mapGetters([
-    //   "navLayoutStyle", // 0 top-left 1 left 2 top
-    // ]),
     syncVisible: {
       get() {
         return this.visible;
@@ -345,16 +343,26 @@ export default {
     },
   },
 
+  watch: {
+    syncVisible(val) {
+      if (val) {
+        this.$nextTick(() => {
+          if (this.$refs.panelViewShow) {
+            this.$refs.panelViewShow.showMain = false;
+          }
+        });
+      }
+    },
+  },
+
   mounted() {
     this.tree(true);
   },
 
   methods: {
-    // ...mapMutations({
-    //   setTopNavPosRadio: "SET_TOP_NAV_POS_RADIO",
-    //   setThemeColor: "SET_THEME_COLOR",
-    //   setNavLayoutStyle: "SET_NAV_LAYOUT_STYLE",
-    // }),
+    close() {
+      this.syncVisible = false;
+    },
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
       console.log("radio", radio);
@@ -477,6 +485,7 @@ export default {
     },
 
     handleUpdateTrend() {
+      this.showPanelView = true;
       this.$store.commit("setComponentDataCache", null);
       initPanelData(this.currentTreeNode.trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
@@ -506,36 +515,16 @@ export default {
   .el-menu.el-menu--horizontal {
     border: unset;
   }
-  ::v-deep .el-radio-group {
-    .el-radio__label {
-      // color: #fff;
-    }
-  }
   ::v-deep .el-header {
     padding: 0;
-  }
-  ::v-deep .el-input__inner {
-    // background-color: transparent;
-    // border-color: transparent;
-    // padding: 0;
-    // color: #fff;
-  }
-  ::v-deep .el-select .el-input__inner:focus {
-    // border-color: transparent;
   }
   ::v-deep .el-tree {
     margin-top: 20px;
     background-color: transparent;
     // color: #fff;
   }
-  ::v-deep .el-tree-node__content:hover {
-    // background-color: #34425b;
-  }
-  ::v-deep
-    .el-tree--highlight-current
-    .el-tree-node.is-current
-    > .el-tree-node__content {
-    // background-color: #34425b;
+  ::v-deep .panel-design-head {
+    display: none !important;
   }
   .el-icon-plus,
   .el-icon-delete {
@@ -606,6 +595,7 @@ export default {
         }
 
         .config-main {
+          padding: 0 !important;
           background-color: var(--TopBG, #e6e6e6);
         }
       }

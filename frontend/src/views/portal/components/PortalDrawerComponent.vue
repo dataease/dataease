@@ -128,7 +128,11 @@
                       src="./left-top-layout.png"
                       alt=""
                     /> -->
-                    <svg-icon icon-class="pltl" class="icon-layout" :class="{ active: navLayoutStyle == 0 }"></svg-icon>
+                    <svg-icon
+                      icon-class="pltl"
+                      class="icon-layout"
+                      :class="{ active: navLayoutStyle == 0 }"
+                    ></svg-icon>
                     <span class="item-name">双导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(1)">
@@ -137,7 +141,11 @@
                       src="./only-left-layout.png"
                       alt=""
                     /> -->
-                    <svg-icon icon-class="poll" class="icon-layout" :class="{ active: navLayoutStyle == 1 }"></svg-icon>
+                    <svg-icon
+                      icon-class="poll"
+                      class="icon-layout"
+                      :class="{ active: navLayoutStyle == 1 }"
+                    ></svg-icon>
                     <span class="item-name">左导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(2)">
@@ -146,7 +154,11 @@
                       src="./only-top-layout.png"
                       alt=""
                     /> -->
-                    <svg-icon icon-class="potl" class="icon-layout" :class="{ active: navLayoutStyle == 2 }"></svg-icon>
+                    <svg-icon
+                      icon-class="potl"
+                      class="icon-layout"
+                      :class="{ active: navLayoutStyle == 2 }"
+                    ></svg-icon>
                     <span class="item-name">顶部导航布局</span>
                   </div>
                 </div>
@@ -196,6 +208,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    openType: {
+      type: String,
+      default: "add", //edit
+    },
   },
 
   data() {
@@ -224,12 +240,33 @@ export default {
     },
   },
 
+  watch: {
+    syncVisible(val) {
+      if (val) {
+        // 如果是新打开的状态
+        this.__initData();
+      }
+    },
+  },
+
   methods: {
     // ...mapMutations({
     //   setTopNavPosRadio: "SET_TOP_NAV_POS_RADIO",
     //   setThemeColor: "SET_THEME_COLOR",
     //   setNavLayoutStyle: "SET_NAV_LAYOUT_STYLE",
     // }),
+
+    __initData() {
+      if (this.openType == "add") {
+        this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
+        this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
+        this.topNavPosRadio = "top"; //  当前一级导航的位置
+        this.themeColor = "#f1f3f8"; // 当前导航的颜色
+        this.navLayoutStyle = "0"; // 0 top-left 1 left 2 top
+        this.portalName = ""; // 当前门户的名称
+      }
+    },
+
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
       console.log("radio", radio);

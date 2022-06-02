@@ -4,7 +4,7 @@
       <el-button
         plain
         icon="el-icon-circle-plus-outline"
-        @click="handleOpenPortalDrawer"
+        @click="handleAddPortalDrawer"
         >新建数据门户</el-button
       >
     </div>
@@ -26,6 +26,7 @@
     <div class="bottom"></div>
     <div class="other">
       <PortalDrawerComponent
+        :open-type="openType"
         :visible.sync="showPortalDrawer"
       ></PortalDrawerComponent>
     </div>
@@ -48,11 +49,13 @@ export default {
         },
       ],
       showPortalDrawer: false,
+      openType: "add", // edit
     };
   },
 
   methods: {
-    handleOpenPortalDrawer() {
+    handleAddPortalDrawer() {
+      this.openType = 'add'
       this.showPortalDrawer = true;
     },
   },
