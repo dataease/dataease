@@ -1,6 +1,7 @@
 package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.dataease.auth.annotation.DeCleaner;
@@ -585,9 +586,9 @@ public class DataSetTableService {
             } else {
                 // check doris table
                 if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
-                    if(dataSetTableRequest.isPreviewForTask()){
+                    if (dataSetTableRequest.isPreviewForTask()) {
                         return map;
-                    }else {
+                    } else {
                         throw new RuntimeException(Translator.get("i18n_data_not_sync"));
                     }
                 }
@@ -1346,7 +1347,11 @@ public class DataSetTableService {
 
         String configuration = ds.getConfiguration();
         JsonObject jsonObject = JsonParser.parseString(configuration).getAsJsonObject();
-        String schema = jsonObject.get("schema").getAsString();
+        JsonElement schemaJson = jsonObject.get("schema");
+        String schema = null;
+        if (schemaJson != null) {
+            schema = schemaJson.getAsString();
+        }
         String joinPrefix = "";
         if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||
@@ -1907,7 +1912,7 @@ public class DataSetTableService {
 
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
 
-            if(editType == 1){
+            if (editType == 1) {
                 for (ExcelSheetData excelSheetData : excelSheetDataList) {
                     List<TableField> tableFields = excelSheetData.getFields();
                     List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
@@ -1918,7 +1923,7 @@ public class DataSetTableService {
                 if (retrunSheetDataList.size() == 0) {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
-            }else {
+            } else {
                 List<DatasetTableField> extFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() > 0).collect(Collectors.toList());
                 List<String> extFieldsRefIds = new ArrayList<>();
                 for (DatasetTableField extField : extFields) {
@@ -1928,7 +1933,7 @@ public class DataSetTableService {
                     Matcher matcher = pattern.matcher(originField);
                     while (matcher.find()) {
                         String id = matcher.group(1);
-                        if(!extFieldsRefIds.contains(id)){
+                        if (!extFieldsRefIds.contains(id)) {
                             extFieldsRefIds.add(id);
                         }
                     }
@@ -1939,12 +1944,12 @@ public class DataSetTableService {
                     List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
                     if (oldFields.equals(newFields)) {
                         excelSheetData.setChangeFiled(false);
-                    }else {
+                    } else {
                         excelSheetData.setChangeFiled(true);
                     }
                     boolean effectExtField = false;
                     for (String extFieldsRefName : extFieldsRefNames) {
-                        if(!newFields.contains(extFieldsRefName)){
+                        if (!newFields.contains(extFieldsRefName)) {
                             effectExtField = true;
                         }
                     }
@@ -1956,7 +1961,7 @@ public class DataSetTableService {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
             }
-        }else {
+        } else {
             retrunSheetDataList = excelSheetDataList;
         }
         retrunSheetDataList = retrunSheetDataList.stream()
@@ -2374,7 +2379,7 @@ public class DataSetTableService {
         return datasetTable;
     }
 
-    public int  updateByExampleSelective(DatasetTable record, DatasetTableExample example ){
+    public int updateByExampleSelective(DatasetTable record, DatasetTableExample example) {
         return datasetTableMapper.updateByExampleSelective(record, example);
     }
 }
