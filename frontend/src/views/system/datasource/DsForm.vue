@@ -1,7 +1,7 @@
 <template>
   <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
     <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList"/>
+      <el-icon name="back" class="back-button" @click.native="backToList" />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
@@ -18,19 +18,20 @@
         label-position="right"
       >
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('commons.description')" prop="desc">
-          <el-input v-model="form.desc" autocomplete="off"/>
+          <el-input v-model="form.desc" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
           <el-select
             v-model="form.type"
             :placeholder="$t('datasource.please_choose_type')"
             class="select-width"
+            style="width: 100%"
             :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
-            @change="changeType()"
             filterable
+            @change="changeType()"
           >
             <el-option
               v-for="item in dsTypes"
@@ -41,27 +42,53 @@
           </el-select>
         </el-form-item>
 
-      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :datasource-type='datasourceType' :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"></ds-configuration>
-      <plugin-com ref="pluginDsConfig" v-if="datasourceType.isPlugin"  :component-name="datasourceType.type" :obj="{form, disabled }" />
+        <el-form-item v-if="datasourceType.isJdbc" :label="$t('driver.driver')">
+          <el-select
+            v-model="form.configuration.customDriver"
+            :placeholder="$t('driver.please_choose_driver')"
+            class="select-width"
+            style="width: 100%"
+            filterable
+          >
+            <el-option
+              v-for="item in driverList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+              :disabled="!item.driverClass"
+            />
+          </el-select>
+        </el-form-item>
 
+        <ds-configuration v-if="!datasourceType.isPlugin" ref="dsConfig" :datasource-type="datasourceType" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit" />
+        <plugin-com v-if="datasourceType.isPlugin" ref="pluginDsConfig" :component-name="datasourceType.type" :obj="{form, disabled }" />
 
       </el-form>
 
-
       <div v-if="canEdit" slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="save">{{ $t('commons.save') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="save"
+        >{{ $t('commons.save') }}
         </el-button>
       </div>
       <div v-else slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="changeEdit">{{ $t('commons.edit') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="changeEdit"
+        >{{ $t('commons.edit') }}
         </el-button>
       </div>
     </div>
@@ -70,11 +97,19 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs, validateDsById, checkApiDatasource} from '@/api/system/datasource'
-import {$confirm} from '@/utils/message'
+import {
+  addDs,
+  editDs,
+  getSchema,
+  validateDs,
+  validateDsById,
+  checkApiDatasource,
+  listDriverByType
+} from '@/api/system/datasource'
+import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
-import DsConfiguration from "@/views/system/datasource/DsConfiguration";
+import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
@@ -111,16 +146,17 @@ export default {
           maxIdleTime: 30,
           acquireIncrement: 5,
           idleConnectionTestPeriod: 5,
-          connectTimeout: 5
+          connectTimeout: 5,
+          customDriver: 'default'
         },
         apiConfiguration: []
       },
       datasourceType: {},
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
+        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur' }],
+        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur' }],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -141,9 +177,9 @@ export default {
           message: i18n.t('datasource.please_input_password'),
           trigger: 'blur'
         }],
-        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur'}],
-        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
-        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur'}],
+        'configuration.host': [{ required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur' }],
+        'configuration.url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur' }],
+        'configuration.port': [{ required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur' }],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
@@ -174,8 +210,8 @@ export default {
           message: i18n.t('datasource.please_input_connect_timeout'),
           trigger: 'blur'
         }],
-        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
-        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur'}]
+        'url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur' }],
+        'dataPath': [{ required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur' }]
       },
       schemas: [],
       canEdit: false,
@@ -190,9 +226,9 @@ export default {
         request: {
           headers: [{}],
           body: {
-            "type": "",
-            "raw": "",
-            "kvs": []
+            'type': '',
+            'raw': '',
+            'kvs': []
           }
         },
         fields: []
@@ -206,28 +242,29 @@ export default {
         request: {
           headers: [],
           body: {
-            "type": "",
-            "raw": "",
-            "kvs": []
+            'type': '',
+            'raw': '',
+            'kvs': []
           },
           authManager: {}
         },
         fields: []
       },
-      reqOptions: [{id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST'}],
+      reqOptions: [{ id: 'GET', label: 'GET' }, { id: 'POST', label: 'POST' }],
       loading: false,
-      responseData: {type: 'HTTP', responseResult: {}, subRequestResults: []},
+      responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
       api_table_title: '',
       api_step2_active_name: 'first',
       fieldTypes: [
-        {label: this.$t('dataset.text'), value: 0},
-        {label: this.$t('dataset.time'), value: 1},
-        {label: this.$t('dataset.value'), value: 2},
-        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
-        {label: this.$t('dataset.location'), value: 5}
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+        { label: this.$t('dataset.location'), value: 5 }
       ],
       height: 500,
-      disabledNext: false
+      disabledNext: false,
+      driverList: []
     }
   },
 
@@ -235,7 +272,7 @@ export default {
     if (this.params && this.params.id) {
       const row = this.params
       this.edit(row)
-      this.changeType()
+      this.changeType(true)
     } else {
       this.create()
       if (this.params && this.params.type) {
@@ -258,9 +295,9 @@ export default {
         maxIdleTime: 30,
         acquireIncrement: 5,
         idleConnectionTestPeriod: 5,
-        connectTimeout: 5
+        connectTimeout: 5,
+        customDriver: 'default'
       }
-
     },
     changeEdit() {
       this.canEdit = true
@@ -300,15 +337,15 @@ export default {
         return
       }
       let repeat = false
-      let repeatDsName = []
+      const repeatDsName = []
       this.tData.forEach(item => {
         if (item.id === this.form.type) {
           item.children.forEach(child => {
             if (this.formType === 'modify' && child.id === this.form.id) {
               return
             }
-            let configuration = JSON.parse(child.configuration)
-            if(!configuration){
+            const configuration = JSON.parse(child.configuration)
+            if (!configuration) {
               return
             }
             switch (this.form.type) {
@@ -350,16 +387,16 @@ export default {
         }
       })
 
-      let status = null;
-      if(this.datasourceType.isPlugin){
-        status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
-      }else {
+      let status = null
+      if (this.datasourceType.isPlugin) {
+        status = this.$refs['pluginDsConfig'].callPluginInner({ methodName: 'validate' })
+      } else {
         this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
           status = valid
         })
       }
-      if(!status){
-        return;
+      if (!status) {
+        return
       }
 
       this.$refs.dsForm.validate(valid => {
@@ -434,19 +471,19 @@ export default {
         this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
-      let status = null;
-      if(this.datasourceType.isPlugin){
-        status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
-      }else {
+      let status = null
+      if (this.datasourceType.isPlugin) {
+        status = this.$refs['pluginDsConfig'].callPluginInner({ methodName: 'validate' })
+      } else {
         this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
           status = valid
-          if(!valid){
+          if (!valid) {
             return
           }
         })
       }
-      if(!status){
-        return;
+      if (!status) {
+        return
       }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
@@ -492,13 +529,21 @@ export default {
         }
       })
     },
-    changeType() {
+    changeType(init) {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
-          if(this.form.type !== 'api'){
+          if (this.form.type !== 'api' && !init) {
             this.form.configuration.extraParams = this.dsTypes[i].extraParams
+            this.form.configuration.customDriver = 'default'
           }
           this.datasourceType = this.dsTypes[i]
+          if (this.datasourceType.isJdbc) {
+            listDriverByType(this.datasourceType.type).then(res => {
+              this.driverList = []
+              this.driverList.push({ id: 'default', name: 'Default', driverClass: 'Default' })
+              this.driverList = this.driverList.concat(res.data)
+            })
+          }
         }
       }
     },
@@ -518,7 +563,7 @@ export default {
             }
           })
         } else {
-          let index = this.form.apiConfiguration.indexOf(this.apiItem)
+          const index = this.form.apiConfiguration.indexOf(this.apiItem)
           for (let i = 0; i < this.form.apiConfiguration.length; i++) {
             if (i !== index && this.form.apiConfiguration[i].name === this.apiItem.name) {
               hasRepeatName = true
@@ -616,13 +661,13 @@ export default {
 }
 </script>
 <style scoped>
-.el-input {
+/* .el-input {
   width: 300px;
 }
 
 .el-select {
   width: 300px;
-}
+} */
 
 .ms-http-input {
   width: 500px;

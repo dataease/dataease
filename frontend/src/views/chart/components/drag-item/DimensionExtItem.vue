@@ -1,5 +1,6 @@
 <template>
-  <span>
+  <span style="position: relative;display: inline-block;">
+    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -157,7 +158,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -167,7 +167,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -246,7 +245,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 70px;
+    width: 100px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

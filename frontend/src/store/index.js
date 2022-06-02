@@ -21,7 +21,7 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
-import { valueValid, formatCondition, formatLinkageCondition } from '@/utils/conditionUtil'
+import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import { Condition } from '@/components/widget/bean/Condition'
 
 import {
@@ -29,6 +29,8 @@ import {
 } from '@/views/panel/panel'
 import bus from '@/utils/bus'
 import { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list'
+import { TYPE_CONFIGS } from '@/views/chart/chart/util'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 Vue.use(Vuex)
 
@@ -111,7 +113,23 @@ const data = {
     // 当前tab页内组件
     curActiveTabInner: null,
     // static resource local path
-    staticResourcePath: '/static-resource/'
+    staticResourcePath: '/static-resource/',
+    // panel edit batch operation status
+    batchOptStatus: false,
+    // Currently selected components
+    curBatchOptComponents: [],
+    // Currently selected Multiplexing components
+    curMultiplexingComponents: {},
+    mixProperties: [],
+    mixPropertiesInner: {},
+    batchOptChartInfo: null,
+    batchOptViews: {},
+    // properties changed
+    changeProperties: {
+      customStyle: {},
+      customAttr: {}
+    },
+    allViewRender: []
   },
   mutations: {
     ...animation.mutations,
@@ -144,6 +162,12 @@ const data = {
         component['optStatus'] = {
           dragging: false,
           resizing: false
+        }
+        // Is the current component in editing status
+        if (!state.curComponent) {
+          component['editing'] = false
+        } else if (component.id !== state.curComponent.id) {
+          component['editing'] = false
         }
       }
       state.styleChangeTimes = 0
@@ -512,6 +536,149 @@ const data = {
     },
     resetViewEditInfo(state) {
       state.panelViewEditInfo = {}
+    },
+    removeCurBatchComponentWithId(state, id) {
+      for (let index = 0; index < state.curBatchOptComponents.length; index++) {
+        const element = state.curBatchOptComponents[index]
+        if (element === id) {
+          delete state.batchOptViews[id]
+          state.curBatchOptComponents.splice(index, 1)
+          this.commit('setBatchOptChartInfo')
+          break
+        }
+      }
+    },
+    addCurBatchComponent(state, id) {
+      if (id) {
+        state.curBatchOptComponents.push(id)
+        // get view base info
+        const viewBaseInfo = state.componentViewsData[id]
+        // get properties
+        const viewConfig = state.allViewRender.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
+        if (viewConfig && viewConfig.length > 0) {
+          state.batchOptViews[id] = viewConfig[0]
+          this.commit('setBatchOptChartInfo')
+        }
+      }
+    },
+    removeCurMultiplexingComponentWithId(state, id) {
+      delete state.curMultiplexingComponents[id]
+    },
+    addCurMultiplexingComponent(state, { component, componentId }) {
+      if (componentId) {
+        state.curMultiplexingComponents[componentId] = component
+      }
+    },
+    setBatchOptChartInfo(state) {
+      let render = null
+      let type = null
+      let allTypes = ''
+      let isPlugin = null
+      state.mixProperties = []
+      state.mixPropertiesInner = {}
+      let mixPropertiesTemp = []
+      let mixPropertyInnerTemp = {}
+      if (state.batchOptViews && JSON.stringify(state.batchOptViews) !== '{}') {
+        for (const key in state.batchOptViews) {
+          if (mixPropertiesTemp.length > 0) {
+            // If it exists , taking the intersection
+            mixPropertiesTemp = mixPropertiesTemp.filter(property => state.batchOptViews[key].properties.indexOf(property) > -1)
+            // 根据当前的mixPropertiesTemp 再对 mixPropertyInnerTemp 进行过滤
+            mixPropertiesTemp.forEach(propertyInnerItem => {
+              if (mixPropertyInnerTemp[propertyInnerItem] && state.batchOptViews[key].propertyInner[propertyInnerItem]) {
+                mixPropertyInnerTemp[propertyInnerItem] = mixPropertyInnerTemp[propertyInnerItem].filter(propertyInnerItemValue => state.batchOptViews[key].propertyInner[propertyInnerItem].indexOf(propertyInnerItemValue) > -1)
+              }
+            })
+          } else {
+            // If it doesn't exist, assignment directly
+            mixPropertiesTemp = deepCopy(state.batchOptViews[key].properties)
+            mixPropertyInnerTemp = deepCopy(state.batchOptViews[key].propertyInner)
+          }
+
+          if (render && render !== state.batchOptViews[key].render) {
+            render = 'mix'
+          } else {
+            render = state.batchOptViews[key].render
+          }
+
+          allTypes = allTypes + '-' + state.batchOptViews[key].value
+          if (type && type !== state.batchOptViews[key].value) {
+            type = 'mix'
+          } else {
+            type = state.batchOptViews[key].value
+          }
+
+          if (isPlugin && isPlugin !== state.batchOptViews[key].isPlugin) {
+            isPlugin = 'mix'
+          } else {
+            isPlugin = state.batchOptViews[key].isPlugin
+          }
+        }
+        mixPropertiesTemp.forEach(property => {
+          if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
+            state.mixPropertiesInner[property] = mixPropertyInnerTemp[property]
+            state.mixProperties.push(property)
+          }
+        })
+
+        if (type && type === 'mix') {
+          type = type + '-' + allTypes
+        }
+        // Assembly history settings 'customAttr' & 'customStyle'
+        state.batchOptChartInfo = {
+          'mode': 'batchOpt',
+          'render': render,
+          'type': type,
+          'isPlugin': isPlugin,
+          'customAttr': state.changeProperties.customAttr,
+          'customStyle': state.changeProperties.customStyle
+        }
+      } else {
+        state.batchOptChartInfo = null
+      }
+    },
+    setBatchOptStatus(state, status) {
+      state.batchOptStatus = status
+      // Currently selected components
+      state.curBatchOptComponents = []
+      state.mixProperties = []
+      state.mixPropertyInnder = {}
+      state.batchOptChartInfo = null
+      state.batchOptViews = {}
+      state.changeProperties = {
+        customStyle: {},
+        customAttr: {}
+      }
+    },
+    setChangeProperties(state, propertyInfo) {
+      state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+    },
+    initCanvas(state) {
+      this.commit('setCurComponent', { component: null, index: null })
+      this.commit('clearLinkageSettingInfo', false)
+      this.commit('resetViewEditInfo')
+      this.commit('initCurMultiplexingComponents')
+      state.batchOptStatus = false
+      // Currently selected components
+      state.curBatchOptComponents = []
+      state.curMultiplexingComponents = {}
+      state.mixProperties = []
+      state.mixPropertyInnder = {}
+      state.batchOptChartInfo = null
+      state.batchOptViews = {}
+      state.changeProperties = {
+        customStyle: {},
+        customAttr: {}
+      }
+    },
+    initViewRender(state, pluginViews) {
+      pluginViews.forEach(plugin => {
+        plugin.isPlugin = true
+      })
+      state.allViewRender = [...TYPE_CONFIGS, ...pluginViews]
+    },
+    initCurMultiplexingComponents(state) {
+      state.curMultiplexingComponents = {}
     }
   },
   modules: {

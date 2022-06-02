@@ -12,7 +12,8 @@ export function proxyInitPanelData(panelId, proxy, callback) {
       id: response.data.id,
       name: response.data.name,
       privileges: response.data.privileges,
-      proxy: proxy.userId
+      proxy: proxy.userId,
+      status: response.data.status
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId, proxy).then(rsp => {

@@ -1,6 +1,13 @@
 <template>
   <div v-loading="dataLoading" class="bg" :style="bgStyle">
-    <Preview v-if="!dataLoading" :back-screen-shot="backScreenShot" @mainHeightChange="mainHeightChange" />
+    <Preview
+      v-if="!dataLoading"
+      :component-data="componentData"
+      :canvas-style-data="canvasStyleData"
+      :back-screen-shot="backScreenShot"
+      :panel-info="panelInfo"
+      @mainHeightChange="mainHeightChange"
+    />
   </div>
 </template>
 <script>
@@ -10,6 +17,7 @@ import { initPanelData } from '@/api/panel/panel'
 import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
+import { mapState } from 'vuex'
 
 export default {
   components: { Preview },
@@ -28,7 +36,14 @@ export default {
       } else {
         return { height: '100vh!important' }
       }
-    }
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    ...mapState([
+      'canvasStyleData',
+      'componentData'
+    ])
   },
   watch: {
     '$route.params.reportId': function() {
@@ -104,7 +119,6 @@ export default {
             message: this.$t('panel.outer_param_decode_error'),
             type: 'error'
           })
-          console.log('outerParams Decode error：', e)
         }
       }
       if (tempParam) {
@@ -129,7 +143,6 @@ export default {
           if (--loadingCount === 0) {
             this.dataLoading = false
           }
-          console.log('queryTargetPanelJumpInfo error：', e)
         }
       }
       if (loadingCount === 0) {

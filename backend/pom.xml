@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dataease-server</artifactId>
         <groupId>io.dataease</groupId>
-        <version>1.10.0</version>
+        <version>1.11.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.79</version>
+            <version>1.2.83</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -241,17 +241,17 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.1</version>
         </dependency>
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-view</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.1</version>
         </dependency>
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-datasource</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.1</version>
         </dependency>
 
 

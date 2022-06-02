@@ -8,7 +8,14 @@
       'rect-shape'
     ]"
   >
-    <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
+    <EditBarView
+      v-if="editBarViewShowFlag"
+      :element="element"
+      :show-position="showPosition"
+      :is-edit="isEdit"
+      :view-id="element.propValue.viewId"
+      @showViewDetails="openChartDetailsDialog"
+    />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -29,6 +36,7 @@
       class="chart-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
+      @trigger-edit-click="pluginEditHandler"
     />
     <chart-component
       v-else-if="charViewShowFlag"
@@ -115,6 +123,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/componen
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+import { viewPropsSave } from '@/api/chart/chart'
 export default {
   name: 'UserView',
   components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -162,6 +171,18 @@ export default {
     filters: {
       type: Array,
       default: () => []
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -185,8 +206,14 @@ export default {
       changeScaleIndex: 0,
       pre: null,
       preCanvasPanel: null,
+      // string
       sourceCustomAttrStr: null,
+      // obj
+      sourceCustomAttr: null,
+      // string
       sourceCustomStyleStr: null,
+      // obj
+      sourceCustomStyle: null,
       scale: 1
     }
   },
@@ -207,7 +234,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
-      return this.active && this.inTab && !this.mobileLayoutStatus
+      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition.includes('multiplexing')
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
@@ -282,24 +309,23 @@ export default {
       return this.outStyle.width * this.outStyle.height
     },
     resultMode() {
-      return this.canvasStyleData.panel.resultMode
+      return this.canvasStyleData.panel && this.canvasStyleData.panel.resultMode || null
     },
     resultCount() {
-      return this.canvasStyleData.panel.resultCount
+      return this.canvasStyleData.panel && this.canvasStyleData.panel.resultCount || null
     },
     innerPadding() {
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
-      'canvasStyleData',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
       'previewCanvasScale',
       'mobileLayoutStatus',
-      'componentData',
       'panelViewDetailsInfo',
-      'componentViewsData'
+      'componentViewsData',
+      'curBatchOptComponents'
     ])
   },
 
@@ -392,6 +418,36 @@ export default {
     }
   },
   methods: {
+    pluginEditHandler(e) {
+      this.$emit('trigger-plugin-edit', { e, id: this.element.id })
+    },
+    batchOptChange(param) {
+      if (this.curBatchOptComponents.includes(this.element.propValue.viewId)) {
+        this.$store.state.styleChangeTimes++
+        // stylePriority change to 'view'
+        const updateParams = { 'id': this.chart.id, 'stylePriority': 'view' }
+        if (param.custom === 'customAttr') {
+          const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
+          sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+          this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
+          this.chart.customAttr = this.sourceCustomAttrStr
+          updateParams['customAttr'] = this.sourceCustomAttrStr
+        } else if (param.custom === 'customStyle') {
+          const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+          // view's title use history
+          // if (param.property === 'text') {
+          //   param.value.title = sourceCustomStyle.text.title
+          // }
+          sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+          this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
+          this.chart.customStyle = this.sourceCustomStyleStr
+          updateParams['customStyle'] = this.sourceCustomStyleStr
+        }
+        viewPropsSave(this.panelInfo.id, updateParams)
+        this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
+        this.mergeScale()
+      }
+    },
     resizeChart() {
       if (this.chart.type === 'map') {
         this.destroyTimeMachine()
@@ -415,6 +471,9 @@ export default {
       })
       bus.$on('view-in-cache', param => {
         param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
+      })
+      bus.$on('batch-opt-change', param => {
+        this.batchOptChange(param)
       })
     },
 
@@ -446,13 +505,17 @@ export default {
         const customStyleChart = JSON.parse(this.chart.customStyle)
         const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
-        // 组件样式-背景设置
-        customStyleChart.background = customStylePanel.background
+        if (customStyleChart.background) {
+          // 组件样式-背景设置
+          customStyleChart.background = customStylePanel.background
+        }
         // 图形属性-颜色设置
         if (this.chart.type.includes('table')) {
           customAttrChart.color = customAttrPanel.tableColor
         } else {
-          customAttrChart.color = customAttrPanel.color
+          customAttrChart.color['value'] = customAttrPanel.color['value']
+          customAttrChart.color['colors'] = customAttrPanel.color['colors']
+          customAttrChart.color['alpha'] = customAttrPanel.color['alpha']
         }
         this.chart = {
           ...this.chart,
@@ -486,11 +549,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
-            if (this.isEdit) {
-              this.componentViewsData[this.chart.id] = {
-                'title': this.chart.title
-              }
-            }
+            this.getDataOnly(response.data)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -547,7 +606,6 @@ export default {
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
       eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
     },
-
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
         (this.chart.type === 'map' || this.chart.type === 'buddle-map') && this.sendToChildren(param)
@@ -796,8 +854,25 @@ export default {
         this.chart.stylePriority = param.viewInfo.stylePriority
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
+        if (this.componentViewsData[this.chart.id]) {
+          this.componentViewsData[this.chart.id]['title'] = this.chart.title
+        }
         this.mergeScale()
-        this.mergeStyle()
+      }
+    },
+    getDataOnly(sourceResponseData) {
+      if (this.isEdit) {
+        if ((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) {
+          viewData(this.chart.id, this.panelInfo.id, {
+            filter: [],
+            drill: [],
+            queryFrom: 'panel'
+          }).then(response => {
+            this.componentViewsData[this.chart.id] = response.data
+          })
+        } else {
+          this.componentViewsData[this.chart.id] = sourceResponseData
+        }
       }
     }
   }

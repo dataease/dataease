@@ -68,6 +68,6 @@ export function starStatus(panelId) {
       method: 'post',
       loading: true
     })
-  }
-  
-    
+}
+
+

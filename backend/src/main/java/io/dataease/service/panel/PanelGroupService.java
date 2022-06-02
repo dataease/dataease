@@ -1,16 +1,19 @@
 package io.dataease.service.panel;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
@@ -27,6 +30,7 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.staticResource.StaticResourceService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
@@ -53,6 +57,8 @@ import java.util.stream.Collectors;
 public class PanelGroupService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+    private final SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.PANEL;
 
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     @Resource
@@ -101,6 +107,7 @@ public class PanelGroupService {
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
+        panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "panel_list");
     }
@@ -108,24 +115,28 @@ public class PanelGroupService {
     public List<PanelGroupDTO> defaultTree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
+        panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")
-    public PanelGroup saveOrUpdate(PanelGroupRequest request) {
+    public String save(PanelGroupRequest request) {
+        checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
+        String panelId = newPanel(request);
+        panelGroupMapper.insertSelective(request);
+        // 清理权限缓存
+        clearPermissionCache();
+        sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
+        return panelId;
+    }
+
+
+    public String update(PanelGroupRequest request) {
         String panelId = request.getId();
-        if (StringUtils.isNotEmpty(panelId)) {
-            panelViewService.syncPanelViews(request);
-        }
-        if (StringUtils.isEmpty(panelId)) { // 新建
-            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
-            panelId = newPanel(request);
-            panelGroupMapper.insert(request);
-            // 清理权限缓存
-            clearPermissionCache();
-            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
-        } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
+        panelViewService.syncPanelViews(request);
+        if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE.SYSTEM);
@@ -141,11 +152,19 @@ public class PanelGroupService {
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, PanelConstants.PANEL_GATHER_DEFAULT_PANEL, null, null);
         } else if ("copy".equals(request.getOptType())) {
             panelId = this.panelGroupCopy(request, null, true);
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+            if (StringUtils.isBlank(request.getPid())) {
+                PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getId());
+                if (ObjectUtils.isNotEmpty(panel)) {
+                    request.setPid(panel.getPid());
+                }
+            }
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
@@ -160,6 +179,7 @@ public class PanelGroupService {
             record.setId(request.getId());
             record.setPid(request.getPid());
             panelGroupMapper.updateByPrimaryKeySelective(record);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), panelInfo.getPid(), request.getPid(), sourceType);
 
         } else {
             // 更新
@@ -167,17 +187,15 @@ public class PanelGroupService {
                 checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId(), request.getNodeType());
             }
             panelGroupMapper.updateByPrimaryKeySelective(request);
+            if (StringUtils.isBlank(request.getPid())) {
+                PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getId());
+                if (ObjectUtils.isNotEmpty(panel)) {
+                    request.setPid(panel.getPid());
+                }
+            }
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), request.getPid(), null, sourceType);
         }
-
-        //带有权限的返回
-        PanelGroupRequest authRequest = new PanelGroupRequest();
-        authRequest.setId(panelId);
-        authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
-        if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
-            DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
-        }
-        return panelGroupDTOList.get(0);
+        return panelId;
     }
 
 
@@ -199,7 +217,8 @@ public class PanelGroupService {
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
         sysAuthService.checkTreeNoManageCount("panel", id);
-
+        PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(id);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, sourceType, panel.getId(), panel.getPid(), null, null);
         //清理view 和 view cache
         extPanelGroupMapper.deleteCircleView(id);
         extPanelGroupMapper.deleteCircleViewCache(id);
@@ -215,6 +234,10 @@ public class PanelGroupService {
         extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpWithPanel(id);
+
+        DeLogUtils.save(sysLogDTO);
+
+
     }
 
 
@@ -262,10 +285,41 @@ public class PanelGroupService {
             List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
             VAuthModelRequest viewRequest = new VAuthModelRequest();
             viewRequest.setPids(panelIds);
+//             Version 1.11 only gets the current panel
             List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
             if (CollectionUtils.isNotEmpty(viewResult)) {
                 result.addAll(viewResult);
             }
+            result = TreeUtils.mergeTree(result, "panel_list");
+            if (AuthUtils.getUser().getIsAdmin()) {
+                // 原有视图的目录结构
+                List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
+                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1) {
+                    result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
+                }
+            }
+
+        }
+        return result;
+    }
+
+    public List<VAuthModelDTO> queryPanelMultiplexingViewTree() {
+        List<VAuthModelDTO> result = new ArrayList<>();
+        VAuthModelRequest panelRequest = new VAuthModelRequest();
+        panelRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        panelRequest.setModelType("panel");
+        List<VAuthModelDTO> panelResult = extVAuthModelMapper.queryAuthModel(panelRequest);
+        // 获取仪表板下面的视图
+        if (CollectionUtils.isNotEmpty(panelResult)) {
+            result.addAll(panelResult);
+            List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
+            VAuthModelRequest viewRequest = new VAuthModelRequest();
+            viewRequest.setPids(panelIds);
+            // Version 1.11 only gets the current panel
+//            List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
+//            if (CollectionUtils.isNotEmpty(viewResult)) {
+//                result.addAll(viewResult);
+//            }
             result = TreeUtils.mergeTree(result, "panel_list");
             if (AuthUtils.getUser().getIsAdmin()) {
                 // 原有视图的目录结构
@@ -322,6 +376,7 @@ public class PanelGroupService {
     }
 
     public String newPanel(PanelGroupRequest request) {
+        Gson gson = new Gson();
         String newPanelId = UUIDUtil.getUUIDAsString();
         String newFrom = request.getNewFrom();
         String templateStyle = null;
@@ -343,13 +398,13 @@ public class PanelGroupService {
                 dynamicData = request.getDynamicData();
                 staticResource = request.getStaticResource();
             }
-            Map<String, String> dynamicDataMap = JSON.parseObject(dynamicData, Map.class);
+            Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
             for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
-                ChartViewDTO chartView = JSON.parseObject(originViewData, ChartViewDTO.class);
+                ChartViewDTO chartView = gson.fromJson(originViewData, ChartViewDTO.class);
                 String position = chartView.getPosition();
                 String newViewId = UUIDUtil.getUUIDAsString();
                 chartView.setId(newViewId);
@@ -410,7 +465,6 @@ public class PanelGroupService {
                     extPanelViewLinkageMapper.copyViewLinkageField(copyId);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("错误===》panel:" + panelGroupDTO.getId() + ";panelView:" + JSON.toJSONString(panelViewtemp));
                 }
             }
         }
@@ -526,5 +580,14 @@ public class PanelGroupService {
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
+    }
+
+    public void updatePanelStatus(String panelId, PanelGroupBaseInfoRequest request) {
+        Assert.notNull(request.getStatus(), "status can not be null");
+        Assert.notNull(panelId, "panelId can not be null");
+        PanelGroupWithBLOBs panelGroup = new PanelGroupWithBLOBs();
+        panelGroup.setId(panelId);
+        panelGroup.setStatus(request.getStatus());
+        panelGroupMapper.updateByPrimaryKeySelective(panelGroup);
     }
 }

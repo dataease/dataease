@@ -68,6 +68,14 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 }
 
 export function panelInit(componentData, componentStyle) {
+  panelDataPrepare(componentData, componentStyle, function() {
+    // 将data 和 style 数据设置到全局store中
+    store.commit('setComponentData', resetID(componentData))
+    store.commit('setCanvasStyle', componentStyle)
+  })
+}
+
+export function panelDataPrepare(componentData, componentStyle, callback) {
   // style初始化
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
@@ -109,9 +117,10 @@ export function panelInit(componentData, componentStyle) {
   })
   // 初始化密度为最高密度
   componentStyle.aidedDesign.matrixBase = 4
-  // 将data 和 style 数据设置到全局store中
-  store.commit('setComponentData', resetID(componentData))
-  store.commit('setCanvasStyle', componentStyle)
+  callback({
+    'componentData': resetID(componentData),
+    'componentStyle': componentStyle
+  })
 }
 
 export function resetID(data) {
@@ -139,7 +148,7 @@ export function checkViewTitle(opt, id, tile) {
     const curPanelViewsData = store.state.componentViewsData
     const curComponentViewNames = []
     store.state.componentData.forEach(item => {
-      if (item.type === 'view' && item.propValue && item.propValue.viewId) {
+      if (item.type === 'view' && item.propValue && item.propValue.viewId && curPanelViewsData[item.propValue.viewId]) {
         // 更新时自己的title不加入比较
         if ((opt === 'update' && id !== item.propValue.viewId) || opt === 'new') {
           curComponentViewNames.push(curPanelViewsData[item.propValue.viewId].title)

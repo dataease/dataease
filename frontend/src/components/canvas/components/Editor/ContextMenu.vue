@@ -58,7 +58,7 @@ export default {
 
       // 编辑样式组件
 
-      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       }
     },

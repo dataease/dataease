@@ -131,6 +131,8 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    publish: '发布',
+    unpublished: '取消发布',
     default_pwd: '初始密码',
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
@@ -415,7 +417,8 @@ export default {
     eidttitle: '编辑标题',
     selectview: '选择视图',
     selectOthers: '选择组件',
-    availableComponents: '可选组件'
+    availableComponents: '可选组件',
+    please: '未'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -1097,7 +1100,10 @@ export default {
     unit_hundred_million: '亿',
     formatter_decimal_count_error: '请输入0-10的整数',
     gauge_threshold_compare_error: '阈值范围需逐级递增',
-    tick_count: '刻度间隔数'
+    tick_count: '刻度间隔数',
+    custom_sort: '自定义',
+    custom_sort_tip: '自定义排序优先级最高，且仅支持单个字段自定义',
+    clean_custom_sort: '清除自定义排序'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1244,7 +1250,9 @@ export default {
       pending: '暂停',
       exec: '执行一次',
       confirm_exec: '手动触发执行？',
-      change_success: '状态切换成功'
+      change_success: '状态切换成功',
+      excel_replace_msg: '可能会影响自定义数据集、关联数据集、仪表板等，确认替换？',
+      effect_ext_field: '会影响计算字段'
     },
     field_group_type: '分类',
     location: '地理位置',
@@ -1325,9 +1333,26 @@ export default {
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集'
   },
+  driver: {
+    driver: '驱动',
+    please_choose_driver: '请选择驱动',
+    mgm: '驱动管理',
+    exit_mgm: '退出驱动管理',
+    add: '添加驱动',
+    modify: '修改',
+    show_info: '驱动信息',
+    file_name: '文件名',
+    version: '版本',
+    please_set_driverClass: '请指定驱动类'
+  },
   datasource: {
+    auth_method: '认证方式',
+    passwd: '用户名密码',
+    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease/conf',
+    client_principal: 'Client Principal',
+    keytab_Key_path: 'Keytab Key Path',
     datasource: '数据源',
-    please_select_left: '请从左侧选择数据源',
+    please_select_left: '请从左侧选择',
     show_info: '数据源信息',
     create: '新建数据源',
     type: '类型',
@@ -1435,6 +1460,10 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    multiplexing: '复用',
+    panel_off: '仪表板已下架',
+    batch_opt: '批量操作',
+    edit_leave_tips: '是否放弃编辑离开当前界面？',
     hyperlinks: '超链接',
     is_live: '是否直播',
     yes: '是',
@@ -1880,6 +1909,10 @@ export default {
     label: '文本下拉',
     placeholder: '请选择'
   },
+  detextselectTree: {
+    label: '下拉树',
+    placeholder: '请选择'
+  },
   detextgridselect: {
     label: '文本列表',
     placeholder: '请选择'
@@ -2034,5 +2067,18 @@ export default {
     port: '端口',
     user: '用户名',
     passwd: '密码'
+  },
+  log: {
+    title: '操作日志',
+    optype: '操作类型',
+    detail: '操作详情',
+    user: '操作用户',
+    time: '操作时间',
+    export: '导出',
+    confirm: '确定导出吗？',
+    search_by_key: '搜索详情'
+  },
+  plugin_style: {
+    border: '边框'
   }
 }

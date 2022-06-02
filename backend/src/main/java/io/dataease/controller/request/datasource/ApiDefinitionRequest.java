@@ -1,14 +1,16 @@
 package io.dataease.controller.request.datasource;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import lombok.Data;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ApiDefinitionRequest {
-    private List<JSONObject> headers = new ArrayList<>();
-    private JSONObject body = new JSONObject();
+    private List<Map<String, String>> headers = new ArrayList<>();
+    private Map<String, Object> body = new HashMap<>();
     private AuthManager authManager = new AuthManager();
 
 

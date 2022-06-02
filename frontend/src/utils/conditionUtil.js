@@ -26,10 +26,21 @@ export const valueValid = condition => {
 }
 
 export const formatCondition = obj => {
-  const { component, value, operator } = obj
-  const fieldId = component.options.attrs.fieldId
+  const { component, value, operator, isTree } = obj
+
+  let fieldId = component.options.attrs.fieldId
   const viewIds = component.options.attrs.viewIds
-  const condition = new Condition(component.id, fieldId, operator, value, viewIds)
+  if (isTree && !component.options.attrs.multiple && value && value.length) {
+    // 单选树
+    const val = value[0]
+    if (val) {
+      const len = val.split(',').length
+      if (len) {
+        fieldId = fieldId.split(',').slice(0, len).join(',')
+      }
+    }
+  }
+  const condition = new Condition(component.id, fieldId, operator, value, viewIds, isTree)
   return condition
 }
 

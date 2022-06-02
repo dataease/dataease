@@ -223,7 +223,6 @@ export default {
       } else if (chart.type === 'chart-mix') {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
-      // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }

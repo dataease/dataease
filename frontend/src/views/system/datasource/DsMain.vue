@@ -22,7 +22,8 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import DsTree from './DsTree'
-import DsForm from './form'
+import DsForm from './DsForm'
+import DriverForm from "./DriverForm";
 import DataHome from './DataHome'
 
 export default {
@@ -52,6 +53,12 @@ export default {
         switch (component) {
           case 'DsForm':
             this.component = DsForm
+            this.param = componentParam
+            this.tData = tData
+            this.dsTypes = dsTypes
+            break
+          case 'DriverForm':
+            this.component = DriverForm
             this.param = componentParam
             this.tData = tData
             this.dsTypes = dsTypes

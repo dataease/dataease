@@ -37,6 +37,8 @@
         :filters="filters"
         :terminal="terminal"
         :screen-shot="screenShot"
+        :canvas-style-data="canvasStyleData"
+        :show-position="showPosition"
       />
     </div>
   </div>
@@ -88,6 +90,18 @@ export default {
     screenShot: {
       type: Boolean,
       default: false
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -129,7 +143,6 @@ export default {
     },
     ...mapState([
       'mobileLayoutStatus',
-      'canvasStyleData',
       'curComponent',
       'componentGap'
     ])
@@ -195,9 +208,11 @@ export default {
 
     handleClick() {
       const events = this.config.events
-      Object.keys(events).forEach(event => {
-        this[event](events[event])
-      })
+      if (events) {
+        Object.keys(events).forEach(event => {
+          this[event](events[event])
+        })
+      }
     },
     elementMouseDown(e) {
       // private 设置当前组件数据及状态

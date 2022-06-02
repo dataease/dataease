@@ -5,7 +5,6 @@
       v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :data="data"
       :columns="columns"
-      local-key="userGrid"
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"

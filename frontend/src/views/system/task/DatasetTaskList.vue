@@ -168,7 +168,7 @@
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector privileges="manage" :mode="1" :clear-empty-dir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
+      <table-selector previewForTask="true" privileges="manage" :mode="1" :clear-empty-dir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="small" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>

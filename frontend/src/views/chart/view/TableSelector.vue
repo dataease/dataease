@@ -50,6 +50,11 @@ export default {
       required: false,
       default: null
     },
+    previewForTask: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     clearEmptyDir: {
       type: Boolean,
       required: false,
@@ -77,6 +82,7 @@ export default {
       // this.table = table
       table && table.id && getTable(table.id).then(response => {
         this.table = response.data
+        this.table.previewForTask = this.previewForTask
         this.$emit('getTable', this.table)
       }).catch(res => {
         this.table = {}

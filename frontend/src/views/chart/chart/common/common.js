@@ -209,6 +209,14 @@ export function seniorCfg(chart_option, chart) {
           symbol: 'none',
           data: []
         }
+        const customStyle = JSON.parse(chart.customStyle)
+        let xAxis, yAxis
+        if (customStyle.xAxis) {
+          xAxis = JSON.parse(JSON.stringify(customStyle.xAxis))
+        }
+        if (customStyle.yAxis) {
+          yAxis = JSON.parse(JSON.stringify(customStyle.yAxis))
+        }
         senior.assistLine.forEach(ele => {
           if (chart.type.includes('horizontal')) {
             chart_option.series[0].markLine.data.push({
@@ -223,7 +231,10 @@ export function seniorCfg(chart_option, chart) {
                 show: true,
                 color: ele.color,
                 fontSize: 10,
-                position: 'insideStartTop'
+                position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
+                formatter: function(param) {
+                  return ele.name + ' : ' + param.value
+                }
               },
               tooltip: {
                 show: false
@@ -242,7 +253,10 @@ export function seniorCfg(chart_option, chart) {
                 show: true,
                 color: ele.color,
                 fontSize: 10,
-                position: 'insideStartTop'
+                position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
+                formatter: function(param) {
+                  return ele.name + ' : ' + param.value
+                }
               },
               tooltip: {
                 show: false

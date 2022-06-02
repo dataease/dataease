@@ -2,17 +2,17 @@
   <div style="width: 100%">
     <el-col>
       <el-form ref="tooltipForm" :model="tooltipForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
+          <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr('show')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="tooltipForm.show">
-          <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
-            <el-select v-model="tooltipForm.textStyle.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTooltipAttr">
+          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.text_fontsize')" class="form-item">
+            <el-select v-model="tooltipForm.textStyle.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTooltipAttr('textStyle')">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr" />
+          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.text_color')" class="form-item">
+            <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
           </el-form-item>
         </div>
       </el-form>
@@ -33,6 +33,13 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    propertyInner: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -79,11 +86,15 @@ export default {
       }
       this.fontSize = arr
     },
-    changeTooltipAttr() {
+    changeTooltipAttr(modifyName) {
       if (!this.tooltipForm.show) {
         this.isSetting = false
       }
+      this.tooltipForm['modifyName'] = modifyName
       this.$emit('onTooltipChange', this.tooltipForm)
+    },
+    showProperty(property) {
+      return this.propertyInner.includes(property)
     }
   }
 }

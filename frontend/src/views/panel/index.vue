@@ -12,7 +12,6 @@ import bus from '@/utils/bus'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import PanelMain from '@/views/panel/list/PanelMain'
-import ChartEdit from '@/views/chart/view/ChartEdit'
 import PanelEdit from '@/views/panel/edit'
 
 export default {
@@ -22,7 +21,8 @@ export default {
     return {
       component: PanelMain,
       componentName: 'PanelMain',
-      param: {}
+      param: {},
+      contentHasSave: false
     }
   },
   computed: {
@@ -30,9 +30,19 @@ export default {
       return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
     }
   },
-  watch: {
-    $route(to, from) {
+  beforeRouteLeave(to, from, next) {
+    if (this.componentName === 'PanelEdit') {
+      next(false)
+      if (confirm(this.$t('panel.edit_leave_tips'))) {
+        next()
+      }
+    } else {
+      next()
     }
+  },
+  watch: {
+    // $route(to, from) {
+    // }
   },
   mounted() {
     bus.$on('to-msg-share', params => {

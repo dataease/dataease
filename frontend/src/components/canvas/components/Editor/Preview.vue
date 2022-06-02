@@ -1,7 +1,18 @@
 <template>
   <div class="bg" :style="customStyle" @scroll="canvasScroll">
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
+      <el-row v-if="showUnpublishedArea" class="custom-position">
+        <div style="text-align: center">
+          <svg-icon icon-class="unpublished" style="font-size: 75px" />
+          <br>
+          <span>{{ $t('panel.panel_off') }}</span>
+        </div>
+      </el-row>
+      <el-row v-else-if="componentDataShow.length===0" class="custom-position">
+        {{ $t('panel.panelNull') }}
+      </el-row>
       <div
+        v-else
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
         :style="[canvasInfoTempStyle,screenShotStyle]"
@@ -9,9 +20,6 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <el-row v-if="componentDataShow.length===0" class="custom-position">
-          {{ $t('panel.panelNull') }}
-        </el-row>
         <canvas-opt-bar />
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
@@ -22,6 +30,8 @@
           :terminal="terminal"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
           :screen-shot="screenShot"
+          :canvas-style-data="canvasStyleData"
+          :show-position="showPosition"
         />
         <!--视图详情-->
         <el-dialog
@@ -73,6 +83,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
+import { hasDataPermission } from '@/utils/permission'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -102,6 +113,34 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    activeTab: {
+      type: String,
+      required: false,
+      default: 'none'
+    },
+    componentData: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
+    },
+    panelInfo: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -137,6 +176,19 @@ export default {
   created() {
   },
   computed: {
+    mainActiveName() {
+      return this.$store.state.panel.mainActiveName
+    },
+    showUnpublishedArea() {
+      // return this.panelInfo.status === 'unpublished'
+      if (this.panelInfo && this.panelInfo.showType === 'view') {
+        return false
+      } else if ((this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') || this.showPosition.includes('multiplexing')) {
+        return this.panelInfo.status === 'unpublished' && !hasDataPermission('manage', this.panelInfo.privileges)
+      } else {
+        return this.panelInfo.status === 'unpublished'
+      }
+    },
     showExportImgButton() {
       return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
     },
@@ -198,11 +250,7 @@ export default {
       return this.componentDataShow
     },
     ...mapState([
-      'isClickComponent',
-      'curComponent',
-      'componentData',
-      'canvasStyleData',
-      'componentGap'
+      'isClickComponent'
     ]),
     filterMap() {
       const map = buildFilterMap(this.componentData)
@@ -227,21 +275,26 @@ export default {
     this._isMobile()
     const _this = this
     const erd = elementResizeDetectorMaker()
+    const canvasMain = document.getElementById('canvasInfoMain')
     // 监听主div变动事件
-    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
-      _this.$nextTick(() => {
-        _this.restore()
+    if (canvasMain) {
+      erd.listenTo(canvasMain, element => {
+        _this.$nextTick(() => {
+          _this.restore()
+        })
       })
-    })
+    }
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
-    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-      _this.$nextTick(() => {
-        // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-        this.$emit('mainHeightChange', _this.mainHeight)
+    if (tempCanvas) {
+      erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+        _this.$nextTick(() => {
+          // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+          _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+          this.$emit('mainHeightChange', _this.mainHeight)
+        })
       })
-    })
+    }
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
@@ -372,7 +425,12 @@ export default {
   }
 
   .custom-position {
+    line-height: 30px;
+    width: 100%;
+    z-index: 100;
     height: 100%;
+    text-align: center;
+    cursor:not-allowed;
     flex: 1;
     display: flex;
     align-items: center;

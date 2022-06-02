@@ -107,7 +107,6 @@ export default {
     })
 
     bus.$on('web-msg-topic-call', msg => {
-      console.log('收到websocket消息')
       this.count = (this.count || this.paginationConfig.total) + 1
       // this.queryCount()
       // this.search()

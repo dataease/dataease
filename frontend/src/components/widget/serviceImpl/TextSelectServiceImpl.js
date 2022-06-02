@@ -37,7 +37,9 @@ const drawPanel = {
     lineHeight: '',
     letterSpacing: 0,
     textAlign: '',
-    color: ''
+    color: '',
+    hPosition: 'left',
+    vPosition: 'center'
   },
   component: 'de-select'
 }

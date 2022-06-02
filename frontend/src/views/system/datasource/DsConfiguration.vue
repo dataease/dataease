@@ -3,13 +3,13 @@
     <el-row>
       <el-col>
         <el-form
-          ref="DsConfig"
-          :model="form"
-          :rules="rule"
-          size="small"
-          :disabled="disabled"
-          label-width="180px"
-          label-position="right"
+            ref="DsConfig"
+            :model="form"
+            :rules="rule"
+            size="small"
+            :disabled="disabled"
+            label-width="180px"
+            label-position="right"
         >
           <el-form-item v-if="form.type == 'api'" :label="$t('datasource.data_table')">
             <el-col>
@@ -77,7 +77,8 @@
                 </div>
 
                 <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
-                  <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
+                  <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath"
+                            autocomplete="off"/>
                 </el-form-item>
               </el-form>
             </el-row>
@@ -103,7 +104,10 @@
               </el-tabs>
             </el-row>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
+              <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{
+                  $t('fu.steps.next')
+                }}
+              </el-button>
               <el-button @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
               <el-button @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
             </div>
@@ -125,20 +129,55 @@
             <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
           </el-form-item>
 
-          <el-form-item v-if="form.type=='oracle' && form.type !== 'api'" :label="$t('datasource.oracle_connection_type')"
+          <el-form-item v-if="form.type=='oracle' && form.type !== 'api'"
+                        :label="$t('datasource.oracle_connection_type')"
                         prop="configuration.connectionType">
-            <el-radio v-model="form.configuration.connectionType" label="sid">{{ $t('datasource.oracle_sid') }}</el-radio>
+            <el-radio v-model="form.configuration.connectionType" label="sid">{{
+                $t('datasource.oracle_sid')
+              }}
+            </el-radio>
             <el-radio v-model="form.configuration.connectionType" label="serviceName">
               {{ $t('datasource.oracle_service_name') }}
             </el-radio>
           </el-form-item>
 
-          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api'"
+          <el-form-item v-if="form.type=='hive' " :label="$t('datasource.auth_method')">
+            <el-select
+                v-model="form.configuration.authMethod"
+                class="select-width"
+            >
+              <el-option
+                  v-for="item in authMethodList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item v-if="form.type === 'hive'  && form.configuration.authMethod === 'kerberos'"
+                        :label="$t('datasource.client_principal')">
+            <el-input v-model="form.configuration.username" autocomplete="off"/>
+          </el-form-item>
+
+          <el-form-item v-if="form.type === 'hive'  && form.configuration.authMethod === 'kerberos'"
+                        :label="$t('datasource.keytab_Key_path')">
+            <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
+            <p>
+              {{$t('datasource.kerbers_info')}}
+            </p>
+          </el-form-item>
+
+          <span v-if="form.type === 'hive'  && form.configuration.authMethod === 'kerberos'">
+
+          </span>
+
+          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
                         :label="$t('datasource.user_name')">
             <el-input v-model="form.configuration.username" autocomplete="off"/>
           </el-form-item>
 
-          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api'"
+          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
                         :label="$t('datasource.password')">
             <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
           </el-form-item>
@@ -164,21 +203,26 @@
           </el-form-item>
 
           <el-form-item
-            v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
-            <el-button icon="el-icon-plus" size="mini" @click="getSchema()">{{ $t('datasource.get_schema') }}</el-button>
+              v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
+            <el-button icon="el-icon-plus" size="mini" @click="getSchema()">{{
+                $t('datasource.get_schema')
+              }}
+            </el-button>
           </el-form-item>
 
           <el-form-item
-            v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
-            :label="$t('datasource.schema')">
-            <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')"
+              v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
+              :label="$t('datasource.schema')">
+            <el-select v-model="form.configuration.schema" filterable
+                       :placeholder="$t('datasource.please_choose_schema')"
                        class="select-width">
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item"/>
             </el-select>
           </el-form-item>
 
           <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.charset')">
-            <el-select v-model="form.configuration.charset" filterable :placeholder="$t('datasource.please_choose_charset')"
+            <el-select v-model="form.configuration.charset" filterable
+                       :placeholder="$t('datasource.please_choose_charset')"
                        class="select-width">
               <el-option v-for="item in datasourceType.charset" :key="item" :label="item" :value="item"/>
             </el-select>
@@ -206,7 +250,6 @@
 </template>
 
 <script>
-
 
 
 import i18n from "@/lang";
@@ -367,15 +410,20 @@ export default {
         {label: this.$t('dataset.location'), value: 5}
       ],
       height: 500,
-      disabledNext: false
+      disabledNext: false,
+      authMethodList: [
+        {
+          id: 'passwd',
+          label: i18n.t('datasource.passwd')
+        }, {
+          id: 'kerberos',
+          label: 'Kerberos'
+        }]
     }
   },
   created() {
-
   },
-  watch: {
-
-  },
+  watch: {},
   methods: {
     getSchema() {
       this.$refs.DsConfig.validate(valid => {
@@ -415,7 +463,6 @@ export default {
         this.$refs.apiItem.validate(valid => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem))
-            data.request = JSON.stringify(data.request)
             this.loading = true
             this.disabledNext = true
             checkApiDatasource(data).then(res => {

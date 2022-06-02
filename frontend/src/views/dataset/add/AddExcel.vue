@@ -153,7 +153,7 @@
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
-import {$alert} from "@/utils/message";
+import {$alert, $confirm} from "@/utils/message";
 import store from "@/store";
 
 const token = getToken()
@@ -310,6 +310,8 @@ export default {
       var validate = true
       var selectedSheet = []
       var sheetFileMd5 = []
+      var effectExtField = false
+      var changeFiled = false
       var selectNode = this.$refs.tree.getCheckedNodes()
       for (var i = 0; i < selectNode.length; i++) {
         if (selectNode[i].sheet) {
@@ -330,6 +332,12 @@ export default {
               type: 'error'
             })
             return
+          }
+          if(selectNode[i].effectExtField){
+            effectExtField = true
+          }
+          if(selectNode[i].changeFiled){
+            changeFiled = true
           }
           selectedSheet.push(selectNode[i])
           sheetFileMd5.push(selectNode[i].fieldsMd5)
@@ -366,8 +374,20 @@ export default {
           editType: this.param.editType ? this.param.editType : 0
         }
       }
+
+      if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
+
+        var msg = effectExtField ? i18n.t('dataset.task.effect_ext_field') + ', ' + i18n.t('dataset.task.excel_replace_msg') : i18n.t('dataset.task.excel_replace_msg')
+        $confirm(msg, () => {
+          this.saveExcelData(sheetFileMd5, table)
+        })
+      }else {
+        this.saveExcelData(sheetFileMd5, table)
+      }
+    },
+    saveExcelData(sheetFileMd5, table) {
       if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId) {
-        this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
+        this.$confirm(this.$t('dataset.excel_replace_msg'), this.$t('dataset.merge_title'), {
           distinguishCancelAndClose: true,
           confirmButtonText: this.$t('dataset.merge'),
           cancelButtonText: this.$t('dataset.no_merge'),

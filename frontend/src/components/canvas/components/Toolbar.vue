@@ -5,7 +5,7 @@
         <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
           {{ $t('commons.reset') }}
         </el-button>
-        <el-button size="mini" @click="editSave">
+        <el-button type="primary" size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
         </el-button>
         <el-button size="mini" @click="editCancel">
@@ -47,8 +47,11 @@
       <el-tooltip v-if="canvasStyleData.aidedDesign.showGrid" :content="$t('panel.aided_grid')+':'+$t('panel.aided_grid_open')">
         <el-button class="icon iconfont-tb icon-wangge-open" size="mini" circle @click="showGridChange" />
       </el-tooltip>
+      <el-tooltip :content="$t('panel.batch_opt')">
+        <el-button class="icon iconfont-tb icon-piliang-copy" size="mini" circle @click="batchOption" />
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
+        <el-button size="mini" type="primary" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -84,7 +87,7 @@ import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
-import { panelSave } from '@/api/panel/panel'
+import { panelUpdate } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import {
@@ -135,7 +138,8 @@ export default {
       'targetLinkageInfo',
       'mobileLayoutStatus',
       'mobileComponentData',
-      'componentDataCache'
+      'componentDataCache',
+      'batchOptStatus'
     ])
   },
   created() {
@@ -291,7 +295,7 @@ export default {
       })
       // 无需保存条件
       requestInfo.panelData = JSON.stringify(components)
-      panelSave(requestInfo).then(response => {
+      panelUpdate(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({
           message: this.$t('commons.save_success'),
@@ -381,6 +385,11 @@ export default {
     showGridChange() {
       this.$store.state.styleChangeTimes++
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
+    },
+    // batch option
+    batchOption() {
+      bus.$emit('change_panel_right_draw', !this.batchOptStatus)
+      this.$store.commit('setBatchOptStatus', !this.batchOptStatus)
     },
     // 启用移动端布局
     openMobileLayout() {

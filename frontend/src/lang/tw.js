@@ -131,6 +131,8 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    publish: '發布',
+    unpublished: '取消發布',
     default_pwd: '初始密碼',
     stop: '停止',
     first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
@@ -414,7 +416,8 @@ export default {
     eidttitle: '編輯標題',
     selectview: '選擇視圖',
     selectOthers: '選擇組件',
-    availableComponents: '可選組件'
+    availableComponents: '可選組件',
+    please: '未'
   },
   example: {
     warning: '創建和編輯頁面是不能被 keep-alive 緩存的，因爲keep-alive 的 include 目前不支持根據路由來緩存，所以目前都是基於 component name 來進行緩存的。如果妳想類似的實現緩存效果，可以使用 localStorage 等瀏覽器緩存方案。或者不要使用 keep-alive 的 include，直接緩存所有頁面。詳情見'
@@ -913,10 +916,10 @@ export default {
     color_fast: '輕快',
     color_spiritual: '靈動',
     chart_details: '視圖明細',
-    details: '明细',
-    image: '图片',
+    details: '明細',
+    image: '圖片',
     export_details: '導出明細',
-    export: '导出',
+    export: '導出',
     chart_data: '數據',
     chart_style: '樣式',
     drag_block_type_axis: '類別軸',
@@ -1094,8 +1097,11 @@ export default {
     unit_million: '百萬',
     unit_hundred_million: '億',
     formatter_decimal_count_error: '請輸入0-10的整數',
-    gauge_threshold_compare_error: '阈值範圍需逐級遞增',
-    tick_count: '刻度間隔數'
+    gauge_threshold_compare_error: '閾值範圍需逐級遞增',
+    tick_count: '刻度間隔數',
+    custom_sort: '自定義',
+    custom_sort_tip: '自定義排序優先級最高，且僅支持單個字段自定義',
+    clean_custom_sort: '清除自定義排序'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1243,7 +1249,9 @@ export default {
       pending: '暫停',
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',
-      change_success: '狀態切換成功'
+      change_success: '狀態切換成功',
+      excel_replace_msg: '可能會影響計算欄位、自定義數据集、關聯數据集、儀錶板等，確認替換？',
+      effect_ext_field: '會影響計算欄位'
     },
     field_group_type: '分類',
     location: '地理位置',
@@ -1323,9 +1331,26 @@ export default {
     sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
     api_data: 'API 數據集'
   },
+  driver: {
+    driver: '驅動',
+    please_choose_driver: '青選擇驅動',
+    mgm: '驅動管理',
+    exit_mgm: '退出驅動管理',
+    add: '添加驅動',
+    modify: '修改',
+    show_info: '驅動信息',
+    file_name: '文件名',
+    version: '版本',
+    please_set_driverClass: '請指定驅動類'
+  },
   datasource: {
+    auth_method: '認證方式',
+    passwd: '用戶名密碼',
+    kerbers_info: '請確保 krb5.Conf、Keytab Key，已經添加到路徑：/opt/dataease/conf',
+    client_principal: 'Client Principal',
+    keytab_Key_path: 'Keytab Key Path',
     datasource: '數據源',
-    please_select_left: '請從左側選擇數據源',
+    please_select_left: '請從左側選擇',
     show_info: '數據源信息',
     create: '新建數據源',
     type: '類型',
@@ -1428,13 +1453,17 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    multiplexing: '復用',
+    panel_off: '儀表板已下架',
+    batch_opt: '批量操作',
+    edit_leave_tips: '是否放棄編輯離開當前界面？',
     hyperlinks: '超鏈接',
     is_live: '是否直播',
     yes: '是',
     no: '否',
     live_tips: '優先HTTPS鏈接',
     stream_media_add_tips: '請點擊添加配置流媒體信息...',
-    stream_mobile_tips: 'IOS终端可能无法显示',
+    stream_mobile_tips: 'IOS終端可能無法顯示',
     json_params_error: '第三方參數解析失敗，請檢查參數格式是否正確',
     inner_padding: '內邊距',
     board_radio: '邊框半徑',
@@ -1521,7 +1550,7 @@ export default {
     save_to_panel: '保存爲模闆',
     export_to_panel: '導出爲模闆',
     export_to_pdf: '導出爲PDF',
-    export_to_img: '導出爲图片',
+    export_to_img: '導出爲圖片',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
     new_tab_preview: '新Tab頁預覽',
@@ -1872,6 +1901,10 @@ export default {
     label: '文本下拉',
     placeholder: '請選擇'
   },
+  detextselectTree: {
+    label: '下拉树',
+    placeholder: '請選擇'
+  },
   detextgridselect: {
     label: '文本列錶',
     placeholder: '請選擇'
@@ -2027,5 +2060,18 @@ export default {
     port: '端口',
     user: '用戶名',
     passwd: '密碼'
+  },
+  log: {
+    title: '操作日誌',
+    optype: '操作類型',
+    detail: '操作詳情',
+    user: '操作用戶',
+    time: '操作時間',
+    export: '導出',
+    confirm: '確定導出嗎？',
+    search_by_key: '搜索詳情'
+  },
+  plugin_style: {
+    border: '邊框'
   }
 }

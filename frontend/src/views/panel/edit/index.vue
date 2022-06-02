@@ -24,7 +24,7 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-show="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div
             style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
           >
@@ -111,11 +111,10 @@
               style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;"
             >
               <el-button
-                :class="show&&showIndex===0? 'button-show':'button-closed'"
                 circle
-                class="el-icon-copy-document"
+                class="el-icon-copy-document button-closed"
                 size="mini"
-                @click="showPanel(0)"
+                @click="showMultiplexing(true)"
               />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
@@ -123,7 +122,7 @@
                 style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
                 <!--                {{ $t('panel.view') }}-->
-                复用
+                {{ $t('panel.multiplexing') }}
               </div>
             </div>
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
@@ -150,7 +149,7 @@
           :close-on-press-escape="false"
           :modal-append-to-body="true"
         >
-          <view-select v-show=" show && showIndex===0" @newChart="newChart" />
+          <!--          <view-select v-show=" show && showIndex===0" @newChart="newChart" />-->
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
           <assist-component v-show=" show &&showIndex===3" />
@@ -226,11 +225,14 @@
         </el-row>
       </de-main-container>
 
-      <div v-if="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
-        <div v-if="showViewToolsAside">
-          <chart-edit v-if="curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+      <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
+        <div v-show="showViewToolsAside">
+          <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
-        <div v-if="!showViewToolsAside">
+        <div v-show="showBatchViewToolsAside">
+          <chart-style-batch-set />
+        </div>
+        <div v-show="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
               <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
@@ -268,27 +270,14 @@
       </div>
     </el-dialog>
 
-    <!--文字组件对话框-->
-    <el-dialog
-      v-if="styleDialogVisible && curComponent"
-      :title="$t('panel.style')"
-      :visible.sync="styleDialogVisible"
-      custom-class="de-style-dialog"
-    >
-      <PanelTextEditor v-if="curComponent.type==='v-text'" />
-      <AttrListExtend v-else />
-      <div style="text-align: center">
-        <span slot="footer">
-          <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
-        </span>
-      </div>
-    </el-dialog>
-
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview
         v-if="previewVisible"
         :in-screen="!previewVisible"
+        :panel-info="panelInfo"
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
+        :canvas-style-data="canvasStyleData"
+        :component-data="componentData"
       />
     </fullscreen>
     <input
@@ -325,6 +314,25 @@
       <OuterParamsSet v-if="outerParamsSetVisible" @outerParamsSetVisibleChange="outerParamsSetVisibleChange" />
     </el-dialog>
 
+    <!--复用视图全屏显示框-->
+    <el-dialog
+      :visible="multiplexingShow"
+      :show-close="false"
+      class="dialog-css"
+      :fullscreen="true"
+    >
+      <multiplexing v-if="multiplexingShow" :view-data="viewData" />
+      <div slot="title" class="dialog-footer title-text">
+        <span style="font-size: 14px;">
+          {{ $t('panel.multiplexing') }}
+        </span>
+        <span style="float: right;">
+          <el-button type="primary" size="mini" @click="saveMultiplexing()">{{ $t('commons.confirm') }}</el-button>
+          <el-button size="mini" @click="showMultiplexing(false)">{{ $t('commons.cancel') }}</el-button>
+        </span>
+      </div>
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -338,7 +346,7 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy, matrixBaseChange, panelInit } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -347,12 +355,10 @@ import componentList, {
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelData, initViewCache } from '@/api/panel/panel'
+import { initPanelData, initViewCache, queryPanelMultiplexingViewTree } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
-import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
 // 引入样式
@@ -368,10 +374,14 @@ import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
+import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
+import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 
 export default {
   name: 'PanelEdit',
   components: {
+    Multiplexing,
+    ChartStyleBatchSet,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -384,15 +394,15 @@ export default {
     FilterDialog,
     SubjectSetting,
     Preview,
-    AttrListExtend,
     AssistComponent,
-    PanelTextEditor,
     TextAttr,
     ChartGroup,
     ChartEdit
   },
   data() {
     return {
+      viewData: [],
+      multiplexingShow: false,
       asideToolType: 'none',
       outerParamsSetVisible: false,
       autoMoveOffSet: 15,
@@ -473,7 +483,10 @@ export default {
     },
     // 显示视图工具栏
     showViewToolsAside() {
-      return this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
+      return !this.batchOptStatus && this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
+    },
+    showBatchViewToolsAside() {
+      return this.batchOptStatus
     },
     showViewToolAsideType() {
       if (this.curComponent) {
@@ -557,6 +570,9 @@ export default {
         return this.pcMatrixCount
       }
     },
+    multiplexingDisabled() {
+      return Object.keys(this.curMultiplexingComponents) === 0
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -571,7 +587,9 @@ export default {
       'pcMatrixCount',
       'mobileMatrixCount',
       'mobileLayoutStyle',
-      'scrollAutoMove'
+      'scrollAutoMove',
+      'batchOptStatus',
+      'curMultiplexingComponents'
     ])
   },
 
@@ -598,13 +616,6 @@ export default {
   },
   created() {
     this.init(this.$store.state.panel.panelInfo.id)
-    // this.restore()
-    // 全局监听按键事件
-    // listenGlobalKeyDown()
-
-    this.$store.commit('setCurComponent', { component: null, index: null })
-    this.$store.commit('clearLinkageSettingInfo', false)
-    this.$store.commit('resetViewEditInfo')
   },
   mounted() {
     // this.insertToBody()
@@ -634,12 +645,18 @@ export default {
         _this.restore()
       })
     })
+    this.loadMultiplexingViewTree()
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
   methods: {
+    loadMultiplexingViewTree() {
+      queryPanelMultiplexingViewTree().then(res => {
+        this.viewData = res.data
+      })
+    },
     closeOuterParamsSetDialog() {
       this.outerParamsSetVisible = false
     },
@@ -657,6 +674,7 @@ export default {
     init(panelId) {
       const _this = this
       _this.initHasStar()
+      this.$store.commit('initCanvas')
       if (panelId) {
         initPanelData(panelId, function() {
           // 初始化视图缓存
@@ -791,7 +809,8 @@ export default {
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
-        this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
+        this.currentFilterCom.mobileStyle = deepCopy(BASE_MOBILE_STYLE)
+        this.currentFilterCom['hyperlinks'] = deepCopy(HYPERLINKS)
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
         if (this.currentWidget.filterDialog) {
@@ -1057,7 +1076,6 @@ export default {
     recordStyleChange(index) {
       if (index === this.$store.state.styleChangeTimes) {
         this.timeMachine = setTimeout(() => {
-          // console.log('recordSnapshot')
           this.$store.commit('recordSnapshot')
           this.$store.state.styleChangeTimes = 0
           this.destroyTimeMachine()
@@ -1098,6 +1116,15 @@ export default {
       const canvasInfoMobile = document.getElementById('canvasInfoMobile')
       canvasInfoMobile.scrollTop = canvasInfoMobile.scrollTop + offset
       this.$store.commit('setScrollAutoMove', this.scrollAutoMove + offset)
+    },
+    showMultiplexing(type) {
+      this.multiplexingShow = type
+    },
+    saveMultiplexing() {
+      this.showMultiplexing(false)
+      this.$store.commit('copyMultiplexingComponents')
+      this.$store.commit('recordSnapshot')
+      this.$store.state.styleChangeTimes++
     }
   }
 }
@@ -1341,7 +1368,7 @@ export default {
   }
 
   .tools-window-main {
-    width: 300px;
+    width: 350px;
     background-color: #FFFFFF;
     transition: 1s;
   }
@@ -1366,4 +1393,15 @@ export default {
     height: calc(100vh - 100px);
   }
 
+  .dialog-css ::v-deep .el-dialog__title {
+    font-size: 14px;
+  }
+
+  .dialog-css ::v-deep .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+
+  .dialog-css ::v-deep .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
 </style>

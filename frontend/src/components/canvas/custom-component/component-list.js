@@ -127,6 +127,14 @@ export const assistList = [
     defaultClass: 'text-filter'
   },
   {
+    id: '10002',
+    component: 'de-rich-text',
+    type: 'de-rich-text',
+    label: '富文本',
+    icon: 'iconfont icon-fuwenbenkuang',
+    defaultClass: 'text-filter'
+  },
+  {
     id: '10004',
     component: 'rect-shape',
     type: 'rect-shape',
@@ -218,6 +226,28 @@ export const otherList = [
   }
 ]
 
+export const USER_VIEW = {
+  id: '10005',
+  component: 'user-view',
+  label: '用户视图',
+  propValue: '',
+  icon: 'juxing',
+  type: 'view',
+  mobileStyle: BASE_MOBILE_STYLE,
+  hyperlinks: HYPERLINKS,
+  style: {
+    width: 300,
+    height: 200
+  },
+  x: 1,
+  y: 108,
+  sizex: 12,
+  sizey: 6,
+  auxiliaryMatrix: true,
+  miniSizex: 1,
+  miniSizey: 1
+}
+
 // 编辑器左侧组件列表
 const list = [
   {
@@ -249,26 +279,21 @@ const list = [
   },
   {
     id: '10002',
-    component: 'v-button',
-    label: '按钮',
-    propValue: '按钮',
-    icon: 'button',
-    type: 'v-button',
+    component: 'de-rich-text',
+    label: '富文本',
+    propValue: '双击进入编辑状态',
+    icon: 'icon-fuwenbenkuang',
+    type: 'de-rich-text',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
-      width: 100,
-      height: 34,
-      borderWidth: '',
-      borderColor: '',
-      borderRadius: '',
-      fontSize: 14,
-      fontWeight: 400,
-      lineHeight: '',
-      letterSpacing: 0,
-      textAlign: '',
-      color: '',
-      backgroundColor: ''
+      width: 400,
+      height: 100
     },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 2,
     miniSizex: 1,
     miniSizey: 1
   },
@@ -334,27 +359,7 @@ const list = [
     miniSizex: 1,
     miniSizey: 1
   },
-  {
-    id: '10005',
-    component: 'user-view',
-    label: '用户视图',
-    propValue: '',
-    icon: 'juxing',
-    type: 'view',
-    mobileStyle: BASE_MOBILE_STYLE,
-    hyperlinks: HYPERLINKS,
-    style: {
-      width: 300,
-      height: 200
-    },
-    x: 1,
-    y: 36,
-    sizex: 12,
-    sizey: 6,
-    auxiliaryMatrix: true,
-    miniSizex: 1,
-    miniSizey: 1
-  },
+  USER_VIEW,
   {
     id: '10006',
     component: 'de-tabs',
@@ -406,8 +411,7 @@ const list = [
       verticalAlign: 'middle',
       borderStyle: 'solid',
       borderColor: '#000000',
-      time_margin: 0,
-      padding: 10
+      time_margin: 0
     },
     formatInfo: {
       openMode: '0',

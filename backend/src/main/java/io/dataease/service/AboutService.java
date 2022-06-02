@@ -9,6 +9,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.listener.util.CacheUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,10 @@ public class AboutService {
 
     @Resource
     private DefaultLicenseService defaultLicenseService;
+
+
+    @Value("${version}")
+    private String version;
 
     public F2CLicenseResponse updateLicense(String licenseKey) {
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.updateLicense(product, licenseKey);
@@ -62,8 +67,7 @@ public class AboutService {
                     return version;
                 }
             }
-            String property = CommonBeanFactory.getBean(Environment.class).getProperty("cmp.version");
-            return Optional.ofNullable(property).orElse("V1.0");
+            return Optional.ofNullable(version).orElse("V1.0");
         } catch (Exception e) {
             LogUtil.error("failed to get build version.", e);
         }

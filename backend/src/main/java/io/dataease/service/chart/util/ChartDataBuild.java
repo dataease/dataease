@@ -859,9 +859,7 @@ public class ChartDataBuild {
 
     // 表格
     public static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, List<String> desensitizationList) {
-        Map<String, Object> map = new TreeMap<>();
         List<ChartViewFieldDTO> fields = new ArrayList<>();
-        List<Map<String, Object>> tableRow = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(xAxis)) {
             fields.addAll(xAxis);
         }
@@ -871,6 +869,24 @@ public class ChartDataBuild {
             }
         }
         fields.addAll(yAxis);
+        return transTableNormal(fields, view, data, desensitizationList);
+    }
+
+    // 表格
+    public static Map<String, Object> transTableNormal(Map<String, List<ChartViewFieldDTO>> fieldMap, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
+        // List<ChartViewFieldDTO> fields = fieldMap.entrySet().stream().map(Map.Entry::getValue).flatMap(List::stream).collect(Collectors.toList());
+        // 上面乱序了
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fieldMap.get("xAxis")))fields.addAll(fieldMap.get("xAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("yAxis")))fields.addAll(fieldMap.get("yAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("labelAxis")))fields.addAll(fieldMap.get("labelAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("tooltipAxis")))fields.addAll(fieldMap.get("tooltipAxis"));
+        return transTableNormal(fields, view, data, desensitizationList);
+    }
+
+    private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
+        Map<String, Object> map = new TreeMap<>();
+        List<Map<String, Object>> tableRow = new ArrayList<>();
         data.forEach(ele -> {
             Map<String, Object> d = new HashMap<>();
             for (int i = 0; i < fields.size(); i++) {
@@ -878,9 +894,9 @@ public class ChartDataBuild {
                     d.put(fields.get(i).getDataeaseName(), ColumnPermissionConstants.Desensitization_desc);
                     continue;
                 }
-
+                if (i == ele.length) break;
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
-                if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
+                if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1 || chartViewFieldDTO.getDeType() == 5) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));

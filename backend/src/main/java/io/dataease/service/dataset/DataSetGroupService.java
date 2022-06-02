@@ -1,6 +1,8 @@
 package io.dataease.service.dataset;
 
 import io.dataease.auth.annotation.DeCleaner;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
@@ -55,12 +57,14 @@ public class DataSetGroupService {
             datasetGroup.setCreateBy(AuthUtils.getUser().getUsername());
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetGroup.getId(), datasetGroup.getPid(), null, null);
             String userName = AuthUtils.getUser().getUsername();
             // 清理权限缓存
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
             sysAuthService.copyAuth(datasetGroup.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
         } else {
             datasetGroupMapper.updateByPrimaryKeySelective(datasetGroup);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetGroup.getId(), datasetGroup.getPid(), null, null);
         }
         DataSetGroupDTO dataSetGroupDTO = new DataSetGroupDTO();
         BeanUtils.copyBean(dataSetGroupDTO, datasetGroup);

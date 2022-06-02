@@ -160,7 +160,6 @@ export default {
     },
     pageChange(val) {
       this.currentPage.page = val
-      // console.log(this.currentPage)
       this.$emit('reSearch', { form: this.form, page: this.currentPage })
     }
   }

@@ -1,5 +1,6 @@
 import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
 import { Radar } from '@antv/g2plot'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseRadarOptionAntV(plot, container, chart, action) {
   // theme
@@ -11,6 +12,7 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
   const legend = getLegend(chart)
   // data
   const data = chart.data.datas
+
   const xAxis = {
     tickLine: null,
     line: null
@@ -130,6 +132,9 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
   }
   options.xAxis = xAxis
   options.yAxis = yAxis
+
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

@@ -150,6 +150,12 @@
           <tab-style :style-info="styleInfo" />
         </el-tooltip>
       </div>
+
+      <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="标题位置">
+          <title-postion :show-vertical="showVertical" :style-info="styleInfo" />
+        </el-tooltip>
+      </div>
       <!--tab 内部组件样式-->
       <div v-if="attrTabShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="视频信息">
@@ -175,7 +181,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
@@ -183,7 +188,7 @@ import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks },
+  components: { FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -264,7 +269,8 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'color'
+        'color',
+        'titlePostion'
       ],
       // tab组件显示的属性
       'de-tabs': [
@@ -349,6 +355,9 @@ export default {
     canvasWidth() {
       return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
     },
+    showVertical() {
+      return !['textSelectGridWidget', 'numberSelectGridWidget'].includes(this.curComponent.serviceName)
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -387,7 +396,6 @@ export default {
         this.$nextTick(() => {
           this.init()
         })
-        // console.log('curComponent change')
       }
     }
   },
@@ -410,14 +418,11 @@ export default {
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
-      // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
     attrTabShow(attr) {
-      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
       return this.curActiveTabInner && this[this.curActiveTabInner.type] && this[this.curActiveTabInner.type].includes(attr)
     },
     attrShow(attr) {
-      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
       return this[this.curComponent.type].includes(attr)
     },
     goColor() {

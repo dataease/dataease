@@ -95,10 +95,13 @@
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span style="float: left">
+                          <span v-if="item.isPlugin" style="float: left">
+                            <svg-icon :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type" style="width: 14px;height: 14px" />
+                          </span>
+                          <span v-else style="float: left">
                             <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
                           </span>
-                          <span style="float: left; font-size: 12px"> {{ item.name }}</span>
+                          <span style="float: left; font-size: 12px">{{ item.name }}</span>
                         </el-option>
                       </el-select>
                     </div>
@@ -115,7 +118,7 @@
                           <span style="float: left">
                             <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
-                            <svg-icon v-if="viewField.deType === 2 || viewField.value === 3" icon-class="field_value" class="field-icon-value" />
+                            <svg-icon v-if="viewField.deType === 2 || viewField.deType === 3" icon-class="field_value" class="field-icon-value" />
                             <svg-icon v-if="viewField.deType === 5" icon-class="field_location" class="field-icon-location" />
                           </span>
                           <span style="float: left;font-size: 12px">{{ viewField.name }}</span>
@@ -317,7 +320,6 @@ export default {
       })
     },
     panelNodeClick(data, node) {
-      // console.log('panelNodeClick:' + JSON.stringify(data))
       this.linkJumpInfo.targetViewInfoList = []
       this.getPanelViewList(data.id)
     },

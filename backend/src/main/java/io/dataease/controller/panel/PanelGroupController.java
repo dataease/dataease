@@ -4,6 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
+import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.plugins.common.base.domain.PanelGroup;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
@@ -61,8 +62,20 @@ public class PanelGroupController {
             @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
-    public PanelGroup saveOrUpdate(@RequestBody PanelGroupRequest request) {
-        return panelGroupService.saveOrUpdate(request);
+    public PanelGroup save(@RequestBody PanelGroupRequest request) throws Exception{
+        String panelId = panelGroupService.save(request);
+        return findOne(panelId);
+    }
+
+    @ApiOperation("更新")
+    @PostMapping("/update")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.PANEL, value = "id"),
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    }, logical = Logical.AND)
+    @I18n
+    public String update(@RequestBody PanelGroupRequest request) {
+        return panelGroupService.update(request);
     }
 
     @ApiOperation("删除")
@@ -96,10 +109,17 @@ public class PanelGroupController {
         return panelGroupService.queryPanelViewTree();
     }
 
+    @ApiOperation("仪表板视图复用信息")
+    @PostMapping("/queryPanelMultiplexingViewTree")
+    @I18n
+    public List<VAuthModelDTO> queryPanelMultiplexingViewTree() {
+        return panelGroupService.queryPanelMultiplexingViewTree();
+    }
+
     @ApiOperation("仪表板组件信息")
     @GetMapping("/queryPanelComponents/{id}")
     @I18n
-    public Map queryPanelComponents(@PathVariable String id){
+    public Map queryPanelComponents(@PathVariable String id) {
         return panelGroupService.queryPanelComponents(id);
     }
 
@@ -107,8 +127,15 @@ public class PanelGroupController {
     @PostMapping("/exportDetails")
     @I18n
     public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
-        panelGroupService.exportPanelViewDetails(request,response);
+        panelGroupService.exportPanelViewDetails(request, response);
     }
 
+    @ApiOperation("更新仪表板状态")
+    @PostMapping("/updatePanelStatus/{panelId}")
+    @I18n
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    public void updatePanelStatus(@PathVariable String panelId, @RequestBody PanelGroupBaseInfoRequest request) {
+        panelGroupService.updatePanelStatus(panelId, request);
+    }
 
 }

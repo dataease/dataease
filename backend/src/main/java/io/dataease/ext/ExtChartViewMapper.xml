@@ -315,7 +315,7 @@
                'private',
                `is_plugin`,
                `senior`,
-            `data_from`
+               `data_from`
         FROM chart_view
         WHERE id = #{oldChartId}
     </insert>
@@ -365,7 +365,8 @@
                                 custom_filter,
                                 drill_fields,
                                 SNAPSHOT,
-            data_from)
+                                senior,
+                                data_from)
         SELECT pv_copy.chart_view_id AS id,
                `name`,
                title,
@@ -392,7 +393,8 @@
                custom_filter,
                drill_fields,
                SNAPSHOT,
-            data_from
+               senior,
+               data_from
         FROM (
                  SELECT panel_id,
                         copy_from_view,

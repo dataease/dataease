@@ -9,6 +9,7 @@ import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.dto.datasource.Db2Configuration;
 import io.dataease.plugins.common.constants.Db2Constants;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.constants.EsSqlLConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
@@ -16,6 +17,7 @@ import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.provider.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +109,11 @@ public class Db2QueryProvider extends QueryProvider {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(Db2Constants.UNIX_TIMESTAMP, originField);
                     } else {
-                        fieldName = originField;
+                        if(f.getType().equalsIgnoreCase("TIME")){
+                            fieldName = String.format(Db2Constants.FORMAT_TIME, originField, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
+                            fieldName = originField;
+                        }
                     }
                 } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
@@ -203,7 +209,7 @@ public class Db2QueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -233,7 +239,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -312,7 +318,7 @@ public class Db2QueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -396,7 +402,7 @@ public class Db2QueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -426,7 +432,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -505,7 +511,7 @@ public class Db2QueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -538,7 +544,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -625,7 +631,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -778,7 +784,11 @@ public class Db2QueryProvider extends QueryProvider {
                     whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                    whereName = originName;
+                    if(field.getType().equalsIgnoreCase("TIME")){
+                        whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }else {
+                        whereName = originName;
+                    }
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -847,50 +857,71 @@ public class Db2QueryProvider extends QueryProvider {
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            DatasetTableField field = request.getDatasetTableField();
-            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                continue;
+
+            List<String> whereNameList = new ArrayList<>();
+            List<DatasetTableField> fieldList = new ArrayList<>();
+            if (request.getIsTree()) {
+                fieldList.addAll(request.getDatasetTableFieldList());
+            } else {
+                fieldList.add(request.getDatasetTableField());
             }
+
+            for (DatasetTableField field : fieldList) {
+                if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    continue;
+                }
+                String whereName = "";
+
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                    originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
+
+                if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                    if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
+                        originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                        whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }
+                    if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
+                        whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }
+                    if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                        if(field.getType().equalsIgnoreCase("TIME")){
+                            whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
+                            whereName = originName;
+                        }
+                    }
+                } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                        whereName = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_FLOAT_FORMAT);
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        whereName = String.format(Db2Constants.UNIX_TIMESTAMP, originName);
+                    }
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        whereName = originName;
+                    }
+                } else {
+                    whereName = originName;
+                }
+                whereNameList.add(whereName);
+            }
+
             String whereName = "";
+            if (request.getIsTree()) {
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+            } else {
+                whereName = whereNameList.get(0);
+            }
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-
-            if (field.getDeType() == DeTypeConstants.DE_TIME) {
-                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    originName = String.format(Db2Constants.STR_TO_DATE, originName);
-                    whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
-                }
-                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
-                    whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
-                }
-                if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                    whereName = originName;
-                }
-            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_FLOAT_FORMAT);
-                }
-                if (field.getDeExtractType() == 1) {
-                    whereName = String.format(Db2Constants.UNIX_TIMESTAMP, originName);
-                }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    whereName = originName;
-                }
-            } else {
-                whereName = originName;
-            }
-
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
@@ -964,7 +995,11 @@ public class Db2QueryProvider extends QueryProvider {
                 fieldName = String.format(Db2Constants.UNIX_TIMESTAMP, originField) + "*1000";
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
+                if(x.getType().equalsIgnoreCase("TIME")){
+                    fieldName = String.format(Db2Constants.FORMAT_TIME, originField, format);
+                }else {
+                    fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
+                }
             } else {
                 fieldName = originField;
             }
@@ -995,6 +1030,8 @@ public class Db2QueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(Db2Constants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(Db2Constants.GROUP_CONCAT, originField);
             } else {
                 fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), originField);
             }

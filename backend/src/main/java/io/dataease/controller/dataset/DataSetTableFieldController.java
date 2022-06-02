@@ -159,7 +159,7 @@ public class DataSetTableFieldController {
     public List<Object> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
-            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), true);
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), true, false);
             if (CollectionUtil.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }
@@ -178,11 +178,28 @@ public class DataSetTableFieldController {
     }
 
     @ApiIgnore
+    @PostMapping("linkMappingFieldValues")
+    public List<Object> linkMappingFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long userId = jwt.getClaim("userId").asLong();
+        multFieldValuesRequest.setUserId(userId);
+        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getUserId(), true, true,false);
+    }
+
+    @ApiIgnore
+    @PostMapping("mappingFieldValues")
+    public List<Object> mappingFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getUserId(), true, true, false);
+    }
+
+    @ApiIgnore
     @PostMapping("multFieldValuesForPermissions")
     public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
-            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false);
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false, true);
             if (CollectionUtil.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }

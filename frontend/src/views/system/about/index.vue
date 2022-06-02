@@ -104,7 +104,6 @@ export default {
     getLicenseInfo() {
     //   validate({}).then(res => {
     //     this.license = this.getLicense(res.data)
-    //     console.log(this.license)
     //   })
       this.validateHandler({}, res => {
         this.license = this.getLicense(res.data)
@@ -150,7 +149,6 @@ export default {
       window.open(url, '_blank')
     },
     beforeUpload(file) {
-      // console.log(file)
       this.importLic(file)
       return false
     }

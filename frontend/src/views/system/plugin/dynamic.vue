@@ -53,7 +53,6 @@ export default {
   created() {
     if (this.jsname && this.menuid) {
       this.showAsync = true
-      // console.log(this.jsname)
       this.url = this.baseUrl + this.menuid
       //   this.url = 'http://localhost:8081/PluginDemo.js'
     //   this.url = 'http://localhost:8081/SystemParam.js'
@@ -89,8 +88,6 @@ export default {
       this.backName = backName
     },
     pluginCallBack(param) {
-      // console.log(param)
-
       const { eventName, eventParam } = param
       bus.$emit(eventName, eventParam)
     }

@@ -79,6 +79,7 @@
             :element="item.content"
             :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
             :out-style="outStyle"
+            :canvas-style-data="canvasStyleData"
           />
         </div>
 
@@ -233,7 +234,8 @@ export default {
     ...mapState([
       'componentData',
       'curComponent',
-      'mobileLayoutStatus'
+      'mobileLayoutStatus',
+      'canvasStyleData'
     ]),
     fontColor() {
       return this.element && this.element.style && this.element.style.headFontColor || 'none'
@@ -331,13 +333,17 @@ export default {
             this.styleChange()
           }
         })
+        this.otherComponentDialogVisible = false
+        return
       }
-      this.otherComponentDialogVisible = false
+      this.$warning(this.$t('detabs.please') + this.$t('detabs.selectOthers'))
+      
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
       if (!nodes || nodes.length === 0) {
-        this.viewDialogVisible = false
+        this.$warning(this.$t('detabs.please') + this.$t('detabs.selectview'))
+        
         return
       }
       const node = nodes[0]
@@ -378,7 +384,6 @@ export default {
     },
 
     setComponentInfo() {
-      console.log('aaa')
     },
 
     editCurTitle(param) {

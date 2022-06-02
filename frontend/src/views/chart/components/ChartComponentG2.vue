@@ -191,7 +191,6 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param)
       if (this.chart.type === 'treemap') {
         this.pointParam = param.data.data
       } else {

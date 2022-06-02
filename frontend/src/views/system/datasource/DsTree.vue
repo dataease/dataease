@@ -1,15 +1,26 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col class="tree-style">
     <el-col>
-      <el-row class="title-css">
+      <el-row class="title-css" v-show="showView === 'Datasource'">
         <span class="title-text">
           {{ $t('commons.datasource') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;"
-                   @click="addFolder"/>
-
       </el-row>
-      <el-divider/>
+      <el-row v-show="showView === 'Datasource'">
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder"> {{ $t('datasource.create') }}</el-button>
+        <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;" @click="driverMgm"> {{ $t('driver.mgm') }}</el-button>
+      </el-row>
+
+      <el-row class="title-css" v-show="showView === 'Driver'">
+        <template>
+          <el-icon name="back" class="back-button"  size="mini"  @click.native="dsMgm" />
+          {{$t('driver.exit_mgm')}}
+        </template>
+      </el-row>
+      <el-row v-show="showView === 'Driver'">
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder"> {{ $t('driver.add') }}</el-button>
+      </el-row>
+
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -50,24 +61,30 @@
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder"/>
                 </span>
-                <span v-if=" data.status === 'Error'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if=" data.status === 'Error'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
                     <span>
                       {{ data.name }}
                     </span>
                   </el-tooltip>
                 </span>
-                <span v-if=" data.status === 'Warning'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if=" data.status === 'Warning'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   <el-tooltip effect="dark" :content="$t('datasource.warning')" placement="right">
                     <span>
                       {{ data.name }}
                     </span>
                   </el-tooltip>
                 </span>
-                <span v-if="data.status !== 'Error' && data.status !== 'Warning'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if="data.status !== 'Error' && data.status !== 'Warning'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   {{ data.name }}
                 </span>
 
@@ -99,11 +116,57 @@
           </el-tree>
         </div>
       </el-col>
+
+      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editDriver" :show-close="false" width="50%" append-to-body>
+        <el-form ref="driverForm" :model="driverForm" label-position="right" label-width="100px" :rules="rule">
+          <el-form-item :label="$t('commons.name')" prop="name">
+            <el-input v-model="driverForm.name"/>
+          </el-form-item>
+          <el-form-item :label="$t('commons.description')">
+            <el-input v-model="driverForm.desc"/>
+          </el-form-item>
+          <el-form-item :label="$t('datasource.type')" prop="type">
+            <el-select
+              v-model="driverForm.type"
+              :placeholder="$t('datasource.please_choose_type')"
+              class="select-width"
+              :disabled="disabledModifyType"
+              filterable
+            >
+              <el-option
+                v-for="item in dsTypesForDriver"
+                :key="item.type"
+                :label="item.name"
+                :value="item.type"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="close()">{{ $t('commons.cancel') }}</el-button>
+          <el-button type="primary" size="mini" @click="saveDriver(driverForm)">{{ $t('commons.save') }}
+          </el-button>
+        </div>
+      </el-dialog>
+
     </el-col>
   </el-col>
 </template>
 <script>
-import {listDatasource, listDatasourceByType, delDs, listDatasourceType} from '@/api/system/datasource'
+
+import {mapGetters} from 'vuex'
+import i18n from '@/lang'
+import {
+  listDatasource,
+  listDatasourceByType,
+  delDs,
+  listDatasourceType,
+  listDrivers,
+  addDriver,
+  delDriver,
+  listDriverByType
+} from '@/api/system/datasource'
+import {ApplicationContext} from '@/utils/ApplicationContext'
 
 export default {
   name: 'DsTree',
@@ -118,8 +181,29 @@ export default {
       expandedArray: [],
       tData: [],
       dsTypes: [],
+      dsTypesForDriver: [],
       showSearchInput: false,
-      key: ''
+      key: '',
+      showView: 'Datasource',
+      dialogTitle: '',
+      editDriver: false,
+      driverForm: {
+        name: '',
+        desc: '',
+        type: ''
+      },
+      disabledModifyType: false,
+      rule: {
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
+        desc: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}]
+      },
+      editableTabs: [{
+        title: i18n.t('commons.datasource'),
+        name: 'Datasource'
+      }]
     }
   },
   watch: {
@@ -127,14 +211,21 @@ export default {
       this.$refs.myDsTree.filter(val)
     }
   },
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
   created() {
     this.queryTreeDatas()
     this.datasourceTypes()
+    if (this.user.isAdmin) {
+      this.editableTabs.push({
+        title: i18n.t('driver.mgm'),
+        name: 'Driver'
+      })
+    }
   },
-  // mounted() {
-  //   this.queryTreeDatas()
-  //   this.datasourceTypes()
-  // },
   methods: {
     filterNode(value, data) {
       if (!value) return true
@@ -148,28 +239,41 @@ export default {
       this.showSearchInput = false
     },
     queryTreeDatas() {
-      listDatasource().then(res => {
-        this.tData = this.buildTree(res.data)
-      })
+      if (this.showView === 'Datasource') {
+        listDatasource().then(res => {
+          this.tData = this.buildTree(res.data)
+        })
+      }
+      if (this.showView === 'Driver') {
+        listDrivers().then(res => {
+          this.tData = this.buildTree(res.data)
+        })
+      }
     },
     datasourceTypes() {
       listDatasourceType().then(res => {
         this.dsTypes = res.data
+        this.dsTypes.forEach(item => {
+          if (item.isJdbc) {
+            this.dsTypesForDriver.push(item)
+          }
+        })
       })
     },
     refreshType(datasource) {
+      const method = this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
       let typeData = []
-      listDatasourceByType(datasource.type).then(res => {
+      method(datasource.type).then(res => {
         typeData = this.buildTree(res.data)
         if (typeData.length === 0) {
-          let index = this.tData.findIndex(item => {
+          const index = this.tData.findIndex(item => {
             if (item.id === datasource.type) {
-              return true;
+              return true
             }
           })
           this.tData.splice(index, 1)
         } else {
-          let find = false;
+          let find = false
           for (let index = 0; index < this.tData.length; index++) {
             if (typeData[0].id === this.tData[index].id) {
               this.tData[index].children = typeData[0].children
@@ -209,10 +313,39 @@ export default {
     },
 
     addFolder() {
-      this.switchMain('DsForm', {}, this.tData, this.dsTypes)
+      if (this.showView === 'Driver') {
+        this.dialogTitle = this.$t('driver.driver')
+        this.editDriver = true
+        // this.switchMain('DriverForm', {}, this.tData, this.dsTypes)
+      } else {
+        this.switchMain('DsForm', {}, this.tData, this.dsTypes)
+      }
+    },
+
+    driverMgm() {
+      this.$emit('switch-main', {})
+      this.showView = 'Driver'
+      this.expandedArray = []
+      this.tData = []
+      this.queryTreeDatas()
+    },
+    dsMgm() {
+      this.$emit('switch-main', {})
+      this.showView = 'Datasource'
+      this.expandedArray = []
+      this.tData = []
+      this.queryTreeDatas()
     },
     addFolderWithType(data) {
-      this.switchMain('DsForm', {type: data.id}, this.tData, this.dsTypes)
+      if (this.showView === 'Driver') {
+        this.driverForm.type = data.id
+        this.dialogTitle = this.$t('driver.driver')
+        // this.editDriver = false
+        this.editDriver = true
+        // this.switchMain(switchMain'DriverForm', {}, this.tData, this.dsTypes)
+      } else {
+        this.switchMain('DsForm', {type: data.id}, this.tData, this.dsTypes)
+      }
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
@@ -240,7 +373,11 @@ export default {
     },
     showInfo(row) {
       const param = {...row.data, ...{showModel: 'show'}}
-      this.switchMain('DsForm', param, this.tData, this.dsTypes)
+      if (this.showView === 'Datasource') {
+        this.switchMain('DsForm', param, this.tData, this.dsTypes)
+      } else {
+        this.switchMain('DriverForm', param, this.tData, this.dsTypes)
+      }
     },
     _handleDelete(datasource) {
       this.$confirm(this.$t('datasource.delete_warning'), '', {
@@ -248,12 +385,18 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        delDs(datasource.id).then(res => {
-          if(res.success){
+        let method = delDriver
+        let parma = {type: datasource.type, id: datasource.id}
+        if (this.showView === 'Datasource') {
+          method = delDs
+          parma = datasource.id
+        }
+        method(parma).then(res => {
+          if (res.success) {
             this.$success(this.$t('commons.delete_success'))
             this.switchMain('DataHome', {}, this.tData, this.dsTypes)
             this.refreshType(datasource)
-          }else {
+          } else {
             this.$message({
               type: 'error',
               message: res.message
@@ -288,6 +431,32 @@ export default {
             }
           })
         })
+      })
+    },
+    close() {
+      this.$refs['driverForm'].resetFields()
+      this.editDriver = false
+      this.driverForm = {
+        name: '',
+        desc: '',
+        type: ''
+      }
+    },
+    saveDriver(driverForm) {
+      this.$refs['driverForm'].validate((valid) => {
+        if (valid) {
+          addDriver(driverForm).then(res => {
+            this.$message({
+              message: this.$t('dataset.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.refreshType(driverForm)
+            this.close()
+          })
+        } else {
+          return false
+        }
       })
     }
   }

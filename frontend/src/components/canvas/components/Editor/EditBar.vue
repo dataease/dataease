@@ -1,9 +1,12 @@
 <template>
   <div class="bar-main">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
-      <el-checkbox v-model="linkageInfo.linkageActive" />
+    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
+      <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+    </div>
+    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
+      <el-checkbox size="medium" @change="batchOptChange" />
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
@@ -44,10 +47,9 @@ import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
-import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 
 export default {
-  components: { Hyperlinks, SettingMenu, LinkageField },
+  components: { SettingMenu, LinkageField },
 
   props: {
     element: {
@@ -87,13 +89,17 @@ export default {
     showJumpFlag() {
       return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
     },
+    // batch operation area
+    batchOptAreaShow() {
+      return this.batchOptStatus && this.element.type === 'view' && !this.element.isPlugin
+    },
     // 联动区域按钮显示
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
     },
     // 编辑或预览区域显示
     normalAreaShow() {
-      return !this.linkageSettingStatus
+      return !this.linkageSettingStatus && !this.batchOptStatus
     },
     existLinkage() {
       let linkageFiltersCount = 0
@@ -131,7 +137,9 @@ export default {
       'linkageSettingStatus',
       'targetLinkageInfo',
       'curLinkageView',
-      'curCanvasScale'
+      'curCanvasScale',
+      'batchOptStatus',
+      'curBatchOptComponents'
     ])
   },
   beforeDestroy() {
@@ -139,13 +147,6 @@ export default {
   methods: {
     closePreview() {
       this.$emit('closePreview')
-    },
-    createTimer() {
-      if (!this.timer) {
-        this.timer = setInterval(() => {
-          console.log('t=' + this.curComponent.auxiliaryMatrix)
-        }, 5000)
-      }
     },
     destroyTimer() {
       if (this.timer) {
@@ -216,7 +217,7 @@ export default {
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
-      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       } else { bus.$emit('change_panel_right_draw', true) }
     },
@@ -264,6 +265,15 @@ export default {
     },
     boardSet() {
       this.$emit('boardSet')
+    },
+    batchOptChange(val) {
+      if (val) {
+        // push
+        this.$store.commit('addCurBatchComponent', this.element.propValue.viewId)
+      } else {
+        // remove
+        this.$store.commit('removeCurBatchComponentWithId', this.element.propValue.viewId)
+      }
     }
   }
 }
@@ -276,15 +286,24 @@ export default {
     float:right;
     z-index: 2;
     border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
+    padding-left: 3px;
+    padding-right: 0px;
     cursor:pointer!important;
-    background-color: #0a7be0;
+    background-color: rgba(10,123,224, 1);
   }
   .bar-main i{
     color: white;
     float: right;
     margin-right: 3px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner{
+    width: 16px;
+    height: 16px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner::after{
+    width: 4.5px;
   }
 
 </style>

@@ -94,6 +94,7 @@ public class SysUserService {
         }
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
+        request.setUserId(dbUser.getUserId());
         saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联
         return insert;
     }
@@ -218,6 +219,8 @@ public class SysUserService {
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
     public int updatePersonBasicInfo(SysUserCreateRequest request) {
+        checkEmail(request);
+        checkNickName(request);
         SysUser user = new SysUser();
         long now = System.currentTimeMillis();
         user.setUserId(request.getUserId());

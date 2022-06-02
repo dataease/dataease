@@ -131,6 +131,8 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    publish: 'publish',
+    unpublished: 'unpublished',
     default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
@@ -414,7 +416,8 @@ export default {
     eidttitle: 'Edit Title',
     selectview: 'Select View',
     selectOthers: 'Select Others',
-    availableComponents: 'Available Components'
+    availableComponents: 'Available Components',
+    please: 'Please'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -1095,7 +1098,10 @@ export default {
     unit_hundred_million: 'Hundred Million',
     formatter_decimal_count_error: 'Range 0-10',
     gauge_threshold_compare_error: 'Range must added',
-    tick_count: 'Tick Split'
+    tick_count: 'Tick Split',
+    custom_sort: 'Custom',
+    custom_sort_tip: 'Custom sort field first,and only support single field',
+    clean_custom_sort: 'Clean'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1243,7 +1249,9 @@ export default {
       pending: 'Pause',
       exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',
-      change_success: 'State switch successful'
+      change_success: 'State switch successful',
+      excel_replace_msg: 'Calculation fields, custom datasets, associated datasets, dashboards, etc. may be affected. Confirm the replacement？',
+      effect_ext_field: 'Affect calculated fields'
     },
     field_group_type: 'Type',
     location: 'Location',
@@ -1323,9 +1331,26 @@ export default {
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset'
   },
+  driver: {
+    driver: 'Driver',
+    please_choose_driver: 'Please choose driver',
+    mgm: 'Driver',
+    exit_mgm: 'Exit Driver',
+    add: 'ADD Driver',
+    modify: 'Modify',
+    show_info: 'Driver info',
+    file_name: 'File name',
+    version: 'version',
+    please_set_driverClass: 'Please specify driver class'
+  },
   datasource: {
+    auth_method: 'Auth method',
+    passwd: 'UserName Password',
+    kerbers_info: 'Please make sure krb5 Conf, KeyTab key, added to path: /opt/dataease/conf',
+    client_principal: 'Client Principal',
+    keytab_Key_path: 'Keytab Key Path',
     datasource: 'Data Source',
-    please_select_left: 'Please select the data source from the left',
+    please_select_left: 'Please select data from the left',
     show_info: 'Data Source Info',
     create: 'Create Data Source',
     type: 'Type',
@@ -1427,6 +1452,10 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    multiplexing: 'Multiplexing',
+    panel_off: 'Off the shelf',
+    batch_opt: 'Batch Operation',
+    edit_leave_tips: 'Do You Want To Abandon And Leave The Current Page?',
     hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
     yes: 'Yes',
@@ -1860,6 +1889,10 @@ export default {
     label: 'Text selector',
     placeholder: 'Please select'
   },
+  detextselectTree: {
+    label: 'Tree selector',
+    placeholder: 'Please select'
+  },
   detextgridselect: {
     label: 'Text list',
     placeholder: 'Please select'
@@ -2016,5 +2049,18 @@ export default {
     port: 'Port',
     user: 'User',
     passwd: 'Password'
+  },
+  log: {
+    title: 'Operate Log',
+    optype: 'Operate Type',
+    detail: 'Detail',
+    user: 'User',
+    time: 'Time',
+    export: 'Export',
+    confirm: 'Sure Export ?',
+    search_by_key: 'Search by key'
+  },
+  plugin_style: {
+    border: 'Border'
   }
 }

@@ -158,7 +158,7 @@ export default {
     },
     chartBackground() {
       let style = {}
-      if (this.subjectItemDetails) {
+      if (this.subjectItemDetails && this.subjectItemDetails.chart.customStyle.background) {
         style = {
           background: this.subjectItemDetails.chart.customStyle.background.color,
           opacity: this.subjectItemDetails.chart.customStyle.background.alpha / 100
@@ -205,7 +205,6 @@ export default {
       this.$emit('templateEdit', this.template)
     },
     handleDelete() {
-      // console.log('handleDelete')
     },
     // 双击事件
     setEdit() {

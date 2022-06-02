@@ -72,6 +72,16 @@ export function panelSave(data) {
     data
   })
 }
+
+export function panelUpdate(data) {
+  return request({
+    url: 'panel/group/update',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function findOne(id) {
   return request({
     url: 'panel/group/findOne/' + id,
@@ -143,7 +153,8 @@ export function initPanelData(panelId, callback) {
       id: response.data.id,
       name: response.data.name,
       privileges: response.data.privileges,
-      sourcePanelName: response.data.sourcePanelName
+      sourcePanelName: response.data.sourcePanelName,
+      status: response.data.status
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId).then(rsp => {
@@ -161,6 +172,14 @@ export function queryPanelViewTree() {
   return request({
     url: '/panel/group/queryPanelViewTree',
     method: 'post'
+  })
+}
+
+export function queryPanelMultiplexingViewTree() {
+  return request({
+    url: '/panel/group/queryPanelMultiplexingViewTree',
+    method: 'post',
+    loading: false
   })
 }
 
@@ -196,6 +215,15 @@ export function exportDetails(data) {
     data: data,
     loading: true,
     responseType: 'blob'
+  })
+}
+
+export function updatePanelStatus(panelId, param) {
+  return request({
+    url: '/panel/group/updatePanelStatus/' + panelId,
+    method: 'post',
+    loading: false,
+    data: param
   })
 }
 

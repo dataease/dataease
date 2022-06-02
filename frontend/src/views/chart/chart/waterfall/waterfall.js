@@ -1,6 +1,5 @@
 import {
   getLabel,
-  getLegend,
   getPadding,
   getTheme,
   getTooltip,

@@ -15,7 +15,6 @@
   >
     <!-- 网格线 -->
     <Grid v-if="showGrid" :matrix-style="matrixStyle" />
-    <!--    positionBox:{{positionBoxInfo}}-->
     <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
 
     <!-- 仪表板联动清除按钮-->
@@ -41,9 +40,10 @@
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
-      :draggable="!linkageSettingStatus"
-      :resizable="!linkageSettingStatus"
-      :linkage-active="linkageSettingStatus&&item===curLinkageView"
+      :draggable="deDraggable"
+      :resizable="deResizable"
+      :linkage-active="linkageActiveCheck(item)"
+      :batch-opt-active="batchOptActiveCheck(item)"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
       @resizeView="resizeView(index,item)"
@@ -60,22 +60,8 @@
       @canvasDragging="canvasDragging"
       @editComponent="editComponent(index,item)"
     >
-      <component
-        :is="item.component"
-        v-if="renderOk&&item.type==='v-text'"
-        :id="'component' + item.id"
-        ref="wrapperChild"
-        class="component"
-        :style="getComponentStyleDefault(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :out-style="getShapeStyleInt(item.style)"
-        :edit-mode="'edit'"
-        :active="item === curComponent"
-        @input="handleInput"
-      />
       <de-out-widget
-        v-else-if="renderOk&&item.type==='custom'"
+        v-if="renderOk&&item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -112,6 +98,9 @@
         :active="item === curComponent"
         :edit-mode="'edit'"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
+        :canvas-style-data="canvasStyleData"
+        @input="handleInput"
+        @trigger-plugin-edit="pluginEditHandler"
       />
     </de-drag>
     <!--拖拽阴影部分-->
@@ -224,12 +213,6 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
-import { ApplicationContext } from '@/utils/ApplicationContext'
-import {
-  BASE_MOBILE_STYLE,
-  COMMON_BACKGROUND_NONE,
-  HYPERLINKS
-} from '@/components/canvas/custom-component/component-list'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -263,11 +246,9 @@ function debounce(func, time) {
 
 function scrollScreen(e) {
   if (e.clientY + 50 >= window.innerHeight) {
-    // console.log('scrollScreen+')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() + 20)
   } else if (e.clientY <= 150) {
-    // console.log('scrollScreen-')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() - 20)
   }
@@ -311,7 +292,6 @@ function addItemToPositionBox(item) {
     }
   } catch (e) {
     // igonre
-    console.log('addItemToPositionBox failed')
   }
 }
 
@@ -513,7 +493,6 @@ function removeItem(index) {
     })
     this.yourList.splice(index, 1, {})
   } catch (e) {
-    console.log('removeItem have some ignore error')
   }
 }
 
@@ -526,7 +505,6 @@ function initPosition(_this) {
 }
 
 function addItem(item, index) {
-  // console.log('addItem')
   if (index < 0) {
     index = this.yourList.length
   }
@@ -955,6 +933,12 @@ export default {
     }
   },
   computed: {
+    deDraggable() {
+      return !this.linkageSettingStatus && !this.batchOptStatus
+    },
+    deResizable() {
+      return !this.linkageSettingStatus && !this.batchOptStatus
+    },
     showExportImgButton() {
       // if the chart type belong to table,'export image' button should be hidden
       return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
@@ -1016,19 +1000,14 @@ export default {
       'doSnapshotIndex',
       'componentGap',
       'mobileLayoutStatus',
-      'curCanvasScale'
+      'curCanvasScale',
+      'batchOptStatus'
     ]),
     filterMap() {
       return buildFilterMap(this.componentData)
     }
   },
   watch: {
-    // 'canvasStyleData.aidedDesign.matrixBase': {
-    //   handler(newVal, oldVal) {
-    //     this.changeComponentSizePoint(newVal / oldVal)
-    //   },
-    //   deep: true
-    // },
     customStyle: {
       handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）
@@ -1049,7 +1028,6 @@ export default {
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
           this.initMatrix()
-          // console.log('componentData-initMatrix')
         }
       },
       deep: true
@@ -1090,6 +1068,27 @@ export default {
   created() {
   },
   methods: {
+    pluginEditHandler({ e, id }) {
+      let index = -1
+      for (let i = 0; i < this.componentData.length; i++) {
+        const item = this.componentData[i]
+        const itemId = item.id
+        if (id === itemId) {
+          index = i
+          break
+        }
+      }
+      if (index >= 0) {
+        const _this = this
+        _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].triggerPluginEdit && _this.$refs.deDragRef[index].triggerPluginEdit(e)
+      }
+    },
+    linkageActiveCheck(item) {
+      return this.linkageSettingStatus && item === this.curLinkageView
+    },
+    batchOptActiveCheck(item) {
+      return this.batchOptStatus && item.type === 'view'
+    },
     canvasInit() {
       this.editShow = false
       setTimeout(() => {
@@ -1286,7 +1285,6 @@ export default {
         this.baseHeight = this.matrixStyle.height
         this.cellWidth = this.matrixStyle.width
         this.cellHeight = this.matrixStyle.height
-        // console.log('.initMatrix1')
         this.initMatrix()
 
         this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
@@ -1325,7 +1323,6 @@ export default {
       }
       if (prop === 'top') {
         const top = this.format(style['top'], this.scaleHeight)
-        // console.log('top:' + top)
         return top
       }
     },
@@ -1453,7 +1450,6 @@ export default {
       infoBox.oldSizeY = item.sizey
     },
     onMouseUp(e) {
-      // console.log('onMouseUp')
       const vm = this
       if (_.isEmpty(vm.infoBox)) return
       if (vm.infoBox.cloneItem) {
@@ -1496,9 +1492,7 @@ export default {
       newY = newY > 0 ? newY : 1
       debounce((function(newX, oldX, newY, oldY, addSizex, addSizey) {
         return function() {
-          // console.log('move1')
           if (newX !== oldX || oldY !== newY) {
-            // console.log('move2')
             movePlayer.call(vm, resizeItem, {
               x: newX,
               y: newY
@@ -1531,9 +1525,7 @@ export default {
       newY = newY > 0 ? newY : 1
       debounce((function(newX, oldX, newY, oldY) {
         return function() {
-          // console.log('move1')
           if (newX !== oldX || oldY !== newY) {
-            // console.log('move2')
             movePlayer.call(vm, moveItem, {
               x: newX,
               y: newY
@@ -1584,8 +1576,6 @@ export default {
        * @returns
        */
     getMaxCell() {
-      // console.log('getMaxCell:')
-
       return this.maxCell
     },
     /**
@@ -1594,8 +1584,6 @@ export default {
        * @returns
        */
     getRenderState() {
-      // console.log('getRenderState:')
-
       return this.moveAnimate
     },
     addItem: addItem,
@@ -1610,7 +1598,6 @@ export default {
       }, 100)
     },
     addItemBox(item) {
-      // console.log('addItemBox:' + JSON.stringify(item))
       this.yourList.push(item)
 
       this.$nextTick(function() {
@@ -1618,7 +1605,6 @@ export default {
       })
     },
     removeLastItem() {
-      // console.log('rlI:' + JSON.stringify(this.yourList))
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.removeItem(this.yourList.length - 1)
       }

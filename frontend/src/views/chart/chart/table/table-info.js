@@ -412,12 +412,15 @@ function getCurrentField(valueFieldList, field) {
   } catch (err) {
     list = JSON.parse(JSON.stringify(valueFieldList))
   }
-  for (let i = 0; i < list.length; i++) {
-    const f = list[i]
-    if (field.dataeaseName === f.dataeaseName) {
-      res = f
-      break
+  if (list) {
+    for (let i = 0; i < list.length; i++) {
+      const f = list[i]
+      if (field.dataeaseName === f.dataeaseName) {
+        res = f
+        break
+      }
     }
   }
+
   return res
 }

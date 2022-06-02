@@ -30,7 +30,7 @@
         <!--        <el-button size="mini" @click="closePanelEdit">-->
         <!--          {{ $t('chart.draw_back') }}-->
         <!--        </el-button>-->
-        <el-button type="warning" round size="mini" :disabled="!hasEdit" @click="reset">
+        <el-button round size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
         <!--        <el-button size="mini" type="primary" @click="closeEdit">-->
@@ -40,7 +40,7 @@
     </el-row>
     <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 350px">
           <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
             <span style="opacity: 1;">
               <el-button
@@ -56,7 +56,7 @@
             </span>
           </div>
           <el-row class="view-panel">
-            <el-col class="theme-border-class" :span="12" style="border-right: 1px solid #E6E6E6;">
+            <el-col class="theme-border-class" :span="11" style="border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
                 <el-input
                   v-model="searchField"
@@ -145,7 +145,7 @@
             </el-col>
 
             <el-col
-              :span="12"
+              :span="13"
               style="height: 100%;border-right: 1px solid #E6E6E6;"
               class="theme-border-class"
             >
@@ -372,6 +372,7 @@
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
                             @valueFormatter="valueFormatter"
+                            @onCustomSort="onCustomSort"
                           />
                         </transition-group>
                       </draggable>
@@ -649,251 +650,32 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
-          <el-row class="view-panel">
-            <plugin-com
-              v-if="view.isPlugin"
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
-              class="attr-style theme-border-class"
-              :component-name="view.type + '-style'"
-              :obj="{view, param, chart}"
-            />
-            <div
-              v-else
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
-              class="attr-style theme-border-class"
-            >
-              <el-row class="padding-lr">
-                <span class="title-text">{{ $t('chart.style_priority') }}</span>
-                <el-row>
-                  <el-radio-group
-                    v-model="view.stylePriority"
-                    class="radio-span"
-                    size="mini"
-                    @change="calcStyle"
-                  >
-                    <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-                    <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-                  </el-radio-group>
-                </el-row>
-              </el-row>
-              <el-row>
-                <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
-                <el-collapse v-model="attrActiveNames" class="style-collapse">
-                  <el-collapse-item name="color" :title="$t('chart.color')">
-                    <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
-                    name="size"
-                    :title="$t('chart.size')"
-                  >
-                    <size-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onSizeChange="onSizeChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
-                    name="size"
-                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
-                  >
-                    <size-selector-ant-v
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onSizeChange="onSizeChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
-                    name="label"
-                    :title="$t('chart.label')"
-                  >
-                    <label-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLabelChange="onLabelChange"
-                    />
-                    <label-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLabelChange="onLabelChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
-                    name="tooltip"
-                    :title="$t('chart.tooltip')"
-                  >
-                    <tooltip-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTooltipChange="onTooltipChange"
-                    />
-                    <tooltip-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTooltipChange="onTooltipChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type === 'table-pivot'"
-                    name="totalCfg"
-                    :title="$t('chart.total_cfg')"
-                  >
-                    <total-cfg
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTotalCfgChange="onTotalCfgChange"
-                    />
-                  </el-collapse-item>
-                </el-collapse>
-              </el-row>
-              <el-row>
-                <span class="padding-lr">{{ $t('chart.module_style') }}</span>
-                <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
-                    name="xAxis"
-                    :title="$t('chart.xAxis')"
-                  >
-                    <x-axis-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeXAxisForm="onChangeXAxisForm"
-                    />
-                    <x-axis-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeXAxisForm="onChangeXAxisForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
-                    name="yAxis"
-                    :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
-                  >
-                    <y-axis-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisForm"
-                    />
-                    <y-axis-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type === 'chart-mix'"
-                    name="yAxisExt"
-                    :title="$t('chart.yAxis_ext')"
-                  >
-                    <y-axis-ext-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisExtForm"
-                    />
-                    <y-axis-ext-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisExtForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type.includes('radar')"
-                    name="split"
-                    :title="$t('chart.split')"
-                  >
-                    <split-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeSplitForm="onChangeSplitForm"
-                    />
-                    <split-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeSplitForm="onChangeSplitForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
-                    <title-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTextChange="onTextChange"
-                    />
-                    <title-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTextChange="onTextChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
-                    name="legend"
-                    :title="$t('chart.legend')"
-                  >
-                    <legend-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLegendChange="onLegendChange"
-                    />
-                    <legend-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLegendChange="onLegendChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item v-if="view.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
-                    <background-color-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeBackgroundForm="onChangeBackgroundForm"
-                    />
-                  </el-collapse-item>
-                </el-collapse>
-              </el-row>
-            </div>
-          </el-row>
+        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 350px">
+          <chart-style
+            v-if="chartProperties || view.isPlugin"
+            :param="param"
+            :view="view"
+            :chart="chart"
+            :properties="chartProperties"
+            :property-inner-all="chartPropertyInnerAll"
+            :dimension-data="dimensionData"
+            :quota-data="quotaData"
+            @calcStyle="calcStyle"
+            @onColorChange="onColorChange"
+            @onSizeChange="onSizeChange"
+            @onLabelChange="onLabelChange"
+            @onTooltipChange="onTooltipChange"
+            @onTotalCfgChange="onTotalCfgChange"
+            @onChangeXAxisForm="onChangeXAxisForm"
+            @onChangeYAxisForm="onChangeYAxisForm"
+            @onChangeYAxisExtForm="onChangeYAxisExtForm"
+            @onChangeSplitForm="onChangeSplitForm"
+            @onTextChange="onTextChange"
+            @onLegendChange="onLegendChange"
+            @onChangeBackgroundForm="onChangeBackgroundForm"
+          />
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
               v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text'"
@@ -1158,6 +940,23 @@
         <el-button type="primary" size="mini" @click="saveValueFormatter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--自定义排序-->
+    <el-dialog
+      v-if="showCustomSort"
+      v-dialogDrag
+      :title="$t('chart.custom_sort')"
+      :visible="showCustomSort"
+      :show-close="false"
+      width="500px"
+      class="dialog-css"
+    >
+      <custom-sort-edit :chart="chart" :field="customSortField" @onSortChange="customSortChange" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeCustomSort">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveCustomSort">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -1195,16 +994,6 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '../chart/chart'
-import ColorSelector from '../components/shape-attr/ColorSelector'
-import SizeSelector from '../components/shape-attr/SizeSelector'
-import LabelSelector from '../components/shape-attr/LabelSelector'
-import TitleSelector from '../components/component-style/TitleSelector'
-import LegendSelector from '../components/component-style/LegendSelector'
-import TooltipSelector from '../components/shape-attr/TooltipSelector'
-import XAxisSelector from '../components/component-style/XAxisSelector'
-import YAxisSelector from '../components/component-style/YAxisSelector'
-import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
-import SplitSelector from '../components/component-style/SplitSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
@@ -1214,18 +1003,8 @@ import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
 import QuotaExtItem from '@/views/chart/components/drag-item/QuotaExtItem'
-import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import ChartType from '@/views/chart/view/ChartType'
-import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSelectorAntV'
-import LabelSelectorAntV from '@/views/chart/components/shape-attr/LabelSelectorAntV'
-import TooltipSelectorAntV from '@/views/chart/components/shape-attr/TooltipSelectorAntV'
-import LegendSelectorAntV from '@/views/chart/components/component-style/LegendSelectorAntV'
-import XAxisSelectorAntV from '@/views/chart/components/component-style/XAxisSelectorAntV'
-import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSelectorAntV'
-import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
-import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
-import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
@@ -1236,38 +1015,30 @@ import { mapState } from 'vuex'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
-import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
+import ChartStyle from '@/views/chart/view/ChartStyle'
+import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import { TYPE_CONFIGS } from '@/views/chart/chart/util'
 export default {
   name: 'ChartEdit',
   components: {
+    CustomSortEdit,
+    ChartStyle,
     ValueFormatterEdit,
     LabelNormalText,
-    TotalCfg,
     Threshold,
     AssistLine,
     FunctionCfg,
     DimensionExtItem,
     ChartComponentS2,
     CompareEdit,
-    SplitSelectorAntV,
-    SizeSelectorAntV,
-    YAxisExtSelectorAntV,
-    YAxisSelectorAntV,
-    XAxisSelectorAntV,
-    LegendSelectorAntV,
-    TooltipSelectorAntV,
-    LabelSelectorAntV,
-    TitleSelectorAntV,
     ChartType,
     ChartComponentG2,
-    YAxisExtSelector,
     QuotaExtItem,
     FilterItem,
     FieldEdit,
-    SplitSelector,
     TableSelector,
     ResultFilterEditor,
     LabelNormal,
@@ -1275,15 +1046,6 @@ export default {
     TableNormal,
     DatasetChartDetail,
     QuotaFilterEditor,
-    BackgroundColorSelector,
-    XAxisSelector,
-    YAxisSelector,
-    TooltipSelector,
-    LabelSelector,
-    LegendSelector,
-    TitleSelector,
-    SizeSelector,
-    ColorSelector,
     ChartComponent,
     QuotaItem,
     DimensionItem,
@@ -1301,6 +1063,11 @@ export default {
       type: String,
       required: false,
       default: 'view'
+    },
+    editStatue: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -1318,6 +1085,7 @@ export default {
         yaxisExt: [],
         extStack: [],
         drillFields: [],
+        viewFields: [],
         extBubble: [],
         show: true,
         type: 'bar',
@@ -1395,20 +1163,44 @@ export default {
       preChartId: '',
       pluginRenderOptions: [],
       showValueFormatter: false,
-      valueFormatterItem: {}
+      valueFormatterItem: {},
+      showCustomSort: false,
+      customSortList: [],
+      customSortField: {}
 
     }
   },
   computed: {
+    chartConfig() {
+      const _this = this
+      if (_this.chart && _this.chart.render) {
+        const viewConfig = this.allViewRender.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
+        if (viewConfig && viewConfig.length) {
+          return viewConfig[0]
+        } else {
+          return null
+        }
+      } else {
+        return null
+      }
+    },
+    chartProperties() {
+      return this.chartConfig ? this.chartConfig.properties : null
+    },
+    chartPropertyInnerAll() {
+      return this.chartConfig ? this.chartConfig.propertyInner : null
+    },
     chartType() {
-      return this.chart.type
+      return this.chart ? this.chart.type : null
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
       'curComponent',
-      'panelViewEditInfo'
+      'panelViewEditInfo',
+      'allViewRender',
+      'componentViewsData'
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1419,13 +1211,18 @@ export default {
     } */
   },
   watch: {
+    'editStatue': function(val) {
+      if (val && this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+      }
+    },
     'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else if (this.param.id !== this.preChartId) {
+      } else if (this.param.id !== this.preChartId && this.editStatue) {
         this.preChartId = this.param.id
         this.chartInit()
-        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
@@ -1442,6 +1239,9 @@ export default {
     }
   },
   created() {
+    this.bindPluginEvent()
+    this.initFromPanel()
+    this.chartInit()
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
     if (plugins) {
       this.loadPluginType()
@@ -1457,10 +1257,6 @@ export default {
     }
   },
   mounted() {
-    this.bindPluginEvent()
-    this.initFromPanel()
-    this.chartInit()
-    // console.log('mounted')
   },
   activated() {
   },
@@ -1474,7 +1270,6 @@ export default {
       this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
     },
     emptyTableData(id) {
-      console.log('emptyTableData:' + id)
       this.table = {}
       this.dimension = []
       this.quota = []
@@ -1488,6 +1283,9 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
+      if (this.componentViewsData[this.param.id]) {
+        this.chart = this.componentViewsData[this.param.id]
+      }
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
@@ -1744,6 +1542,7 @@ export default {
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
+      view.viewFields = JSON.stringify(view.viewFields)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
@@ -1783,7 +1582,6 @@ export default {
     // 将视图传入echart组件
     //   this.chart = response.data
     //   this.data = response.data.data
-    //   // console.log(JSON.stringify(this.chart))
     //   this.httpRequest.status = true
     //   if (this.chart.privileges) {
     //     this.param.privileges = this.chart.privileges
@@ -1804,6 +1602,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
+        // this.getData(this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -1812,6 +1611,7 @@ export default {
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
+      view.viewFields = JSON.stringify(this.view.viewFields)
       view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
@@ -1867,15 +1667,16 @@ export default {
       }
     },
     getData(id) {
-      this.hasEdit = false
+      // this.hasEdit = true
       if (id) {
         ajaxGetDataOnly(id, this.panelInfo.id, {
           filter: [],
           drill: this.drillClickDimensionList,
-          queryFrom: 'panelEdit'
+          queryFrom: 'panel'
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
+          this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -1890,7 +1691,6 @@ export default {
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
-          // console.log(JSON.stringify(this.chart))
           this.httpRequest.status = true
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
@@ -1927,6 +1727,7 @@ export default {
               this.initTableData(response.data.tableId)
             }
             this.view = JSON.parse(JSON.stringify(response.data))
+            this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
             this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
             this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
             this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -1955,9 +1756,13 @@ export default {
 
     // move回调方法
     onMove(e, originalEvent) {
-      // console.log(e)
       this.moveId = e.draggedContext.element.id
       return true
+    },
+
+    onCustomSort(item) {
+      this.customSortField = this.view.xaxis[item.index]
+      this.customSort()
     },
 
     dimensionItemChange(item) {
@@ -2583,6 +2388,7 @@ export default {
       resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
         _this.changeEditStatus(false)
         _this.getChart(_this.param.id, 'panel')
+        // _this.getData(_this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },
@@ -2618,6 +2424,8 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+      // reset custom colors
+      this.view.customAttr.color.seriesColors = []
     },
 
     valueFormatter(item) {
@@ -2647,6 +2455,33 @@ export default {
       }
       this.calcData(true)
       this.closeValueFormatter()
+    },
+
+    customSort() {
+      this.showCustomSort = true
+    },
+    customSortChange(val) {
+      this.customSortList = val
+    },
+    closeCustomSort() {
+      this.showCustomSort = false
+      this.customSortField = {}
+      this.customSortList = []
+    },
+    saveCustomSort() {
+      this.view.xaxis.forEach(ele => {
+        // 先将所有自定义排序的维度设置为none，再对当前维度赋值
+        // if (ele.sort === 'custom_sort') {
+        //   ele.sort = 'none'
+        //   ele.customSort = []
+        // }
+        if (ele.id === this.customSortField.id) {
+          ele.sort = 'custom_sort'
+          ele.customSort = this.customSortList
+        }
+      })
+      this.closeCustomSort()
+      this.calcData(true)
     }
   }
 }
@@ -2686,12 +2521,11 @@ export default {
 .view-panel-Mask {
   display: flex;
   height: calc(100vh - 60px);
-  background-color: #5c5e61;
-  opacity: 0.7;
+  background-color: rgba(92,94,97, 0.7);
   position:absolute;
   top:0px;
   left: 0px;
-  width: 300px;
+  width: 350px;
   z-index: 2;
   cursor:not-allowed;
   display: flex;
@@ -3016,7 +2850,7 @@ span {
 }
 
 ::v-deep .item-axis {
-  width: 128px !important;
+  width: 168px !important;
 }
 
 ::v-deep .el-slider__input {

@@ -2,42 +2,42 @@
   <div style="width: 100%">
     <el-col>
       <el-form ref="splitForm" :model="splitForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.name')" class="form-item">
-          <el-checkbox v-model="splitForm.name.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('name')" :label="$t('chart.name')" class="form-item">
+          <el-checkbox v-model="splitForm.name.show" @change="changeSplitStyle('name')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.color')" class="form-item">
-          <el-color-picker v-model="splitForm.name.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
+        <el-form-item v-show="showProperty('name')" :label="$t('chart.color')" class="form-item">
+          <el-color-picker v-model="splitForm.name.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle('name')" />
         </el-form-item>
-        <el-form-item :label="$t('chart.text_fontsize')" class="form-item form-item-slider">
-          <el-select v-model="splitForm.name.fontSize" :placeholder="$t('chart.text_fontsize')" @change="changeSplitStyle">
+        <el-form-item v-show="showProperty('name')" :label="$t('chart.text_fontsize')" class="form-item form-item-slider">
+          <el-select v-model="splitForm.name.fontSize" :placeholder="$t('chart.text_fontsize')" @change="changeSplitStyle('name')">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.axis_line')" class="form-item">
-          <el-checkbox v-model="splitForm.axisLine.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('axisLine')" :label="$t('chart.axis_line')" class="form-item">
+          <el-checkbox v-model="splitForm.axisLine.show" @change="changeSplitStyle('axisLine')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.axis_color')" class="form-item">
-          <el-color-picker v-model="splitForm.axisLine.lineStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
+        <el-form-item v-show="showProperty('axisLine')" :label="$t('chart.axis_color')" class="form-item">
+          <el-color-picker v-model="splitForm.axisLine.lineStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle('axisLine')" />
         </el-form-item>
-        <el-form-item :label="$t('chart.axis_label')" class="form-item">
-          <el-checkbox v-model="splitForm.axisLabel.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('axisLabel')" :label="$t('chart.axis_label')" class="form-item">
+          <el-checkbox v-model="splitForm.axisLabel.show" @change="changeSplitStyle('axisLabel')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
-          <el-color-picker v-model="splitForm.axisLabel.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
+        <el-form-item v-show="showProperty('axisLabel')" :label="$t('chart.axis_label_color')" class="form-item">
+          <el-color-picker v-model="splitForm.axisLabel.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle('axisLabel')" />
         </el-form-item>
-        <el-form-item :label="$t('chart.label_fontsize')" class="form-item form-item-slider">
-          <el-select v-model="splitForm.axisLabel.fontSize" :placeholder="$t('chart.label_fontsize')" @change="changeSplitStyle">
+        <el-form-item v-show="showProperty('axisLabel')" :label="$t('chart.label_fontsize')" class="form-item form-item-slider">
+          <el-select v-model="splitForm.axisLabel.fontSize" :placeholder="$t('chart.label_fontsize')" @change="changeSplitStyle('axisLabel')">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.split_line')" class="form-item">
-          <el-checkbox v-model="splitForm.splitLine.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('splitLine')" :label="$t('chart.split_line')" class="form-item">
+          <el-checkbox v-model="splitForm.splitLine.show" @change="changeSplitStyle('splitLine')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.split_color')" class="form-item">
-          <el-color-picker v-model="splitForm.splitLine.lineStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
+        <el-form-item v-show="showProperty('splitLine')" :label="$t('chart.split_color')" class="form-item">
+          <el-color-picker v-model="splitForm.splitLine.lineStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle('splitLine')" />
         </el-form-item>
-        <el-form-item :label="$t('chart.shadow')" class="form-item">
-          <el-checkbox v-model="splitForm.splitArea.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
+        <el-form-item v-show="showProperty('splitArea')" :label="$t('chart.shadow')" class="form-item">
+          <el-checkbox v-model="splitForm.splitArea.show" @change="changeSplitStyle('splitArea')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
       </el-form>
     </el-col>
@@ -57,6 +57,13 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    propertyInner: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -105,11 +112,15 @@ export default {
       }
       this.fontSize = arr
     },
-    changeSplitStyle() {
+    changeSplitStyle(modifyName) {
       if (!this.splitForm.show) {
         this.isSetting = false
       }
+      this.splitForm['modifyName'] = modifyName
       this.$emit('onChangeSplitForm', this.splitForm)
+    },
+    showProperty(property) {
+      return this.propertyInner.includes(property)
     }
   }
 }

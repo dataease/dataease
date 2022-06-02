@@ -7,6 +7,7 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.EsSqlLConstants;
+import io.dataease.plugins.common.constants.HiveConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
@@ -14,6 +15,7 @@ import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.provider.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -235,7 +237,7 @@ public class EsQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -269,7 +271,7 @@ public class EsQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -351,7 +353,7 @@ public class EsQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -432,7 +434,7 @@ public class EsQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -466,7 +468,7 @@ public class EsQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -548,7 +550,7 @@ public class EsQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
 
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -585,7 +587,7 @@ public class EsQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -675,7 +677,7 @@ public class EsQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -887,49 +889,66 @@ public class EsQueryProvider extends QueryProvider {
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            DatasetTableField field = request.getDatasetTableField();
-            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                continue;
+
+            List<String> whereNameList = new ArrayList<>();
+            List<DatasetTableField> fieldList = new ArrayList<>();
+            if (request.getIsTree()) {
+                fieldList.addAll(request.getDatasetTableFieldList());
+            } else {
+                fieldList.add(request.getDatasetTableField());
             }
+
+            for (DatasetTableField field : fieldList) {
+                if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    continue;
+                }
+                String whereName = "";
+
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                    originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
+
+                if (field.getDeType() == 1) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                        whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                    }
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        whereName = originName;
+                    }
+                } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                        whereName = String.format(EsSqlLConstants.CAST, originName, "double");
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        whereName = String.format(EsSqlLConstants.CAST, originName, "bigint");
+                    }
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        whereName = originName;
+                    }
+                } else {
+                    whereName = originName;
+                }
+                whereNameList.add(whereName);
+            }
+
             String whereName = "";
+            if (request.getIsTree()) {
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+            } else {
+                whereName = whereNameList.get(0);
+            }
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-
-            if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
-                }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
-                    whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
-                }
-                if (field.getDeExtractType() == 1) {
-                    whereName = originName;
-                }
-            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(EsSqlLConstants.CAST, originName, "double");
-                }
-                if (field.getDeExtractType() == 1) {
-                    whereName = String.format(EsSqlLConstants.CAST, originName, "bigint");
-                }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    whereName = originName;
-                }
-            } else {
-                whereName = originName;
-            }
-
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
@@ -1034,6 +1053,8 @@ public class EsQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(EsSqlLConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(EsSqlLConstants.GROUP_CONCAT, originField);
             } else {
                 fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), originField);
             }

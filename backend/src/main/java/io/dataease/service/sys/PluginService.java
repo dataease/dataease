@@ -139,7 +139,7 @@ public class PluginService {
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
         } catch (Exception e) {
             if (StringUtils.isNotEmpty(targetDir)) {
-                DeFileUtils.deleteFile(targetDir);
+                deleteJarFile(myPlugin);
             }
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(e);
@@ -199,9 +199,7 @@ public class PluginService {
             if(CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))){
                 throw new RuntimeException(Translator.get("i18n_plugin_not_allow_delete"));
             }
-            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "DsProvider");
-            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "QueryProvider");
-            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "Service");
+            loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
         }
         myPluginMapper.deleteByPrimaryKey(pluginId);
         return true;

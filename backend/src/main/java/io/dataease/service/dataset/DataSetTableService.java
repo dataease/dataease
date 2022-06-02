@@ -1,10 +1,11 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
 import io.dataease.ext.UtilMapper;
@@ -52,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,6 +66,8 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
@@ -145,6 +149,7 @@ public class DataSetTableService {
         }
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public void saveExcel(DataSetTableRequest datasetTable) throws Exception {
         List<String> datasetIdList = new ArrayList<>();
@@ -178,6 +183,7 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
@@ -208,11 +214,13 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
                             null, datasetIdList));
                 });
+
 
             }
             return;
@@ -253,6 +261,7 @@ public class DataSetTableService {
             commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加",
                     null, Arrays.asList(datasetTable.getId())));
         }
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
     }
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
@@ -268,6 +277,8 @@ public class DataSetTableService {
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
             int insert = datasetTableMapper.insert(datasetTable);
+
+
             // 清理权限缓存
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
             sysAuthService.copyAuth(datasetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -276,6 +287,7 @@ public class DataSetTableService {
             if (insert == 1) {
                 saveTableField(datasetTable);
                 extractData(datasetTable);
+                DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -287,6 +299,7 @@ public class DataSetTableService {
                             || StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
                         saveTableField(datasetTable);
                     }
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
             }
         }
@@ -300,6 +313,7 @@ public class DataSetTableService {
 
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATASET, table.getId(), table.getSceneId(), null, null);
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
@@ -311,6 +325,7 @@ public class DataSetTableService {
             if (table.getMode() == 1) {
                 deleteDorisTable(id, table);
             }
+            DeLogUtils.save(sysLogDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -346,7 +361,7 @@ public class DataSetTableService {
     public List<DatasetTable> list(List<String> datasetIds) {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdIn(datasetIds);
-        return datasetTableMapper.selectByExample(example);
+        return datasetTableMapper.selectByExampleWithBLOBs(example);
     }
 
     public List<DataSetTableDTO> listAndGroup(DataSetTableRequest dataSetTableRequest) {
@@ -570,7 +585,11 @@ public class DataSetTableService {
             } else {
                 // check doris table
                 if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
-                    throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                    if(dataSetTableRequest.isPreviewForTask()){
+                        return map;
+                    }else {
+                        throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                    }
                 }
                 Datasource ds = engineService.getDeEngine();
                 JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
@@ -1326,8 +1345,8 @@ public class DataSetTableService {
         String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
 
         String configuration = ds.getConfiguration();
-        JSONObject jsonObject = JSON.parseObject(configuration);
-        String schema = jsonObject.getString("schema");
+        JsonObject jsonObject = JsonParser.parseString(configuration).getAsJsonObject();
+        String schema = jsonObject.get("schema").getAsString();
         String joinPrefix = "";
         if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||
@@ -1771,6 +1790,8 @@ public class DataSetTableService {
         } else {
             datasetTableIncrementalConfigMapper.updateByPrimaryKey(datasetTableIncrementalConfig);
         }
+        DatasetTable datasetTable = get(datasetTableIncrementalConfig.getTableId());
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
         checkColumes(datasetTableIncrementalConfig);
     }
 
@@ -1871,9 +1892,9 @@ public class DataSetTableService {
         List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
         List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
 
-        if (StringUtils.isNotEmpty(tableId) && editType == 1) {
-            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId)
-                    .stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(tableId)) {
+            List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(tableId);
+            List<DatasetTableField> datasetTableFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
                     return -1;
@@ -1885,18 +1906,57 @@ public class DataSetTableService {
             });
 
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
-            for (ExcelSheetData excelSheetData : excelSheetDataList) {
-                List<TableField> fields = excelSheetData.getFields();
-                List<String> newFields = fields.stream().map(TableField::getRemarks).collect(Collectors.toList());
-                if (oldFields.equals(newFields)) {
+
+            if(editType == 1){
+                for (ExcelSheetData excelSheetData : excelSheetDataList) {
+                    List<TableField> tableFields = excelSheetData.getFields();
+                    List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
+                    if (oldFields.equals(newFields)) {
+                        retrunSheetDataList.add(excelSheetData);
+                    }
+                }
+                if (retrunSheetDataList.size() == 0) {
+                    DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
+                }
+            }else {
+                List<DatasetTableField> extFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() > 0).collect(Collectors.toList());
+                List<String> extFieldsRefIds = new ArrayList<>();
+                for (DatasetTableField extField : extFields) {
+                    String originField = extField.getOriginName().replaceAll("[\\t\\n\\r]]", "");
+                    String regex = "\\[(.*?)]";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(originField);
+                    while (matcher.find()) {
+                        String id = matcher.group(1);
+                        if(!extFieldsRefIds.contains(id)){
+                            extFieldsRefIds.add(id);
+                        }
+                    }
+                }
+                List<String> extFieldsRefNames = datasetTableFields.stream().filter(datasetTableField -> extFieldsRefIds.contains(datasetTableField.getId())).map(DatasetTableField::getOriginName).collect(Collectors.toList());
+                for (ExcelSheetData excelSheetData : excelSheetDataList) {
+                    List<TableField> tableFields = excelSheetData.getFields();
+                    List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
+                    if (oldFields.equals(newFields)) {
+                        excelSheetData.setChangeFiled(false);
+                    }else {
+                        excelSheetData.setChangeFiled(true);
+                    }
+                    boolean effectExtField = false;
+                    for (String extFieldsRefName : extFieldsRefNames) {
+                        if(!newFields.contains(extFieldsRefName)){
+                            effectExtField = true;
+                        }
+                    }
+                    excelSheetData.setEffectExtField(effectExtField);
+
                     retrunSheetDataList.add(excelSheetData);
                 }
+                if (retrunSheetDataList.size() == 0) {
+                    DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
+                }
             }
-
-            if (retrunSheetDataList.size() == 0) {
-                DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
-            }
-        } else {
+        }else {
             retrunSheetDataList = excelSheetDataList;
         }
         retrunSheetDataList = retrunSheetDataList.stream()
@@ -2270,7 +2330,7 @@ public class DataSetTableService {
         record.setSyncStatus(JobStatus.Error.name());
         example.clear();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name())
-                .andIdIn(datasetTableTasks.stream().map(DatasetTableTask::getTableId).collect(Collectors.toList()));
+                .andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);
 
         //TaskLog

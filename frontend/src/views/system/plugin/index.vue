@@ -8,7 +8,6 @@
       @search="search"
     >
       <template #toolbar>
-
         <el-upload
           :action="baseUrl+'api/plugin/upload'"
           :multiple="false"

@@ -8,7 +8,8 @@ export const DEFAULT_COLOR_CASE = {
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
-  tableBorderColor: '#cfdaf4'
+  tableBorderColor: '#cfdaf4',
+  seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -56,7 +57,9 @@ export const DEFAULT_SIZE = {
   liquidWaveLength: 128,
   liquidWaveCount: 3,
   liquidShape: 'circle',
-  tablePageMode: 'page'
+  tablePageMode: 'page',
+  symbolOpacity: 0.7,
+  symbolStrokeWidth: 2
 }
 export const DEFAULT_LABEL = {
   show: false,

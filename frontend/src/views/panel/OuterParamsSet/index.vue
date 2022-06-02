@@ -81,7 +81,10 @@
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span style="float: left">
+                          <span v-if="item.isPlugin" style="float: left">
+                            <svg-icon :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type" style="width: 14px;height: 14px" />
+                          </span>
+                          <span v-else style="float: left">
                             <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
                           </span>
                           <span style="float: left; font-size: 12px"> {{ item.name }}</span>
@@ -107,7 +110,7 @@
                             <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
                             <svg-icon
-                              v-if="viewField.deType === 2 || viewField.value === 3"
+                              v-if="viewField.deType === 2 || viewField.deType === 3"
                               icon-class="field_value"
                               class="field-icon-value"
                             />
@@ -292,7 +295,6 @@ export default {
       })
     },
     panelNodeClick(data, node) {
-      // console.log('panelNodeClick:' + JSON.stringify(data))
       this.outerParamsInfo.targetViewInfoList = []
       this.getPanelViewList(data.id)
     },

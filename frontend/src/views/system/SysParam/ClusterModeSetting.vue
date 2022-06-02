@@ -281,8 +281,6 @@ export default {
                 this.$error(res.message.substring(0, 2500) + '......')
               }
             }
-          }).catch(res => {
-            this.$error(res.message)
           })
         } else {
           return false

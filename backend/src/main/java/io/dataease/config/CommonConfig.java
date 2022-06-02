@@ -1,8 +1,6 @@
 package io.dataease.config;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
-import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.utils.CommonThreadPool;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.filerep.KettleFileRepository;

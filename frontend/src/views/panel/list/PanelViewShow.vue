@@ -23,18 +23,26 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
+
             <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
               <el-button size="mini" type="primary" @click="editPanel">
                 {{ $t('commons.edit') }}
               </el-button>
             </span>
 
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
+              <el-button size="mini" type="primary" @click="changePublishState">
+                <span v-if="panelInfo.status==='publish'">{{ $t('commons.unpublished') }}</span>
+                <span v-if="panelInfo.status!=='publish'">{{ $t('commons.publish') }}</span>
+              </el-button>
+            </span>
+
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.save_to_panel')">
                 <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
               </el-tooltip>
             </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-dropdown>
                 <el-button size="mini" class="el-icon-download" circle />
                 <el-dropdown-menu slot="dropdown">
@@ -44,25 +52,25 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
-            <span style="float: right;margin-right: 10px">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>
 
-            <span style="float: right;margin-right: 10px">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.new_tab_preview')">
                 <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.store')">
                 <el-button class="el-icon-star-off" size="mini" circle @click="star" />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.cancel')">
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>
@@ -82,7 +90,16 @@
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <Preview
+              v-if="showMainFlag"
+              :component-data="componentData"
+              :canvas-style-data="canvasStyleData"
+              :active-tab="activeTab"
+              :in-screen="!fullscreen"
+              :show-type="'width'"
+              :panel-info="panelInfo"
+              :screen-shot="dataLoading"
+            />
           </fullscreen>
         </div>
       </el-row>
@@ -136,10 +153,10 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
-import { initPanelData } from '@/api/panel/panel'
+import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
-import { findResourceAsBase64, readFile } from '@/api/staticResource/staticResource'
+import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'PanelViewShow',
@@ -420,6 +437,18 @@ export default {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
       } else { initPanelData(this.panelInfo.id) }
+    },
+    changePublishState() {
+      if (this.panelInfo.status === 'publish') {
+        this.panelInfo.status = 'unpublished'
+      } else {
+        this.panelInfo.status = 'publish'
+      }
+      updatePanelStatus(this.panelInfo.id, { 'status': this.panelInfo.status })
+      this.$emit('editPanelBashInfo', {
+        'operation': 'status',
+        'value': this.panelInfo.status
+      })
     }
   }
 }

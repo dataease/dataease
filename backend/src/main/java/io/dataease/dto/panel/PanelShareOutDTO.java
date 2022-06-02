@@ -27,4 +27,7 @@ public class PanelShareOutDTO implements Serializable {
 
     @ApiModelProperty("分享时间")
     private Long createTime;
+
+    @ApiModelProperty("仪表板状态")
+    private String status;
 }

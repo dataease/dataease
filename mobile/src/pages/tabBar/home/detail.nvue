@@ -170,10 +170,16 @@
                 })
             },
             loadLinkUrl() {
-				this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + "/" + getToken()
+				const baseUrl = process.env.VUE_APP_BASE_API + 'tempMobileLink/'
+				let resource = this.banner.id
+				const token = getToken()
+				
 				if (this.banner.index && this.banner.index === 2 && this.banner.userId) {
-                    this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + '|' + this.banner.userId + "/" + getToken()
+					resource = this.banner.id + '|' + this.banner.userId
+                    //this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + '|' + this.banner.userId + "/" + getToken()
                 }
+				
+				this.url = baseUrl + encodeURIComponent(encodeURIComponent(resource)) + "/" + encodeURIComponent(token)
                 
                 const url = this.url
 				/* uni.hideLoading() */

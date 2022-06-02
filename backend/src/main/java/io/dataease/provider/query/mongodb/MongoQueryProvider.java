@@ -15,6 +15,7 @@ import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.provider.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -176,7 +177,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -206,7 +207,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -288,7 +289,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -373,7 +374,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -403,7 +404,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -486,7 +487,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
-                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -519,7 +520,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -611,7 +612,7 @@ public class MongoQueryProvider extends QueryProvider {
                 // 处理纵轴过滤
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -809,25 +810,42 @@ public class MongoQueryProvider extends QueryProvider {
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            DatasetTableField field = request.getDatasetTableField();
-            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                continue;
+
+            List<String> whereNameList = new ArrayList<>();
+            List<DatasetTableField> fieldList = new ArrayList<>();
+            if (request.getIsTree()) {
+                fieldList.addAll(request.getDatasetTableFieldList());
+            } else {
+                fieldList.add(request.getDatasetTableField());
             }
+
+            for (DatasetTableField field : fieldList) {
+                if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    continue;
+                }
+                String whereName = "";
+
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_INT) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_TIME) {
+                    originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
+                whereName = originName;
+                whereNameList.add(whereName);
+            }
+
             String whereName = "";
+            if (request.getIsTree()) {
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+            } else {
+                whereName = whereNameList.get(0);
+            }
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_INT) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == DeTypeConstants.DE_TIME) {
-                originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-
-            whereName = originName;
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
@@ -843,7 +861,7 @@ public class MongoQueryProvider extends QueryProvider {
                     whereValue = String.format(MongoConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                if (field.getDeType() == DeTypeConstants.DE_STRING) {
+                if (!request.getIsTree() && fieldList.get(0).getDeType() == DeTypeConstants.DE_STRING) {
                     whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
                 } else {
                     whereValue = value.get(0);
@@ -918,6 +936,8 @@ public class MongoQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(MongoConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+                fieldName = String.format(MongoConstants.GROUP_CONCAT, originField);
             } else {
                 fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
             }

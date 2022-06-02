@@ -10,6 +10,7 @@ import {
   getSlider,
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
@@ -98,6 +99,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   } else {
     delete options.isStack
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
@@ -198,6 +201,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   } else {
     delete options.isStack
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

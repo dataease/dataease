@@ -1,7 +1,8 @@
 package io.dataease.service.staticResource;
 
+import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import io.dataease.commons.utils.FileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.StaticResourceUtils;
@@ -10,11 +11,8 @@ import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -53,8 +51,9 @@ public class StaticResourceService {
     }
 
     public void saveFilesToServe(String staticResource){
+        Gson gson = new Gson();
         if(StringUtils.isNotEmpty(staticResource)){
-            Map<String,String> resource = JSON.parseObject(staticResource,Map.class);
+            Map<String,String> resource = gson.fromJson(staticResource,Map.class);
             for(Map.Entry<String,String> entry:resource.entrySet()){
                 String path = entry.getKey();
                 Path uploadPath = Paths.get(staticDir.toString(), path.substring(path.lastIndexOf("/")+1,path.length()));
@@ -65,7 +64,7 @@ public class StaticResourceService {
                         String content = entry.getValue();
                         if(StringUtils.isNotEmpty(content)){
                             Files.createFile(uploadPath);
-                            FileCopyUtils.copy(new BASE64Decoder().decodeBuffer(content),Files.newOutputStream(uploadPath));
+                            FileCopyUtils.copy(Base64Decoder.decode(content),Files.newOutputStream(uploadPath));
                         }
                     }
                 }catch (Exception e){
