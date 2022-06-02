@@ -15,7 +15,12 @@
           </div>
           <div class="headerright">
             <div class="wrapper">
-              <el-radio-group v-model="activeTab" size="mini" round>
+              <el-radio-group
+                v-model="activeTab"
+                size="mini"
+                round
+                @change="handleEditPreivewTab"
+              >
                 <el-radio-button label="edit">编辑</el-radio-button>
                 <el-radio-button label="preview">预览</el-radio-button>
               </el-radio-group>
@@ -214,7 +219,15 @@
                 >
                 <!-- <el-checkbox class="config-checkbox" v-model="currentTreeNode.isNodeNull">设为空节点</el-checkbox> -->
                 <div class="config-title">选择仪表盘</div>
-                <el-select
+                <el-cascader
+                  v-model="currentTreeNode.trendId"
+                  :options="tData"
+                  :props="{ expandTrigger: 'click' }"
+                  class="config-input"
+                  size="mini"
+                  @change="handleTrendChange"
+                ></el-cascader>
+                <!-- <el-select
                   v-model="currentTreeNode.panelId"
                   class="config-input"
                   size="mini"
@@ -239,7 +252,7 @@
                     :value="item.id"
                     :label="item.label"
                   ></el-option>
-                </el-select>
+                </el-select> -->
                 <el-button
                   class="config-btn"
                   type="primary"
@@ -341,6 +354,8 @@ export default {
       }
       return [];
     },
+
+    // 预览按钮是否可以点击
   },
 
   watch: {
@@ -363,6 +378,27 @@ export default {
     close() {
       this.syncVisible = false;
     },
+    // 点击编辑和预览
+    handleEditPreivewTab(evt) {
+      console.log("evt -- ", evt);
+      if (evt == "edit") {
+        return;
+      }
+      this.$nextTick(() => {
+        if (this.$refs.panelViewShow && this.$refs.panelViewShow.showMain) {
+          this.$refs.panelViewShow.clickFullscreen();
+
+          this.$watch(
+            () => this.$refs.panelViewShow.fullscreen,
+            (val) => {
+              console.log("fullscreen -- ", val);
+              if (!val) this.activeTab = "edit";
+            }
+          );
+        }
+      });
+    },
+
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
       console.log("radio", radio);
@@ -493,16 +529,27 @@ export default {
     },
 
     tree(cache = false) {
-      const modelInfo = localStorage.getItem("panel-main-tree");
-      const userCache = modelInfo && cache;
-      if (userCache) {
-        this.tData = JSON.parse(modelInfo);
-      }
-      groupTree(this.groupForm, !userCache).then((res) => {
+      // const modelInfo = localStorage.getItem("panel-main-tree");
+      // const userCache = modelInfo && cache;
+      // if (userCache) {
+      //   this.tData = JSON.parse(modelInfo);
+      // }
+      groupTree(this.groupForm, false).then((res) => {
         localStorage.setItem("panel-main-tree", JSON.stringify(res.data));
-        if (!userCache) {
-          this.tData = res.data;
-        }
+        // if (!userCache) {
+        // const tData = res.data.map((item) => {});
+        this.tData = this._deepLooptData(res.data);
+        // }
+      });
+    },
+
+    _deepLooptData(data) {
+      return data.map((item) => {
+        return {
+          label: item.label,
+          value: item.id,
+          children: item.children && this._deepLooptData(item.children),
+        };
       });
     },
   },
@@ -525,6 +572,9 @@ export default {
   }
   ::v-deep .panel-design-head {
     display: none !important;
+  }
+  ::v-deep .panel-design-preview {
+    height: 100% !important;
   }
   .el-icon-plus,
   .el-icon-delete {
