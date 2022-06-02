@@ -147,7 +147,7 @@ export default {
       }
       this.editPanel.panelInfo['newFrom'] = this.inputType
       this.loading = true
-      if (this.editPanel.optType === 'new') {
+      if (this.editPanel.optType === 'new' || this.editPanel.optType === 'newFirstFolder') {
         panelSave(this.editPanel.panelInfo).then(response => {
           this.$message({
             message: this.$t('commons.save_success'),
