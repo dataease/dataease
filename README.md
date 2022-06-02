@@ -7,24 +7,29 @@
   <a href="https://github.com/dataease/dataease"><img src="https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square" alt="Stars"></a>
   <a href="https://github.com/dataease/dataease/releases/latest"><img src="https://img.shields.io/github/downloads/dataease/dataease/total" alt="Downloads"></a>
 </p>
-<hr />
+<hr/>
+
+## 什么是 DataEase？
+
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
 
-### DataEase 的功能：
+![de-architecture](https://dataease.io/images/screenshot/de-chart-new.jpg)
 
--   图表展示：支持 PC 端、移动端及大屏;
+**DataEase 的功能包括：**
+
+-   图表展示：支持 PC 端、移动端、大屏;
 -   图表制作：支持丰富的图表类型(Apache ECharts / AntV)、支持拖拉拽方式快速制作仪表板;
 -   数据引擎：支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
--   数据连接：支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
+-   数据连接：支持数据仓库/数据湖、OLAP 数据库、OLTP 数据库、Excel 数据文件、API 等各种数据源。
 
-### DataEase 的优势：
+## DataEase 的优势
 
 -   开源开放：零门槛，线上快速获取和安装；快速获取用户反馈、按月发布新版本；
 -   简单易用：极易上手，通过鼠标点击和拖拽即可完成分析；
 -   秒级响应：集成 Apache Doris，超大数据量下秒级查询返回延时；
 -   安全分享：支持多种数据分享方式，确保数据安全。
 
-### DataEase 已支持的数据源:
+## DataEase 支持的数据源
 
 - Excel
 - MySQL
@@ -39,20 +44,20 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 - Amazon Redshift
 - Hive
 - DB2
+- API
+- Impala
+- TiDB
+- StarRocks
 
 > 更多数据源支持持续增加中...
 
 ## UI 展示
 
-![de-ui](https://www.fit2cloud.com/dataease/images/screenshot/dataease-v1.gif)
-
-## 功能架构
-
-![de-architecture](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/de-architecture.png)
+![de-ui](https://dataease.io/docs/img/index/%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA.gif)
 
 ## 在线体验
 
--   环境地址：<https://demo.dataease.io/>
+-   环境地址：<https://dataease.fit2cloud.com/>
 -   用户名：demo
 -   密码：dataease
 
@@ -68,7 +73,8 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ```
 
 -   [在线文档](https://dataease.io/docs/)
--   [演示视频](https://www.bilibili.com/video/BV1i34y1v7hq/)
+-   [教学视频](https://dataease.io/video.html)
+-   [在线学习班](https://edu.fit2cloud.com/page/2635362?navIndex=0)
 
 ## 微信群
 
@@ -76,15 +82,16 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 技术栈
 
+-   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
+-   图库：[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
 -   后端：[Spring Boot](https://spring.io/projects/spring-boot)
--   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)、[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
 -   中间件：[MySQL](https://www.mysql.com/)
 -   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)
 -   基础设施：[Docker](https://www.docker.com/)
 
-## License & Copyright
+## License
 
-Copyright (c) 2014-2021 飞致云 FIT2CLOUD, All rights reserved.
+Copyright (c) 2014-2022 飞致云 FIT2CLOUD, All rights reserved.
 
 Licensed under The GNU General Public License version 3 (GPLv3)  (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
