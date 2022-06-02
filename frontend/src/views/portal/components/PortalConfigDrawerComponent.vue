@@ -26,7 +26,9 @@
               </el-radio-group>
             </div>
             <div class="wrapper">
-              <el-button type="primary" round size="mini">保 存</el-button>
+              <el-button type="primary" round size="mini" @click="handleSave"
+                >保 存</el-button
+              >
             </div>
           </div>
         </div>
@@ -284,6 +286,7 @@ import PortalMenu from "./PortalMenu.vue";
 import { groupTree, initPanelData } from "@/api/panel/panel";
 import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
 import bus from "@/utils/bus";
+import { savePortal, updatePortal } from "@/api/panel/portal";
 export default {
   components: {
     PortalMenu,
@@ -378,6 +381,34 @@ export default {
     close() {
       this.syncVisible = false;
     },
+    // 保存
+    handleSave() {
+      const params = {
+        navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
+        topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
+        themeColor: this.themeColor, // 默认
+        portalName: this.portalName || "未命名站点", // 站点名称
+        config: {
+          treeData: this.treeData,
+        },
+      };
+      const positionJson = JSON.stringify(params);
+      // savePortal({ positionJson })
+      //   .then((res) => {
+      //     this.$message.success("操作成功");
+      //   })
+      //   .catch((err) => {
+      //     console.log("savePortal err, ", err);
+      //   });
+      updatePortal({ id: 2, positionJson })
+        .then((res) => {
+          this.$message.success("操作成功");
+        })
+        .catch((err) => {
+          console.log("savePortal err, ", err);
+        });
+    },
+
     // 点击编辑和预览
     handleEditPreivewTab(evt) {
       console.log("evt -- ", evt);

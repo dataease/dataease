@@ -10,18 +10,33 @@
     </div>
     <div class="content">
       <el-table :data="list">
-        <el-table-column label="名称" prop="name"></el-table-column>
-        <el-table-column label="创建者" prop="created"></el-table-column>
-        <el-table-column label="修改人" prop="updated"></el-table-column>
-        <el-table-column label="修改时间"></el-table-column>
+        <el-table-column label="名称" prop="portalName"></el-table-column>
+        <el-table-column label="创建者" prop="userName"></el-table-column>
+        <el-table-column label="修改人" prop="updateBy"></el-table-column>
+        <el-table-column label="修改时间">
+          <template slot-scope="{ row }">
+            {{ row.createTime || row.updateTime }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
-          <div class="table-option">
-            <i class="el-icon-edit"></i>
-            <i class="el-icon-table-lamp"></i>
-            <i class="el-icon-delete"></i>
-          </div>
+          <template slot-scope="{ row }">
+            <div class="table-option">
+              <i class="el-icon-edit"></i>
+              <i class="el-icon-table-lamp"></i>
+              <i class="el-icon-delete" @click="handleDeleteRow(row)"></i>
+            </div>
+          </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        :current-page="pageValue.page_number"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pageValue.page_size"
+        layout="prev, pager, next"
+        :total="total"
+        @current-change="handlePageNumberChange"
+        @size-change="handlePageSizeChange"
+      />
     </div>
     <div class="bottom"></div>
     <div class="other">
@@ -35,29 +50,70 @@
 
 <script>
 import PortalDrawerComponent from "./components/PortalDrawerComponent.vue";
+import { getPortalList, deletePortal } from "@/api/panel/portal";
 export default {
   components: {
     PortalDrawerComponent,
   },
   data() {
     return {
-      list: [
-        {
-          name: "123",
-          created: "123",
-          updated: "123",
-        },
-      ],
+      list: [],
+      total: 0,
       showPortalDrawer: false,
       openType: "add", // edit
+      pageValue: {
+        page_number: 1,
+        page_size: 10,
+      },
     };
+  },
+
+  mounted() {
+    this.handleGetPortalList()
   },
 
   methods: {
     handleAddPortalDrawer() {
-      this.openType = 'add'
+      this.openType = "add";
       this.showPortalDrawer = true;
     },
+
+    // 获取站点列表
+    handleGetPortalList() {
+      getPortalList({ ...this.pageValue })
+        .then((res) => {
+          if (res.success) {
+            this.list = res.data.portalDataList.map((item) => {
+              return {
+                ...item,
+                portalName: JSON.parse(item.positionJson).portalName,
+              };
+            });
+            this.total = res.data.total;
+          }
+        })
+        .catch((err) => {
+          console.log("err: ", err);
+        });
+    },
+
+    // 删除一个站点
+    handleDeleteRow(row) {
+      deletePortal(row.id)
+        .then((res) => {
+          if (res.success) {
+            this.$message.success("操作成功");
+            this.handleGetPortalList()
+          }
+        })
+        .catch((err) => {
+          console.log("deletePortal err ", err);
+        });
+    },
+
+    handlePageNumberChange() {},
+
+    handlePageSizeChange() {},
   },
 };
 </script>
