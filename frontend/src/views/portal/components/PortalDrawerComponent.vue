@@ -24,7 +24,9 @@
               </el-radio-group>
             </div>
             <div class="wrapper">
-              <el-button type="primary" round size="mini">保 存</el-button>
+              <el-button type="primary" round size="mini" @click="handleSave"
+                >保 存</el-button
+              >
             </div>
           </div>
         </div>
@@ -187,18 +189,24 @@
       </div>
     </el-drawer>
     <PortConfigDrawerComponent
-      :portalName="portalName"
       :visible.sync="showPortConfigDrawerComponent"
+      :portalName="portalName"
       :themeColor="themeColor"
       :navLayoutStyle="navLayoutStyle"
       :topNavPosRadio="topNavPosRadio"
+      :lastTreeId="lastTreeId"
+      :open-type="openType"
+      :config="item.config"
+      :portalId="item.id"
+      @treeData="handleGetTreeData"
+      @close="syncVisible = false"
     ></PortConfigDrawerComponent>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
 import PortConfigDrawerComponent from "./PortalConfigDrawerComponent.vue";
+import bus from '@/utils/bus'
 export default {
   components: {
     PortConfigDrawerComponent,
@@ -212,6 +220,10 @@ export default {
       type: String,
       default: "add", //edit
     },
+    item: {
+      type: Object,
+      default: () => {},
+    },
   },
 
   data() {
@@ -223,6 +235,8 @@ export default {
       themeColor: "#f1f3f8", // 当前导航的颜色
       navLayoutStyle: "0", // 0 top-left 1 left 2 top
       portalName: "", // 当前门户的名称
+      lastTreeId: 0, // 当前的树节点的跟节点
+      tmpTreeData: null,  // 获取配置页面的treeData
     };
   },
 
@@ -257,13 +271,20 @@ export default {
     // }),
 
     __initData() {
+      this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
+      this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
       if (this.openType == "add") {
-        this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
-        this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
         this.topNavPosRadio = "top"; //  当前一级导航的位置
         this.themeColor = "#f1f3f8"; // 当前导航的颜色
         this.navLayoutStyle = "0"; // 0 top-left 1 left 2 top
         this.portalName = ""; // 当前门户的名称
+        this.lastTreeId = 0;
+      } else {
+        this.topNavPosRadio = this.item.topNavPosRadio; //  当前一级导航的位置
+        this.themeColor = this.item.themeColor; // 当前导航的颜色
+        this.navLayoutStyle = this.item.navLayoutStyle; // 0 top-left 1 left 2 top
+        this.portalName = this.item.portalName; // 当前门户的名称
+        this.lastTreeId = this.item.lastTreeId;
       }
     },
 
@@ -278,16 +299,50 @@ export default {
       // this.setThemeColor(color);
     },
     setNavLayoutStyle(style) {
-      this.navLayoutStyle = style;
+      this.navLayoutStyle = style.toString();
     },
     // 选择一级菜单
     handleTopSelect(active) {
       console.log("active", active);
       this.topActiveTab = active;
     },
+
+    // 获取配置页面的treeData
+    handleGetTreeData(treeData) {
+      this.tmpTreeData = treeData
+    },
     // 打开配置
     handleOpenConfigDrawer() {
       this.showPortConfigDrawerComponent = true;
+    },
+    // 保存
+    handleSave() {
+      const getTreeData = () => {
+        if (this.tmpTreeData) {
+          return this.tmpTreeData
+        }
+        if (this.item && this.item.config && this.item.config.treeData) {
+          return this.item.config.treeData
+        }
+        return []
+      }
+      const params = {
+        navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
+        topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
+        themeColor: this.themeColor, // 默认
+        portalName: this.portalName || "未命名站点", // 站点名称
+        lastTreeId: this.lastTreeId,
+        config: {
+          treeData: getTreeData(),
+        },
+      };
+      const positionJson = JSON.stringify(params);
+      if (this.openType == "add") {
+        bus.$emit("savePortal", { positionJson });
+      } else {
+        bus.$emit("updatePortal", { id: this.item.id, positionJson });
+      }
+      this.syncVisible = false
     },
   },
 };

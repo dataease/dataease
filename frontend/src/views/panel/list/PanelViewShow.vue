@@ -222,6 +222,14 @@ export default {
     })
     this.initPdfTemplate()
   },
+  destroyed() {
+     bus.$off('set-panel-show-type', type => {
+      this.showType = type || 0
+    })
+    bus.$off('set-panel-share-user', userId => {
+      this.shareUserId = userId
+    })
+  },
   methods: {
     initPdfTemplate() {
       queryAll().then(res => {

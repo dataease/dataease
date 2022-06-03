@@ -7,7 +7,7 @@
       :show-close="false"
       :withHeader="false"
     >
-      <div class="portal-config-drawer-container-container">
+      <div class="portal-config-drawer-container-container" v-if="syncVisible">
         <div class="header">
           <div class="headerleft">
             <i class="el-icon-close" @click="close"></i>
@@ -54,9 +54,9 @@
                     @select="handleTopSelect"
                   >
                     <el-menu-item
-                      v-for="(item, index) in treeData"
+                      v-for="item in treeData"
                       :key="item.id"
-                      :index="index"
+                      :index="item.id"
                     >
                       <template slot="title">
                         <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
@@ -118,9 +118,9 @@
                     @select="handleTopSelect"
                   >
                     <el-menu-item
-                      v-for="(item, index) in treeData"
+                      v-for="item in treeData"
                       :key="item.id"
-                      :index="index"
+                      :index="item.id"
                     >
                       <template slot="title">
                         <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
@@ -281,12 +281,11 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
 import PortalMenu from "./PortalMenu.vue";
 import { groupTree, initPanelData } from "@/api/panel/panel";
 import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
 import bus from "@/utils/bus";
-import { savePortal, updatePortal } from "@/api/panel/portal";
+
 export default {
   components: {
     PortalMenu,
@@ -301,6 +300,16 @@ export default {
     topNavPosRadio: String,
     navLayoutStyle: String,
     portalName: String, // 当前门户的名称
+    openType: {
+      type: String,
+      default: "add", //edit
+    },
+    lastTreeId: Number | String,
+    portalId: String | Number,
+    config: {
+      type: Object,
+      default: () => {},
+    },
   },
 
   data() {
@@ -364,11 +373,23 @@ export default {
   watch: {
     syncVisible(val) {
       if (val) {
+        this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
+        this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
+        this.currentTreeNode = {};
         this.$nextTick(() => {
           if (this.$refs.panelViewShow) {
             this.$refs.panelViewShow.showMain = false;
           }
         });
+        if (this.openType == "add") {
+          this.treeData = [];
+          this.treeId = 0;
+        } else {
+          this.treeData = this.config.treeData;
+          this.treeId = Number(this.lastTreeId);
+        }
+      } else {
+        this.$emit("treeData", this.treeData);
       }
     },
   },
@@ -382,31 +403,25 @@ export default {
       this.syncVisible = false;
     },
     // 保存
-    handleSave() {
+    async handleSave() {
       const params = {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
         themeColor: this.themeColor, // 默认
         portalName: this.portalName || "未命名站点", // 站点名称
+        lastTreeId: this.treeId,
         config: {
           treeData: this.treeData,
         },
       };
       const positionJson = JSON.stringify(params);
-      // savePortal({ positionJson })
-      //   .then((res) => {
-      //     this.$message.success("操作成功");
-      //   })
-      //   .catch((err) => {
-      //     console.log("savePortal err, ", err);
-      //   });
-      updatePortal({ id: 2, positionJson })
-        .then((res) => {
-          this.$message.success("操作成功");
-        })
-        .catch((err) => {
-          console.log("savePortal err, ", err);
-        });
+      if (this.openType == "add") {
+        bus.$emit("savePortal", { positionJson });
+      } else {
+        bus.$emit("updatePortal", { id: this.portalId, positionJson });
+      }
+      this.close();
+      this.$emit("close");
     },
 
     // 点击编辑和预览
@@ -422,7 +437,6 @@ export default {
           this.$watch(
             () => this.$refs.panelViewShow.fullscreen,
             (val) => {
-              console.log("fullscreen -- ", val);
               if (!val) this.activeTab = "edit";
             }
           );
@@ -445,8 +459,9 @@ export default {
     },
     // 添加主菜单
     handleAddMainMenu() {
+      const treeId = (this.treeId += 1);
       this.treeData.push({
-        id: (this.treeId += 1),
+        id: treeId.toString(),
         label: "一级菜单",
         children: [],
         panelId: "",
@@ -490,7 +505,7 @@ export default {
           (item) => item.id == node.data.id
         );
         this.treeData[foundIndex].children.push({
-          id: treeId,
+          id: treeId.toString(),
           label: "二级菜单",
           children: [],
           showMenuIcon: true, // 显示菜单icon
@@ -513,7 +528,7 @@ export default {
         );
         console.log("foundChildIndex", foundChildIndex);
         this.treeData[foundIndex].children[foundChildIndex].children.push({
-          id: treeId,
+          id: treeId.toString(),
           label: "三级菜单",
           // children: [],
           showMenuIcon: true, // 显示菜单icon
@@ -552,9 +567,11 @@ export default {
     },
 
     handleUpdateTrend() {
-      this.showPanelView = true;
-      this.$store.commit("setComponentDataCache", null);
-      initPanelData(this.currentTreeNode.trendId, function (response) {
+      // this.showPanelView = true;
+      // this.$store.commit("setComponentDataCache", null);
+      const trendId =
+        this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1];
+      initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
       });
     },
