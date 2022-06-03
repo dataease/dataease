@@ -167,15 +167,15 @@
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >
-                    <span>{{ node.label }}</span>
-                    <span v-if="node.data.showOption && data.level < 3">
+                    <span>{{ node.label  }}</span>
+                    <span v-if="node.data.showOption">
                       <i
                         class="el-icon-plus"
                         @click.stop="handleAddTreeSubNode(node)"
                       ></i>
                       <i
                         class="el-icon-delete"
-                        @click.stop="handleDeleteTreeNode(node)"
+                        @click.stop="handleDeleteTreeSubNode(node)"
                       ></i>
                     </span>
                   </span>
@@ -415,6 +415,11 @@ export default {
         },
       };
       const positionJson = JSON.stringify(params);
+      if (positionJson.includes(`"label":""`)) {
+        this.$message.error('请输入节点的名称')
+        return
+      }
+      
       if (this.openType == "add") {
         bus.$emit("savePortal", { positionJson });
       } else {
@@ -542,8 +547,28 @@ export default {
       }
     },
     // 删除一个节点
-    handleDeleteTreeSubNode(node) {
+    handleDeleteTreeSubNode(node, data) {
       console.log("handleDeleteTreeSubNode node", node);
+      this.$confirm("删除该节点", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          const id = node.data.id;
+          if (node.data.level == 1) {
+            const foundIndex = this.treeData.findIndex((item) => item.id == id);
+            if (foundIndex > -1) {
+              this.treeData.splice(foundIndex, 1);
+            }
+            return;
+          }
+          const parent = node.parent;
+          const children = parent.data.children;
+          const index = children.findIndex((d) => d.id === id);
+          children.splice(index, 1);
+        })
+        .catch(() => {});
     },
     // 选择一级菜单
     handleTopSelect(active) {
