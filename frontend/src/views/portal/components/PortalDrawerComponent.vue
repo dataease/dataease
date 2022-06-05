@@ -202,7 +202,7 @@
         :topNavPosRadio="topNavPosRadio"
         :lastTreeId="lastTreeId"
         :open-type="openType"
-        :config="[]"
+        :config="{}"
         :portalId="null"
         @treeData="handleGetTreeData"
         @close="syncVisible = false"
