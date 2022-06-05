@@ -62,10 +62,7 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i
-                          :class="[item.iconName]"
-                          v-if="item.showMenuIcon"
-                        ></i>
+                        <i :class="[item.iconName]"></i>
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -129,10 +126,7 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i
-                          :class="[item.iconName]"
-                          v-if="item.showMenuIcon"
-                        ></i>
+                        <i :class="[item.iconName]"></i>
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -216,7 +210,7 @@
                     :key="item.value"
                     :value="item.value"
                   >
-                  <i :class="[item.value]" />
+                    <i :class="[item.value]" />
                   </el-option>
                 </el-select>
                 <el-checkbox
@@ -676,6 +670,13 @@ export default {
   ::v-deep .panel-design-preview {
     height: 100% !important;
   }
+  ::v-deep .el-menu--horizontal .el-submenu .el-submenu__title .el-submenu__icon-arrow {
+    position: static;
+    vertical-align: middle;
+    margin-left: 8px;
+    margin-top: -3px;
+  }
+
   .el-icon-plus,
   .el-icon-delete {
     cursor: pointer;
