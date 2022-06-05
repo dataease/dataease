@@ -193,7 +193,22 @@
         </div>
       </div>
     </el-drawer>
-    <template v-if="item && item.config">
+    <template v-if="openType == 'add'">
+      <PortConfigDrawerComponent
+        :visible.sync="showPortConfigDrawerComponent"
+        :portalName="portalName"
+        :themeColor="themeColor"
+        :navLayoutStyle="navLayoutStyle"
+        :topNavPosRadio="topNavPosRadio"
+        :lastTreeId="lastTreeId"
+        :open-type="openType"
+        :config="[]"
+        :portalId="null"
+        @treeData="handleGetTreeData"
+        @close="syncVisible = false"
+      ></PortConfigDrawerComponent>
+    </template>
+    <template v-else>
       <PortConfigDrawerComponent
         :visible.sync="showPortConfigDrawerComponent"
         :portalName="portalName"
@@ -280,6 +295,7 @@ export default {
     __initData() {
       this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
       this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
+      this.tmpTreeData = null
       if (this.openType == "add") {
         this.topNavPosRadio = "top"; //  当前一级导航的位置
         this.themeColor = "#f1f3f8"; // 当前导航的颜色
@@ -301,7 +317,7 @@ export default {
       if (evt == "preview") {
         this.$emit("preview", this.item);
         setTimeout(() => {
-          this.syncVisible = false
+          this.syncVisible = false;
         }, 1000);
       }
     },
@@ -336,6 +352,7 @@ export default {
     // 保存
     handleSave() {
       const getTreeData = () => {
+        debugger
         if (this.tmpTreeData) {
           return this.tmpTreeData;
         }

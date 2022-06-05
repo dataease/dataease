@@ -109,6 +109,7 @@ export default {
   methods: {
     // 新建站点
     handleAddPortalDrawer() {
+      this.currentItem = null
       this.openType = "add";
       this.showPortalDrawer = true;
     },

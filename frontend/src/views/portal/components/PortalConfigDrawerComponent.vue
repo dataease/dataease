@@ -407,6 +407,7 @@ export default {
           this.treeId = Number(this.lastTreeId);
         }
       } else {
+        debugger
         this.$emit("treeData", this.treeData);
       }
     },
