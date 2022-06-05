@@ -187,6 +187,8 @@ export default {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
     })
+
+    console.log("permission_routes", this.permission_routes)
   },
   created() {
     this.loadUiInfo()
