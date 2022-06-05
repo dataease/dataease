@@ -166,7 +166,7 @@
                 >
                   <span
                     class="custom-tree-node"
-                    slot-scope="{ node, data }"
+                    slot-scope="{ node }"
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >

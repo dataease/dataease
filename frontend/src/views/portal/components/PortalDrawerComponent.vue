@@ -193,7 +193,7 @@
         </div>
       </div>
     </el-drawer>
-    <template v-if="item.config">
+    <template v-if="item && item.config">
       <PortConfigDrawerComponent
         :visible.sync="showPortConfigDrawerComponent"
         :portalName="portalName"
