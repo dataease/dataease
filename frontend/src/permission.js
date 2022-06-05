@@ -96,6 +96,7 @@ router.beforeEach(async(to, from, next) => {
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const datas = res.data
+    console.log('datas', JSON.parse(JSON.stringify(datas)))
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
     // 如果包含首页 则默认页面是 首页 否则默认页面是仪表板页面
@@ -120,6 +121,36 @@ export const loadMenus = (next, to) => {
       redirect: '/404',
       hidden: true
     })
+
+    // Add Router start: hard code - add portal
+    const portalRouter = {
+      children: [{
+        component: () => import("@/views/portal/list"),
+        isPlugin: false,
+        name: "portal-list",
+        noLayout: null,
+        path: "list",
+        type: 1,
+        permission: null,
+      }],
+      component: () => import("@/layout/index.vue"),
+      hidden: false,
+      isPlugin: false,
+      meta: {
+        icon: "portal",
+        title: "数据门户"
+      },
+      name: "protal",
+      noLayout: null,
+      pid: 0,
+      path: "/portal",
+      permission: null,
+      redirect: "/portal/list"
+    }
+    asyncRouter.splice(4, 0, portalRouter)
+    console.log("asyncRouter", asyncRouter)
+    // Add Router end
+
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
       if (pathValid(to.path, asyncRouter)) {
