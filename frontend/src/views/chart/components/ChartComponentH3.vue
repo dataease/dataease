@@ -86,7 +86,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      tableData: []
+      tableData: [],
+      graphicData: "",
     }
   },
   computed: {
@@ -174,15 +175,14 @@ export default {
         }
       }
       // 加载地图必备样式文件
-      loadCss("http://localhost:9528/arcgisapi/esri/css/main.css");
-      loadCss("http://localhost:9528/arcgisapi/dijit/themes/claro/claro.css");
+      loadCss("/arcgisapi/esri/css/main.css");
+      loadCss("/arcgisapi/dijit/themes/claro/claro.css");
 
       // 异步加载对应 js 模块
       loadModules(
         [
           'esri/Map',
           'esri/views/MapView',
-          "esri/core/lang",
           "esri/layers/MapImageLayer",
           "esri/widgets/Home",
           "esri/widgets/ScaleBar",
@@ -198,7 +198,6 @@ export default {
         ([
           Map,
           MapView,
-          esriLang,
           MapImageLayer,
           Home,
           ScaleBar,
@@ -207,8 +206,9 @@ export default {
           Graphic,
           GraphicsLayer,
           FeatureLayer,
-          Point
+          Point,
         ]) => {
+          let that = this
           var ygyx = new MapImageLayer({
             url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
             // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
@@ -226,10 +226,11 @@ export default {
             center: [120.585294, 31.299758],
             zoom: 14,
             popup: {
-              dockEnabled: true,
+              // collapseEnabled : false, // 是否需title点击折叠功能
+              dockEnabled: true,  // 指示弹出窗口的位置是否停靠在视图的一侧
               dockOptions: {
-                buttonEnabled: false,
-                breakpoint: false
+                buttonEnabled: true, // 开启固定标签页
+                breakpoint: true  // 开启 点击停靠气泡窗
               }
             },
             // rotation: 45
@@ -266,20 +267,35 @@ export default {
 
           view.popup.autoOpenEnabled = false
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
+            console.log(event)
             view.hitTest(event).then((res) => {
+              console.log(res)
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
+                  view.graphics.remove(results[0].graphic)
                   let g = results[0].graphic
-                  let geo = g.geometry
+                  g.symbol.url = require('@/assets/point.png')
+                  that.graphicData = g
+                  console.log(g)
+                  graphicView1(g.attributes)
+                  // view.graphics.addMany([g])
+                  // let geo = g.geometry
                   let attr = g.attributes
-                  let point = new Point(geo.x, geo.y, view.spatialReference)
-                  view.popup.open({ location: point,
+                  // let point = new Point(geo.x, geo.y, view.spatialReference)
+                  view.popup.open({ 
+                    location: event.mapPoint,
                     title: attr.name,
-                    content: `<p style="width:350px;overflow: auto;white-space:break-spaces;" class="attr_content">${attr.desc}</p>`
+                    content: `<p style="width:350px;overflow: auto;white-space:break-spaces;">${attr.desc}</p>`
                   })
                 }
               } else {
+                console.log(that.graphicData)
+                if(that.graphicData !== '') {
+                  view.graphics.remove(that.graphicData)
+                  let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
+                  graphicView(g)
+                }
                 view.popup.close()
               }
             })
@@ -305,8 +321,39 @@ export default {
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
-                name: data.name,
-                desc: data.desc,
+                // name: data.name,
+                // desc: data.desc,
+                ...data
+              },
+            });
+            // 将图形添加到视图的图形层
+            view.graphics.addMany([graphic])
+            if(that.graphicData !== ''){
+              console.log('graphicData',that.graphicData)
+              that.graphicData = ''
+            }
+          }
+          function graphicView1(data) {
+            let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
+              geometry: {  //点位信息
+                type: 'point',
+                longitude: data.lng,
+                latitude: data.lat
+              },
+              symbol: {  //图像
+                //类型有 图片标记 和 点
+                type: 'picture-marker',
+                //图片地址，可以使用网络路径或本地路径 (base64也可以)
+                url: require("@/assets/point.png"),
+                // 图片大小
+                width: '49px',
+                height: '39px'
+              },
+              // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
+              attributes: {
+                // name: data.name,
+                // desc: data.desc,
+                ...data
               },
             });
             // 将图形添加到视图的图形层
@@ -465,8 +512,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.attr_content {
-  overflow: auto;
-  white-space: break-spaces;
-}
+
 </style>

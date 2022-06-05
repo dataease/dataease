@@ -29,7 +29,22 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
       </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-banner'" class="icon iconfont icon-genghuan" @click.stop="goBannerFile" />
+      </span>
     </div>
+    <!-- 轮播图的数据修改 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -67,6 +82,7 @@ export default {
   data() {
     return {
       componentType: null,
+      dialogVisible: false,
       linkageActiveStatus: false,
       editFilter: [
         'view',
@@ -239,6 +255,11 @@ export default {
     },
     goFile() {
       this.$refs.files.click()
+    },
+    goBannerFile() {
+      // this.dialogVisible = true
+      console.log('-------------------------------------------------------', this.element)
+      this.$emit('bannerImg')
     },
     handleFileChange(e) {
       const file = e.target.files[0]

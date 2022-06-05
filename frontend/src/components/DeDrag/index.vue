@@ -31,7 +31,19 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @bannerImg="bannerImg"
+        @boardSet="boardSet"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
@@ -1840,7 +1852,7 @@ export default {
       addEvent(document.documentElement, 'mousedown', this.deselect)
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
-      // addEvent(window, 'resize', this.checkParentSize)
+      addEvent(window, 'resize', this.checkParentSize)
       // this.changeWidth(this.element.style.width)
       // this.changeHeight(this.element.style.height)
     },
@@ -1872,7 +1884,7 @@ export default {
       removeEvent(document.documentElement, 'touchmove', this.move)
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-      // removeEvent(window, 'resize', this.checkParentSize)
+      removeEvent(window, 'resize', this.checkParentSize)
     },
     showViewDetails() {
       this.$emit('showViewDetails')
@@ -1893,6 +1905,11 @@ export default {
     // 跳转设置
     boardSet() {
       this.$emit('boardSet')
+    },
+    // 跳转设置
+    bannerImg() {
+      console.log('-------------------------------------------------------2222222', this.element)
+      this.$emit('bannerImg')
     }
   }
 

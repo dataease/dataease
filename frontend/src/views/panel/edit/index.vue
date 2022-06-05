@@ -744,6 +744,7 @@ export default {
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
+      console.log('拖拽信息--------------', this.dropComponentInfo)
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -1196,6 +1197,7 @@ export default {
     canvasScroll(event) {
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
+      console.log('是否触发此处的滚动————————', this.scrollLeft, this.scrollTop)
       bus.$emit('onScroll')
     },
     destroyTimeMachine() {
@@ -1398,9 +1400,10 @@ export default {
 
   .this_canvas {
     width: 100%;
-    height: calc(100vh - 35px);
-    overflow-x: scroll;
-    overflow-y: auto;
+    // height: calc(100vh - 35px);
+    // overflow-x: auto;
+    // overflow-y: auto;
+    // overflow:hidden;
     position:relative;
     // overflow: scroll;
     // overflow-y: auto;

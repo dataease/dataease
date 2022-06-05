@@ -932,7 +932,7 @@ export default {
     drag_block_radar_length: '分支长度',
     drag_block_radar_label: '分支标签',
     map_range: '地图范围',
-    arc_map_update:  '地图图层',
+    arc_map_update: '地图图层',
     arc_map_url: '地图serve',
     arc_map_url_place: '请输入地图地址',
     select_map_range: '请选择地图范围',
@@ -1849,6 +1849,10 @@ export default {
   },
   detextselect: {
     label: '文本下拉',
+    placeholder: '请选择'
+  },
+  deextrotation: {
+    label: '文本轮播',
     placeholder: '请选择'
   },
   detextgridselect: {

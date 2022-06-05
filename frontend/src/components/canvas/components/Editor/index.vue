@@ -51,6 +51,7 @@
       @onHandleUp="onMouseUp"
       @onDragging="onDragging"
       @onResizing="onResizing"
+      @bannerImg="bannerImg(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -97,7 +98,7 @@
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
       />
-      <component
+      <!-- <component
         :is="item.component"
         v-else-if="renderOk&&item.type==='de-banner'"
         :id="'component' + item.id"
@@ -108,7 +109,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
-      />
+      /> -->
       <component
         :is="item.component"
         v-else-if="renderOk"
@@ -193,6 +194,18 @@
     >
       <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
+    <el-dialog
+      :visible.sync="bannerSetVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <BannerSet v-if="bannerSetVisible" :element="bannerelement" @backgroundSetClose="bannerSetClose" />
+      <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -223,6 +236,7 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
+import BannerSet from '@/views/background/bannerSet'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -789,7 +803,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, BannerSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -855,6 +869,7 @@ export default {
   data() {
     return {
       boardSetVisible: false,
+      bannerSetVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1049,10 +1064,19 @@ export default {
     backgroundSetClose() {
       this.boardSetVisible = false
     },
+    bannerSetClose() {
+      this.bannerSetVisible = false
+    },
     boardSet(item) {
       console.log('itsm00001', item)
       this.$emit('boardSet', item)
+
       this.boardSetVisible = true
+    },
+    bannerImg(item) {
+      console.log('item-------------------------------------------', item)
+      this.bannerelement = item
+      this.bannerSetVisible = true
     },
     changeStyleWithScale,
     handleMouseDown(e) {
@@ -1169,7 +1193,7 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-      console.log('这里的style改变了什么======', style, result)
+      // console.log('这里的style改变了什么======', style, result)
       return result
     },
 
@@ -1180,8 +1204,9 @@ export default {
     },
 
     getComponentStyle(style) {
-      //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-      return style
+      console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // return style
     },
 
     handleInput(element, value) {
@@ -1258,8 +1283,8 @@ export default {
         return style['width']
       }
       if (prop === 'left') {
-        // return this.format(style['left'], this.scaleWidth)
-        return style['left']
+        return this.format(style['left'], this.scaleWidth)
+        // return style['left']
       }
       if (prop === 'height') {
         // conditions
@@ -1267,8 +1292,8 @@ export default {
         return style['height']
       }
       if (prop === 'top') {
-        // const top = this.format(style['top'], this.scaleHeight)
-        const top = style['top']
+        const top = this.format(style['top'], this.scaleHeight)
+        // const top = style['top']
         // console.log('top:' + top)
         return top
       }
@@ -1533,7 +1558,7 @@ export default {
      * @returns
      */
     getRenderState() {
-      // console.log('getRenderState:')
+      console.log('getRenderState:', this.moveAnimate)
 
       return this.moveAnimate
     },
