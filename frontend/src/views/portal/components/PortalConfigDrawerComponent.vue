@@ -33,6 +33,9 @@
           </div>
         </div>
         <div class="portal-config-drawer-container-container-content">
+          <!-- <PortalNavMenu :portal="portal">
+            <PanelViewShow ref="panelViewShow"></PanelViewShow>
+          </PortalNavMenu> -->
           <el-container class="config-container">
             <el-header
               class="config-header"
@@ -46,7 +49,7 @@
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
-                    :default-active="topActiveTab"
+                    :default-active="currentTreeNode.id"
                     class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
@@ -59,7 +62,10 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+                        <i
+                          :class="[item.iconName]"
+                          v-if="item.showMenuIcon"
+                        ></i>
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -110,7 +116,7 @@
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
-                    :default-active="topActiveTab"
+                    :default-active="currentTreeNode.id"
                     class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
@@ -123,7 +129,10 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+                        <i
+                          :class="[item.iconName]"
+                          v-if="item.showMenuIcon"
+                        ></i>
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -167,7 +176,7 @@
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >
-                    <span>{{ node.label  }}</span>
+                    <span>{{ node.label }}</span>
                     <span v-if="node.data.showOption">
                       <i
                         class="el-icon-plus"
@@ -198,16 +207,17 @@
                   >显示菜单icon</el-checkbox
                 >
                 <el-select
-                  v-model="currentTreeNode.panelId"
+                  v-model="currentTreeNode.iconName"
                   class="config-input"
                   size="mini"
                 >
                   <el-option
-                    v-for="item in tData"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.label"
-                  ></el-option>
+                    v-for="item in iconData"
+                    :key="item.value"
+                    :value="item.value"
+                  >
+                  <i :class="[item.value]" />
+                  </el-option>
                 </el-select>
                 <el-checkbox
                   class="config-checkbox"
@@ -328,6 +338,20 @@ export default {
         sort: "create_time desc,node_type desc,name asc",
       },
       tData: [],
+      iconData: [
+        {
+          value: "el-icon-menu",
+        },
+        {
+          value: "el-icon-s-opportunity",
+        },
+        {
+          value: "el-icon-s-finance",
+        },
+        {
+          value: "el-icon-s-claim",
+        },
+      ],
       showPanelView: false,
     };
   },
@@ -416,10 +440,10 @@ export default {
       };
       const positionJson = JSON.stringify(params);
       if (positionJson.includes(`"label":""`)) {
-        this.$message.error('请输入节点的名称')
-        return
+        this.$message.error("请输入节点的名称");
+        return;
       }
-      
+
       if (this.openType == "add") {
         bus.$emit("savePortal", { positionJson });
       } else {
@@ -468,6 +492,7 @@ export default {
       this.treeData.push({
         id: treeId.toString(),
         label: "一级菜单",
+        iconName: "el-icon-menu",
         children: [],
         panelId: "",
         trendId: "",
@@ -512,6 +537,7 @@ export default {
         this.treeData[foundIndex].children.push({
           id: treeId.toString(),
           label: "二级菜单",
+          iconName: "el-icon-menu",
           children: [],
           showMenuIcon: true, // 显示菜单icon
           isMenuFoldindg: true, // 菜单允许折叠
@@ -535,6 +561,7 @@ export default {
         this.treeData[foundIndex].children[foundChildIndex].children.push({
           id: treeId.toString(),
           label: "三级菜单",
+          iconName: "el-icon-menu",
           // children: [],
           showMenuIcon: true, // 显示菜单icon
           isMenuFoldindg: true, // 菜单允许折叠

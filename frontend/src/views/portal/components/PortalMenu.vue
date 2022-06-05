@@ -5,7 +5,7 @@
         <!-- 一级 -->
         <el-submenu :key="item.id" :index="item.id">
           <template slot="title">
-            <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+            <i :class="[item.iconName]" v-if="item.showMenuIcon"></i>
             <span slot="title">{{ item.label  }}</span>
           </template>
           <template v-if="_checkArrayHasValue(item.children)">
@@ -14,7 +14,7 @@
                 <!-- 二级 -->
                 <el-submenu :key="sub.id" :index="sub.id">
                   <template slot="title">
-                    <i class="el-icon-menu" v-if="sub.showMenuIcon"></i>
+                    <i :class="[item.iconName]" v-if="sub.showMenuIcon"></i>
                     <span slot="title">{{ sub.label  }}</span>
                   </template>
                   <template v-if="_checkArrayHasValue(sub.children)">
@@ -22,7 +22,7 @@
                       <!-- 三级 -->
                       <el-menu-item :key="subItem.id" :index="subItem.id">
                         <template slot="title">
-                          <i class="el-icon-menu" v-if="subItem.showMenuIcon"></i>
+                          <i :class="[item.iconName]" v-if="subItem.showMenuIcon"></i>
                           <span slot="title">{{ subItem.label }}</span>
                         </template>
                       </el-menu-item>
@@ -33,7 +33,7 @@
               <template v-else>
                 <el-menu-item :key="sub.id" :index="sub.id">
                   <template slot="title">
-                    <i class="el-icon-menu" v-if="sub.showMenuIcon"></i>
+                    <i :class="[item.iconName]" v-if="sub.showMenuIcon"></i>
                     <span slot="title">{{ sub.label }}</span>
                   </template>
                 </el-menu-item>
@@ -46,7 +46,7 @@
         <!-- 二级 -->
         <el-menu-item :key="item.id" :index="item.id">
           <template slot="title">
-            <i class="el-icon-menu" v-if="item.showMenuIcon"></i>
+            <i :class="[item.iconName]" v-if="item.showMenuIcon"></i>
             <span slot="title">{{ item.label }}</span>
           </template>
         </el-menu-item>

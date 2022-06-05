@@ -53,8 +53,8 @@
         :visible.sync="showPortalDrawer"
       ></PortalDrawerComponent>
     </div>
-    <div class="portal-panel-view-show">
-      <PanelViewShow ref="panelViewShow"></PanelViewShow>
+    <div class="portal-panel-view-show" v-if="currentItem">
+      <PanelViewShow ref="panelViewShow" :portal="currentItem" @update="update"></PanelViewShow>
     </div>
   </div>
 </template>
@@ -120,6 +120,10 @@ export default {
 
     // 站点预览
     handleUpdateTrend(row) {
+      this.currentItem = {
+        ...JSON.parse(row.positionJson),
+        id: row.id,
+      };
       this.previewLoading = true;
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
@@ -127,7 +131,7 @@ export default {
       function getTreedDataFirstTrendId(treeData) {
         for (let i = 0; i < treeData.length; i++) {
           const item = treeData[i];
-          if (item.trendId) {
+          if (item.trendId && !trendId) {
             trendId = item.trendId;
           } else {
             getTreedDataFirstTrendId(item.children);
@@ -137,6 +141,10 @@ export default {
 
       const treeData = JSON.parse(row.positionJson).config.treeData;
       getTreedDataFirstTrendId(treeData);
+      this.update(trendId);
+    },
+
+    update(trendId) {
       if (trendId) {
         if (Object.prototype.toString.call(trendId) == "[object Array]") {
           trendId = trendId[trendId.length - 1];
@@ -144,18 +152,17 @@ export default {
         const that = this;
         initPanelData(trendId, function (response) {
           bus.$emit("set-panel-show-type", 0);
-          if (that.$refs.panelViewShow) {
-            that.$refs.panelViewShow.clickFullscreen();
-            console.log("this.$refs.panelViewShow", that.$refs.panelViewShow);
-            that.previewLoading = false;
-            // that.$watch(
-            //   () => that.$refs.panelViewShow.showMain,
-            //   (val) => {
-            //     console.log("this.$refs.panelViewShow val", val)
-            //     if (val) that.$refs.panelViewShow.clickFullscreen();
-            //   }
-            // );
-          }
+          setTimeout(() => {
+            if (that.$refs.panelViewShow) {
+              that.$refs.panelViewShow.clickFullscreen();
+              that.previewLoading = false;
+            }
+            that.$watch(() => that.$refs.panelViewShow.fullscreen, (val) => {
+              if (!val) {
+                that.currentItem = null
+              }
+            })
+          }, 1000);
         });
       } else {
         this.previewLoading = false;
@@ -165,9 +172,9 @@ export default {
 
     // 获取站点列表
     async handleGetPortalList() {
-      this.previewLoading = true
+      this.previewLoading = true;
       const res = await getPortalList({ ...this.pageValue });
-      this.previewLoading = false
+      this.previewLoading = false;
       if (res.success) {
         this.total = res.data.total;
         this.list = res.data.portalDataList.map((item) => {
@@ -197,12 +204,12 @@ export default {
     },
 
     handlePageNumberChange(page_number) {
-      this.pageValue.page_number = page_number
-      this.handleGetPortalList()
+      this.pageValue.page_number = page_number;
+      this.handleGetPortalList();
     },
 
     handlePageSizeChange(evt) {
-      console.log("handlePageSizeChange evt", evt)
+      console.log("handlePageSizeChange evt", evt);
     },
 
     async handleSavePortal(params) {
@@ -263,6 +270,8 @@ export default {
     position: absolute;
     z-index: 1;
     opacity: 0;
+    width: 100%;
+    min-height: 100vh;
     visibility: visible;
   }
 }
