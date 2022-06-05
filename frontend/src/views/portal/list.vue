@@ -51,10 +51,15 @@
         :item="currentItem"
         :open-type="openType"
         :visible.sync="showPortalDrawer"
+        @preview="handleConfigPreviewTrend"
       ></PortalDrawerComponent>
     </div>
     <div class="portal-panel-view-show" v-if="currentItem">
-      <PanelViewShow ref="panelViewShow" :portal="currentItem" @update="update"></PanelViewShow>
+      <PanelViewShow
+        ref="panelViewShow"
+        :portal="currentItem"
+        @update="update"
+      ></PanelViewShow>
     </div>
   </div>
 </template>
@@ -85,7 +90,7 @@ export default {
         page_number: 1,
         page_size: 10,
       },
-      currentItem: {},
+      currentItem: null,
       previewLoading: false,
     };
   },
@@ -108,7 +113,7 @@ export default {
       this.showPortalDrawer = true;
     },
 
-    // 点击站点
+    // 点击编辑站点
     handleEditPortal(row) {
       this.openType = "edit";
       this.currentItem = {
@@ -116,6 +121,24 @@ export default {
         id: row.id,
       };
       this.showPortalDrawer = true;
+    },
+
+    // 点击配置里的预览
+    handleConfigPreviewTrend(item) {
+      let trendId = "";
+      function getTreedDataFirstTrendId(treeData) {
+        for (let i = 0; i < treeData.length; i++) {
+          const item = treeData[i];
+          if (item.trendId && !trendId) {
+            trendId = item.trendId;
+          } else {
+            getTreedDataFirstTrendId(item.children);
+          }
+        }
+      }
+
+      getTreedDataFirstTrendId(item.config.treeData);
+      this.update(trendId);
     },
 
     // 站点预览
@@ -157,11 +180,14 @@ export default {
               that.$refs.panelViewShow.clickFullscreen();
               that.previewLoading = false;
             }
-            that.$watch(() => that.$refs.panelViewShow.fullscreen, (val) => {
-              if (!val) {
-                that.currentItem = null
+            that.$watch(
+              () => that.$refs.panelViewShow.fullscreen,
+              (val) => {
+                if (!val) {
+                  that.currentItem = null;
+                }
               }
-            })
+            );
           }, 1000);
         });
       } else {

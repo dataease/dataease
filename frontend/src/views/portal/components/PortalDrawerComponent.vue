@@ -18,7 +18,12 @@
               <i class="el-icon-setting" @click="handleOpenConfigDrawer"></i>
             </div>
             <div class="wrapper">
-              <el-radio-group v-model="activeTab" size="mini" round>
+              <el-radio-group
+                v-model="activeTab"
+                size="mini"
+                round
+                @change="handleTopRadioPreView"
+              >
                 <el-radio-button label="edit">编辑</el-radio-button>
                 <el-radio-button label="preview">预览</el-radio-button>
               </el-radio-group>
@@ -188,25 +193,27 @@
         </div>
       </div>
     </el-drawer>
-    <PortConfigDrawerComponent
-      :visible.sync="showPortConfigDrawerComponent"
-      :portalName="portalName"
-      :themeColor="themeColor"
-      :navLayoutStyle="navLayoutStyle"
-      :topNavPosRadio="topNavPosRadio"
-      :lastTreeId="lastTreeId"
-      :open-type="openType"
-      :config="item.config"
-      :portalId="item.id"
-      @treeData="handleGetTreeData"
-      @close="syncVisible = false"
-    ></PortConfigDrawerComponent>
+    <template v-if="item.config">
+      <PortConfigDrawerComponent
+        :visible.sync="showPortConfigDrawerComponent"
+        :portalName="portalName"
+        :themeColor="themeColor"
+        :navLayoutStyle="navLayoutStyle"
+        :topNavPosRadio="topNavPosRadio"
+        :lastTreeId="lastTreeId"
+        :open-type="openType"
+        :config="item.config"
+        :portalId="item.id"
+        @treeData="handleGetTreeData"
+        @close="syncVisible = false"
+      ></PortConfigDrawerComponent>
+    </template>
   </div>
 </template>
 
 <script>
 import PortConfigDrawerComponent from "./PortalConfigDrawerComponent.vue";
-import bus from '@/utils/bus'
+import bus from "@/utils/bus";
 export default {
   components: {
     PortConfigDrawerComponent,
@@ -236,7 +243,7 @@ export default {
       navLayoutStyle: "0", // 0 top-left 1 left 2 top
       portalName: "", // 当前门户的名称
       lastTreeId: 0, // 当前的树节点的跟节点
-      tmpTreeData: null,  // 获取配置页面的treeData
+      tmpTreeData: null, // 获取配置页面的treeData
     };
   },
 
@@ -288,6 +295,17 @@ export default {
       }
     },
 
+    // 点击预览
+    handleTopRadioPreView(evt) {
+      console.log("evt", evt);
+      if (evt == "preview") {
+        this.$emit("preview", this.item);
+        setTimeout(() => {
+          this.syncVisible = false
+        }, 1000);
+      }
+    },
+
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
       console.log("radio", radio);
@@ -309,7 +327,7 @@ export default {
 
     // 获取配置页面的treeData
     handleGetTreeData(treeData) {
-      this.tmpTreeData = treeData
+      this.tmpTreeData = treeData;
     },
     // 打开配置
     handleOpenConfigDrawer() {
@@ -319,13 +337,13 @@ export default {
     handleSave() {
       const getTreeData = () => {
         if (this.tmpTreeData) {
-          return this.tmpTreeData
+          return this.tmpTreeData;
         }
         if (this.item && this.item.config && this.item.config.treeData) {
-          return this.item.config.treeData
+          return this.item.config.treeData;
         }
-        return []
-      }
+        return [];
+      };
       const params = {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
@@ -342,7 +360,7 @@ export default {
       } else {
         bus.$emit("updatePortal", { id: this.item.id, positionJson });
       }
-      this.syncVisible = false
+      this.syncVisible = false;
     },
   },
 };
