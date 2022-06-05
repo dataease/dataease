@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.PortalDataMapper">
+
+    <select id="list" resultType="io.datains.base.domain.PortalData">
+        select  * from portal_data
+        where
+        user_id = #{userId}
+    </select>
+
+    <select id="listCount" resultType="Integer">
+        select  count(*) from portal_data
+        where
+        user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="io.datains.base.domain.PortalData">
+        INSERT INTO `portal_data`
+	(
+	`user_id`,
+	`user_name`,
+	`position_json`
+	)
+	VALUES
+	(
+	#{userId},
+	#{userName},
+	#{positionJson}
+	);
+
+    </insert>
+
+    <delete id="del">
+        delete from portal_data  where id = #{id}
+    </delete>
+
+    <update id="update" parameterType="io.datains.base.domain.PortalData">
+         update portal_data
+        <set>
+            <if test="positionJson != null">
+                position_json = #{positionJson},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+    WHERE id = #{id}
+    </update>
+
+</mapper>

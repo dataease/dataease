@@ -127,6 +127,11 @@ public class AuthServer implements AuthApi {
         return result;
     }
 
+    public static void main(String[] args) {
+        String s = CodingUtil.md5("123456");
+        System.err.println(s);
+    }
+
     @Override
     public CurrentUserDto userInfo() {
         CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
