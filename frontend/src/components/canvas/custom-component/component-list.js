@@ -389,7 +389,7 @@ const list = [
     type: 'de-banner',
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
-      width: 200,
+      width: 400,
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
@@ -400,7 +400,12 @@ const list = [
         title: 'Tab1',
         name: '1',
         content: null
-      }]
+      }],
+      slidesPerView: 3,
+      rotationTime: 1,
+      pictureGap: 10,
+      bannerImgList: []
+      // autoplay: { delay: 1000, disableOnInteraction: false }
     },
     x: 1,
     y: 1,

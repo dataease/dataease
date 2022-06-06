@@ -10,6 +10,7 @@ const state = {
 
 const mutations = {
   SET_ROUTERS: (state, routes) => {
+    console.log("SET_ROUTERS", routes)
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
   },
