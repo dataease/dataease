@@ -104,7 +104,7 @@
 
                 <!-- </el-menu> -->
               </el-aside>
-              <el-main class="config-main">
+              <el-main class="config-main" v-loading="panelLoading">
                 <PanelViewShow ref="panelViewShow"></PanelViewShow>
               </el-main>
             </el-container>
@@ -174,6 +174,7 @@
                   check-on-click-node
                   @node-click="handleNodeClick"
                   :allow-drop="handleAllowDrop"
+                  :current-node-key="currentTreeNode.id"
                 >
                   <span
                     class="custom-tree-node"
@@ -358,6 +359,7 @@ export default {
         },
       ],
       showPanelView: false,
+      panelLoading: false,
     };
   },
   computed: {
@@ -478,12 +480,6 @@ export default {
         }
       });
     },
-
-    // 一级导航位置
-    handleChangeTopNavPosRadio(radio) {
-      console.log("radio", radio);
-      // this.setTopNavPosRadio(radio);
-    },
     // 选择主题设置
     handleChangeThemeColor(color) {
       console.log("color", color);
@@ -518,6 +514,11 @@ export default {
     handleNodeClick(node) {
       // console.log("node", node);
       this.currentTreeNode = node;
+      if (this.currentTreeNode.trendId && this.currentTreeNode.trendId.length) {
+        this.handleUpdateTrend();
+      } else {
+        this.$refs.panelViewShow.showMain = false;
+      }
     },
     // 鼠标移入该节点的时候触发
     handleTreeNodeMouseEnter(node) {
@@ -633,10 +634,15 @@ export default {
     handleUpdateTrend() {
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
+      this.panelLoading = true;
       const trendId =
         this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1];
+      const that = this;
       initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
+        that.panelLoading = false;
+      }).catch((err) => {
+        that.panelLoading = false;
       });
     },
 
