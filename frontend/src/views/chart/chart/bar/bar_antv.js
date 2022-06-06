@@ -11,6 +11,49 @@ import {
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
 
+function sortDatas(data) {
+  var sort1 = JSON.parse(data.xaxis)
+  var sort2 = sort1[0].sort
+  console.log(sort1.sort)
+  let isSort
+  if (sort2 === undefined) {
+    isSort = false
+  } else if (sort2 === 'asc') {
+    isSort = false
+  } else if (sort2 === 'desc') {
+    isSort = true
+  } else {
+    isSort = false
+  }
+  var datas1 = JSON.parse(JSON.stringify(data))
+  var datas = datas1.data.datas
+  const sorts = {
+    '一': 1,
+    '二': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '七': 7,
+    '八': 8,
+    '九': 9,
+    '十': 10,
+    '十一': 11,
+    '十二': 12
+  }
+  if (sorts[datas[0].field.split('月')[0]]) {
+    datas.map((item, index) => {
+      item.id = sorts[item.field.split('月')[0]]
+    })
+    datas.sort((a, b) => {
+      return isSort ? a.id - b.id : b.id - a.id
+    })
+    return datas
+  }
+  return datas.sort((a, b) => {
+    return isSort ? b.field.split('月')[0] - a.field.split('月')[0] : a.field.split('月')[0] - b.field.split('月')[0]
+  })
+}
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
   const theme = getTheme(chart)
@@ -22,7 +65,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.datas
+  // const data = chart.data.datas
+  const data = sortDatas(chart)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
