@@ -63,7 +63,7 @@
           <el-menu-item :key="item.id" :index="item.id">
             <template slot="title">
               <i :class="[item.iconName]"></i>
-              <span slot="title">{{ item.label + "111" }}</span>
+              <span slot="title">{{ item.label }}</span>
             </template>
           </el-menu-item>
         </template>
