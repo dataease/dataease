@@ -183,7 +183,7 @@ export default {
         [
           'esri/Map',
           'esri/views/MapView',
-          "esri/layers/MapImageLayer",
+          "esri/layers/TileLayer",
           "esri/widgets/Home",
           "esri/widgets/ScaleBar",
           "esri/geometry/SpatialReference",
@@ -192,13 +192,14 @@ export default {
           "esri/layers/GraphicsLayer",
           "esri/layers/FeatureLayer",
           "esri/geometry/Point",
+          "esri/identity/IdentityManager"
         ],
         config.loadConfig
       ).then(
         ([
           Map,
           MapView,
-          MapImageLayer,
+          TileLayer,
           Home,
           ScaleBar,
           SpatialReference,
@@ -207,24 +208,29 @@ export default {
           GraphicsLayer,
           FeatureLayer,
           Point,
+          IdentityManager
         ]) => {
+          IdentityManager.registerToken({
+            server: "http://2.40.7.227:8080/OneMapServer/rest/services",
+            token: "QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A.."
+          })
           let that = this
-          var ygyx = new MapImageLayer({
-            url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
-            // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
+          var ygyx = new TileLayer({
+            // url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
+            url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer",
             id:'ygyx'
           });
           // 创建地图
           var map=new Map({
-            // layers:[ygyx]
-            basemap: 'osm',
+            layers:[ygyx]
+            // basemap: 'osm',
           });
           // 地图实例化
           let view = new MapView({
             container: container,
             map: map,
             center: [120.585294, 31.299758],
-            zoom: 14,
+            zoom: 4,
             popup: {
               // collapseEnabled : false, // 是否需title点击折叠功能
               dockEnabled: true,  // 指示弹出窗口的位置是否停靠在视图的一侧
@@ -283,7 +289,7 @@ export default {
                   // let geo = g.geometry
                   let attr = g.attributes
                   // let point = new Point(geo.x, geo.y, view.spatialReference)
-                  view.popup.open({ 
+                  view.popup.open({
                     location: event.mapPoint,
                     title: attr.name,
                     content: `<p style="width:350px;overflow: auto;white-space:break-spaces;">${attr.desc}</p>`
@@ -304,11 +310,15 @@ export default {
           console.log('view',view,this.myChart)
 
           function graphicView(data) {
+            var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
             let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
               geometry: {  //点位信息
                 type: 'point',
                 longitude: data.lng,
-                latitude: data.lat
+                latitude: data.lat,
+                spatialReference: {
+                  wkt: wktString
+                }
               },
               symbol: {  //图像
                 //类型有 图片标记 和 点
@@ -327,6 +337,7 @@ export default {
               },
             });
             // 将图形添加到视图的图形层
+            console.log('graphic:' , graphic)
             view.graphics.addMany([graphic])
             if(that.graphicData !== ''){
               console.log('graphicData',that.graphicData)
@@ -334,11 +345,16 @@ export default {
             }
           }
           function graphicView1(data) {
+            var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
+
             let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
               geometry: {  //点位信息
                 type: 'point',
                 longitude: data.lng,
-                latitude: data.lat
+                latitude: data.lat,
+                spatialReference: {
+                  wkt: wktString
+                }
               },
               symbol: {  //图像
                 //类型有 图片标记 和 点
@@ -357,6 +373,7 @@ export default {
               },
             });
             // 将图形添加到视图的图形层
+            console.log('graphic:' , graphic)
             view.graphics.addMany([graphic])
           }
         }
