@@ -525,7 +525,27 @@ const list = [
     sizey: 5,
     miniSizex: 1,
     miniSizey: 1
-  }
+  },
+  {
+    id: '40001',
+    component: 'de-icon',
+    type: 'de-icon',
+    label: '图标',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
+    style: {
+      width: 400,
+      height: 200
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
 ]
 
 for (let i = 0, len = list.length; i < len; i++) {

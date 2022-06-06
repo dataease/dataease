@@ -77,7 +77,6 @@
             </div>
             <!-- 过滤组件 end -->
             <!-- 其他组件 start -->
-
             <div
               class="button-div-class"
               style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
@@ -132,6 +131,33 @@
               />
             </div>
             <!-- 视图复用 end -->
+
+            <!-- 图标库start -->
+            <div
+              class="button-div-class"
+              style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
+            >
+              <el-button
+                circle
+                :class="show&&showIndex===4? 'button-show':'button-closed'"
+                class="el-icon-brush"
+                size="mini"
+                @click="showPanel(4)"
+              />
+            </div>
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+              <div
+                style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
+                {{ $t('panel.icon_module') }}
+              </div>
+            </div>
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
+            </div>
+            <!-- 图标库end -->
           </div>
         </div>
       </de-aside-container>
@@ -155,6 +181,7 @@
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
           <assist-component v-show=" show &&showIndex===3" />
+          <icon-library v-show="show && showIndex === 4" />
         </el-drawer>
 
         <!--PC端画布区域-->
@@ -364,6 +391,7 @@ import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
+import IconLibrary from "@/views/panel/IconLibrary"
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
@@ -399,6 +427,7 @@ export default {
     Preview,
     AttrListExtend,
     AssistComponent,
+    IconLibrary,
     PanelTextEditor,
     TextAttr,
     ChartGroup,
@@ -741,6 +770,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      console.log('拖拽：：：：',e)
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
@@ -750,7 +780,9 @@ export default {
       let component
       const newComponentId = uuid.v1()
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
+      console.log('componentInfo',componentInfo)
       if (componentInfo.type === 'assist') {
+        console.log('组件list',componentList)
         // 辅助设计组件
         componentList.forEach(componentTemp => {
           if (componentInfo.id === componentTemp.id) {
@@ -760,6 +792,38 @@ export default {
 
         if (component.type === 'picture-add') {
           this.goFile()
+          this.clearCurrentInfo()
+          return
+        }
+        if (component.type === 'de-icon') {
+          if (this.canvasStyleData.auxiliaryMatrix) {
+            component.x = this.dropComponentInfo.x
+            component.y = this.dropComponentInfo.y
+            component.sizex = this.dropComponentInfo.sizex
+            component.sizey = this.dropComponentInfo.sizey
+
+            component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+            component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+            component.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+            component.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+          } else {
+            component.style.top = this.dropComponentInfo.shadowStyle.y
+            component.style.left = this.dropComponentInfo.shadowStyle.x
+            component.style.width = this.dropComponentInfo.shadowStyle.width
+            component.style.height = this.dropComponentInfo.shadowStyle.height
+          }
+          component.id = newComponentId
+
+          component.propValue = sessionStorage.getItem('iconUrl')
+
+          // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
+          component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+          // 统一设置背景信息
+          component.commonBackground = component.commonBackground || deepCopy(COMMON_BACKGROUND)
+          // 视图统一调整为复制
+          this.$store.commit('addComponent', { component })
+          this.$store.commit('recordSnapshot', 'handleDrop')
+          console.log('这里吗？？？',component)
           this.clearCurrentInfo()
           return
         }

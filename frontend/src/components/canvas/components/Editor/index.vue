@@ -111,6 +111,18 @@
       />
       <component
         :is="item.component"
+        v-else-if="renderOk&&item.type==='de-icon'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      />
+      <component
+        :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
         ref="wrapperChild"
