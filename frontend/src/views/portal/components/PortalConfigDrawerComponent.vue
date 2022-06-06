@@ -50,7 +50,6 @@
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
                     :default-active="currentTreeNode.id"
-                    class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
                     active-text-color="#333"
@@ -69,15 +68,18 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu
+                  <!-- <el-menu
                     :default-active="currentTreeNode.id"
                     mode="horizontal"
-                    class="el-menu-vertical-demo"
                     :background-color="themeColor"
                     active-text-color="#333"
-                  >
-                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                  </el-menu>
+                  > -->
+                  <PortalMenu
+                    :subTreeDatas="subTreeDatas"
+                    :currentTreeNode="currentTreeNode"
+                    :themeColor="themeColor"
+                  ></PortalMenu>
+                  <!-- </el-menu> -->
                 </template>
               </div>
             </el-header>
@@ -88,14 +90,19 @@
                 :style="{ backgroundColor: themeColor }"
                 v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
               >
-                <el-menu
+                <!-- <el-menu
                   :default-active="currentTreeNode.id"
-                  class="el-menu-vertical-demo"
                   :background-color="themeColor"
                   active-text-color="#333"
-                >
-                  <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                </el-menu>
+                > -->
+                <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+                <PortalMenu
+                  :subTreeDatas="subTreeDatas"
+                  :currentTreeNode="currentTreeNode"
+                  :themeColor="themeColor"
+                ></PortalMenu>
+
+                <!-- </el-menu> -->
               </el-aside>
               <el-main class="config-main">
                 <PanelViewShow ref="panelViewShow"></PanelViewShow>
@@ -114,7 +121,6 @@
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
                     :default-active="currentTreeNode.id"
-                    class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
                     active-text-color="#333"
@@ -133,15 +139,20 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu
+                  <!-- <el-menu
                     :default-active="currentTreeNode.id"
                     mode="horizontal"
-                    class="el-menu-vertical-demo"
                     :background-color="themeColor"
                     text-color="#333"
-                  >
-                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                  </el-menu>
+                  > -->
+                  <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+                  <PortalMenu
+                    :subTreeDatas="subTreeDatas"
+                    :currentTreeNode="currentTreeNode"
+                    :themeColor="themeColor"
+                  ></PortalMenu>
+
+                  <!-- </el-menu> -->
                 </template>
               </div>
             </el-header>

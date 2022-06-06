@@ -2,13 +2,14 @@
   <el-row>
     <el-row>
       <el-col :span="24">
-        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ '轮播图片' }}</span>
+        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ $t('panel.rotate_pictures') }}</span>
       </el-col>
     </el-row>
     <el-row class="main-content">
+
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '轮播区域张数' }}</span>
+          <span class="params-title">{{ $t('panel.Number_of_rotation_shows') }}</span>
         </el-col>
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.slidesPerView" :min="1" :max="10" />
@@ -16,19 +17,27 @@
       </el-row>
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '轮播间隔时间' }}</span>
+          <span class="params-title">{{ $t('panel.pictureGap') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.pictureGap" :min="0" :max="100" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.Rotation_interval') }}</span>
         </el-col>
         <el-col :span="7">
           <el-input-number v-model="curComponent.options.rotationTime" :min="1" :max="100" />
         </el-col>
         <el-col :span="2">
-          <span class="params-title">{{ '秒' }}</span>
+          <span class="params-title">{{ $t('panel.second') }}</span>
         </el-col>
       </el-row>
       <!-- 轮播的图片 -->
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '上传图片' }}</span>
+          <span class="params-title">{{ $t('panel.Upload_pictures') }}</span>
         </el-col>
         <!-- <el-col :span="20">
           <el-upload

@@ -403,6 +403,7 @@ const list = [
       }],
       slidesPerView: 3,
       rotationTime: 1,
+      pictureGap: 10,
       bannerImgList: []
       // autoplay: { delay: 1000, disableOnInteraction: false }
     },
