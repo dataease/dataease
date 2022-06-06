@@ -407,6 +407,7 @@ export default {
           this.treeId = Number(this.lastTreeId);
         }
       } else {
+        debugger;
         this.$emit("treeData", this.treeData);
       }
     },
@@ -519,6 +520,12 @@ export default {
     },
     // 添加子节点
     handleAddTreeSubNode(node) {
+      if (node.data.trendId) {
+        this.$message.warning(
+          "该菜单下已配置过仪表盘，不能配置子菜单，请删除后重新配置"
+        );
+        return;
+      }
       console.log("handleAddTreeSubNode node", node);
       this.treeId += 1;
       const treeId = this.treeId;
@@ -670,7 +677,11 @@ export default {
   ::v-deep .panel-design-preview {
     height: 100% !important;
   }
-  ::v-deep .el-menu--horizontal .el-submenu .el-submenu__title .el-submenu__icon-arrow {
+  ::v-deep
+    .el-menu--horizontal
+    .el-submenu
+    .el-submenu__title
+    .el-submenu__icon-arrow {
     position: static;
     vertical-align: middle;
     margin-left: 8px;
