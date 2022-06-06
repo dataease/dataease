@@ -359,7 +359,7 @@ export default {
         },
       ],
       showPanelView: false,
-      panelLoading: false
+      panelLoading: false,
     };
   },
   computed: {
@@ -517,7 +517,7 @@ export default {
       if (this.currentTreeNode.trendId && this.currentTreeNode.trendId.length) {
         this.handleUpdateTrend();
       } else {
-        this.$refs.panelViewShow.showMain = false
+        this.$refs.panelViewShow.showMain = false;
       }
     },
     // 鼠标移入该节点的时候触发
@@ -634,15 +634,15 @@ export default {
     handleUpdateTrend() {
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
-      this.panelLoading = true
+      this.panelLoading = true;
       const trendId =
         this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1];
-        const that = this
+      const that = this;
       initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
-        that.panelLoading = false
-      }).catch(err => {
-        that.panelLoading = false
+        that.panelLoading = false;
+      }).catch((err) => {
+        that.panelLoading = false;
       });
     },
 
