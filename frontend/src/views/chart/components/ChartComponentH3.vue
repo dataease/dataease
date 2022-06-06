@@ -381,6 +381,7 @@ export default {
         console.log(err)
       })
     },
+    // 数据处理
     loadPoint(data,items) {
       console.log(data,items)
       let objs = {}
