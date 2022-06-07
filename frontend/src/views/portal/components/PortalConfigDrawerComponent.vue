@@ -641,9 +641,7 @@ export default {
       initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
         that.panelLoading = false;
-      }).catch((err) => {
-        that.panelLoading = false;
-      });
+      })
     },
 
     tree(cache = false) {
