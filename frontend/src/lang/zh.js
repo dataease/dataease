@@ -646,7 +646,7 @@ export default {
     login_type: '默认登录方式',
     empty_front: '为空则默认取10秒',
     empty_msg: '为空则默认取30天',
-    front_error: '请填写0-100正整数',
+    front_error: '请填写0-300正整数', //修改了提示信息
     msg_error: '请填写1-365正整数',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP账户',
