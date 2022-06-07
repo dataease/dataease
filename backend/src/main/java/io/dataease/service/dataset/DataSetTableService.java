@@ -1633,6 +1633,7 @@ public class DataSetTableService {
                                 TableUtils.fieldName(field.getTableId() + "_" + field.getDataeaseName()),
                                 tableField.getFieldName())) {
                             tableField.setRemarks(field.getName());
+                            tableField.setFieldType(field.getType()); //将原有的type赋值给新创建的数据列
                             break;
                         }
                     }

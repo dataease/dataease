@@ -643,7 +643,7 @@ export default {
     login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
-    front_error: 'Valid ranger [0 - 100]',
+    front_error: 'Valid ranger [0 - 300]', //修改了提示信息
     msg_error: 'Valid ranger [1 - 365]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',

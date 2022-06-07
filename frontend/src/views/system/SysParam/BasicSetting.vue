@@ -86,7 +86,7 @@ export default {
       rules: {
         frontTimeOut: [
           {
-            pattern: '^([0-9]{1,2}|100)$',
+            pattern: '^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$', //修改了正则表达式，让其正确匹配0-300的数值
             message: this.$t('system_parameter_setting.front_error'),
             trigger: 'blur'
           }
