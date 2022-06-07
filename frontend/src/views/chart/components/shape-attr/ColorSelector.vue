@@ -118,6 +118,7 @@
 import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
 import { getColors } from '@/views/chart/chart/util'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   name: 'ColorSelector',
@@ -248,11 +249,15 @@ export default {
   },
   computed: {
     ...mapState([
-      'batchOptStatus'
+      'batchOptStatus',
+      'componentViewsData'
     ])
   },
   mounted() {
     this.init()
+    bus.$on('prop-change-data', () => {
+      this.initCustomColor()
+    })
   },
   methods: {
     changeColorOption(modifyName = 'value') {
@@ -336,8 +341,10 @@ export default {
           this.chart.type === 'funnel' ||
           this.chart.type === 'radar' ||
           this.chart.type === 'scatter')) {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        if (this.componentViewsData[this.chart.id]) {
+          const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
+          this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        }
       }
     }
   }

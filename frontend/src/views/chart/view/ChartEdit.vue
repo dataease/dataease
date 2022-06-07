@@ -1199,8 +1199,8 @@ export default {
     ...mapState([
       'curComponent',
       'panelViewEditInfo',
-      'allViewRender',
-      'componentViewsData'
+      'allViewRender'
+
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1283,9 +1283,9 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
-      if (this.componentViewsData[this.param.id]) {
-        this.chart = this.componentViewsData[this.param.id]
-      }
+      // if (this.componentViewsData[this.param.id]) {
+      //   this.chart = this.componentViewsData[this.param.id]
+      // }
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
