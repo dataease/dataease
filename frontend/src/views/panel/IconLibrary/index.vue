@@ -57,10 +57,10 @@ export default {
   },
   methods: {
     handleDragStart(ev) {
-      console.log('======拖拽触发事件', ev)
-      sessionStorage.setItem('iconUrl',ev.target.innerText)
-      // this.getImgWH(ev.target.innerText)
+      console.log('======拖拽触发事件', ev,ev.target.dataset.id)
       if(ev.target.dataset.id === undefined) return;
+      sessionStorage.setItem('iconUrl',ev.target.innerText)
+      this.getImgWH(ev.target.innerText)
       this.$store.commit('setDragComponentInfo', this.componentInfo(ev.target.dataset.id))
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
@@ -74,14 +74,18 @@ export default {
       this.$store.commit('clearDragComponentInfo')
     },
     async getImgWH(name){
-      let obj = await this.getImgSize(`@/assets/icon_lib/${name}`)
+      console.log(name)
+      let obj = await this.getImgSize(name)
       console.log(obj)
+      sessionStorage.setItem('imgWidth',obj.width)
+      sessionStorage.setItem('imgHeight',obj.height)
     },
-    getImgSize(url) {
+    getImgSize(name) {
       return new Promise((resolve,reject) => {
         let imgObj = new Image()
-        imgObj.src = url
+        imgObj.src = require('@/assets/icon_lib/'+name)
         imgObj.onload = () => {
+          console.log(imgObj)
           resolve({
             width: imgObj.width,
             height: imgObj.height
