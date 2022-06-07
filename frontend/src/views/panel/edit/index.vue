@@ -165,6 +165,7 @@
           class="ruler_class"
           :parent="true"
         > -->
+
         <div
           v-if="!previewVisible&&!mobileLayoutStatus"
           id="canvasInfo"
@@ -922,14 +923,18 @@ export default {
     restore() {
       this.$nextTick(() => {
         const domInfo = this.mobileLayoutStatus ? document.getElementById('canvasInfoMobile') : document.getElementById('canvasInfo')
+        console.log('此处更新视图状态------', domInfo.offsetHeight, domInfo.offsetWidth)
         if (domInfo) {
-          this.outStyle.height = domInfo.offsetHeight - this.getGap()
+          // this.outStyle.height = domInfo.offsetHeight - this.getGap()
+          this.outStyle.height = domInfo.offsetHeight
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001) + 2
+          // this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001) + 2
+          this.outStyle.width = domInfo.offsetWidth
         }
       })
     },
     getGap() {
+      console.log('this.componentGap外层--------------------', this.mobileLayoutStatus, this.componentGap)
       return this.mobileLayoutStatus ? 0 : this.componentGap * 2
     },
     closeStyleDialog() {
