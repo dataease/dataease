@@ -160,11 +160,13 @@ export default {
       reader.readAsDataURL(file)
     },
     componentInfo(id) {
-    // 辅助设计组件
+      console.log(id)
+      // 辅助设计组件
       let component
       console.log('componentList', componentList)
       componentList.forEach(componentTemp => {
         if (id === componentTemp.id) {
+          console.log(componentTemp.id)
           component = deepCopy(componentTemp)
         }
       })

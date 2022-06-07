@@ -112,6 +112,19 @@
       /> -->
       <component
         :is="item.component"
+        v-else-if="renderOk&&item.type==='de-icon'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
+      />
+      <component
+        :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
         ref="wrapperChild"
@@ -1282,6 +1295,7 @@ export default {
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
+      // console.log('什么问题啊？',style,prop)
       if (prop === 'rotate') {
         return style['rotate']
       }
@@ -1350,6 +1364,7 @@ export default {
       }
     },
     handleDragOver(e) {
+      if(this.dragComponentInfo === null) return
       console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop

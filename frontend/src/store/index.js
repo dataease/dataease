@@ -444,7 +444,10 @@ const data = {
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
+      console.log(state)
       // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
+      if(state.dragComponentInfo === null)return
+      
       if (state.dragComponentInfo.moveStatus !== 'drop') {
         bus.$emit('onRemoveLastItem')
       }

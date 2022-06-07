@@ -1588,6 +1588,7 @@ export default {
     border_style_dashed: '虚线',
     select_component: '请选择组件',
     other_module: '其他',
+    icon_module: '图标库',
     content: '内容',
     default_panel_name: '默认仪表板名称',
     source_panel_name: '原仪表板名称',
