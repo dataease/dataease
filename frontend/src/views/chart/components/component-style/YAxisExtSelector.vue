@@ -88,6 +88,32 @@
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
+
+            <span v-show="chart.type && !chart.type.includes('horizontal')">
+              <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
+                <el-select v-model="axisForm.axisLabelFormatter.type" @change="changeYAxisStyle">
+                  <el-option v-for="type in typeList" :key="type.value" :label="$t('chart.' + type.name)" :value="type.value" />
+                </el-select>
+              </el-form-item>
+
+              <el-form-item v-show="axisForm.axisLabelFormatter.type !== 'auto'" :label="$t('chart.value_formatter_decimal_count')" class="form-item">
+                <el-input-number v-model="axisForm.axisLabelFormatter.decimalCount" :precision="0" :min="0" :max="10" size="mini" @change="changeYAxisStyle" />
+              </el-form-item>
+
+              <el-form-item v-show="axisForm.axisLabelFormatter.type !== 'percent'" :label="$t('chart.value_formatter_unit')" class="form-item">
+                <el-select v-model="axisForm.axisLabelFormatter.unit" :placeholder="$t('chart.pls_select_field')" size="mini" @change="changeYAxisStyle">
+                  <el-option v-for="item in unitList" :key="item.value" :label="$t('chart.' + item.name)" :value="item.value" />
+                </el-select>
+              </el-form-item>
+
+              <el-form-item :label="$t('chart.value_formatter_suffix')" class="form-item">
+                <el-input v-model="axisForm.axisLabelFormatter.suffix" size="mini" clearable :placeholder="$t('commons.input_content')" @change="changeYAxisStyle" />
+              </el-form-item>
+
+              <el-form-item :label="$t('chart.value_formatter_thousand_separator')" class="form-item">
+                <el-checkbox v-model="axisForm.axisLabelFormatter.thousandSeparator" @change="changeYAxisStyle" />
+              </el-form-item>
+            </span>
           </span>
           <el-divider v-if="showProperty('axisLabel')" />
           <el-form-item v-show="showProperty('axisLabel')"  :label="$t('chart.content_formatter')" class="form-item">
@@ -101,6 +127,7 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_YAXIS_EXT_STYLE } from '../../chart/chart'
+import { formatterType, unitList } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'YAxisExtSelector',
@@ -126,7 +153,9 @@ export default {
       axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_EXT_STYLE)),
       isSetting: false,
       fontSize: [],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      typeList: formatterType,
+      unitList: unitList
     }
   },
   watch: {
@@ -163,6 +192,9 @@ export default {
           }
           if (!this.axisForm.axisValue) {
             this.axisForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_YAXIS_EXT_STYLE.axisValue))
+          }
+          if (!this.axisForm.axisLabelFormatter) {
+            this.axisForm.axisLabelFormatter = JSON.parse(JSON.stringify(DEFAULT_YAXIS_EXT_STYLE.axisLabelFormatter))
           }
         }
       }

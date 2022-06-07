@@ -100,7 +100,7 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
-      const param = { fieldIds: this.element.options.attrs.fieldId.split(',') }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
       if (this.panelInfo.proxy) {
         param.userId = this.panelInfo.proxy
       }
@@ -121,10 +121,33 @@ export default {
       this.$nextTick(() => {
         this.show = true
       })
+    },
+    'element.options.attrs.sort': function(value, old) {
+      if (value === null || typeof value === 'undefined' || value === old) return
+      this.datas = []
+
+      let method = multFieldValues
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = linkMultFieldValues
+      }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
+      this.element.options.attrs.fieldId &&
+      this.element.options.attrs.fieldId.length > 0 &&
+      method(param).then(res => {
+        this.datas = this.optionDatas(res.data)
+      }) || (this.element.options.value = '')
     }
 
   },
   created() {
+    if (!this.element.options.attrs.sort) {
+      this.element.options.attrs.sort = {}
+    }
     this.initLoad()
   },
   mounted() {
@@ -155,7 +178,7 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+        method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
           this.datas = this.optionDatas(res.data)
         })
       }
