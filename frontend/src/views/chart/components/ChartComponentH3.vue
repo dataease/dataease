@@ -226,10 +226,19 @@ export default {
             // basemap: 'osm',
           });
           // 地图实例化
+          // 中心点
+          var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
+          var point = new Point({
+              x: 331780.7808473259,
+              y: 667386.2572571054,
+              spatialReference: {wkt: wktString}
+            }
+          );
+
           let view = new MapView({
             container: container,
             map: map,
-            center: [120.585294, 31.299758],
+            center: point,
             zoom: 4,
             popup: {
               // collapseEnabled : false, // 是否需title点击折叠功能
@@ -272,6 +281,7 @@ export default {
           //给“地图视图”绑定点击事件
 
           view.popup.autoOpenEnabled = false
+          var tmpGraphic = null``
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
             view.hitTest(event).then((res) => {
@@ -280,7 +290,7 @@ export default {
                 let results = res.results
                 if (results.length > 0) {
                   view.graphics.remove(results[0].graphic)
-                  let g = results[0].graphic
+                  let g = results[0].graphic.clone()
                   g.symbol.url = require('@/assets/point.png')
                   that.graphicData = g
                   console.log(g)
