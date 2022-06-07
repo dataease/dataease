@@ -770,7 +770,8 @@ export default {
       return data
     },
     handleDrop(e) {
-      console.log('拖拽：：：：',e)
+      console.log('拖拽：：：：',e,this.dragComponentInfo)
+      if(this.dragComponentInfo === null) return
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
@@ -810,8 +811,10 @@ export default {
           } else {
             component.style.top = this.dropComponentInfo.shadowStyle.y
             component.style.left = this.dropComponentInfo.shadowStyle.x
-            component.style.width = this.dropComponentInfo.shadowStyle.width
-            component.style.height = this.dropComponentInfo.shadowStyle.height
+            // component.style.width = this.dropComponentInfo.shadowStyle.width
+            // component.style.height = this.dropComponentInfo.shadowStyle.height
+            component.style.width = parseInt(sessionStorage.getItem('imgWidth'))
+            component.style.height = parseInt(sessionStorage.getItem('imgHeight'))
           }
           component.id = newComponentId
 
