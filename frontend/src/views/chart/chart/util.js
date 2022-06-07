@@ -61,6 +61,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -101,6 +102,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -144,6 +146,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -176,6 +179,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -208,6 +212,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -246,6 +251,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -352,6 +358,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -426,6 +433,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -500,6 +508,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -573,6 +582,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -639,6 +649,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -705,6 +716,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -778,6 +790,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -830,6 +843,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -882,6 +896,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -935,6 +950,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -985,6 +1001,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -1022,6 +1039,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ]
@@ -1088,6 +1106,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],
@@ -1135,6 +1154,7 @@ export const TYPE_CONFIGS = [
         'title',
         'fontSize',
         'color',
+        'hPosition',
         'isItalic',
         'isBolder'
       ],

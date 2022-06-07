@@ -118,7 +118,7 @@
                           <span style="float: left">
                             <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
-                            <svg-icon v-if="viewField.deType === 2 || viewField.value === 3" icon-class="field_value" class="field-icon-value" />
+                            <svg-icon v-if="viewField.deType === 2 || viewField.deType === 3" icon-class="field_value" class="field-icon-value" />
                             <svg-icon v-if="viewField.deType === 5" icon-class="field_location" class="field-icon-location" />
                           </span>
                           <span style="float: left;font-size: 12px">{{ viewField.name }}</span>

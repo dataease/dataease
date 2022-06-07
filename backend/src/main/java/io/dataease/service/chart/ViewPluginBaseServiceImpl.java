@@ -2,6 +2,7 @@ package io.dataease.service.chart;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
+import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -128,6 +129,19 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String tabelName = (tableName.startsWith("(") && tableName.endsWith(")")) ? tableName : String.format(keyword, tableName);
         String tabelAlias = String.format(TABLE_ALIAS_PREFIX, 0);
         PluginViewSQL tableObj = PluginViewSQL.builder().tableName(tabelName).tableAlias(tabelAlias).build();
+
+
+        QueryProvider queryProvider = ProviderFactory.getQueryProvider(pluginViewSet.getDsType());
+
+        SQLObj sqlObj = SQLObj.builder().tableName(tabelName).tableAlias(tabelAlias).build();
+        PluginViewSetImpl child = (PluginViewSetImpl)pluginViewSet;
+        queryProvider.setSchema(sqlObj, child.getDs());
+        // String methodName = "setSchema";
+        // execProviderMethod(queryProvider, methodName, sqlObj, child.getDs());
+        tableObj.setTableName(sqlObj.getTableName());
+        tableObj.setTableAlias(sqlObj.getTableAlias());
+
+
         return tableObj;
     }
 

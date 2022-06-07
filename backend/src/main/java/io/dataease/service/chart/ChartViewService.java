@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
+import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.ext.*;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
@@ -1094,9 +1095,10 @@ public class ChartViewService {
 
     private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view) {
         PluginViewParam pluginViewParam = new PluginViewParam();
-        PluginViewSet pluginViewSet = BeanUtils.copyBean(new PluginViewSet(), table);
+        PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTabelId(table.getId());
+        pluginViewSet.setDs(ds);
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
 

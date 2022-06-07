@@ -110,7 +110,7 @@
                             <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
                             <svg-icon
-                              v-if="viewField.deType === 2 || viewField.value === 3"
+                              v-if="viewField.deType === 2 || viewField.deType === 3"
                               icon-class="field_value"
                               class="field-icon-value"
                             />
