@@ -8,7 +8,7 @@
       </el-row>
       <el-row v-show="showView === 'Datasource'">
         <el-button icon="el-icon-plus" type="text" size="mini" style="float: left;" @click="addFolder"> {{ $t('datasource.create') }}</el-button>
-        <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;" @click="driverMgm"> {{ $t('driver.mgm') }}</el-button>
+        <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;" @click="driverMgm" v-show="user.isAdmin"> {{ $t('driver.mgm') }}</el-button>
       </el-row>
 
       <el-row class="title-css" v-show="showView === 'Driver'">
@@ -199,11 +199,7 @@ export default {
         desc: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
           {min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
         type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}]
-      },
-      editableTabs: [{
-        title: i18n.t('commons.datasource'),
-        name: 'Datasource'
-      }]
+      }
     }
   },
   watch: {
@@ -219,12 +215,6 @@ export default {
   created() {
     this.queryTreeDatas()
     this.datasourceTypes()
-    if (this.user.isAdmin) {
-      this.editableTabs.push({
-        title: i18n.t('driver.mgm'),
-        name: 'Driver'
-      })
-    }
   },
   methods: {
     filterNode(value, data) {
