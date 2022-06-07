@@ -41,6 +41,7 @@ export const DEFAULT_SIZE = {
   gaugeMax: 100,
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,
+  gaugeTickCount: 5,
   dimensionFontSize: 18,
   quotaFontSize: 18,
   spaceSplit: 10,
@@ -70,6 +71,13 @@ export const DEFAULT_LABEL = {
   gaugeFormatter: '{value}',
   labelLine: {
     show: true
+  },
+  gaugeLabelFormatter: {
+    type: 'value', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 export const DEFAULT_TOOLTIP = {
@@ -163,6 +171,13 @@ export const DEFAULT_XAXIS_STYLE = {
     max: null,
     split: null,
     splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -194,6 +209,13 @@ export const DEFAULT_YAXIS_STYLE = {
     max: null,
     split: null,
     splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 export const DEFAULT_YAXIS_EXT_STYLE = {
@@ -225,6 +247,13 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     max: null,
     split: null,
     splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
