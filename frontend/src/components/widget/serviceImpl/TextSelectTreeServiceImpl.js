@@ -17,7 +17,8 @@ const dialogPanel = {
       label: 'text',
       value: 'id',
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      sort: {}
     },
     value: '',
     manualModify: false
@@ -95,6 +96,9 @@ class TextSelectTreeServiceImpl extends WidgetService {
       param.value = param.value.map(val => val.replaceAll('-de-', ','))
     }
     return param
+  }
+  isSortWidget() {
+    return true
   }
 
   fillValueDerfault(element) {

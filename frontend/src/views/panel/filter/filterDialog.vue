@@ -181,7 +181,7 @@
 
     <de-main-container class="ms-main-container">
       <div v-if="currentElement.options && currentElement.options.attrs">
-        <filter-head :element="currentElement" />
+        <filter-head :element="currentElement" :all-fields="allFields" :widget="widget" />
 
         <filter-control :element="currentElement" :widget="widget" :control-attrs="myAttrs" :child-views="childViews" />
 
@@ -294,7 +294,8 @@ export default {
       childViews: {
         viewInfos: []
       },
-      currentElement: null
+      currentElement: null,
+      allFields: []
     }
   },
   computed: {
@@ -318,6 +319,7 @@ export default {
       }
       this.enableSureButton()
     },
+
     keyWord(val) {
       this.expandedArray = []
       if (this.showDomType === 'field') {
@@ -546,6 +548,7 @@ export default {
     loadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
+        this.allFields = JSON.parse(JSON.stringify(datas))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
@@ -556,6 +559,7 @@ export default {
     comLoadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
+        this.allFields = JSON.parse(JSON.stringify(datas))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
