@@ -2,7 +2,7 @@
   <div class="portal-nav-menu-container">
     <el-container class="config-container">
       <el-header
-        class="config-header config-top-header"
+        class="config-header"
         :style="{ backgroundColor: portal.themeColor }"
         v-if="
           (portal.navLayoutStyle == 0 || portal.navLayoutStyle == 2) &&
@@ -71,6 +71,7 @@
           > -->
           <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
           <PortalMenu
+            mode="vertical"
             :subTreeDatas="subTreeDatas"
             :currentTreeNode="currentTreeNode"
             :themeColor="portal.themeColor"
@@ -188,7 +189,7 @@ export default {
         });
         return subs;
       } else if (
-        this.portal.navLayoutStyle == 1 &&
+        this.portal.navLayoutStyle == 1 ||
         this.portal.navLayoutStyle == 2
       ) {
         return treeData;
@@ -277,6 +278,14 @@ export default {
 
     .config-aside {
       height: 100%;
+    }
+    .config-aside-fixed {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 60px;
+      z-index: 9999;
+      height: calc(100% - 60px);
     }
 
     .config-main {

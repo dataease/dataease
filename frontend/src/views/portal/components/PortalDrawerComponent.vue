@@ -22,10 +22,10 @@
                 v-model="activeTab"
                 size="mini"
                 round
-                @change="handleTopRadioPreView"
+                @change="handleEditPreivewTab"
               >
                 <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview">预览</el-radio-button>
+                <el-radio-button label="preview" :disabled="true">预览</el-radio-button>
               </el-radio-group>
             </div>
             <div class="wrapper">
@@ -223,15 +223,24 @@
         @close="syncVisible = false"
       ></PortConfigDrawerComponent>
     </template>
+    <template v-if="privewPortal">
+      <PanelViewShow
+        ref="panelViewShow"
+        :portal="privewPortal"
+        @update="update"
+      ></PanelViewShow>
+    </template>
   </div>
 </template>
 
 <script>
 import PortConfigDrawerComponent from "./PortalConfigDrawerComponent.vue";
+import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
 import bus from "@/utils/bus";
 export default {
   components: {
     PortConfigDrawerComponent,
+    PanelViewShow
   },
   props: {
     visible: {
@@ -259,6 +268,8 @@ export default {
       portalName: "", // 当前门户的名称
       lastTreeId: 0, // 当前的树节点的跟节点
       tmpTreeData: null, // 获取配置页面的treeData
+      privewPortal: null,
+      priviewBtnEnable: false,
     };
   },
 
@@ -295,7 +306,7 @@ export default {
     __initData() {
       this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
       this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
-      this.tmpTreeData = null
+      this.tmpTreeData = null;
       if (this.openType == "add") {
         this.topNavPosRadio = "top"; //  当前一级导航的位置
         this.themeColor = "#f1f3f8"; // 当前导航的颜色
@@ -309,18 +320,56 @@ export default {
         this.portalName = this.item.portalName; // 当前门户的名称
         this.lastTreeId = this.item.lastTreeId;
       }
+      // this.priviewBtnEnable = !!this.item.config.treeData || !!this.tmpTreeData
     },
 
-    // 点击预览
-    handleTopRadioPreView(evt) {
-      console.log("evt", evt);
-      if (evt == "preview") {
-        this.$emit("preview", this.item);
-        setTimeout(() => {
-          this.syncVisible = false;
-        }, 1000);
+    /***************** 预览 start ****************/
+    handleEditPreivewTab(evt) {
+      console.log("evt -- ", evt);
+      if (evt == "edit") {
+        return;
+      }
+      this.privewPortal = {
+        navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
+        topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
+        themeColor: this.themeColor, // 默认
+        portalName: this.portalName || "未命名站点", // 站点名称
+        config: {
+          treeData: Object.assign({}, this.item.config.treeData, this.tmpTreeData)
+        },
+      };
+      this.$nextTick(() => {
+        console.log("this.$refs.panelViewShow", this.$refs.panelViewShow)
+        if (this.$refs.panelViewShow) {
+          this.$refs.panelViewShow.clickFullscreen();
+
+          this.$watch(
+            () => this.$refs.panelViewShow.fullscreen,
+            (val) => {
+              if (!val) {
+                this.activeTab = "edit";
+                this.privewPortal = null;
+              }
+            }
+          );
+        }
+      });
+    },
+
+    update(trendId) {
+      if (trendId) {
+        if (Object.prototype.toString.call(trendId) == "[object Array]") {
+          trendId = trendId[trendId.length - 1];
+        }
+        initPanelData(trendId, function (response) {
+          bus.$emit("set-panel-show-type", 0);
+        });
+      } else {
+        this.$refs.panelViewShow.showMain = false;
       }
     },
+
+    /***************** 预览 end ****************/
 
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
@@ -352,7 +401,7 @@ export default {
     // 保存
     handleSave() {
       const getTreeData = () => {
-        debugger
+        debugger;
         if (this.tmpTreeData) {
           return this.tmpTreeData;
         }
