@@ -16,28 +16,12 @@
                 style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
-                <!-- <div class="list-group-container">
-                  <drag-item
-                    v-for="(item,index) in element.options.attrs.dragItems"
-                    :key="item.id"
-                    :item="item"
-                    :index="index"
-                    @closeItem="closeItem"
-                  />
-                </div> -->
+
                 <v-flex v-for="(item,index) in element.options.attrs.dragItems" :key="item.id">
 
-                  <drag-item :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
+                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : allFields" @closeItem="closeItem" @sort-change="sortChange" />
                 </v-flex>
-                <!-- <transition-group class="list-group" :data-value="$t('panel.drag_here')">
-                  <drag-item
-                    v-for="(item,index) in element.options.attrs.dragItems"
-                    :key="item.id"
-                    :item="item"
-                    :index="index"
-                    @closeItem="closeItem"
-                  />
-                </transition-group> -->
+
                 <span solt="footer">{{ $t('panel.drag_here') }}</span>
               </draggable>
             </el-row>
@@ -61,6 +45,14 @@ export default {
     element: {
       type: Object,
       default: () => {}
+    },
+    allFields: {
+      type: Array,
+      default: () => []
+    },
+    widget: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -68,11 +60,17 @@ export default {
       targets: []
     }
   },
+  computed: {
+    isSortWidget() {
+      return this.widget && this.widget.isSortWidget && this.widget.isSortWidget()
+    }
+  },
 
   watch: {
 
   },
   created() {
+
   },
   methods: {
     onMove(e, originalEvent) {
@@ -84,6 +82,13 @@ export default {
     closeItem(tag) {
       const index = tag.index
       this.element.options.attrs.dragItems.splice(index, 1)
+      if (!index) {
+        this.element.options.attrs.sort = null
+      }
+    },
+    sortChange(param) {
+      this.element.options.attrs.sort = param
+      // this.$emit('sort-change', param)
     }
   }
 }

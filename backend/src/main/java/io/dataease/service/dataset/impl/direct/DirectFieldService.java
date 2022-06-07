@@ -3,13 +3,16 @@ package io.dataease.service.dataset.impl.direct;
 import com.google.gson.Gson;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.BaseTreeNode;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
+import io.dataease.dto.dataset.DeSortDTO;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -48,11 +51,28 @@ public class DirectFieldService implements DataSetFieldService {
     public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions, Boolean rowAndColumnMgm) throws Exception {
         List<String> filedIds = new ArrayList<>();
         filedIds.add(fieldId);
-        return fieldValues(filedIds, userId, userPermissions, false, rowAndColumnMgm);
+        return fieldValues(filedIds, null, userId, userPermissions, false, rowAndColumnMgm);
     }
 
     @Override
-    public List<Object> fieldValues(List<String> fieldIds, Long userId, Boolean userPermissions, Boolean needMapping, Boolean rowAndColumnMgm) throws Exception {
+    public List<Object> fieldValues(String fieldId, DeSortDTO sortDTO, Long userId, Boolean userPermissions, Boolean rowAndColumnMgm) throws Exception {
+        List<String> filedIds = new ArrayList<>();
+        filedIds.add(fieldId);
+        return fieldValues(filedIds, sortDTO, userId, userPermissions, false, rowAndColumnMgm);
+    }
+
+    public List<DeSortField> buildSorts(List<DatasetTableField> allFields, DeSortDTO sortDTO) {
+        if (ObjectUtils.isEmpty(sortDTO) || StringUtils.isBlank(sortDTO.getId()) || StringUtils.isBlank(sortDTO.getSort()))
+            return null;
+        return allFields.stream().filter(field -> StringUtils.equals(sortDTO.getId(), field.getId())).map(field -> {
+            DeSortField deSortField = BeanUtils.copyBean(new DeSortField(), field);
+            deSortField.setOrderDirection(sortDTO.getSort());
+            return deSortField;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Object> fieldValues(List<String> fieldIds, DeSortDTO sortDTO, Long userId, Boolean userPermissions, Boolean needMapping, Boolean rowAndColumnMgm) throws Exception {
         String fieldId = fieldIds.get(0);
         DatasetTableField field = dataSetTableFieldsService.selectByPrimaryKey(fieldId);
         if (field == null || StringUtils.isEmpty(field.getTableId())) return null;
@@ -62,6 +82,9 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(field.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+
+        List<DeSortField> deSortFields = buildSorts(fields, sortDTO);
+
         final List<String> allTableFieldIds = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
         boolean multi = fieldIds.stream().anyMatch(item -> !allTableFieldIds.contains(item));
         if (multi && needMapping) {
@@ -95,6 +118,8 @@ public class DirectFieldService implements DataSetFieldService {
             }
         }
 
+
+
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Provider datasourceProvider = null;
         if (datasetTable.getMode() == 0) {// 直连
@@ -110,18 +135,18 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, true, ds, customFilter));
+                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, true, ds, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), permissionFields, true, customFilter));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), permissionFields, true, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, true, customFilter));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, true, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, true, customFilter));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, true, customFilter, deSortFields));
             }
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询

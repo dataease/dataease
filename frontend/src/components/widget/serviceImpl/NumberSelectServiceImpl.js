@@ -18,7 +18,8 @@ const dialogPanel = {
       label: 'text',
       value: 'id',
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      sort: {}
     },
     value: '',
     manualModify: false
@@ -90,6 +91,10 @@ class NumberSelectServiceImpl extends WidgetService {
       operator: element.options.attrs.multiple ? 'in' : 'eq'
     }
     return param
+  }
+
+  isSortWidget() {
+    return true
   }
   fillValueDerfault(element) {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()

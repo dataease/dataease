@@ -5,6 +5,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,16 @@ public class ApiProvider extends QueryProvider {
 
     @Override
     public String getSQL(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+        return null;
+    }
+
+    @Override
+    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DeSortField> list2) {
+        return null;
+    }
+
+    @Override
+    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DeSortField> list2) {
         return null;
     }
 
