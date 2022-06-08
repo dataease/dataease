@@ -86,6 +86,7 @@ export default {
         } else {
           this.assistLine = []
         }
+        this.lineArr = JSON.parse(JSON.stringify(this.assistLine))
       }
     },
     changeAssistLine() {
