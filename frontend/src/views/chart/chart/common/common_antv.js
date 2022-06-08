@@ -1,4 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -267,6 +268,17 @@ export function getXAxis(chart) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
+          },
+          formatter: function(value) {
+            if (chart.type.includes('horizontal')) {
+              if (!a.axisLabelFormatter) {
+                return valueFormatter(value, formatterItem)
+              } else {
+                return valueFormatter(value, a.axisLabelFormatter)
+              }
+            } else {
+              return value
+            }
           }
         } : null
 
@@ -327,6 +339,17 @@ export function getYAxis(chart) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
+          },
+          formatter: function(value) {
+            if (!chart.type.includes('horizontal')) {
+              if (!a.axisLabelFormatter) {
+                return valueFormatter(value, formatterItem)
+              } else {
+                return valueFormatter(value, a.axisLabelFormatter)
+              }
+            } else {
+              return value
+            }
           }
         } : null
 
