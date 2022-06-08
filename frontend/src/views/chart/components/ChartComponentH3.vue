@@ -241,12 +241,14 @@ export default {
             center: point,
             zoom: 4,
             popup: {
-              // collapseEnabled : false, // 是否需title点击折叠功能
+              collapseEnabled : false, // 是否需title点击折叠功能
               dockEnabled: true,  // 指示弹出窗口的位置是否停靠在视图的一侧
               dockOptions: {
-                buttonEnabled: true, // 开启固定标签页
-                breakpoint: true  // 开启 点击停靠气泡窗
-              }
+                position: 'top-center',
+                buttonEnabled: false, // 开启固定标签页
+                // breakpoint: true,  // 开启 点击停靠气泡窗
+              },
+              actions: [] // 清空事件按钮 （缩放至、...）
             },
             // rotation: 45
           });
@@ -357,8 +359,8 @@ export default {
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
                 url: require("@/assets/point2.png"),
                 // 图片大小
-                width: '49px',
-                height: '39px'
+                width: '130px',
+                height: '71px'
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
@@ -393,8 +395,8 @@ export default {
           //       //图片地址，可以使用网络路径或本地路径 (base64也可以)
           //       url: require("@/assets/point.png"),
           //       // 图片大小
-          //       width: '49px',
-          //       height: '39px'
+          //       width: '130px',
+          //       height: '71px'
           //     },
           //     // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
           //     attributes: {
@@ -561,5 +563,62 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+  ::v-deep .esri-popup__header-title {
+    border-radius: 2px;
+    font-size: 14px;
+    padding: 6px 7px;
+    margin: 6px auto 6px 7px;
+    display: block;
+    transition: background-color 125ms ease-in-out;
+    white-space: pre-wrap;
+    word-break: break-all;
+    word-wrap: break-word;
+    word-break: break-word;
+    margin-top: 36px;
+    margin-left: 50px;
+    color: #fadc43;
+  }
+
+  ::v-deep .esri-view-width-xlarge .esri-popup__main-container {
+    width: 400px;
+  }
+
+  ::v-deep .esri-popup__main-container {
+   pointer-events: auto;
+   position: relative;
+   z-index: 1;
+   width: 340px;
+   max-height: 340px;
+   background-color: rgba(0,0,0,0);
+   display: flex;
+   flex-flow: column nowrap;
+   width: 400px;
+   height: 271px;
+   background-image: require('@/assets/popup-background.png');
+   color: white;
+ }
+
+  ::v-deep .esri-popup__pointer {
+    position: absolute;
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  ::v-deep .esri-popup__content {
+   display: flex;
+   flex-flow: column nowrap;
+   flex: 1 1 auto;
+   font-size: 12px;
+   font-weight: 400;
+   margin: 0 15px 12px;
+   overflow: auto;
+   line-height: normal;
+   margin-left: 28px;
+   margin-top: 10px;
+   white-space: break-spaces;
+ }
+
 
 </style>
