@@ -179,6 +179,7 @@ export default {
         })
         result['rotate'] = style['rotate']
       }
+      console.log('------------------------', result)
       return result
     },
 
@@ -190,6 +191,7 @@ export default {
           height: '100%'
         }
       } else {
+        console.log('getStyle', getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
         return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },

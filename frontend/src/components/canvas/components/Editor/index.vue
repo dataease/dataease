@@ -1017,7 +1017,7 @@ export default {
       handler(newVal, oldVla) {
         console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
-        // this.changeScale()  // 暂时禁用为解决s2表格出现的加载问题
+        this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
@@ -1364,7 +1364,7 @@ export default {
       }
     },
     handleDragOver(e) {
-      if(this.dragComponentInfo === null) return
+      if (this.dragComponentInfo === null) return
       console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop

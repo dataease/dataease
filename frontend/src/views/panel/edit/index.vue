@@ -192,6 +192,13 @@
           class="ruler_class"
           :parent="true"
         > -->
+        <div class="zoom_control">
+          画布缩放控制器
+          <div>
+            <el-slider v-model="scaleValue" :min="30" :max="100" @change="changeScale" />
+          </div>
+
+        </div>
         <SketchRule
           :lang="lang"
           :thick="thick"
@@ -209,6 +216,7 @@
         />
         <!-- 创建盒子 -->
         <div id="ruleBox" ref="screensRef" class="rule_box" @scroll="handleScroll" @wheel="handleWheel">
+
           <div
             v-if="!previewVisible&&!mobileLayoutStatus"
             id="canvasInfo"
@@ -354,6 +362,7 @@
       ref="files"
       type="file"
       accept="image/*"
+      multiple
       hidden
       @click="e => {e.target.value = '';}"
       @change="handleFileChange"
@@ -411,7 +420,7 @@ import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
-import IconLibrary from "@/views/panel/IconLibrary"
+import IconLibrary from '@/views/panel/IconLibrary'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
@@ -457,6 +466,7 @@ export default {
   },
   data() {
     return {
+      scaleValue: 100,
       scaleRule: 1, // 658813476562495, //1,
       startX: 0,
       startY: 0,
@@ -749,6 +759,7 @@ export default {
         _this.restore()
       })
     })
+
     // this.$refs.screensRef.scrollLeft =this.$refs.containerRef.getBoundingClientRect().width / 2 - 300 // 300 = #screens.width / 2
     this.$nextTick(() => {
       this.initSize()
@@ -759,6 +770,13 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    changeScale(e) {
+      console.log('缩放值------', e)
+      this.scaleRule = e / 100
+      this.$nextTick(() => {
+        this.handleScroll()
+      })
+    },
     detectZoom() {
       let ratio = 0
       const screen = window.screen
@@ -804,14 +822,21 @@ export default {
     },
     // 控制缩放值
     handleWheel(e) {
-      console.log('是否触发-----')
+      console.log('是否触发-----', e)
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault()
         const nextScale = parseFloat(
           Math.max(0.2, this.scaleRule - e.deltaY / 500).toFixed(2)
         )
+        if (nextScale > 1) {
+          return
+        }
+        if (nextScale < 0.3) {
+          return
+        }
         console.log('nextScale', nextScale)
         this.scaleRule = nextScale
+        this.scaleValue = nextScale * 100
       }
       this.$nextTick(() => {
         this.handleScroll()
@@ -916,8 +941,8 @@ export default {
       return data
     },
     handleDrop(e) {
-      console.log('拖拽：：：：',e,this.dragComponentInfo)
-      if(this.dragComponentInfo === null) return
+      console.log('拖拽：：：：', e, this.dragComponentInfo)
+      if (this.dragComponentInfo === null) return
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
@@ -928,9 +953,9 @@ export default {
       let component
       const newComponentId = uuid.v1()
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
-      console.log('componentInfo',componentInfo)
+      console.log('componentInfo', componentInfo)
       if (componentInfo.type === 'assist') {
-        console.log('组件list',componentList)
+        console.log('组件list', componentList)
         // 辅助设计组件
         componentList.forEach(componentTemp => {
           if (componentInfo.id === componentTemp.id) {
@@ -973,7 +998,7 @@ export default {
           // 视图统一调整为复制
           this.$store.commit('addComponent', { component })
           this.$store.commit('recordSnapshot', 'handleDrop')
-          console.log('这里吗？？？',component)
+          console.log('这里吗？？？', component)
           this.clearCurrentInfo()
           return
         }
@@ -1163,8 +1188,58 @@ export default {
         toast('只能插入图片')
         return
       }
+      const fileList = e.target.files
+      console.log('e.target==========', fileList)
+      for (const key in fileList) {
+        console.log('遍历对象数组-----', key, fileList[key])
+        _this.addMorePirTure(fileList[key])
+      }
       //
-      const reader = new FileReader()
+      // const reader = new FileReader()
+      // reader.onload = (res) => {
+      //   const fileResult = res.target.result
+      //   const img = new Image()
+      //   img.onload = () => {
+      //     const component = {
+      //       ...commonAttr,
+      //       id: generateID(),
+      //       component: 'Picture',
+      //       type: 'picture-add',
+      //       label: '图片',
+      //       icon: '',
+      //       hyperlinks: HYPERLINKS,
+      //       mobileStyle: BASE_MOBILE_STYLE,
+      //       propValue: fileResult,
+      //       style: {
+      //         ...commonStyle
+      //       },
+      //       commonBackground: {
+      //         alpha: 100,
+      //         backgroundType: 'color',
+      //         borderRadius: 0,
+      //         boxHeight: img.width,
+      //         boxWidth: img.height,
+      //         color: '#FFFFFF',
+      //         enable: false
+      //       }
+      //     }
+      //     console.log('图片的样式', img.width, img.height)
+      //     component.auxiliaryMatrix = false
+      //     component.style.top = _this.dropComponentInfo.shadowStyle.y
+      //     component.style.left = _this.dropComponentInfo.shadowStyle.x
+      //     component.style.width = img.width
+      //     component.style.height = img.height
+      //     this.$store.commit('addComponent', {
+      //       component: component
+      //     })
+      //     this.$store.commit('recordSnapshot', 'handleFileChange')
+      //   }
+
+      //   img.src = fileResult
+      // }
+      // reader.readAsDataURL(file)
+
+      // -------------------------------------------------------------------------------废弃代码
       // reader.onload = (res) => {
       //   const fileResult = res.target.result
       //   const img = new Image()
@@ -1207,51 +1282,6 @@ export default {
       //   }
       //   // img.src = fileResult
       // }
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        const img = new Image()
-
-        img.onload = () => {
-          const component = {
-            ...commonAttr,
-            id: generateID(),
-            component: 'Picture',
-            type: 'picture-add',
-            label: '图片',
-            icon: '',
-            hyperlinks: HYPERLINKS,
-            mobileStyle: BASE_MOBILE_STYLE,
-            propValue: fileResult,
-            style: {
-              ...commonStyle
-            },
-            commonBackground: {
-              alpha: 100,
-              backgroundType: 'color',
-              borderRadius: 0,
-              boxHeight: img.width,
-              boxWidth: img.height,
-              color: '#FFFFFF',
-              enable: false
-            }
-          }
-          console.log('图片的样式', img.width, img.height)
-          component.auxiliaryMatrix = false
-          component.style.top = _this.dropComponentInfo.shadowStyle.y
-          component.style.left = _this.dropComponentInfo.shadowStyle.x
-          // component.style.width = _this.dropComponentInfo.shadowStyle.width
-          // component.style.height = _this.dropComponentInfo.shadowStyle.height
-          component.style.width = img.width
-          component.style.height = img.height
-          this.$store.commit('addComponent', {
-            component: component
-          })
-          this.$store.commit('recordSnapshot', 'handleFileChange')
-        }
-
-        img.src = fileResult
-      }
-      reader.readAsDataURL(file)
 
       //
 
@@ -1337,6 +1367,52 @@ export default {
       //   }
       //   reader.readAsDataURL(file)
       // })
+    },
+    addMorePirTure(file) {
+      const _this = this
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        const img = new Image()
+        img.onload = () => {
+          const component = {
+            ...commonAttr,
+            id: generateID(),
+            component: 'Picture',
+            type: 'picture-add',
+            label: '图片',
+            icon: '',
+            hyperlinks: HYPERLINKS,
+            mobileStyle: BASE_MOBILE_STYLE,
+            propValue: fileResult,
+            style: {
+              ...commonStyle
+            },
+            commonBackground: {
+              alpha: 100,
+              backgroundType: 'color',
+              borderRadius: 0,
+              boxHeight: img.width,
+              boxWidth: img.height,
+              color: '#FFFFFF',
+              enable: false
+            }
+          }
+          console.log('图片的样式', img.width, img.height)
+          component.auxiliaryMatrix = false
+          component.style.top = _this.dropComponentInfo.shadowStyle.y
+          component.style.left = _this.dropComponentInfo.shadowStyle.x
+          component.style.width = img.width
+          component.style.height = img.height
+          this.$store.commit('addComponent', {
+            component: component
+          })
+          this.$store.commit('recordSnapshot', 'handleFileChange')
+        }
+
+        img.src = fileResult
+      }
+      reader.readAsDataURL(file)
     },
     getPositionX(x) {
       if (this.canvasStyleData.selfAdaption) {
@@ -1623,6 +1699,16 @@ export default {
     height: 100%;
     overflow-x: auto;
     overflow-y: auto;
+    position:relative;
+  }
+  .zoom_control{
+    position:absolute;
+    right:4%;
+    bottom:8%;
+    z-index:99999999999999999;
+    width: 210px;
+    background: rgba(0,0,0,0.1);
+    padding: 20px 10px;
   }
   .this_canvas {
     width: 100%;
