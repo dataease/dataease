@@ -22,12 +22,9 @@
           <el-table-column label="操作">
             <template slot-scope="{ row }">
               <div class="table-option">
-                <i class="el-icon-edit" @click="handleEditPortal(row)"></i>
-                <i
-                  class="el-icon-table-lamp"
-                  @click="handleUpdateTrend(row)"
-                ></i>
-                <i class="el-icon-delete" @click="handleDeleteRow(row)"></i>
+                <el-button circle icon="el-icon-edit" size="mini" type="primary" @click="handleEditPortal(row)"></el-button>
+                <el-button circle icon="el-icon-table-lamp" size="mini" @click="handleUpdateTrend(row)"></el-button>
+                <el-button circle icon="el-icon-delete" size="mini" type="danger" @click="handleDeleteRow(row)"></el-button>
               </div>
             </template>
           </el-table-column>
@@ -265,7 +262,7 @@ export default {
 .portal-container {
   position: relative;
   .portal-container-table {
-    padding: 10px;
+    padding: 14px;
     box-sizing: border-box;
     position: absolute;
     left: 0;
