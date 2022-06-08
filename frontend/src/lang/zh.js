@@ -2080,5 +2080,8 @@ export default {
   },
   plugin_style: {
     border: '边框'
+  },
+  sql_variable: {
+    variable_mgm: '参数设置'
   }
 }

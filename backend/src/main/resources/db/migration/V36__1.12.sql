@@ -19,3 +19,17 @@ CREATE TABLE `chart_view_field`
     `last_sync_time`  bigint(13) DEFAULT NULL COMMENT '同步时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `sql_variable`;
+CREATE TABLE `sql_variable`
+(
+    `id`              varchar(50)  NOT NULL COMMENT 'ID',
+    `table_id`        varchar(50)  NOT NULL COMMENT '数据集ID',
+    `variable_name`   varchar(255) NOT NULL COMMENT '名称',
+    `alias`           varchar(255) NOT NULL COMMENT '别名',
+    `type`            varchar(50)  NOT NULL COMMENT '类型',
+    `details`         longtext DEFAULT NULL COMMENT '明细',
+    `default_value`   longtext DEFAULT NULL COMMENT '默认值',
+    `required`        tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否必填',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;

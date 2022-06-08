@@ -46,6 +46,7 @@
             </el-select>
           </el-form-item>
         </el-form>
+        <el-button  v-if="mode === '1'"  type="text" size="mini" style="float: left;" @click="variableMgm"> {{ $t('sql_variable.variable_mgm') }}</el-button>
       </el-row>
       <el-row>
         <el-col style="min-width: 200px;">
@@ -94,6 +95,20 @@
           </span>
         </el-card>
       </el-row>
+
+      <el-dialog :title="dialogTitle" :visible="showVariableMgm" :before-close="closeVariableMgm" width="60%" class="dialog-css" append-to-body>
+
+<!--        <fu-table :data="VariableList">-->
+<!--          <el-table-column prop="authTargetName" :label="$t('dataset.row_permission.name')"/>-->
+<!--          <el-table-column prop="authTargetName" :label="$t('dataset.row_permission.name')"/>-->
+<!--          <el-table-column prop="authTargetName" :label="$t('dataset.row_permission.name')"/>-->
+<!--        </fu-table>-->
+<!--        <div slot="footer" class="dialog-footer">-->
+<!--          <el-button size="mini" @click="closeVariableMgm">{{ $t('dataset.cancel') }}</el-button>-->
+<!--          <el-button type="primary" size="mini" @click="saveVariable()">{{ $t('dataset.confirm') }}</el-button>-->
+<!--        </div>-->
+      </el-dialog>
+
     </el-row>
   </el-col>
 </template>
@@ -161,6 +176,10 @@ export default {
       selectedDatasource: {},
       engineMode: 'local',
       disabledSync: true,
+      showVariableMgm: false,
+      dialogTitle: '',
+      variables: [],
+      variablesTmp: []
     }
   },
   computed: {
@@ -335,7 +354,18 @@ export default {
       this.fields = []
       this.mode = '0'
       this.syncType = 'sync_now'
-    }
+    },
+
+    variableMgm() {
+      var reg = new RegExp("${(.*?)}", "gim");
+      var match = this.sql.match(reg);
+      console.log(match)
+      this.dialogTitle = this.$t('sql_variable.variable_mgm')
+      this.showVariableMgm = true
+    },
+    closeVariableMgm() {
+      this.showVariableMgm = false
+    },
   }
 }
 </script>
