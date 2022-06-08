@@ -367,7 +367,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -442,7 +443,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -517,7 +519,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -591,7 +594,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -725,7 +729,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -799,7 +804,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -852,7 +858,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -905,7 +912,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -959,7 +967,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ],
       'split-selector-ant-v': [
         'splitForm',
@@ -1010,7 +1019,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -1115,7 +1125,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
@@ -1163,7 +1174,8 @@ export const TYPE_CONFIGS = [
         'icon',
         'orient',
         'textStyle',
-        'hPosition'
+        'hPosition',
+        'vPosition'
       ]
     }
   },
