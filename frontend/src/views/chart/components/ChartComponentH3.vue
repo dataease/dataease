@@ -279,9 +279,8 @@ export default {
           }
 
           //给“地图视图”绑定点击事件
-
           view.popup.autoOpenEnabled = false
-          var tmpGraphic = null``
+          var tmpGraphic = null
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
             view.hitTest(event).then((res) => {
@@ -289,13 +288,14 @@ export default {
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
-                  view.graphics.remove(results[0].graphic)
-                  let g = results[0].graphic.clone()
+                  var ori = results[0].graphic
+                  // 画新点
+                  let g = ori.clone()
                   g.symbol.url = require('@/assets/point.png')
-                  that.graphicData = g
+                  // that.graphicData = g
                   console.log(g)
-                  graphicView1(g.attributes)
-                  // view.graphics.addMany([g])
+                  // graphicView1(g.attributes)
+                  view.graphics.add(g)
                   // let geo = g.geometry
                   let attr = g.attributes
                   // let point = new Point(geo.x, geo.y, view.spatialReference)
@@ -304,18 +304,39 @@ export default {
                     title: attr.name,
                     content: `<p style="width:350px;overflow: auto;white-space:break-spaces;">${attr.desc}</p>`
                   })
+                  // 删除原来的点
+                  view.graphics.remove(ori)
+                  tmpGraphic = g
+                  console.log('tmpGraphic: ', tmpGraphic)
                 }
               } else {
-                console.log(that.graphicData)
-                if(that.graphicData !== '') {
-                  view.graphics.remove(that.graphicData)
-                  let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
-                  graphicView(g)
-                }
+                // console.log(that.graphicData)
+                // if(that.graphicData !== '') {
+                //   view.graphics.remove(that.graphicData)
+                //   let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
+                //   graphicView(g)
+                // }
                 view.popup.close()
               }
             })
           })
+
+          // view popup关闭事件监听
+          view.popup.watch('visible', evt => {
+            console.log('popup event', evt)
+            console.log('ori tmpGraphic: ', tmpGraphic)
+            var var3 = tmpGraphic.clone()
+            if(!evt) {
+              var3.symbol.url = require("@/assets/point2.png")
+            } else {
+              var3.symbol.url = require("@/assets/point.png")
+            }
+            view.graphics.add(var3)
+            view.graphics.remove(tmpGraphic)
+            tmpGraphic = var3
+            console.log('new tmpGraphic: ', tmpGraphic)
+          })
+
           this.myChart = view
           console.log('view',view,this.myChart)
 
@@ -354,38 +375,38 @@ export default {
               that.graphicData = ''
             }
           }
-          function graphicView1(data) {
-            var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
-
-            let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
-              geometry: {  //点位信息
-                type: 'point',
-                longitude: data.lng,
-                latitude: data.lat,
-                spatialReference: {
-                  wkt: wktString
-                }
-              },
-              symbol: {  //图像
-                //类型有 图片标记 和 点
-                type: 'picture-marker',
-                //图片地址，可以使用网络路径或本地路径 (base64也可以)
-                url: require("@/assets/point.png"),
-                // 图片大小
-                width: '49px',
-                height: '39px'
-              },
-              // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
-              attributes: {
-                // name: data.name,
-                // desc: data.desc,
-                ...data
-              },
-            });
-            // 将图形添加到视图的图形层
-            console.log('graphic:' , graphic)
-            view.graphics.addMany([graphic])
-          }
+          // function graphicView1(data) {
+          //   var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
+          //
+          //   let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
+          //     geometry: {  //点位信息
+          //       type: 'point',
+          //       longitude: data.lng,
+          //       latitude: data.lat,
+          //       spatialReference: {
+          //         wkt: wktString
+          //       }
+          //     },
+          //     symbol: {  //图像
+          //       //类型有 图片标记 和 点
+          //       type: 'picture-marker',
+          //       //图片地址，可以使用网络路径或本地路径 (base64也可以)
+          //       url: require("@/assets/point.png"),
+          //       // 图片大小
+          //       width: '49px',
+          //       height: '39px'
+          //     },
+          //     // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
+          //     attributes: {
+          //       // name: data.name,
+          //       // desc: data.desc,
+          //       ...data
+          //     },
+          //   });
+          //   // 将图形添加到视图的图形层
+          //   console.log('graphic:' , graphic)
+          //   view.graphics.addMany([graphic])
+          // }
         }
       ).catch(err => {
         console.log(err)
