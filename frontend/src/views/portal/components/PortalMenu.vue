@@ -1,10 +1,10 @@
 <template>
   <el-menu
     :default-active="currentTreeNode.id"
-    mode="horizontal"
+    :mode="mode"
     menu-trigger="click"
     :background-color="themeColor"
-    active-text-color="#333"
+    active-text-color="#409eff"
     @select="handleMenuSelect"
   >
     <template v-if="_checkArrayHasValue(subTreeDatas)">
@@ -87,6 +87,10 @@ export default {
       type: String,
       default: "",
     },
+    mode: {
+      type: String,
+      default: "horizontal"
+    }
   },
 
   methods: {

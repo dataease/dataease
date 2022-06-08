@@ -22,7 +22,9 @@
                 @change="handleEditPreivewTab"
               >
                 <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview">预览</el-radio-button>
+                <el-radio-button label="preview" :disabled="!priviewBtnEnable"
+                  >预览</el-radio-button
+                >
               </el-radio-group>
             </div>
             <div class="wrapper">
@@ -97,6 +99,7 @@
                 > -->
                 <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
                 <PortalMenu
+                  mode="vertical"
                   :subTreeDatas="subTreeDatas"
                   :currentTreeNode="currentTreeNode"
                   :themeColor="themeColor"
@@ -105,7 +108,11 @@
                 <!-- </el-menu> -->
               </el-aside>
               <el-main class="config-main" v-loading="panelLoading">
-                <PanelViewShow ref="panelViewShow"></PanelViewShow>
+                <PanelViewShow
+                  ref="panelViewShow"
+                  :portal="privewPortal"
+                  @update="update"
+                ></PanelViewShow>
               </el-main>
             </el-container>
             <el-header
@@ -165,6 +172,7 @@
                   >+添加主菜单</el-button
                 >
                 <el-tree
+                  ref="tree"
                   node-key="id"
                   draggable
                   :data="treeData"
@@ -182,8 +190,8 @@
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >
-                    <span>{{ node.label }}</span>
-                    <span v-if="node.data.showOption">
+                    <span class="custom-tree-node-label">{{ node.label }}</span>
+                    <span class="icon-wrapper" v-if="node.data.showOption">
                       <i
                         class="el-icon-plus"
                         @click.stop="handleAddTreeSubNode(node)"
@@ -360,6 +368,8 @@ export default {
       ],
       showPanelView: false,
       panelLoading: false,
+      privewPortal: null,
+      priviewBtnEnable: false,
     };
   },
   computed: {
@@ -410,6 +420,14 @@ export default {
         this.$nextTick(() => {
           if (this.$refs.panelViewShow) {
             this.$refs.panelViewShow.showMain = false;
+            // 检测panel是否变化
+            this.$watch(
+              () => this.$refs.panelViewShow.showMain,
+              (val) => {
+                console.log("this.$refs.panelViewShow.showMain ----", val);
+                this.priviewBtnEnable = val;
+              }
+            );
           }
         });
         if (this.openType == "add") {
@@ -418,9 +436,24 @@ export default {
         } else {
           this.treeData = this.config.treeData;
           this.treeId = Number(this.lastTreeId);
+          let currentTreeId = "";
+          function getTreedDataFirstTrendId(treeData) {
+            for (let i = 0; i < treeData.length; i++) {
+              const item = treeData[i];
+              if (item.trendId && !currentTreeId) {
+                currentTreeId = item.id;
+              } else {
+                getTreedDataFirstTrendId(item.children);
+              }
+            }
+          }
+
+          getTreedDataFirstTrendId(this.treeData);
+          this.$nextTick(() => {
+            this.handleDynamicMenuAndTree(currentTreeId)
+          });
         }
       } else {
-        debugger;
         this.$emit("treeData", this.treeData);
       }
     },
@@ -467,6 +500,16 @@ export default {
       if (evt == "edit") {
         return;
       }
+      this.privewPortal = {
+        navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
+        topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
+        themeColor: this.themeColor, // 默认
+        portalName: this.portalName || "未命名站点", // 站点名称
+        lastTreeId: this.treeId,
+        config: {
+          treeData: this.treeData,
+        },
+      };
       this.$nextTick(() => {
         if (this.$refs.panelViewShow && this.$refs.panelViewShow.showMain) {
           this.$refs.panelViewShow.clickFullscreen();
@@ -474,7 +517,10 @@ export default {
           this.$watch(
             () => this.$refs.panelViewShow.fullscreen,
             (val) => {
-              if (!val) this.activeTab = "edit";
+              if (!val) {
+                this.activeTab = "edit";
+                this.privewPortal = null;
+              }
             }
           );
         }
@@ -487,6 +533,16 @@ export default {
     },
     setNavLayoutStyle(style) {
       this.navLayoutStyle = style;
+    },
+    // 动态关联菜单和tree的同步
+    handleDynamicMenuAndTree(currentTreeId) {
+      if (currentTreeId) {
+        this.$refs.tree.setCurrentKey(currentTreeId);
+        const currentNode = this.$refs.tree.getCurrentNode();
+        if (currentNode) {
+          this.handleNodeClick(currentNode);
+        }
+      }
     },
     // 添加主菜单
     handleAddMainMenu() {
@@ -641,8 +697,6 @@ export default {
       initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
         that.panelLoading = false;
-      }).catch((err) => {
-        that.panelLoading = false;
       });
     },
 
@@ -659,6 +713,20 @@ export default {
         this.tData = this._deepLooptData(res.data);
         // }
       });
+    },
+
+    update(trendId) {
+      if (trendId) {
+        if (Object.prototype.toString.call(trendId) == "[object Array]") {
+          trendId = trendId[trendId.length - 1];
+        }
+        const that = this;
+        initPanelData(trendId, function (response) {
+          bus.$emit("set-panel-show-type", 0);
+        });
+      } else {
+        this.$refs.panelViewShow.showMain = false;
+      }
     },
 
     _deepLooptData(data) {
@@ -842,11 +910,26 @@ export default {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    position: relative;
+    // width: 200px;
+    .custom-tree-node-label {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      // width: 160px;
+    }
+    .icon-wrapper {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
     i {
       margin-right: 8px;
+      color: #409eff;
     }
     i:last-child {
       margin-right: 0;
+      color: #409eff;
     }
   }
 }
