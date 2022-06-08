@@ -344,6 +344,13 @@ export const TYPE_CONFIGS = [
     icon: '3dpie'
   },
   {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dbar',
+    title: 'chart.chart_bar',
+    icon: '3dbar'
+  },
+  {
     render: 'other',
     category: 'chart.chart_type_distribute',
     value: 'arc_map',

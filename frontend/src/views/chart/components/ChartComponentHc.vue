@@ -18,6 +18,7 @@ import Highcharts3D from 'highcharts/highcharts-3d'
 Highcharts3D(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
+import { BASE_BAR, baseBarOption } from '@/views/chart/chart/bar/bar_hc'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
   name: 'ChartComponentHc',
@@ -140,7 +141,12 @@ export default {
         resolve()
       }).then(() => {
         if (!this.myChart) {
-          this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          if (this.chart.type === '3dpie') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          }else if (this.chart.type === '3dbar') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_BAR)))
+          }
+        
         }
         this.drawEcharts()
 
@@ -160,13 +166,19 @@ export default {
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}
+      console.log('3d数据。。。', chart, this.myChart)
 
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
-      const base_json = JSON.parse(JSON.stringify(BASE_PIE))
-
-      chart_option = basePieOption(base_json, chart, this.terminalType)
+      if(chart.type === '3dpie') {
+        const base_json = JSON.parse(JSON.stringify(BASE_PIE))
+        chart_option = basePieOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dbar') {
+        const base_json = JSON.parse(JSON.stringify(BASE_BAR))
+        chart_option = baseBarOption(base_json, chart, this.terminalType)
+      }
+      
       this.myEcharts(chart_option)
     },
 
