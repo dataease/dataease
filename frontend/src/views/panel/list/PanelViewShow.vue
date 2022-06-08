@@ -45,7 +45,7 @@
               </el-tooltip>
             </span>
             <span style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.fullscreen_preview')">
+              <el-tooltip :content="$t('panel.fullscreen_preview')+'2222'">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>
@@ -80,11 +80,9 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
-        <!-- <div>12321312</div> -->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
-          <!-- <div>12321</div> -->
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <PortalNavMenu :portal="portal" v-if="portal" @update="updatePortal">
+            <PortalNavMenu v-if="portal" :portal="portal" @update="updatePortal">
               <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
             </PortalNavMenu>
             <template v-else>
@@ -193,6 +191,7 @@ export default {
       }
     },
     showMainFlag() {
+      console.log('22222', this.showMain)
       return this.showMain
     },
     panelInfo() {

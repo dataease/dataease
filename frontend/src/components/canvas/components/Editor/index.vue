@@ -1015,9 +1015,9 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
-        console.log('改变从这里开始-------------',)
+        console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
-        // this.changeScale()  // 暂时禁用为解决s2表格出现的加载问题
+        this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
@@ -1245,22 +1245,27 @@ export default {
       return value
     },
     changeScale() {
+      console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
-
+      console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         this.matrixStyle.originWidth = this.canvasStyleData.width / this.matrixCount.x
         this.matrixStyle.originHeight = this.canvasStyleData.height / this.matrixCount.y
         if (!this.canvasStyleData.selfAdaption) {
-          this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
-          this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          // this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
+          // this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          this.matrixStyle.width = this.canvasStyleData.width
+          this.matrixStyle.height = this.canvasStyleData.height
         } else {
-          this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
-          this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          // this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
+          // this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          this.matrixStyle.width = this.outStyle.width
+          this.matrixStyle.height = this.outStyle.height
         }
         this.baseWidth = this.matrixStyle.width
         this.baseHeight = this.matrixStyle.height
@@ -1268,9 +1273,11 @@ export default {
         this.cellHeight = this.matrixStyle.height
         // console.log('.initMatrix1')
         this.initMatrix()
-
-        this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
-        this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
+        // this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
+        this.scaleWidth = 100
+        // this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        this.scaleHeight = 100
         this.scalePointWidth = this.scaleWidth / 100
         this.scalePointHeight = this.scaleHeight / 100
         this.$store.commit('setCurCanvasScale',
@@ -1357,7 +1364,7 @@ export default {
       }
     },
     handleDragOver(e) {
-      if(this.dragComponentInfo === null) return
+      if (this.dragComponentInfo === null) return
       console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
