@@ -85,7 +85,7 @@
                 />
               </div>
 
-              <div class="field-split">
+              <div v-if="fieldShow" class="field-split">
                 <fu-split-pane top="50%" direction="vertical">
                   <template v-slot:top>
                     <div class="padding-lr field-height">
@@ -1030,7 +1030,6 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
-import { TYPE_CONFIGS } from '@/views/chart/chart/util'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1176,7 +1175,8 @@ export default {
       valueFormatterItem: {},
       showCustomSort: false,
       customSortList: [],
-      customSortField: {}
+      customSortField: {},
+      fieldShow: false
 
     }
   },
@@ -1342,6 +1342,7 @@ export default {
               })
             }
           }
+          this.fieldShow = true
         }).catch(err => {
           console.log(err)
           this.resetView()
