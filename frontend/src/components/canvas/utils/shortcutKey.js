@@ -1,7 +1,7 @@
 import store from '@/store'
-import eventBus from '@/components/canvas/utils/eventBus'
 
 const ctrlKey = 17
+const commandKey = 91 // mac command
 const vKey = 86 // 粘贴
 const cKey = 67 // 复制
 const xKey = 88 // 剪切
@@ -27,10 +27,7 @@ export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
 const basemap = {
   [vKey]: paste,
   [yKey]: redo,
-  [zKey]: undo,
-  [sKey]: save,
-  [pKey]: preview,
-  [eKey]: clearCanvas
+  [zKey]: undo
 }
 
 // 组件锁定状态下可以执行的操作
@@ -51,33 +48,28 @@ const unlockMap = {
   [lKey]: lock
 }
 
-let isCtrlDown = false
-// 全局监听按键操作并执行相应命令
-// export function listenGlobalKeyDown() {
-//   window.onkeydown = (e) => {
-//     const { curComponent } = store.state
-//     if (e.keyCode === ctrlKey) {
-//       isCtrlDown = true
-//     } else if (e.keyCode === deleteKey && curComponent) {
-//       store.commit('deleteComponent')
-//       store.commit('recordSnapshot')
-//     } else if (isCtrlDown) {
-//       if (!curComponent || !curComponent.isLock) {
-//         e.preventDefault()
-//         unlockMap[e.keyCode] && unlockMap[e.keyCode]()
-//       } else if (curComponent && curComponent.isLock) {
-//         e.preventDefault()
-//         lockMap[e.keyCode] && lockMap[e.keyCode]()
-//       }
-//     }
-//   }
-//
-//   window.onkeyup = (e) => {
-//     if (e.keyCode === ctrlKey) {
-//       isCtrlDown = false
-//     }
-//   }
-// }
+let isCtrlOrCommandDown = false
+// Monitor key operations globally and execute corresponding commands
+export function listenGlobalKeyDown() {
+  window.onkeydown = (e) => {
+    if (!store.state.isInEditor) return
+    const { keyCode } = e
+    if (keyCode === ctrlKey || keyCode === commandKey) {
+      isCtrlOrCommandDown = true
+    } else if (isCtrlOrCommandDown) {
+      if (keyCode === zKey || keyCode === yKey) {
+        e.preventDefault()
+        unlockMap[keyCode]()
+      }
+    }
+  }
+
+  window.onkeyup = (e) => {
+    if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
+      isCtrlOrCommandDown = false
+    }
+  }
+}
 
 function copy() {
   store.commit('copy')
@@ -115,23 +107,11 @@ function decompose() {
   }
 }
 
-function save() {
-  eventBus.$emit('save')
-}
-
-function preview() {
-  eventBus.$emit('preview')
-}
-
 function deleteComponent() {
   if (store.state.curComponent) {
     store.commit('deleteComponent')
     store.commit('recordSnapshot')
   }
-}
-
-function clearCanvas() {
-  eventBus.$emit('clearCanvas')
 }
 
 function lock() {

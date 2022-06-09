@@ -646,7 +646,7 @@ export default {
     login_type: '默认登录方式',
     empty_front: '为空则默认取10秒',
     empty_msg: '为空则默认取30天',
-    front_error: '请填写0-300正整数', //修改了提示信息
+    front_error: '请填写0-300正整数', // 修改了提示信息
     msg_error: '请填写1-365正整数',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP账户',
@@ -1460,6 +1460,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    panel_style: '仪表板样式',
     multiplexing: '复用',
     panel_off: '仪表板已下架',
     batch_opt: '批量操作',
@@ -1656,7 +1657,7 @@ export default {
     no_drill_field: '缺少关联字段',
     matrix: '矩阵',
     suspension: '悬浮',
-    new_element_distribution: '当前元素移入分布方式',
+    new_element_distribution: '元素移入分布方式',
     aided_grid: '辅助设计网格',
     aided_grid_open: '打开',
     aided_grid_close: '关闭',

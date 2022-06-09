@@ -1453,6 +1453,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    panel_style: '仪表板样式',
     multiplexing: '復用',
     panel_off: '儀表板已下架',
     batch_opt: '批量操作',
@@ -1647,7 +1648,7 @@ export default {
     no_drill_field: '缺少關聯字段',
     matrix: '矩陣',
     suspension: '懸浮',
-    new_element_distribution: '當前元素移入分佈方式',
+    new_element_distribution: '元素移入分佈方式',
     aided_grid: '輔助設計網格',
     aided_grid_open: '打開',
     aided_grid_close: '關閉',
