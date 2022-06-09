@@ -84,64 +84,74 @@
                   @click="changeDs"
                 />
               </div>
-              <div class="padding-lr field-height">
-                <span>{{ $t('chart.dimension') }}</span>
-                <draggable
-                  v-if="table && hasDataPermission('use',table.privileges)"
-                  v-model="dimensionData"
-                  :options="{group:{name: 'drag',pull:'clone'},sort: true}"
-                  animation="300"
-                  :move="onMove"
-                  class="drag-list"
-                  @add="moveToDimension"
-                >
-                  <transition-group>
-                    <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name">
-                      <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                      <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                      <svg-icon
-                        v-if="item.deType === 2 || item.deType === 3"
-                        icon-class="field_value"
-                        class="field-icon-value"
-                      />
-                      <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                      {{ item.name }}
-                    </span>
-                  </transition-group>
-                </draggable>
+
+              <div v-if="fieldShow" class="field-split">
+                <fu-split-pane top="50%" direction="vertical">
+                  <template v-slot:top>
+                    <div class="padding-lr field-height">
+                      <span>{{ $t('chart.dimension') }}</span>
+                      <draggable
+                        v-if="table && hasDataPermission('use',table.privileges)"
+                        v-model="dimensionData"
+                        :options="{group:{name: 'drag',pull:'clone'},sort: true}"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-list"
+                        @add="moveToDimension"
+                      >
+                        <transition-group>
+                          <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name">
+                            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                            <svg-icon
+                              v-if="item.deType === 2 || item.deType === 3"
+                              icon-class="field_value"
+                              class="field-icon-value"
+                            />
+                            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                            {{ item.name }}
+                          </span>
+                        </transition-group>
+                      </draggable>
+                    </div>
+                  </template>
+                  <template v-slot:bottom>
+                    <div class="padding-lr field-height">
+                      <span>{{ $t('chart.quota') }}</span>
+                      <draggable
+                        v-if="table && hasDataPermission('use',table.privileges)"
+                        v-model="quotaData"
+                        :options="{group:{name: 'drag',pull:'clone'},sort: true}"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-list"
+                        @add="moveToQuota"
+                      >
+                        <transition-group>
+                          <span
+                            v-for="item in quotaData"
+                            v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
+                            :key="item.id"
+                            class="item-quota"
+                            :title="item.name"
+                          >
+                            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                            <svg-icon
+                              v-if="item.deType === 2 || item.deType === 3"
+                              icon-class="field_value"
+                              class="field-icon-value"
+                            />
+                            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                            <span>{{ item.name }}</span>
+                          </span>
+                        </transition-group>
+                      </draggable>
+                    </div>
+                  </template>
+                </fu-split-pane>
               </div>
-              <div class="padding-lr field-height">
-                <span>{{ $t('chart.quota') }}</span>
-                <draggable
-                  v-if="table && hasDataPermission('use',table.privileges)"
-                  v-model="quotaData"
-                  :options="{group:{name: 'drag',pull:'clone'},sort: true}"
-                  animation="300"
-                  :move="onMove"
-                  class="drag-list"
-                  @add="moveToQuota"
-                >
-                  <transition-group>
-                    <span
-                      v-for="item in quotaData"
-                      v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
-                      :key="item.id"
-                      class="item-quota"
-                      :title="item.name"
-                    >
-                      <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                      <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                      <svg-icon
-                        v-if="item.deType === 2 || item.deType === 3"
-                        icon-class="field_value"
-                        class="field-icon-value"
-                      />
-                      <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                      <span>{{ item.name }}</span>
-                    </span>
-                  </transition-group>
-                </draggable>
-              </div>
+
             </el-col>
 
             <el-col
@@ -1020,7 +1030,6 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
-import { TYPE_CONFIGS } from '@/views/chart/chart/util'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1166,7 +1175,8 @@ export default {
       valueFormatterItem: {},
       showCustomSort: false,
       customSortList: [],
-      customSortField: {}
+      customSortField: {},
+      fieldShow: false
 
     }
   },
@@ -1332,6 +1342,7 @@ export default {
               })
             }
           }
+          this.fieldShow = true
         }).catch(err => {
           console.log(err)
           this.resetView()
@@ -2749,7 +2760,7 @@ span {
 }
 
 .field-height {
-  height: calc(50% - 20px);
+  height: 100%;
   border-top: 1px solid #E6E6E6;
 }
 
@@ -2881,6 +2892,11 @@ span {
 }
 .form-item>>>.el-form-item__label{
   font-size: 12px;
+}
+
+.field-split{
+  height: 700px;
+ // height: calc(100% - 40px);
 }
 
 </style>
