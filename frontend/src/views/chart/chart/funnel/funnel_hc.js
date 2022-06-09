@@ -59,17 +59,15 @@ export const DEFAULT_COLOR_CASE = {
     alpha: 100,
     borderRadius: 5
   }
-  export const BASE_BAR = {
+  export const BASE_FUNNEL = {
     chart: {
+      type: 'funnel3d', // 图表类型
       options3d: {
         enabled: true,
-        alpha: 10, // 内（X）旋转角度
-        beta: 10, // 外（Y）旋转角度
-        depth: 50, // 图表的总深度。
-        viewDistance: 25
-      },
-      backgroundColor: 'rgba(0,0,0,0)', //背景颜色或渐变
-      inverted: false, // 反转坐标轴
+        alpha: 10,
+        depth: 50,
+        viewDistance: 50
+      }
     },
     credits: {
       enabled: false
@@ -83,42 +81,34 @@ export const DEFAULT_COLOR_CASE = {
     legend: {},
   
     plotOptions: {
-      bar: {
-        allowPointSelect: true,
-        cursor: 'pointer',
-        depth: 25,
+      series: {
         dataLabels: {
-          enabled: true
+          enabled: true,
+          format: '<b>{point.name}</b> ({point.y:,.0f})',
+          color: 'black',
+          allowOverlap: true,
+          y: 10
         },
-        showInLegend: false
+        neckWidth: '30%',
+        neckHeight: '25%',
+        width: '80%',
+        height: '80%'
       }
     },
-    
     tooltip: {},
-    xAxis: {
-      categories: [],
-    },
-    yAxis: {
-      title: {
-        text: null,
-      },
-
-    },
     series: [
       {
         name: '',
-        type: 'bar',
         data: []
       }
     ]
   }
   
   let terminalType = 'pc'
-  export function baseBarOption(chart_option, chart, terminal = 'pc') {
-    console.log('apple......')
+  export function baseFunnelOption(chart_option, chart, terminal = 'pc') {
     terminalType = terminal
     let customAttr = {}
-    console.log('chart.customAttr: ', chart.customAttr)
+    console.log('funnel,chart.customAttr: ', chart.customAttr)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -153,14 +143,15 @@ export const DEFAULT_COLOR_CASE = {
         formatter = formatter.replace('{c}', '{point.y}')
         formatter = formatter.replace('{d', '{point.percentage')
         dataLabels.format = formatter
-  
-        chart_option.plotOptions.bar.dataLabels = dataLabels
+        
+        // 系列数据标签的选项，显示在每个数据点旁边
+        chart_option.plotOptions.series.dataLabels = dataLabels
       }
     }
   
     // 处理data
     if (chart.data) {
-      console.log('chart.data',chart.data)
+      console.log('funnel,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
@@ -174,18 +165,17 @@ export const DEFAULT_COLOR_CASE = {
           }*/
   
         const valueArr = chart.data.series[0].data
-        console.log('valueArr::::',valueArr)
-        let arr = []
+        console.log('funnel,valueArr::::',valueArr)
+        // let arr = []
         for (let i = 0; i < valueArr.length; i++) {
           const y = valueArr[i]
           y.name = chart.data.x[i]
           y.y = y.value
-          // y.x = chart.data.x[i]
-          arr.push(chart.data.x[i])
+          // arr.push(chart.data.x[i])
           chart_option.series[0].data.push(y)
         }
-        chart_option.xAxis.categories = arr;
-        console.log('chart_option:::::',chart_option)
+        // chart_option.xAxis.categories = arr;
+        console.log('funnel,chart_option:::::',chart_option)
       }
     }
   
@@ -196,7 +186,7 @@ export const DEFAULT_COLOR_CASE = {
     const padding = '8px'
     if (chart.customStyle) {
       const customStyle = JSON.parse(chart.customStyle)
-      console.log('componentStyle: ', customStyle)
+      console.log('funnel,componentStyle: ', customStyle)
   
       if (customStyle.text) {
         chart_option.title.text = customStyle.text.show ? chart.title : ''
@@ -211,7 +201,7 @@ export const DEFAULT_COLOR_CASE = {
       }
   
       if (customStyle.legend && chart_option.legend) {
-        chart_option.plotOptions.bar.showInLegend = customStyle.legend.show
+        // chart_option.plotOptions.funnel.showInLegend = customStyle.legend.show
         // chart_option.legend.padding = padding
         chart_option.legend.layout = customStyle.legend.orient
         chart_option.legend.verticalAlign = customStyle.legend.vPosition
