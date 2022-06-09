@@ -24,6 +24,9 @@
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">
+        <i v-if="curComponent.type==='view'" class="el-icon-ticket" @click.stop="showViewDetails" />
+      </span>
+      <span :title="$t('panel.details')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
       </span>
       <span :title="$t('panel.cancel_linkage')">
