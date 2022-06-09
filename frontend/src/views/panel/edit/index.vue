@@ -1,16 +1,8 @@
 <template>
   <el-row>
     <el-header class="de-header">
-      <el-col
-        :span="8"
-        style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px"
-      >
-        <span style="line-height: 35px;">
-          {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
-        </span>
-      </el-col>
       <!--横向工具栏-->
-      <el-col :span="16">
+      <el-col :span="24">
         <Toolbar
           ref="toolbar"
           :style-button-active="show&&showIndex===2"
@@ -376,7 +368,7 @@ import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
-
+import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 export default {
   name: 'PanelEdit',
   components: {
@@ -388,7 +380,6 @@ export default {
     DeContainer,
     DeAsideContainer,
     FilterGroup,
-    ViewSelect,
     Editor,
     Toolbar,
     FilterDialog,
@@ -615,6 +606,8 @@ export default {
     }
   },
   created() {
+    // Global listening for key events
+    listenGlobalKeyDown()
     this.init(this.$store.state.panel.panelInfo.id)
   },
   mounted() {
@@ -1145,11 +1138,11 @@ export default {
   .de-header {
     height: 35px !important;
     border-bottom: 1px solid #E6E6E6;
-
+    background-color: var(--SiderBG, white);
   }
 
   .blackTheme .de-header {
-    background-color: var(--SiderBG) !important;
+    background-color: var(--SiderBG, white) !important;
     color: var(--TextActive);
   }
 

@@ -1452,6 +1452,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    panel_style: 'Panel Style',
     multiplexing: 'Multiplexing',
     panel_off: 'Off the shelf',
     batch_opt: 'Batch Operation',
@@ -1646,7 +1647,7 @@ export default {
     no_drill_field: 'Miss relation field',
     matrix: 'matrix',
     suspension: 'suspension',
-    new_element_distribution: 'New element Distribution',
+    new_element_distribution: 'Element Distribution',
     aided_grid: 'Aided Grid',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',

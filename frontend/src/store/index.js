@@ -129,7 +129,8 @@ const data = {
       customStyle: {},
       customAttr: {}
     },
-    allViewRender: []
+    allViewRender: [],
+    isInEditor: false // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
   },
   mutations: {
     ...animation.mutations,
@@ -658,6 +659,8 @@ const data = {
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
       this.commit('initCurMultiplexingComponents')
+      // 清空当前缓存,快照
+      this.commit('refreshSnapshot')
       state.batchOptStatus = false
       // Currently selected components
       state.curBatchOptComponents = []
@@ -670,6 +673,7 @@ const data = {
         customStyle: {},
         customAttr: {}
       }
+      state.isInEditor = true
     },
     initViewRender(state, pluginViews) {
       pluginViews.forEach(plugin => {
@@ -679,6 +683,9 @@ const data = {
     },
     initCurMultiplexingComponents(state) {
       state.curMultiplexingComponents = {}
+    },
+    setInEditorStatus(state, status) {
+      state.isInEditor = status
     }
   },
   modules: {
