@@ -344,6 +344,22 @@ export const TYPE_CONFIGS = [
     icon: '3dpie'
   },
   {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcolumn',
+    title: 'chart.chart_bar',
+    icon: '3dcolumn'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_relation',
+    value: '3dfunnel',
+    title: 'chart.chart_funnel',
+    icon: '3dfunnel'
+  },
+
+
+  {
     render: 'other',
     category: 'chart.chart_type_distribute',
     value: 'arc_map',

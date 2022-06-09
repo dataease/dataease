@@ -16,8 +16,14 @@
 import * as highcharts from 'highcharts'
 import Highcharts3D from 'highcharts/highcharts-3d'
 Highcharts3D(highcharts)
+const funnel3d = require('highcharts/modules/funnel3d');
+funnel3d(highcharts);
+const cylinder = require('highcharts/modules/cylinder');
+cylinder(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
+import { BASE_COLUMM, baseColumnOption } from '@/views/chart/chart/column/column_hc'
+import { BASE_FUNNEL,baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
   name: 'ChartComponentHc',
@@ -140,7 +146,14 @@ export default {
         resolve()
       }).then(() => {
         if (!this.myChart) {
-          this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          if (this.chart.type === '3dpie') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          }else if (this.chart.type === '3dcolumn') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMM)))
+          }else if (this.chart.type === '3dfunnel') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
+          }
+        
         }
         this.drawEcharts()
 
@@ -160,13 +173,22 @@ export default {
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}
+      console.log('3d数据。。。', chart, this.myChart)
 
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
-      const base_json = JSON.parse(JSON.stringify(BASE_PIE))
-
-      chart_option = basePieOption(base_json, chart, this.terminalType)
+      if(chart.type === '3dpie') {
+        const base_json = JSON.parse(JSON.stringify(BASE_PIE))
+        chart_option = basePieOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dcolumn') {
+        const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
+        chart_option = baseColumnOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dfunnel') {
+        const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
+        chart_option = baseFunnelOption(base_json, chart, this.terminalType)
+      }
+      
       this.myEcharts(chart_option)
     },
 
