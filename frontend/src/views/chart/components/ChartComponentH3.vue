@@ -595,7 +595,7 @@ export default {
    flex-flow: column nowrap;
    width: 400px;
    height: 271px;
-   background-image: require('@/assets/popup-background.png');
+   background-image: url('../../../assets/popup-background.png');
    color: white;
  }
 
