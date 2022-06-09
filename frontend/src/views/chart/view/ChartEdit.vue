@@ -1290,6 +1290,7 @@ export default {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
     },
     chartInit() {
+      this.fieldShow = false
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
@@ -2895,8 +2896,7 @@ span {
 }
 
 .field-split{
-  height: 700px;
- // height: calc(100% - 40px);
+  height: calc(100% - 40px);
 }
 
 </style>
