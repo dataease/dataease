@@ -22,7 +22,7 @@ const cylinder = require('highcharts/modules/cylinder');
 cylinder(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
-import { BASE_COLUMM, baseColumnOption } from '@/views/chart/chart/column/column_hc'
+import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
 import { BASE_FUNNEL,baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
@@ -148,9 +148,11 @@ export default {
         if (!this.myChart) {
           if (this.chart.type === '3dpie') {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
-          }else if (this.chart.type === '3dcolumn') {
+          } else if (this.chart.type === '3dcolumn') {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMM)))
-          }else if (this.chart.type === '3dfunnel') {
+          } else if (this.chart.type === '3dcolumn_stack') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMN_STACK)))
+          } else if (this.chart.type === '3dfunnel') {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
           }
         
@@ -183,7 +185,10 @@ export default {
         chart_option = basePieOption(base_json, chart, this.terminalType)
       } else if (chart.type === '3dcolumn') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
-        chart_option = baseColumnOption(base_json, chart, this.terminalType)
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false)
+      } else if (chart.type === '3dcolumn_stack') {
+        const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_STACK))
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true)
       } else if (chart.type === '3dfunnel') {
         const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
         chart_option = baseFunnelOption(base_json, chart, this.terminalType)

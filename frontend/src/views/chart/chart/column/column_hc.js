@@ -112,12 +112,56 @@ export const DEFAULT_COLOR_CASE = {
       }
     ]
   }
+
+  export const BASE_COLUMN_STACK = {
+    chart: {
+      type: 'column',
+      options3d: {
+        enabled: true,
+        alpha: 15,
+        beta: 15,
+        viewDistance: 25,
+        depth: 40
+      },
+      marginTop: 80,
+      marginRight: 40
+    },
+    credits: {
+      enabled: false
+    },
+    title: {
+      text: '',
+    },
+    legend: {},
+    plotOptions: {
+      column: {
+        stacking: 'normal',
+        depth: 40
+      }
+    },
+    tooltip: {},
+    xAxis: {
+      categories: [],
+    },
+    yAxis: {
+      allowDecimals: false,
+      title: {
+        text: null
+      }
+    },
+    series: [
+      {
+        name: '',
+        data: []
+      }
+    ]
+  }
   
   let terminalType = 'pc'
-  export function baseColumnOption(chart_option, chart, terminal = 'pc') {
+  export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack) {
     terminalType = terminal
     let customAttr = {}
-    console.log('column,chart.customAttr: ', chart.customAttr)
+    console.log('column,chart: ', chart)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -162,33 +206,61 @@ export const DEFAULT_COLOR_CASE = {
     if (chart.data) {
       console.log('column,chart.data',chart.data)
       // chart_option.title.text = chart.title
-      if (chart.data.series.length > 0) {
-        chart_option.series[0].name = chart.data.series[0].name
-        if (customAttr.color) {
-          chart_option.series[0].opacity = customAttr.color.alpha / 100
+      // 基础柱状数据处理
+      if (isBase) {
+        if (chart.data.series.length > 0) {
+          chart_option.series[0].name = chart.data.series[0].name
+          if (customAttr.color) {
+            chart_option.series[0].opacity = customAttr.color.alpha / 100
+          }
+          // size
+          /* if (customAttr.size) {
+              chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
+            }*/
+          const valueArr = chart.data.series[0].data
+          console.log('isBase,valueArr::::',valueArr)
+          let arr = []
+          for (let i = 0; i < valueArr.length; i++) {
+            const y = valueArr[i]
+            y.name = chart.data.x[i]
+            y.y = y.value
+            arr.push(chart.data.x[i])
+            chart_option.series[0].data.push(y)
+          }
+          chart_option.xAxis.categories = arr;
+          console.log('isBase,chart_option:::::',chart_option)
         }
-  
-        // size
-        /* if (customAttr.size) {
-            chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-          }*/
-  
-        const valueArr = chart.data.series[0].data
-        console.log('column,valueArr::::',valueArr)
-        let arr = []
-        for (let i = 0; i < valueArr.length; i++) {
-          const y = valueArr[i]
-          y.name = chart.data.x[i]
-          y.y = y.value
-          arr.push(chart.data.x[i])
-          chart_option.series[0].data.push(y)
+      }
+      
+      // 堆叠柱状数据处理
+      if (isStack) {
+        if (chart.data.series.length > 0) {
+          const series = chart.data.series
+          let arr = []
+          for (let i = 0; i < series.length; i++) {
+            console.log(series[i].name)
+            let obj = {
+              name: series[i].name,
+              data: series[i].data.map(ele => {return ele.value}),
+              opacity: series[i].opacity,
+            }
+            if (customAttr.color) {
+              obj.opacity = customAttr.color.alpha / 100
+            }
+            arr.push(obj)
+          }
+          chart_option.series = arr
+    
+          chart_option.xAxis.categories = chart.data.x
+
+          console.log('isStack,chart_option',chart_option)
         }
-        chart_option.xAxis.categories = arr;
-        console.log('column,chart_option:::::',chart_option)
+        
       }
     }
   
     componentStyle(chart_option, chart)
+    console.log('return,,,,',chart_option)
     return chart_option
   }
   export function componentStyle(chart_option, chart) {
