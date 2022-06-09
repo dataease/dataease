@@ -1705,7 +1705,7 @@ export default {
     position:absolute;
     right:4%;
     bottom:8%;
-    z-index:99999999999999999;
+    z-index:100;
     width: 210px;
     background: rgba(0,0,0,0.1);
     padding: 20px 10px;
