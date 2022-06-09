@@ -350,6 +350,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bar',
     icon: '3dcolumn'
   },
+  // {
+  //   render: 'highcharts',
+  //   category: 'chart.chart_type_compare',
+  //   value: '3dcolumn_stack',
+  //   title: 'chart.chart_bar_stack',
+  //   icon: '3dcolumn_stack'
+  // },
   {
     render: 'highcharts',
     category: 'chart.chart_type_relation',
