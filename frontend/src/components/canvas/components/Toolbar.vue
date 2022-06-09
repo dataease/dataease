@@ -28,7 +28,7 @@
 
     <div v-show="!editControlButton" class="toolbar">
       <div class="panel-info-area">
-        <el-tooltip :content="$t('commons.back') ">
+        <el-tooltip :content="$t('panel.back') ">
           <i class="el-icon-back icon-back" @click="closePanelEdit" />
         </el-tooltip>
         <span class="text">
