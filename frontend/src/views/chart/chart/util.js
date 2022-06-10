@@ -1203,7 +1203,7 @@ export const TYPE_CONFIGS = [
         'tableItemFontSize',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnMode'
+        'tableColumnWidth'
       ],
       'title-selector': [
         'show',
@@ -1241,7 +1241,7 @@ export const TYPE_CONFIGS = [
         'tableItemFontSize',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnMode'
+        'tableColumnWidth'
       ],
       'title-selector': [
         'show',
