@@ -7,7 +7,6 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.EsSqlLConstants;
-import io.dataease.plugins.common.constants.HiveConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
@@ -1105,7 +1104,13 @@ public class EsQueryProvider extends QueryProvider {
                     fieldName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(EsSqlLConstants.CAST, originField, "bigint");
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(EsSqlLConstants.CAST, originField, "double");
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()

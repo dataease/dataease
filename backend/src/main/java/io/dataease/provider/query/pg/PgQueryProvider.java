@@ -6,7 +6,10 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
-import io.dataease.plugins.common.constants.*;
+import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.constants.PgConstants;
+import io.dataease.plugins.common.constants.SQLConstants;
+import io.dataease.plugins.common.constants.SqlServerSQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -1069,7 +1072,13 @@ public class PgQueryProvider extends QueryProvider {
                     fieldName = String.format(PgConstants.DATE_FORMAT, from_unixtime, format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()
@@ -1087,8 +1096,7 @@ public class PgQueryProvider extends QueryProvider {
                 fieldName = String.format(PgConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
             } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
                 fieldName = String.format(PgConstants.GROUP_CONCAT, originField);
-            }
-            else {
+            } else {
                 fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {

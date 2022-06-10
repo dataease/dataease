@@ -5,9 +5,10 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.MySQLConstants;
-import io.dataease.plugins.common.constants.engine.MysqlConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
+import io.dataease.plugins.common.constants.engine.MysqlConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -194,7 +195,6 @@ public class MysqlQueryProvider extends QueryProvider {
         }
 
 
-
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
@@ -368,7 +368,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MySQLConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
                         originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -1048,7 +1048,13 @@ public class MysqlQueryProvider extends QueryProvider {
                     fieldName = String.format(MySQLConstants.DATE_FORMAT, from_unixtime, format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()
@@ -1102,11 +1108,9 @@ public class MysqlQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                 fieldName = String.format(MySQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
-            }
-            else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
+            } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
                 fieldName = String.format(MySQLConstants.GROUP_CONCAT, originField);
-            }
-            else {
+            } else {
                 fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {

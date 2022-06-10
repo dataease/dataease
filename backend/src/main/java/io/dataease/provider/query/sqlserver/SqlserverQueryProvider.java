@@ -7,7 +7,6 @@ import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.constants.ImpalaConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.constants.SqlServerSQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
@@ -1121,7 +1120,13 @@ public class SqlserverQueryProvider extends QueryProvider {
                     fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(SqlServerSQLConstants.CONVERT, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(SqlServerSQLConstants.CONVERT, originField, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()
