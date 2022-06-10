@@ -90,6 +90,10 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 -   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)
 -   基础设施：[Docker](https://www.docker.com/)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=dataease/dataease&type=Date)](https://star-history.com/#dataease/dataease&Date)
+
 ## License
 
 Copyright (c) 2014-2022 飞致云 FIT2CLOUD, All rights reserved.
