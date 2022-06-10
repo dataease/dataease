@@ -125,18 +125,24 @@ export default {
       if (this.config.commonBackground) {
         style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (this.config.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+        }
         if (this.config.commonBackground.enable) {
-          if (this.config.commonBackground.backgroundType === 'innerImage' && this.config.commonBackground.innerImage) {
+          if (this.config.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
             let innerImage = this.config.commonBackground.innerImage
             if (this.screenShot) {
               innerImage = innerImage.replace('svg', 'png')
             }
-            style['background'] = `url(${innerImage}) no-repeat`
-          } else if (this.config.commonBackground.backgroundType === 'outerImage' && this.config.commonBackground.outerImage) {
-            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
-          } else if (this.config.commonBackground.backgroundType === 'color') {
-            style['background-color'] = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
           }
+        } else {
+          style['background-color'] = colorRGBA
         }
         style['overflow'] = 'hidden'
       }
