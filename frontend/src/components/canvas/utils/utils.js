@@ -114,6 +114,12 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
     item.hyperlinks = (item.hyperlinks || deepCopy(HYPERLINKS))
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
+    // Multi choice of colors and pictures
+    if (item.commonBackground.backgroundType === 'color') {
+      item.commonBackground['backgroundColorSelect'] = item.commonBackground.enable
+      item.commonBackground.enable = false
+      item.commonBackground.backgroundType = 'innerImage'
+    }
   })
   // 初始化密度为最高密度
   componentStyle.aidedDesign.matrixBase = 4

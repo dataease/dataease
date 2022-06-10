@@ -552,16 +552,22 @@ export default {
     mainSlotStyleInner() {
       const style = {}
       if (this.element.commonBackground) {
+        let colorRGBA = ''
+        if (this.element.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+        }
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
-          if (this.element.commonBackground.backgroundType === 'innerImage' && this.element.commonBackground.innerImage) {
-            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'outerImage' && this.element.commonBackground.outerImage) {
-            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'color') {
-            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          if (this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
           }
+        } else {
+          style['background-color'] = colorRGBA
         }
       }
       return style
