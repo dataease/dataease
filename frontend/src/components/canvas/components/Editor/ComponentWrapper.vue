@@ -5,8 +5,8 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <div :style="commonStyle" class="main_view">
-      <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+    <div :id="componentCanvasId" :style="commonStyle" class="main_view">
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -110,6 +110,13 @@ export default {
     }
   },
   computed: {
+    componentCanvasId() {
+      if (this.config.type === 'view') {
+        return 'user-view-' + this.config.propValue.viewId
+      } else {
+        return 'components-' + this.config.id
+      }
+    },
     commonStyle() {
       const style = {
         width: '100%',
@@ -224,8 +231,8 @@ export default {
       e.stopPropagation()
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
-    showViewDetails() {
-      this.$refs.wrapperChild.openChartDetailsDialog()
+    showViewDetails(params) {
+      this.$refs.wrapperChild.openChartDetailsDialog(params)
     },
     closePreview() {
       this.previewVisible = false

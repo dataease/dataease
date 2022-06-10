@@ -593,7 +593,7 @@ export default {
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
     },
-    openChartDetailsDialog() {
+    openChartDetailsDialog(params) {
       const tableChart = deepCopy(this.chart)
       tableChart.customAttr = JSON.parse(this.chart.customAttr)
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
@@ -604,7 +604,7 @@ export default {
       tableChart.customStyle.text.show = false
       tableChart.customAttr = JSON.stringify(tableChart.customAttr)
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
-      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
+      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart, openType: params.openType })
     },
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {

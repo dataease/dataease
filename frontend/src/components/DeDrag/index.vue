@@ -44,7 +44,7 @@
       >
         <slot :name="handlei" />
       </div>
-      <div :style="mainSlotStyleInner" class="main-background">
+      <div :id="componentCanvasId" :style="mainSlotStyleInner" class="main-background">
         <slot />
       </div>
     </div>
@@ -385,6 +385,13 @@ export default {
     }
   },
   computed: {
+    componentCanvasId() {
+      if (this.element.type === 'view') {
+        return 'user-view-' + this.element.propValue.viewId
+      } else {
+        return 'components-' + this.element.id
+      }
+    },
     // 编辑组件显示
     editBarShow() {
       // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置状态 3.当前不在移动端画布编辑状态 4.或者批量操作状态
@@ -1741,8 +1748,8 @@ export default {
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
+    showViewDetails(params) {
+      this.$emit('showViewDetails', params)
     },
     amAddItem() {
       this.$emit('amAddItem')
