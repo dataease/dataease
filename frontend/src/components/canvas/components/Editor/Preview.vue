@@ -37,22 +37,20 @@
         <el-dialog
           :title="$t('chart.chart_details')"
           :visible.sync="chartDetailsVisible"
-          width="70%"
+          width="80%"
           class="dialog-css"
           :destroy-on-close="true"
+          top="5vh"
         >
           <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-            <el-dropdown>
-              <el-button size="mini">
-                {{ $t('chart.export') }}<i class="el-icon-download" />
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="exportExcel"><svg-icon icon-class="ds-excel" class="ds-icon-excel" />Excel</el-dropdown-item>
-                <el-dropdown-item v-if="showExportImgButton" icon="el-icon-picture-outline" @click.native="exportViewImg">{{ $t('chart.image') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button v-if="showChartInfoType==='enlarge'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+              {{ $t('chart.export_img') }}
+            </el-button>
+            <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
+              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
+            </el-button>
           </span>
-          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :open-type="showChartInfoType" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
 
         <!--手机视图详情-->
@@ -169,6 +167,7 @@ export default {
       mobileChartDetailsVisible: false,
       showChartInfo: {},
       showChartTableInfo: {},
+      showChartInfoType: 'details',
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc'
     }
@@ -188,9 +187,6 @@ export default {
       } else {
         return this.panelInfo.status === 'unpublished'
       }
-    },
-    showExportImgButton() {
-      return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
     },
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
@@ -378,6 +374,7 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
+      this.showChartInfoType = chartInfo.openType
       if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {

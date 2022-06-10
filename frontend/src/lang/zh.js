@@ -663,6 +663,7 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    export_img: '导出图片',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
@@ -1460,6 +1461,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    enlarge: '放大',
     panel_style: '仪表板样式',
     multiplexing: '复用',
     panel_off: '仪表板已下架',
