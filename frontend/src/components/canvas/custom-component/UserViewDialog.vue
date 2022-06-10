@@ -162,19 +162,20 @@ export default {
       } else {
         if (this.showChartCanvas) {
           html2canvas(document.getElementById('chartCanvas')).then(canvas => {
-            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+            const snapshot = canvas.toDataURL('image/jpeg', 1)
             _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
           })
         } else {
-          const dom = document.getElementById('user-view-' + this.chart.id)
-          if (dom) {
-            html2canvas(dom).then(canvas => {
-              const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-              _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
-            })
-          } else {
-            _this.exportExcelDownload()
-          }
+          _this.exportExcelDownload()
+          // const dom = document.getElementById('user-view-' + this.chart.id)
+          // if (dom) {
+          //   html2canvas(dom).then(canvas => {
+          //     const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+          //     _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
+          //   })
+          // } else {
+          //   _this.exportExcelDownload()
+          // }
         }
       }
     },
