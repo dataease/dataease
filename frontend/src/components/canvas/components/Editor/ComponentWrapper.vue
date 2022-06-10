@@ -130,7 +130,7 @@ export default {
           colorRGBA = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
         }
         if (this.config.commonBackground.enable) {
-          if (this.config.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+          if (this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
             let innerImage = this.config.commonBackground.innerImage
             if (this.screenShot) {
               innerImage = innerImage.replace('svg', 'png')
