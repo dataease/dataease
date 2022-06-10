@@ -263,15 +263,17 @@ export default {
     // this.$nextTick(() => {
     //   _this.restore()
     // })
-    if (!this.inScreen) {
-      setTimeout(() => {
-        _this.restore()
-      })
-    }
+    // if (!this.inScreen) {
+
+    // }
+
+    setTimeout(() => {
+      _this.restore()
+    })
 
     window.onresize = () => {
-      console.log('视图是否发生变化？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？', document.getElementById('canvasInfoMain').offsetWidth)
       this.$nextTick(() => {
+        console.log('视图是否发生变化？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？', document.getElementById('canvasInfoMain').offsetWidth)
         // _this.restore()
       })
     }
@@ -284,9 +286,9 @@ export default {
         // _this.detectZoom()
         // console.log('画布高度缩放 === ', this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width))
         // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
-        if (this.onsizeKey) {
-          _this.restore()
-        }
+        // if (this.onsizeKey) {
+        //   _this.restore()
+        // }
         // _this.restore()
         console.log('***********************************************************************', this.inScreen)
         // this.canvasStyleData.height = this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
