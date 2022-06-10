@@ -347,23 +347,37 @@ export const TYPE_CONFIGS = [
     render: 'highcharts',
     category: 'chart.chart_type_compare',
     value: '3dcolumn',
-    title: 'chart.chart_bar',
+    title: 'chart.chart_column',
     icon: '3dcolumn'
   },
-  // {
-  //   render: 'highcharts',
-  //   category: 'chart.chart_type_compare',
-  //   value: '3dcolumn_stack',
-  //   title: 'chart.chart_bar_stack',
-  //   icon: '3dcolumn_stack'
-  // },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcolumn_stack',
+    title: 'chart.chart_column_stack',
+    icon: '3dcolumn_stack'
+  },
   {
     render: 'highcharts',
     category: 'chart.chart_type_relation',
     value: '3dfunnel',
-    title: 'chart.chart_funnel',
+    title: 'chart.chart_3dfunnel',
     icon: '3dfunnel'
   },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_relation',
+    value: '3dpyramid',
+    title: 'chart.chart_3dpyramid',
+    icon: '3dpyramid'
+  },
+  // {
+  //   render: 'highcharts',
+  //   category: 'chart.chart_type_relation',
+  //   value: '3dscatter',
+  //   title: 'chart.chart_3dscatter',
+  //   icon: '3dscatter'
+  // },
 
 
   {

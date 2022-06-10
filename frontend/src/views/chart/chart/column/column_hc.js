@@ -243,6 +243,7 @@ export const DEFAULT_COLOR_CASE = {
               name: series[i].name,
               data: series[i].data.map(ele => {return ele.value}),
               opacity: series[i].opacity,
+              stack: (i%2 === 0)? 'male' : 'female' 
             }
             if (customAttr.color) {
               obj.opacity = customAttr.color.alpha / 100
@@ -260,7 +261,6 @@ export const DEFAULT_COLOR_CASE = {
     }
   
     componentStyle(chart_option, chart)
-    console.log('return,,,,',chart_option)
     return chart_option
   }
   export function componentStyle(chart_option, chart) {

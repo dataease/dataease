@@ -59,14 +59,21 @@ export const DEFAULT_COLOR_CASE = {
     alpha: 100,
     borderRadius: 5
   }
-  export const BASE_FUNNEL = {
+  export const BASE_SCATTER = {
     chart: {
-      type: 'funnel3d', // 图表类型
+      margin: 100,
+      type: 'scatter',
       options3d: {
         enabled: true,
         alpha: 10,
-        depth: 50,
-        viewDistance: 50
+        beta: 30,
+        depth: 250,
+        viewDistance: 5,
+        frame: {
+          bottom: { size: 1, color: 'rgba(0,0,0,0.02)' },
+          back: { size: 1, color: 'rgba(0,0,0,0.04)' },
+          side: { size: 1, color: 'rgba(0,0,0,0.06)' }
+        }
       }
     },
     credits: {
@@ -74,25 +81,14 @@ export const DEFAULT_COLOR_CASE = {
     },
     title: {
       text: '',
-      style: {
-        fontWeight: 'normal'
-      }
     },
     legend: {},
   
     plotOptions: {
-      series: {
-        dataLabels: {
-          enabled: true,
-          format: '<b>{point.name}</b> ({point.y:,.0f})',
-          color: 'black',
-          allowOverlap: true,
-          y: 10
-        },
-        neckWidth: '30%',
-        neckHeight: '25%',
-        width: '80%',
-        height: '80%'
+      scatter: {
+        width: 10,
+        height: 10,
+        depth: 10
       }
     },
     tooltip: {},
@@ -105,10 +101,10 @@ export const DEFAULT_COLOR_CASE = {
   }
   
   let terminalType = 'pc'
-  export function baseFunnelOption(chart_option, chart, terminal = 'pc') {
+  export function baseScatterOption(chart_option, chart, terminal = 'pc') {
     terminalType = terminal
     let customAttr = {}
-    console.log('funnel,chart.customAttr: ', chart.customAttr)
+    console.log('pyramid,chart.customAttr: ', chart.customAttr)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -151,7 +147,7 @@ export const DEFAULT_COLOR_CASE = {
   
     // 处理data
     if (chart.data) {
-      console.log('funnel,chart.data',chart.data)
+      console.log('pyramid,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
@@ -159,13 +155,8 @@ export const DEFAULT_COLOR_CASE = {
           chart_option.series[0].opacity = customAttr.color.alpha / 100
         }
   
-        // size
-        /* if (customAttr.size) {
-            chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-          }*/
-  
         const valueArr = chart.data.series[0].data
-        console.log('funnel,valueArr::::',valueArr)
+        console.log('pyramid,valueArr::::',valueArr)
         for (let i = 0; i < valueArr.length; i++) {
           const y = valueArr[i]
           y.name = chart.data.x[i]
@@ -173,7 +164,7 @@ export const DEFAULT_COLOR_CASE = {
           chart_option.series[0].data.push(y)
         }
         // chart_option.xAxis.categories = arr;
-        console.log('funnel,chart_option:::::',chart_option)
+        console.log('pyramid,chart_option:::::',chart_option)
       }
     }
   
@@ -198,7 +189,7 @@ export const DEFAULT_COLOR_CASE = {
       }
   
       if (customStyle.legend && chart_option.legend) {
-        // chart_option.plotOptions.funnel.showInLegend = customStyle.legend.show
+        // chart_option.plotOptions.pyramid.showInLegend = customStyle.legend.show
         // chart_option.legend.padding = padding
         chart_option.legend.layout = customStyle.legend.orient
         chart_option.legend.verticalAlign = customStyle.legend.vPosition
