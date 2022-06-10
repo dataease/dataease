@@ -1461,6 +1461,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    level: '层级',
     enlarge: '放大',
     panel_style: '仪表板样式',
     multiplexing: '复用',
