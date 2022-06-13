@@ -173,6 +173,10 @@ export default {
     }
   },
   created() {
+    // 取消视图请求
+    this.$cancelRequest('/chart/view/getData/**')
+    this.$cancelRequest('/api/link/viewDetail/**')
+    this.$cancelRequest('/static-resource/**')
   },
   computed: {
     mainActiveName() {
