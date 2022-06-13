@@ -2312,7 +2312,6 @@ export const TYPE_CONFIGS = [
     icon: 'map',
     properties: [
       'color-selector',
-      'size-selector',
       'label-selector',
       'tooltip-selector',
       'title-selector'
@@ -2322,9 +2321,6 @@ export const TYPE_CONFIGS = [
         'value',
         'custom',
         'alpha'
-      ],
-      'size-selector': [
-
       ],
       'label-selector': [
         'show',
