@@ -11,8 +11,13 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
+        <!-- <el-row v-if="shareKey" class="custom-position">
+          2121111111111111111111111
+        </el-row> -->
         <el-row v-if="componentDataShow.length===0" class="custom-position">
-          {{ $t('panel.panelNull') }}
+          <span v-if="shareKey">{{ $t('panel.panelLoading') }} </span>
+          <span v-else>{{ $t('panel.panelNull') }}</span>
+
         </el-row>
         <canvas-opt-bar />
         <ComponentWrapper
@@ -77,6 +82,10 @@ export default {
     event: 'change'
   },
   props: {
+    shareKey: {
+      type: Boolean,
+      default: false
+    },
     // 后端截图
     backScreenShot: {
       type: Boolean,
