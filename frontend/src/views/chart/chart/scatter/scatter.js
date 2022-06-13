@@ -54,6 +54,7 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
+    console.log('散点图数据：',chart_option)
   }
   // console.log(chart_option);
   componentStyle(chart_option, chart)

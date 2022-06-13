@@ -401,7 +401,7 @@ export default {
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
-      console.log('修改触发=====0001boxWidth2222222222222222')
+      console.log('修改触发=====0001boxHeight2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
     },
     // 编辑组件显示

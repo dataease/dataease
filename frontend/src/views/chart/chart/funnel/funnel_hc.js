@@ -67,7 +67,8 @@ export const DEFAULT_COLOR_CASE = {
         alpha: 10,
         depth: 50,
         viewDistance: 50
-      }
+      },
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     credits: {
       enabled: false

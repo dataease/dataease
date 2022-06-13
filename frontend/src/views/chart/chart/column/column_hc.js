@@ -98,12 +98,15 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     yAxis: {
       title: {
         text: null,
       },
-
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     series: [
       {
@@ -124,7 +127,8 @@ export const DEFAULT_COLOR_CASE = {
         depth: 40
       },
       marginTop: 80,
-      marginRight: 40
+      marginRight: 40,
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     credits: {
       enabled: false
@@ -142,12 +146,16 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     yAxis: {
       allowDecimals: false,
       title: {
         text: null
-      }
+      },
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     series: [
       {
