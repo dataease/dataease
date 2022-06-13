@@ -20,6 +20,7 @@
     @touchstart="elementTouchDown"
     @mouseenter="enter"
     @mouseleave="leave"
+    @keyup.alt="keyboard"
   >
     <div
       :class="[
@@ -833,6 +834,9 @@ export default {
       eventsFor = events.touch
       this.elementDown(e)
     },
+    keyboard(e) {
+      console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', e)
+    },
     elementMouseDown(e) {
       console.log('设置参数002', this.element, e)
       if (this.element.commonBackground.boxWidth && this.element.commonBackground.boxHeight) {
@@ -1109,6 +1113,7 @@ export default {
     },
     // 移动
     move(e) {
+      console.log('鼠标移动事件-----------------------------------', e)
       if (this.resizing) {
         this.handleResize(e)
       } else if (this.dragging) {
@@ -1855,6 +1860,9 @@ export default {
       addEvent(window, 'resize', this.checkParentSize)
       // this.changeWidth(this.element.style.width)
       // this.changeHeight(this.element.style.height)
+      // document.addEventListener('keydown', function(e) {
+      //   console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-------------------------', e)
+      // })
     },
     createdFunction() {
       // minWidth不能大于maxWidth
