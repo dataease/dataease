@@ -1,5 +1,6 @@
 <template>
   <el-date-picker
+    class="deDate"
     v-if="element.options!== null && element.options.attrs!==null"
     ref="dateRef"
     v-model="values"
@@ -205,5 +206,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .deDate ::v-deep .el-input__inner {
+    background-color: transparent;
+  }
 
+  .deDate ::v-deep .el-range-editor.el-input__inner {
+    background-color: transparent;
+  }
+
+  .deDate ::v-deep .el-range-editor .el-range-input {
+    background-color: transparent;
+  }
 </style>

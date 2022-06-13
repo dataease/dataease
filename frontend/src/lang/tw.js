@@ -1524,6 +1524,7 @@ export default {
     redo: '重做',
     undo: '撤銷',
     panelNull: '這是個空的儀錶闆，可以通過編輯來豐富內容',
+    panelLoading: '仪表盘内容加载中，请稍候...',
     copy: '複製',
     paste: '黏貼',
     cut: '剪切',

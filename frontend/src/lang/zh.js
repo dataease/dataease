@@ -1549,6 +1549,7 @@ export default {
     redo: '重做',
     undo: '撤销',
     panelNull: '这是个空的仪表板，可以通过编辑来丰富内容',
+    panelLoading: '仪表盘内容加载中，请稍候...',
     copy: '复制',
     paste: '粘贴',
     cut: '剪切',

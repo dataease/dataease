@@ -12,6 +12,14 @@
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
+    <!-- 绘制盒子的基线框 用来框住所选中的组件元素 -->
+    <!-- <div
+      v-show="baseLineShow"
+      class="baseClass"
+      :style="{'top':baseline.top+'px','left': baseline.left+'px','height':baseline.height+'px','width':baseline.width+'px'}"
+      @mousedown="baseMoseDown"
+      @dblclick="clearInfo()"
+    /> -->
     <!-- 网格线 -->
     <Grid v-if="psDebug&&canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--    positionBox:{{positionBoxInfo}}-->
@@ -250,6 +258,9 @@ import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
 import BannerSet from '@/views/background/bannerSet'
+import { events } from '../../../DeDrag/option.js'
+import { addEvent, removeEvent } from '../../../../utils/dom.js'
+const eventsForBus = events.mouse
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -881,6 +892,13 @@ export default {
   },
   data() {
     return {
+      baseline: {
+        top: 0,
+        left: 0,
+        height: 0,
+        width: 0
+      },
+      baseLineShow: false,
       boardSetVisible: false,
       bannerSetVisible: false,
       psDebug: false, // 定位调试模式
@@ -1060,6 +1078,7 @@ export default {
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
+
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
@@ -1092,7 +1111,46 @@ export default {
       this.bannerSetVisible = true
     },
     changeStyleWithScale,
+    setLine(e) {
+      console.log('组件外的移动----------', e)
+      if (e.offsetY >= this.baseline.top) {
+        this.baseline.height = e.offsetY - this.baseline.top
+      }
+      if (e.offsetX >= this.baseline.left) {
+        this.baseline.width = e.offsetX - this.baseline.left
+      }
+    },
+    hangdleMouseUp(e) {
+      console.log('松开鼠标的时候触发-----------', e)
+      if (this.baseline.width <= 50 || this.baseline.height <= 50) {
+        this.baseLineShow = false
+      }
+      removeEvent(document.documentElement, 'mousemove', this.setLine)
+      removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+    },
+    baseMoseDown(e) {
+      e.stopPropagation()
+      console.log('----------------------111111111111111111111111111111111', e)
+    },
+    clearInfo() {
+      console.log('双击事件---', this.componentData)
+      this.baseLineShow = false
+      this.baseline.left = 0
+      this.baseline.top = 0
+      this.baseline.height = 0
+      this.baseline.width = 0
+    },
     handleMouseDown(e) {
+      console.log('---------------------点击画布非元素-----------------------------', e)
+      // removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+      if (!this.baseLineShow) {
+        this.baseline.left = e.offsetX
+        this.baseline.top = e.offsetY
+        addEvent(document.documentElement, eventsForBus.move, this.setLine)
+        addEvent(document.documentElement, eventsForBus.stop, this.hangdleMouseUp)
+        this.baseLineShow = true
+      }
+
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
@@ -1702,5 +1760,11 @@ export default {
 .dialog-css >>> .el-dialog__body {
   padding: 10px 20px 20px;
 }
+.baseClass{
+          position: absolute;
+          background: #409EFF;
+          opacity: 0.5;
+          z-index: 99;
+        }
 
 </style>

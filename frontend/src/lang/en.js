@@ -1527,6 +1527,7 @@ export default {
     redo: 'Redo',
     undo: 'Undo',
     panelNull: 'This is a Empty Dashboard，You Can Edit and Enrich It',
+    panelLoading: 'This is loading, plase writting...',
     copy: 'Copy',
     paste: 'Paste',
     cut: 'Cut',
