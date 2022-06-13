@@ -670,6 +670,8 @@ export default {
       this.$store.commit('initCanvas')
       if (panelId) {
         initPanelData(panelId, function() {
+          // 清空当前缓存,快照
+          _this.$store.commit('refreshSnapshot')
           // 初始化视图缓存
           initViewCache(panelId)
           // 初始化记录的视图信息

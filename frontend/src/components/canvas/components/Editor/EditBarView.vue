@@ -5,7 +5,7 @@
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
       <span :title="$t('panel.details')">
-        <i class="icon iconfont icon-fuwenbenkuang" @click.stop="showViewDetails('details')" />
+        <i class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
       </span>
     </div>
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">

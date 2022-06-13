@@ -659,8 +659,6 @@ const data = {
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
       this.commit('initCurMultiplexingComponents')
-      // 清空当前缓存,快照
-      this.commit('refreshSnapshot')
       state.batchOptStatus = false
       // Currently selected components
       state.curBatchOptComponents = []
