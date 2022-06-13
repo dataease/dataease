@@ -400,7 +400,7 @@ export default {
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
-      console.log('修改触发=====0001boxWidth2222222222222222')
+      console.log('修改触发=====0001boxHeight2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
     },
     // 编辑组件显示
@@ -571,7 +571,7 @@ export default {
     mainSlotStyleInner() {
       const style = {}
       this.manualSetting2
-      // console.log('this.element.commonBackground===', this.element.commonBackground)
+      console.log('this.element.commonBackground===', this.element.commonBackground)
       if (this.element.commonBackground) {
         // style['width'] = (this.config.commonBackground.boxWidth || 300) + 'px'
         // style['height'] = (this.config.commonBackground.boxHeight || 100) + 'px'

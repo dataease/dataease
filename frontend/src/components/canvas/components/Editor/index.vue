@@ -1206,7 +1206,7 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-      // console.log('这里的style改变了什么======', style, result)
+      console.log('这里的style改变了什么======', style, result)
       return result
     },
 

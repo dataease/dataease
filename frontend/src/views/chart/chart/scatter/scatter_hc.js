@@ -95,6 +95,7 @@ export const DEFAULT_COLOR_CASE = {
     series: [
       {
         name: '',
+        colorByPoint: true,
         data: []
       }
     ]

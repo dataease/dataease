@@ -161,10 +161,9 @@ export default {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
           } else if (this.chart.type === '3dpyramid') {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PYRAMID)))
+          } else if (this.chart.type === '3dscatter') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
           }
-          //  else if (this.chart.type === '3dscatter') {
-          //   this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
-          // }
         
         }
         this.drawEcharts()
@@ -205,11 +204,10 @@ export default {
       } else if (chart.type === '3dpyramid') {
         const base_json = JSON.parse(JSON.stringify(BASE_PYRAMID))
         chart_option = basePyramidOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dscatter') {
+        const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
+        chart_option = baseScatterOption(base_json, chart, this.terminalType)
       }
-      //  else if (chart.type === '3dscatter') {
-      //   const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
-      //   chart_option = baseScatterOption(base_json, chart, this.terminalType)
-      // }
       
       this.myEcharts(chart_option,chart.type)
     },
