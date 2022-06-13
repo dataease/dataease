@@ -109,7 +109,7 @@ export const DEFAULT_COLOR_CASE = {
   export function basePyramidOption(chart_option, chart, terminal = 'pc') {
     terminalType = terminal
     let customAttr = {}
-    console.log('pyramid,chart.customAttr: ', chart.customAttr)
+    // console.log('pyramid,chart.customAttr: ', JSON.parse(chart.customAttr))
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -152,7 +152,7 @@ export const DEFAULT_COLOR_CASE = {
   
     // 处理data
     if (chart.data) {
-      console.log('pyramid,chart.data',chart.data)
+      // console.log('pyramid,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
@@ -161,7 +161,6 @@ export const DEFAULT_COLOR_CASE = {
         }
   
         const valueArr = chart.data.series[0].data
-        console.log('pyramid,valueArr::::',valueArr)
         for (let i = 0; i < valueArr.length; i++) {
           const y = valueArr[i]
           y.name = chart.data.x[i]

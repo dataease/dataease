@@ -109,7 +109,7 @@ export const DEFAULT_COLOR_CASE = {
   export function baseFunnelOption(chart_option, chart, terminal = 'pc') {
     terminalType = terminal
     let customAttr = {}
-    console.log('funnel,chart.customAttr: ', chart.customAttr)
+    // console.log('funnel,chart.customAttr: ', chart.customAttr)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -152,7 +152,7 @@ export const DEFAULT_COLOR_CASE = {
   
     // 处理data
     if (chart.data) {
-      console.log('funnel,chart.data',chart.data)
+      // console.log('funnel,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
@@ -166,7 +166,6 @@ export const DEFAULT_COLOR_CASE = {
           }*/
   
         const valueArr = chart.data.series[0].data
-        console.log('funnel,valueArr::::',valueArr)
         for (let i = 0; i < valueArr.length; i++) {
           const y = valueArr[i]
           y.name = chart.data.x[i]

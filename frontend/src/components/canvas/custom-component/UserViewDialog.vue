@@ -11,6 +11,8 @@
       <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
       <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+      <chart-component-H3 v-else-if="renderComponent() === 'other'" class="chart-class" :chart="chart"/>
+      <chart-component-hc v-else-if="renderComponent() === 'highcharts'" class="chart-class" :chart="chart" />
       <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
       <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
     </de-aside-container>
@@ -33,10 +35,25 @@ import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
+import ChartComponentH3 from '@/views/chart/components/ChartComponentH3'
+import ChartComponentHc from '@/views/chart/components/ChartComponentHc.vue'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 export default {
   name: 'UserView',
-  components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
+  components: { 
+    LabelNormalText, 
+    ChartComponentS2, 
+    ChartComponentG2, 
+    DeMainContainer, 
+    DeContainer, 
+    DeAsideContainer, 
+    ChartComponent, 
+    TableNormal, 
+    LabelNormal, 
+    PluginCom,
+    ChartComponentH3,
+    ChartComponentHc
+  },
   props: {
     chart: {
       type: Object,
@@ -92,6 +109,7 @@ export default {
     },
 
     renderComponent() {
+      console.log(this.chart)
       return this.chart.render
     }
   }

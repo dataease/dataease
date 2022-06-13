@@ -169,7 +169,7 @@ export const DEFAULT_COLOR_CASE = {
   export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack) {
     terminalType = terminal
     let customAttr = {}
-    console.log('column,chart: ', chart)
+    // console.log('column,chart: ', chart)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -212,7 +212,7 @@ export const DEFAULT_COLOR_CASE = {
   
     // 处理data
     if (chart.data) {
-      console.log('column,chart.data',chart.data)
+      // console.log('column,chart.data',chart.data)
       // chart_option.title.text = chart.title
       // 基础柱状数据处理
       if (isBase) {
@@ -226,7 +226,6 @@ export const DEFAULT_COLOR_CASE = {
               chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
             }*/
           const valueArr = chart.data.series[0].data
-          console.log('isBase,valueArr::::',valueArr)
           let arr = []
           for (let i = 0; i < valueArr.length; i++) {
             const y = valueArr[i]
@@ -236,7 +235,7 @@ export const DEFAULT_COLOR_CASE = {
             chart_option.series[0].data.push(y)
           }
           chart_option.xAxis.categories = arr;
-          console.log('isBase,chart_option:::::',chart_option)
+          // console.log('isBase,chart_option:::::',chart_option)
         }
       }
       
@@ -246,7 +245,6 @@ export const DEFAULT_COLOR_CASE = {
           const series = chart.data.series
           let arr = []
           for (let i = 0; i < series.length; i++) {
-            console.log(series[i].name)
             let obj = {
               name: series[i].name,
               data: series[i].data.map(ele => {return ele.value}),
@@ -262,7 +260,7 @@ export const DEFAULT_COLOR_CASE = {
     
           chart_option.xAxis.categories = chart.data.x
 
-          console.log('isStack,chart_option',chart_option)
+          // console.log('isStack,chart_option',chart_option)
         }
         
       }
@@ -275,7 +273,6 @@ export const DEFAULT_COLOR_CASE = {
     const padding = '8px'
     if (chart.customStyle) {
       const customStyle = JSON.parse(chart.customStyle)
-      console.log('column,componentStyle: ', customStyle)
   
       if (customStyle.text) {
         chart_option.title.text = customStyle.text.show ? chart.title : ''

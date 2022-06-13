@@ -122,6 +122,7 @@ export default {
         this.initTitle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
+          console.log('22222')
           this.drawView()
         })
       },
@@ -132,6 +133,7 @@ export default {
     }
   },
   mounted() {
+    console.log('11111')
     this.preDraw()
   },
   beforeDestroy() {
