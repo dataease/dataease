@@ -143,6 +143,13 @@ export default {
     })
   },
   methods: {
+    changeColumnWidth({ column, columnIndex }) {
+      console.log('23123213213231232132121', column, columnIndex)
+      // if (column.width !== column.renderWidth) {
+      //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
+      //   // this.saveHeadConfig()
+      // }
+    },
     init() {
       this.resetHeight()
       this.$nextTick(() => {
