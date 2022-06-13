@@ -92,6 +92,7 @@ export default {
 
   methods: {
     handleDragStart(ev) {
+      console.log('组件拖动：',ev)
       // 记录拖拽信息
       const dragComponentInfo = deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel())
       // 设置矩阵标记点
