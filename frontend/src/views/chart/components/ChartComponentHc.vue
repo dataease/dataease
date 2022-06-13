@@ -16,14 +16,19 @@
 import * as highcharts from 'highcharts'
 import Highcharts3D from 'highcharts/highcharts-3d'
 Highcharts3D(highcharts)
-const funnel3d = require('highcharts/modules/funnel3d');
+import funnel3d from 'highcharts/modules/funnel3d'; // 漏斗图引入
 funnel3d(highcharts);
-const cylinder = require('highcharts/modules/cylinder');
+import cylinder from 'highcharts/modules/cylinder';
 cylinder(highcharts)
+import pyramid3d from 'highcharts/modules/pyramid3d'; //金字塔图引入
+pyramid3d(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
 import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
 import { BASE_FUNNEL,baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
+import { BASE_PYRAMID, basePyramidOption } from "@/views/chart/chart/pyramid/pyramid_hc"
+import { BASE_SCATTER, baseScatterOption } from "@/views/chart/chart/scatter/scatter_hc"
+
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
   name: 'ChartComponentHc',
@@ -154,6 +159,10 @@ export default {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMN_STACK)))
           } else if (this.chart.type === '3dfunnel') {
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
+          } else if (this.chart.type === '3dpyramid') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PYRAMID)))
+          } else if (this.chart.type === '3dscatter') {
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
           }
         
         }
@@ -192,16 +201,32 @@ export default {
       } else if (chart.type === '3dfunnel') {
         const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
         chart_option = baseFunnelOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dpyramid') {
+        const base_json = JSON.parse(JSON.stringify(BASE_PYRAMID))
+        chart_option = basePyramidOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dscatter') {
+        const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
+        chart_option = baseScatterOption(base_json, chart, this.terminalType)
       }
       
-      this.myEcharts(chart_option)
+      this.myEcharts(chart_option,chart.type)
     },
 
-    myEcharts(option) {
+    myEcharts(option,type) {
       // 指定图表的配置项和数据
       const chart = this.myChart
       this.setBackGroundBorder()
-      setTimeout(chart.update(option, true), 500)
+      setTimeout(() => {
+        if(type === '3dcolumn_stack') {
+          if(this.myChart) {
+            this.myChart.destroy()
+          }
+          this.myChart = this.$highcharts.chart(this.chartId, option)
+        } else {
+          chart.update(option, true)
+        }
+        
+      }, 500)
       window.onresize = function() {
         this.myChart.reflow()
       }

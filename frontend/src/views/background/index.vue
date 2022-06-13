@@ -183,10 +183,11 @@ export default {
       this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
       this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
       this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
+      console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
+      console.log('组件背景样式：：：：',this.curComponent)
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },

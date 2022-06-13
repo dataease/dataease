@@ -124,7 +124,8 @@ export const DEFAULT_COLOR_CASE = {
         depth: 40
       },
       marginTop: 80,
-      marginRight: 40
+      marginRight: 40,
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     credits: {
       enabled: false
@@ -142,12 +143,16 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     yAxis: {
       allowDecimals: false,
       title: {
         text: null
-      }
+      },
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     series: [
       {
@@ -243,6 +248,7 @@ export const DEFAULT_COLOR_CASE = {
               name: series[i].name,
               data: series[i].data.map(ele => {return ele.value}),
               opacity: series[i].opacity,
+              stack: (i%2 === 0)? 'male' : 'female' 
             }
             if (customAttr.color) {
               obj.opacity = customAttr.color.alpha / 100
@@ -260,7 +266,6 @@ export const DEFAULT_COLOR_CASE = {
     }
   
     componentStyle(chart_option, chart)
-    console.log('return,,,,',chart_option)
     return chart_option
   }
   export function componentStyle(chart_option, chart) {
