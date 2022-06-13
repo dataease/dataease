@@ -74,7 +74,8 @@ export const DEFAULT_COLOR_CASE = {
           back: { size: 1, color: 'rgba(0,0,0,0.04)' },
           side: { size: 1, color: 'rgba(0,0,0,0.06)' }
         }
-      }
+      },
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     credits: {
       enabled: false

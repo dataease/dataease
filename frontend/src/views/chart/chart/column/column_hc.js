@@ -124,7 +124,8 @@ export const DEFAULT_COLOR_CASE = {
         depth: 40
       },
       marginTop: 80,
-      marginRight: 40
+      marginRight: 40,
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     credits: {
       enabled: false

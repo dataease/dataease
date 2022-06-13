@@ -571,7 +571,7 @@ export default {
     mainSlotStyleInner() {
       const style = {}
       this.manualSetting2
-      console.log('this.element.commonBackground===', this.element.commonBackground)
+      // console.log('this.element.commonBackground===', this.element.commonBackground)
       if (this.element.commonBackground) {
         // style['width'] = (this.config.commonBackground.boxWidth || 300) + 'px'
         // style['height'] = (this.config.commonBackground.boxHeight || 100) + 'px'
