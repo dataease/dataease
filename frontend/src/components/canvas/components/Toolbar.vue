@@ -36,10 +36,10 @@
         </span>
       </div>
       <el-tooltip :content="$t('panel.undo') ">
-        <i class="el-icon-refresh-right insert" @click="undo" />
+        <span class="icon iconfont icon-outline-undo insert" @click="undo" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.redo') ">
-        <i class="el-icon-refresh-left insert" @click="redo" />
+        <span class="icon iconfont icon-outline-redo insert" @click="redo" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <span class="icon iconfont icon-fangda insert" @click="clickPreview" />
@@ -49,19 +49,24 @@
       <span class="button_self">
         <el-dropdown trigger="click" placement="bottom-start" size="mini">
           <el-button size="mini">
-            <i class="el-icon-arrow-down" />
+            <span class="icon iconfont icon-gengduo" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-dropdown placement="right-start" size="mini" style="width: 100%">
                 <span>
-                  <span class="icon iconfont" :class="[canvasStyleData.auxiliaryMatrix?'icon-shujujuzhen':'icon-xuanfuanniu']" />
+                  <span
+                    class="icon iconfont"
+                    :class="[canvasStyleData.auxiliaryMatrix?'icon-shujujuzhen':'icon-xuanfuanniu']"
+                  />
                   <span style="font-size: 12px">{{ $t('panel.new_element_distribution') }}</span>
                   <i class="el-icon-arrow-right el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item @click.native="auxiliaryMatrixChange">
-                    <span :class="[!canvasStyleData.auxiliaryMatrix?'font-active':'']"> {{ $t('panel.suspension') }} </span>
+                    <span
+                      :class="[!canvasStyleData.auxiliaryMatrix?'font-active':'']"
+                    > {{ $t('panel.suspension') }} </span>
                     <i v-if="!canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check" />
                   </el-dropdown-item>
                   <el-dropdown-item @click.native="auxiliaryMatrixChange">
@@ -72,20 +77,27 @@
               </el-dropdown>
             </el-dropdown-item>
             <el-dropdown-item @click.native="showGridChange">
-              <span class="icon iconfont-tb" :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']" />
+              <span
+                class="icon iconfont-tb"
+                :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']"
+              />
               {{ $t('panel.aided_grid') }}:{{ canvasStyleData.aidedDesign.showGrid?$t('panel.aided_grid_open'):$t('panel.aided_grid_close') }}
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
               <span class="icon iconfont-tb icon-canshu" />{{ $t('panel.params_setting') }}
             </el-dropdown-item>
             <el-dropdown-item @click.native="clearCanvas">
-              <i class="el-icon-document-delete" />{{ $t('panel.clean_canvas') }}
+              <span class="icon iconfont-tb icon-qingkong" />{{ $t('panel.clean_canvas') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
-      <el-button size="mini" class="el-icon-magic-stick el-icon--left" @click="showPanel">{{ $t('panel.panel_style') }}</el-button>
-      <el-button size="mini" @click="batchOption"> <span class="icon iconfont-tb icon-piliang-copy el-icon--left" />{{ $t('panel.batch_opt') }}</el-button>
+      <el-button size="mini" class="el-icon-magic-stick el-icon--left" @click="showPanel">{{ $t('panel.panel_style')
+      }}
+      </el-button>
+      <el-button size="mini" @click="batchOption"><span class="icon iconfont-tb icon-piliang-copy el-icon--left" />{{
+        $t('panel.batch_opt') }}
+      </el-button>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" type="primary" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -94,7 +106,13 @@
     </div>
 
     <!--关闭弹框-->
-    <el-dialog :visible.sync="closePanelVisible" :title="$t('panel.panel_save_tips')" :show-close="false" width="30%" class="dialog-css">
+    <el-dialog
+      :visible.sync="closePanelVisible"
+      :title="$t('panel.panel_save_tips')"
+      :show-close="false"
+      width="30%"
+      class="dialog-css"
+    >
       <el-row style="height: 20px">
         <el-col :span="4">
           <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
@@ -321,8 +339,12 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
-        if (view.DetailAreaCode) { view.DetailAreaCode = null }
-        if (view.filters && view.filters.length > 0) { view.filters = [] }
+        if (view.DetailAreaCode) {
+          view.DetailAreaCode = null
+        }
+        if (view.filters && view.filters.length > 0) {
+          view.filters = []
+        }
         if (view.type === 'de-tabs') {
           view.options.tabList && view.options.tabList.length > 0 && view.options.tabList.forEach(tab => {
             if (tab.content && tab.content.filters && tab.content.filters.length > 0) {
@@ -485,6 +507,7 @@ export default {
     height: 35px;
     line-height: 32px;
     min-width: 400px;
+
     .canvas-config {
       display: inline-block;
       margin-left: 10px;
@@ -519,7 +542,7 @@ export default {
       transition: .1s;
       font-weight: 500;
       padding: 5px 5px;
-      font-size: 16px!important;
+      font-size: 16px !important;
       border-radius: 3px;
       margin-left: 10px;
 
@@ -537,23 +560,24 @@ export default {
     }
   }
 
-  .button-show{
-    background-color: #ebf2fe!important;
+  .button-show {
+    background-color: #ebf2fe !important;
   }
 
-  .button-closed{
-    background-color: #ffffff!important;
+  .button-closed {
+    background-color: #ffffff !important;
   }
 
-   >>>.el-switch__core{
-     width:30px!important;
-     height:15px;
-   }
+  > > > .el-switch__core {
+    width: 30px !important;
+    height: 15px;
+  }
+
   /*设置圆*/
-  >>>.el-switch__core::after{
-    width:14px;
-    height:14px;
-    margin-top:-1px;
+  > > > .el-switch__core::after {
+    width: 14px;
+    height: 14px;
+    margin-top: -1px;
     margin-bottom: 2px;
   }
 
@@ -565,36 +589,44 @@ export default {
     -moz-osx-font-smoothing: grayscale;
   }
 
-  .switch-position{
+  .switch-position {
     position: absolute;
     top: 3px;
     right: 50%;
     width: 100px;
   }
-  .button_self{
+
+  .button_self {
     margin-right: 5px;
   }
 
-  .button_self ::v-deep .el-button--mini{
+  .button_self ::v-deep .el-button--mini {
     padding: 7px 7px !important;
   }
-  .font-active{
-    font-color: #3a8ee6!important;
+
+  .font-active {
+    font-color: #3a8ee6 !important;
   }
-  .icon-active{
+
+  .icon-active {
     color: #3a8ee6;
   }
-  .icon-unactivated{
+
+  .icon-unactivated {
     display: none;
   }
-  .panel-info-area{
+
+  .panel-info-area {
     position: absolute;
     left: 10px;
-    .text{
+
+    .text {
       font-size: 16px;
       color: var(--TextPrimary, #606266);
-    };
-    .icon-back{
+    }
+  ;
+
+    .icon-back {
       font-size: 18px;
       font-weight: bold;
       color: var(--TextPrimary, #606266);
