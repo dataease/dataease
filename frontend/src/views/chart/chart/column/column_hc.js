@@ -98,12 +98,15 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     yAxis: {
       title: {
         text: null,
       },
-
+      gridLineWidth: 0,
+      minorGridLineWidth: 0
     },
     series: [
       {
