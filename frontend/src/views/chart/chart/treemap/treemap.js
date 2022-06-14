@@ -57,7 +57,6 @@ export function baseTreemapOption(chart_option, chart) {
       chart_option.series[0].name = chart.data.series[0].name
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

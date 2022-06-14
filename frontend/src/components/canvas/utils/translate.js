@@ -130,7 +130,6 @@ export function changeStyleWithScale(value) {
 export function changeStyleWithScaleHeightInAuto(value) {
   const scale = store.state.canvasStyleData.scaleHeight ? store.state.canvasStyleData.scaleHeight : 100
   const result = value * scale / 100
-  // console.log('heightInAuto=>' + scale + ';' + result)
   return result
 }
 
@@ -138,7 +137,6 @@ export function changeStyleWithScaleHeightInAuto(value) {
 export function changeStyleWithScaleWidthInAuto(value) {
   const scale = store.state.canvasStyleData.scaleWidth ? store.state.canvasStyleData.scaleWidth : 100
   const result = value * scale / 100
-  // console.log('widthInAuto=>' + scale + ';' + result)
   return result
 }
 

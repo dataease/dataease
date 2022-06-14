@@ -128,7 +128,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       }
     }
   }
-  // console.log(options.indicator.pin)
 
   // 开始渲染
   if (plot) {

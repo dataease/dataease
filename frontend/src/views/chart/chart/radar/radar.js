@@ -62,7 +62,6 @@ export function baseRadarOption(chart_option, chart) {
       chart_option.radar.indicator.push({ name: ele, max: max })
     })
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

@@ -101,7 +101,7 @@ export default {
               message: this.$t('panel.outer_param_decode_error'),
               type: 'error'
             })
-            console.log('outerParams Decode error：', e)
+            console.error('outerParams Decode error：', e)
           }
         }
 
@@ -125,7 +125,7 @@ export default {
             if (--loadingCount === 0) {
               this.show = true
             }
-            console.log('tempParam error：', e)
+            console.error('tempParam error：', e)
           }
         }
 
