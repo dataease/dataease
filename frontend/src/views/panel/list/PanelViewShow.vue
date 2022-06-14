@@ -326,7 +326,7 @@ export default {
             callBack(rsp.data)
           })
         } catch (e) {
-          console.log('findResourceAsBase64 error')
+          console.error('findResourceAsBase64 error', e)
           callBack()
         }
       } else {

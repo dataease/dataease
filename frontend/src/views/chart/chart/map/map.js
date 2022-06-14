@@ -80,7 +80,6 @@ export function baseMapOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

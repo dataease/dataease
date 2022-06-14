@@ -1345,7 +1345,8 @@ export default {
           }
           this.fieldShow = true
         }).catch(err => {
-          console.log(err)
+          console.error(err)
+
           this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message

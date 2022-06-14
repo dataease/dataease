@@ -768,7 +768,7 @@ function findBelowItems(item) {
           break
         }
       } catch (e) {
-        console.log('positionBox igonre')
+        console.error('positionBox igonre', e)
       }
     }
   }

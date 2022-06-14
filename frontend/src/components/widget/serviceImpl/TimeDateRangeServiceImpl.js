@@ -68,7 +68,6 @@ class TimeDateRangeServiceImpl extends WidgetService {
   initLeftPanel() {
     const value = JSON.parse(JSON.stringify(leftPanel))
     return value
-    // console.log('this is first initWidget')
   }
 
   initFilterDialog() {
