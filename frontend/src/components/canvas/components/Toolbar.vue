@@ -47,7 +47,7 @@
       <el-divider direction="vertical" />
 
       <span class="button_self">
-        <el-dropdown trigger="click" placement="bottom-start" size="mini">
+        <el-dropdown :hide-on-click="false" trigger="click" placement="bottom-start" size="mini">
           <el-button size="mini">
             <span class="icon iconfont icon-gengduo" />
           </el-button>
@@ -74,9 +74,10 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </el-dropdown-item>
-            <el-dropdown-item @click.native="showGridChange">
+            <el-dropdown-item>
               <span class="icon iconfont-tb" :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']" />
-              <span>{{ $t('panel.aided_grid') }}:{{ canvasStyleData.aidedDesign.showGrid?$t('panel.aided_grid_open'):$t('panel.aided_grid_close') }}</span>
+              {{ $t('panel.aided_grid') }}
+              <el-switch v-model="showGridSwitch" size="mini" @change="showGridChange" />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
               <span class="icon iconfont-tb icon-canshu" />{{ $t('panel.params_setting') }}
@@ -149,6 +150,7 @@ export default {
   },
   data() {
     return {
+      showGridSwitch: false,
       mobileLayoutInitStatus: false,
       isShowPreview: false,
       needToChange: [
@@ -198,6 +200,7 @@ export default {
     eventBus.$on('clearCanvas', this.clearCanvas)
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
+    this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
   },
   methods: {
     close() {
@@ -563,13 +566,13 @@ export default {
     background-color: #ffffff !important;
   }
 
-  > > > .el-switch__core {
+  ::v-deep .el-switch__core {
     width: 30px !important;
     height: 15px;
   }
 
   /*设置圆*/
-  > > > .el-switch__core::after {
+  ::v-deep .el-switch__core::after {
     width: 14px;
     height: 14px;
     margin-top: -1px;
