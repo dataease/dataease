@@ -26,7 +26,7 @@
       v-html="element.propValue"
     />
   </div>
-  <div v-else class="v-text">
+  <div v-else class="v-text" style="cursor: default">
     <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
   </div>
 </template>
