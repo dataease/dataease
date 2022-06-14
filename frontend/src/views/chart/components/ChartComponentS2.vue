@@ -209,6 +209,15 @@ export default {
       if (this.myChart && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
+      this.myChart.setThemeCfg({
+        theme: {
+          dataCell: {
+            cell: {
+              crossBackgroundColor: 'pink'
+            }
+          }
+        }
+      })
 
       if (this.myChart && this.antVRenderStatus) {
         this.myChart.render()
