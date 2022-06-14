@@ -98,15 +98,27 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
-      gridLineWidth: 0,
-      minorGridLineWidth: 0
+      title: {
+        text: '',
+        style: {
+          color: '#333333',
+          fontSize: '12'
+        }
+      },
+      gridLineColor: '#eeeeee',
+      gridLineWidth: 1,
+      visible: true,
     },
     yAxis: {
       title: {
-        text: null,
+        text: '',
+        style: {
+          color: '#333333'
+        }
       },
-      gridLineWidth: 0,
-      minorGridLineWidth: 0
+      gridLineColor: '#eeeeee',
+      gridLineWidth: 1,
+      visible: true,
     },
     series: [
       {
@@ -146,16 +158,18 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
-      gridLineWidth: 0,
-      minorGridLineWidth: 0
+      gridLineWidth: 1,
+      minorGridLineWidth: 1,
+      // gridLineColor: 'rgb(0, 0, 0,0)'
     },
     yAxis: {
       allowDecimals: false,
       title: {
         text: null
       },
-      gridLineWidth: 0,
-      minorGridLineWidth: 0
+      gridLineWidth: 1,
+      minorGridLineWidth: 1,
+      // gridLineColor: 'rgb(0, 0, 0,0)'
     },
     series: [
       {
@@ -271,9 +285,10 @@ export const DEFAULT_COLOR_CASE = {
   }
   export function componentStyle(chart_option, chart) {
     const padding = '8px'
+    console.log('column_hc,样式：：：',chart)
     if (chart.customStyle) {
       const customStyle = JSON.parse(chart.customStyle)
-  
+      console.log('customStyle=========',customStyle)
       if (customStyle.text) {
         chart_option.title.text = customStyle.text.show ? chart.title : ''
         const style = chart_option.title.style ? chart_option.title.style : {}
@@ -299,6 +314,17 @@ export const DEFAULT_COLOR_CASE = {
       if (customStyle.background) {
         chart_option.chart.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
       }
+
+      // 坐标轴设置
+      if (customStyle.xAxis) {
+        chart_option.xAxis.visible = customStyle.xAxis.show //展示
+        chart_option.xAxis.title.text = customStyle.xAxis.name //描述
+        chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 字体颜色
+        // chart_option.xAxis.gridLineColor = customStyle.xAxis.gridLineColor // 轴线颜色
+        // chart_option.xAxis.gridLineWidth = customStyle.xAxis.gridLineWidth // 轴线宽度
+        // chart_option.xAxis.labels = customStyle.xAxis.axisLabel // 轴标签
+      }
+
     }
   }
   export function hexColorToRGBA(hex, alpha) {

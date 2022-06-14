@@ -152,16 +152,22 @@ export default {
       }).then(() => {
         if (!this.myChart) {
           if (this.chart.type === '3dpie') {
+            // 饼图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
           } else if (this.chart.type === '3dcolumn') {
+            // 柱状图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMM)))
           } else if (this.chart.type === '3dcolumn_stack') {
+            // 堆叠柱状图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMN_STACK)))
           } else if (this.chart.type === '3dfunnel') {
+            // 漏斗图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
           } else if (this.chart.type === '3dpyramid') {
+            // 金字塔图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PYRAMID)))
           } else if (this.chart.type === '3dscatter') {
+            // 散点图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
           }
         

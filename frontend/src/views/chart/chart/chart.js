@@ -149,6 +149,36 @@ export const DEFAULT_XAXIS_STYLE = {
     formatter: '{value}'
   },
   splitLine: {
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null,
+    splitCount: null
+  }
+}
+export const DEFAULT_XAXIS_STYLE_HC = {
+  show: true,
+  position: 'bottom',
+  name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
+  axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
+    rotate: 0,
+    formatter: '{value}'
+  },
+  splitLine: {
     show: false,
     lineStyle: {
       color: '#cccccc',
