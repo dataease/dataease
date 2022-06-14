@@ -7,7 +7,7 @@
           <el-dropdown-item v-if="editFilter.includes(curComponent.type)" icon="el-icon-edit-outline" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
               <span class="el-icon-copy-document">
                 {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right" />
@@ -65,12 +65,8 @@ export default {
     }
   },
   computed: mapState([
-    'menuTop',
-    'menuLeft',
-    'menuShow',
     'curComponent',
-    'componentData',
-    'canvasStyleData'
+    'componentData'
   ]),
   methods: {
     edit() {
