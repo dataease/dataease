@@ -64,9 +64,7 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item @click.native="auxiliaryMatrixChange">
-                    <span
-                      :class="[!canvasStyleData.auxiliaryMatrix?'font-active':'']"
-                    > {{ $t('panel.suspension') }} </span>
+                    <span :class="[!canvasStyleData.auxiliaryMatrix?'font-active':'']"> {{ $t('panel.suspension') }} </span>
                     <i v-if="!canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check" />
                   </el-dropdown-item>
                   <el-dropdown-item @click.native="auxiliaryMatrixChange">
@@ -77,11 +75,8 @@
               </el-dropdown>
             </el-dropdown-item>
             <el-dropdown-item @click.native="showGridChange">
-              <span
-                class="icon iconfont-tb"
-                :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']"
-              />
-              {{ $t('panel.aided_grid') }}:{{ canvasStyleData.aidedDesign.showGrid?$t('panel.aided_grid_open'):$t('panel.aided_grid_close') }}
+              <span class="icon iconfont-tb" :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']" />
+              <span>{{ $t('panel.aided_grid') }}:{{ canvasStyleData.aidedDesign.showGrid?$t('panel.aided_grid_open'):$t('panel.aided_grid_close') }}</span>
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
               <span class="icon iconfont-tb icon-canshu" />{{ $t('panel.params_setting') }}
@@ -92,8 +87,8 @@
           </el-dropdown-menu>
         </el-dropdown>
       </span>
-      <el-button size="mini" class="el-icon-magic-stick el-icon--left" @click="showPanel">{{ $t('panel.panel_style')
-      }}
+      <el-button size="mini" class="el-icon-magic-stick el-icon--left" @click="showPanel">
+        {{ $t('panel.panel_style') }}
       </el-button>
       <el-button size="mini" @click="batchOption"><span class="icon iconfont-tb icon-piliang-copy el-icon--left" />{{
         $t('panel.batch_opt') }}
@@ -621,15 +616,16 @@ export default {
     left: 10px;
 
     .text {
+      margin-left: 20px;
       font-size: 16px;
       color: var(--TextPrimary, #606266);
     }
   ;
 
     .icon-back {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
-      color: var(--TextPrimary, #606266);
+      color: var(--MenuActiveBG, #409EFF);
     }
 
   }
