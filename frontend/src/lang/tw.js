@@ -1102,7 +1102,12 @@ export default {
     tick_count: '刻度間隔數',
     custom_sort: '自定義',
     custom_sort_tip: '自定義排序優先級最高，且僅支持單個字段自定義',
-    clean_custom_sort: '清除自定義排序'
+    clean_custom_sort: '清除自定義排序',
+    ds_field_edit: '數據集字段管理',
+    chart_field_edit: '視圖字段管理',
+    copy_field: '復製字段',
+    calc_field: '計算字段',
+    form_type: '類別'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

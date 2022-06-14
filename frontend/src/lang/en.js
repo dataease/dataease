@@ -1102,7 +1102,12 @@ export default {
     tick_count: 'Tick Split',
     custom_sort: 'Custom',
     custom_sort_tip: 'Custom sort field first,and only support single field',
-    clean_custom_sort: 'Clean'
+    clean_custom_sort: 'Clean',
+    ds_field_edit: 'Dataset Field Manage',
+    chart_field_edit: 'Chart Field Manage',
+    copy_field: 'Copy Field',
+    calc_field: 'Calculate Field',
+    form_type: 'From Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
