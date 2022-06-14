@@ -103,6 +103,7 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
 }
 
 export function baseTableNormal(s2, container, chart, action, tableData) {
+  console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
 
   // fields
@@ -194,6 +195,7 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
 
   // theme
   const customTheme = getCustomTheme(chart)
+  console.log('customTheme', customTheme)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2

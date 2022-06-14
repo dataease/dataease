@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
+      <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
@@ -59,8 +59,11 @@
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="'表格'+$t('chart.table_item_font_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableInfoFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />

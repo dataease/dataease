@@ -179,6 +179,7 @@ export default {
       // }
     },
     drawView() {
+      // this.myChart = null
       const chart = this.chart
       // type
       // if (chart.data) {
@@ -193,11 +194,15 @@ export default {
           ]
         }
       }
+      console.log('是否触发drawView事件----------------？？？？？？？？？？？？？？？？？？？', this.chart)
       if (chart.type === 'table-info') {
+        console.log('触发点-------1111111111')
         this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-normal') {
+        console.log('触发点-------22222222222')
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
+        console.log('触发点-------33333333333')
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else {
         if (this.myChart) {
@@ -209,17 +214,18 @@ export default {
       if (this.myChart && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
-      this.myChart.setThemeCfg({
-        theme: {
-          dataCell: {
-            cell: {
-              crossBackgroundColor: 'pink'
-            }
-          }
-        }
-      })
+      // this.myChart.setThemeCfg({
+      //   theme: {
+      //     dataCell: {
+      //       cell: {
+      //         crossBackgroundColor: 'pink'
+      //       }
+      //     }
+      //   }
+      // })
 
       if (this.myChart && this.antVRenderStatus) {
+        console.log('this.antVRenderStatus', this.antVRenderStatus)
         this.myChart.render()
       }
       // this.timer = null
