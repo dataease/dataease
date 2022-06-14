@@ -74,7 +74,8 @@ export function getCustomTheme(chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        // fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableInfoFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
         textAlign: itemAlign
       },
@@ -120,7 +121,7 @@ export function getCustomTheme(chart) {
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor
-      theme.dataCell.text.fill = c.tableFontColor
+      theme.dataCell.text.fill = c.tableInfoFontColor
     }
     // size
     if (customAttr.size) {

@@ -396,7 +396,7 @@
 </template>
 
 <script>
-import VueRulerTool from 'vue-ruler-tool'
+// import VueRulerTool from 'vue-ruler-tool'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
@@ -443,7 +443,7 @@ export default {
   name: 'PanelEdit',
   components: {
     SketchRule,
-    VueRulerTool,
+    // VueRulerTool,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -470,7 +470,7 @@ export default {
       scaleRule: 1, // 658813476562495, //1,
       startX: 0,
       startY: 0,
-      lines: {
+      liness: {
         h: [],
         v: []
       },
@@ -619,6 +619,19 @@ export default {
         width: this.canvasStyleData.width,
         height: this.canvasStyleData.height
       }
+    },
+    lines() {
+      let linesData = {}
+      if (this.canvasStyleData.ruleLines) {
+        linesData = this.canvasStyleData.ruleLines
+      } else {
+        linesData = {
+          h: [],
+          v: []
+        }
+      }
+
+      return linesData
     },
     customCanvasStyle() {
       let style = {
@@ -843,7 +856,13 @@ export default {
       })
     },
     handleLine(lines) {
+      console.log('lines====', this.canvasStyleData, lines)
       // this.lines = lines
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      canvasStyleData.ruleLines = lines
+      // console.log('canvasStyleData', canvasStyleData)
+      this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot', 'commitStyle')
     },
     handleCornerClick() {
       return

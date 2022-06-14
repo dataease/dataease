@@ -5,6 +5,7 @@ export const DEFAULT_COLOR_CASE = {
     tableHeaderBgColor: '#e1eaff',
     tableItemBgColor: '#ffffff',
     tableFontColor: '#000000',
+    tableInfoFontColor: '#000000',
     tableStripe: true,
     dimensionColor: '#000000',
     quotaColor: '#000000',

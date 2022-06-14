@@ -2,7 +2,7 @@
   <div v-show="contentShow" v-loading="loading" class="login-background">
     <div class="login-container">
       <el-row type="flex">
-        <el-col :span="9" :offset="9">
+        <el-col :span="8" :offset="8">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
               <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
@@ -243,6 +243,10 @@ export default {
   height: 100vh;
   // @include login-center;
   background: url(../../assets/login-background.png) no-repeat;
+  background-size:100% 100%;
+  display:flex;
+  justify-content: center;
+  padding-top:20px;
 }
 
 .login-container {
