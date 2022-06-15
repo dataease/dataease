@@ -62,7 +62,7 @@ export const DEFAULT_COLOR_CASE = {
   export const BASE_SCATTER = {
     chart: {
       margin: 100,
-      type: 'scatter',
+      type: 'scatter', // 散点图
       options3d: {
         enabled: true,
         alpha: 10,
@@ -149,7 +149,7 @@ export const DEFAULT_COLOR_CASE = {
   
     // 处理data
     if (chart.data) {
-      // console.log('pyramid,chart.data',chart.data)
+      console.log('pyramid,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
