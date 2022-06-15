@@ -106,19 +106,30 @@ export const DEFAULT_COLOR_CASE = {
           fontSize: '12'
         }
       },
+      labels:{
+        enabled: true,
+        style: {},
+      },
       gridLineColor: '#eeeeee',
       gridLineWidth: 1,
+      gridLineDashStyle: 'solid',
       visible: true,
     },
     yAxis: {
       title: {
         text: '',
         style: {
-          color: '#333333'
+          color: '#333333',
+          fontSize: '12'
         }
+      },
+      labels:{
+        enabled: true,
+        style: {},
       },
       gridLineColor: '#eeeeee',
       gridLineWidth: 1,
+      gridLineDashStyle: 'solid',
       visible: true,
     },
     series: [
@@ -159,18 +170,39 @@ export const DEFAULT_COLOR_CASE = {
     tooltip: {},
     xAxis: {
       categories: [],
+      title: {
+        text: '',
+        style: {
+          color: '#333333',
+          fontSize: '12'
+        }
+      },
+      labels:{
+        enabled: true,
+        style: {},
+      },
+      gridLineColor: '#eeeeee',
       gridLineWidth: 1,
-      minorGridLineWidth: 1,
-      // gridLineColor: 'rgb(0, 0, 0,0)'
+      gridLineDashStyle: 'solid',
+      visible: true,
     },
     yAxis: {
       allowDecimals: false,
       title: {
-        text: null
+        text: '',
+        style: {
+          color: '#333333',
+          fontSize: '12'
+        }
       },
+      labels:{
+        enabled: true,
+        style: {},
+      },
+      gridLineColor: '#eeeeee',
       gridLineWidth: 1,
-      minorGridLineWidth: 1,
-      // gridLineColor: 'rgb(0, 0, 0,0)'
+      gridLineDashStyle: 'solid',
+      visible: true,
     },
     series: [
       {
@@ -321,9 +353,24 @@ export const DEFAULT_COLOR_CASE = {
         chart_option.xAxis.visible = customStyle.xAxis.show //展示
         chart_option.xAxis.title.text = customStyle.xAxis.name //描述
         chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 字体颜色
-        // chart_option.xAxis.gridLineColor = customStyle.xAxis.gridLineColor // 轴线颜色
-        // chart_option.xAxis.gridLineWidth = customStyle.xAxis.gridLineWidth // 轴线宽度
-        // chart_option.xAxis.labels = customStyle.xAxis.axisLabel // 轴标签
+        chart_option.xAxis.gridLineColor = customStyle.xAxis.splitLine.lineStyle.color // 轴线颜色
+        chart_option.xAxis.gridLineWidth = customStyle.xAxis.splitLine.lineStyle.width // 轴线宽度
+        chart_option.xAxis.gridLineDashStyle = customStyle.xAxis.splitLine.lineStyle.type // 轴线线条样式
+        chart_option.xAxis.labels.enabled = customStyle.xAxis.axisLabel.show // 轴标签展示
+        chart_option.xAxis.labels.style.color = customStyle.xAxis.axisLabel.color //轴标签颜色
+        chart_option.xAxis.labels.style.fontSize = customStyle.xAxis.axisLabel.fontSize //轴标签字体大小
+        // chart_option.xAxis.labels.rotation = customStyle.xAxis.axisLabel.rotate // 轴标签旋转角度
+      }
+      if(customStyle.yAxis) {
+        chart_option.yAxis.visible = customStyle.yAxis.show // 展示
+        chart_option.yAxis.title.text = customStyle.yAxis.name //描述
+        chart_option.yAxis.title.style = customStyle.yAxis.nameTextStyle // 字体颜色
+        chart_option.yAxis.gridLineColor = customStyle.yAxis.splitLine.lineStyle.color // 轴线颜色
+        chart_option.yAxis.gridLineWidth = customStyle.yAxis.splitLine.lineStyle.width // 轴线宽度
+        chart_option.yAxis.gridLineDashStyle = customStyle.yAxis.splitLine.lineStyle.type // 轴线线条样式
+        chart_option.yAxis.labels.enabled = customStyle.yAxis.axisLabel.show // 轴标签展示
+        chart_option.yAxis.labels.style.color = customStyle.yAxis.axisLabel.color //轴标签颜色
+        chart_option.yAxis.labels.style.fontSize = customStyle.yAxis.axisLabel.fontSize //轴标签字体大小
       }
 
     }

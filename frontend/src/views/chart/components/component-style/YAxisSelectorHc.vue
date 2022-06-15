@@ -3,61 +3,59 @@
     <el-col>
       <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="axisForm.show" @change="changeXAxisStyle">{{ $t('chart.show') }}</el-checkbox>
+          <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="axisForm.show">
           <!-- <el-form-item :label="$t('chart.position')" class="form-item">
-            <el-radio-group v-model="axisForm.position" size="mini" @change="changeXAxisStyle">
-              <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
-              <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+            <el-radio-group v-model="axisForm.position" size="mini" @change="changeYAxisStyle">
+              <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+              <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item> -->
           <el-form-item :label="$t('chart.name')" class="form-item">
-            <el-input v-model="axisForm.name" size="mini" @blur="changeXAxisStyle" />
+            <el-input v-model="axisForm.name" size="mini" @blur="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
-            <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeXAxisStyle" />
+            <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item">
-            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeXAxisStyle">
+            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeYAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+
           <el-divider />
           <el-form-item :label="$t('chart.axis_color')" class="form-item">
-            <el-color-picker v-model="axisForm.splitLine.lineStyle.color" class="el-color-picker" :predefine="predefineColors" @change="changeXAxisStyle" />
+            <el-color-picker v-model="axisForm.splitLine.lineStyle.color" class="el-color-picker" :predefine="predefineColors" @change="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_width')" class="form-item form-item-slider">
-            <el-slider v-model="axisForm.splitLine.lineStyle.width" :min="0" :max="10" show-input :show-input-controls="false" input-size="mini" @change="changeXAxisStyle" />
+            <el-slider v-model="axisForm.splitLine.lineStyle.width" :min="0" :max="10" show-input :show-input-controls="false" input-size="mini" @change="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_type')" class="form-item">
-            <el-radio-group v-model="axisForm.splitLine.lineStyle.type" size="mini" @change="changeXAxisStyle">
+            <el-radio-group v-model="axisForm.splitLine.lineStyle.type" size="mini" @change="changeYAxisStyle">
               <el-radio-button label="solid">{{ $t('chart.axis_type_solid') }}</el-radio-button>
               <el-radio-button label="shortdash">{{ $t('chart.axis_type_dashed') }}</el-radio-button>
               <el-radio-button label="dot">{{ $t('chart.axis_type_dotted') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
+
           <el-divider />
           <el-form-item :label="$t('chart.axis_label_show')" class="form-item">
-            <el-checkbox v-model="axisForm.axisLabel.show" @change="changeXAxisStyle">{{ $t('chart.axis_label_show') }}</el-checkbox>
+            <el-checkbox v-model="axisForm.axisLabel.show" @change="changeYAxisStyle">{{ $t('chart.axis_label_show') }}</el-checkbox>
           </el-form-item>
           <span v-show="axisForm.axisLabel.show">
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
-              <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" :predefine="predefineColors" @change="changeXAxisStyle" />
+              <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" :predefine="predefineColors" @change="changeYAxisStyle" />
             </el-form-item>
             <!-- <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
-              <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :step="10" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
+              <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
             </el-form-item> -->
             <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item">
-              <el-select v-model="axisForm.axisLabel.fontSize" :placeholder="$t('chart.axis_label_fontsize')" @change="changeXAxisStyle">
+              <el-select v-model="axisForm.axisLabel.fontSize" :placeholder="$t('chart.axis_label_fontsize')" @change="changeYAxisStyle">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
           </span>
-          <el-divider />
-          <!-- <el-form-item :label="$t('chart.content_formatter')" class="form-item">
-            <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeXAxisStyle" />
-          </el-form-item> -->
         </div>
       </el-form>
     </el-col>
@@ -65,10 +63,10 @@
 </template>
 
 <script>
-import { COLOR_PANEL, DEFAULT_XAXIS_STYLE_HC } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_YAXIS_STYLE_HC } from '../../chart/chart'
 
 export default {
-  name: 'XAxisSelector',
+  name: 'YAxisSelector',
   props: {
     param: {
       type: Object,
@@ -81,7 +79,7 @@ export default {
   },
   data() {
     return {
-      axisForm: JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE_HC)),
+      axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE_HC)),
       isSetting: false,
       fontSize: [],
       predefineColors: COLOR_PANEL
@@ -108,16 +106,16 @@ export default {
         } else {
           customStyle = JSON.parse(chart.customStyle)
         }
-        if (customStyle.xAxis) {
-          this.axisForm = customStyle.xAxis
+        if (customStyle.yAxis) {
+          this.axisForm = customStyle.yAxis
           if (!this.axisForm.splitLine) {
-            this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE_HC.splitLine))
+            this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE_HC.splitLine))
           }
           if (!this.axisForm.nameTextStyle) {
-            this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE_HC.nameTextStyle))
+            this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE_HC.nameTextStyle))
           }
           if (!this.axisForm.axisValue) {
-            this.axisForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE_HC.axisValue))
+            this.axisForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE_HC.axisValue))
           }
         }
       }
@@ -132,11 +130,11 @@ export default {
       }
       this.fontSize = arr
     },
-    changeXAxisStyle() {
+    changeYAxisStyle() {
       if (!this.axisForm.show) {
         this.isSetting = false
       }
-      this.$emit('onChangeXAxisForm', this.axisForm)
+      this.$emit('onChangeYAxisForm', this.axisForm)
     }
   }
 }

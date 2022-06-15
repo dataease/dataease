@@ -820,12 +820,11 @@
                   <el-collapse-item
                     v-show="view.type 
                       && (view.type.includes('bar') || view.type.includes('line') 
-                        || view.type.includes('scatter') || view.type === 'chart-mix' 
-                        || view.type === 'waterfall')"
+                        || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                        || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
-                  <!-- || view.type === '3dcolumn' || view.type === '3dcolumn_stack' -->
                     <x-axis-selector
                       v-if="view.render && view.render === 'echarts'"
                       :param="param"
@@ -840,16 +839,19 @@
                       :chart="chart"
                       @onChangeXAxisForm="onChangeXAxisForm"
                     />
-                    <!-- <x-axis-selector-hc
+                    <x-axis-selector-hc
                       v-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
                       @onChangeXAxisForm="onChangeXAxisForm"
-                    /> -->
+                    />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                    v-show="view.type 
+                      && (view.type.includes('bar') || view.type.includes('line') 
+                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
                   >
@@ -862,6 +864,13 @@
                     />
                     <y-axis-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onChangeYAxisForm="onChangeYAxisForm"
+                    />
+                    <y-axis-selector-hc
+                      v-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -1303,6 +1312,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
 import XAxisSelectorHc from "@/views/chart/components/component-style/XAxisSelectorHc"
+import YAxisSelectorHc from "@/views/chart/components/component-style/YAxisSelectorHc"
 
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
@@ -1316,6 +1326,7 @@ export default {
   name: 'ChartEdit',
   components: {
     XAxisSelectorHc,
+    YAxisSelectorHc,
     LabelNormalText,
     TotalCfg,
     Threshold,
