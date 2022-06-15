@@ -82,6 +82,8 @@ import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewM
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
+const erd = elementResizeDetectorMaker()
+
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -273,37 +275,17 @@ export default {
   },
   mounted() {
     this._isMobile()
-    const _this = this
-    const erd = elementResizeDetectorMaker()
-    const canvasMain = document.getElementById('canvasInfoMain')
-    // 监听主div变动事件
-    if (canvasMain) {
-      erd.listenTo(canvasMain, element => {
-        _this.$nextTick(() => {
-          _this.restore()
-        })
-      })
-    }
-    // 监听画布div变动事件
-    const tempCanvas = document.getElementById('canvasInfoTemp')
-    if (tempCanvas) {
-      erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-        _this.$nextTick(() => {
-          // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-          _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-          this.$emit('mainHeightChange', _this.mainHeight)
-        })
-      })
-    }
-    eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
-    _this.$store.commit('clearLinkageSettingInfo', false)
-    _this.canvasStyleDataInit()
+    this.initListen()
+    this.$store.commit('clearLinkageSettingInfo', false)
+    this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
-    if (_this.terminal === 'mobile') {
-      _this.initMobileCanvas()
+    if (this.terminal === 'mobile') {
+      this.initMobileCanvas()
     }
   },
   beforeDestroy() {
+    erd.uninstall(this.$refs.canvasInfoTemp)
+    erd.uninstall(this.$refs.canvasInfoMain)
     clearInterval(this.timer)
   },
   methods: {
@@ -404,6 +386,33 @@ export default {
     },
     canvasScroll() {
       bus.$emit('onScroll')
+    },
+    initListen() {
+      const _this = this
+      const canvasMain = document.getElementById('canvasInfoMain')
+      // 监听主div变动事件
+      if (canvasMain) {
+        erd.listenTo(canvasMain, element => {
+          _this.$nextTick(() => {
+            _this.restore()
+          })
+        })
+      }
+      setTimeout(() => {
+        // 监听画布div变动事件
+        const tempCanvas = document.getElementById('canvasInfoTemp')
+        if (tempCanvas) {
+          erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+            _this.$nextTick(() => {
+              // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+              _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+              this.$emit('mainHeightChange', _this.mainHeight)
+            })
+          })
+        }
+      }, 1500)
+
+      eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     }
   }
 }
