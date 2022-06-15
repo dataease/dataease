@@ -18,8 +18,8 @@ export const BASE_MOBILE_STYLE = {
 
 // 组件仪表板样式
 export const COMMON_BACKGROUND = {
-  enable: true,
-  backgroundColorSelect: false,
+  enable: false,
+  backgroundColorSelect: true,
   backgroundType: 'innerImage',
   color: '#FFFFFF',
   innerImage: 'board/blue_1.svg',
