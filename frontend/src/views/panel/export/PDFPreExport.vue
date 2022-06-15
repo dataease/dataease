@@ -4,7 +4,7 @@
     style="height: 100%;width: 100%;"
     :element-loading-text="$t('panel.export_loading')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 1)"
+    element-loading-background="rgba(220,220,220, 1)"
   >
     <el-row class="export_body_class">
       <div id="exportPdf" ref="exportPdf" :style="mainCanvasStyle">
