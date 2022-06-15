@@ -1458,6 +1458,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    more: 'More',
     level: 'Level',
     enlarge: 'Enlarge',
     panel_style: 'Panel Style',

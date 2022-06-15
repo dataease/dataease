@@ -729,7 +729,7 @@ export default {
       const parent = evt.target.closest('.button-div-class')
       const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
-      const stick = evt.target.closest('.el-icon-magic-stick')
+      const stick = evt.target.closest('.icon-magic-line')
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
@@ -1127,18 +1127,18 @@ export default {
 
 <style scoped>
   .ms-aside-container {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     max-width: 60px;
     border: none;
     width: 60px;
   }
 
   .ms-main-container {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
   }
 
   .de-header {
-    height: 35px !important;
+    height: 56px !important;
     border-bottom: 1px solid #E6E6E6;
     background-color: var(--SiderBG, white);
   }
@@ -1169,7 +1169,7 @@ export default {
   .leftPanel {
     width: 100%;
     max-width: 300px;
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     position: fixed;
     top: 91px;
     left: 60px;
@@ -1265,14 +1265,14 @@ export default {
 
   .this_canvas {
     width: 100%;
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     overflow-x: hidden;
     overflow-y: auto;
     background-size: 100% 100% !important;
   }
 
   .el-main {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     padding: 0 !important;
     overflow: auto;
     position: relative;

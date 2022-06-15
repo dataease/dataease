@@ -29,7 +29,7 @@
     <div v-show="!editControlButton" class="toolbar">
       <div class="panel-info-area">
         <el-tooltip :content="$t('panel.back') ">
-          <i class="el-icon-back icon-back" @click="closePanelEdit" />
+          <span class="icon iconfont icon-jiantou insert" @click="closePanelEdit" />
         </el-tooltip>
         <span class="text">
           {{ panelInfo.name }}
@@ -48,9 +48,7 @@
 
       <span class="button_self">
         <el-dropdown :hide-on-click="false" trigger="click" placement="bottom-start" size="mini">
-          <el-button size="mini">
-            <span class="icon iconfont icon-gengduo" />
-          </el-button>
+          <span class="icon iconfont icon-gengduo insert de-icon-base"><span class="icon-font-margin">{{ $t('panel.more') }}</span></span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-dropdown placement="right-start" size="mini" style="width: 100%">
@@ -59,7 +57,7 @@
                     class="icon iconfont"
                     :class="[canvasStyleData.auxiliaryMatrix?'icon-shujujuzhen':'icon-xuanfuanniu']"
                   />
-                  <span style="font-size: 12px">{{ $t('panel.new_element_distribution') }}</span>
+                  <span class="icon-font-margin" style="font-size: 12px">{{ $t('panel.new_element_distribution') }}</span>
                   <i class="el-icon-arrow-right el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -76,24 +74,22 @@
             </el-dropdown-item>
             <el-dropdown-item>
               <span class="icon iconfont-tb" :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']" />
-              {{ $t('panel.aided_grid') }}
+              <span class="icon-font-margin">{{ $t('panel.aided_grid') }}</span>
               <el-switch v-model="showGridSwitch" size="mini" @change="showGridChange" />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
-              <span class="icon iconfont-tb icon-canshu" />{{ $t('panel.params_setting') }}
+              <span class="icon iconfont-tb icon-canshu" />
+              <span class="icon-font-margin">{{ $t('panel.params_setting') }}</span>
             </el-dropdown-item>
             <el-dropdown-item @click.native="clearCanvas">
-              <span class="icon iconfont-tb icon-qingkong" />{{ $t('panel.clean_canvas') }}
+              <span class="icon iconfont-tb icon-qingkong" />
+              <span class="icon-font-margin">{{ $t('panel.clean_canvas') }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
-      <el-button size="mini" class="el-icon-magic-stick el-icon--left" @click="showPanel">
-        {{ $t('panel.panel_style') }}
-      </el-button>
-      <el-button size="mini" @click="batchOption"><span class="icon iconfont-tb icon-piliang-copy el-icon--left" />{{
-        $t('panel.batch_opt') }}
-      </el-button>
+      <span class="icon iconfont icon-magic-line insert" @click="showPanel"><span class="icon-font-margin">{{ $t('panel.panel_style') }}</span></span>
+      <span class="icon iconfont icon-piliang-copy insert" @click="batchOption"><span class="icon-font-margin">{{ $t('panel.batch_opt') }}</span></span>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" type="primary" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -502,8 +498,8 @@ export default {
 <style lang="scss" scoped>
   .toolbar {
     float: right;
-    height: 35px;
-    line-height: 32px;
+    height: 56px;
+    line-height: 56px;
     min-width: 400px;
 
     .canvas-config {
@@ -526,11 +522,12 @@ export default {
 
     .insert {
       display: inline-block;
+      font-weight: 400 !important;
+      font-size: 14px !important;
+      font-family: PingFang SC;
       line-height: 1;
       white-space: nowrap;
       cursor: pointer;
-      /*background: #FFF;*/
-      /*border: 1px solid #DCDFE6;*/
       color: var(--TextPrimary, #606266);
       -webkit-appearance: none;
       text-align: center;
@@ -538,11 +535,9 @@ export default {
       outline: 0;
       margin: 0;
       transition: .1s;
-      font-weight: 500;
       padding: 5px 5px;
-      font-size: 16px !important;
       border-radius: 3px;
-      margin-left: 10px;
+      margin-left: 5px;
 
       &:active {
         color: #000;
@@ -589,7 +584,7 @@ export default {
 
   .switch-position {
     position: absolute;
-    top: 3px;
+    top: 13px;
     right: 50%;
     width: 100px;
   }
@@ -619,8 +614,9 @@ export default {
     left: 10px;
 
     .text {
-      margin-left: 20px;
+      margin-left: 15px;
       font-size: 16px;
+      font-weight: 500;
       color: var(--TextPrimary, #606266);
     }
   ;
@@ -631,6 +627,10 @@ export default {
       color: var(--MenuActiveBG, #409EFF);
     }
 
+  }
+
+  .icon-font-margin{
+    margin-left: 2px;
   }
 
 </style>

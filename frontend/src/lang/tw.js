@@ -1459,6 +1459,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    more: '更多',
     level: '层级',
     enlarge: '放大',
     panel_style: '仪表板样式',
