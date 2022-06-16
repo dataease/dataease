@@ -66,15 +66,32 @@
                   clearable
                   class="main-area-input"
                 />
-                <el-button
-                  :title="$t('dataset.edit_field')"
-                  :disabled="!table || !hasDataPermission('manage',table.privileges)"
-                  icon="el-icon-setting"
-                  type="text"
-                  size="mini"
-                  style="float: right;width: 20px;margin-left: 4px;"
-                  @click="editField"
-                />
+                <el-dropdown trigger="click" size="mini" @command="fieldEdit">
+                  <span class="el-dropdown-link">
+                    <el-button
+                      :title="$t('dataset.field_manage')"
+                      icon="el-icon-setting"
+                      type="text"
+                      size="mini"
+                      style="float: right;width: 20px;margin-left: 4px;"
+                    />
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item
+                      :disabled="!table || !hasDataPermission('manage',table.privileges)"
+                      :command="beforeFieldEdit('ds')"
+                      icon="el-icon-s-grid"
+                    >
+                      {{ $t('chart.ds_field_edit') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      :command="beforeFieldEdit('chart')"
+                      icon="el-icon-s-data"
+                    >
+                      {{ $t('chart.chart_field_edit') }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
                 <el-button
                   :title="$t('chart.change_ds')"
                   icon="el-icon-refresh"
@@ -100,7 +117,7 @@
                         @add="moveToDimension"
                       >
                         <transition-group>
-                          <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name">
+                          <span v-for="item in dimensionData" :key="item.id" class="item-dimension father" :title="item.name">
                             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                             <svg-icon
@@ -109,7 +126,15 @@
                               class="field-icon-value"
                             />
                             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                            {{ item.name }}
+                            <span class="field-name">{{ item.name }}</span>
+                            <el-dropdown v-show="false" placement="right-start" trigger="click" size="mini" class="field-setting child" @command="chartFieldEdit">
+                              <span class="el-dropdown-link">
+                                <i class="el-icon-s-tools" />
+                              </span>
+                              <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')">{{ $t('commons.copy') }}...</el-dropdown-item>
+                              </el-dropdown-menu>
+                            </el-dropdown>
                           </span>
                         </transition-group>
                       </draggable>
@@ -132,7 +157,7 @@
                             v-for="item in quotaData"
                             v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
                             :key="item.id"
-                            class="item-quota"
+                            class="item-quota father"
                             :title="item.name"
                           >
                             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
@@ -143,7 +168,15 @@
                               class="field-icon-value"
                             />
                             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                            <span>{{ item.name }}</span>
+                            <span class="field-name">{{ item.name }}</span>
+                            <el-dropdown v-show="false" v-if="item.id !== 'count'" placement="right-start" trigger="click" size="mini" class="field-setting child" @command="chartFieldEdit">
+                              <span class="el-dropdown-link">
+                                <i class="el-icon-s-tools" />
+                              </span>
+                              <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')">{{ $t('commons.copy') }}...</el-dropdown-item>
+                              </el-dropdown-menu>
+                            </el-dropdown>
                           </span>
                         </transition-group>
                       </draggable>
@@ -151,7 +184,6 @@
                   </template>
                 </fu-split-pane>
               </div>
-
             </el-col>
 
             <el-col
@@ -910,10 +942,28 @@
       <field-edit :param="table" :table="table" />
       <div slot="title" class="dialog-footer title-text">
         <span style="font-size: 14px;">
-          {{ $t('dataset.field_manage') }}
+          {{ $t('chart.ds_field_edit') }}
           <span v-if="table">[{{ table.name }}]</span>
         </span>
         <el-button size="mini" style="float: right;" @click="closeEditDsField">{{ $t('chart.close') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--编辑视图的字段-->
+    <el-dialog
+      v-if="showEditChartField"
+      :visible="showEditChartField"
+      :show-close="false"
+      class="dialog-css"
+      :fullscreen="true"
+    >
+      <chart-field-edit :param="chart" :table="table" :chart="chart" />
+      <div slot="title" class="dialog-footer title-text">
+        <span style="font-size: 14px;">
+          {{ $t('chart.chart_field_edit') }}
+          <span v-if="table">[{{ chart.title }}]</span>
+        </span>
+        <el-button size="mini" style="float: right;" @click="closeEditChartField">{{ $t('chart.close') }}</el-button>
       </div>
     </el-dialog>
 
@@ -966,6 +1016,24 @@
         <el-button size="mini" @click="closeCustomSort">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveCustomSort">{{ $t('chart.confirm') }}</el-button>
       </div>
+    </el-dialog>
+
+    <!--视图计算字段弹框-->
+    <el-dialog
+      v-if="editChartCalcField"
+      v-dialogDrag
+      :visible="editChartCalcField"
+      :show-close="false"
+      class="dialog-css"
+      :title="$t('chart.copy_field')"
+      append-to-body
+    >
+      <calc-chart-field-edit
+        :param="chart"
+        :field="currEditField"
+        mode="copy"
+        @onEditClose="closeChartCalcField"
+      />
     </el-dialog>
   </el-row>
 </template>
@@ -1030,9 +1098,14 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
+import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
+
 export default {
   name: 'ChartEdit',
   components: {
+    CalcChartFieldEdit,
+    ChartFieldEdit,
     CustomSortEdit,
     ChartStyle,
     ValueFormatterEdit,
@@ -1176,6 +1249,9 @@ export default {
       showCustomSort: false,
       customSortList: [],
       customSortField: {},
+      showEditChartField: false,
+      currEditField: {},
+      editChartCalcField: false,
       fieldShow: false
 
     }
@@ -1329,21 +1405,29 @@ export default {
       if (this.table) {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
           // If click too fast on the panel, the data here may be inconsistent, so make a verification
-          if (this.view.tableId === id) {
-            this.dimension = response.data.dimension
-            this.quota = response.data.quota
-            this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
-            this.quotaData = JSON.parse(JSON.stringify(this.quota))
-            this.fieldFilter(this.searchField)
-            if (optType === 'change') {
-              this.resetChangeTable()
-              this.$nextTick(() => {
-                bus.$emit('reset-change-table', 'change')
-                this.calcData()
-              })
+          post('/chart/field/listByDQ/' + this.param.id + '/' + this.panelInfo.id, null).then(res => {
+            if (this.view.tableId === id) {
+              this.dimension = response.data.dimension.concat(res.data.dimensionList)
+              this.quota = response.data.quota.concat(res.data.quotaList)
+              this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+              this.quotaData = JSON.parse(JSON.stringify(this.quota))
+              this.fieldFilter(this.searchField)
+              if (optType === 'change') {
+                this.resetChangeTable()
+                this.$nextTick(() => {
+                  bus.$emit('reset-change-table', 'change')
+                  this.calcData()
+                })
+              }
             }
-          }
-          this.fieldShow = true
+            this.fieldShow = true
+          }).catch(err => {
+            console.log(err)
+            this.resetView()
+            this.httpRequest.status = err.response.data.success
+            this.httpRequest.msg = err.response.data.message
+            return true
+          })
         }).catch(err => {
           console.error(err)
 
@@ -1453,13 +1537,18 @@ export default {
         if (!ele.chartType) {
           ele.chartType = 'bar'
         }
-        if (!ele.summary || ele.summary === '') {
-          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
-            ele.summary = 'count'
-          } else {
-            ele.summary = 'sum'
+        if (ele.chartId) {
+          ele.summary = ''
+        } else {
+          if (!ele.summary || ele.summary === '') {
+            if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+              ele.summary = 'count'
+            } else {
+              ele.summary = 'sum'
+            }
           }
         }
+
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
         }
@@ -1475,13 +1564,18 @@ export default {
           if (!ele.chartType) {
             ele.chartType = 'bar'
           }
-          if (!ele.summary || ele.summary === '') {
-            if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
-              ele.summary = 'count'
-            } else {
-              ele.summary = 'sum'
+          if (ele.chartId) {
+            ele.summary = ''
+          } else {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
             }
           }
+
           if (!ele.sort || ele.sort === '') {
             ele.sort = 'none'
           }
@@ -2096,9 +2190,12 @@ export default {
       const optType = this.view.tableId === this.changeTable.id ? 'same' : 'change'
       // this.save(true, 'chart', false)
       this.view.tableId = this.changeTable.id
-      this.calcData(true, 'chart', false)
-      this.initTableData(this.view.tableId, optType)
-      this.closeChangeChart()
+      // 更换数据集后清空视图字段
+      post('/chart/field/deleteByChartId/' + this.param.id + '/' + this.panelInfo.id, null).then(response => {
+        this.calcData(true, 'chart', false)
+        this.initTableData(this.view.tableId, optType)
+        this.closeChangeChart()
+      })
     },
 
     fieldFilter(val) {
@@ -2121,6 +2218,15 @@ export default {
 
     closeEditDsField() {
       this.editDsField = false
+      this.initTableField(this.table.id)
+    },
+
+    editChartField() {
+      this.showEditChartField = true
+    },
+
+    closeEditChartField() {
+      this.showEditChartField = false
       this.initTableField(this.table.id)
     },
 
@@ -2495,6 +2601,50 @@ export default {
       })
       this.closeCustomSort()
       this.calcData(true)
+    },
+
+    fieldEdit(param) {
+      switch (param.type) {
+        case 'ds':
+          this.editField()
+          break
+        case 'chart':
+          this.editChartField()
+          break
+        default:
+          break
+      }
+    },
+    beforeFieldEdit(type) {
+      return {
+        type: type
+      }
+    },
+
+    chartFieldEdit(param) {
+      this.currEditField = JSON.parse(JSON.stringify(param.item))
+      switch (param.type) {
+        case 'copy':
+          this.currEditField.id = null
+          this.currEditField.extField = 1
+          this.showChartCalcField()
+          break
+      }
+    },
+    handleChartFieldEdit(item, type) {
+      return {
+        type: type,
+        item: item
+      }
+    },
+
+    showChartCalcField() {
+      this.editChartCalcField = true
+    },
+    closeChartCalcField() {
+      this.editChartCalcField = false
+      this.currEditField = {}
+      this.initTableField(this.table.id)
     }
   }
 }
@@ -2574,6 +2724,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  position: relative;
 }
 
 .blackTheme .item-dimension {
@@ -2612,6 +2763,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  position: relative;
 }
 
 .blackTheme .item-quota {
@@ -2894,6 +3046,30 @@ span {
 }
 .form-item>>>.el-form-item__label{
   font-size: 12px;
+}
+
+.field-name{
+  display: inline-block;
+  width: 90px;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: absolute;
+  top: 2px;
+}
+
+.field-setting{
+  position: absolute;
+  right: 8px;
+}
+
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
 }
 
 .field-split{
