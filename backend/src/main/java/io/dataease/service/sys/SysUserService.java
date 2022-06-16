@@ -124,6 +124,31 @@ public class SysUserService {
         }
     }
 
+    @Transactional
+    public void saveCASUser(String name, String email) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+        sysUser.setUsername(name);
+        sysUser.setNickName(name);
+        sysUser.setEmail(email);
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+        sysUser.setEnabled(1L);
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(3);
+        sysUser.setIsAdmin(false);
+        // sysUser.setSub(ssoUserInfo.getSub());
+        sysUserMapper.insert(sysUser);
+        SysUser dbUser = findOne(sysUser);
+        if (null != dbUser && null != dbUser.getUserId()) {
+            // oidc默认角色是普通员工
+            List<Long> roleIds = new ArrayList<Long>();
+            roleIds.add(2L);
+            saveUserRoles( dbUser.getUserId(), roleIds);
+        }
+    }
+
     public String defaultPWD() {
         return DEFAULT_PWD;
     }
@@ -323,6 +348,14 @@ public class SysUserService {
         return null;
     }
 
+    public void validateCasUser(String userName) {
+        SysUserExample example = new SysUserExample();
+        example.createCriteria().andUsernameEqualTo(userName);
+        List<SysUser> users = sysUserMapper.selectByExample(example);
+        if(CollectionUtils.isNotEmpty(users)) {
+            throw new RuntimeException("用户ID【"+userName+"】已存在,请联系管理员");
+        }
+    }
     public void validateExistUser(String userName, String nickName, String email) {
         SysUserExample example = new SysUserExample();
         if (StringUtils.isNotBlank(userName)) {

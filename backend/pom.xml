@@ -18,6 +18,9 @@
         <java.version>1.8</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
+
+        <buji.version>4.0.0</buji.version>
+        <pac4j.version>3.3.0</pac4j.version>
     </properties>
 
     <dependencies>
@@ -36,12 +39,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>-->
+
         </dependency>
 
         <dependency>
@@ -89,11 +87,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.1.2</version>
-        </dependency>-->
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -122,7 +116,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring-boot-starter</artifactId>
+            <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
         <dependency>
@@ -236,8 +230,7 @@
             </exclusions>
         </dependency>
 
-        <!--由于暂时插件接口未注册到公司仓库，请先down下代码安装到本地仓库
-        https://github.com/dataease/dataease-plugins-->
+
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
@@ -336,6 +329,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -350,9 +344,7 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <!-- <includes>
-                    <include>**/*</include>
-                </includes> -->
+
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>static/**/*.woff</exclude>

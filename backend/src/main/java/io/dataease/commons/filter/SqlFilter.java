@@ -3,7 +3,10 @@ package io.dataease.commons.filter;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.wrapper.XssAndSqlHttpServletRequestWrapper;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +23,10 @@ public class SqlFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
+        if (ObjectUtils.isEmpty(RequestContextHolder.getRequestAttributes())) {
+            ServletRequestAttributes attributes = new ServletRequestAttributes((HttpServletRequest) request);
+            RequestContextHolder.setRequestAttributes(attributes);
+        }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if ("TRACE".equalsIgnoreCase(httpRequest.getMethod()) || "TRACK".equalsIgnoreCase(httpRequest.getMethod())) {

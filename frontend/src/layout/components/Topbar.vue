@@ -197,6 +197,9 @@ export default {
     bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
+    bus.$on('sys-logout', param => {
+      this.logout(param)
+    })
     this.showTips && this.$nextTick(() => {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
@@ -300,9 +303,13 @@ export default {
       }
       return route.children.filter(kid => !kid.hidden).length
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    async logout(param) {
+      const result = await this.$store.dispatch('user/logout', param)
+      if (result !== 'success' && result !== 'fail') {
+        window.location.href = result
+      } else {
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      }
     },
     loadUiInfo() {
       this.$store.dispatch('user/getUI').then(() => {

@@ -472,7 +472,8 @@ export default {
     display: '显示设置',
     ldap: 'LDAP设置',
     oidc: 'OIDC设置',
-    theme: '主题设置'
+    theme: '主题设置',
+    cas: 'CAS设置'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
@@ -660,7 +661,8 @@ export default {
     test_recipients: '测试收件人',
     tip: '提示：仅用来作为测试邮件收件人',
     engine_mode_setting: '引擎设置',
-    kettle_setting: 'Kettle 设置'
+    kettle_setting: 'Kettle 设置',
+    cas_selected_warn: '选择CAS方式保存后会注销当前回话，重新登录'
   },
   chart: {
     view_reset: '视图重置',

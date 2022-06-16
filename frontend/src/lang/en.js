@@ -471,7 +471,8 @@ export default {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
     oidc: 'OIDC Setting',
-    theme: 'Theme Setting'
+    theme: 'Theme Setting',
+    cas: 'CAS Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -657,7 +658,8 @@ export default {
     test_recipients: 'Test recipients',
     tip: 'Tip: use as test mail recipient only',
     engine_mode_setting: 'Engine Setting',
-    kettle_setting: 'Kettle Setting'
+    kettle_setting: 'Kettle Setting',
+    cas_selected_warn: 'Selecting CAS will cause you to login again'
   },
   chart: {
     view_reset: 'View Reset',
