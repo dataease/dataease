@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
 
       <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.basic_setting')" name="zero">
-        <basic-setting />
+        <basic-setting v-if="activeName === 'zero'" />
       </el-tab-pane>
 
       <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
@@ -34,8 +34,12 @@
         <cluster-mode />
       </el-tab-pane>
 
-      <el-tab-pane  v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.kettle_setting')" name="eight">
+      <el-tab-pane v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.kettle_setting')" name="eight">
         <kettle-setting />
+      </el-tab-pane>
+
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.cas')" name="nine">
+        <plugin-com v-if="isPluginLoaded" ref="CasSetting" component-name="CasSetting" />
       </el-tab-pane>
 
     </el-tabs>
@@ -53,7 +57,7 @@ import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting},
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting },
   data() {
     return {
       activeName: 'zero',
@@ -68,6 +72,9 @@ export default {
     engineMode().then(res => {
       this.engineMode = res.data
     })
+  },
+  created() {
+
   },
   methods: {
     handleClick(tab, event) {

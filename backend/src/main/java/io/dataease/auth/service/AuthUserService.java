@@ -14,6 +14,8 @@ public interface AuthUserService {
 
     SysUserEntity getLdapUserByName(String username);
 
+    SysUserEntity getCasUserByName(String username);
+
     SysUserEntity getUserBySub(String sub);
 
     List<String> roles(Long userId);
@@ -27,6 +29,8 @@ public interface AuthUserService {
     boolean supportLdap();
 
     Boolean supportOidc();
+
+    Boolean supportCas();
 
     Boolean pluginLoaded();
 

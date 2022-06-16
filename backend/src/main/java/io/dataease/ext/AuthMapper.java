@@ -27,6 +27,8 @@ public interface AuthMapper {
 
     SysUserEntity findLdapUserByName(@Param("username") String username);
 
+    SysUserEntity findCasUserByName(@Param("username") String username);
+
     SysUserEntity findUserBySub(@Param("sub") String sub);
 
 

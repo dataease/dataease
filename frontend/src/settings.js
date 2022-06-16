@@ -6,6 +6,7 @@ module.exports = {
   /* for sso */
   IdTokenKey: 'IdToken',
   AccessTokenKey: 'AccessToken',
+  CASSESSION: 'JSESSIONID',
 
   /**
    * @type {boolean} true | false

@@ -38,6 +38,7 @@
               <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
               <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
               <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
+              <el-radio v-if="loginTypes.includes(3)" :label="3" size="mini">CAS</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -67,8 +68,8 @@
 <script>
 
 import { basicInfo, updateInfo } from '@/api/system/basic'
-import { ldapStatus, oidcStatus } from '@/api/user'
-
+import { ldapStatus, oidcStatus, casStatus } from '@/api/user'
+import bus from '@/utils/bus'
 export default {
   name: 'EmailSetting',
   data() {
@@ -86,7 +87,7 @@ export default {
       rules: {
         frontTimeOut: [
           {
-            pattern: '^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$', //修改了正则表达式，让其正确匹配0-300的数值
+            pattern: '^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$', // 修改了正则表达式，让其正确匹配0-300的数值
             message: this.$t('system_parameter_setting.front_error'),
             trigger: 'blur'
           }
@@ -98,7 +99,8 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      originLoginType: null
     }
   },
   beforeCreate() {
@@ -113,6 +115,12 @@ export default {
         this.loginTypes.push(2)
       }
     })
+
+    casStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(3)
+      }
+    })
   },
   created() {
     this.query()
@@ -125,6 +133,9 @@ export default {
 
         if (this.formInline && !this.formInline.loginType) {
           this.formInline.loginType = 0
+        }
+        if (!this.originLoginType) {
+          this.originLoginType = this.formInline.loginType
         }
 
         this.$nextTick(() => {
@@ -150,21 +161,42 @@ export default {
 
       this.$refs[formInline].validate(valid => {
         if (valid) {
-          updateInfo(param).then(response => {
-            const flag = response.success
-            if (flag) {
-              this.$success(this.$t('commons.save_success'))
-              this.showEdit = true
-              this.showCancel = false
-              this.showSave = false
-              this.show = true
-              window.location.reload()
-            } else {
-              this.$message.error(this.$t('commons.save_failed'))
-            }
-          })
+          const needWarn = this.formInline.loginType === 3 && this.originLoginType !== 3
+          if (needWarn) {
+            this.$confirm(this.$t('system_parameter_setting.cas_selected_warn'), '', {
+              confirmButtonText: this.$t('commons.confirm'),
+              cancelButtonText: this.$t('commons.cancel'),
+              type: 'warning'
+            }).then(() => {
+              this.saveHandler(param)
+            }).catch(() => {
+              // this.$info(this.$t('commons.delete_cancel'))
+            })
+            return
+          }
+          this.saveHandler(param)
         } else {
           // this.result = false
+        }
+      })
+    },
+    saveHandler(param) {
+      updateInfo(param).then(response => {
+        const flag = response.success
+        if (flag) {
+          if (response.data && response.data.needLogout) {
+            const casEnable = response.data.casEnable
+            bus.$emit('sys-logout', { casEnable })
+            return
+          }
+          this.$success(this.$t('commons.save_success'))
+          this.showEdit = true
+          this.showCancel = false
+          this.showSave = false
+          this.show = true
+          window.location.reload()
+        } else {
+          this.$message.error(this.$t('commons.save_failed'))
         }
       })
     },

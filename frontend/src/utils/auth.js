@@ -7,6 +7,8 @@ const IdTokenKey = Config.IdTokenKey
 
 const AccessTokenKey = Config.AccessTokenKey
 
+const casSessionKey = Config.CASSESSION
+
 const linkTokenKey = Config.LinkTokenKey
 
 export function getIdToken() {
@@ -22,6 +24,7 @@ export function setToken(token) {
 }
 
 export function removeToken() {
+  Cookies.remove(casSessionKey)
   Cookies.remove(IdTokenKey)
   Cookies.remove(AccessTokenKey)
   return Cookies.remove(TokenKey)

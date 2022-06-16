@@ -10,6 +10,7 @@ import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
@@ -63,6 +64,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public SysUserEntity getLdapUserByName(String username) {
         return authMapper.findLdapUserByName(username);
+    }
+
+    @Override
+    public SysUserEntity getCasUserByName(String username) {
+        return authMapper.findCasUserByName(username);
     }
 
     @Override
@@ -145,6 +151,15 @@ public class AuthUserServiceImpl implements AuthUserService {
         OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
         if (ObjectUtils.isEmpty(oidcXpackService)) return false;
         return oidcXpackService.isSuuportOIDC();
+    }
+
+    @Override
+    public Boolean supportCas() {
+        Map<String, CasXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((CasXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+        if (ObjectUtils.isEmpty(casXpackService)) return false;
+        return casXpackService.suuportCas();
     }
 
     @Override

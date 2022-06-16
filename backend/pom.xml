@@ -18,6 +18,9 @@
         <java.version>1.8</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
+
+        <buji.version>4.0.0</buji.version>
+        <pac4j.version>3.3.0</pac4j.version>
     </properties>
 
     <dependencies>
@@ -122,7 +125,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring-boot-starter</artifactId>
+           <!-- <artifactId>shiro-spring-boot-starter</artifactId>-->
+            <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
         <dependency>
@@ -336,6 +340,32 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+
+        <!--<dependency>
+            <groupId>io.buji</groupId>
+            <artifactId>buji-pac4j</artifactId>
+            <version>${buji.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-cas</artifactId>
+            <version>${pac4j.version}</version>
+        </dependency>-->
+
+        <!--<dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
+
+
     </dependencies>
 
     <build>

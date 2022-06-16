@@ -471,7 +471,8 @@ export default {
     display: '顯示設置',
     ldap: 'LDAP設置',
     oidc: 'OIDC設置',
-    theme: '主題設置'
+    theme: '主題設置',
+    cas: 'CAS設置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -645,7 +646,7 @@ export default {
     login_type: '默認登錄方式',
     empty_front: '為空則默認取值10秒',
     empty_msg: '為空則默認取值30天',
-    front_error: '請填寫0-300正整數', //修改了提示信息
+    front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP賬戶',
@@ -659,7 +660,8 @@ export default {
     test_recipients: '測試收件人',
     tip: '提示：僅用來作爲測試郵件收件人',
     engine_mode_setting: '引擎設置',
-    kettle_setting: 'Kettle 設置'
+    kettle_setting: 'Kettle 設置',
+    cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄'
   },
   chart: {
     title_repeat: '當前標題已存在',

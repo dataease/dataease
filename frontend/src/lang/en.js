@@ -471,7 +471,8 @@ export default {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
     oidc: 'OIDC Setting',
-    theme: 'Theme Setting'
+    theme: 'Theme Setting',
+    cas: 'CAS Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -643,7 +644,7 @@ export default {
     login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
-    front_error: 'Valid ranger [0 - 300]', //修改了提示信息
+    front_error: 'Valid ranger [0 - 300]', // 修改了提示信息
     msg_error: 'Valid ranger [1 - 365]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
@@ -657,7 +658,8 @@ export default {
     test_recipients: 'Test recipients',
     tip: 'Tip: use as test mail recipient only',
     engine_mode_setting: 'Engine Setting',
-    kettle_setting: 'Kettle Setting'
+    kettle_setting: 'Kettle Setting',
+    cas_selected_warn: 'Selecting CAS will cause you to login again'
   },
   chart: {
     title_repeat: 'The Title Already Exist',
