@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
@@ -31,6 +32,7 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -47,6 +49,7 @@ import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
+import net.sf.jsqlparser.expression.operators.relational.LikeExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -922,65 +925,61 @@ public class DataSetTableService {
         List<SqlVariableDetails> sqlVariableDetails = new ArrayList<>();
         datasetTables.forEach(datasetTable -> {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
-                sqlVariableDetails.addAll(new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
-                }.getType()));
+                sqlVariableDetails.addAll(new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType()));
             }
 
         });
         return sqlVariableDetails;
     }
 
-
-    public String handleVariableDefaultValue(String sql, String sqlVariableDetails) {
+    public String handleVariableDefaultValue(String sql, String sqlVariableDetails){
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(sql);
         while (matcher.find()) {
-            boolean customValue = false;
-//            if (CollectionUtils.isNotEmpty(customSqlVariableDetails)) {
-//                for (SqlVariableDetails customSqlVariableDetail : customSqlVariableDetails) {
-//                    if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(customSqlVariableDetail.getVariableName())) {
-//                        sql = sql.replace(matcher.group(), customSqlVariableDetail.getDefaultValue());
-//                        customValue = true;
-//                        break;
-//                    }
-//                }
-//            }
-            if (!customValue) {
-                SqlVariableDetails defaultsSqlVariableDetail = null;
-                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {
-                }.getType());
-                for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
-                    if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
-                        defaultsSqlVariableDetail = sqlVariableDetail;
-                        break;
-                    }
+            SqlVariableDetails defaultsSqlVariableDetail = null;
+            List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {}.getType());
+            for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
+                if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
+                    defaultsSqlVariableDetail = sqlVariableDetail;
+                    break;
                 }
-                if (defaultsSqlVariableDetail == null || StringUtils.isEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
-                    throw new RuntimeException(matcher.group().substring(2, matcher.group().length() - 1) + "没有默认值!");
-                }
+            }
+            if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                 sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
             }
         }
+       try {
+           sql = removeVariables(sql);
+       }catch (Exception e){
+           e.printStackTrace();
+       }
         return sql;
     }
 
-    private String removeVariables(String sql) throws Exception {
+    public String removeVariables(String sql) throws Exception {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(sql);
         while (matcher.find()) {
             sql = sql.replace(matcher.group(), SubstitutedParams);
         }
-
         CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
         Statement statement = CCJSqlParserUtil.parse(sql);
         Select select = (Select) statement;
-        Expression expr = ((PlainSelect) select.getSelectBody()).getWhere();
+        PlainSelect plainSelect = ((PlainSelect) select.getSelectBody());
+        Expression expr = plainSelect.getWhere();
         StringBuilder stringBuilder = new StringBuilder();
-        expr.accept(getExpressionDeParser(stringBuilder));
-        return stringBuilder.toString();
+        BinaryExpression binaryExpression = (BinaryExpression)expr;
+
+        if(!(binaryExpression.getLeftExpression() instanceof BinaryExpression)  && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVarible(binaryExpression.toString())){
+            stringBuilder.append(SubstitutedSql);
+        }else {
+            expr.accept(getExpressionDeParser(stringBuilder));
+        }
+        plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
+        return plainSelect.toString();
     }
 
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
@@ -2511,6 +2510,21 @@ public class DataSetTableService {
             }
 
             @Override
+            public void visit(LikeExpression likeExpression) {
+                if (hasVarible(likeExpression.toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+
+                visitBinaryExpression(likeExpression, (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
+                Expression escape = likeExpression.getEscape();
+                if (escape != null) {
+                    getBuffer().append(" ESCAPE ");
+                    likeExpression.getEscape().accept(this);
+                }
+            }
+
+            @Override
             public void visit(InExpression inExpression) {
                 inExpression.getLeftExpression().accept(this);
                 if (inExpression.isNot()) {
@@ -2536,7 +2550,7 @@ public class DataSetTableService {
                 StringBuilder stringBuilder = new StringBuilder();
                 Expression in = ((PlainSelect) subSelect.getSelectBody()).getWhere();
                 if (in instanceof BinaryExpression && hasVarible(in.toString())) {
-                    stringBuilder.append(SubstitutedSql);
+                    stringBuilder.append(SubstitutedParams);
                 } else {
                     in.accept(getExpressionDeParser(stringBuilder));
                 }
@@ -2550,9 +2564,6 @@ public class DataSetTableService {
                 }
             }
 
-            private boolean hasVarible(String sql) {
-                return sql.contains(SubstitutedParams);
-            }
 
             private void visitBinaryExpr(BinaryExpression expr, String operator) {
                 boolean hasBinaryExpression = false;
@@ -2587,5 +2598,8 @@ public class DataSetTableService {
             }
         };
         return expressionDeParser;
+    }
+    static private boolean hasVarible(String sql) {
+        return sql.contains(SubstitutedParams);
     }
 }

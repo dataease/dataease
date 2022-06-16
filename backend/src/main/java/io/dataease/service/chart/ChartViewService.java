@@ -451,9 +451,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql =  dataTableInfoDTO.getSql();
-                if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
-                    sql = handleVariable(sql, requestList);
-                }
+                sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -824,10 +822,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql =  dataTableInfoDTO.getSql();
-                if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
-                    sql = handleVariable(sql, requestList);
-                }
-
+                sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -839,7 +834,6 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
-                System.out.println(datasourceRequest.getQuery());
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
@@ -1498,22 +1492,24 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList){
-        for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
-            chartExtFilterRequest.getParameters();
-            if(CollectionUtils.isEmpty(chartExtFilterRequest.getValue())){
-                continue;
-            }
-            if(chartExtFilterRequest.getValue().size() > 1){
-                for (String parameter : chartExtFilterRequest.getParameters()) {
-                    sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
+    private String handleVariable(String sql, ChartExtRequest requestList)throws Exception{
+        if(requestList !=null &&CollectionUtils.isNotEmpty(requestList.getFilter()) ){
+            for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
+                if(CollectionUtils.isEmpty(chartExtFilterRequest.getValue())){
+                    continue;
                 }
-            }else {
-                for (String parameter : chartExtFilterRequest.getParameters()) {
-                    sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
+                if(chartExtFilterRequest.getValue().size() > 1){
+                    for (String parameter : chartExtFilterRequest.getParameters()) {
+                        sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
+                    }
+                }else {
+                    for (String parameter : chartExtFilterRequest.getParameters()) {
+                        sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
+                    }
                 }
             }
         }
+        sql = dataSetTableService.removeVariables(sql);
         return sql;
     }
 }

@@ -164,7 +164,6 @@ export default {
         }));
       }
       this.$emit('change', this.parameters);
-      // TODO 检查key重复
     },
     isDisable: function (index) {
       return this.parameters.length - 1 == index;

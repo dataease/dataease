@@ -140,7 +140,7 @@ public class DirectFieldService implements DataSetFieldService {
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
                 if (rowAndColumnMgm) {
-                    sql = "";
+                    sql = dataSetTableService.removeVariables(sql);
                 }
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, true, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {

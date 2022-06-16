@@ -60,7 +60,7 @@
             />
           </el-popover>
         </span>
-        <span style="padding-left: 10px;">
+        <span v-show="element.component === 'de-select'" style="padding-left: 10px;">
           <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
             {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
 

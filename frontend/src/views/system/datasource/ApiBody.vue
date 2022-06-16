@@ -207,7 +207,6 @@ export default {
         case "WWW_FORM":
           this.setContentType("application/x-www-form-urlencoded");
           break;
-        // todo from data
         case "BINARY":
           this.setContentType("application/octet-stream");
           break;
