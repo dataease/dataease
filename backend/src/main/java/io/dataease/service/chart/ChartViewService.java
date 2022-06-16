@@ -27,6 +27,7 @@ import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.ChartViewCacheMapper;
 import io.dataease.plugins.common.base.mapper.ChartViewMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
+import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -435,7 +436,7 @@ public class ChartViewService {
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
+            if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.DB.name())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, fieldCustomFilter, extFilterList, view, ds));
@@ -448,19 +449,21 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
+                String sql =  dataTableInfoDTO.getSql();
+                sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, fieldCustomFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(dataTableInfoDTO.getSql(), xAxis, fieldCustomFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "custom")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
@@ -475,7 +478,7 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "union")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
                 Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dt, ds);
                 String sql = (String) sqlMap.get("sql");
@@ -494,9 +497,6 @@ public class ChartViewService {
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
-            // 连接doris，构建doris数据源查询
-            // Datasource ds = engineService.getDeEngine();
-            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
@@ -807,7 +807,7 @@ public class ChartViewService {
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
+            if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.DB.name())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, fieldCustomFilter, extFilterList, view, ds));
@@ -820,19 +820,21 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
+                String sql =  dataTableInfoDTO.getSql();
+                sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, fieldCustomFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(dataTableInfoDTO.getSql(), xAxis, fieldCustomFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "custom")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
@@ -847,7 +849,7 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
-            } else if (StringUtils.equalsIgnoreCase(table.getType(), "union")) {
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
                 Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dt, ds);
                 String sql = (String) sqlMap.get("sql");
@@ -1490,4 +1492,24 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
+    private String handleVariable(String sql, ChartExtRequest requestList)throws Exception{
+        if(requestList !=null &&CollectionUtils.isNotEmpty(requestList.getFilter()) ){
+            for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
+                if(CollectionUtils.isEmpty(chartExtFilterRequest.getValue())){
+                    continue;
+                }
+                if(chartExtFilterRequest.getValue().size() > 1){
+                    for (String parameter : chartExtFilterRequest.getParameters()) {
+                        sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
+                    }
+                }else {
+                    for (String parameter : chartExtFilterRequest.getParameters()) {
+                        sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
+                    }
+                }
+            }
+        }
+        sql = dataSetTableService.removeVariables(sql);
+        return sql;
+    }
 }

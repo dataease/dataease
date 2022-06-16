@@ -157,7 +157,6 @@
           this.items.push(new KeyValue({enable: true}));
         }
         this.$emit('change', this.items);
-        // TODO 检查key重复
       },
       isDisable: function (index) {
         return this.items.length - 1 === index;

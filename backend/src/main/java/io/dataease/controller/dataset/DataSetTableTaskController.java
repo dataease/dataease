@@ -43,7 +43,6 @@ public class DataSetTableTaskController {
         return dataSetTableTaskService.save(dataSetTaskRequest);
     }
 
-    //TODO
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@PathVariable String id) {

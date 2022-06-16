@@ -134,9 +134,6 @@
                           {{ field.remarks }}
                         </span>
                       </span>
-                      <!--                      <span v-else style="font-size: 12px;">-->
-                      <!--                        {{ field.remarks }}-->
-                      <!--                      </span>-->
                     </template>
                   </ux-table-column>
                 </ux-grid>

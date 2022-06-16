@@ -3,7 +3,7 @@
 <mapper namespace="io.dataease.ext.ExtDataSetTableMapper">
 
     <resultMap id="BaseResultMapDTO" type="io.dataease.dto.dataset.DataSetTableDTO"
-               extends="io.dataease.plugins.common.base.mapper.DatasetTableMapper.ResultMapWithBLOBs">
+               extends="io.dataease.plugins.common.base.mapper.DatasetTableMapper.BaseResultMap">
         <result column="privileges" property="privileges"/>
     </resultMap>
 

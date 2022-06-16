@@ -167,15 +167,6 @@ public class DataSetTableFieldController {
 
         }
         List<Object> list = results.stream().distinct().collect(Collectors.toList());
-        /*ArrayList<Object> list = results.stream().collect(
-                Collectors.collectingAndThen(
-                        Collectors.toCollection(
-                                () -> new TreeSet<>(Comparator.comparing(t -> {
-                                    if (ObjectUtils.isEmpty(t))
-                                        return "";
-                                    return t.toString();
-                                }))),
-                        ArrayList::new));*/
         return list;
     }
 

@@ -128,13 +128,6 @@ public class DriverService {
         saveFile(file, dirPath, filePath);
         List<String> jdbcList = new ArrayList<>();
         String version = "";
-//        ExtendedJdbcClassLoader extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(filePath).toURI().toURL()}, null);
-//        for (String className : getClassNameFrom(filePath)) {
-//            if (isChildClass(className, java.sql.Driver.class, extendedJdbcClassLoader)) {
-//                jdbcList.add(className);
-//                version = classVersion(extendedJdbcClassLoader, className);
-//            }
-//        }
 
         DeDriverDetails deDriverDetails = new DeDriverDetails();
         deDriverDetails.setId(UUID.randomUUID().toString());

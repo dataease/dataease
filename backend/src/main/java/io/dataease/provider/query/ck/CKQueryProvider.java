@@ -5,9 +5,10 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
-import io.dataease.plugins.common.constants.CKConstants;
+import io.dataease.plugins.common.constants.datasource.CKConstants;
+import io.dataease.plugins.common.constants.datasource.Db2Constants;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.constants.SQLConstants;
+import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -32,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE_ALIAS_PREFIX;
 
 /**
  * @Author gin

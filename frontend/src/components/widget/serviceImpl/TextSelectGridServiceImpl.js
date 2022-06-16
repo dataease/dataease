@@ -13,6 +13,7 @@ const dialogPanel = {
       multiple: false,
       placeholder: 'detextgridselect.placeholder',
       viewIds: [],
+      parameters: [],
       datas: [],
       key: 'id',
       label: 'text',

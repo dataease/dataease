@@ -19,3 +19,6 @@ CREATE TABLE `chart_view_field`
     `last_sync_time`  bigint(13) DEFAULT NULL COMMENT '同步时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+
+ALTER TABLE `dataset_table` ADD COLUMN `sql_variable_details` LONGTEXT NULL AFTER `last_update_time`;
