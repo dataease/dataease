@@ -189,7 +189,7 @@ export default {
       let style = {
         width: '100%'
       }
-      console.log('样式修改库=====', this.canvasStyleData)
+      // console.log('样式修改库=====', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -209,7 +209,8 @@ export default {
         // style.padding = '5px'
       }
       style.height = this.scaleNewHeight + 'px'
-      console.log('改变的样式库===', style)
+      style.fontFamily = this.canvasStyleData.fontFamily
+      // console.log('改变的样式库===', style)
       return style
     },
     screenShotStyle() {
@@ -217,7 +218,7 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      console.log('this.componentDataShow', this.componentDataShow)
+      // console.log('this.componentDataShow', this.componentDataShow)
       // const style = this.componentDataShow.map(res => {
       //   console.log('res==', res)
       //   Object.keys(res.style).forEach(key => {
@@ -232,7 +233,7 @@ export default {
       //   return res
       // })
       const style = this.componentDataShow
-      console.log('this.componentDataShow222222222222222', this.componentDataShow)
+      // console.log('this.componentDataShow222222222222222', this.componentDataShow)
 
       return style
     },
@@ -282,15 +283,15 @@ export default {
 
     window.onresize = () => {
       this.$nextTick(() => {
-        console.log('视图是否发生变化？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？', document.getElementById('canvasInfoMain').offsetWidth)
+        // console.log('视图是否发生变化？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？', document.getElementById('canvasInfoMain').offsetWidth)
         // _this.restore()
       })
     }
-    console.log('放大会不会修改这个值---------------------------------')
+    // console.log('放大会不会修改这个值---------------------------------')
     // 监听主div变动事件
     erd.listenTo(document.getElementById('vaeryBigBox'), element => {
       _this.$nextTick(() => {
-        console.log('获取到的元素宽度---------', document.getElementById('canvasInfoMain').offsetWidth)
+        // console.log('获取到的元素宽度---------', document.getElementById('canvasInfoMain').offsetWidth)
         // console.log('div变动变化==', document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
         // _this.detectZoom()
         // console.log('画布高度缩放 === ', this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width))
@@ -299,7 +300,7 @@ export default {
         //   _this.restore()
         // }
         // _this.restore()
-        console.log('***********************************************************************', this.inScreen)
+        // console.log('***********************************************************************', this.inScreen)
         // this.canvasStyleData.height = this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
       })
     })
@@ -307,7 +308,7 @@ export default {
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
     erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-      console.log('修改状态值')
+      // console.log('修改状态值')
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
@@ -318,7 +319,7 @@ export default {
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
-    console.log('huoqude1shuju1===')
+    // console.log('huoqude1shuju1===')
     if (_this.terminal === 'mobile') {
       _this.initMobileCanvas()
     }
@@ -380,7 +381,7 @@ export default {
     restore() {
       this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
-      console.log('计算宽高比----------', this.offsetWidth, this.canvasStyleData.width, document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+      // console.log('计算宽高比----------', this.offsetWidth, this.canvasStyleData.width, document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
       // const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
@@ -388,7 +389,7 @@ export default {
       // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
 
-      console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
+      // console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
       if (this.backScreenShot) {
         this.scaleHeight = this.scaleWidth * 100
       } else {
@@ -396,7 +397,7 @@ export default {
         this.scaleHeight = this.scaleWidth// 获取高度比
         // this.scaleHeight = this.scaleSize// 获取高度比
       }
-      console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
+      // console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
       this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       this.$nextTick(() => {
         this.handleScaleChange()
@@ -411,19 +412,19 @@ export default {
       return data
     },
     format(value, scale) {
-      console.log('value===', value, value * scale / 100, this.pageRatio)
+      // console.log('value===', value, value * scale / 100, this.pageRatio)
       return (value * scale / 100)
     },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
-        console.log('componentData====', componentData)
+        // console.log('componentData====', componentData)
         componentData.forEach(component => {
-          console.log('切割线===================================================')
+          // console.log('切割线===================================================')
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
-              console.log('循环对象得到的key===', key, component.style[key])
+              // console.log('循环对象得到的key===', key, component.style[key])
             }
             if (this.needToChangeWidth.includes(key)) {
               if (key === 'fontSize' && this.terminal === 'mobile') {
@@ -431,7 +432,7 @@ export default {
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)
               }
-              console.log('循环对象得到的key===222', key, component.style[key])
+              // console.log('循环对象得到的key===222', key, component.style[key])
             }
           })
         })
@@ -487,6 +488,7 @@ export default {
     height: 100%;
     overflow-x: hidden;
     background-size: 100% 100% !important;
+    // font-family:'楷体';
   }
 
   .main-class {

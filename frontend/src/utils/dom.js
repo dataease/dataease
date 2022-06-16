@@ -25,7 +25,7 @@ export function matchesSelectorToParentElements(el, selector, baseNode) {
 
 export function getComputedSize($el) {
   const style = window.getComputedStyle($el)
-  console.log('返回浮点数？？？？', parseFloat(style.getPropertyValue('width'), 10), parseFloat(style.getPropertyValue('height'), 10))
+  // console.log('返回浮点数？？？？', parseFloat(style.getPropertyValue('width'), 10), parseFloat(style.getPropertyValue('height'), 10))
   return [
     parseFloat(style.getPropertyValue('width'), 10),
     parseFloat(style.getPropertyValue('height'), 10)

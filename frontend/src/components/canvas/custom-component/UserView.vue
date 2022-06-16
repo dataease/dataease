@@ -572,13 +572,13 @@ export default {
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
       }
-      console.log('88888888customAttrChart', customAttrChart, this.chart)
+      // console.log('88888888customAttrChart', customAttrChart, this.chart)
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
-      console.log('this.chart====', this.chart)
+      // console.log('this.chart====', this.chart)
       this.mergeStyle()
     },
     mergeStyle() {
@@ -599,7 +599,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        console.log('customAttrChart=====6666', customAttrChart)
+        // console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -632,9 +632,9 @@ export default {
           .then((response) => {
             // 将视图传入echart组件
             if (response.success) {
-              console.log('查出的数据', response.data)
+              // console.log('查出的数据', response.data)
               this.chart = response.data
-              console.log('this.chart: ', this.chart)
+              // console.log('this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -969,11 +969,11 @@ export default {
     },
 
     renderComponent() {
-      console.log('this.chart.render', this.chart)
+      // console.log('this.chart.render', this.chart)
       return this.chart.render
     },
     getDataEdit(param) {
-      console.log('getDataEdit::::', param)
+      // console.log('getDataEdit::::', param)
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
         this.getData(param.viewId, false)
