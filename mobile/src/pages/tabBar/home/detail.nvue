@@ -1,6 +1,6 @@
 <template>
 	<view>
-       
+
 		<uni-nav-bar :fixed="true" left-icon="arrowleft"  @clickLeft="back" :title="banner.title" >
 			<block slot="right">
 				<uni-row class="demo-uni-row" >
@@ -13,37 +13,34 @@
                             <uni-icons type="star" size="18" color="#fff"></uni-icons>
                         </view>
 					</uni-col>
-					
+
 					<uni-col :span="12"  style="margin: 0 10rpx;">
 						<view @click="refresh">
 						<uni-icons type="reload" size="18" color="#999" ></uni-icons>
 						</view>
 					</uni-col>
 				</uni-row>
-				
+
 			</block>
-			
+
 		</uni-nav-bar>
-		
-		<scroll-view 
-		
-		:scroll-top="scrollTop" 
-		scroll-y="true" 
-		class="scroll-Y" 
-		@scrolltoupper="upper" 
+
+		<scroll-view
+
+		:scroll-top="scrollTop"
+		scroll-y="true"
+		class="scroll-Y"
+		@scrolltoupper="upper"
 		@scrolltolower="lower"
 		@scroll="scroll">
-			
-			<!-- <web-view v-if="url" :style="{height: 'calc(100vh - ' + ktxStatusHeight +'px)'}" /> -->
-			<!-- <web-view v-if="url" style="height: 100vh;" /> -->
 			<web-view v-if="url" :style="{height: viewHeight}" />
 
 		</scroll-view>
-		
-		
-		
 
-       
+
+
+
+
 	</view>
 </template>
 
@@ -86,7 +83,7 @@
 				title: '',
 				banner: {},
 				htmlNodes: [],
-                
+
                 url: '',
                 hasStar: false,
                 refreshCount: 0,
@@ -129,12 +126,12 @@
             }
             this.refreshCount -= 1
             uni.navigateBack()
-            
+
         },
-		
-		
+
+
 		methods: {
-			
+
             addRecent() {
                 const item = {id: this.banner.id, title: this.banner.title, index: this.banner.index, userId: this.banner.userId}
                 addRecent(item)
@@ -152,17 +149,17 @@
                     uni.$emit('loadHomeIndex', {
                         index: 0
                     })
-                    
+
                 })
             },
             refresh() {
                 uni.showLoading({
 					title: this.$t('commons.loading')
 				});
-                
+
                 this.url = null
-                this.loadLinkUrl()  
-                this.refreshCount += 1 
+                this.loadLinkUrl()
+                this.refreshCount += 1
             },
             loadStarStatus() {
                 starStatus(this.banner.id).then(res => {
@@ -173,23 +170,23 @@
 				const baseUrl = process.env.VUE_APP_BASE_API + 'tempMobileLink/'
 				let resource = this.banner.id
 				const token = getToken()
-				
+
 				if (this.banner.index && this.banner.index === 2 && this.banner.userId) {
 					resource = this.banner.id + '|' + this.banner.userId
                     //this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + '|' + this.banner.userId + "/" + getToken()
                 }
-				
+
 				this.url = baseUrl + encodeURIComponent(encodeURIComponent(resource)) + "/" + encodeURIComponent(token)
-                
+
                 const url = this.url
 				/* uni.hideLoading() */
                 setTimeout(() => {
                     const iframe = document.getElementsByTagName("iframe")[0]
                     // iframe.style.height = (ktxScreentHeight - ktxStatusHeight) + 'px'
                     iframe.src = url
-                    iframe.onload = e => {						
-                        uni.hideLoading()						
-                    }                                        
+                    iframe.onload = e => {
+                        uni.hideLoading()
+                    }
                 }, 1000);
 
             },
@@ -200,26 +197,26 @@
 					h5Height = h5Height - systemInfo.navigationBarHeight
 				}
 				this.viewHeight = h5Height + 'px'
-				
+
 			},
-            back() {   
-                // #ifdef H5  
-                let canBack = true  
-                const pages = getCurrentPages()  
-                if (pages.length > 1) {  
-                    uni.navigateBack(1)  
-                    return;  
-                }  
-                let a = this.$router.go(-1)  
-                // router.go失败之后则重定向到首页  
-                if (a == undefined) {  
-                    uni.reLaunch({  
-                        url: "/pages/index/index"  
-                    })  
-                }  
+            back() {
+                // #ifdef H5
+                let canBack = true
+                const pages = getCurrentPages()
+                if (pages.length > 1) {
+                    uni.navigateBack(1)
+                    return;
+                }
+                let a = this.$router.go(-1)
+                // router.go失败之后则重定向到首页
+                if (a == undefined) {
+                    uni.reLaunch({
+                        url: "/pages/index/index"
+                    })
+                }
                 return
-                // #endif  
-                uni.navigateBack(1)  
+                // #endif
+                uni.navigateBack(1)
             },
 			upper: function(e) {
 				console.log(e)

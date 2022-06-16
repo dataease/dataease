@@ -35,21 +35,13 @@ public class DePermissionProxyHandler {
             Object[] args = point.getArgs();
             if (null == args || args.length == 0) {
                 return point.proceed(args);
-
             }
             Object arg = point.getArgs()[annotation.paramIndex()];
-            /*
-             * if (arg instanceof PermissionProxy) {
-             * PermissionProxy proxy = (PermissionProxy) arg;
-             * AuthUtils.setProxyUser(proxy.getUserId());
-             * }
-             */
             PermissionProxy proxy = getProxy(arg, annotation, 0);
             if (null != proxy && null != proxy.getUserId()) {
                 AuthUtils.setProxyUser(proxy.getUserId());
             }
             return point.proceed(args);
-
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
             /* throw new RuntimeException(throwable.getMessage()); */
@@ -69,26 +61,8 @@ public class DePermissionProxyHandler {
         if (arg instanceof PermissionProxy) {
             return (PermissionProxy) arg;
         } else if (isArray(parameterType)) {
-            /*
-             * for (int i = 0; i < Array.getLength(arg); i++) {
-             * Object o = Array.get(arg, i);
-             * if ((result = getProxy(o, annotation, layer)) != null) {
-             * return result;
-             * }
-             * }
-             */
             return null;
-
         } else if (isCollection(parameterType)) {
-            /*
-             * Object[] array = ((Collection) arg).toArray();
-             * for (int i = 0; i < array.length; i++) {
-             * Object o = array[i];
-             * if ((result = getProxy(o, annotation, layer)) != null) {
-             * return result;
-             * }
-             * }
-             */
             return null;
         } else if (isMap(parameterType)) {
             Map<String, Object> argMap = (Map) arg;
@@ -99,10 +73,8 @@ public class DePermissionProxyHandler {
             // 当作自定义类处理
             String[] values = value.split("\\.");
             String fieldName = values[layer];
-
             Object fieldValue = getFieldValue(arg, fieldName);
             return getProxy(fieldValue, annotation, ++layer);
-
         }
 
     }

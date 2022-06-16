@@ -25,6 +25,5 @@ public class PrincipalHandshakeHandler extends DefaultHandshakeHandler {
             return new DePrincipal(userId);
         }
         return null;
-        //return super.determineUser(request, wsHandler, attributes);
     }
 }

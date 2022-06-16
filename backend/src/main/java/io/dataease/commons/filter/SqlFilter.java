@@ -16,8 +16,6 @@ public class SqlFilter implements Filter {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -43,9 +41,7 @@ public class SqlFilter implements Filter {
                 if (xssRequest.checkXSSAndSql(param)) {
                     response.setCharacterEncoding("UTF-8");
                     response.setContentType("application/json;charset=UTF-8");
-                    // PrintWriter out = response.getWriter();
                     String msg = ThreadLocalContextHolder.getData().toString();
-                    // out.write(msg);
                     DEException.throwException(msg);
                     return;
                 }
@@ -54,9 +50,7 @@ public class SqlFilter implements Filter {
         if (xssRequest.checkParameter()) {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=UTF-8");
-            // PrintWriter out = response.getWriter();
             String msg = ThreadLocalContextHolder.getData().toString();
-            // out.write(msg);
             DEException.throwException(msg);
             return;
         }

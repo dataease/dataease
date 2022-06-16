@@ -32,7 +32,6 @@ import LabelNormal from '@/views/chart/components/normal/LabelNormal'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-// import { export_json_to_excel } from '@/plugins/Export2Excel'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
@@ -167,15 +166,6 @@ export default {
           })
         } else {
           _this.exportExcelDownload()
-          // const dom = document.getElementById('user-view-' + this.chart.id)
-          // if (dom) {
-          //   html2canvas(dom).then(canvas => {
-          //     const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-          //     _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
-          //   })
-          // } else {
-          //   _this.exportExcelDownload()
-          // }
         }
       }
     },

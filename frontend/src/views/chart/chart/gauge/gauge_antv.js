@@ -94,12 +94,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
         }
       }
     }
-    // range: {
-    //   width: 12
-    // },
-    // gaugeStyle: {
-    //   lineCap: 'round'
-    // }
   }
   if (hasThreshold) {
     options.range = {

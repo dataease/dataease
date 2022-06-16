@@ -25,7 +25,6 @@ export default {
       type: Array,
       default: () => []
     },
-    // eslint-disable-next-line vue/require-default-prop
     element: {
       type: Object
     }

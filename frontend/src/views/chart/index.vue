@@ -6,7 +6,6 @@
     </de-aside-container>
 
     <de-main-container>
-      <!--        <router-view />-->
       <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" @typeChange="typeChange" />
     </de-main-container>
   </de-container>

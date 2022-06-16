@@ -74,11 +74,6 @@ export default {
   data() {
     return {
       selectType: -1,
-      //   msgTypes: [
-      //     { value: -1, label: '全部类型' },
-      //     { value: 0, label: '仪表板分享' },
-      //     { value: 1, label: '数据集同步' }
-      //   ],
       msgTypes: msgTypes,
       data: [],
       allTypes: [{ name: 'mysql', type: 'jdbc' }, { name: 'sqlServer', type: 'jdbc' }],
@@ -141,8 +136,6 @@ export default {
     },
     toDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
-      //   this.$router.push({ name: row.router, params: param })
-      //   this.setReaded(row)
       if (this.hasPermissionRoute(row.router)) {
         this.$router.push({ name: row.router, params: param })
         this.setReaded(row)

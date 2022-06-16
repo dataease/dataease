@@ -47,25 +47,11 @@
                 <div style="display: flex;align-items: center;margin-top: 10px;">
                   <span class="color-label" />
                   <span>
-                    <!--                    色系自定义-->
-                    <!--                    <el-radio-group v-model="customColor" class="color-type">-->
-                    <!--                      <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">-->
-                    <!--                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />-->
-                    <!--                      </el-radio>-->
-                    <!--                    </el-radio-group>-->
-
                     <span v-for="(c,index) in colorForm.colors" :key="index" style="padding: 2px;">
                       <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
                     </span>
                   </span>
                 </div>
-                <!--                色系自定义-->
-                <!--                <div style="display: flex;align-items: center;margin-top: 10px;">-->
-                <!--                  <span class="color-label" />-->
-                <!--                  <span>-->
-                <!--                    <el-color-picker v-model="customColor" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase" />-->
-                <!--                  </span>-->
-                <!--                </div>-->
                 <div class="custom-color-style">
                   <div
                     v-for="(item,index) in colorForm.seriesColors"
@@ -275,10 +261,6 @@ export default {
       const items = this.colorCases.filter(ele => {
         return ele.value === that.colorForm.value
       })
-      // const val = JSON.parse(JSON.stringify(this.colorForm))
-      // val.value = items[0].value
-      // val.colors = items[0].colors
-      // this.colorForm.value = items[0].value
       this.colorForm.colors = JSON.parse(JSON.stringify(items[0].colors))
 
       this.customColor = this.colorForm.colors[0]
@@ -292,8 +274,6 @@ export default {
     },
     changeColorCase() {
       this.$emit('onColorChange', this.colorForm)
-      // this.customColor = null
-      // this.colorIndex = 0
     },
     init() {
       const chart = JSON.parse(JSON.stringify(this.chart))

@@ -149,7 +149,6 @@ export default {
       required: false,
       default: false
     },
-    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false
@@ -390,7 +389,6 @@ export default {
       }
     },
     'chartType': function(newVal, oldVal) {
-      // this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
       if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
@@ -927,32 +925,4 @@ export default {
     z-index: 2;
     display: block !important;
   }
-
-  /*.rect-shape > i {*/
-  /*  right: 5px;*/
-  /*  color: gray;*/
-  /*  position: absolute;*/
-  /*}*/
-
-  /*.rect-shape > > > i:hover {*/
-  /*  color: red;*/
-  /*}*/
-
-  /*.rect-shape:hover > > > .icon-fangda {*/
-  /*  z-index: 2;*/
-  /*  display: block;*/
-  /*}*/
-
-  /*.rect-shape > > > .icon-fangda {*/
-  /*  display: none*/
-  /*}*/
-
-  /*.rect-shape:hover > > > .icon-shezhi {*/
-  /*  z-index: 2;*/
-  /*  display: block;*/
-  /*}*/
-
-  /*.rect-shape > > > .icon-shezhi {*/
-  /*  display: none*/
-  /*}*/
 </style>

@@ -50,9 +50,4 @@ public class SysPluginController {
         return pluginService.uninstall(pluginId);
     }
 
-//    @ApiOperation("切换插件状态")
-//    @PostMapping("/changeStatus")
-//    public Boolean changeStatus(@RequestBody PluginStatus pluginStatus) {
-//        return pluginService.changeStatus(pluginStatus.getPluginId(), pluginStatus.getStatus());
-//    }
 }

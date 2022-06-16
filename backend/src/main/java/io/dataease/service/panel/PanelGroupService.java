@@ -222,22 +222,16 @@ public class PanelGroupService {
         //清理view 和 view cache
         extPanelGroupMapper.deleteCircleView(id);
         extPanelGroupMapper.deleteCircleViewCache(id);
-
         // 同时会删除对应默认仪表盘
         extPanelGroupMapper.deleteCircle(id);
         storeService.removeByPanelId(id);
         shareService.delete(id, null);
         panelLinkService.deleteByResourceId(id);
-
-
         //清理跳转信息
         extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpWithPanel(id);
-
         DeLogUtils.save(sysLogDTO);
-
-
     }
 
 
@@ -285,7 +279,6 @@ public class PanelGroupService {
             List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
             VAuthModelRequest viewRequest = new VAuthModelRequest();
             viewRequest.setPids(panelIds);
-//             Version 1.11 only gets the current panel
             List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
             if (CollectionUtils.isNotEmpty(viewResult)) {
                 result.addAll(viewResult);
@@ -316,10 +309,6 @@ public class PanelGroupService {
             VAuthModelRequest viewRequest = new VAuthModelRequest();
             viewRequest.setPids(panelIds);
             // Version 1.11 only gets the current panel
-//            List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
-//            if (CollectionUtils.isNotEmpty(viewResult)) {
-//                result.addAll(viewResult);
-//            }
             result = TreeUtils.mergeTree(result, "panel_list");
             if (AuthUtils.getUser().getIsAdmin()) {
                 // 原有视图的目录结构

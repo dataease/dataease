@@ -14,6 +14,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -24,14 +25,13 @@ import java.util.stream.Collectors;
 public class DePermissionAnnotationHandler {
 
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermissions)")
-    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable{
+    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable {
 
         if (AuthUtils.getUser().getIsAdmin()) {
             return point.proceed(point.getArgs());
         }
         Boolean access = false;
         try {
-
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
             DePermissions annotation = method.getAnnotation(DePermissions.class);
@@ -66,17 +66,15 @@ public class DePermissionAnnotationHandler {
                     throw exceptions.get(0);
                 }
             }
-
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
             throw new RuntimeException(throwable.getMessage());
         }
-
         return access ? point.proceed(point.getArgs()) : null;
     }
 
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermission)")
-    public Object PermissionAround(ProceedingJoinPoint point) throws Throwable{
+    public Object PermissionAround(ProceedingJoinPoint point) throws Throwable {
         Boolean access = false;
         try {
             if (AuthUtils.getUser().getIsAdmin()) {
@@ -84,7 +82,6 @@ public class DePermissionAnnotationHandler {
             }
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
-
             DePermission annotation = method.getAnnotation(DePermission.class);
             Object arg = point.getArgs()[annotation.paramIndex()];
             if (access(arg, annotation, 0)) {
@@ -94,7 +91,6 @@ public class DePermissionAnnotationHandler {
             LogUtil.error(throwable.getMessage(), throwable);
             throw new RuntimeException(throwable.getMessage());
         }
-
         return access ? point.proceed(point.getArgs()) : null;
     }
 
@@ -104,10 +100,8 @@ public class DePermissionAnnotationHandler {
         String type = annotation.type().name().toLowerCase();
         String value = annotation.value();
         Integer requireLevel = annotation.level().getLevel();
-
         Set<String> resourceIds = AuthUtils.permissionByType(type).stream().filter(
                 item -> item.getLevel() >= requireLevel).map(AuthItem::getAuthSource).collect(Collectors.toSet());
-
         Class<?> parameterType = arg.getClass();
         if (parameterType.isPrimitive() || ReflectUtil.isWrapClass(parameterType) || ReflectUtil.isString(parameterType)) {
             boolean permissionValid = resourceIds.contains(arg);
@@ -122,7 +116,6 @@ public class DePermissionAnnotationHandler {
                     return false;
                 }
             }
-
         } else if (ReflectUtil.isCollection(parameterType)) {
             Object[] array = ((Collection) arg).toArray();
             for (int i = 0; i < array.length; i++) {
@@ -140,14 +133,10 @@ public class DePermissionAnnotationHandler {
             // 当作自定义类处理
             String[] values = value.split("\\.");
             String fieldName = values[layer];
-
             Object fieldValue = ReflectUtil.getFieldValue(arg, fieldName);
             return access(fieldValue, annotation, ++layer);
 
         }
         return true;
     }
-
-
-
 }

@@ -137,14 +137,6 @@
               </span>
             </template>
           </el-table-column>
-          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
-          <!--            <template slot-scope="scope">-->
-          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
-          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
-          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
-          <!--              </el-radio-group>-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
           <el-table-column property="fromType" :label="$t('chart.form_type')" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 1" class="from-type-span">{{ $t('chart.copy_field') }}</span>
@@ -293,14 +285,6 @@
               </span>
             </template>
           </el-table-column>
-          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
-          <!--            <template slot-scope="scope">-->
-          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
-          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
-          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
-          <!--              </el-radio-group>-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
           <el-table-column property="fromType" :label="$t('chart.form_type')" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 1" class="from-type-span">{{ $t('chart.copy_field') }}</span>

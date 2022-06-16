@@ -8,14 +8,6 @@ export const areaMapping = () => {
   })
 }
 
-// export function geoJson(areaCode) {
-//   return request({
-//     url: '/api/map/resourceFull/' + areaCode,
-//     method: 'get',
-//     loading: true
-//   })
-// }
-
 export function geoJson(areaCode) {
   return request({
     url: '/geo/' + areaCode + '_full.json',

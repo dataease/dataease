@@ -47,11 +47,6 @@ public class LogService {
     // 驱动文件操作 上传， 删除
     private static Integer[] driver_file_ope = {11, 3};
 
-
-    // 排除驱动和驱动文件的公共操作的资源类型
-    // 暂时屏蔽视图日志
-    // private static Integer[] COMMON_SOURCE = {1, 2,3,4,6,7,8,9};
-
     private static Integer[] COMMON_SOURCE = {1, 2, 3, 6, 7, 8, 9};
 
     // 增 改 删  针对公共资源的操作

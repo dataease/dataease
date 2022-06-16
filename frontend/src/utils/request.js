@@ -141,7 +141,6 @@ const checkAuth = response => {
     })
   }
   // token到期后自动续命 刷新token
-  //   if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
   if (response.headers[RefreshTokenKey]) {
     const refreshToken = response.headers[RefreshTokenKey]
     store.dispatch('user/refreshToken', refreshToken)

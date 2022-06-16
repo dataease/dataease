@@ -31,9 +31,24 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @boardSet="boardSet"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
-      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
+      <div
+        v-if="resizing"
+        style="transform: translateZ(11px);position: absolute; z-index: 3"
+        :style="resizeShadowStyle"
+      />
       <div
         v-for="(handlei, indexi) in actualHandles"
         :key="indexi"
@@ -55,6 +70,7 @@
 import { matchesSelectorToParentElements, getComputedSize, addEvent, removeEvent } from '../../utils/dom'
 import { computeWidth, computeHeight, restrictToBounds, snapToGrid, rotatedPoint, getAngle } from '../../utils/fns'
 import { events, userSelectNone, userSelectAuto } from './option.js'
+
 let eventsFor = events.mouse
 
 // private
@@ -1782,7 +1798,7 @@ export default {
 .vdr {
   touch-action: none;
   position: absolute;
-  transform-style:preserve-3d;
+  transform-style: preserve-3d;
   border: 1px
 }
 
@@ -1794,30 +1810,39 @@ export default {
   border-radius: 50%;
   z-index: 2;
 }
+
 .handle-tl {
   cursor: nw-resize;
 }
+
 .handle-tm {
   cursor: n-resize;
 }
+
 .handle-tr {
   cursor: ne-resize;
 }
+
 .handle-ml {
   cursor: w-resize;
 }
+
 .handle-mr {
   cursor: e-resize;
 }
+
 .handle-bl {
   cursor: sw-resize;
 }
+
 .handle-bm {
   cursor: s-resize;
 }
+
 .handle-br {
   cursor: se-resize;
 }
+
 /* 新增 旋转控制柄 */
 
 .handle-rot {
@@ -1830,6 +1855,7 @@ export default {
   text-indent: -9999px;
   vertical-align: middle;
 }
+
 .handle-rot:before,
 .handle-rot:after {
   content: "";
@@ -1839,6 +1865,7 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .handle-rot:before {
   /* display: block; */
   width: 1em;
@@ -1847,6 +1874,7 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
 }
+
 .handle-rot:after {
   width: 0px;
   height: 0px;
@@ -1862,29 +1890,30 @@ export default {
   user-select: none;
 }
 
-.linkageSetting{
+.linkageSetting {
   opacity: 0.5;
 }
 
-.batchSetting{
+.batchSetting {
   opacity: 0.9;
 }
 
-.positionChange{
+.positionChange {
   transition: 0.2s
 }
 
-.de-drag-active{
+.de-drag-active {
   user-select: none;
 }
 
-.de-drag-active-inner{
+.de-drag-active-inner {
   outline: 1px solid #70c0ff;
 }
-  .main-background{
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100% !important;
-  }
+
+.main-background {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
+}
 </style>

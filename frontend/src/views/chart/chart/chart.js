@@ -555,10 +555,6 @@ export const BASE_FUNNEL = {
       maxSize: '100%',
       sort: 'descending',
       gap: 1,
-      // label: {
-      //   show: true,
-      //   position: 'inside'
-      // },
       labelLine: {
         length: 10,
         lineStyle: {
@@ -754,16 +750,12 @@ export const BASE_MAP = {
     },
     right: 0
   },
-  //   legend: {},
   series: [
     {
       name: '',
       type: 'map',
       map: 'MAP',
       roam: true,
-      //   label: {
-      //     show: true
-      //   },
       data: []
     }
   ]
@@ -855,15 +847,6 @@ export const BASE_TREEMAP = {
       breadcrumb: {
         show: false
       },
-      // radius: ['0%', '60%'],
-      // avoidLabelOverlap: false,
-      // emphasis: {
-      //   itemStyle: {
-      //     shadowBlur: 10,
-      //     shadowOffsetX: 0,
-      //     shadowColor: 'rgba(0, 0, 0, 0.5)'
-      //   }
-      // },
       data: []
     }
   ]

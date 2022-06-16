@@ -9,7 +9,6 @@
         @click="closePanelEdit"
       />
     </el-tooltip>
-    <!--    <i class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 11px"></i>-->
     <el-row style="height: 40px;" class="padding-lr">
       <el-popover
         placement="right-start"
@@ -27,15 +26,9 @@
       </el-popover>
       <span class="title-text view-title-name" style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
-        <!--        <el-button size="mini" @click="closePanelEdit">-->
-        <!--          {{ $t('chart.draw_back') }}-->
-        <!--        </el-button>-->
         <el-button round size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
-        <!--        <el-button size="mini" type="primary" @click="closeEdit">-->
-        <!--          {{ $t('commons.save') }}-->
-        <!--        </el-button>-->
       </span>
     </el-row>
     <el-row class="view-panel-row">
@@ -236,19 +229,6 @@
                               </el-radio-group>
                             </div>
                           </el-row>
-                          <!--                          <el-row class="title-text" style="color: #909399;">-->
-                          <!--                            <span>-->
-                          <!--                              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">-->
-                          <!--                                Tips: {{ $t('chart.only_one_quota') }}-->
-                          <!--                              </span>-->
-                          <!--                              &lt;!&ndash;              <span v-show="chart.type && (chart.type.includes('text'))">&ndash;&gt;-->
-                          <!--                              &lt;!&ndash;                Tips: {{ $t('chart.only_one_result') }}&ndash;&gt;-->
-                          <!--                              &lt;!&ndash;              </span>&ndash;&gt;-->
-                          <!--                              &lt;!&ndash;              <span v-show="chart.type && chart.type.includes('gauge')">&ndash;&gt;-->
-                          <!--                              &lt;!&ndash;                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}&ndash;&gt;-->
-                          <!--                              &lt;!&ndash;              </span>&ndash;&gt;-->
-                          <!--                            </span>-->
-                          <!--                          </el-row>-->
                         </div>
                         <el-button
                           slot="reference"
@@ -618,9 +598,6 @@
                     </el-row>
                     <el-row class="padding-lr" style="margin-top: 6px;">
                       <span>{{ $t('chart.result_filter') }}</span>
-                      <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
-                      <!--                      {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon&#45;&#45;right" />-->
-                      <!--                    </el-button>-->
                       <draggable
                         v-model="view.customFilter"
                         group="drag"

@@ -100,10 +100,6 @@
           <el-form-item v-show="showProperty('tableBorderColor')" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableBorderColor')" />
           </el-form-item>
-          <!--              暂时不支持该功能-->
-          <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
-          <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase('tableStripe')">{{ $t('chart.stripe') }}</el-checkbox>-->
-          <!--              </el-form-item>-->
         </div>
 
         <el-form-item v-show="showProperty('alpha')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
@@ -265,10 +261,6 @@ export default {
       const items = this.colorCases.filter(ele => {
         return ele.value === that.colorForm.value
       })
-      // const val = JSON.parse(JSON.stringify(this.colorForm))
-      // val.value = items[0].value
-      // val.colors = items[0].colors
-      // this.colorForm.value = items[0].value
       this.colorForm.colors = JSON.parse(JSON.stringify(items[0].colors))
 
       this.customColor = this.colorForm.colors[0]
@@ -285,8 +277,6 @@ export default {
       this.$emit('onColorChange', this.colorForm)
       this.colorForm['modifyName'] = 'colors'
       this.$emit('onColorChange', this.colorForm)
-      // this.customColor = null
-      // this.colorIndex = 0
     },
     init() {
       const chart = JSON.parse(JSON.stringify(this.chart))
