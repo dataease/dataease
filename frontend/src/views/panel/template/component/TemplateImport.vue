@@ -45,6 +45,7 @@ export default {
         templateStyle: null,
         templateData: null,
         dynamicData: null,
+        staticResource: null,
         snapshot: ''
       }
     }
@@ -120,6 +121,7 @@ export default {
         this.templateInfo.templateData = this.importTemplateInfo.panelData
         this.templateInfo.snapshot = this.importTemplateInfo.snapshot
         this.templateInfo.dynamicData = this.importTemplateInfo.dynamicData
+        this.templateInfo.staticResource = this.importTemplateInfo.staticResource
         this.templateInfo.nodeType = 'template'
       }
       reader.readAsText(file)
