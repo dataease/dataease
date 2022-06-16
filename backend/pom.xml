@@ -39,12 +39,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>-->
+
         </dependency>
 
         <dependency>
@@ -92,11 +87,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.1.2</version>
-        </dependency>-->
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -125,7 +116,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
-           <!-- <artifactId>shiro-spring-boot-starter</artifactId>-->
             <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
@@ -240,8 +230,7 @@
             </exclusions>
         </dependency>
 
-        <!--由于暂时插件接口未注册到公司仓库，请先down下代码安装到本地仓库
-        https://github.com/dataease/dataease-plugins-->
+
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
@@ -341,31 +330,6 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-
-        <!--<dependency>
-            <groupId>io.buji</groupId>
-            <artifactId>buji-pac4j</artifactId>
-            <version>${buji.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-cas</artifactId>
-            <version>${pac4j.version}</version>
-        </dependency>-->
-
-        <!--<dependency>
-            <groupId>org.jasig.cas.client</groupId>
-            <artifactId>cas-client-core</artifactId>
-            <version>3.5.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
-
     </dependencies>
 
     <build>
@@ -380,9 +344,7 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <!-- <includes>
-                    <include>**/*</include>
-                </includes> -->
+
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>static/**/*.woff</exclude>
