@@ -3,12 +3,14 @@ package io.dataease.service.chart;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.model.PluginViewSetImpl;
+import io.dataease.commons.utils.TableUtils;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
-import io.dataease.plugins.common.constants.SQLConstants;
+import io.dataease.plugins.common.constants.DatasetType;
+import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
@@ -30,7 +32,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE_ALIAS_PREFIX;
 
 @Service
 public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
@@ -97,24 +99,22 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String tableName = null;
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(pluginViewSet.getInfo(), DataTableInfoDTO.class);
         if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
-
-            tableName = "ds_" + pluginViewSet.getTabelId().replaceAll("-", "_");
-
+            tableName = TableUtils.tableName(pluginViewSet.getTabelId());
         }else {
-            switch (pluginViewSet.getType()) {
-                case "db":
+            switch (DatasetType.valueOf(pluginViewSet.getType())) {
+                case DB:
                     tableName = dataTableInfoDTO.getTable();
                     break;
-                case "sql":
-                    tableName = dataTableInfoDTO.getSql();
+                case SQL:
+                    tableName = dataSetTableService.handleVariableDefaultValue(dataTableInfoDTO.getSql(), pluginViewSet.getSqlVariableDetails());
                     break;
-                case "custom":
+                case CUSTOM:
                     List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
                     Datasource ds = new Datasource();
                     ds.setType(pluginViewSet.getDsType());
                     tableName = dataSetTableService.getCustomSQLDatasource(dataTableInfoDTO, list, ds);
                     break;
-                case "union":
+                case UNION:
                     Datasource datasource = new Datasource();
                     datasource.setType(pluginViewSet.getDsType());
                     Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dataTableInfoDTO, datasource);
@@ -129,19 +129,12 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String tabelName = (tableName.startsWith("(") && tableName.endsWith(")")) ? tableName : String.format(keyword, tableName);
         String tabelAlias = String.format(TABLE_ALIAS_PREFIX, 0);
         PluginViewSQL tableObj = PluginViewSQL.builder().tableName(tabelName).tableAlias(tabelAlias).build();
-
-
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(pluginViewSet.getDsType());
-
         SQLObj sqlObj = SQLObj.builder().tableName(tabelName).tableAlias(tabelAlias).build();
         PluginViewSetImpl child = (PluginViewSetImpl)pluginViewSet;
         queryProvider.setSchema(sqlObj, child.getDs());
-        // String methodName = "setSchema";
-        // execProviderMethod(queryProvider, methodName, sqlObj, child.getDs());
         tableObj.setTableName(sqlObj.getTableName());
         tableObj.setTableAlias(sqlObj.getTableAlias());
-
-
         return tableObj;
     }
 

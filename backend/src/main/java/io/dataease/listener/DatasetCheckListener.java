@@ -33,7 +33,7 @@ public class DatasetCheckListener implements ApplicationListener<ApplicationRead
         // 项目启动查找是否有'自定义数据集'
         DatasetTableExample datasetTableExample = new DatasetTableExample();
         datasetTableExample.createCriteria().andTypeEqualTo("custom");
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
         CacheUtils.put(CACHE_NAME, CACHE_KEY, CollectionUtils.isEmpty(datasetTables), null, null);
     }
 }

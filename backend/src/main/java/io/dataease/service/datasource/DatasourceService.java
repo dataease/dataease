@@ -30,6 +30,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
 import io.dataease.plugins.common.base.mapper.DatasourceMapper;
+import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceCalculationMode;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
@@ -325,7 +326,7 @@ public class DatasourceService {
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        if (!ds.getType().equalsIgnoreCase("api")) {
+        if (!ds.getType().equalsIgnoreCase(DatasetType.API.name())) {
             datasourceProvider.checkStatus(datasourceRequest);
         }
 
@@ -333,8 +334,8 @@ public class DatasourceService {
 
         // 获取当前数据源下的db、api类型数据集
         DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andTypeIn(Arrays.asList("db", "api")).andDataSourceIdEqualTo(ds.getId());
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
+        datasetTableExample.createCriteria().andTypeIn(Arrays.asList(DatasetType.DB.name(), DatasetType.API.name())).andDataSourceIdEqualTo(ds.getId());
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
         List<DBTableDTO> list = new ArrayList<>();
         for (TableDesc tableDesc : tables) {
             DBTableDTO dbTableDTO = new DBTableDTO();

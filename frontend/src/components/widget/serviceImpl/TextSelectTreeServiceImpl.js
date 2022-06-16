@@ -12,6 +12,7 @@ const dialogPanel = {
       multiple: false,
       placeholder: 'detextselectTree.placeholder',
       viewIds: [],
+      parameters: [],
       datas: [],
       key: 'id',
       label: 'text',

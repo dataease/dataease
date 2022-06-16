@@ -11,6 +11,7 @@ const dialogPanel = {
     attrs: {
       placeholder: 'deinputsearch.placeholder',
       viewIds: [],
+      parameters: [],
       fieldId: '',
       dragItems: []
 

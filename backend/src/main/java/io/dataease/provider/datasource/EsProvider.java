@@ -10,7 +10,7 @@ import io.dataease.controller.request.datasource.es.RequestWithCursor;
 import io.dataease.dto.datasource.EsConfiguration;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
-import io.dataease.plugins.common.constants.EsSqlLConstants;
+import io.dataease.plugins.common.constants.datasource.EsSqlLConstants;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;

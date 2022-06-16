@@ -1577,6 +1577,7 @@ export default {
     data_list: '数据列表',
     component_list: '组件列表',
     custom_scope: '自定义控制范围',
+    binding_parameters: '绑定参数',
     multiple_choice: '多选',
     single_choice: '单选',
     field: '字段',

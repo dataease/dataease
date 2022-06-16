@@ -8,6 +8,7 @@ import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -1012,13 +1013,13 @@ public class ExtractDataService {
     }
 
     private String getSelectSQL(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) {
-        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("db")) {
+        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.DB.name())) {
             String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
             selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields, datasource);
         }
 
-        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("sql")) {
+        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.SQL.name())) {
             selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
             selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
@@ -1032,7 +1033,7 @@ public class ExtractDataService {
 
     private StepMeta inputStep(TransMeta transMeta, String selectSQL) {
         TableInputMeta tableInput = new TableInputMeta();
-        DatabaseMeta database = transMeta.findDatabase("db");
+        DatabaseMeta database = transMeta.findDatabase(DatasetType.DB.name());
         tableInput.setDatabaseMeta(database);
         tableInput.setSQL(selectSQL);
         StepMeta fromStep = new StepMeta("TableInput", "Data Input", tableInput);

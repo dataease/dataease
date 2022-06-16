@@ -17,6 +17,15 @@ export function viewsWithIds(data) {
   })
 }
 
+export function paramsWithIds(data) {
+  return request({
+    url: '/dataset/table/paramsWithIds',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function findOne(id) {
   return request({
     url: '/api/panelView/findOne/' + id,

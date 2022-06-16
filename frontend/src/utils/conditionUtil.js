@@ -30,6 +30,7 @@ export const formatCondition = obj => {
 
   let fieldId = component.options.attrs.fieldId
   const viewIds = component.options.attrs.viewIds
+  const parameters = component.options.attrs.parameters
   if (isTree && !component.options.attrs.multiple && value && value.length) {
     // 单选树
     const val = value[0]
@@ -40,7 +41,7 @@ export const formatCondition = obj => {
       }
     }
   }
-  const condition = new Condition(component.id, fieldId, operator, value, viewIds, isTree)
+  const condition = new Condition(component.id, fieldId, operator, value, viewIds, parameters, isTree)
   return condition
 }
 

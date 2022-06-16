@@ -215,6 +215,7 @@ export default {
     },
 
     setCondition() {
+      console.log(this.element)
       const param = {
         component: this.element,
         value: this.formatFilterValue(),

@@ -210,6 +210,7 @@ import {
   fieldListWithPermission
 } from '@/api/dataset/dataset'
 import {
+  paramsWithIds,
   viewsWithIds
 } from '@/api/panel/view'
 import {
@@ -471,6 +472,15 @@ export default {
         }) */
         this.viewInfos = datas
         this.childViews.viewInfos = datas
+      })
+      viewIds && viewIds.length > 0 && paramsWithIds(viewIds).then(res => {
+        const datas = res.data
+        /* datas.forEach(item => {
+          if (tabViewIds.includes(item.id)) {
+            item.name = 'tabs(' + item.name + ')'
+          }
+        }) */
+        this.childViews.datasetParams = datas
       })
     },
     handleNodeClick(data) {
