@@ -4,6 +4,7 @@
       <svg-icon v-if="currentNode.currentDs.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
       <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
       <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
 
       <span class="node-name" :title="currentNode.currentDs.name">{{ currentNode.currentDs.name }}</span>
 
