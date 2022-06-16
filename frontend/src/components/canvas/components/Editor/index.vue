@@ -997,14 +997,14 @@ export default {
           }
         }
       }
-      console.log('backgroundType--------',)
+      // console.log('backgroundType--------',)
       return style
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     dragComponentInfo() {
-      console.log('是否触发这个事件------')
+      // console.log('是否触发这个事件------')
       return this.$store.state.dragComponentInfo
     },
 
@@ -1033,7 +1033,7 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
-        console.log('改变从这里开始-------------', newVal)
+        // console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
         this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
@@ -1042,8 +1042,8 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
-        console.log('++++++this.componentData', this.componentData)
-        console.log('组件：', newVal)
+        // console.log('++++++this.componentData', this.componentData)
+        // console.log('组件：', newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
@@ -1100,19 +1100,19 @@ export default {
       this.bannerSetVisible = false
     },
     boardSet(item) {
-      console.log('itsm00001', item)
+      // console.log('itsm00001', item)
       this.$emit('boardSet', item)
 
       this.boardSetVisible = true
     },
     bannerImg(item) {
-      console.log('item-------------------------------------------', item)
+      // console.log('item-------------------------------------------', item)
       this.bannerelement = item
       this.bannerSetVisible = true
     },
     changeStyleWithScale,
     setLine(e) {
-      console.log('组件外的移动----------', e)
+      // console.log('组件外的移动----------', e)
       if (e.offsetY >= this.baseline.top) {
         this.baseline.height = e.offsetY - this.baseline.top
       }
@@ -1121,7 +1121,7 @@ export default {
       }
     },
     hangdleMouseUp(e) {
-      console.log('松开鼠标的时候触发-----------', e)
+      // console.log('松开鼠标的时候触发-----------', e)
       if (this.baseline.width <= 50 || this.baseline.height <= 50) {
         this.baseLineShow = false
       }
@@ -1130,10 +1130,10 @@ export default {
     },
     baseMoseDown(e) {
       e.stopPropagation()
-      console.log('----------------------111111111111111111111111111111111', e)
+      // console.log('----------------------111111111111111111111111111111111', e)
     },
     clearInfo() {
-      console.log('双击事件---', this.componentData)
+      // console.log('双击事件---', this.componentData)
       this.baseLineShow = false
       this.baseline.left = 0
       this.baseline.top = 0
@@ -1141,7 +1141,7 @@ export default {
       this.baseline.width = 0
     },
     handleMouseDown(e) {
-      console.log('---------------------点击画布非元素-----------------------------', e)
+      // console.log('---------------------点击画布非元素-----------------------------', e)
       // removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
       if (!this.baseLineShow) {
         this.baseline.left = e.offsetX
@@ -1264,18 +1264,18 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-      console.log('这里的style改变了什么======', style, result)
+      // console.log('这里的style改变了什么======', style, result)
       return result
     },
 
     getComponentStyleDefault(style) {
-      console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      // console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
 
     getComponentStyle(style) {
-      console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      // console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
@@ -1303,13 +1303,13 @@ export default {
       return value
     },
     changeScale() {
-      console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
+      // console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
-      console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
+      // console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         this.matrixStyle.originWidth = this.canvasStyleData.width / this.matrixCount.x
@@ -1331,7 +1331,7 @@ export default {
         this.cellHeight = this.matrixStyle.height
         // console.log('.initMatrix1')
         this.initMatrix()
-        console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
+        // console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
         // this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
         this.scaleWidth = 100
         // this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
@@ -1423,7 +1423,7 @@ export default {
     },
     handleDragOver(e) {
       if (this.dragComponentInfo === null) return
-      console.log('展示？？？？？？？', this.dragComponentInfo, e)
+      // console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1469,7 +1469,7 @@ export default {
       return true
     },
     containerMouseDown(e) {
-      console.log('修改值状态', e)
+      // console.log('修改值状态', e)
       // e.preventDefault();
       if (!this.infoBox) {
         this.infoBox = {}

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="block">
-      <el-carousel :height="element.style.height+'px'" trigger="click" @change="changeCarousel">
+      <el-carousel v-model="value" :height="element.style.height+'px'" trigger="click" :interval="5000" @change="changeCarousel">
         <el-carousel-item v-for="(item,index) in datas" :key="index" class="banner_class" :style="bannerStyle">
           <!-- <h3 class="small">{{ item }}</h3> -->
           <span>{{ item.text }}</span>
@@ -53,6 +53,7 @@ export default {
       datas: [],
       isIndeterminate: false,
       checkAll: false
+
     }
   },
   computed: {
@@ -159,12 +160,26 @@ export default {
   methods: {
     changeCarousel(e) {
       if (JSON.stringify(this.datas) !== '[]') {
+        console.log('this.datas', this.datas)
         this.datas.forEach((item, index) => {
-          console.log('对数据进行解析----', item, index)
+          if (e === index) {
+            console.log('对数据进行解析----', item, index, e)
+            this.changeValue(item.id)
+          }
+          if (e === this.datas.length - 1) {
+            this.value = this.datas[0].id
+          } else {
+            if ((e + 1) === index) {
+              this.value = item.id
+            }
+          }
+
+          // console.log('对数据进行解析----', item, index)
         })
       }
+      // this.changeValue(e)
       // JSON.str
-      console.log('轮播图事件触发------', e)
+      // console.log('轮播图事件触发------', e)
     },
     initLoad() {
       console.log('this.element=======', this.element)
@@ -191,6 +206,7 @@ export default {
       }
     },
     changeValue(value) {
+      console.log('value', value)
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''

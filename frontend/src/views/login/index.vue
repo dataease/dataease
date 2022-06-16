@@ -192,7 +192,7 @@ export default {
     },
 
     handleLogin() {
-      console.log('111111')
+      // console.log('111111')
       this.initCache()
       this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
