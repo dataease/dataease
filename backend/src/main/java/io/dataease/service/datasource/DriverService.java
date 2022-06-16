@@ -105,6 +105,9 @@ public class DriverService {
     public void deleteDriverFile(String driverFileId) throws Exception{
         DeDriverDetails deDriverDetails = deDriverDetailsMapper.selectByPrimaryKey(driverFileId);
         DeDriver deDriver = deDriverMapper.selectByPrimaryKey(deDriverDetails.getDeDriverId());
+        if(deDriver == null){
+            throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
+        }
         DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), deDriverDetails.getDeDriverId(), null, null);
         DeLogUtils.save(sysLogDTO);
@@ -114,6 +117,10 @@ public class DriverService {
     }
 
     public DeDriverDetails saveJar(MultipartFile file, String driverId) throws Exception {
+        DeDriver deDriver = deDriverMapper.selectByPrimaryKey(driverId);
+        if(deDriver == null){
+            throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
+        }
         String filename = file.getOriginalFilename();
         String dirPath = DRIVER_PATH + driverId + "/";
         String filePath = dirPath + filename;
@@ -138,7 +145,6 @@ public class DriverService {
         deDriverDetailsMapper.insert(deDriverDetails);
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.UPLOADFILE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), driverId, null, null);
         DeLogUtils.save(sysLogDTO);
-        DeDriver deDriver = deDriverMapper.selectByPrimaryKey(driverId);
         DefaultJdbcProvider defaultJdbcProvider = (DefaultJdbcProvider)ProviderFactory.getProvider(deDriver.getType());
         defaultJdbcProvider.reloadCustomJdbcClassLoader(deDriver);
         return deDriverDetails;
