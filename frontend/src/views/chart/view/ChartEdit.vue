@@ -1098,6 +1098,7 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import {delGroup} from "@/api/panel/panel";
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 
@@ -2504,11 +2505,19 @@ export default {
 
     reset() {
       const _this = this
-      resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
-        _this.changeEditStatus(false)
-        _this.getChart(_this.param.id, 'panel')
-        // _this.getData(_this.param.id)
-        bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
+
+      this.$confirm(this.$t('chart.view_reset'), this.$t('chart.view_reset_tips'), {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText: this.$t('commons.cancel'),
+        type: 'warning'
+      }).then(() => {
+        resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
+          _this.changeEditStatus(false)
+          _this.getChart(_this.param.id, 'panel')
+          bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
+        })
+      }).catch(() => {
+        // Do Nothing
       })
     },
     changeEditStatus(status) {
