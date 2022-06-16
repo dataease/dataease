@@ -945,6 +945,7 @@ export default {
     select_map_range: '请选择地图范围',
     area: '地区',
     stack_item: '堆叠项',
+    drag_block_scatter_zaxis: '值轴',
     placeholder_field: '拖动字段至此处',
     axis_label_rotate: '标签角度',
     chart_scatter_bubble: '气泡图',
@@ -1450,6 +1451,7 @@ export default {
     outer_param_set: '外部参数设置',
     input_param_name: '请输入参数名称',
     params_setting: '外部参数设置',
+    params_checkbox: '多选'
     template_view_tips: '当前是模板视图,请点击更换数据集',
     edit_web_tips: '编辑状态不可操作网页内部',
     no_auth_role: '未分享角色',
