@@ -2,14 +2,19 @@
   <div class="portal-nav-menu-container">
     <el-container class="config-container">
       <el-header
-        class="config-header"
-        :style="{ backgroundColor: portal.themeColor }"
         v-if="
           (portal.navLayoutStyle == 0 || portal.navLayoutStyle == 2) &&
-          portal.topNavPosRadio == 'top'
+            portal.topNavPosRadio == 'top'
         "
+        class="config-header"
+        :style="{ backgroundColor: portal.themeColor }"
       >
+        <div
+          v-for="item in portal.config.treeData"
+          :key="item.id"
+        >212</div>
         <div class="title">{{ portal.portalName || "未命名站点" }}</div>
+        <!-- <div>55555</div> 此处为全屏预览头部模式下的切换tab -->
         <div class="tabs">
           <template v-if="portal.navLayoutStyle == 0">
             <el-menu
@@ -27,7 +32,7 @@
                 :index="item.id"
               >
                 <template slot="title">
-                  <i :class="[item.iconName]"></i>
+                  <i :class="[item.iconName]" />
                   <span slot="title">{{ item.label }}</span>
                 </template>
               </el-menu-item>
@@ -45,11 +50,11 @@
             > -->
             <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
             <PortalMenu
-              :subTreeDatas="subTreeDatas"
-              :currentTreeNode="currentTreeNode"
-              :themeColor="portal.themeColor"
+              :sub-tree-datas="subTreeDatas"
+              :current-tree-node="currentTreeNode"
+              :theme-color="portal.themeColor"
               @handleMenuSelect="handleMenuSelect"
-            ></PortalMenu>
+            />
 
             <!-- </el-menu> -->
           </template>
@@ -57,11 +62,12 @@
       </el-header>
       <el-container>
         <el-aside
+          v-if="portal.navLayoutStyle == 0 || portal.navLayoutStyle == 1"
           class="config-aside"
           width="200px"
           :style="{ backgroundColor: portal.themeColor }"
-          v-if="portal.navLayoutStyle == 0 || portal.navLayoutStyle == 1"
         >
+
           <!-- <el-menu
             :default-active="currentTreeNode.id"
             class="el-menu-vertical-demo"
@@ -72,26 +78,28 @@
           <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
           <PortalMenu
             mode="vertical"
-            :subTreeDatas="subTreeDatas"
-            :currentTreeNode="currentTreeNode"
-            :themeColor="portal.themeColor"
+            :sub-tree-datas="subTreeDatas"
+            :current-tree-node="currentTreeNode"
+            :theme-color="portal.themeColor"
             @handleMenuSelect="handleMenuSelect"
-          ></PortalMenu>
+          />
 
           <!-- </el-menu> -->
         </el-aside>
         <el-main class="config-main">
-          <slot></slot>
+          config-main
+          <slot />
         </el-main>
       </el-container>
       <el-header
-        class="config-header config-bottom-header"
-        :style="{ backgroundColor: portal.themeColor }"
         v-if="
           (portal.navLayoutStyle == 0 || portal.navLayoutStyle == 2) &&
-          portal.topNavPosRadio == 'bottom'
+            portal.topNavPosRadio == 'bottom'
         "
+        class="config-header config-bottom-header"
+        :style="{ backgroundColor: portal.themeColor }"
       >
+        <div>头部设置4444</div>
         <div class="title">{{ portal.portalName || "未命名站点" }}</div>
         <div class="tabs">
           <template v-if="portal.navLayoutStyle == 0">
@@ -110,7 +118,7 @@
                 :index="item.id"
               >
                 <template slot="title">
-                  <i :class="[item.iconName]"></i>
+                  <i :class="[item.iconName]" />
                   <span slot="title">{{ item.label }}</span>
                 </template>
               </el-menu-item>
@@ -128,11 +136,11 @@
             > -->
             <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
             <PortalMenu
-              :subTreeDatas="subTreeDatas"
-              :currentTreeNode="currentTreeNode"
-              :themeColor="portal.themeColor"
+              :sub-tree-datas="subTreeDatas"
+              :current-tree-node="currentTreeNode"
+              :theme-color="portal.themeColor"
               @handleMenuSelect="handleMenuSelect"
-            ></PortalMenu>
+            />
 
             <!-- </el-menu> -->
           </template>
@@ -143,80 +151,80 @@
 </template>
 
 <script>
-import PortalMenu from "./PortalMenu.vue";
+import PortalMenu from './PortalMenu.vue'
 export default {
   components: {
-    PortalMenu,
+    PortalMenu
   },
   props: {
     portal: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 
   data() {
     return {
-      currentTreeNode: {},
-    };
-  },
-
-  mounted() {
-    const that = this;
-    function getTreedDataFirstTrendId(treeData) {
-      for (let i = 0; i < treeData.length; i++) {
-        const item = treeData[i];
-        if (item.trendId && !that.currentTreeNode.id) {
-          console.log("item.label", item.label);
-          that.currentTreeNode = item;
-        } else {
-          getTreedDataFirstTrendId(item.children);
-        }
-      }
+      currentTreeNode: {}
     }
-    getTreedDataFirstTrendId(this.portal.config.treeData);
   },
 
   computed: {
     subTreeDatas() {
-      const treeData = this.portal.config.treeData.slice(0);
+      const treeData = this.portal.config.treeData.slice(0)
       if (this.portal.navLayoutStyle == 0) {
-        const subs = [];
+        const subs = []
         treeData.forEach((item) => {
           item.children.forEach((sub) => {
-            subs.push(sub);
-          });
-        });
-        return subs;
+            subs.push(sub)
+          })
+        })
+        return subs
       } else if (
         this.portal.navLayoutStyle == 1 ||
         this.portal.navLayoutStyle == 2
       ) {
-        return treeData;
+        return treeData
       }
-      return treeData;
-    },
+      return treeData
+    }
+  },
+
+  mounted() {
+    const that = this
+    function getTreedDataFirstTrendId(treeData) {
+      for (let i = 0; i < treeData.length; i++) {
+        const item = treeData[i]
+        if (item.trendId && !that.currentTreeNode.id) {
+          console.log('item.label', item.label)
+          that.currentTreeNode = item
+        } else {
+          getTreedDataFirstTrendId(item.children)
+        }
+      }
+    }
+    getTreedDataFirstTrendId(this.portal.config.treeData)
   },
 
   methods: {
     handleMenuSelect(active) {
-      console.log("----- active", active);
-      const that = this;
+      console.log('----- active', active)
+      const that = this
       function getTreedDataActive(treeData) {
         for (let i = 0; i < treeData.length; i++) {
-          const item = treeData[i];
+          const item = treeData[i]
           if (item.id == active) {
-            console.log("item.label", item.label);
-            that.$emit("update", item.trendId);
+            console.log('item.label', item.label)
+            that.$emit('update', item.trendId)
           } else {
-            getTreedDataActive(item.children);
+            getTreedDataActive(item.children)
           }
         }
       }
-      getTreedDataActive(this.portal.config.treeData);
-    },
-  },
-};
+      getTreedDataActive(this.portal.config.treeData)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

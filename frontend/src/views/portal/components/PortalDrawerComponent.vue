@@ -5,17 +5,17 @@
       size="80%"
       direction="rtl"
       :show-close="false"
-      :withHeader="false"
+      :with-header="false"
     >
       <div class="portal-drawer-container-container">
         <div class="header">
           <div class="headerleft">
-            <i class="el-icon-close" @click="syncVisible = false"></i>
+            <i class="el-icon-close" @click="syncVisible = false" />
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
           <div class="headerright">
             <div class="wrapper">
-              <i class="el-icon-setting" @click="handleOpenConfigDrawer"></i>
+              <i class="el-icon-setting" @click="handleOpenConfigDrawer" />
             </div>
             <div class="wrapper">
               <el-radio-group
@@ -29,22 +29,26 @@
               </el-radio-group>
             </div>
             <div class="wrapper">
-              <el-button type="primary" round size="mini" @click="handleSave"
-                >保 存</el-button
-              >
+              <el-button
+                type="primary"
+                round
+                size="mini"
+                @click="handleSave"
+              >保 存</el-button>
             </div>
           </div>
         </div>
         <div class="content">
           <el-container class="config-container">
             <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
               v-if="
                 (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'top'
+                  topNavPosRadio == 'top'
               "
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
             >
+              <div>头部设置22222</div>
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
                 <el-menu
@@ -61,10 +65,10 @@
             </el-header>
             <el-container>
               <el-aside
+                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
                 class="config-aside"
                 width="200px"
                 :style="{ backgroundColor: themeColor }"
-                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
               >
                 <el-menu
                   default-active="0-1"
@@ -74,7 +78,7 @@
                 >
                   <el-submenu index="0">
                     <template slot="title">
-                      <i class="el-icon-menu"></i>
+                      <i class="el-icon-menu" />
                       <span slot="title">二级菜单</span>
                     </template>
                     <el-menu-item index="0-1">
@@ -84,17 +88,18 @@
                 </el-menu>
               </el-aside>
               <el-main class="config-main">
-                <img src="./portal-trend-bg.png" alt="" />
+                <img src="./portal-trend-bg.png" alt="">
               </el-main>
             </el-container>
             <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
               v-if="
                 (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'bottom'
+                  topNavPosRadio == 'bottom'
               "
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
             >
+              <div>头部修改11111</div>
               <div class="title">{{ portalName || "未命名站点" }}</div>
               <div class="tabs">
                 <el-menu
@@ -108,8 +113,7 @@
                   <el-menu-item
                     index="0"
                     :style="{ borderColor: topActiveTab == 0 ? '#429eff' : '' }"
-                    >一级菜单</el-menu-item
-                  >
+                  >一级菜单</el-menu-item>
                   <!-- <el-menu-item index="1" :style="{ borderColor: topActiveTab == 1 ? '#429eff' : '' }">二级菜单</el-menu-item> -->
                 </el-menu>
               </div>
@@ -139,7 +143,7 @@
                       icon-class="pltl"
                       class="icon-layout"
                       :class="{ active: navLayoutStyle == 0 }"
-                    ></svg-icon>
+                    />
                     <span class="item-name">双导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(1)">
@@ -152,7 +156,7 @@
                       icon-class="poll"
                       class="icon-layout"
                       :class="{ active: navLayoutStyle == 1 }"
-                    ></svg-icon>
+                    />
                     <span class="item-name">左导航布局</span>
                   </div>
                   <div class="item" @click="setNavLayoutStyle(2)">
@@ -165,7 +169,7 @@
                       icon-class="potl"
                       class="icon-layout"
                       :class="{ active: navLayoutStyle == 2 }"
-                    ></svg-icon>
+                    />
                     <span class="item-name">顶部导航布局</span>
                   </div>
                 </div>
@@ -186,7 +190,26 @@
                   v-model="themeColor"
                   size="small"
                   @change="handleChangeThemeColor"
-                ></el-color-picker>
+                />
+              </div>
+              <div v-if="navLayoutStyle==='2'" class="wrapper">
+                <div class="name">顶部导航类型</div>
+                <el-radio-group
+                  v-model="headerNavStyle"
+                >
+                  <el-radio label="0">默认</el-radio>
+                  <el-radio label="1">浮动</el-radio>
+                </el-radio-group>
+              </div>
+              <div v-if="navLayoutStyle==='2'&&headerNavStyle==='1'" class="wrapper">
+                <div class="name">浮动位置</div>
+                <el-radio-group
+                  v-model="floatPosition"
+                >
+                  <el-radio label="left">居左</el-radio>
+                  <el-radio label="center">居中</el-radio>
+                  <el-radio label="right">居右</el-radio>
+                </el-radio-group>
               </div>
             </div>
           </div>
@@ -196,47 +219,47 @@
     <template v-if="openType == 'add'">
       <PortConfigDrawerComponent
         :visible.sync="showPortConfigDrawerComponent"
-        :portalName="portalName"
-        :themeColor="themeColor"
-        :navLayoutStyle="navLayoutStyle"
-        :topNavPosRadio="topNavPosRadio"
-        :lastTreeId="lastTreeId"
+        :portal-name="portalName"
+        :theme-color="themeColor"
+        :nav-layout-style="navLayoutStyle"
+        :top-nav-pos-radio="topNavPosRadio"
+        :last-tree-id="lastTreeId"
         :open-type="openType"
         :config="{}"
-        :portalId="null"
+        :portal-id="null"
         @treeData="handleGetTreeData"
         @close="syncVisible = false"
-      ></PortConfigDrawerComponent>
+      />
     </template>
     <template v-else>
       <PortConfigDrawerComponent
         :visible.sync="showPortConfigDrawerComponent"
-        :portalName="portalName"
-        :themeColor="themeColor"
-        :navLayoutStyle="navLayoutStyle"
-        :topNavPosRadio="topNavPosRadio"
-        :lastTreeId="lastTreeId"
+        :portal-name="portalName"
+        :theme-color="themeColor"
+        :nav-layout-style="navLayoutStyle"
+        :top-nav-pos-radio="topNavPosRadio"
+        :last-tree-id="lastTreeId"
         :open-type="openType"
         :config="item.config"
-        :portalId="item.id"
+        :portal-id="item.id"
         @treeData="handleGetTreeData"
         @close="syncVisible = false"
-      ></PortConfigDrawerComponent>
+      />
     </template>
     <template v-if="privewPortal">
       <PanelViewShow
         ref="panelViewShow"
         :portal="privewPortal"
         @update="update"
-      ></PanelViewShow>
+      />
     </template>
   </div>
 </template>
 
 <script>
-import PortConfigDrawerComponent from "./PortalConfigDrawerComponent.vue";
-import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
-import bus from "@/utils/bus";
+import PortConfigDrawerComponent from './PortalConfigDrawerComponent.vue'
+import PanelViewShow from '@/views/panel/list/PanelViewShow.vue'
+import bus from '@/utils/bus'
 export default {
   components: {
     PortConfigDrawerComponent,
@@ -245,32 +268,35 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: false,
+      default: false
     },
     openType: {
       type: String,
-      default: "add", //edit
+      default: 'add' // edit
     },
     item: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 
   data() {
     return {
       showPortConfigDrawerComponent: false,
-      activeTab: "edit", // 当前最顶部nav中是编辑还是预览
-      topActiveTab: "0", // 当前顶部导航栏选择的下标选项
-      topNavPosRadio: "top", //  当前一级导航的位置
-      themeColor: "#f1f3f8", // 当前导航的颜色
-      navLayoutStyle: "0", // 0 top-left 1 left 2 top
-      portalName: "", // 当前门户的名称
+      activeTab: 'edit', // 当前最顶部nav中是编辑还是预览
+      topActiveTab: '0', // 当前顶部导航栏选择的下标选项
+      topNavPosRadio: 'top', //  当前一级导航的位置
+      themeColor: '#f1f3f8', // 当前导航的颜色
+      navLayoutStyle: '0', // 0 top-left 1 left 2 top
+      portalName: '', // 当前门户的名称
       lastTreeId: 0, // 当前的树节点的跟节点
       tmpTreeData: null, // 获取配置页面的treeData
       privewPortal: null,
       priviewBtnEnable: false,
-    };
+      // 新增模式
+      headerNavStyle: '0', // 0 默认 1浮动
+      floatPosition: 'left' // 浮动位置
+    }
   },
 
   computed: {
@@ -279,21 +305,21 @@ export default {
     // ]),
     syncVisible: {
       get() {
-        return this.visible;
+        return this.visible
       },
       set(val) {
-        this.$emit("update:visible", val);
-      },
-    },
+        this.$emit('update:visible', val)
+      }
+    }
   },
 
   watch: {
     syncVisible(val) {
       if (val) {
         // 如果是新打开的状态
-        this.__initData();
+        this.__initData()
       }
-    },
+    }
   },
 
   methods: {
@@ -304,132 +330,134 @@ export default {
     // }),
 
     __initData() {
-      this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
-      this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
-      this.tmpTreeData = null;
-      if (this.openType == "add") {
-        this.topNavPosRadio = "top"; //  当前一级导航的位置
-        this.themeColor = "#f1f3f8"; // 当前导航的颜色
-        this.navLayoutStyle = "0"; // 0 top-left 1 left 2 top
-        this.portalName = ""; // 当前门户的名称
-        this.lastTreeId = 0;
+      this.activeTab = 'edit' // 当前最顶部nav中是编辑还是预览
+      this.topActiveTab = '0' // 当前顶部导航栏选择的下标选项
+      this.tmpTreeData = null
+      if (this.openType == 'add') {
+        this.topNavPosRadio = 'top' //  当前一级导航的位置
+        this.themeColor = '#f1f3f8' // 当前导航的颜色
+        this.navLayoutStyle = '0' // 0 top-left 1 left 2 top
+        this.portalName = '' // 当前门户的名称
+        this.lastTreeId = 0
       } else {
-        this.topNavPosRadio = this.item.topNavPosRadio; //  当前一级导航的位置
-        this.themeColor = this.item.themeColor; // 当前导航的颜色
-        this.navLayoutStyle = this.item.navLayoutStyle; // 0 top-left 1 left 2 top
-        this.portalName = this.item.portalName; // 当前门户的名称
-        this.lastTreeId = this.item.lastTreeId;
+        this.topNavPosRadio = this.item.topNavPosRadio //  当前一级导航的位置
+        this.themeColor = this.item.themeColor // 当前导航的颜色
+        this.navLayoutStyle = this.item.navLayoutStyle // 0 top-left 1 left 2 top
+        this.portalName = this.item.portalName // 当前门户的名称
+        this.lastTreeId = this.item.lastTreeId
       }
       // this.priviewBtnEnable = !!this.item.config.treeData || !!this.tmpTreeData
     },
 
-    /***************** 预览 start ****************/
+    /** *************** 预览 start ****************/
     handleEditPreivewTab(evt) {
-      console.log("evt -- ", evt);
-      if (evt == "edit") {
-        return;
+      console.log('evt -- ', evt)
+      if (evt == 'edit') {
+        return
       }
       this.privewPortal = {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
         themeColor: this.themeColor, // 默认
-        portalName: this.portalName || "未命名站点", // 站点名称
+        portalName: this.portalName || '未命名站点', // 站点名称
         config: {
           treeData: Object.assign({}, this.item.config.treeData, this.tmpTreeData)
-        },
-      };
+        }
+      }
       this.$nextTick(() => {
-        console.log("this.$refs.panelViewShow", this.$refs.panelViewShow)
+        console.log('this.$refs.panelViewShow', this.$refs.panelViewShow)
         if (this.$refs.panelViewShow) {
-          this.$refs.panelViewShow.clickFullscreen();
+          this.$refs.panelViewShow.clickFullscreen()
 
           this.$watch(
             () => this.$refs.panelViewShow.fullscreen,
             (val) => {
               if (!val) {
-                this.activeTab = "edit";
-                this.privewPortal = null;
+                this.activeTab = 'edit'
+                this.privewPortal = null
               }
             }
-          );
+          )
         }
-      });
+      })
     },
 
     update(trendId) {
       if (trendId) {
-        if (Object.prototype.toString.call(trendId) == "[object Array]") {
-          trendId = trendId[trendId.length - 1];
+        if (Object.prototype.toString.call(trendId) == '[object Array]') {
+          trendId = trendId[trendId.length - 1]
         }
-        initPanelData(trendId, function (response) {
-          bus.$emit("set-panel-show-type", 0);
-        });
+        initPanelData(trendId, function(response) {
+          bus.$emit('set-panel-show-type', 0)
+        })
       } else {
-        this.$refs.panelViewShow.showMain = false;
+        this.$refs.panelViewShow.showMain = false
       }
     },
 
-    /***************** 预览 end ****************/
+    /** *************** 预览 end ****************/
 
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
-      console.log("radio", radio);
+      console.log('radio', radio)
       // this.setTopNavPosRadio(radio);
     },
     // 选择主题设置
     handleChangeThemeColor(color) {
-      console.log("color", color);
+      console.log('color', color)
       // this.setThemeColor(color);
     },
     setNavLayoutStyle(style) {
-      this.navLayoutStyle = style.toString();
+      this.navLayoutStyle = style.toString()
     },
     // 选择一级菜单
     handleTopSelect(active) {
-      console.log("active", active);
-      this.topActiveTab = active;
+      console.log('active', active)
+      this.topActiveTab = active
     },
 
     // 获取配置页面的treeData
     handleGetTreeData(treeData) {
-      this.tmpTreeData = treeData;
+      this.tmpTreeData = treeData
     },
     // 打开配置
     handleOpenConfigDrawer() {
-      this.showPortConfigDrawerComponent = true;
+      this.showPortConfigDrawerComponent = true
     },
     // 保存
     handleSave() {
       const getTreeData = () => {
-        debugger;
+        debugger
         if (this.tmpTreeData) {
-          return this.tmpTreeData;
+          return this.tmpTreeData
         }
         if (this.item && this.item.config && this.item.config.treeData) {
-          return this.item.config.treeData;
+          return this.item.config.treeData
         }
-        return [];
-      };
+        return []
+      }
       const params = {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
         themeColor: this.themeColor, // 默认
-        portalName: this.portalName || "未命名站点", // 站点名称
+        portalName: this.portalName || '未命名站点', // 站点名称
         lastTreeId: this.lastTreeId,
+        headerNavStyle: this.headerNavStyle, // 0 默认 1浮动
+        floatPosition: this.floatPosition, // 浮动位置
         config: {
-          treeData: getTreeData(),
-        },
-      };
-      const positionJson = JSON.stringify(params);
-      if (this.openType == "add") {
-        bus.$emit("savePortal", { positionJson });
-      } else {
-        bus.$emit("updatePortal", { id: this.item.id, positionJson });
+          treeData: getTreeData()
+        }
       }
-      this.syncVisible = false;
-    },
-  },
-};
+      const positionJson = JSON.stringify(params)
+      if (this.openType === 'add') {
+        bus.$emit('savePortal', { positionJson })
+      } else {
+        bus.$emit('updatePortal', { id: this.item.id, positionJson })
+      }
+      this.syncVisible = false
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -489,6 +517,7 @@ export default {
           background-color: var(--TopBG, #f1f3f8);
           // min-height: 60px;
           display: flex;
+          justify-content:center;
           .title {
             // background-color: green;
             width: 200px;

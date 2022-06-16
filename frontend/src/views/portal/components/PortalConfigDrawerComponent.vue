@@ -5,12 +5,12 @@
       size="80%"
       direction="rtl"
       :show-close="false"
-      :withHeader="false"
+      :with-header="false"
     >
-      <div class="portal-config-drawer-container-container" v-if="syncVisible">
+      <div v-if="syncVisible" class="portal-config-drawer-container-container">
         <div class="header">
           <div class="headerleft">
-            <i class="el-icon-close" @click="close"></i>
+            <i class="el-icon-close" @click="close" />
             <div class="name">{{ portalName || "未命名站点" }}</div>
           </div>
           <div class="headerright">
@@ -22,15 +22,19 @@
                 @change="handleEditPreivewTab"
               >
                 <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview" :disabled="!priviewBtnEnable"
-                  >预览</el-radio-button
-                >
+                <el-radio-button
+                  label="preview"
+                  :disabled="!priviewBtnEnable"
+                >预览</el-radio-button>
               </el-radio-group>
             </div>
             <div class="wrapper">
-              <el-button type="primary" round size="mini" @click="handleSave"
-                >保 存</el-button
-              >
+              <el-button
+                type="primary"
+                round
+                size="mini"
+                @click="handleSave"
+              >保 存</el-button>
             </div>
           </div>
         </div>
@@ -40,14 +44,16 @@
           </PortalNavMenu> -->
           <el-container class="config-container">
             <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
               v-if="
                 (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'top'
+                  topNavPosRadio == 'top'
               "
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
             >
+              <div>头部设置3333</div>
               <div class="title">{{ portalName || "未命名站点" }}</div>
+
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
@@ -63,7 +69,7 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i :class="[item.iconName]"></i>
+                        <i :class="[item.iconName]" />
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -77,20 +83,20 @@
                     active-text-color="#333"
                   > -->
                   <PortalMenu
-                    :subTreeDatas="subTreeDatas"
-                    :currentTreeNode="currentTreeNode"
-                    :themeColor="themeColor"
-                  ></PortalMenu>
+                    :sub-tree-datas="subTreeDatas"
+                    :current-tree-node="currentTreeNode"
+                    :theme-color="themeColor"
+                  />
                   <!-- </el-menu> -->
                 </template>
               </div>
             </el-header>
             <el-container>
               <el-aside
+                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
                 class="config-aside"
                 width="200px"
                 :style="{ backgroundColor: themeColor }"
-                v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
               >
                 <!-- <el-menu
                   :default-active="currentTreeNode.id"
@@ -100,30 +106,33 @@
                 <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
                 <PortalMenu
                   mode="vertical"
-                  :subTreeDatas="subTreeDatas"
-                  :currentTreeNode="currentTreeNode"
-                  :themeColor="themeColor"
-                ></PortalMenu>
+                  :sub-tree-datas="subTreeDatas"
+                  :current-tree-node="currentTreeNode"
+                  :theme-color="themeColor"
+                />
 
                 <!-- </el-menu> -->
               </el-aside>
-              <el-main class="config-main" v-loading="panelLoading">
+              <el-main v-loading="panelLoading" class="config-main">
+                <div>11111111111111111</div>
                 <PanelViewShow
                   ref="panelViewShow"
                   :portal="privewPortal"
                   @update="update"
-                ></PanelViewShow>
+                />
               </el-main>
             </el-container>
             <el-header
-              class="config-header"
-              :style="{ backgroundColor: themeColor }"
               v-if="
                 (navLayoutStyle == 0 || navLayoutStyle == 2) &&
-                topNavPosRadio == 'bottom'
+                  topNavPosRadio == 'bottom'
               "
+              class="config-header"
+              :style="{ backgroundColor: themeColor }"
             >
+              <div>头部设置44444</div>
               <div class="title">{{ portalName || "未命名站点" }}</div>
+
               <div class="tabs">
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
@@ -139,7 +148,7 @@
                       :index="item.id"
                     >
                       <template slot="title">
-                        <i :class="[item.iconName]"></i>
+                        <i :class="[item.iconName]" />
                         <span slot="title">{{ item.label }}</span>
                       </template>
                     </el-menu-item>
@@ -153,11 +162,12 @@
                     text-color="#333"
                   > -->
                   <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+
                   <PortalMenu
-                    :subTreeDatas="subTreeDatas"
-                    :currentTreeNode="currentTreeNode"
-                    :themeColor="themeColor"
-                  ></PortalMenu>
+                    :sub-tree-datas="subTreeDatas"
+                    :current-tree-node="currentTreeNode"
+                    :theme-color="themeColor"
+                  />
 
                   <!-- </el-menu> -->
                 </template>
@@ -168,9 +178,11 @@
             <div class="right-config-container-left">
               <div class="title">菜单配置</div>
               <div class="left-content">
-                <el-button type="primary" size="mini" @click="handleAddMainMenu"
-                  >+添加主菜单</el-button
-                >
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="handleAddMainMenu"
+                >+添加主菜单</el-button>
                 <el-tree
                   ref="tree"
                   node-key="id"
@@ -180,26 +192,26 @@
                   default-expand-all
                   :expand-on-click-node="false"
                   check-on-click-node
-                  @node-click="handleNodeClick"
                   :allow-drop="handleAllowDrop"
                   :current-node-key="currentTreeNode.id"
+                  @node-click="handleNodeClick"
                 >
                   <span
-                    class="custom-tree-node"
                     slot-scope="{ node }"
+                    class="custom-tree-node"
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >
                     <span class="custom-tree-node-label">{{ node.label }}</span>
-                    <span class="icon-wrapper" v-if="node.data.showOption">
+                    <span v-if="node.data.showOption" class="icon-wrapper">
                       <i
                         class="el-icon-plus"
                         @click.stop="handleAddTreeSubNode(node)"
-                      ></i>
+                      />
                       <i
                         class="el-icon-delete"
                         @click.stop="handleDeleteTreeSubNode(node)"
-                      ></i>
+                      />
                     </span>
                   </span>
                 </el-tree>
@@ -207,19 +219,18 @@
             </div>
             <div class="right-config-container-right">
               <div class="title">内容设置</div>
-              <div class="right-content" v-if="currentTreeNode.id">
+              <div v-if="currentTreeNode.id" class="right-content">
                 <div class="config-title">菜单显示名称</div>
                 <el-input
-                  class="config-input"
                   v-model="currentTreeNode.label"
+                  class="config-input"
                   size="mini"
                   placeholder="显示名称"
-                ></el-input>
+                />
                 <el-checkbox
-                  class="config-checkbox"
                   v-model="currentTreeNode.showMenuIcon"
-                  >显示菜单icon</el-checkbox
-                >
+                  class="config-checkbox"
+                >显示菜单icon</el-checkbox>
                 <el-select
                   v-model="currentTreeNode.iconName"
                   class="config-input"
@@ -234,15 +245,13 @@
                   </el-option>
                 </el-select>
                 <el-checkbox
-                  class="config-checkbox"
                   v-model="currentTreeNode.isMenuFoldindg"
-                  >菜单允许折叠</el-checkbox
-                >
-                <el-checkbox
                   class="config-checkbox"
+                >菜单允许折叠</el-checkbox>
+                <el-checkbox
                   v-model="currentTreeNode.isMenuDefaultFolding"
-                  >菜单默认折叠</el-checkbox
-                >
+                  class="config-checkbox"
+                >菜单默认折叠</el-checkbox>
                 <!-- <el-checkbox class="config-checkbox" v-model="currentTreeNode.isNodeNull">设为空节点</el-checkbox> -->
                 <div class="config-title">选择仪表盘</div>
                 <el-cascader
@@ -252,7 +261,7 @@
                   class="config-input"
                   size="mini"
                   @change="handleTrendChange"
-                ></el-cascader>
+                />
                 <!-- <el-select
                   v-model="currentTreeNode.panelId"
                   class="config-input"
@@ -284,16 +293,17 @@
                   type="primary"
                   size="mini"
                   @click="handleUpdateTrend"
-                  >更新</el-button
-                >
+                >更新</el-button>
                 <div class="config-title">查看方式</div>
                 <el-radio-group v-model="currentTreeNode.viewMode">
-                  <el-radio class="config-radio" label="current"
-                    >当前页面打开</el-radio
-                  >
-                  <el-radio class="config-radio" label="_blank"
-                    >新窗口打开</el-radio
-                  >
+                  <el-radio
+                    class="config-radio"
+                    label="current"
+                  >当前页面打开</el-radio>
+                  <el-radio
+                    class="config-radio"
+                    label="_blank"
+                  >新窗口打开</el-radio>
                 </el-radio-group>
               </div>
             </div>
@@ -305,20 +315,20 @@
 </template>
 
 <script>
-import PortalMenu from "./PortalMenu.vue";
-import { groupTree, initPanelData } from "@/api/panel/panel";
-import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
-import bus from "@/utils/bus";
+import PortalMenu from './PortalMenu.vue'
+import { groupTree, initPanelData } from '@/api/panel/panel'
+import PanelViewShow from '@/views/panel/list/PanelViewShow.vue'
+import bus from '@/utils/bus'
 
 export default {
   components: {
     PortalMenu,
-    PanelViewShow,
+    PanelViewShow
   },
   props: {
     visible: {
       type: Boolean,
-      default: false,
+      default: false
     },
     themeColor: String,
     topNavPosRadio: String,
@@ -326,87 +336,87 @@ export default {
     portalName: String, // 当前门户的名称
     openType: {
       type: String,
-      default: "add", //edit
+      default: 'add' // edit
     },
     lastTreeId: Number | String,
     portalId: String | Number,
     config: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 
   data() {
     return {
-      activeTab: "edit", // 当前最顶部nav中是编辑还是预览
-      topActiveTab: "0", // 当前顶部导航栏选择的下标选项
+      activeTab: 'edit', // 当前最顶部nav中是编辑还是预览
+      topActiveTab: '0', // 当前顶部导航栏选择的下标选项
       treeData: [],
       treeId: 0,
       currentTreeNode: {},
       groupForm: {
         name: null,
         pid: null,
-        panelType: "self",
+        panelType: 'self',
         nodeType: null,
         children: [],
-        sort: "create_time desc,node_type desc,name asc",
+        sort: 'create_time desc,node_type desc,name asc'
       },
       tData: [],
       iconData: [
         {
-          value: "el-icon-menu",
+          value: 'el-icon-menu'
         },
         {
-          value: "el-icon-s-opportunity",
+          value: 'el-icon-s-opportunity'
         },
         {
-          value: "el-icon-s-finance",
+          value: 'el-icon-s-finance'
         },
         {
-          value: "el-icon-s-claim",
-        },
+          value: 'el-icon-s-claim'
+        }
       ],
       showPanelView: false,
       panelLoading: false,
       privewPortal: null,
-      priviewBtnEnable: false,
-    };
+      priviewBtnEnable: false
+    }
   },
   computed: {
     syncVisible: {
       get() {
-        return this.visible;
+        return this.visible
       },
       set(val) {
-        this.$emit("update:visible", val);
-      },
+        this.$emit('update:visible', val)
+      }
     },
 
     subTreeDatas() {
-      const treeData = this.treeData.slice(0);
+      const treeData = this.treeData.slice(0)
       if (this.navLayoutStyle == 0) {
-        const subs = [];
+        const subs = []
         treeData.forEach((item) => {
           item.children.forEach((sub) => {
-            subs.push(sub);
-          });
-        });
-        return subs;
+            subs.push(sub)
+          })
+        })
+        return subs
       } else if (this.navLayoutStyle == 1 && this.navLayoutStyle == 2) {
-        return treeData;
+        return treeData
       }
-      return treeData;
+      return treeData
     },
 
     trendData() {
       const found = this.tData.find(
         (item) => item.id == this.currentTreeNode.panelId
-      );
+      )
       if (found) {
-        return found.children;
+        return found.children
       }
-      return [];
-    },
+      return []
+    }
 
     // 预览按钮是否可以点击
   },
@@ -414,58 +424,58 @@ export default {
   watch: {
     syncVisible(val) {
       if (val) {
-        this.activeTab = "edit"; // 当前最顶部nav中是编辑还是预览
-        this.topActiveTab = "0"; // 当前顶部导航栏选择的下标选项
-        this.currentTreeNode = {};
+        this.activeTab = 'edit' // 当前最顶部nav中是编辑还是预览
+        this.topActiveTab = '0' // 当前顶部导航栏选择的下标选项
+        this.currentTreeNode = {}
         this.$nextTick(() => {
           if (this.$refs.panelViewShow) {
-            this.$refs.panelViewShow.showMain = false;
+            this.$refs.panelViewShow.showMain = false
             // 检测panel是否变化
             this.$watch(
               () => this.$refs.panelViewShow.showMain,
               (val) => {
-                console.log("this.$refs.panelViewShow.showMain ----", val);
-                this.priviewBtnEnable = val;
+                console.log('this.$refs.panelViewShow.showMain ----', val)
+                this.priviewBtnEnable = val
               }
-            );
+            )
           }
-        });
-        if (this.openType == "add") {
-          this.treeData = [];
-          this.treeId = 0;
+        })
+        if (this.openType == 'add') {
+          this.treeData = []
+          this.treeId = 0
         } else {
-          this.treeData = this.config.treeData;
-          this.treeId = Number(this.lastTreeId);
-          let currentTreeId = "";
+          this.treeData = this.config.treeData
+          this.treeId = Number(this.lastTreeId)
+          let currentTreeId = ''
           function getTreedDataFirstTrendId(treeData) {
             for (let i = 0; i < treeData.length; i++) {
-              const item = treeData[i];
+              const item = treeData[i]
               if (item.trendId && !currentTreeId) {
-                currentTreeId = item.id;
+                currentTreeId = item.id
               } else {
-                getTreedDataFirstTrendId(item.children);
+                getTreedDataFirstTrendId(item.children)
               }
             }
           }
 
-          getTreedDataFirstTrendId(this.treeData);
+          getTreedDataFirstTrendId(this.treeData)
           this.$nextTick(() => {
             this.handleDynamicMenuAndTree(currentTreeId)
-          });
+          })
         }
       } else {
-        this.$emit("treeData", this.treeData);
+        this.$emit('treeData', this.treeData)
       }
-    },
+    }
   },
 
   mounted() {
-    this.tree(true);
+    this.tree(true)
   },
 
   methods: {
     close() {
-      this.syncVisible = false;
+      this.syncVisible = false
     },
     // 保存
     async handleSave() {
@@ -473,214 +483,214 @@ export default {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
         themeColor: this.themeColor, // 默认
-        portalName: this.portalName || "未命名站点", // 站点名称
+        portalName: this.portalName || '未命名站点', // 站点名称
         lastTreeId: this.treeId,
         config: {
-          treeData: this.treeData,
-        },
-      };
-      const positionJson = JSON.stringify(params);
+          treeData: this.treeData
+        }
+      }
+      const positionJson = JSON.stringify(params)
       if (positionJson.includes(`"label":""`)) {
-        this.$message.error("请输入节点的名称");
-        return;
+        this.$message.error('请输入节点的名称')
+        return
       }
 
-      if (this.openType == "add") {
-        bus.$emit("savePortal", { positionJson });
+      if (this.openType == 'add') {
+        bus.$emit('savePortal', { positionJson })
       } else {
-        bus.$emit("updatePortal", { id: this.portalId, positionJson });
+        bus.$emit('updatePortal', { id: this.portalId, positionJson })
       }
-      this.close();
-      this.$emit("close");
+      this.close()
+      this.$emit('close')
     },
 
     // 点击编辑和预览
     handleEditPreivewTab(evt) {
-      console.log("evt -- ", evt);
-      if (evt == "edit") {
-        return;
+      console.log('evt -- ', evt)
+      if (evt == 'edit') {
+        return
       }
       this.privewPortal = {
         navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
         topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
         themeColor: this.themeColor, // 默认
-        portalName: this.portalName || "未命名站点", // 站点名称
+        portalName: this.portalName || '未命名站点', // 站点名称
         lastTreeId: this.treeId,
         config: {
-          treeData: this.treeData,
-        },
-      };
+          treeData: this.treeData
+        }
+      }
       this.$nextTick(() => {
         if (this.$refs.panelViewShow && this.$refs.panelViewShow.showMain) {
-          this.$refs.panelViewShow.clickFullscreen();
+          this.$refs.panelViewShow.clickFullscreen()
 
           this.$watch(
             () => this.$refs.panelViewShow.fullscreen,
             (val) => {
               if (!val) {
-                this.activeTab = "edit";
-                this.privewPortal = null;
+                this.activeTab = 'edit'
+                this.privewPortal = null
               }
             }
-          );
+          )
         }
-      });
+      })
     },
     // 选择主题设置
     handleChangeThemeColor(color) {
-      console.log("color", color);
+      console.log('color', color)
       // this.setThemeColor(color);
     },
     setNavLayoutStyle(style) {
-      this.navLayoutStyle = style;
+      this.navLayoutStyle = style
     },
     // 动态关联菜单和tree的同步
     handleDynamicMenuAndTree(currentTreeId) {
       if (currentTreeId) {
-        this.$refs.tree.setCurrentKey(currentTreeId);
-        const currentNode = this.$refs.tree.getCurrentNode();
+        this.$refs.tree.setCurrentKey(currentTreeId)
+        const currentNode = this.$refs.tree.getCurrentNode()
         if (currentNode) {
-          this.handleNodeClick(currentNode);
+          this.handleNodeClick(currentNode)
         }
       }
     },
     // 添加主菜单
     handleAddMainMenu() {
-      const treeId = (this.treeId += 1);
+      const treeId = (this.treeId += 1)
       this.treeData.push({
         id: treeId.toString(),
-        label: "一级菜单",
-        iconName: "el-icon-menu",
+        label: '一级菜单',
+        iconName: 'el-icon-menu',
         children: [],
-        panelId: "",
-        trendId: "",
+        panelId: '',
+        trendId: '',
         showMenuIcon: true, // 显示菜单icon
         isMenuFoldindg: true, // 菜单允许折叠
         isMenuDefaultFolding: true, // 菜单默认折叠
         isNodeNull: false, // 设置为空节点
-        viewMode: "current", // _blank
+        viewMode: 'current', // _blank
         showOption: false,
-        level: 1,
-      });
+        level: 1
+      })
     },
     _checkArrayHasValue(arr) {
-      return arr && arr.length;
+      return arr && arr.length
     },
     // 点击节点时候触发
     handleNodeClick(node) {
       // console.log("node", node);
-      this.currentTreeNode = node;
+      this.currentTreeNode = node
       if (this.currentTreeNode.trendId && this.currentTreeNode.trendId.length) {
-        this.handleUpdateTrend();
+        this.handleUpdateTrend()
       } else {
-        this.$refs.panelViewShow.showMain = false;
+        this.$refs.panelViewShow.showMain = false
       }
     },
     // 鼠标移入该节点的时候触发
     handleTreeNodeMouseEnter(node) {
       // console.log("node enter", node);
-      node.data.showOption = true;
+      node.data.showOption = true
     },
     // 鼠标移除该节点的时候触发
     handleTreeNodeMouseLeave(node) {
       // console.log("node leave", node);
-      node.data.showOption = false;
+      node.data.showOption = false
     },
     // 添加子节点
     handleAddTreeSubNode(node) {
       if (node.data.trendId) {
         this.$message.warning(
-          "该菜单下已配置过仪表盘，不能配置子菜单，请删除后重新配置"
-        );
-        return;
+          '该菜单下已配置过仪表盘，不能配置子菜单，请删除后重新配置'
+        )
+        return
       }
-      console.log("handleAddTreeSubNode node", node);
-      this.treeId += 1;
-      const treeId = this.treeId;
-      const level = node.data.level + 1;
+      console.log('handleAddTreeSubNode node', node)
+      this.treeId += 1
+      const treeId = this.treeId
+      const level = node.data.level + 1
 
       if (node.data.level == 1) {
         const foundIndex = this.treeData.findIndex(
           (item) => item.id == node.data.id
-        );
+        )
         this.treeData[foundIndex].children.push({
           id: treeId.toString(),
-          label: "二级菜单",
-          iconName: "el-icon-menu",
+          label: '二级菜单',
+          iconName: 'el-icon-menu',
           children: [],
           showMenuIcon: true, // 显示菜单icon
           isMenuFoldindg: true, // 菜单允许折叠
           isMenuDefaultFolding: true, // 菜单默认折叠
           isNodeNull: false, // 设置为空节点
-          viewMode: "current", // _blank
+          viewMode: 'current', // _blank
           showOption: false,
-          level,
-        });
+          level
+        })
       } else {
         const foundIndex = this.treeData.findIndex(
           (item) => item.id == node.parent.data.id
-        );
-        console.log("foundINdex", foundIndex);
-        const children = this.treeData[foundIndex].children;
-        console.log("children", children);
+        )
+        console.log('foundINdex', foundIndex)
+        const children = this.treeData[foundIndex].children
+        console.log('children', children)
         const foundChildIndex = children.findIndex(
           (item) => item.id == node.data.id
-        );
-        console.log("foundChildIndex", foundChildIndex);
+        )
+        console.log('foundChildIndex', foundChildIndex)
         this.treeData[foundIndex].children[foundChildIndex].children.push({
           id: treeId.toString(),
-          label: "三级菜单",
-          iconName: "el-icon-menu",
+          label: '三级菜单',
+          iconName: 'el-icon-menu',
           // children: [],
           showMenuIcon: true, // 显示菜单icon
           isMenuFoldindg: true, // 菜单允许折叠
           isMenuDefaultFolding: true, // 菜单默认折叠
           isNodeNull: false, // 设置为空节点
-          viewMode: "current", // _blank
+          viewMode: 'current', // _blank
           showOption: false,
-          level,
-        });
+          level
+        })
       }
     },
     // 删除一个节点
     handleDeleteTreeSubNode(node, data) {
-      console.log("handleDeleteTreeSubNode node", node);
-      this.$confirm("删除该节点", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      console.log('handleDeleteTreeSubNode node', node)
+      this.$confirm('删除该节点', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          const id = node.data.id;
+          const id = node.data.id
           if (node.data.level == 1) {
-            const foundIndex = this.treeData.findIndex((item) => item.id == id);
+            const foundIndex = this.treeData.findIndex((item) => item.id == id)
             if (foundIndex > -1) {
-              this.treeData.splice(foundIndex, 1);
+              this.treeData.splice(foundIndex, 1)
             }
-            return;
+            return
           }
-          const parent = node.parent;
-          const children = parent.data.children;
-          const index = children.findIndex((d) => d.id === id);
-          children.splice(index, 1);
+          const parent = node.parent
+          const children = parent.data.children
+          const index = children.findIndex((d) => d.id === id)
+          children.splice(index, 1)
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 选择一级菜单
     handleTopSelect(active) {
-      console.log("active", active);
-      this.topActiveTab = active;
+      console.log('active', active)
+      this.topActiveTab = active
     },
     // 节点拖拽进入到其他的节点
     handleAllowDrop(node, targetNode, type) {
       if (targetNode.level == 3) {
-        return false;
+        return false
       }
-      return true;
+      return true
     },
     // 选择一个趋势图
     handleTrendChange(data) {
-      console.log("data", data);
+      console.log('data', data)
       //   this.$store.commit("setComponentDataCache", null);
       //   initPanelData(data, function (response) {
       //     bus.$emit("set-panel-show-type", 0);
@@ -690,14 +700,14 @@ export default {
     handleUpdateTrend() {
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
-      this.panelLoading = true;
+      this.panelLoading = true
       const trendId =
-        this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1];
-      const that = this;
-      initPanelData(trendId, function (response) {
-        bus.$emit("set-panel-show-type", 0);
-        that.panelLoading = false;
-      });
+        this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1]
+      const that = this
+      initPanelData(trendId, function(response) {
+        bus.$emit('set-panel-show-type', 0)
+        that.panelLoading = false
+      })
     },
 
     tree(cache = false) {
@@ -707,25 +717,25 @@ export default {
       //   this.tData = JSON.parse(modelInfo);
       // }
       groupTree(this.groupForm, false).then((res) => {
-        localStorage.setItem("panel-main-tree", JSON.stringify(res.data));
+        localStorage.setItem('panel-main-tree', JSON.stringify(res.data))
         // if (!userCache) {
         // const tData = res.data.map((item) => {});
-        this.tData = this._deepLooptData(res.data);
+        this.tData = this._deepLooptData(res.data)
         // }
-      });
+      })
     },
 
     update(trendId) {
       if (trendId) {
-        if (Object.prototype.toString.call(trendId) == "[object Array]") {
-          trendId = trendId[trendId.length - 1];
+        if (Object.prototype.toString.call(trendId) == '[object Array]') {
+          trendId = trendId[trendId.length - 1]
         }
-        const that = this;
-        initPanelData(trendId, function (response) {
-          bus.$emit("set-panel-show-type", 0);
-        });
+        const that = this
+        initPanelData(trendId, function(response) {
+          bus.$emit('set-panel-show-type', 0)
+        })
       } else {
-        this.$refs.panelViewShow.showMain = false;
+        this.$refs.panelViewShow.showMain = false
       }
     },
 
@@ -734,12 +744,12 @@ export default {
         return {
           label: item.label,
           value: item.id,
-          children: item.children && this._deepLooptData(item.children),
-        };
-      });
-    },
-  },
-};
+          children: item.children && this._deepLooptData(item.children)
+        }
+      })
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
