@@ -660,6 +660,8 @@ export default {
     kettle_setting: 'Kettle Setting'
   },
   chart: {
+    view_reset: 'View Reset',
+    view_reset_tips: 'Discard Changes To View?',
     export_img: 'Export Img',
     title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',

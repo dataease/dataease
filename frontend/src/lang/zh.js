@@ -663,6 +663,8 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    view_reset: '视图重置',
+    view_reset_tips: '放弃对视图的修改？',
     export_img: '导出图片',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',

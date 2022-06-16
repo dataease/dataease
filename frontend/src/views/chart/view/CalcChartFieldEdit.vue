@@ -95,7 +95,7 @@
                   :key="item.id"
                   class="item-dimension"
                   :title="item.name"
-                  @click="insertFieldToCodeMirror('['+item.id+']')"
+                  @click="insertFieldToCodeMirror('['+item.name+']')"
                 >
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -125,7 +125,7 @@
                   :key="item.id"
                   class="item-quota"
                   :title="item.name"
-                  @click="insertFieldToCodeMirror('['+item.id+']')"
+                  @click="insertFieldToCodeMirror('['+item.name+']')"
                 >
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -283,7 +283,8 @@ export default {
       dimensionData: [],
       quotaData: [],
       functionData: [],
-      tableFields: {}
+      tableFields: {},
+      name2Auto: []
     }
   },
   computed: {
@@ -332,7 +333,7 @@ export default {
       this.$refs.myCm.codemirror.showHint()
     })
     this.initFunctions()
-    this.initField()
+    // this.initField()
   },
   methods: {
     onCmReady(cm) {
@@ -356,6 +357,7 @@ export default {
       pos2.line = pos1.line
       pos2.ch = pos1.ch
       this.$refs.myCm.codemirror.replaceRange(param, pos2)
+      this.$refs.myCm.codemirror.markText(pos2, { line: pos2.line, ch: param.length + pos2.ch }, { atomic: true, selectRight: true })
     },
 
     initFunctions() {
@@ -370,9 +372,24 @@ export default {
     initField() {
       if (this.field.id || this.mode === 'copy') {
         this.fieldForm = JSON.parse(JSON.stringify(this.field))
+        this.name2Auto = []
+        this.fieldForm.originName = this.setNameIdTrans('id', 'name', this.fieldForm.originName, this.name2Auto)
+        setTimeout(() => {
+          this.matchToAuto()
+        }, 500)
       } else {
         this.fieldForm = JSON.parse(JSON.stringify(this.fieldForm))
       }
+    },
+    matchToAuto() {
+      if (!this.name2Auto.length) return
+      this.name2Auto.forEach(ele => {
+        const search = this.$refs.myCm.codemirror.getSearchCursor(ele, { line: 0, ch: 0 })
+        if (search.find()) {
+          const { from, to } = search.pos
+          this.$refs.myCm.codemirror.markText({ line: from.line, ch: from.ch - 1 }, { line: to.line, ch: to.ch + 1 }, { atomic: true, selectRight: true })
+        }
+      })
     },
 
     closeCalcField() {
@@ -380,18 +397,38 @@ export default {
       this.$emit('onEditClose', {})
     },
 
+    setNameIdTrans(from, to, originName, name2Auto) {
+      let name2Id = originName
+      const nameIdMap = [...this.dimensionData, ...this.quotaData].reduce((pre, next) => {
+        pre[next[from]] = next[to]
+        return pre
+      }, {})
+      const on = originName.match(/(?<=\[).+?(?=\])/g)
+      if (on) {
+        on.forEach(ele => {
+          if (name2Auto) {
+            name2Auto.push(nameIdMap[ele])
+          }
+          name2Id = name2Id.replace(ele, nameIdMap[ele])
+        })
+      }
+      return name2Id
+    },
+
     saveCalcField() {
-      if (this.fieldForm.name && this.fieldForm.name.length > 50) {
+      const { id, name = [], deType, originName } = this.fieldForm
+      if (name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))
         return
       }
-      if (!this.fieldForm.id) {
-        this.fieldForm.type = this.fieldForm.deType
-        this.fieldForm.deExtractType = this.fieldForm.deType
+      if (!id) {
+        this.fieldForm.type = deType
+        this.fieldForm.deExtractType = deType
         this.fieldForm.tableId = this.param.tableId
         this.fieldForm.columnIndex = 0
         this.fieldForm.chartId = this.param.id
       }
+      this.fieldForm.originName = this.setNameIdTrans('name', 'id', originName)
       post('/chart/field/save/' + this.panelInfo.id, this.fieldForm).then(response => {
         this.closeCalcField()
       })
@@ -425,6 +462,8 @@ export default {
 
         this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
         this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+
+        this.initField()
       })
     }
   }
