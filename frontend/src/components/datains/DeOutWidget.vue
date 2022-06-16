@@ -117,7 +117,7 @@ export default {
   methods: {
 
     watchSize() {
-      console.log('watchSize',this.element)
+      console.log('watchSize', this.element)
       const erd = elementResizeDetectorMaker()
       erd.listenTo(this.$refs.myContainer, ele => {
         const deContentContainer = this.$refs.deContentContainer
