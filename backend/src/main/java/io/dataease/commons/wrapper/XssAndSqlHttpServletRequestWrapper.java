@@ -243,22 +243,12 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
                 ThreadLocalContextHolder.setData("包含SQL注入的参数，请检查参数！");
                 return true;
             }
-            // NOTE: It's highly recommended to use the ESAPI library and
-            // uncomment the following line to
-            // avoid encoded attacks.
-            // value = ESAPI.encoder().canonicalize(value);
-            // Avoid null characters
-            /** value = value.replaceAll("", ""); ***/
-            // Avoid anything between script tags
             Pattern scriptPattern = Pattern.compile(
                     "<[\r\n| | ]*script[\r\n| | ]*>(.*?)</[\r\n| | ]*script[\r\n| | ]*>", Pattern.CASE_INSENSITIVE);
             flag = scriptPattern.matcher(value).find();
             if (flag) {
                 return flag;
             }
-            // Avoid anything in a
-            // src="http://www.yihaomen.com/article/java/..." type of
-            // e-xpression
             scriptPattern = Pattern.compile("src[\r\n| | ]*=[\r\n| | ]*[\\\"|\\\'](.*?)[\\\"|\\\']",
                     Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             flag = scriptPattern.matcher(value).find();

@@ -149,7 +149,6 @@ export default {
       required: false,
       default: false
     },
-    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false
@@ -390,7 +389,6 @@ export default {
       }
     },
     'chartType': function(newVal, oldVal) {
-      // this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
       if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
@@ -524,7 +522,7 @@ export default {
         }
       }
     },
-    getData(id, cache = true) {
+    getData(id, cache = true, dataBroadcast = false) {
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -549,7 +547,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
-            this.getDataOnly(response.data)
+            this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -593,7 +591,7 @@ export default {
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
     },
-    openChartDetailsDialog() {
+    openChartDetailsDialog(params) {
       const tableChart = deepCopy(this.chart)
       tableChart.customAttr = JSON.parse(this.chart.customAttr)
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
@@ -604,7 +602,7 @@ export default {
       tableChart.customStyle.text.show = false
       tableChart.customAttr = JSON.stringify(tableChart.customAttr)
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
-      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
+      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart, openType: params.openType })
     },
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
@@ -845,7 +843,7 @@ export default {
     getDataEdit(param) {
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
-        this.getData(param.viewId, false)
+        this.getData(param.viewId, false, true)
       } else if (param.type === 'styleChange') {
         this.chart.customAttr = param.viewInfo.customAttr
         this.chart.customStyle = param.viewInfo.customStyle
@@ -860,7 +858,7 @@ export default {
         this.mergeScale()
       }
     },
-    getDataOnly(sourceResponseData) {
+    getDataOnly(sourceResponseData, dataBroadcast) {
       if (this.isEdit) {
         if ((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) {
           viewData(this.chart.id, this.panelInfo.id, {
@@ -869,9 +867,15 @@ export default {
             queryFrom: 'panel'
           }).then(response => {
             this.componentViewsData[this.chart.id] = response.data
+            if (dataBroadcast) {
+              bus.$emit('prop-change-data')
+            }
           })
         } else {
           this.componentViewsData[this.chart.id] = sourceResponseData
+          if (dataBroadcast) {
+            bus.$emit('prop-change-data')
+          }
         }
       }
     }
@@ -921,32 +925,4 @@ export default {
     z-index: 2;
     display: block !important;
   }
-
-  /*.rect-shape > i {*/
-  /*  right: 5px;*/
-  /*  color: gray;*/
-  /*  position: absolute;*/
-  /*}*/
-
-  /*.rect-shape > > > i:hover {*/
-  /*  color: red;*/
-  /*}*/
-
-  /*.rect-shape:hover > > > .icon-fangda {*/
-  /*  z-index: 2;*/
-  /*  display: block;*/
-  /*}*/
-
-  /*.rect-shape > > > .icon-fangda {*/
-  /*  display: none*/
-  /*}*/
-
-  /*.rect-shape:hover > > > .icon-shezhi {*/
-  /*  z-index: 2;*/
-  /*  display: block;*/
-  /*}*/
-
-  /*.rect-shape > > > .icon-shezhi {*/
-  /*  display: none*/
-  /*}*/
 </style>

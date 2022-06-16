@@ -1115,7 +1115,13 @@ public class CKQueryProvider extends QueryProvider {
                     fieldName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, String.format(CKConstants.toFloat64, originField)), format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(CKConstants.toInt64, originField);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(CKConstants.toFloat64, originField);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()

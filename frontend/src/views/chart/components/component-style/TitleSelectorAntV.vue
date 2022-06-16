@@ -2,11 +2,11 @@
   <div style="width: 100%">
     <el-col>
       <el-form ref="titleForm" :model="titleForm" label-width="80px" size="mini">
-         <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
+        <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="titleForm.show" @change="changeTitleStyle('show')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="showProperty('show') && titleForm.show">
-           <el-form-item v-show="showProperty('title')" v-if="!batchOptStatus" :label="$t('chart.title')" class="form-item">
+          <el-form-item v-show="showProperty('title')" v-if="!batchOptStatus" :label="$t('chart.title')" class="form-item">
             <el-input
               v-model="titleForm.title"
               size="mini"
@@ -16,22 +16,22 @@
               @input="inputOnInput($event)"
             />
           </el-form-item>
-           <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
+          <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle('fontSize')">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
-           <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
+          <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="titleForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('color')" />
           </el-form-item>
-           <el-form-item v-show="showProperty('hPosition')" :label="$t('chart.text_h_position')" class="form-item">
+          <el-form-item v-show="showProperty('hPosition')" :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle('hPosition')">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
               <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-           <el-form-item v-show="showProperty('isItalic') || showProperty('isBolder') " :label="$t('chart.text_style')" class="form-item">
+          <el-form-item v-show="showProperty('isItalic') || showProperty('isBolder') " :label="$t('chart.text_style')" class="form-item">
             <el-checkbox v-model="titleForm.isItalic" @change="changeTitleStyle('isItalic')">{{ $t('chart.italic') }}</el-checkbox>
             <el-checkbox v-model="titleForm.isBolder" @change="changeTitleStyle('isBolder')">{{ $t('chart.bolder') }}</el-checkbox>
           </el-form-item>

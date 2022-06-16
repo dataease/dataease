@@ -1,7 +1,5 @@
 <template>
-  <div class="main-shadow" style="z-index:-1" :style="styleInfo">
-    <!--    {{ curComponent }}-->
-  </div>
+  <div class="main-shadow" style="z-index:-1" :style="styleInfo" />
 </template>
 
 <script>
@@ -31,7 +29,6 @@ export default {
           width = this.dragComponentInfo.style.width
           height = this.dragComponentInfo.style.height
         }
-
       } else {
         // temp 临时测试
         // left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100

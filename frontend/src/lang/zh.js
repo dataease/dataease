@@ -472,7 +472,8 @@ export default {
     display: '显示设置',
     ldap: 'LDAP设置',
     oidc: 'OIDC设置',
-    theme: '主题设置'
+    theme: '主题设置',
+    cas: 'CAS设置'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
@@ -646,7 +647,7 @@ export default {
     login_type: '默认登录方式',
     empty_front: '为空则默认取10秒',
     empty_msg: '为空则默认取30天',
-    front_error: '请填写0-100正整数',
+    front_error: '请填写0-300正整数', // 修改了提示信息
     msg_error: '请填写1-365正整数',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP账户',
@@ -660,9 +661,13 @@ export default {
     test_recipients: '测试收件人',
     tip: '提示：仅用来作为测试邮件收件人',
     engine_mode_setting: '引擎设置',
-    kettle_setting: 'Kettle 设置'
+    kettle_setting: 'Kettle 设置',
+    cas_selected_warn: '选择CAS方式保存后会注销当前回话，重新登录'
   },
   chart: {
+    view_reset: '视图重置',
+    view_reset_tips: '放弃对视图的修改？',
+    export_img: '导出图片',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
@@ -1103,7 +1108,12 @@ export default {
     tick_count: '刻度间隔数',
     custom_sort: '自定义',
     custom_sort_tip: '自定义排序优先级最高，且仅支持单个字段自定义',
-    clean_custom_sort: '清除自定义排序'
+    clean_custom_sort: '清除自定义排序',
+    ds_field_edit: '数据集字段管理',
+    chart_field_edit: '视图字段管理',
+    copy_field: '复制字段',
+    calc_field: '计算字段',
+    form_type: '类别'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1460,6 +1470,10 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    more: '更多',
+    level: '层级',
+    enlarge: '放大',
+    panel_style: '仪表板样式',
     multiplexing: '复用',
     panel_off: '仪表板已下架',
     batch_opt: '批量操作',
@@ -1657,7 +1671,7 @@ export default {
     no_drill_field: '缺少关联字段',
     matrix: '矩阵',
     suspension: '悬浮',
-    new_element_distribution: '当前元素移入分布方式',
+    new_element_distribution: '元素移入分布方式',
     aided_grid: '辅助设计网格',
     aided_grid_open: '打开',
     aided_grid_close: '关闭',

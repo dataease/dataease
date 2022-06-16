@@ -24,7 +24,10 @@
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+      </span>
+      <span :title="$t('panel.enlarge')">
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
@@ -154,12 +157,8 @@ export default {
         this.timer = null
       }
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
-    },
-    componentJump() {
-      window.open(url, '_blank')
-      // this.$emit('showViewDetails')
+    showViewDetails(openType = 'details') {
+      this.$emit('showViewDetails', { openType: openType })
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {

@@ -12,6 +12,7 @@ import io.dataease.plugins.common.base.domain.PanelTemplate;
 import io.dataease.plugins.common.base.domain.PanelTemplateExample;
 import io.dataease.plugins.common.base.domain.PanelTemplateWithBLOBs;
 import io.dataease.plugins.common.base.mapper.PanelTemplateMapper;
+import io.dataease.service.staticResource.StaticResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,8 @@ public class PanelTemplateService {
     private PanelTemplateMapper panelTemplateMapper;
     @Resource
     private ExtPanelTemplateMapper extPanelTemplateMapper;
+    @Resource
+    private StaticResourceService staticResourceService;
 
     public List<PanelTemplateDTO> templateList(PanelTemplateRequest panelTemplateRequest) {
         panelTemplateRequest.setWithBlobs("N");
@@ -75,6 +78,8 @@ public class PanelTemplateService {
                 exampleDelete.createCriteria().andPidEqualTo(request.getPid()).andNameEqualTo(request.getName());
                 panelTemplateMapper.deleteByExample(exampleDelete);
             }
+            //Store static resource into the server
+            staticResourceService.saveFilesToServe(request.getStaticResource());
             panelTemplateMapper.insert(request);
         } else {
             String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getPid(), request.getId());

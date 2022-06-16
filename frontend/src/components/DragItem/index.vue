@@ -6,14 +6,20 @@
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-
           <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('none')">
-            <span class="de-sort-menu" :class="!disabledSort && (!sortNode || sortNode.sort === 'none') ? 'de-active-li': ''">{{ $t('chart.none') }}</span>
+            <span
+              class="de-sort-menu"
+              :class="!disabledSort && (!sortNode || sortNode.sort === 'none') ? 'de-active-li': ''"
+            >{{
+              $t('chart.none')
+            }}</span>
           </el-dropdown-item>
-
           <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('asc')">
-
-            <span v-popover:popoverasc class="el-dropdown-link inner-dropdown-menu de-sort-menu" :class="!disabledSort && sortNode.sort === 'asc' ? 'de-active-li': ''">
+            <span
+              v-popover:popoverasc
+              class="el-dropdown-link inner-dropdown-menu de-sort-menu"
+              :class="!disabledSort && sortNode.sort === 'asc' ? 'de-active-li': ''"
+            >
               <span>
                 <span>{{ $t('chart.asc') }}</span>
               </span>
@@ -28,7 +34,6 @@
               trigger="hover"
             >
               <ul class="de-ul">
-
                 <li
                   v-for="(node, i) in allFields"
                   :key="node.id"
@@ -39,14 +44,15 @@
                 >
                   <span>{{ node.name }}</span>
                 </li>
-
               </ul>
-
             </el-popover>
           </el-dropdown-item>
           <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('desc')">
-
-            <span v-popover:popoverdesc class="el-dropdown-link inner-dropdown-menu de-sort-menu" :class="!disabledSort && sortNode.sort === 'desc' ? 'de-active-li': ''">
+            <span
+              v-popover:popoverdesc
+              class="el-dropdown-link inner-dropdown-menu de-sort-menu"
+              :class="!disabledSort && sortNode.sort === 'desc' ? 'de-active-li': ''"
+            >
               <span>
                 <span>{{ $t('chart.desc') }}</span>
               </span>
@@ -61,7 +67,6 @@
               trigger="hover"
             >
               <ul class="de-ul">
-
                 <li
                   v-for="(node, i) in allFields"
                   :key="node.id"
@@ -72,14 +77,9 @@
                 >
                   <span>{{ node.name }}</span>
                 </li>
-
               </ul>
-
             </el-popover>
           </el-dropdown-item>
-          <!-- <el-dropdown-item :disabled="index" :command="beforeClickItem('customSort')">
-            <span class="de-sort-menu" :class="sortNode.sort === 'custom' ? 'de-active-li': ''">{{ $t('chart.custom_sort') }}</span>
-          </el-dropdown-item> -->
           <el-dropdown-item :divided="isSortWidget" icon="el-icon-delete" :command="beforeClickItem('remove')">
             <span class="de-delete-field">{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
@@ -137,7 +137,6 @@ export default {
   created() {
     if (!this.sortNode) {
       this.sortNode = this.sort && this.sort.id ? JSON.parse(JSON.stringify(this.sort)) : JSON.parse(JSON.stringify(this.defaultSortProp))
-      // this.sortChange('none')
     }
   },
   methods: {
@@ -199,67 +198,72 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .item-axis {
-    padding: 1px 6px;
-    margin: 0 3px 2px 3px;
-    text-align: left;
-    height: 24px;
-    line-height: 22px;
+.item-axis {
+  padding: 1px 6px;
+  margin: 0 3px 2px 3px;
+  text-align: left;
+  height: 24px;
+  line-height: 22px;
+  display: inline-block;
+  border-radius: 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.item-axis:hover {
+  background-color: #fdfdfd;
+  cursor: pointer;
+}
+
+span {
+  font-size: 12px;
+}
+
+.de-ul li {
+  margin: 5px 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: #409EFF;
+    border-color: rgb(198, 226, 255);
+    background-color: rgb(236, 245, 255);
+  }
+
+  &:before {
+    content: "";
+    width: 6px;
+    height: 6px;
     display: inline-block;
-    border-radius: 4px;
-    box-sizing: border-box;
-    white-space: nowrap;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 5px;
   }
+}
 
-  .item-axis:hover {
-    background-color: #fdfdfd;
-    cursor: pointer;
+.de-active-li {
+  &:before {
+    background: #409EFF;
   }
+}
 
-  span {
-    font-size: 12px;
-  }
-  .de-ul li {
-    margin: 5px 2px;
-    cursor: pointer;
-    &:hover {
-      color: #409EFF;
-      border-color: rgb(198, 226, 255);
-      background-color: rgb(236, 245, 255);
-    }
-    &:before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      display: inline-block;
-      border-radius: 50%;
-      vertical-align: middle;
-      margin-right: 5px;
-    }
-  }
-  .de-active-li {
-      &:before {
-        background: #409EFF;
-      }
-  }
-  .de-sort-menu::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      display: inline-block;
-      border-radius: 50%;
-      vertical-align: middle;
-      margin-right: 5px;
-  }
-  .de-delete-field {
-      margin-left: 4px;
-  }
-  .de-sort-field-span {
-    /* width: 80px;
-    max-width: 80px; */
-    display: inline-flexbox;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.de-sort-menu::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.de-delete-field {
+  margin-left: 4px;
+}
+
+.de-sort-field-span {
+  display: inline-flexbox;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

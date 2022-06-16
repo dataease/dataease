@@ -91,9 +91,6 @@
             <if test="level != null">
                 and panel_group.level = #{level}
             </if>
-<!--            <if test="isAdmin != null and !isAdmin">-->
-<!--                and (panel_group.node_type='folder' or (panel_group.node_type='panel' and panel_group.`status`='publish') or (panel_group.node_type='panel' and panel_group.`status`='unpublished' and authInfo.privileges like '%manage%')  )-->
-<!--            </if>-->
         </where>
         ORDER BY CONVERT(panel_group.name using gbk)
     </select>
@@ -170,9 +167,6 @@
             <if test="level != null">
                 and panel_group.level = #{level}
             </if>
-<!--            <if test="isAdmin != null and !isAdmin">-->
-<!--                and (panel_group.node_type='folder' or (panel_group.node_type='panel' and panel_group.`status`='publish') or (panel_group.node_type='panel' and panel_group.`status`='unpublished' and authInfo.privileges like '%manage%')  )-->
-<!--            </if>-->
         </where>
      ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
     </select>

@@ -31,9 +31,24 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @boardSet="boardSet"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
-      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
+      <div
+        v-if="resizing"
+        style="transform: translateZ(11px);position: absolute; z-index: 3"
+        :style="resizeShadowStyle"
+      />
       <div
         v-for="(handlei, indexi) in actualHandles"
         :key="indexi"
@@ -44,7 +59,7 @@
       >
         <slot :name="handlei" />
       </div>
-      <div :style="mainSlotStyleInner" class="main-background">
+      <div :id="componentCanvasId" :style="mainSlotStyleInner" class="main-background">
         <slot />
       </div>
     </div>
@@ -55,6 +70,7 @@
 import { matchesSelectorToParentElements, getComputedSize, addEvent, removeEvent } from '../../utils/dom'
 import { computeWidth, computeHeight, restrictToBounds, snapToGrid, rotatedPoint, getAngle } from '../../utils/fns'
 import { events, userSelectNone, userSelectAuto } from './option.js'
+
 let eventsFor = events.mouse
 
 // private
@@ -385,6 +401,13 @@ export default {
     }
   },
   computed: {
+    componentCanvasId() {
+      if (this.element.type === 'view') {
+        return 'user-view-' + this.element.propValue.viewId
+      } else {
+        return 'components-' + this.element.id
+      }
+    },
     // 编辑组件显示
     editBarShow() {
       // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置状态 3.当前不在移动端画布编辑状态 4.或者批量操作状态
@@ -545,16 +568,22 @@ export default {
     mainSlotStyleInner() {
       const style = {}
       if (this.element.commonBackground) {
+        let colorRGBA = ''
+        if (this.element.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+        }
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
-          if (this.element.commonBackground.backgroundType === 'innerImage' && this.element.commonBackground.innerImage) {
-            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'outerImage' && this.element.commonBackground.outerImage) {
-            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'color') {
-            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          if (this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
           }
+        } else {
+          style['background-color'] = colorRGBA
         }
       }
       return style
@@ -1741,8 +1770,8 @@ export default {
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
+    showViewDetails(params) {
+      this.$emit('showViewDetails', params)
     },
     amAddItem() {
       this.$emit('amAddItem')
@@ -1769,7 +1798,7 @@ export default {
 .vdr {
   touch-action: none;
   position: absolute;
-  transform-style:preserve-3d;
+  transform-style: preserve-3d;
   border: 1px
 }
 
@@ -1781,30 +1810,39 @@ export default {
   border-radius: 50%;
   z-index: 2;
 }
+
 .handle-tl {
   cursor: nw-resize;
 }
+
 .handle-tm {
   cursor: n-resize;
 }
+
 .handle-tr {
   cursor: ne-resize;
 }
+
 .handle-ml {
   cursor: w-resize;
 }
+
 .handle-mr {
   cursor: e-resize;
 }
+
 .handle-bl {
   cursor: sw-resize;
 }
+
 .handle-bm {
   cursor: s-resize;
 }
+
 .handle-br {
   cursor: se-resize;
 }
+
 /* 新增 旋转控制柄 */
 
 .handle-rot {
@@ -1817,6 +1855,7 @@ export default {
   text-indent: -9999px;
   vertical-align: middle;
 }
+
 .handle-rot:before,
 .handle-rot:after {
   content: "";
@@ -1826,6 +1865,7 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .handle-rot:before {
   /* display: block; */
   width: 1em;
@@ -1834,6 +1874,7 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
 }
+
 .handle-rot:after {
   width: 0px;
   height: 0px;
@@ -1849,29 +1890,30 @@ export default {
   user-select: none;
 }
 
-.linkageSetting{
+.linkageSetting {
   opacity: 0.5;
 }
 
-.batchSetting{
+.batchSetting {
   opacity: 0.9;
 }
 
-.positionChange{
+.positionChange {
   transition: 0.2s
 }
 
-.de-drag-active{
+.de-drag-active {
   user-select: none;
 }
 
-.de-drag-active-inner{
+.de-drag-active-inner {
   outline: 1px solid #70c0ff;
 }
-  .main-background{
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100% !important;
-  }
+
+.main-background {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
+}
 </style>

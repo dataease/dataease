@@ -167,7 +167,6 @@ export function recursionTransObj(template, infoObj, scale, terminal) {
         if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
           // 移动端特殊属性值设置
           if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
-            // console.log('mobile:' + templateProp + mobileSpecialProps[templateProp])
             infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
           } else {
             infoObj[templateKey][templateProp] = getScaleValue(infoObj[templateKey][templateProp], scale)

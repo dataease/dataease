@@ -1105,7 +1105,13 @@ public class EsQueryProvider extends QueryProvider {
                     fieldName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(EsSqlLConstants.CAST, originField, "bigint");
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(EsSqlLConstants.CAST, originField, "double");
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()

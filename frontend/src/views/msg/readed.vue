@@ -78,11 +78,6 @@ export default {
   data() {
     return {
       selectType: -1,
-      //   msgTypes: [
-      //     { value: -1, label: '全部类型' },
-      //     { value: 0, label: '仪表板分享' },
-      //     { value: 1, label: '数据集同步' }
-      //   ],
       msgTypes: msgTypes,
       data: [],
       allTypes: [{ name: 'mysql', type: 'jdbc' }, { name: 'sqlServer', type: 'jdbc' }],

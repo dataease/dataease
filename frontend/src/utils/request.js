@@ -6,6 +6,7 @@ import Config from '@/settings'
 import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
 import { getLinkToken, setLinkToken } from '@/utils/auth'
+import Vue from 'vue'
 
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
@@ -49,6 +50,7 @@ let service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+    const CancelToken = axios.CancelToken
     const idToken = getIdToken()
     if (idToken) {
       config.headers[Config.IdTokenKey] = idToken
@@ -72,6 +74,10 @@ service.interceptors.request.use(
     }
     config.loading && tryShowLoading(store.getters.currentPath)
 
+    config.cancelToken = new CancelToken(function executor(c) {
+      Vue.prototype.$currentHttpRequestList.set(config.url, c)
+    })
+
     return config
   },
   error => {
@@ -91,6 +97,7 @@ service.setTimeOut = time => {
 service.interceptors.response.use(response => {
   response.config.loading && tryHideLoading(store.getters.currentPath)
   checkAuth(response)
+  Vue.prototype.$currentHttpRequestList.delete(response.config.url)
   return response.data
 }, error => {
   const config = error.response && error.response.config || error.config
@@ -134,7 +141,6 @@ const checkAuth = response => {
     })
   }
   // token到期后自动续命 刷新token
-  //   if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
   if (response.headers[RefreshTokenKey]) {
     const refreshToken = response.headers[RefreshTokenKey]
     store.dispatch('user/refreshToken', refreshToken)

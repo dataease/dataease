@@ -5,6 +5,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.constants.engine.MysqlConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
@@ -64,6 +65,7 @@ public class MysqlQueryProvider extends QueryProvider {
             case "MEDIUMINT":
             case "INTEGER":
             case "BIGINT":
+            case "LONG": //增加了LONG类型
                 return 2;// 整型
             case "FLOAT":
             case "DOUBLE":
@@ -1065,7 +1067,13 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (x.getDeType() == 0 && x.getDeExtractType() == 0) {
                 fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.CHAR);
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_INT_FORMAT);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()

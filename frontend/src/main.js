@@ -118,6 +118,20 @@ Vue.prototype.checkPermission = function(pers) {
   return hasPermission
 }
 Vue.use(deWebsocket)
+
+Vue.prototype.$currentHttpRequestList = new Map()
+Vue.prototype.$cancelRequest = function(cancelkey) {
+  if (cancelkey) {
+    if (cancelkey.indexOf('/**') > -1) {
+      Vue.prototype.$currentHttpRequestList.forEach((item, key) => {
+        key.indexOf(cancelkey.split('/**')[0]) > -1 && item('Operation canceled by the user.')
+      })
+    } else {
+      Vue.prototype.$currentHttpRequestList.get(cancelkey) && Vue.prototype.$currentHttpRequestList.get(cancelkey)('Operation canceled by the user.')
+    }
+  }
+}
+
 new Vue({
 
   router,

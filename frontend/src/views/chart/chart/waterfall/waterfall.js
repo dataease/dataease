@@ -75,29 +75,12 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
           end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
         }
       },
-      // {
-      //   type: 'legend-active', cfg: {
-      //     start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-      //     end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
-      //   }
-      // },
-      // {
-      //   type: 'legend-filter', cfg: {
-      //     start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
-      //   }
-      // },
       {
         type: 'tooltip', cfg: {
           start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
         }
       }
-      // {
-      //   type: 'active-region', cfg: {
-      //     start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-      //     end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-      //   }
-      // }
     ]
   }
   // size

@@ -37,10 +37,5 @@ public class WsUtil {
         return ONLINE_USERS.contains(userId);
     }
 
-    /*public static void releaseMessage(WsMessage wsMessage){
-        if(ObjectUtils.isEmpty(wsMessage) || ObjectUtils.isEmpty(wsMessage.getUserId()) ||  ObjectUtils.isEmpty(wsMessage.getTopic())) return;
-        CommonBeanFactory.getBean()
-    }*/
-
 
 }

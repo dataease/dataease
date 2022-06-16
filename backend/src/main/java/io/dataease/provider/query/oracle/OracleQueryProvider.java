@@ -1,13 +1,13 @@
 package io.dataease.provider.query.oracle;
 
 import com.google.gson.Gson;
+import io.dataease.dto.datasource.OracleConfiguration;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
-import io.dataease.dto.datasource.OracleConfiguration;
-import io.dataease.plugins.common.constants.datasource.MySQLConstants;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.datasource.OracleConstants;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
@@ -109,7 +109,6 @@ public class OracleQueryProvider extends QueryProvider {
         List<SQLObj> xFields = xFields(table, fields);
 
 
-
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
@@ -134,7 +133,6 @@ public class OracleQueryProvider extends QueryProvider {
         }
         return st_sql.render();
     }
-
 
 
     @Override
@@ -1122,7 +1120,13 @@ public class OracleQueryProvider extends QueryProvider {
                     fieldName = String.format(OracleConstants.TO_CHAR, date, format);
                 }
             } else {
-                fieldName = originField;
+                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                    fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                    fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                } else {
+                    fieldName = originField;
+                }
             }
         }
         return SQLObj.builder()
@@ -1178,8 +1182,7 @@ public class OracleQueryProvider extends QueryProvider {
                 fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
             } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
                 fieldName = String.format(OracleConstants.GROUP_CONCAT, originField, originField);
-            }
-            else {
+            } else {
                 fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {

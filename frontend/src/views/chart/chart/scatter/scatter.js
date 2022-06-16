@@ -55,7 +55,6 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
       chart_option.series.push(y)
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   seniorCfg(chart_option, chart)
   return chart_option

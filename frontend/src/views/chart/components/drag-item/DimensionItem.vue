@@ -39,10 +39,6 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <!--          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">-->
-          <!--            <span>{{ $t('chart.filter') }}...</span>-->
-          <!--          </el-dropdown-item>-->
-
           <el-dropdown-item v-show="item.deType === 1" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="dateStyle">
               <span class="el-dropdown-link inner-dropdown-menu">

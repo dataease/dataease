@@ -24,6 +24,21 @@
         </el-col>
       </el-row>
 
+      <el-row style="height: 40px;overflow: hidden;">
+        <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+          <el-checkbox v-model="curComponent.commonBackground.backgroundColorSelect">颜色</el-checkbox>
+        </el-col>
+        <el-col :span="1" style="padding-top: 5px">
+          <el-color-picker v-model="curComponent.commonBackground.color" :disabled="!curComponent.commonBackground.backgroundColorSelect" size="mini" class="color-picker-style" :predefine="predefineColors" />
+        </el-col>
+        <el-col :span="3">
+          <span class="params-title-small">不透明度：</span>
+        </el-col>
+        <el-col :span="11">
+          <el-slider v-model="curComponent.commonBackground.alpha" :disabled="!curComponent.commonBackground.backgroundColorSelect" show-input :show-input-controls="false" input-size="mini" />
+        </el-col>
+      </el-row>
+
       <el-row style="height: 50px">
         <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
           <el-checkbox v-model="curComponent.commonBackground.enable">{{ $t('panel.background') }}</el-checkbox>
@@ -34,21 +49,7 @@
           </span>
         </el-col>
       </el-row>
-      <el-row v-if="curComponent.commonBackground.enable">
-        <el-row style="height: 40px;overflow: hidden">
-          <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
-            <el-radio v-model="curComponent.commonBackground.backgroundType" label="color" @change="onChangeType">颜色</el-radio>
-          </el-col>
-          <el-col :span="1" style="padding-top: 5px">
-            <el-color-picker v-model="curComponent.commonBackground.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
-          </el-col>
-          <el-col :span="3">
-            <span class="params-title-small">不透明度：</span>
-          </el-col>
-          <el-col :span="11">
-            <el-slider v-model="curComponent.commonBackground.alpha" show-input :show-input-controls="false" input-size="mini" />
-          </el-col>
-        </el-row>
+      <el-row v-if="curComponent.commonBackground.enable" style="padding-left: 20px">
         <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
           <el-col :span="3" style="padding-left: 10px">
             <el-radio v-model="curComponent.commonBackground.backgroundType" label="outerImage" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
@@ -169,10 +170,7 @@ export default {
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
-      const canvasStyleData = deepCopy(this.canvasStyleData)
-      canvasStyleData.panel = this.panel
-      this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot', 'commitStyle')
+      this.$store.commit('recordSnapshot')
     },
     onChangeType() {
       this.commitStyle()

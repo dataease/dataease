@@ -17,12 +17,14 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
+import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
 import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import io.dataease.service.sys.SysUserService;
 
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -36,7 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -49,6 +53,9 @@ public class AuthServer implements AuthApi {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Resource
+    private SystemParameterService systemParameterService;
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
@@ -160,6 +167,37 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public String deLogout() {
+        String token = ServletUtils.getToken();
+        if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
+            return "success";
+        }
+        SecurityUtils.getSubject().logout();
+        String result = null;
+        Integer defaultLoginType = systemParameterService.defaultLoginType();
+        if (defaultLoginType == 3 && isOpenCas()) {
+            HttpServletRequest request = ServletUtils.request();
+            HttpSession session = request.getSession();
+            session.invalidate();
+            CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+            result = casXpackService.logout();
+        }
+        try {
+            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+            authUserService.clearCache(userId);
+            if (StringUtils.isBlank(result)) {
+                result = "success";
+            }
+        } catch (Exception e) {
+            LogUtil.error(e);
+            if (StringUtils.isBlank(result)) {
+                result = "fail";
+            }
+        }
+        return result;
+    }
+
+    @Override
     public String logout() {
         String token = ServletUtils.getToken();
 
@@ -170,20 +208,36 @@ public class AuthServer implements AuthApi {
                 OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
                 oidcXpackService.logout(idToken);
             }
-
         }
+
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
         }
+
+        SecurityUtils.getSubject().logout();
+        String result = null;
+        Integer defaultLoginType = systemParameterService.defaultLoginType();
+        if (defaultLoginType == 3 && isOpenCas()) {
+            HttpServletRequest request = ServletUtils.request();
+            HttpSession session = request.getSession();
+            session.invalidate();
+            CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+            result = casXpackService.logout();
+        }
         try {
             Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+
             authUserService.clearCache(userId);
+            if (StringUtils.isBlank(result)) {
+                result = "success";
+            }
         } catch (Exception e) {
             LogUtil.error(e);
-            return "fail";
+            if (StringUtils.isBlank(result)) {
+                result = "fail";
+            }
         }
-
-        return "success";
+        return result;
     }
 
     @Override
@@ -209,6 +263,17 @@ public class AuthServer implements AuthApi {
         if (!licValid)
             return false;
         return authUserService.supportOidc();
+    }
+
+
+    @Override
+    public boolean isOpenCas() {
+        Boolean licValid = PluginUtils.licValid();
+        if (!licValid)
+            return false;
+        Boolean supportCas = authUserService.supportCas();
+
+        return authUserService.supportCas();
     }
 
     @Override

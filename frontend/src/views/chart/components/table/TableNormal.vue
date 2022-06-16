@@ -25,9 +25,6 @@
           :title="field.name"
           :width="columnWidth"
         >
-          <!--        <template slot="header">-->
-          <!--          <span>{{ field.name }}</span>-->
-          <!--        </template>-->
         </ux-table-column>
       </ux-grid>
 

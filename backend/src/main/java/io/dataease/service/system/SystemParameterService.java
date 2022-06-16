@@ -10,8 +10,12 @@ import io.dataease.plugins.common.base.domain.FileMetadata;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
+import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.service.FileService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,8 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.dataease.ext.*;
 
 @Service
@@ -29,6 +35,7 @@ import io.dataease.ext.*;
 public class SystemParameterService {
 
     private final static String LOGIN_TYPE_KEY = "basic.loginType";
+    private final static String CAS_LOGIN_TYPE = "3";
     @Resource
     private SystemParameterMapper systemParameterMapper;
     @Resource
@@ -81,8 +88,11 @@ public class SystemParameterService {
         return result;
     }
 
-    public void editBasic(List<SystemParameter> parameters) {
-        parameters.forEach(parameter -> {
+    @Transactional
+    public CasSaveResult editBasic(List<SystemParameter> parameters) {
+        CasSaveResult casSaveResult = afterSwitchDefaultLogin(parameters);
+        for (int i = 0; i < parameters.size(); i++) {
+            SystemParameter parameter = parameters.get(i);
             SystemParameterExample example = new SystemParameterExample();
 
             example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
@@ -92,8 +102,65 @@ public class SystemParameterService {
                 systemParameterMapper.insert(parameter);
             }
             example.clear();
+        }
+        return casSaveResult;
+    }
 
+    @Transactional
+    public void resetCas() {
+        Map<String, CasXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((CasXpackService.class));
+        if (beansOfType.keySet().size() == 0) DEException.throwException("当前未启用CAS");
+        CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+        if (ObjectUtils.isEmpty(casXpackService)) DEException.throwException("当前未启用CAS");
+
+        String loginTypePk = "basic.loginType";
+        SystemParameter loginTypeParameter = systemParameterMapper.selectByPrimaryKey(loginTypePk);
+        if (ObjectUtils.isNotEmpty(loginTypeParameter) && StringUtils.equals("3", loginTypeParameter.getParamValue())) {
+            loginTypeParameter.setParamValue("0");
+            systemParameterMapper.updateByPrimaryKeySelective(loginTypeParameter);
+        }
+        casXpackService.setEnabled(false);
+    }
+
+    public CasSaveResult afterSwitchDefaultLogin(List<SystemParameter> parameters) {
+        CasSaveResult casSaveResult = new CasSaveResult();
+        casSaveResult.setNeedLogout(false);
+        Map<String, CasXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((CasXpackService.class));
+        if (beansOfType.keySet().size() == 0) return casSaveResult;
+        CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+        if (ObjectUtils.isEmpty(casXpackService)) return casSaveResult;
+
+        AtomicReference<String> loginType = new AtomicReference();
+        boolean containLoginType = parameters.stream().anyMatch(param -> {
+            if (StringUtils.equals(param.getParamKey(), LOGIN_TYPE_KEY)) {
+                loginType.set(param.getParamValue());
+                return true;
+            }
+            return false;
         });
+        if (!containLoginType) return casSaveResult;
+
+
+        SystemParameter systemParameter = systemParameterMapper.selectByPrimaryKey(LOGIN_TYPE_KEY);
+        String originVal = null;
+        if (ObjectUtils.isNotEmpty(systemParameter)) {
+            originVal = systemParameter.getParamValue();
+        }
+
+        if (StringUtils.equals(originVal, loginType.get())) return casSaveResult;
+
+        if (StringUtils.equals(CAS_LOGIN_TYPE, loginType.get())) {
+            casSaveResult.setNeedLogout(true);
+            casXpackService.setEnabled(true);
+            casSaveResult.setCasEnable(true);
+        }
+
+        if (StringUtils.equals(CAS_LOGIN_TYPE, originVal)) {
+            casSaveResult.setNeedLogout(true);
+            casXpackService.setEnabled(false);
+            casSaveResult.setCasEnable(false);
+        }
+        return casSaveResult;
     }
 
     public List<SystemParameter> getParamList(String type) {
@@ -101,6 +168,8 @@ public class SystemParameterService {
         example.createCriteria().andParamKeyLike(type + "%");
         return systemParameterMapper.selectByExample(example);
     }
+
+
 
     public String getVersion() {
         return System.getenv("MS_VERSION");

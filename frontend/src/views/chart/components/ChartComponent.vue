@@ -377,7 +377,7 @@ export default {
 <style scoped>
   .map-zoom-box {
     position: absolute;
-    z-index: 999;
+    z-index: 0;
     left: 2%;
     bottom: 30px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

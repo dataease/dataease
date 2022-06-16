@@ -114,7 +114,6 @@ export default {
     // this.watchSize()
   },
   created() {
-    // console.log('aaaaaa')
     const { horizontal, vertical } = this.element.style
     this.$set(this.element.style, 'horizontal', horizontal || 'left')
     this.$set(this.element.style, 'vertical', vertical || 'center')

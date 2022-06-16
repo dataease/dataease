@@ -5,7 +5,7 @@
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
       <span :title="$t('panel.details')">
-        <i class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+        <i class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
       </span>
     </div>
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
@@ -87,8 +87,8 @@ export default {
     amRemoveItem() {
       this.$emit('amRemoveItem')
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
+    showViewDetails(params) {
+      this.$emit('showViewDetails', params)
     },
     positionCheck(position) {
       return this.showPosition.includes(position)

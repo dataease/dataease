@@ -12,8 +12,6 @@ import java.util.List;
 public interface ExtChartViewMapper {
     List<ChartViewDTO> search(ChartViewRequest request);
 
-//    ChartViewDTO searchOne(ChartViewRequest request);
-
     void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId,@Param("panelId")String panelId);
 
     @Select("select id from chart_view where table_id = #{tableId}")
@@ -34,8 +32,6 @@ public interface ExtChartViewMapper {
     void deleteCircleGroup(@Param("pid") String pid);
 
     List<ChartViewDTO> searchViewsWithPanelId(@Param("panelId") String panelId);
-
-//    ChartViewDTO searchOneFromCache(@Param("id") String id );
 
     void copyToCache(@Param("id") String id );
 

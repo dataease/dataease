@@ -471,7 +471,8 @@ export default {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
     oidc: 'OIDC Setting',
-    theme: 'Theme Setting'
+    theme: 'Theme Setting',
+    cas: 'CAS Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -643,7 +644,7 @@ export default {
     login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
-    front_error: 'Valid ranger [0 - 100]',
+    front_error: 'Valid ranger [0 - 300]', // 修改了提示信息
     msg_error: 'Valid ranger [1 - 365]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
@@ -657,9 +658,13 @@ export default {
     test_recipients: 'Test recipients',
     tip: 'Tip: use as test mail recipient only',
     engine_mode_setting: 'Engine Setting',
-    kettle_setting: 'Kettle Setting'
+    kettle_setting: 'Kettle Setting',
+    cas_selected_warn: 'Selecting CAS will cause you to login again'
   },
   chart: {
+    view_reset: 'View Reset',
+    view_reset_tips: 'Discard Changes To View?',
+    export_img: 'Export Img',
     title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
@@ -1101,7 +1106,12 @@ export default {
     tick_count: 'Tick Split',
     custom_sort: 'Custom',
     custom_sort_tip: 'Custom sort field first,and only support single field',
-    clean_custom_sort: 'Clean'
+    clean_custom_sort: 'Clean',
+    ds_field_edit: 'Dataset Field Manage',
+    chart_field_edit: 'Chart Field Manage',
+    copy_field: 'Copy Field',
+    calc_field: 'Calculate Field',
+    form_type: 'From Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1452,6 +1462,10 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    more: 'More',
+    level: 'Level',
+    enlarge: 'Enlarge',
+    panel_style: 'Panel Style',
     multiplexing: 'Multiplexing',
     panel_off: 'Off the shelf',
     batch_opt: 'Batch Operation',
@@ -1646,7 +1660,7 @@ export default {
     no_drill_field: 'Miss relation field',
     matrix: 'matrix',
     suspension: 'suspension',
-    new_element_distribution: 'New element Distribution',
+    new_element_distribution: 'Element Distribution',
     aided_grid: 'Aided Grid',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',

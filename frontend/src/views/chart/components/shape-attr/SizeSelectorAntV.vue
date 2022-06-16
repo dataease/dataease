@@ -258,8 +258,9 @@
           </el-tooltip>
         </el-form-item>
         <el-form-item
-          v-show="showProperty('tableColumnWidth') && sizeForm.tableColumnMode === 'custom'"
+          v-show="showProperty('tableColumnMode') && sizeForm.tableColumnMode === 'custom'"
           label=""
+          label-width="100px"
           class="form-item form-item-slider"
         >
           <el-slider
@@ -269,7 +270,7 @@
             show-input
             :show-input-controls="false"
             input-size="mini"
-            @change="changeBarSizeCase('tableColumnWidth')"
+            @change="changeBarSizeCase('tableColumnMode')"
           />
         </el-form-item>
         <!--table-end-->

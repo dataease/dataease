@@ -37,22 +37,20 @@
         <el-dialog
           :title="$t('chart.chart_details')"
           :visible.sync="chartDetailsVisible"
-          width="70%"
+          width="80%"
           class="dialog-css"
           :destroy-on-close="true"
+          top="5vh"
         >
           <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-            <el-dropdown>
-              <el-button size="mini">
-                {{ $t('chart.export') }}<i class="el-icon-download" />
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="exportExcel"><svg-icon icon-class="ds-excel" class="ds-icon-excel" />Excel</el-dropdown-item>
-                <el-dropdown-item v-if="showExportImgButton" icon="el-icon-picture-outline" @click.native="exportViewImg">{{ $t('chart.image') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button v-if="showChartInfoType==='enlarge'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+              {{ $t('chart.export_img') }}
+            </el-button>
+            <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
+              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
+            </el-button>
           </span>
-          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :open-type="showChartInfoType" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
 
         <!--手机视图详情-->
@@ -84,6 +82,8 @@ import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewM
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
+const erd = elementResizeDetectorMaker()
+
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -169,11 +169,16 @@ export default {
       mobileChartDetailsVisible: false,
       showChartInfo: {},
       showChartTableInfo: {},
+      showChartInfoType: 'details',
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc'
     }
   },
   created() {
+    // 取消视图请求
+    this.$cancelRequest('/chart/view/getData/**')
+    this.$cancelRequest('/api/link/viewDetail/**')
+    this.$cancelRequest('/static-resource/**')
   },
   computed: {
     mainActiveName() {
@@ -188,9 +193,6 @@ export default {
       } else {
         return this.panelInfo.status === 'unpublished'
       }
-    },
-    showExportImgButton() {
-      return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
     },
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
@@ -273,37 +275,17 @@ export default {
   },
   mounted() {
     this._isMobile()
-    const _this = this
-    const erd = elementResizeDetectorMaker()
-    const canvasMain = document.getElementById('canvasInfoMain')
-    // 监听主div变动事件
-    if (canvasMain) {
-      erd.listenTo(canvasMain, element => {
-        _this.$nextTick(() => {
-          _this.restore()
-        })
-      })
-    }
-    // 监听画布div变动事件
-    const tempCanvas = document.getElementById('canvasInfoTemp')
-    if (tempCanvas) {
-      erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-        _this.$nextTick(() => {
-          // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-          _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-          this.$emit('mainHeightChange', _this.mainHeight)
-        })
-      })
-    }
-    eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
-    _this.$store.commit('clearLinkageSettingInfo', false)
-    _this.canvasStyleDataInit()
+    this.initListen()
+    this.$store.commit('clearLinkageSettingInfo', false)
+    this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
-    if (_this.terminal === 'mobile') {
-      _this.initMobileCanvas()
+    if (this.terminal === 'mobile') {
+      this.initMobileCanvas()
     }
   },
   beforeDestroy() {
+    erd.uninstall(this.$refs.canvasInfoTemp)
+    erd.uninstall(this.$refs.canvasInfoMain)
     clearInterval(this.timer)
   },
   methods: {
@@ -378,6 +360,7 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
+      this.showChartInfoType = chartInfo.openType
       if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
@@ -403,6 +386,33 @@ export default {
     },
     canvasScroll() {
       bus.$emit('onScroll')
+    },
+    initListen() {
+      const _this = this
+      const canvasMain = document.getElementById('canvasInfoMain')
+      // 监听主div变动事件
+      if (canvasMain) {
+        erd.listenTo(canvasMain, element => {
+          _this.$nextTick(() => {
+            _this.restore()
+          })
+        })
+      }
+      setTimeout(() => {
+        // 监听画布div变动事件
+        const tempCanvas = document.getElementById('canvasInfoTemp')
+        if (tempCanvas) {
+          erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+            _this.$nextTick(() => {
+              // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+              _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+              this.$emit('mainHeightChange', _this.mainHeight)
+            })
+          })
+        }
+      }, 1500)
+
+      eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     }
   }
 }

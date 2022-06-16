@@ -41,10 +41,6 @@ export function baseTreemapOption(chart_option, chart) {
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
-        // const y = {
-        //   name: chart.data.x[i],
-        //   value: valueArr[i]
-        // }
         const y = valueArr[i]
         y.name = chart.data.x[i]
         // color
@@ -57,7 +53,6 @@ export function baseTreemapOption(chart_option, chart) {
       chart_option.series[0].name = chart.data.series[0].name
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

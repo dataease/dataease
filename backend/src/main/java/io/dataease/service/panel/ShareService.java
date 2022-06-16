@@ -54,7 +54,7 @@ public class ShareService {
      * 5.批量新增
      * 6.发送取消分享消息
      * 7.发送新增分享消息
-     * 
+     *
      * @param panelShareFineDto
      */
     @Transactional
@@ -72,12 +72,6 @@ public class ShareService {
         authURDMap.put(0, authURD.getUserIds());
         authURDMap.put(1, authURD.getRoleIds());
         authURDMap.put(2, authURD.getDeptIds());
-
-        /*
-         * PanelShareExample example = new PanelShareExample();
-         * example.createCriteria().andPanelGroupIdEqualTo(panelGroupId);
-         * List<PanelShare> panelShares = mapper.selectByExample(example);
-         */
         PanelShareSearchRequest request = new PanelShareSearchRequest();
         request.setCurrentUserName(AuthUtils.getUser().getUsername());
         request.setResourceId(panelGroupId);
@@ -322,7 +316,7 @@ public class ShareService {
 
     /**
      * panel_group_id建了索引 效率不会很差
-     * 
+     *
      * @param panel_group_id
      */
     @Transactional

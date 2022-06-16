@@ -8,6 +8,7 @@
     "build": "vue-cli-service build",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
+    "dll": "webpack -p --progress --config ./webpack.dll.conf.js",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
@@ -78,8 +79,10 @@
     "@vue/cli-plugin-babel": "3.6.0",
     "@vue/cli-plugin-eslint": "^3.9.1",
     "@vue/cli-service": "^3.3.1",
+    "add-asset-html-webpack-plugin": "^3.1.3",
     "babel-eslint": "10.0.1",
     "chalk": "2.4.2",
+    "clean-webpack-plugin": "^1.0.1",
     "connect": "3.6.6",
     "copy-webpack-plugin": "^4.6.0",
     "eslint": "5.15.3",
@@ -95,7 +98,8 @@
     "script-loader": "^0.7.2",
     "serve-static": "^1.13.2",
     "vue-template-compiler": "2.6.10",
-    "vuetify": "^2.6.6"
+    "vuetify": "^2.6.6",
+    "webpack-cli": "^3.2.3"
   },
   "engines": {
     "node": ">=8.9",

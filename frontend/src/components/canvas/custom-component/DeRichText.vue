@@ -33,34 +33,6 @@ import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
 
-// const fonts = [
-//   '宋体=宋体',
-//   '微软雅黑=微软雅黑',
-//   '新宋体=新宋体',
-//   '黑体=黑体',
-//   '楷体=楷体',
-//   '隶书=隶书',
-//   'Courier New=courier new,courier',
-//   'AkrutiKndPadmini=Akpdmi-n',
-//   'Andale Mono=andale mono,times',
-//   'Arial=arial,helvetica,sans-serif',
-//   'Arial Black=arial black,avant garde',
-//   'Book Antiqua=book antiqua,palatino',
-//   'Comic Sans MS=comic sans ms,sans-serif',
-//   'Courier New=courier new,courier',
-//   'Georgia=georgia,palatino',
-//   'Helvetica=helvetica',
-//   'Impact=impact,chicago',
-//   'Symbol=symbol',
-//   'Tahoma=tahoma,arial,helvetica,sans-serif',
-//   'Terminal=terminal,monaco',
-//   'Times New Roman=times new roman,times',
-//   'Trebuchet MS=trebuchet ms,geneva',
-//   'Verdana=verdana,geneva',
-//   'Webdings=webdings',
-//   'Wingdings=wingdings,zapf dingbats'
-// ]
-
 export default {
   name: 'DeRichText',
   components: {
@@ -106,7 +78,6 @@ export default {
         content_css: '/tinymce/skins/content/default/content.css',
         plugins: 'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
         // 工具栏
-        // toolbar: 'undo redo |  fontsizeselect fontselect | bold italic forecolor backcolor underline strikethrough | alignleft aligncenter alignright | lists image media table link | bullist numlist ',
         toolbar: 'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
             'alignleft aligncenter alignright | bullist numlist |' +
             ' blockquote subscript superscript removeformat | table image media | fullscreen ' +

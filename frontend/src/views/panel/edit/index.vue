@@ -1,16 +1,8 @@
 <template>
   <el-row>
     <el-header class="de-header">
-      <el-col
-        :span="8"
-        style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px"
-      >
-        <span style="line-height: 35px;">
-          {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
-        </span>
-      </el-col>
       <!--横向工具栏-->
-      <el-col :span="16">
+      <el-col :span="24">
         <Toolbar
           ref="toolbar"
           :style-button-active="show&&showIndex===2"
@@ -376,7 +368,7 @@ import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
-
+import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 export default {
   name: 'PanelEdit',
   components: {
@@ -388,7 +380,6 @@ export default {
     DeContainer,
     DeAsideContainer,
     FilterGroup,
-    ViewSelect,
     Editor,
     Toolbar,
     FilterDialog,
@@ -615,6 +606,8 @@ export default {
     }
   },
   created() {
+    // Global listening for key events
+    listenGlobalKeyDown()
     this.init(this.$store.state.panel.panelInfo.id)
   },
   mounted() {
@@ -677,6 +670,8 @@ export default {
       this.$store.commit('initCanvas')
       if (panelId) {
         initPanelData(panelId, function() {
+          // 清空当前缓存,快照
+          _this.$store.commit('refreshSnapshot')
           // 初始化视图缓存
           initViewCache(panelId)
           // 初始化记录的视图信息
@@ -734,7 +729,7 @@ export default {
       const parent = evt.target.closest('.button-div-class')
       const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
-      const stick = evt.target.closest('.el-icon-magic-stick')
+      const stick = evt.target.closest('.icon-magic-line')
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
@@ -1132,24 +1127,24 @@ export default {
 
 <style scoped>
   .ms-aside-container {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     max-width: 60px;
     border: none;
     width: 60px;
   }
 
   .ms-main-container {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
   }
 
   .de-header {
-    height: 35px !important;
+    height: 56px !important;
     border-bottom: 1px solid #E6E6E6;
-
+    background-color: var(--SiderBG, white);
   }
 
   .blackTheme .de-header {
-    background-color: var(--SiderBG) !important;
+    background-color: var(--SiderBG, white) !important;
     color: var(--TextActive);
   }
 
@@ -1174,7 +1169,7 @@ export default {
   .leftPanel {
     width: 100%;
     max-width: 300px;
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     position: fixed;
     top: 91px;
     left: 60px;
@@ -1270,14 +1265,14 @@ export default {
 
   .this_canvas {
     width: 100%;
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     overflow-x: hidden;
     overflow-y: auto;
     background-size: 100% 100% !important;
   }
 
   .el-main {
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
     padding: 0 !important;
     overflow: auto;
     position: relative;

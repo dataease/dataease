@@ -7,6 +7,7 @@ import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.listener.DatasetCheckListener;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.service.FileService;
 import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
@@ -66,8 +67,14 @@ public class SystemParameterController {
 
     @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/basic")
-    public void editBasic(@RequestBody List<SystemParameter> systemParameter) {
-        systemParameterService.editBasic(systemParameter);
+    public CasSaveResult editBasic(@RequestBody List<SystemParameter> systemParameter) {
+        int timeout = Integer.parseInt(systemParameter.stream().filter(
+                parameter -> parameter.getParamKey().equals("basic.frontTimeOut")
+        ).findFirst().get().getParamValue());
+        if (timeout < 0 || timeout > 300) { //增加了合法性检验
+            throw new NumberFormatException("Timeout Range Error!");
+        }
+        return systemParameterService.editBasic(systemParameter);
     }
 
     @PostMapping("/testConnection")

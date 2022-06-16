@@ -106,7 +106,7 @@ public class DriverService {
         DeDriverDetails deDriverDetails = deDriverDetailsMapper.selectByPrimaryKey(driverFileId);
         DeDriver deDriver = deDriverMapper.selectByPrimaryKey(deDriverDetails.getDeDriverId());
         if(deDriver == null){
-            throw new Exception("未找到驱动");
+            throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
         }
         DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), deDriverDetails.getDeDriverId(), null, null);
@@ -119,7 +119,7 @@ public class DriverService {
     public DeDriverDetails saveJar(MultipartFile file, String driverId) throws Exception {
         DeDriver deDriver = deDriverMapper.selectByPrimaryKey(driverId);
         if(deDriver == null){
-            throw new Exception("未找到驱动");
+            throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
         }
         String filename = file.getOriginalFilename();
         String dirPath = DRIVER_PATH + driverId + "/";
@@ -128,13 +128,6 @@ public class DriverService {
         saveFile(file, dirPath, filePath);
         List<String> jdbcList = new ArrayList<>();
         String version = "";
-//        ExtendedJdbcClassLoader extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(filePath).toURI().toURL()}, null);
-//        for (String className : getClassNameFrom(filePath)) {
-//            if (isChildClass(className, java.sql.Driver.class, extendedJdbcClassLoader)) {
-//                jdbcList.add(className);
-//                version = classVersion(extendedJdbcClassLoader, className);
-//            }
-//        }
 
         DeDriverDetails deDriverDetails = new DeDriverDetails();
         deDriverDetails.setId(UUID.randomUUID().toString());

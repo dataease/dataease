@@ -45,7 +45,7 @@
       :linkage-active="linkageActiveCheck(item)"
       :batch-opt-active="batchOptActiveCheck(item)"
       @refLineParams="getRefLineParams"
-      @showViewDetails="showViewDetails(index)"
+      @showViewDetails="showViewDetails($event,index)"
       @resizeView="resizeView(index,item)"
       @onResizeStart="startResize"
       @onDragStart="onStartMove"
@@ -137,27 +137,26 @@
     <el-dialog
       :title="$t('chart.chart_details')"
       :visible.sync="chartDetailsVisible"
-      width="70%"
+      width="80%"
       class="dialog-css"
       :destroy-on-close="true"
       :show-close="true"
+      top="5vh"
     >
       <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-        <el-dropdown>
-          <el-button size="mini">
-            {{ $t('chart.export') }}<i class="el-icon-download" />
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="exportExcel"><svg-icon icon-class="ds-excel" class="ds-icon-excel" />Excel</el-dropdown-item>
-            <el-dropdown-item v-if="showExportImgButton" icon="el-icon-picture-outline" @click.native="exportViewImg">{{ $t('chart.image') }}</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <el-button v-if="showChartInfoType==='enlarge'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+          {{ $t('chart.export_img') }}
+        </el-button>
+        <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
+          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
+        </el-button>
       </span>
       <UserViewDialog
         v-if="chartDetailsVisible"
         ref="userViewDialog"
         :chart="showChartInfo"
         :chart-table="showChartTableInfo"
+        :open-type="showChartInfoType"
       />
     </el-dialog>
 
@@ -769,7 +768,7 @@ function findBelowItems(item) {
           break
         }
       } catch (e) {
-        console.log('positionBox igonre')
+        console.error('positionBox igonre', e)
       }
     }
   }
@@ -912,6 +911,7 @@ export default {
       chartDetailsVisible: false,
       showChartInfo: {},
       showChartTableInfo: {},
+      showChartInfoType: 'details',
       // 挤占式画布设计
       baseWidth: 100,
       baseHeight: 100,
@@ -1351,6 +1351,7 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
+      this.showChartInfoType = chartInfo.openType
       this.chartDetailsVisible = true
     },
     exportExcel() {
@@ -1359,8 +1360,8 @@ export default {
     exportViewImg() {
       this.$refs['userViewDialog'].exportViewImg()
     },
-    showViewDetails(index) {
-      this.$refs.wrapperChild[index].openChartDetailsDialog()
+    showViewDetails(params, index) {
+      this.$refs.wrapperChild[index].openChartDetailsDialog(params)
     },
 
     resizeView(index, item) {

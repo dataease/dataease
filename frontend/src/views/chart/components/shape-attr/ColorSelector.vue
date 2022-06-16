@@ -100,10 +100,6 @@
           <el-form-item v-show="showProperty('tableBorderColor')" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableBorderColor')" />
           </el-form-item>
-          <!--              暂时不支持该功能-->
-          <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
-          <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase('tableStripe')">{{ $t('chart.stripe') }}</el-checkbox>-->
-          <!--              </el-form-item>-->
         </div>
 
         <el-form-item v-show="showProperty('alpha')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
@@ -118,6 +114,7 @@
 import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
 import { getColors } from '@/views/chart/chart/util'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   name: 'ColorSelector',
@@ -248,11 +245,15 @@ export default {
   },
   computed: {
     ...mapState([
-      'batchOptStatus'
+      'batchOptStatus',
+      'componentViewsData'
     ])
   },
   mounted() {
     this.init()
+    bus.$on('prop-change-data', () => {
+      this.initCustomColor()
+    })
   },
   methods: {
     changeColorOption(modifyName = 'value') {
@@ -260,10 +261,6 @@ export default {
       const items = this.colorCases.filter(ele => {
         return ele.value === that.colorForm.value
       })
-      // const val = JSON.parse(JSON.stringify(this.colorForm))
-      // val.value = items[0].value
-      // val.colors = items[0].colors
-      // this.colorForm.value = items[0].value
       this.colorForm.colors = JSON.parse(JSON.stringify(items[0].colors))
 
       this.customColor = this.colorForm.colors[0]
@@ -280,8 +277,6 @@ export default {
       this.$emit('onColorChange', this.colorForm)
       this.colorForm['modifyName'] = 'colors'
       this.$emit('onColorChange', this.colorForm)
-      // this.customColor = null
-      // this.colorIndex = 0
     },
     init() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -336,8 +331,10 @@ export default {
           this.chart.type === 'funnel' ||
           this.chart.type === 'radar' ||
           this.chart.type === 'scatter')) {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        if (this.componentViewsData[this.chart.id]) {
+          const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
+          this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        }
       }
     }
   }
