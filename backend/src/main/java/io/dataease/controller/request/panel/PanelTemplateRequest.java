@@ -17,6 +17,8 @@ public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
     private String withBlobs="Y";
     @ApiModelProperty("操作类型")
     private String optType;
+    @ApiModelProperty("静态文件")
+    private String staticResource;
     @ApiModelProperty("是否及联")
     private Boolean withChildren = false;
 
