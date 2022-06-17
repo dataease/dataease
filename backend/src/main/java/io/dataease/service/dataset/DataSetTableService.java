@@ -1714,11 +1714,11 @@ public class DataSetTableService {
                     }
                     datasetTableField.setSize(filed.getFieldSize());
                     datasetTableField.setChecked(true);
-                    datasetTableField.setColumnIndex(i);
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
                     datasetTableField.setGroupType((datasetTableField.getDeType() < 2 || datasetTableField.getDeType() == 6) ? "d" : "q");
                 }
+                datasetTableField.setColumnIndex(i);
                 dataSetTableFieldsService.save(datasetTableField);
             }
             // delete 数据库中多余的字段
