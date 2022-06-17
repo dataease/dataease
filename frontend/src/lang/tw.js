@@ -661,7 +661,8 @@ export default {
     tip: '提示：僅用來作爲測試郵件收件人',
     engine_mode_setting: '引擎設置',
     kettle_setting: 'Kettle 設置',
-    cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄'
+    cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄',
+    cas_reset: 'CAS切換回默認登錄方式訪問API：'
   },
   chart: {
     view_reset: '视图重置',

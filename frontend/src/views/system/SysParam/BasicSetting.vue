@@ -40,8 +40,13 @@
               <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
               <el-radio v-if="loginTypes.includes(3)" :label="3" size="mini">CAS</el-radio>
             </el-radio-group>
+
           </el-form-item>
+
         </el-col>
+      </el-row>
+      <el-row v-show="loginTypes.includes(3)">
+        <el-button class="pwd-tips" type="text">{{ $t('system_parameter_setting.cas_reset') + '[/cas/reset/{adminAcount}/{adminPwd}]' }}</el-button>
       </el-row>
 
       <el-row>
@@ -102,6 +107,9 @@ export default {
       },
       originLoginType: null
     }
+  },
+  computed: {
+
   },
   beforeCreate() {
     ldapStatus().then(res => {

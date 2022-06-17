@@ -659,7 +659,8 @@ export default {
     tip: 'Tip: use as test mail recipient only',
     engine_mode_setting: 'Engine Setting',
     kettle_setting: 'Kettle Setting',
-    cas_selected_warn: 'Selecting CAS will cause you to login again'
+    cas_selected_warn: 'Selecting CAS will cause you to login again',
+    cas_reset: 'CAS switches back to the default login mode to access API:'
   },
   chart: {
     view_reset: 'View Reset',

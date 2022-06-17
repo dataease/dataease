@@ -34,5 +34,7 @@ public interface AuthUserService {
 
     Boolean pluginLoaded();
 
+    void checkAdmin(String uname, String pwd);
+
 
 }
