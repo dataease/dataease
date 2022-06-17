@@ -45,7 +45,7 @@
 
         </el-col>
       </el-row>
-      <el-row v-show="loginTypes.includes(3)">
+      <el-row v-if="loginTypes.includes(3)">
         <el-button class="pwd-tips" type="text">{{ $t('system_parameter_setting.cas_reset') + '[/cas/reset/{adminAcount}/{adminPwd}]' }}</el-button>
       </el-row>
 
