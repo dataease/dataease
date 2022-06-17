@@ -49,7 +49,7 @@ export default [
 
   // get user info
   {
-    url: '/dataease/user/info\.*',
+    url: '/dataease/user/info*',
     type: 'get',
     response: config => {
       const { token } = config.query
