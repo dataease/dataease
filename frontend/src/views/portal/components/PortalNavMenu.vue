@@ -7,15 +7,40 @@
             portal.topNavPosRadio == 'top'
         "
         class="config-header"
-        :style="{ backgroundColor: portal.themeColor }"
+        :style="{ backgroundColor: portal.themeColor,
+                  justifyContent:portal.headerNavStyle==='1'?portal.floatPosition:'flex-start',
+                  backgroundImage:`url(${portal.navBageImg})`,
+                  height:portal.titleFontSet.height+'px'
+        }"
       >
         <div
+          v-for="(item,index) in portal.config.treeData"
+          v-show="portal.headerNavStyle==='1'&&( portal.floatPosition ==='center'||portal.floatPosition ==='flex-end')&&JudgmentTwo(portal.floatPosition,index)"
+          :key="item.id"
+          :style="menuStyleSet"
+          @click="changePage(item,index)"
+        >
+          {{ item.label }}
+        </div>
+        <div v-if="portal.headerNavStyle==='1'" :style="titleStyleSet">{{ portal.portalName || "未命名站点" }}</div>
+        <div
+          v-for="(item,indexs) in portal.config.treeData"
+          v-show="portal.headerNavStyle==='1'&&( portal.floatPosition ==='center'||portal.floatPosition ==='flex-end')&&Judgment(portal.floatPosition,indexs)"
+          :key="item.id"
+          :style="menuStyleSet"
+          @click="changePage(item,indexs)"
+        >
+          {{ item.label }}
+        </div>
+        <!-- <div>{{ portal }}</div> -->
+        <!-- <div
           v-for="item in portal.config.treeData"
           :key="item.id"
-        >212</div>
-        <div class="title">{{ portal.portalName || "未命名站点" }}</div>
+        >212</div> -->
+
+        <div v-if="portal.headerNavStyle==='0'" class="title">{{ portal.portalName || "未命名站点" }}</div>
         <!-- <div>55555</div> 此处为全屏预览头部模式下的切换tab -->
-        <div class="tabs">
+        <div v-if="portal.headerNavStyle==='0'" class="tabs">
           <template v-if="portal.navLayoutStyle == 0">
             <el-menu
               :default-active="currentTreeNode.id"
@@ -87,7 +112,7 @@
           <!-- </el-menu> -->
         </el-aside>
         <el-main class="config-main">
-          config-main
+          <!-- config-main -->
           <slot />
         </el-main>
       </el-container>
@@ -170,9 +195,42 @@ export default {
   },
 
   computed: {
+    // titleStyleSet(){
+    //   // {width:portal.titleWidth+'%',textAlign:'center'}
+
+    // },
+    titleStyleSet() {
+      // {width:titleWidth+'%',textAlign:'center'}
+      console.log('this.titleFontSet', this.titleFontSet)
+      const style = {}
+      style.width = this.portal.titleWidth + '%'
+      style.textAlign = 'center'
+      if (this.portal.titleFontSet) {
+        style.color = this.portal.titleFontSet.color
+        style.fontSize = this.portal.titleFontSet.fontSize + 'px'
+        style.fontFamily = this.portal.titleFontSet.fontFamily
+        style.opacity = this.portal.titleFontSet.opacity
+      }
+
+      return style
+    },
+    menuStyleSet() {
+      // {width:menuWidth+'%',textAlign:'center'}
+      const style = {}
+      style.width = this.portal.menuWidth / 10 + '%'
+      style.textAlign = 'center'
+      if (this.portal.menuFontSet) {
+        style.color = this.portal.menuFontSet.color
+        style.fontSize = this.portal.menuFontSet.fontSize + 'px'
+        style.fontFamily = this.portal.menuFontSet.fontFamily
+      }
+      style.cursor = 'pointer'
+
+      return style
+    },
     subTreeDatas() {
       const treeData = this.portal.config.treeData.slice(0)
-      if (this.portal.navLayoutStyle == 0) {
+      if (this.portal.navLayoutStyle === 0) {
         const subs = []
         treeData.forEach((item) => {
           item.children.forEach((sub) => {
@@ -181,8 +239,8 @@ export default {
         })
         return subs
       } else if (
-        this.portal.navLayoutStyle == 1 ||
-        this.portal.navLayoutStyle == 2
+        this.portal.navLayoutStyle === 1 ||
+        this.portal.navLayoutStyle === 2
       ) {
         return treeData
       }
@@ -207,13 +265,39 @@ export default {
   },
 
   methods: {
+    Judgment(key, index) {
+      if (key === 'center') {
+        if (index % 2 !== 0) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return true
+      }
+    },
+    JudgmentTwo(key, index) {
+      if (key === 'center') {
+        if (index % 2 !== 0) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return true
+      }
+    },
+    changePage(item, index) {
+      console.log('item切换页面', item, index, this.portal)
+      this.handleMenuSelect(item.id)
+    },
     handleMenuSelect(active) {
       console.log('----- active', active)
       const that = this
       function getTreedDataActive(treeData) {
         for (let i = 0; i < treeData.length; i++) {
           const item = treeData[i]
-          if (item.id == active) {
+          if (item.id === active) {
             console.log('item.label', item.label)
             that.$emit('update', item.trendId)
           } else {
@@ -221,6 +305,7 @@ export default {
           }
         }
       }
+      // console.log('getTreedDataActive(this.portal.config.treeData)', getTreedDataActive(this.portal.config.treeData))
       getTreedDataActive(this.portal.config.treeData)
     }
   }
@@ -260,7 +345,10 @@ export default {
     .config-header {
       // background-color: #242834;
       // min-height: 60px;
+       background-size:100% 100%;
+      background-repeat: no-repeat;
       display: flex;
+      align-items:center;
       .title {
         // background-color: green;
         width: 200px;
@@ -268,6 +356,12 @@ export default {
         text-align: center;
         border-bottom: 1px solid var(--TopBG, #e6e6e6);
       }
+    }
+    .menu_class{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
     }
     .config-bottom-header {
       position: fixed;

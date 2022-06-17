@@ -83,7 +83,7 @@
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
             <PortalNavMenu v-if="portal" :portal="portal" @update="updatePortal">
-              <div>213123112312</div>
+              <!-- <div>页面加载区域</div> -->
               <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
             </PortalNavMenu>
             <template v-else>

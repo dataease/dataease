@@ -6,14 +6,13 @@
           plain
           icon="el-icon-circle-plus-outline"
           @click="handleAddPortalDrawer"
-          >新建数据门户</el-button
-        >
+        >新建数据门户</el-button>
       </div>
       <div class="content">
-        <el-table :data="list" v-loading="previewLoading">
-          <el-table-column label="名称" prop="portalName"></el-table-column>
-          <el-table-column label="创建者" prop="userName"></el-table-column>
-          <el-table-column label="修改人" prop="updateBy"></el-table-column>
+        <el-table v-loading="previewLoading" :data="list">
+          <el-table-column label="名称" prop="portalName" />
+          <el-table-column label="创建者" prop="userName" />
+          <el-table-column label="修改人" prop="updateBy" />
           <el-table-column label="修改时间">
             <template slot-scope="{ row }">
               {{ row.createTime || row.updateTime }}
@@ -22,9 +21,9 @@
           <el-table-column label="操作">
             <template slot-scope="{ row }">
               <div class="table-option">
-                <el-button circle icon="el-icon-edit" size="mini" type="primary" @click="handleEditPortal(row)"></el-button>
-                <el-button circle icon="el-icon-table-lamp" size="mini" @click="handleUpdateTrend(row)"></el-button>
-                <el-button circle icon="el-icon-delete" size="mini" type="danger" @click="handleDeleteRow(row)"></el-button>
+                <el-button circle icon="el-icon-edit" size="mini" type="primary" @click="handleEditPortal(row)" />
+                <el-button circle icon="el-icon-table-lamp" size="mini" @click="handleUpdateTrend(row)" />
+                <el-button circle icon="el-icon-delete" size="mini" type="danger" @click="handleDeleteRow(row)" />
               </div>
             </template>
           </el-table-column>
@@ -49,213 +48,217 @@
         :open-type="openType"
         :visible.sync="showPortalDrawer"
         @preview="handleConfigPreviewTrend"
-      ></PortalDrawerComponent>
+      />
     </div>
-    <div class="portal-panel-view-show" v-if="currentItem">
+    <div v-if="currentItem" class="portal-panel-view-show">
+      <div>333333333</div>
       <PanelViewShow
         ref="panelViewShow"
         :portal="currentItem"
         @update="update"
-      ></PanelViewShow>
+      />
     </div>
   </div>
 </template>
 
 <script>
-import PortalDrawerComponent from "./components/PortalDrawerComponent.vue";
-import PanelViewShow from "@/views/panel/list/PanelViewShow.vue";
+import PortalDrawerComponent from './components/PortalDrawerComponent.vue'
+import PanelViewShow from '@/views/panel/list/PanelViewShow.vue'
 import {
   getPortalList,
   deletePortal,
   savePortal,
-  updatePortal,
-} from "@/api/panel/portal";
-import { initPanelData } from "@/api/panel/panel";
-import bus from "@/utils/bus";
+  updatePortal
+} from '@/api/panel/portal'
+import { initPanelData } from '@/api/panel/panel'
+import bus from '@/utils/bus'
 export default {
   components: {
     PortalDrawerComponent,
-    PanelViewShow,
+    PanelViewShow
   },
   data() {
     return {
       list: [],
       total: 0,
       showPortalDrawer: false,
-      openType: "add", // edit
+      openType: 'add', // edit
       pageValue: {
         page_number: 1,
-        page_size: 10,
+        page_size: 10
       },
       currentItem: null,
-      previewLoading: false,
-    };
+      previewLoading: false
+    }
   },
 
   mounted() {
-    this.handleGetPortalList();
-    bus.$on("savePortal", this.handleSavePortal);
-    bus.$on("updatePortal", this.handleUpdatePortal);
+    this.handleGetPortalList()
+    bus.$on('savePortal', this.handleSavePortal)
+    bus.$on('updatePortal', this.handleUpdatePortal)
   },
 
   destroyed() {
-    bus.$off("savePortal", this.handleSavePortal);
-    bus.$off("updatePortal", this.handleUpdatePortal);
+    bus.$off('savePortal', this.handleSavePortal)
+    bus.$off('updatePortal', this.handleUpdatePortal)
   },
 
   methods: {
     // 新建站点
     handleAddPortalDrawer() {
       this.currentItem = null
-      this.openType = "add";
-      this.showPortalDrawer = true;
+      this.openType = 'add'
+      this.showPortalDrawer = true
     },
 
     // 点击编辑站点
     handleEditPortal(row) {
-      this.openType = "edit";
+      this.openType = 'edit'
       this.currentItem = {
         ...JSON.parse(row.positionJson),
-        id: row.id,
-      };
-      this.showPortalDrawer = true;
+        id: row.id
+      }
+      this.showPortalDrawer = true
     },
 
     // 点击配置里的预览
     handleConfigPreviewTrend(item) {
-      let trendId = "";
+      let trendId = ''
       function getTreedDataFirstTrendId(treeData) {
         for (let i = 0; i < treeData.length; i++) {
-          const item = treeData[i];
+          const item = treeData[i]
           if (item.trendId && !trendId) {
-            trendId = item.trendId;
+            trendId = item.trendId
           } else {
-            getTreedDataFirstTrendId(item.children);
+            getTreedDataFirstTrendId(item.children)
           }
         }
       }
 
-      getTreedDataFirstTrendId(item.config.treeData);
-      this.update(trendId);
+      getTreedDataFirstTrendId(item.config.treeData)
+      this.update(trendId)
     },
 
     // 站点预览
     handleUpdateTrend(row) {
       this.currentItem = {
         ...JSON.parse(row.positionJson),
-        id: row.id,
-      };
-      this.previewLoading = true;
+        id: row.id
+      }
+      this.previewLoading = true
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
-      let trendId = "";
+      let trendId = ''
       function getTreedDataFirstTrendId(treeData) {
         for (let i = 0; i < treeData.length; i++) {
-          const item = treeData[i];
+          const item = treeData[i]
           if (item.trendId && !trendId) {
-            trendId = item.trendId;
+            trendId = item.trendId
           } else {
-            getTreedDataFirstTrendId(item.children);
+            getTreedDataFirstTrendId(item.children)
           }
         }
       }
 
-      const treeData = JSON.parse(row.positionJson).config.treeData;
-      getTreedDataFirstTrendId(treeData);
-      this.update(trendId);
+      const treeData = JSON.parse(row.positionJson).config.treeData
+      getTreedDataFirstTrendId(treeData)
+      this.update(trendId)
     },
 
     update(trendId) {
+      console.log('触发此处的刷新功能，-------', trendId)
       if (trendId) {
-        if (Object.prototype.toString.call(trendId) == "[object Array]") {
-          trendId = trendId[trendId.length - 1];
+        if (Object.prototype.toString.call(trendId) === '[object Array]') {
+          trendId = trendId[trendId.length - 1]
         }
-        const that = this;
-        initPanelData(trendId, function (response) {
-          bus.$emit("set-panel-show-type", 0);
+        const that = this
+        console.log('此处的trendId', trendId)
+        initPanelData(trendId, function(response) {
+          console.log('response===', response)
+          bus.$emit('set-panel-show-type', 0)
           setTimeout(() => {
             if (that.$refs.panelViewShow) {
-              that.$refs.panelViewShow.clickFullscreen();
-              that.previewLoading = false;
+              that.$refs.panelViewShow.clickFullscreen()
+              that.previewLoading = false
             }
             that.$watch(
               () => that.$refs.panelViewShow.fullscreen,
               (val) => {
                 if (!val) {
-                  that.currentItem = null;
+                  that.currentItem = null
                 }
               }
-            );
-          }, 1000);
-        });
+            )
+          }, 1000)
+        })
       } else {
-        this.previewLoading = false;
-        this.$message.warning("该站点下还没有配置仪表板");
+        this.previewLoading = false
+        this.$message.warning('该站点下还没有配置仪表板')
       }
     },
 
     // 获取站点列表
     async handleGetPortalList() {
-      this.previewLoading = true;
-      const res = await getPortalList({ ...this.pageValue });
-      this.previewLoading = false;
+      this.previewLoading = true
+      const res = await getPortalList({ ...this.pageValue })
+      this.previewLoading = false
       if (res.success) {
-        this.total = res.data.total;
+        this.total = res.data.total
         this.list = res.data.portalDataList.map((item) => {
           return {
             ...item,
-            portalName: JSON.parse(item.positionJson).portalName,
-          };
-        });
+            portalName: JSON.parse(item.positionJson).portalName
+          }
+        })
       }
     },
 
     // 删除一个站点
     async handleDeleteRow(row) {
-      this.$confirm("删除该站点", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('删除该站点', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-        .then(async () => {
-          const res = await deletePortal(row.id);
+        .then(async() => {
+          const res = await deletePortal(row.id)
           if (res.success) {
-            this.$message.success("操作成功");
-            this.handleGetPortalList();
+            this.$message.success('操作成功')
+            this.handleGetPortalList()
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
     handlePageNumberChange(page_number) {
-      this.pageValue.page_number = page_number;
-      this.handleGetPortalList();
+      this.pageValue.page_number = page_number
+      this.handleGetPortalList()
     },
 
     handlePageSizeChange(evt) {
-      console.log("handlePageSizeChange evt", evt);
+      console.log('handlePageSizeChange evt', evt)
     },
 
     async handleSavePortal(params) {
-      const res = await savePortal(params);
+      const res = await savePortal(params)
       if (res.success) {
-        this.$message.success("操作成功");
+        this.$message.success('操作成功')
       } else {
-        this.$message.error(res.message);
+        this.$message.error(res.message)
       }
-      this.handleGetPortalList();
+      this.handleGetPortalList()
     },
     async handleUpdatePortal(params) {
-      const res = await updatePortal(params);
+      const res = await updatePortal(params)
       if (res.success) {
-        this.$message.success("操作成功");
+        this.$message.success('操作成功')
       } else {
-        this.$message.error(res.message);
+        this.$message.error(res.message)
       }
-      this.handleGetPortalList();
-    },
-  },
-};
+      this.handleGetPortalList()
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

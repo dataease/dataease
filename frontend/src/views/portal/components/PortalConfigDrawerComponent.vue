@@ -49,12 +49,30 @@
                   topNavPosRadio == 'top'
               "
               class="config-header"
-              :style="{ backgroundColor: themeColor }"
+              :style="{ backgroundColor: themeColor,justifyContent:floatPosition,backgroundImage:`url(${navBageImg})` }"
             >
-              <div>头部设置3333</div>
-              <div class="title">{{ portalName || "未命名站点" }}</div>
+              <div
+                v-for="(item,index) in treeData"
+                v-show="headerNavStyle==='1'&&( floatPosition ==='center'||floatPosition ==='flex-end')&&JudgmentTwo(floatPosition,index)"
+                :key="item.id"
+                :style="menuStyleSet"
+                @click="changePage(item,index)"
+              >
+                {{ item.label }}
+              </div>
+              <div v-if="headerNavStyle==='1'" :style="titleStyleSet">{{ portalName || "未命名站点" }}</div>
+              <div
+                v-for="(item,indexs) in treeData"
+                v-show="headerNavStyle==='1'&&( floatPosition ==='center'||floatPosition ==='flex-end')&&Judgment(floatPosition,indexs)"
+                :key="item.id"
+                :style="menuStyleSet"
+                @click="changePage(item,indexs)"
+              >
+                {{ item.label }}
+              </div>
+              <div v-if="headerNavStyle==='0'" class="title">{{ portalName || "未命名站点" }}</div>
 
-              <div class="tabs">
+              <div v-if="headerNavStyle==='0'" class="tabs">
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
                     :default-active="currentTreeNode.id"
@@ -114,7 +132,7 @@
                 <!-- </el-menu> -->
               </el-aside>
               <el-main v-loading="panelLoading" class="config-main">
-                <div>11111111111111111</div>
+                <!-- <div>11111111111111111</div> -->
                 <PanelViewShow
                   ref="panelViewShow"
                   :portal="privewPortal"
@@ -330,6 +348,19 @@ export default {
       type: Boolean,
       default: false
     },
+    titleFontSet: {
+      type: Object,
+      default: () => {}
+    },
+    menuFontSet: {
+      type: Object,
+      default: () => {}
+    },
+    navBageImg: String,
+    headerNavStyle: String,
+    titleWidth: Number,
+    menuWidth: Number,
+    floatPosition: String,
     themeColor: String,
     topNavPosRadio: String,
     navLayoutStyle: String,
@@ -383,6 +414,35 @@ export default {
     }
   },
   computed: {
+    titleStyleSet() {
+      // {width:titleWidth+'%',textAlign:'center'}
+      console.log('this.titleFontSet', this.titleFontSet)
+      const style = {}
+      style.width = this.titleWidth + '%'
+      style.textAlign = 'center'
+      if (this.titleFontSet) {
+        style.color = this.titleFontSet.color
+        style.fontSize = this.titleFontSet.fontSize + 'px'
+        style.fontFamily = this.titleFontSet.fontFamily
+        style.opacity = this.titleFontSet.opacity
+      }
+
+      return style
+    },
+    menuStyleSet() {
+      // {width:menuWidth+'%',textAlign:'center'}
+      const style = {}
+      style.width = this.menuWidth / 10 + '%'
+      style.textAlign = 'center'
+      if (this.menuFontSet) {
+        style.color = this.menuFontSet.color
+        style.fontSize = this.menuFontSet.fontSize + 'px'
+        style.fontFamily = this.menuFontSet.fontFamily
+      }
+      style.cursor = 'pointer'
+
+      return style
+    },
     syncVisible: {
       get() {
         return this.visible
@@ -474,6 +534,28 @@ export default {
   },
 
   methods: {
+    Judgment(key, index) {
+      if (key === 'center') {
+        if (index % 2 !== 0) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return true
+      }
+    },
+    JudgmentTwo(key, index) {
+      if (key === 'center') {
+        if (index % 2 !== 0) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return true
+      }
+    },
     close() {
       this.syncVisible = false
     },
@@ -485,6 +567,13 @@ export default {
         themeColor: this.themeColor, // 默认
         portalName: this.portalName || '未命名站点', // 站点名称
         lastTreeId: this.treeId,
+        headerNavStyle: this.headerNavStyle, // 0 默认 1浮动
+        floatPosition: this.floatPosition, // 浮动位置
+        titleWidth: this.titleWidth, // 标题宽度
+        menuWidth: this.menuWidth, // 菜单宽度
+        navBageImg: this.navBageImg,
+        titleFontSet: this.titleFontSet,
+        menuFontSet: this.menuFontSet,
         config: {
           treeData: this.treeData
         }
@@ -677,6 +766,9 @@ export default {
         .catch(() => {})
     },
     // 选择一级菜单
+    changePage(item, index) {
+      this.handleTopSelect(item.id)
+    },
     handleTopSelect(active) {
       console.log('active', active)
       this.topActiveTab = active
@@ -837,7 +929,10 @@ export default {
         .config-header {
           // background-color: #242834;
           // min-height: 60px;
+          background-size:100% 100%;
+          background-repeat: no-repeat;
           display: flex;
+          align-items:center;
           .title {
             // background-color: green;
             width: 200px;
