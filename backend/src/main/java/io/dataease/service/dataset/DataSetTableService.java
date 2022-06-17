@@ -2517,11 +2517,11 @@ public class DataSetTableService {
                     return;
                 }
 
-                visitBinaryExpression(likeExpression, (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
-                Expression escape = likeExpression.getEscape();
+                visitBinaryExpression(likeExpression,
+                        (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
+                String escape = likeExpression.getEscape();
                 if (escape != null) {
-                    getBuffer().append(" ESCAPE ");
-                    likeExpression.getEscape().accept(this);
+                    buffer.append(" ESCAPE '").append(escape).append('\'');
                 }
             }
 

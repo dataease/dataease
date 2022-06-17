@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
-            <version>5.0.3</version>
+            <version>5.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -329,11 +329,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>4.4</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -482,45 +477,45 @@
             <build>
                 <plugins>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <?m2e execute onConfiguration?>
-                                <id>main-class-placement</id>
-                                <phase>generate-resources</phase>
-                                <configuration>
-                                    <target>
-                                        <move todir="src/main/resources/static">
-                                            <fileset dir="../frontend/dist">
-                                                <exclude name="*.html"/>
-                                            </fileset>
-                                        </move>
-                                        <move todir="src/main/resources/templates">
-                                            <fileset dir="../frontend/dist">
-                                                <include name="*.html"/>
-                                            </fileset>
-                                        </move>
+<!--                    <plugin>-->
+<!--                        <groupId>org.apache.maven.plugins</groupId>-->
+<!--                        <artifactId>maven-antrun-plugin</artifactId>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <?m2e execute onConfiguration?>-->
+<!--                                <id>main-class-placement</id>-->
+<!--                                <phase>generate-resources</phase>-->
+<!--                                <configuration>-->
+<!--                                    <target>-->
+<!--                                        <move todir="src/main/resources/static">-->
+<!--                                            <fileset dir="../frontend/dist">-->
+<!--                                                <exclude name="*.html"/>-->
+<!--                                            </fileset>-->
+<!--                                        </move>-->
+<!--                                        <move todir="src/main/resources/templates">-->
+<!--                                            <fileset dir="../frontend/dist">-->
+<!--                                                <include name="*.html"/>-->
+<!--                                            </fileset>-->
+<!--                                        </move>-->
 
-                                        <copy todir="src/main/resources/static/de-app">
-                                            <fileset dir="../mobile/dist">
-                                                <exclude name="*.html"/>
-                                            </fileset>
-                                        </copy>
-
-
-                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
+<!--                                        <copy todir="src/main/resources/static/de-app">-->
+<!--                                            <fileset dir="../mobile/dist">-->
+<!--                                                <exclude name="*.html"/>-->
+<!--                                            </fileset>-->
+<!--                                        </copy>-->
 
 
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+<!--                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />-->
+
+
+<!--                                    </target>-->
+<!--                                </configuration>-->
+<!--                                <goals>-->
+<!--                                    <goal>run</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
                 </plugins>
             </build>
         </profile>
