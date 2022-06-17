@@ -69,17 +69,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-        <chart-component-hc
-          v-else-if="charViewHcShowFlag"
-          :ref="element.propValue.id"
-          class="chart-class"
-          :chart="chart"
-          :track-menu="trackMenu"
-          :search-count="searchCount"
-          :terminal-type="scaleCoefficientType"
-          @onChartClick="chartClick"
-          @onJumpClick="jumpClick"
-        />
+    <chart-component-hc
+      v-else-if="charViewHcShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
@@ -252,11 +252,11 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        !this.chart.type.includes("table") &&
-        !this.chart.type.includes("text") &&
-        this.chart.type !== "label" &&
-        this.renderComponent() === "highcharts"
-      );
+        !this.chart.type.includes('table') &&
+        !this.chart.type.includes('text') &&
+        this.chart.type !== 'label' &&
+        this.renderComponent() === 'highcharts'
+      )
     },
     charViewG2ShowFlag() {
       return (
@@ -572,13 +572,13 @@ export default {
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
       }
-      console.log('88888888customAttrChart', customAttrChart, this.chart)
+      // console.log('88888888customAttrChart', customAttrChart, this.chart)
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
-      console.log('this.chart====', this.chart)
+      // console.log('this.chart====', this.chart)
       this.mergeStyle()
     },
     mergeStyle() {
@@ -599,7 +599,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        console.log('customAttrChart=====6666', customAttrChart)
+        // console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -632,9 +632,9 @@ export default {
           .then((response) => {
             // 将视图传入echart组件
             if (response.success) {
-              console.log('查出的数据', response.data)
+              // console.log('查出的数据', response.data)
               this.chart = response.data
-              console.log('this.chart: ', this.chart)
+              // console.log('this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -969,24 +969,24 @@ export default {
     },
 
     renderComponent() {
-      console.log('this.chart.render', this.chart)
+      // console.log('this.chart.render', this.chart)
       return this.chart.render
     },
     getDataEdit(param) {
-      console.log('getDataEdit::::',param)
-      this.$store.state.styleChangeTimes++;
-      if (param.type === "propChange") {
-        this.getData(param.viewId, false);
-      } else if (param.type === "styleChange") {
-        this.chart.customAttr = param.viewInfo.customAttr;
-        this.chart.customStyle = param.viewInfo.customStyle;
-        this.chart.senior = param.viewInfo.senior;
-        this.chart.title = param.viewInfo.title;
-        this.chart.stylePriority = param.viewInfo.stylePriority;
-        this.sourceCustomAttrStr = this.chart.customAttr;
-        this.sourceCustomStyleStr = this.chart.customStyle;
-        this.mergeScale();
-        this.mergeStyle();
+      // console.log('getDataEdit::::', param)
+      this.$store.state.styleChangeTimes++
+      if (param.type === 'propChange') {
+        this.getData(param.viewId, false)
+      } else if (param.type === 'styleChange') {
+        this.chart.customAttr = param.viewInfo.customAttr
+        this.chart.customStyle = param.viewInfo.customStyle
+        this.chart.senior = param.viewInfo.senior
+        this.chart.title = param.viewInfo.title
+        this.chart.stylePriority = param.viewInfo.stylePriority
+        this.sourceCustomAttrStr = this.chart.customAttr
+        this.sourceCustomStyleStr = this.chart.customStyle
+        this.mergeScale()
+        this.mergeStyle()
       }
     }
   }

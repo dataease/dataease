@@ -77,7 +77,6 @@
             </div>
             <!-- 过滤组件 end -->
             <!-- 其他组件 start -->
-
             <div
               class="button-div-class"
               style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
@@ -132,12 +131,39 @@
               />
             </div>
             <!-- 视图复用 end -->
+
+            <!-- 图标库start -->
+            <div
+              class="button-div-class"
+              style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
+            >
+              <el-button
+                circle
+                :class="show&&showIndex===4? 'button-show':'button-closed'"
+                class="el-icon-brush"
+                size="mini"
+                @click="showPanel(4)"
+              />
+            </div>
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+              <div
+                style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
+                {{ $t('panel.icon_module') }}
+              </div>
+            </div>
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
+            </div>
+            <!-- 图标库end -->
           </div>
         </div>
       </de-aside-container>
 
       <!--画布区域-->
-      <de-main-container id="canvasInfo-main">
+      <de-main-container id="canvasInfo-main" @wheel="handleWheel">
         <!-- <div>2121</div> -->
         <!--左侧抽屉-->
         <el-drawer
@@ -155,6 +181,7 @@
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
           <assist-component v-show=" show &&showIndex===3" />
+          <icon-library v-show="show && showIndex === 4" />
         </el-drawer>
 
         <!--PC端画布区域-->
@@ -165,20 +192,48 @@
           class="ruler_class"
           :parent="true"
         > -->
-        <div
-          v-if="!previewVisible&&!mobileLayoutStatus"
-          id="canvasInfo"
-          class="this_canvas"
-          :style="customCanvasStyle"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-          @scroll="canvasScroll"
-        >
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
-          <!--矩形样式组件-->
-          <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+        <div class="zoom_control">
+          画布缩放控制器
+          <div>
+            <el-slider v-model="scaleValue" :min="30" :max="100" @change="changeScale" />
+          </div>
+
+        </div>
+        <SketchRule
+          :lang="lang"
+          :thick="thick"
+          :scale="scaleRule"
+          :width="ruleWidth"
+          :height="ruleHeight"
+          :start-x="startX"
+          :start-y="startY"
+          :hor-line-arr="lines.h"
+          :ver-line-arr="lines.v"
+          :shadow="shadow"
+          :corner-active="true"
+          @handleLine="handleLine"
+          @onCornerClick="handleCornerClick"
+        />
+        <!-- 创建盒子 -->
+        <div id="ruleBox" ref="screensRef" class="rule_box" @scroll="handleScroll" @wheel="handleWheel">
+
+          <div
+            v-if="!previewVisible&&!mobileLayoutStatus"
+            id="canvasInfo"
+            ref="containerRef"
+            class="this_canvas"
+            :style="customCanvasStyle"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @mousedown="handleMouseDown"
+            @mouseup="deselectCurComponent"
+            @scroll="canvasScroll"
+          >
+            <!-- <Editor id="canvasEditor" ref="canvasEditor" :style="editorStyle" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" /> -->
+            <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+            <!--矩形样式组件-->
+            <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+          </div>
         </div>
         <!-- </vue-ruler-tool> -->
         <!--移动端画布区域 保持宽高比2.5-->
@@ -307,6 +362,7 @@
       ref="files"
       type="file"
       accept="image/*"
+      multiple
       hidden
       @click="e => {e.target.value = '';}"
       @change="handleFileChange"
@@ -340,7 +396,7 @@
 </template>
 
 <script>
-import VueRulerTool from 'vue-ruler-tool'
+// import VueRulerTool from 'vue-ruler-tool'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
@@ -364,6 +420,7 @@ import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
+import IconLibrary from '@/views/panel/IconLibrary'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
@@ -380,11 +437,13 @@ import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
+import SketchRule from 'vue-sketch-ruler'
 
 export default {
   name: 'PanelEdit',
   components: {
-    VueRulerTool,
+    SketchRule,
+    // VueRulerTool,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -399,6 +458,7 @@ export default {
     Preview,
     AttrListExtend,
     AssistComponent,
+    IconLibrary,
     PanelTextEditor,
     TextAttr,
     ChartGroup,
@@ -406,6 +466,20 @@ export default {
   },
   data() {
     return {
+      scaleValue: 100,
+      scaleRule: 1, // 658813476562495, //1,
+      startX: 0,
+      startY: 0,
+      liness: {
+        h: [],
+        v: []
+      },
+      thick: 20, // 标尺的厚度
+      ruleWidth: 3200,
+      ruleHeight: 900,
+      lang: 'zh-CN', // 中英文
+      isShowRuler: true, // 显示标尺
+      isShowReferLine: true, // 显示参考线
       presetLine: [{ type: 'l', site: 100 }, { type: 'v', site: 200 }],
       asideToolType: 'none',
       outerParamsSetVisible: false,
@@ -538,11 +612,32 @@ export default {
       }
       return style
     },
+    shadow() {
+      return {
+        x: 0,
+        y: 0,
+        width: this.canvasStyleData.width,
+        height: this.canvasStyleData.height
+      }
+    },
+    lines() {
+      let linesData = {}
+      if (this.canvasStyleData.ruleLines) {
+        linesData = this.canvasStyleData.ruleLines
+      } else {
+        linesData = {
+          h: [],
+          v: []
+        }
+      }
+
+      return linesData
+    },
     customCanvasStyle() {
       let style = {
         padding: this.componentGap + 'px'
       }
-
+      // console.log('this.canvasStyleData==========', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
           style = {
@@ -558,9 +653,42 @@ export default {
       }
 
       style.width = this.canvasStyleData.width + 'px'
+      style.transform = `scale(${this.scaleRule})`
       style.height = this.canvasStyleData.height + 'px'
-      console.log('shezhi===', style, this.canvasStyleData)
+      style.fontFamily = this.canvasStyleData.fontFamily
+      // console.log('shezhi===', style, this.canvasStyleData)
       return style
+    },
+    editorStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      style.width = this.canvasStyleData.width + 'px'
+      style.height = this.canvasStyleData.height + 'px'
+      return style
+    },
+    ruleStyle() {
+      const style = {}
+      style.width = this.canvasStyleData.width + 'px'
+      style.height = this.canvasStyleData.height + 'px'
+      return style
+    },
+    newRuleWidth() {
+      return this.canvasStyleData.width
+    },
+    newRuleHeight() {
+      return this.canvasStyleData.height
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
@@ -638,9 +766,17 @@ export default {
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
     erd.listenTo(document.getElementById('canvasInfo-main'), element => {
+      // console.log('element=====', element)
+
+      this.detectZoom()
       _this.$nextTick(() => {
         _this.restore()
       })
+    })
+
+    // this.$refs.screensRef.scrollLeft =this.$refs.containerRef.getBoundingClientRect().width / 2 - 300 // 300 = #screens.width / 2
+    this.$nextTick(() => {
+      this.initSize()
     })
   },
   beforeDestroy() {
@@ -648,6 +784,90 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    changeScale(e) {
+      // console.log('缩放值------', e)
+      this.scaleRule = e / 100
+      this.$nextTick(() => {
+        this.handleScroll()
+      })
+    },
+    detectZoom() {
+      let ratio = 0
+      const screen = window.screen
+      const ua = navigator.userAgent.toLowerCase()
+      if (window.devicePixelRatio !== undefined) {
+        // console.log('window.devicePixelRatio', window.devicePixelRatio)
+        ratio = window.devicePixelRatio
+      } else if (~ua.indexOf('msie')) {
+        if (screen.deviceXDPI && screen.logicalXDPI) {
+          // console.log('suofang----------', screen.deviceXDPI, screen.logicalXDPI, screen.deviceXDPI / screen.logicalXDPI)
+          ratio = screen.deviceXDPI / screen.logicalXDPI
+        }
+      } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+        ratio = window.outerWidth / window.innerWidth
+        // console.log('suofang----------22222', window.outerWidth, window.innerWidth, window.outerWidth / window.innerWidth)
+      }
+      if (ratio) {
+        ratio = Math.round(ratio * 100)
+      }
+      // console.log('window.screen.width * window.devicePixelRatio', window.screen.width * window.devicePixelRatio)
+      // console.log('detectZoom====缩放值-----', ratio)
+    },
+    handleScroll() {
+      // console.log('21312321321')
+      const screensRect = document
+        .querySelector('#ruleBox')
+        .getBoundingClientRect()
+      const canvasRect = document
+        .querySelector('#canvasInfo')
+        .getBoundingClientRect()
+      // 标尺开始的刻度
+      const startX = (screensRect.left + this.thick - canvasRect.left) / this.scaleRule
+      const startY = (screensRect.top + this.thick - canvasRect.top) / this.scaleRule
+      this.startX = startX >> 0
+      this.startY = startY >> 0
+    },
+    initSize() {
+      const wrapperRect = document.querySelector('#canvasInfo-main').getBoundingClientRect()
+      const borderWidth = 1
+      // console.log('wrapperRect============', wrapperRect)
+      this.ruleWidth = wrapperRect.width - this.thick - borderWidth
+      this.ruleHeight = wrapperRect.height - this.thick - borderWidth
+    },
+    // 控制缩放值
+    handleWheel(e) {
+      // console.log('是否触发-----', e)
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault()
+        const nextScale = parseFloat(
+          Math.max(0.2, this.scaleRule - e.deltaY / 500).toFixed(2)
+        )
+        if (nextScale > 1) {
+          return
+        }
+        if (nextScale < 0.3) {
+          return
+        }
+        // console.log('nextScale', nextScale)
+        this.scaleRule = nextScale
+        this.scaleValue = nextScale * 100
+      }
+      this.$nextTick(() => {
+        this.handleScroll()
+      })
+    },
+    handleLine(lines) {
+      // console.log('lines====', this.canvasStyleData, lines)
+      // this.lines = lines
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      canvasStyleData.ruleLines = lines
+      // console.log('canvasStyleData', canvasStyleData)
+      this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot', 'commitStyle')
+    },
+    handleCornerClick() {
+      return
+    },
     closeOuterParamsSetDialog() {
       this.outerParamsSetVisible = false
     },
@@ -741,17 +961,21 @@ export default {
       return data
     },
     handleDrop(e) {
+      // console.log('拖拽：：：：', e, this.dragComponentInfo)
+      if (this.dragComponentInfo === null) return
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
-      console.log('拖拽信息--------------', this.dropComponentInfo)
+      // console.log('拖拽信息--------------', this.dropComponentInfo)
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
+      // console.log('componentInfo', componentInfo)
       if (componentInfo.type === 'assist') {
+        // console.log('组件list', componentList)
         // 辅助设计组件
         componentList.forEach(componentTemp => {
           if (componentInfo.id === componentTemp.id) {
@@ -761,6 +985,40 @@ export default {
 
         if (component.type === 'picture-add') {
           this.goFile()
+          this.clearCurrentInfo()
+          return
+        }
+        if (component.type === 'de-icon') {
+          if (this.canvasStyleData.auxiliaryMatrix) {
+            component.x = this.dropComponentInfo.x
+            component.y = this.dropComponentInfo.y
+            component.sizex = this.dropComponentInfo.sizex
+            component.sizey = this.dropComponentInfo.sizey
+
+            component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+            component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+            component.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+            component.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+          } else {
+            component.style.top = this.dropComponentInfo.shadowStyle.y
+            component.style.left = this.dropComponentInfo.shadowStyle.x
+            // component.style.width = this.dropComponentInfo.shadowStyle.width
+            // component.style.height = this.dropComponentInfo.shadowStyle.height
+            component.style.width = parseInt(sessionStorage.getItem('imgWidth'))
+            component.style.height = parseInt(sessionStorage.getItem('imgHeight'))
+          }
+          component.id = newComponentId
+
+          component.propValue = sessionStorage.getItem('iconUrl')
+
+          // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
+          component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+          // 统一设置背景信息
+          component.commonBackground = component.commonBackground || deepCopy(COMMON_BACKGROUND)
+          // 视图统一调整为复制
+          this.$store.commit('addComponent', { component })
+          this.$store.commit('recordSnapshot', 'handleDrop')
+          // console.log('这里吗？？？', component)
           this.clearCurrentInfo()
           return
         }
@@ -902,7 +1160,7 @@ export default {
       this.show = false
     },
     previewFullScreen() {
-      console.log('触发全屏功能=====')
+      // console.log('触发全屏功能=====')
       // this.previewVisible = true
       this.$nextTick(() => {
         this.previewVisible = true
@@ -922,14 +1180,19 @@ export default {
     restore() {
       this.$nextTick(() => {
         const domInfo = this.mobileLayoutStatus ? document.getElementById('canvasInfoMobile') : document.getElementById('canvasInfo')
+        // console.log('此处更新视图状态------', domInfo.offsetHeight, domInfo.offsetWidth)
+        // this.initSize()
         if (domInfo) {
-          this.outStyle.height = domInfo.offsetHeight - this.getGap()
+          // this.outStyle.height = domInfo.offsetHeight - this.getGap()
+          this.outStyle.height = domInfo.offsetHeight
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001) + 2
+          // this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001) + 2
+          this.outStyle.width = domInfo.offsetWidth
         }
       })
     },
     getGap() {
+      // console.log('this.componentGap外层--------------------', this.mobileLayoutStatus, this.componentGap)
       return this.mobileLayoutStatus ? 0 : this.componentGap * 2
     },
     closeStyleDialog() {
@@ -945,8 +1208,58 @@ export default {
         toast('只能插入图片')
         return
       }
+      const fileList = e.target.files
+      // console.log('e.target==========', fileList)
+      for (const key in fileList) {
+        // console.log('遍历对象数组-----', key, fileList[key])
+        _this.addMorePirTure(fileList[key])
+      }
       //
-      const reader = new FileReader()
+      // const reader = new FileReader()
+      // reader.onload = (res) => {
+      //   const fileResult = res.target.result
+      //   const img = new Image()
+      //   img.onload = () => {
+      //     const component = {
+      //       ...commonAttr,
+      //       id: generateID(),
+      //       component: 'Picture',
+      //       type: 'picture-add',
+      //       label: '图片',
+      //       icon: '',
+      //       hyperlinks: HYPERLINKS,
+      //       mobileStyle: BASE_MOBILE_STYLE,
+      //       propValue: fileResult,
+      //       style: {
+      //         ...commonStyle
+      //       },
+      //       commonBackground: {
+      //         alpha: 100,
+      //         backgroundType: 'color',
+      //         borderRadius: 0,
+      //         boxHeight: img.width,
+      //         boxWidth: img.height,
+      //         color: '#FFFFFF',
+      //         enable: false
+      //       }
+      //     }
+      //     console.log('图片的样式', img.width, img.height)
+      //     component.auxiliaryMatrix = false
+      //     component.style.top = _this.dropComponentInfo.shadowStyle.y
+      //     component.style.left = _this.dropComponentInfo.shadowStyle.x
+      //     component.style.width = img.width
+      //     component.style.height = img.height
+      //     this.$store.commit('addComponent', {
+      //       component: component
+      //     })
+      //     this.$store.commit('recordSnapshot', 'handleFileChange')
+      //   }
+
+      //   img.src = fileResult
+      // }
+      // reader.readAsDataURL(file)
+
+      // -------------------------------------------------------------------------------废弃代码
       // reader.onload = (res) => {
       //   const fileResult = res.target.result
       //   const img = new Image()
@@ -989,51 +1302,6 @@ export default {
       //   }
       //   // img.src = fileResult
       // }
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        const img = new Image()
-
-        img.onload = () => {
-          const component = {
-            ...commonAttr,
-            id: generateID(),
-            component: 'Picture',
-            type: 'picture-add',
-            label: '图片',
-            icon: '',
-            hyperlinks: HYPERLINKS,
-            mobileStyle: BASE_MOBILE_STYLE,
-            propValue: fileResult,
-            style: {
-              ...commonStyle
-            },
-            commonBackground: {
-              alpha: 100,
-              backgroundType: 'color',
-              borderRadius: 0,
-              boxHeight: img.width,
-              boxWidth: img.height,
-              color: '#FFFFFF',
-              enable: false
-            }
-          }
-          console.log('图片的样式', img.width, img.height)
-          component.auxiliaryMatrix = false
-          component.style.top = _this.dropComponentInfo.shadowStyle.y
-          component.style.left = _this.dropComponentInfo.shadowStyle.x
-          // component.style.width = _this.dropComponentInfo.shadowStyle.width
-          // component.style.height = _this.dropComponentInfo.shadowStyle.height
-          component.style.width = img.width
-          component.style.height = img.height
-          this.$store.commit('addComponent', {
-            component: component
-          })
-          this.$store.commit('recordSnapshot', 'handleFileChange')
-        }
-
-        img.src = fileResult
-      }
-      reader.readAsDataURL(file)
 
       //
 
@@ -1120,6 +1388,52 @@ export default {
       //   reader.readAsDataURL(file)
       // })
     },
+    addMorePirTure(file) {
+      const _this = this
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        const img = new Image()
+        img.onload = () => {
+          const component = {
+            ...commonAttr,
+            id: generateID(),
+            component: 'Picture',
+            type: 'picture-add',
+            label: '图片',
+            icon: '',
+            hyperlinks: HYPERLINKS,
+            mobileStyle: BASE_MOBILE_STYLE,
+            propValue: fileResult,
+            style: {
+              ...commonStyle
+            },
+            commonBackground: {
+              alpha: 100,
+              backgroundType: 'color',
+              borderRadius: 0,
+              boxHeight: img.width,
+              boxWidth: img.height,
+              color: '#FFFFFF',
+              enable: false
+            }
+          }
+          // console.log('图片的样式', img.width, img.height)
+          component.auxiliaryMatrix = false
+          component.style.top = _this.dropComponentInfo.shadowStyle.y
+          component.style.left = _this.dropComponentInfo.shadowStyle.x
+          component.style.width = img.width
+          component.style.height = img.height
+          this.$store.commit('addComponent', {
+            component: component
+          })
+          this.$store.commit('recordSnapshot', 'handleFileChange')
+        }
+
+        img.src = fileResult
+      }
+      reader.readAsDataURL(file)
+    },
     getPositionX(x) {
       if (this.canvasStyleData.selfAdaption) {
         return x * 100 / this.curCanvasScale.scaleWidth
@@ -1140,7 +1454,7 @@ export default {
       this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
-      console.log(newViewInfo)
+      // console.log(newViewInfo)
       let component
       const newComponentId = uuid.v1()
       // 用户视图设置 复制一个模板
@@ -1198,6 +1512,9 @@ export default {
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
       console.log('是否触发此处的滚动————————', this.scrollLeft, this.scrollTop)
+      this.handleScroll()
+      // this.startX = this.scrollLeft >> 0
+      // this.startY = this.scrollTop >> 0
       bus.$emit('onScroll')
     },
     destroyTimeMachine() {
@@ -1266,6 +1583,7 @@ export default {
     max-width: 60px;
     border: none;
     width: 60px;
+
   }
 
   .ms-main-container {
@@ -1397,10 +1715,25 @@ export default {
     background-size: 100% 100% !important;
     border: 2px solid #9ea6b2
   }
-
+  .rule_box{
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    position:relative;
+  }
+  .zoom_control{
+    position:absolute;
+    right:4%;
+    bottom:8%;
+    z-index:100;
+    width: 210px;
+    background: rgba(0,0,0,0.1);
+    padding: 20px 10px;
+  }
   .this_canvas {
     width: 100%;
-    // height: calc(100vh - 35px);
+    // height: 100%;
     // overflow-x: auto;
     // overflow-y: auto;
     // overflow:hidden;

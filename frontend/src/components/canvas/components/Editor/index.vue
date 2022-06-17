@@ -12,6 +12,14 @@
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
+    <!-- 绘制盒子的基线框 用来框住所选中的组件元素 -->
+    <!-- <div
+      v-show="baseLineShow"
+      class="baseClass"
+      :style="{'top':baseline.top+'px','left': baseline.left+'px','height':baseline.height+'px','width':baseline.width+'px'}"
+      @mousedown="baseMoseDown"
+      @dblclick="clearInfo()"
+    /> -->
     <!-- 网格线 -->
     <Grid v-if="psDebug&&canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--    positionBox:{{positionBoxInfo}}-->
@@ -110,6 +118,19 @@
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
       /> -->
+      <component
+        :is="item.component"
+        v-else-if="renderOk&&item.type==='de-icon'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
+      />
       <component
         :is="item.component"
         v-else-if="renderOk"
@@ -237,6 +258,9 @@ import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
 import BannerSet from '@/views/background/bannerSet'
+import { events } from '../../../DeDrag/option.js'
+import { addEvent, removeEvent } from '../../../../utils/dom.js'
+const eventsForBus = events.mouse
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -868,6 +892,13 @@ export default {
   },
   data() {
     return {
+      baseline: {
+        top: 0,
+        left: 0,
+        height: 0,
+        width: 0
+      },
+      baseLineShow: false,
       boardSetVisible: false,
       bannerSetVisible: false,
       psDebug: false, // 定位调试模式
@@ -966,14 +997,14 @@ export default {
           }
         }
       }
-      console.log('backgroundType--------',)
+      // console.log('backgroundType--------',)
       return style
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     dragComponentInfo() {
-      console.log('是否触发这个事件------')
+      // console.log('是否触发这个事件------')
       return this.$store.state.dragComponentInfo
     },
 
@@ -1002,17 +1033,17 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
-        console.log('改变从这里开始-------------',)
+        // console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
-        // this.changeScale()  // 暂时禁用为解决s2表格出现的加载问题
+        this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
     },
     componentData: {
       handler(newVal, oldVla) {
-        console.log('++++++this.componentData', this.componentData)
-        console.log('组件：', newVal)
+        // console.log('++++++this.componentData', this.componentData)
+        // console.log('组件：', newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
@@ -1047,6 +1078,7 @@ export default {
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
+
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
@@ -1068,18 +1100,57 @@ export default {
       this.bannerSetVisible = false
     },
     boardSet(item) {
-      console.log('itsm00001', item)
+      // console.log('itsm00001', item)
       this.$emit('boardSet', item)
 
       this.boardSetVisible = true
     },
     bannerImg(item) {
-      console.log('item-------------------------------------------', item)
+      // console.log('item-------------------------------------------', item)
       this.bannerelement = item
       this.bannerSetVisible = true
     },
     changeStyleWithScale,
+    setLine(e) {
+      // console.log('组件外的移动----------', e)
+      if (e.offsetY >= this.baseline.top) {
+        this.baseline.height = e.offsetY - this.baseline.top
+      }
+      if (e.offsetX >= this.baseline.left) {
+        this.baseline.width = e.offsetX - this.baseline.left
+      }
+    },
+    hangdleMouseUp(e) {
+      // console.log('松开鼠标的时候触发-----------', e)
+      if (this.baseline.width <= 50 || this.baseline.height <= 50) {
+        this.baseLineShow = false
+      }
+      removeEvent(document.documentElement, 'mousemove', this.setLine)
+      removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+    },
+    baseMoseDown(e) {
+      e.stopPropagation()
+      // console.log('----------------------111111111111111111111111111111111', e)
+    },
+    clearInfo() {
+      // console.log('双击事件---', this.componentData)
+      this.baseLineShow = false
+      this.baseline.left = 0
+      this.baseline.top = 0
+      this.baseline.height = 0
+      this.baseline.width = 0
+    },
     handleMouseDown(e) {
+      // console.log('---------------------点击画布非元素-----------------------------', e)
+      // removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+      if (!this.baseLineShow) {
+        this.baseline.left = e.offsetX
+        this.baseline.top = e.offsetY
+        addEvent(document.documentElement, eventsForBus.move, this.setLine)
+        addEvent(document.documentElement, eventsForBus.stop, this.hangdleMouseUp)
+        this.baseLineShow = true
+      }
+
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
@@ -1198,13 +1269,13 @@ export default {
     },
 
     getComponentStyleDefault(style) {
-      console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      // console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
 
     getComponentStyle(style) {
-      console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      // console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
@@ -1232,22 +1303,27 @@ export default {
       return value
     },
     changeScale() {
+      // console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
-
+      // console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         this.matrixStyle.originWidth = this.canvasStyleData.width / this.matrixCount.x
         this.matrixStyle.originHeight = this.canvasStyleData.height / this.matrixCount.y
         if (!this.canvasStyleData.selfAdaption) {
-          this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
-          this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          // this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
+          // this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          this.matrixStyle.width = this.canvasStyleData.width
+          this.matrixStyle.height = this.canvasStyleData.height
         } else {
-          this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
-          this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          // this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
+          // this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          this.matrixStyle.width = this.outStyle.width
+          this.matrixStyle.height = this.outStyle.height
         }
         this.baseWidth = this.matrixStyle.width
         this.baseHeight = this.matrixStyle.height
@@ -1255,9 +1331,11 @@ export default {
         this.cellHeight = this.matrixStyle.height
         // console.log('.initMatrix1')
         this.initMatrix()
-
-        this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
-        this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        // console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
+        // this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
+        this.scaleWidth = 100
+        // this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        this.scaleHeight = 100
         this.scalePointWidth = this.scaleWidth / 100
         this.scalePointHeight = this.scaleHeight / 100
         this.$store.commit('setCurCanvasScale',
@@ -1275,6 +1353,7 @@ export default {
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
+      // console.log('什么问题啊？',style,prop)
       if (prop === 'rotate') {
         return style['rotate']
       }
@@ -1343,7 +1422,8 @@ export default {
       }
     },
     handleDragOver(e) {
-      console.log('展示？？？？？？？', this.dragComponentInfo, e)
+      if (this.dragComponentInfo === null) return
+      // console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1389,7 +1469,7 @@ export default {
       return true
     },
     containerMouseDown(e) {
-      console.log('修改值状态', e)
+      // console.log('修改值状态', e)
       // e.preventDefault();
       if (!this.infoBox) {
         this.infoBox = {}
@@ -1680,5 +1760,11 @@ export default {
 .dialog-css >>> .el-dialog__body {
   padding: 10px 20px 20px;
 }
+.baseClass{
+          position: absolute;
+          background: #409EFF;
+          opacity: 0.5;
+          z-index: 99;
+        }
 
 </style>

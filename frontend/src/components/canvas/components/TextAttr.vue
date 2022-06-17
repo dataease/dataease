@@ -51,7 +51,7 @@
       </el-tooltip>
 
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="initFontSize" type="number" size="mini" :min="miniFontSize" :max="maxFontSize" @change="styleChange" />
+        <el-input v-model="initFontSize" type="number" size="mini" :max="maxFontSize" @change="styleChange" />
       </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
@@ -189,7 +189,7 @@ export default {
       innerOpacity: 0,
       mainWidthOffset: 600,
       initFontSize: 12,
-      miniFontSize: 12,
+      miniFontSize: 1,
       maxFontSize: 128,
       textAlignOptions: [
         {
@@ -199,7 +199,7 @@ export default {
         },
         {
           icon: 'iconfont icon-align-center',
-          tooltip: this.$t('panel.text_align_center'),
+          tooltip: this.$t('panel.text_align_center') + '123',
           label: 'center'
         },
         {
@@ -367,7 +367,7 @@ export default {
     initFontSize: {
       handler(newVal) {
         if (newVal < this.miniFontSize) {
-          this.styleInfo.fontSize = this.miniFontSize
+          // this.styleInfo.fontSize = this.miniFontSize
         } else if (newVal > this.maxFontSize) {
           this.styleInfo.fontSize = this.maxFontSize
         } else {

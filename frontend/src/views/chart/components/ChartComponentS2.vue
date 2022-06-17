@@ -122,6 +122,7 @@ export default {
         this.initTitle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
+          console.log('22222', '触发此处')
           this.drawView()
         })
       },
@@ -132,6 +133,7 @@ export default {
     }
   },
   mounted() {
+    // console.log('11111')
     this.preDraw()
   },
   beforeDestroy() {
@@ -177,6 +179,7 @@ export default {
       // }
     },
     drawView() {
+      // this.myChart = null
       const chart = this.chart
       // type
       // if (chart.data) {
@@ -191,11 +194,15 @@ export default {
           ]
         }
       }
+      // console.log('是否触发drawView事件----------------？？？？？？？？？？？？？？？？？？？', this.chart)
       if (chart.type === 'table-info') {
+        // console.log('触发点-------1111111111')
         this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-normal') {
+        // console.log('触发点-------22222222222')
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
+        // console.log('触发点-------33333333333')
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else {
         if (this.myChart) {
@@ -207,23 +214,33 @@ export default {
       if (this.myChart && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
+      // this.myChart.setThemeCfg({
+      //   theme: {
+      //     dataCell: {
+      //       cell: {
+      //         crossBackgroundColor: 'pink'
+      //       }
+      //     }
+      //   }
+      // })
 
       if (this.myChart && this.antVRenderStatus) {
+        // console.log('this.antVRenderStatus', this.antVRenderStatus)
         this.myChart.render()
       }
       // this.timer = null
       clearInterval(this.timer)
-      console.log('触发重新渲染、、、、、、、', this.myChart, this.chartId, chart, this.antVAction, this.tableData)
-      console.log('获取高度', document.getElementById(this.chartId).offsetHeight)
+      // console.log('触发重新渲染、、、、、、、', this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+      // console.log('获取高度', document.getElementById(this.chartId).offsetHeight)
       const canvasHeig = document.getElementById(this.chartId).offsetHeight
       // tableTitleHeight
 
       if (chart.type === 'table-normal') {
         if (this.myChart) {
           const customAttrSize = JSON.parse(chart.customAttr).size
-          console.log('获取展示区域高度', parseInt((canvasHeig - customAttrSize.tableTitleHeight) / customAttrSize.tableItemHeight))
+          // console.log('获取展示区域高度', parseInt((canvasHeig - customAttrSize.tableTitleHeight) / customAttrSize.tableItemHeight))
 
-          console.log('样式数据', JSON.parse(chart.customAttr))
+          // console.log('样式数据', JSON.parse(chart.customAttr))
           setTimeout(() => {
             this.myChart.facet.updateScrollOffset({
               offsetX: {},
@@ -236,10 +253,10 @@ export default {
           if (customAttrSize.automatic) {
             const showTabls = parseInt((canvasHeig - customAttrSize.tableTitleHeight) / customAttrSize.tableItemHeight)
             this.$nextTick(() => {
-              console.log('触发事件', this.myChart)
+              // console.log('触发事件', this.myChart)
               var valus = 0
               this.timer = setInterval(() => {
-                console.log('???????????this.s2', this.myChart)
+                // console.log('???????????this.s2', this.myChart)
                 valus = valus + customAttrSize.tableItemHeight
                 this.myChart.facet.updateScrollOffset({
                   offsetX: {},
@@ -252,14 +269,14 @@ export default {
                   valus = 0 - customAttrSize.tableItemHeight
                 }
 
-                console.log('执行刻度尺', valus)
-                const { scrollY } = this.myChart.facet.getScrollOffset()
+                // console.log('执行刻度尺', valus)
+                // const { scrollY } = this.myChart.facet.getScrollOffset()
                 // if (this.myChart.facet.isScrollToBottom(scrollY)) {
                 //   valus = 0 - customAttrSize.tableItemHeight
                 // }
-                console.log('是否滚动到底部', this.myChart.facet.isScrollToBottom(scrollY))
-                console.log('是否滚动到顶部', this.myChart.facet.isScrollToTop(scrollY))
-                console.log('是否在表格非边缘区域滚动', this.myChart.facet.isVerticalScrollOverTheViewport(scrollY))
+                // console.log('是否滚动到底部', this.myChart.facet.isScrollToBottom(scrollY))
+                // console.log('是否滚动到顶部', this.myChart.facet.isScrollToTop(scrollY))
+                // console.log('是否在表格非边缘区域滚动', this.myChart.facet.isVerticalScrollOverTheViewport(scrollY))
               }, customAttrSize.automaticTime)
             // setInterval(() => {
             //   this.s2.facet.updateScrollOffset({
@@ -281,10 +298,10 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param, 'param')
+      // console.log(param, 'param')
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
-      console.log(meta, 'meta')
+      // console.log(meta, 'meta')
 
       let xAxis = []
       if (this.chart.xaxis) {

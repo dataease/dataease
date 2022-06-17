@@ -22,7 +22,9 @@
                 @change="handleEditPreivewTab"
               >
                 <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview">预览</el-radio-button>
+                <el-radio-button label="preview" :disabled="!priviewBtnEnable"
+                  >预览</el-radio-button
+                >
               </el-radio-group>
             </div>
             <div class="wrapper">
@@ -50,7 +52,6 @@
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
                     :default-active="currentTreeNode.id"
-                    class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
                     active-text-color="#333"
@@ -69,15 +70,18 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu
+                  <!-- <el-menu
                     :default-active="currentTreeNode.id"
                     mode="horizontal"
-                    class="el-menu-vertical-demo"
                     :background-color="themeColor"
                     active-text-color="#333"
-                  >
-                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                  </el-menu>
+                  > -->
+                  <PortalMenu
+                    :subTreeDatas="subTreeDatas"
+                    :currentTreeNode="currentTreeNode"
+                    :themeColor="themeColor"
+                  ></PortalMenu>
+                  <!-- </el-menu> -->
                 </template>
               </div>
             </el-header>
@@ -88,17 +92,27 @@
                 :style="{ backgroundColor: themeColor }"
                 v-if="navLayoutStyle == 0 || navLayoutStyle == 1"
               >
-                <el-menu
+                <!-- <el-menu
                   :default-active="currentTreeNode.id"
-                  class="el-menu-vertical-demo"
                   :background-color="themeColor"
                   active-text-color="#333"
-                >
-                  <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                </el-menu>
+                > -->
+                <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+                <PortalMenu
+                  mode="vertical"
+                  :subTreeDatas="subTreeDatas"
+                  :currentTreeNode="currentTreeNode"
+                  :themeColor="themeColor"
+                ></PortalMenu>
+
+                <!-- </el-menu> -->
               </el-aside>
-              <el-main class="config-main">
-                <PanelViewShow ref="panelViewShow"></PanelViewShow>
+              <el-main class="config-main" v-loading="panelLoading">
+                <PanelViewShow
+                  ref="panelViewShow"
+                  :portal="privewPortal"
+                  @update="update"
+                ></PanelViewShow>
               </el-main>
             </el-container>
             <el-header
@@ -114,7 +128,6 @@
                 <template v-if="navLayoutStyle == 0">
                   <el-menu
                     :default-active="currentTreeNode.id"
-                    class="top-nav-menu"
                     mode="horizontal"
                     :background-color="themeColor"
                     active-text-color="#333"
@@ -133,15 +146,20 @@
                   </el-menu>
                 </template>
                 <template v-else-if="navLayoutStyle == 2">
-                  <el-menu
+                  <!-- <el-menu
                     :default-active="currentTreeNode.id"
                     mode="horizontal"
-                    class="el-menu-vertical-demo"
                     :background-color="themeColor"
                     text-color="#333"
-                  >
-                    <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-                  </el-menu>
+                  > -->
+                  <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+                  <PortalMenu
+                    :subTreeDatas="subTreeDatas"
+                    :currentTreeNode="currentTreeNode"
+                    :themeColor="themeColor"
+                  ></PortalMenu>
+
+                  <!-- </el-menu> -->
                 </template>
               </div>
             </el-header>
@@ -154,6 +172,7 @@
                   >+添加主菜单</el-button
                 >
                 <el-tree
+                  ref="tree"
                   node-key="id"
                   draggable
                   :data="treeData"
@@ -163,15 +182,16 @@
                   check-on-click-node
                   @node-click="handleNodeClick"
                   :allow-drop="handleAllowDrop"
+                  :current-node-key="currentTreeNode.id"
                 >
                   <span
                     class="custom-tree-node"
-                    slot-scope="{ node, data }"
+                    slot-scope="{ node }"
                     @mouseenter="handleTreeNodeMouseEnter(node)"
                     @mouseleave="handleTreeNodeMouseLeave(node)"
                   >
-                    <span>{{ node.label }}</span>
-                    <span v-if="node.data.showOption">
+                    <span class="custom-tree-node-label">{{ node.label }}</span>
+                    <span class="icon-wrapper" v-if="node.data.showOption">
                       <i
                         class="el-icon-plus"
                         @click.stop="handleAddTreeSubNode(node)"
@@ -347,6 +367,9 @@ export default {
         },
       ],
       showPanelView: false,
+      panelLoading: false,
+      privewPortal: null,
+      priviewBtnEnable: false,
     };
   },
   computed: {
@@ -397,6 +420,14 @@ export default {
         this.$nextTick(() => {
           if (this.$refs.panelViewShow) {
             this.$refs.panelViewShow.showMain = false;
+            // 检测panel是否变化
+            this.$watch(
+              () => this.$refs.panelViewShow.showMain,
+              (val) => {
+                console.log("this.$refs.panelViewShow.showMain ----", val);
+                this.priviewBtnEnable = val;
+              }
+            );
           }
         });
         if (this.openType == "add") {
@@ -405,6 +436,22 @@ export default {
         } else {
           this.treeData = this.config.treeData;
           this.treeId = Number(this.lastTreeId);
+          let currentTreeId = "";
+          function getTreedDataFirstTrendId(treeData) {
+            for (let i = 0; i < treeData.length; i++) {
+              const item = treeData[i];
+              if (item.trendId && !currentTreeId) {
+                currentTreeId = item.id;
+              } else {
+                getTreedDataFirstTrendId(item.children);
+              }
+            }
+          }
+
+          getTreedDataFirstTrendId(this.treeData);
+          this.$nextTick(() => {
+            this.handleDynamicMenuAndTree(currentTreeId)
+          });
         }
       } else {
         this.$emit("treeData", this.treeData);
@@ -453,6 +500,16 @@ export default {
       if (evt == "edit") {
         return;
       }
+      this.privewPortal = {
+        navLayoutStyle: this.navLayoutStyle, // 0-双导航布局 1-左导航布局 2-顶部导航布局
+        topNavPosRadio: this.topNavPosRadio, // top-底部 bottom-底部
+        themeColor: this.themeColor, // 默认
+        portalName: this.portalName || "未命名站点", // 站点名称
+        lastTreeId: this.treeId,
+        config: {
+          treeData: this.treeData,
+        },
+      };
       this.$nextTick(() => {
         if (this.$refs.panelViewShow && this.$refs.panelViewShow.showMain) {
           this.$refs.panelViewShow.clickFullscreen();
@@ -460,17 +517,14 @@ export default {
           this.$watch(
             () => this.$refs.panelViewShow.fullscreen,
             (val) => {
-              if (!val) this.activeTab = "edit";
+              if (!val) {
+                this.activeTab = "edit";
+                this.privewPortal = null;
+              }
             }
           );
         }
       });
-    },
-
-    // 一级导航位置
-    handleChangeTopNavPosRadio(radio) {
-      console.log("radio", radio);
-      // this.setTopNavPosRadio(radio);
     },
     // 选择主题设置
     handleChangeThemeColor(color) {
@@ -479,6 +533,16 @@ export default {
     },
     setNavLayoutStyle(style) {
       this.navLayoutStyle = style;
+    },
+    // 动态关联菜单和tree的同步
+    handleDynamicMenuAndTree(currentTreeId) {
+      if (currentTreeId) {
+        this.$refs.tree.setCurrentKey(currentTreeId);
+        const currentNode = this.$refs.tree.getCurrentNode();
+        if (currentNode) {
+          this.handleNodeClick(currentNode);
+        }
+      }
     },
     // 添加主菜单
     handleAddMainMenu() {
@@ -506,6 +570,11 @@ export default {
     handleNodeClick(node) {
       // console.log("node", node);
       this.currentTreeNode = node;
+      if (this.currentTreeNode.trendId && this.currentTreeNode.trendId.length) {
+        this.handleUpdateTrend();
+      } else {
+        this.$refs.panelViewShow.showMain = false;
+      }
     },
     // 鼠标移入该节点的时候触发
     handleTreeNodeMouseEnter(node) {
@@ -519,6 +588,12 @@ export default {
     },
     // 添加子节点
     handleAddTreeSubNode(node) {
+      if (node.data.trendId) {
+        this.$message.warning(
+          "该菜单下已配置过仪表盘，不能配置子菜单，请删除后重新配置"
+        );
+        return;
+      }
       console.log("handleAddTreeSubNode node", node);
       this.treeId += 1;
       const treeId = this.treeId;
@@ -615,10 +690,13 @@ export default {
     handleUpdateTrend() {
       // this.showPanelView = true;
       // this.$store.commit("setComponentDataCache", null);
+      this.panelLoading = true;
       const trendId =
         this.currentTreeNode.trendId[this.currentTreeNode.trendId.length - 1];
+      const that = this;
       initPanelData(trendId, function (response) {
         bus.$emit("set-panel-show-type", 0);
+        that.panelLoading = false;
       });
     },
 
@@ -635,6 +713,20 @@ export default {
         this.tData = this._deepLooptData(res.data);
         // }
       });
+    },
+
+    update(trendId) {
+      if (trendId) {
+        if (Object.prototype.toString.call(trendId) == "[object Array]") {
+          trendId = trendId[trendId.length - 1];
+        }
+        const that = this;
+        initPanelData(trendId, function (response) {
+          bus.$emit("set-panel-show-type", 0);
+        });
+      } else {
+        this.$refs.panelViewShow.showMain = false;
+      }
     },
 
     _deepLooptData(data) {
@@ -670,7 +762,11 @@ export default {
   ::v-deep .panel-design-preview {
     height: 100% !important;
   }
-  ::v-deep .el-menu--horizontal .el-submenu .el-submenu__title .el-submenu__icon-arrow {
+  ::v-deep
+    .el-menu--horizontal
+    .el-submenu
+    .el-submenu__title
+    .el-submenu__icon-arrow {
     position: static;
     vertical-align: middle;
     margin-left: 8px;
@@ -814,11 +910,26 @@ export default {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    position: relative;
+    // width: 200px;
+    .custom-tree-node-label {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      // width: 160px;
+    }
+    .icon-wrapper {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
     i {
       margin-right: 8px;
+      color: #409eff;
     }
     i:last-child {
       margin-right: 0;
+      color: #409eff;
     }
   }
 }

@@ -16,8 +16,19 @@
 import * as highcharts from 'highcharts'
 import Highcharts3D from 'highcharts/highcharts-3d'
 Highcharts3D(highcharts)
+import funnel3d from 'highcharts/modules/funnel3d'; // 漏斗图引入
+funnel3d(highcharts);
+import cylinder from 'highcharts/modules/cylinder';
+cylinder(highcharts)
+import pyramid3d from 'highcharts/modules/pyramid3d'; //金字塔图引入
+pyramid3d(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
+import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
+import { BASE_FUNNEL,baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
+import { BASE_PYRAMID, basePyramidOption } from "@/views/chart/chart/pyramid/pyramid_hc"
+import { BASE_SCATTER, baseScatterOption } from "@/views/chart/chart/scatter/scatter_hc"
+
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
   name: 'ChartComponentHc',
@@ -140,7 +151,26 @@ export default {
         resolve()
       }).then(() => {
         if (!this.myChart) {
-          this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          if (this.chart.type === '3dpie') {
+            // 饼图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PIE)))
+          } else if (this.chart.type === '3dcolumn') {
+            // 柱状图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMM)))
+          } else if (this.chart.type === '3dcolumn_stack') {
+            // 堆叠柱状图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMN_STACK)))
+          } else if (this.chart.type === '3dfunnel') {
+            // 漏斗图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_FUNNEL)))
+          } else if (this.chart.type === '3dpyramid') {
+            // 金字塔图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PYRAMID)))
+          } else if (this.chart.type === '3dscatter') {
+            // 散点图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
+          }
+        
         }
         this.drawEcharts()
 
@@ -160,21 +190,49 @@ export default {
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}
+      console.log('3d数据。。。', chart, this.myChart)
 
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
-      const base_json = JSON.parse(JSON.stringify(BASE_PIE))
-
-      chart_option = basePieOption(base_json, chart, this.terminalType)
-      this.myEcharts(chart_option)
+      if(chart.type === '3dpie') {
+        const base_json = JSON.parse(JSON.stringify(BASE_PIE))
+        chart_option = basePieOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dcolumn') {
+        const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false)
+      } else if (chart.type === '3dcolumn_stack') {
+        const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_STACK))
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true)
+      } else if (chart.type === '3dfunnel') {
+        const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
+        chart_option = baseFunnelOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dpyramid') {
+        const base_json = JSON.parse(JSON.stringify(BASE_PYRAMID))
+        chart_option = basePyramidOption(base_json, chart, this.terminalType)
+      } else if (chart.type === '3dscatter') {
+        const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
+        chart_option = baseScatterOption(base_json, chart, this.terminalType)
+      }
+      
+      this.myEcharts(chart_option,chart.type)
     },
 
-    myEcharts(option) {
+    myEcharts(option,type) {
       // 指定图表的配置项和数据
       const chart = this.myChart
       this.setBackGroundBorder()
-      setTimeout(chart.update(option, true), 500)
+      setTimeout(() => {
+        if(type === '3dcolumn_stack') {
+          if(this.myChart) {
+            this.myChart.destroy()
+          }
+          this.myChart = this.$highcharts.chart(this.chartId, option)
+        } else {
+          chart.update(option, true)
+        }
+        
+      }, 500)
       window.onresize = function() {
         this.myChart.reflow()
       }

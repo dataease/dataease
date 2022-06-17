@@ -165,7 +165,7 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
-      console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
+      // console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -444,7 +444,10 @@ const data = {
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
+      console.log(state)
       // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
+      if (state.dragComponentInfo === null) return
+
       if (state.dragComponentInfo.moveStatus !== 'drop') {
         bus.$emit('onRemoveLastItem')
       }

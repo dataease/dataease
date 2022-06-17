@@ -2,7 +2,7 @@
   <div class="portal-nav-menu-container">
     <el-container class="config-container">
       <el-header
-        class="config-header config-top-header"
+        class="config-header"
         :style="{ backgroundColor: portal.themeColor }"
         v-if="
           (portal.navLayoutStyle == 0 || portal.navLayoutStyle == 2) &&
@@ -34,7 +34,7 @@
             </el-menu>
           </template>
           <template v-else-if="portal.navLayoutStyle == 2">
-            <el-menu
+            <!-- <el-menu
               :default-active="currentTreeNode.id"
               mode="horizontal"
               menu-trigger="click"
@@ -42,9 +42,16 @@
               :background-color="portal.themeColor"
               active-text-color="#409eff"
               @select="handleMenuSelect"
-            >
-              <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-            </el-menu>
+            > -->
+            <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+            <PortalMenu
+              :subTreeDatas="subTreeDatas"
+              :currentTreeNode="currentTreeNode"
+              :themeColor="portal.themeColor"
+              @handleMenuSelect="handleMenuSelect"
+            ></PortalMenu>
+
+            <!-- </el-menu> -->
           </template>
         </div>
       </el-header>
@@ -55,15 +62,23 @@
           :style="{ backgroundColor: portal.themeColor }"
           v-if="portal.navLayoutStyle == 0 || portal.navLayoutStyle == 1"
         >
-          <el-menu
+          <!-- <el-menu
             :default-active="currentTreeNode.id"
             class="el-menu-vertical-demo"
             :background-color="portal.themeColor"
             active-text-color="#409eff"
             @select="handleMenuSelect"
-          >
-            <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-          </el-menu>
+          > -->
+          <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+          <PortalMenu
+            mode="vertical"
+            :subTreeDatas="subTreeDatas"
+            :currentTreeNode="currentTreeNode"
+            :themeColor="portal.themeColor"
+            @handleMenuSelect="handleMenuSelect"
+          ></PortalMenu>
+
+          <!-- </el-menu> -->
         </el-aside>
         <el-main class="config-main">
           <slot></slot>
@@ -102,7 +117,7 @@
             </el-menu>
           </template>
           <template v-else-if="portal.navLayoutStyle == 2">
-            <el-menu
+            <!-- <el-menu
               :default-active="currentTreeNode.id"
               mode="horizontal"
               menu-trigger="click"
@@ -110,9 +125,16 @@
               :background-color="portal.themeColor"
               active-text-color="#409eff"
               @select="handleMenuSelect"
-            >
-              <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu>
-            </el-menu>
+            > -->
+            <!-- <PortalMenu :subTreeDatas="subTreeDatas"></PortalMenu> -->
+            <PortalMenu
+              :subTreeDatas="subTreeDatas"
+              :currentTreeNode="currentTreeNode"
+              :themeColor="portal.themeColor"
+              @handleMenuSelect="handleMenuSelect"
+            ></PortalMenu>
+
+            <!-- </el-menu> -->
           </template>
         </div>
       </el-header>
@@ -167,7 +189,7 @@ export default {
         });
         return subs;
       } else if (
-        this.portal.navLayoutStyle == 1 &&
+        this.portal.navLayoutStyle == 1 ||
         this.portal.navLayoutStyle == 2
       ) {
         return treeData;
@@ -199,7 +221,6 @@ export default {
 
 <style lang="scss" scoped>
 .portal-nav-menu-container {
-
   display: flex;
   justify-content: space-between;
   font-size: 14px;
@@ -257,6 +278,14 @@ export default {
 
     .config-aside {
       height: 100%;
+    }
+    .config-aside-fixed {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 60px;
+      z-index: 9999;
+      height: calc(100% - 60px);
     }
 
     .config-main {

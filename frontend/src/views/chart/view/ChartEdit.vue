@@ -381,6 +381,7 @@
                           $t('chart.drag_block_word_cloud_label')
                         }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info')}}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
@@ -457,6 +458,7 @@
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
                           $t('chart.drag_block_word_cloud_size')
                         }}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{$t('chart.drag_block_arc_map_coordinate')}}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
@@ -816,7 +818,10 @@
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                    v-show="view.type 
+                      && (view.type.includes('bar') || view.type.includes('line') 
+                        || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                        || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
@@ -834,9 +839,19 @@
                       :chart="chart"
                       @onChangeXAxisForm="onChangeXAxisForm"
                     />
+                    <x-axis-selector-hc
+                      v-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onChangeXAxisForm="onChangeXAxisForm"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                    v-show="view.type 
+                      && (view.type.includes('bar') || view.type.includes('line') 
+                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
                   >
@@ -849,6 +864,13 @@
                     />
                     <y-axis-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onChangeYAxisForm="onChangeYAxisForm"
+                    />
+                    <y-axis-selector-hc
+                      v-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -926,7 +948,13 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
+                    v-show="view.type && view.type !== 'map' 
+                      && view.type !== 'arc_map' && !view.type.includes('table') 
+                      && view.type !== '3dfunnel' && view.type !== '3dpyramid'
+                      && !view.type.includes('text') && view.type !== 'label' 
+                      && (chart.type !== 'treemap' || chart.render === 'antv') 
+                      && view.type !== 'liquid' && view.type !== 'waterfall' 
+                      && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -1283,6 +1311,9 @@ import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtIte
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
+import XAxisSelectorHc from "@/views/chart/components/component-style/XAxisSelectorHc"
+import YAxisSelectorHc from "@/views/chart/components/component-style/YAxisSelectorHc"
+
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
@@ -1294,6 +1325,8 @@ import { pluginTypes } from '@/api/chart/chart'
 export default {
   name: 'ChartEdit',
   components: {
+    XAxisSelectorHc,
+    YAxisSelectorHc,
     LabelNormalText,
     TotalCfg,
     Threshold,
@@ -1377,7 +1410,7 @@ export default {
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
           tooltip: DEFAULT_TOOLTIP,
-          totalCfg: DEFAULT_TOTAL
+          totalCfg: DEFAULT_TOTAL,
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -2065,6 +2098,7 @@ export default {
     },
 
     onChangeXAxisForm(val) {
+      console.log(val)
       this.view.customStyle.xAxis = val
       this.calcStyle()
     },
@@ -2368,7 +2402,7 @@ export default {
       }
     },
     dragMoveDuplicate(list, e, mode) {
-      console.log("dragMoveDuplicate::::::::::",list,e,mode)
+      console.log('dragMoveDuplicate::::::::::', list, e, mode)
       if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
       } else {
@@ -2392,7 +2426,7 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
-      console.log('维度添加：',e,this.view)
+      console.log('维度添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2419,7 +2453,7 @@ export default {
       this.calcData(true)
     },
     moveToDimension(e) {
-      console.log("moveToDimension:::::::::::",e)
+      console.log('moveToDimension:::::::::::', e)
       this.dragMoveDuplicate(this.dimensionData, e, 'ds')
       this.calcData(true)
     },

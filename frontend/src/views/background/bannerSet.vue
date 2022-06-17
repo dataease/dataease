@@ -2,13 +2,14 @@
   <el-row>
     <el-row>
       <el-col :span="24">
-        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ '轮播图片' }}</span>
+        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ $t('panel.rotate_pictures') }}</span>
       </el-col>
     </el-row>
     <el-row class="main-content">
+
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '轮播区域张数' }}</span>
+          <span class="params-title">{{ $t('panel.Number_of_rotation_shows') }}</span>
         </el-col>
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.slidesPerView" :min="1" :max="10" />
@@ -16,46 +17,29 @@
       </el-row>
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '轮播间隔时间' }}</span>
+          <span class="params-title">{{ $t('panel.pictureGap') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.pictureGap" :min="0" :max="100" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.Rotation_interval') }}</span>
         </el-col>
         <el-col :span="7">
           <el-input-number v-model="curComponent.options.rotationTime" :min="1" :max="100" />
         </el-col>
         <el-col :span="2">
-          <span class="params-title">{{ '秒' }}</span>
+          <span class="params-title">{{ $t('panel.second') }}</span>
         </el-col>
       </el-row>
       <!-- 轮播的图片 -->
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
-          <span class="params-title">{{ '上传图片' }}</span>
+          <span class="params-title">{{ $t('panel.Upload_pictures') }}</span>
         </el-col>
-        <!-- <el-col :span="20">
-          <el-upload
-            action=""
-            accept=".jpeg,.jpg,.png,.gif,.svg"
-            class="avatar-uploader"
-            list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :http-request="upload"
-            :file-list="fileList"
-            :on-change="onChange"
-          >
-            <i class="el-icon-plus" />
-          </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
-        </el-col> -->
       </el-row>
-      <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;padding:10px;"> -->
-      <!-- <el-col v-for="(item,index) in 7" :key="index" :span="4">
-          图片
-
-        </el-col> -->
-
-      <!-- </el-row> -->
       <el-row style="padding:10px">
         <el-upload
           action=""
@@ -73,6 +57,37 @@
         <el-dialog :visible.sync="dialogVisible">
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;">
+        <el-col :span="4">
+          <span class="params-title">添加文字描述</span>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <span class="params-title">图1、</span>
+        </el-col>
+      </el-row>
+      <el-row style="padding:5px;">
+        <el-col :span="2">
+          <span class="params-title">标题</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="input" placeholder="请输入内容" />
+        </el-col>
+      </el-row>
+      <el-row style="padding:5px;">
+        <el-col :span="2">
+          <span class="params-title">内容</span>
+        </el-col>
+        <el-col :span="20">
+          <el-input
+            v-model="input"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+          />
+        </el-col>
       </el-row>
     </el-row>
     <el-row class="root-class">
@@ -104,6 +119,7 @@ export default {
   },
   data() {
     return {
+      input: '',
       BackgroundShowMap: {},
       imgUrlList: [],
       checked: false,
@@ -114,6 +130,7 @@ export default {
       uploadDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL,
+      textData: [],
       options: [{
         value: 1000,
         label: '1秒'

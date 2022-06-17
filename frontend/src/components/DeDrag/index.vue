@@ -20,6 +20,7 @@
     @touchstart="elementTouchDown"
     @mouseenter="enter"
     @mouseleave="leave"
+    @keyup.alt="keyboard"
   >
     <div
       :class="[
@@ -396,11 +397,11 @@ export default {
   },
   computed: {
     boxWidth() {
-      console.log('修改触发=====0001boxWidth2222222222222222')
+      // console.log('修改触发=====0001boxWidth2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
-      console.log('修改触发=====0001boxWidth2222222222222222')
+      // console.log('修改触发=====0001boxHeight2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
     },
     // 编辑组件显示
@@ -525,7 +526,7 @@ export default {
 
     //  根据left right 算出元素的宽度
     computedMainSlotWidth() {
-      console.log('触发改变前this.width=====', this.width)
+      // console.log('触发改变前this.width=====', this.width)
       if (this.w === 'auto') {
         if (!this.widthTouched) {
           return 'auto'
@@ -556,7 +557,7 @@ export default {
 
     // private
     mainSlotStyle() {
-      console.log('宽高设置触发器===', this.computedMainSlotWidth, this.computedMainSlotHeight)
+      // console.log('宽高设置触发器===', this.computedMainSlotWidth, this.computedMainSlotHeight)
       const style = {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
@@ -808,17 +809,17 @@ export default {
     },
     // 获取父元素大小
     getParentSize() {
-      console.log('this.canvasStyleData===', this.canvasStyleData)
+      // console.log('this.canvasStyleData===', this.canvasStyleData)
       if (this.parent === true) {
         const style = window.getComputedStyle(this.$el.parentNode, null)
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        console.log('this.canvasStyleData===22222')
+        // console.log('this.canvasStyleData===22222')
         return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, this.canvasStyleData.height]
       }
       if (typeof this.parent === 'string') {
-        console.log('this.canvasStyleData===33333')
+        // console.log('this.canvasStyleData===33333')
         const parentNode = document.querySelector(this.parent)
         if (!(parentNode instanceof HTMLElement)) {
           throw new Error(`The selector ${this.parent} does not match any element`)
@@ -829,28 +830,31 @@ export default {
     },
     // 元素触摸按下
     elementTouchDown(e) {
-      console.log('元素触摸按下====')
+      // console.log('元素触摸按下====')
       eventsFor = events.touch
       this.elementDown(e)
     },
+    keyboard(e) {
+      // console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', e)
+    },
     elementMouseDown(e) {
-      console.log('设置参数002', this.element, e)
+      // console.log('设置参数002', this.element, e)
       if (this.element.commonBackground.boxWidth && this.element.commonBackground.boxHeight) {
-        console.log('11111111111111111111====', typeof (this.element.commonBackground.boxWidth), this.element.commonBackground.boxWidth)
+        // console.log('11111111111111111111====', typeof (this.element.commonBackground.boxWidth), this.element.commonBackground.boxWidth)
         // var width = deepCopy(this.element.commonBackground)
         // this.element.style.width = this.element.commonBackground.boxWidth
         // this.element.style.height = this.element.commonBackground.boxHeight
         this.element.commonBackground.boxWidth = Math.floor(this.element.commonBackground.boxWidth)
         this.element.commonBackground.boxHeight = Math.floor(this.element.commonBackground.boxHeight)
       } else {
-        console.log('22222222222222222222====')
+        // console.log('22222222222222222222====')
         var info = document.getElementById('eleId' + this.element.id)
         // console.log('设置参数003', info.offsetWidth, info.offsetHeight)
         this.element.commonBackground.boxWidth = Math.floor(info.offsetWidth)
         this.element.commonBackground.boxHeight = Math.floor(info.offsetHeight)
       }
 
-      console.log('设置参数002', this.element.style, e)
+      // console.log('设置参数002', this.element.style, e)
       // debugger
 
       // console.log('设置参数003', this.style)
@@ -866,7 +870,7 @@ export default {
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
 
       const newData = JSON.parse(JSON.stringify(this.element))
-      console.log('传输', newData)
+      // console.log('传输', newData)
 
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       // 移动端组件点击自动置顶
@@ -876,7 +880,7 @@ export default {
     },
     // 元素按下
     elementDown(e) {
-      console.log('元素按下')
+      // console.log('元素按下')
       if (e instanceof MouseEvent && e.which !== 1) {
         return
       }
@@ -980,7 +984,7 @@ export default {
     },
     // 控制柄按下
     handleDown(handle, e) {
-      console.log('handle, e', handle, e)
+      // console.log('handle, e', handle, e)
       if (e instanceof MouseEvent && e.which !== 1) {
         return false
       }
@@ -1005,7 +1009,7 @@ export default {
       // 新增保存矩形信息
       // 获取父元素的位置大小信息
       const { top, left, width, height } = this.$el.getBoundingClientRect()
-      console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
+      // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
       // 保存旋转中心的绝对坐标
       this.lastCenterX = window.pageXOffset + left + width / 2
       this.lastCenterY = window.pageYOffset + top + height / 2
@@ -1109,6 +1113,7 @@ export default {
     },
     // 移动
     move(e) {
+      // console.log('鼠标移动事件-----------------------------------', e)
       if (this.resizing) {
         this.handleResize(e)
       } else if (this.dragging) {
@@ -1742,7 +1747,7 @@ export default {
       this.hasMove = true
       this.element.commonBackground.boxWidth = this.width
       this.element.commonBackground.boxHeight = this.height
-      console.log('元素是否修改状态=======222222', style)
+      // console.log('元素是否修改状态=======222222', style)
       this.slecltKey = true
       this.$store.commit('setShapeStyle', style)
     },
@@ -1822,12 +1827,12 @@ export default {
       // this.snap = this.horizontal
       // this.snapTolerance = 5
       // this.grid = [10, 10]
-      console.log('是否走这里呢?????')
+      // console.log('是否走这里呢?????')
       if (!this.enableNativeDrag) {
         this.$el.ondragstart = () => false
       }
       const [parentWidth, parentHeight] = this.getParentSize()
-      console.log('parentWidth, parentHeight', parentWidth, parentHeight)
+      // console.log('parentWidth, parentHeight', parentWidth, parentHeight)
       this.parentWidth = parentWidth
       this.parentHeight = parentHeight
       const [width, height] = getComputedSize(this.$el)
@@ -1835,10 +1840,10 @@ export default {
       if (this.outsideAspectRatio) {
         this.aspectFactor = this.outsideAspectRatio
       }
-      console.log('this.element.style===', this.element.style)
+      // console.log('this.element.style===', this.element.style)
       this.width = this.w !== 'auto' ? this.w : width
       // this.width = this.element.style.width
-      console.log('with改变点5====', this.width, this.w, width)
+      // console.log('with改变点5====', this.width, this.w, width)
       // console.log('width1:' + this.width)
       this.height = this.h !== 'auto' ? this.h : height
       // this.height = this.element.style.height
@@ -1855,6 +1860,9 @@ export default {
       addEvent(window, 'resize', this.checkParentSize)
       // this.changeWidth(this.element.style.width)
       // this.changeHeight(this.element.style.height)
+      // document.addEventListener('keydown', function(e) {
+      //   console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-------------------------', e)
+      // })
     },
     createdFunction() {
       // minWidth不能大于maxWidth

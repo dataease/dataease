@@ -1,6 +1,7 @@
 <template>
 
   <el-select
+    class="deSelect"
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelect"
     v-model="value"
@@ -237,5 +238,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+// .deSelect ::v-deep .el-input__inner {
+//   background-color: transparent;
+// }
 </style>

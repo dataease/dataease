@@ -171,7 +171,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
       }
     }
   }
-
+  console.log('pie,chart_option',chart_option)
   componentStyle(chart_option, chart)
   return chart_option
 }
