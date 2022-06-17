@@ -85,7 +85,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/plugin/oidc/authInfo", ANON);
         filterChainDefinitionMap.put("/sso/callBack*", ANON);
         filterChainDefinitionMap.put("/cas/callBack*", ANON);
-        filterChainDefinitionMap.put("/cas/reset", ANON);
+        filterChainDefinitionMap.put("/cas/reset/**", ANON);
 
         filterChainDefinitionMap.put("/unauth", ANON);
         filterChainDefinitionMap.put("/display/**", ANON);

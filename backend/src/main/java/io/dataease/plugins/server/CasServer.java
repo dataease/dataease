@@ -9,6 +9,8 @@ import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 
+import io.dataease.controller.ResultHolder;
+import io.dataease.i18n.Translator;
 import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +19,7 @@ import org.jasig.cas.client.util.AssertionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -87,17 +90,26 @@ public class CasServer {
         return modelAndView;
     }
 
-    @GetMapping("/reset")
+    @GetMapping("/reset/{uname}/{pwd}")
     @ResponseBody
-    public String reset() {
-        systemParameterService.resetCas();
-        String token = ServletUtils.getToken();
-        if (StringUtils.isNotBlank(token)) {
-            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-            authUserService.clearCache(userId);
+    public ResultHolder reset(@PathVariable(value = "uname", required = true) String uname, @PathVariable(value = "pwd", required = true) String pwd) {
+        try {
+            authUserService.checkAdmin(uname, pwd);
+            systemParameterService.resetCas();
+            String token = ServletUtils.getToken();
+            if (StringUtils.isNotBlank(token)) {
+                Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+                authUserService.clearCache(userId);
+            }
+            HttpServletRequest request = ServletUtils.request();
+            request.getSession().invalidate();
+            ResultHolder success = ResultHolder.success(null);
+            success.setMessage(Translator.get("i18n_default_login_reset"));
+            return success;
+        }catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            ResultHolder error = ResultHolder.error(e.getMessage());
+            return error;
         }
-        HttpServletRequest request = ServletUtils.request();
-        request.getSession().invalidate();
-        return "已经切换默认登录方式";
     }
 }

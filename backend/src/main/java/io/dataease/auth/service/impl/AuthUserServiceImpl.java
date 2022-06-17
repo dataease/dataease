@@ -2,10 +2,13 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.commons.utils.CodingUtil;
+import io.dataease.exception.DataEaseException;
 import io.dataease.ext.*;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
@@ -171,5 +174,20 @@ public class AuthUserServiceImpl implements AuthUserService {
         return pluginCommonService.isPluginLoaded();
     }
 
+    @Override
+    public void checkAdmin(String uname, String pwd) {
 
+        SysUserEntity user = getUserByName(uname);
+        if (ObjectUtils.isEmpty(user)) {
+            DataEaseException.throwException(Translator.get("i18n_user_not_exist"));
+        }
+        if (!user.getIsAdmin()) {
+            DataEaseException.throwException(Translator.get("i18n_not_admin_error"));
+        }
+        String realPwd = user.getPassword();
+        pwd = CodingUtil.md5(pwd);
+        if (!StringUtils.equals(pwd, realPwd)) {
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+        }
+    }
 }
