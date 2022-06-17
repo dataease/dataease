@@ -49,7 +49,8 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
     }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
@@ -135,6 +136,10 @@ public class DataSetTableController {
 
     @ApiOperation("根据sql查询预览数据")
     @PostMapping("sqlPreview")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_USE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
+    }, logical = Logical.AND)
     public Map<String, Object> getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }

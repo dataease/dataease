@@ -9,6 +9,7 @@
     >
       <template #toolbar>
         <el-upload
+          v-permission="['plugin:upload']"
           :action="baseUrl+'api/plugin/upload'"
           :multiple="false"
           :show-file-list="false"
@@ -54,7 +55,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
-// import { checkPermission } from '@/utils/permission'
+import { checkPermission } from '@/utils/permission'
 import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { pluginLists, uninstall } from '@/api/system/plugin'
 import { getToken } from '@/utils/auth'
@@ -72,6 +73,7 @@ export default {
         // }
         {
           label: this.$t('plugin.un_install'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          show: checkPermission(['plugin:uninstall']),
           disabled: this.btnDisabled
         }
       ],
