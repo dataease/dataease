@@ -27,7 +27,9 @@ export const COMMON_BACKGROUND = {
   borderRadius: 5,
   innerPadding: 0,
   boxHeight: 0,
-  boxWidth: 0
+  boxWidth: 0,
+  fontSize: 16,
+  fontColor: "#000000"
 }
 
 // 空组件仪表板样式
@@ -41,7 +43,9 @@ export const COMMON_BACKGROUND_NONE = {
   borderRadius: 0,
   innerPadding: 0,
   boxHeight: 0,
-  boxWidth: 0
+  boxWidth: 0,
+  fontSize: 16,
+  fontColor: "#000000"
 }
 
 // 公共样式

@@ -1433,6 +1433,8 @@ export default {
     board_radio: '边框半径',
     box_width: '组件宽',
     box_height: '组件高',
+    box_fontSize: '字体大小',
+    box_fontColor: '字体颜色',
     background: '背景',
     component_style: '组件样式',
     rotate_pictures: '轮播图片',
