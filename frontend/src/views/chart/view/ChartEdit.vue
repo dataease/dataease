@@ -1075,7 +1075,7 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
-import {delGroup} from "@/api/panel/panel";
+import { delGroup } from '@/api/panel/panel'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 
@@ -2483,7 +2483,7 @@ export default {
     reset() {
       const _this = this
 
-      this.$confirm(this.$t('chart.view_reset'), this.$t('chart.view_reset_tips'), {
+      this.$confirm(this.$t('chart.view_reset_tips'), this.$t('chart.view_reset'), {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
