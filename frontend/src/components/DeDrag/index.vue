@@ -397,7 +397,7 @@ export default {
   },
   computed: {
     boxWidth() {
-      // console.log('修改触发=====0001boxWidth2222222222222222')
+      console.log('修改触发=====0001boxWidth2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
@@ -734,6 +734,7 @@ export default {
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
+      // console.log('w()下的bounds',this.bounds)
       // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
@@ -838,7 +839,7 @@ export default {
       // console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', e)
     },
     elementMouseDown(e) {
-      // console.log('设置参数002', this.element, e)
+      console.log('设置参数002', this.element, e)
       if (this.element.commonBackground.boxWidth && this.element.commonBackground.boxHeight) {
         // console.log('11111111111111111111====', typeof (this.element.commonBackground.boxWidth), this.element.commonBackground.boxWidth)
         // var width = deepCopy(this.element.commonBackground)
@@ -880,7 +881,7 @@ export default {
     },
     // 元素按下
     elementDown(e) {
-      // console.log('元素按下')
+      console.log('元素按下')
       if (e instanceof MouseEvent && e.which !== 1) {
         return
       }
@@ -921,6 +922,7 @@ export default {
         if (this.parent) {
           this.bounds = this.calcDragLimits()
         }
+        console.log('边界',this.bounds)
         var width = deepCopy(this.element.commonBackground)
         this.element.style.width = width.boxWidth
         this.element.style.height = width.boxHeight
@@ -1036,17 +1038,22 @@ export default {
       this.mouseClickPosition.height = this.height
       // 计算边界
       this.bounds = this.calcResizeLimits()
+      console.log('边界。。。。。',this.bounds)
       // 添加事件
       addEvent(document.documentElement, eventsFor.move, this.move)
       addEvent(document.documentElement, eventsFor.stop, this.handleUp)
     },
     // 计算调整大小范围
     calcResizeLimits() {
+      this.mountedFunction() // 从新计算一下
+      console.log('计算调整大小范围')
       const minW = this.minW
       const minH = this.minH
+      console.log(minW,minH)
       let maxW = this.maxW
       let maxH = this.maxH
       const [gridX, gridY] = this.grid
+      console.log('grid:::',gridX,gridY)
       // 获取矩形信息
       const width = this.width
       const height = this.height
@@ -1054,6 +1061,13 @@ export default {
       const top = this.top
       const right = this.right
       const bottom = this.bottom
+      console.log('矩形信息：')
+      console.log('widht:',width)
+      console.log('height:',height)
+      console.log('left:',left)
+      console.log('top:',top)
+      console.log('right:',right)
+      console.log('bottom:',bottom)
       // 对齐网格
       maxW = maxW - (maxW % gridX)
       maxH = maxH - (maxH % gridY)
@@ -1067,8 +1081,10 @@ export default {
         minBottom: null,
         maxBottom: null
       }
+      console.log('网格',maxW,maxH)
       // 边界限制
       if (this.parent) {
+        console.log('11111111111111111')
         limits.minLeft = left
         limits.maxLeft = left + Math.floor((width - minW) / gridX)
         limits.minTop = top
@@ -1086,6 +1102,7 @@ export default {
           limits.minBottom = Math.max(limits.minBottom, this.parentHeight - top - maxH)
         }
       } else {
+        console.log('22222222222222222')
         limits.minLeft = null
         limits.maxLeft = left + Math.floor(width - minW)
         limits.minTop = null

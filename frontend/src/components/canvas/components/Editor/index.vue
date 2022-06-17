@@ -1408,6 +1408,7 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     showViewDetails(index) {
+      console.log('删除第几个？',index)
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
 
