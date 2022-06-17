@@ -67,6 +67,10 @@ const data = {
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
     canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 多选选择状态
+    checkboxStatus: false,
+    // 多选选中组件数据
+    checkboxInfo: [],
     // 联动设置状态
     linkageSettingStatus: false,
     // 当前设置联动的组件
@@ -405,6 +409,7 @@ const data = {
       state.componentData.splice(index, 1)
     },
     setLinkageInfo(state, targetLinkageInfo) {
+      console.log('联动设置：：',state,targetLinkageInfo)
       state.linkageSettingStatus = true
       state.curLinkageView = state.curComponent
       state.targetLinkageInfo = targetLinkageInfo
@@ -413,6 +418,14 @@ const data = {
       state.linkageSettingStatus = false
       state.curLinkageView = null
       state.targetLinkageInfo = []
+    },
+    setCheckBoxStatus(state, checkboxInfo) {
+      state.checkboxStatus = true
+      state.checkboxInfo = checkboxInfo
+    },
+    clearCheckBoxInfo(state) {
+      state.checkboxStatus = false
+      state.checkboxInfo = []
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo

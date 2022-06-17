@@ -65,11 +65,11 @@ export const DEFAULT_COLOR_CASE = {
       type: 'scatter', // 散点图
       options3d: {
         enabled: true,
-        alpha: 10,
-        beta: 30,
-        depth: 250,
+        alpha: 20,
+				beta: 30,
+				depth: 300,
         viewDistance: 5,
-        frame: {
+        frame: {  // 面板设置
           bottom: { size: 1, color: 'rgba(0,0,0,0.02)' },
           back: { size: 1, color: 'rgba(0,0,0,0.04)' },
           side: { size: 1, color: 'rgba(0,0,0,0.06)' }
@@ -86,18 +86,31 @@ export const DEFAULT_COLOR_CASE = {
     legend: {},
   
     plotOptions: {
+      allowPointSelect: true,
+      animation: true,
       scatter: {
         width: 10,
         height: 10,
-        depth: 10
+        depth: 10,
       }
     },
     tooltip: {},
+    xAxis: {
+
+    },
+    yAxis: {
+
+    },
+    zAxis: {
+      categories: [],
+    },
     series: [
       {
         name: '',
         colorByPoint: true,
-        data: []
+        data: [
+          // [x,y,z]
+        ]
       }
     ]
   }
@@ -106,7 +119,7 @@ export const DEFAULT_COLOR_CASE = {
   export function baseScatterOption(chart_option, chart, terminal = 'pc') {
     terminalType = terminal
     let customAttr = {}
-    // console.log('pyramid,chart.customAttr: ', JSON.parse(chart.customAttr))
+    console.log('scatter,chart.customAttr: ', JSON.parse(chart.customAttr),chart)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -143,13 +156,13 @@ export const DEFAULT_COLOR_CASE = {
         dataLabels.format = formatter
         
         // 系列数据标签的选项，显示在每个数据点旁边
-        chart_option.plotOptions.series.dataLabels = dataLabels
+        chart_option.plotOptions.scatter.dataLabels = dataLabels
       }
     }
   
     // 处理data
     if (chart.data) {
-      console.log('pyramid,chart.data',chart.data)
+      console.log('scatter,chart.data',chart.data)
       // chart_option.title.text = chart.title
       if (chart.data.series.length > 0) {
         chart_option.series[0].name = chart.data.series[0].name
@@ -165,7 +178,7 @@ export const DEFAULT_COLOR_CASE = {
           chart_option.series[0].data.push(y)
         }
         // chart_option.xAxis.categories = arr;
-        // console.log('pyramid,chart_option:::::',chart_option)
+        console.log('scatter,chart_option:::::',chart_option)
       }
     }
   
@@ -190,7 +203,7 @@ export const DEFAULT_COLOR_CASE = {
       }
   
       if (customStyle.legend && chart_option.legend) {
-        // chart_option.plotOptions.pyramid.showInLegend = customStyle.legend.show
+        chart_option.plotOptions.scatter.showInLegend = customStyle.legend.show
         // chart_option.legend.padding = padding
         chart_option.legend.layout = customStyle.legend.orient
         chart_option.legend.verticalAlign = customStyle.legend.vPosition

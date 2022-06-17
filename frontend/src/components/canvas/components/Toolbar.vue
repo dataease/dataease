@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-show="editControlButton" class="toolbar">
-      <span style="float: right;">
+      <span style="float: right;" v-show="linkageSettingStatus">
         <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
           {{ $t('commons.reset') }}
         </el-button>
@@ -9,6 +9,14 @@
           {{ $t('commons.confirm') }}
         </el-button>
         <el-button size="mini" @click="editCancel">
+          {{ $t('commons.cancel') }}
+        </el-button>
+      </span>
+      <span style="float: right;" v-show="checkboxStatus">
+        <el-button size="mini" @click="checkDel">
+          {{ $t('commons.delete') }}
+        </el-button>
+        <el-button size="mini" @click="checkCancel">
           {{ $t('commons.cancel') }}
         </el-button>
       </span>
@@ -41,6 +49,9 @@
       <el-tooltip :content="$t('panel.params_setting')">
         <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
       </el-tooltip>
+      <!--<el-tooltip :content="$t('panel.params_checkbox')">
+        <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
+      </el-tooltip> -->
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -114,7 +125,7 @@ export default {
       return this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex
     },
     editControlButton() {
-      return this.linkageSettingStatus || this.mobileLayoutStatus
+      return this.linkageSettingStatus || this.mobileLayoutStatus || this.checkboxStatus
     },
     ...mapState([
       'componentData',
@@ -125,6 +136,7 @@ export default {
       'snapshotIndex',
       'lastSaveSnapshotIndex',
       'linkageSettingStatus',
+      'checkboxStatus',
       'curLinkageView',
       'targetLinkageInfo',
       'mobileLayoutStatus',
@@ -321,6 +333,16 @@ export default {
     },
     openOuterParamsSet() {
       this.$emit('outerParamsSetVisibleChange', true)
+    },
+    clickCheckbox() {
+      console.log('checkbox')
+      this.$store.commit('setCheckBoxStatus',[])
+    },
+    checkDel(){
+      
+    },
+    checkCancel(){
+      this.$store.commit('clearCheckBoxInfo')
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

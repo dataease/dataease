@@ -127,6 +127,7 @@ export default {
         'targetViewIds': targetViewIds
       }
       getViewLinkageGather(requestInfo).then(rsp => {
+        console.log('查询的数据',rsp)
         this.$store.commit('setLinkageInfo', rsp.data)
       })
     },

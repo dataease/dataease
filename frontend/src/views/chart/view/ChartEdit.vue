@@ -256,7 +256,7 @@
                     :obj="{view, param, chart, dimensionData, quotaData}"
                   />
                   <div v-else>
-
+                    <!-- map -->
                     <el-row v-if="view.type ==='map' || view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
@@ -353,8 +353,7 @@
                       </div>
                     </el-row>
                     <!--xAxis-->
-                    <el-row
-                      v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
+                    <el-row v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
@@ -362,7 +361,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type.includes('column') || view.type === 'chart-mix' || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -418,8 +417,7 @@
                       </div>
                     </el-row>
                     <!--yaxis-->
-                    <el-row
-                      v-if="view.type !=='table-info' && view.type !=='label'"
+                    <el-row v-if="view.type !=='table-info' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -428,7 +426,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter')|| view.type.includes('column') || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -531,6 +529,42 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <!-- zAxis -->
+                    <!-- <el-row v-if="view.type && view.type === '3dscatter'" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.drag_block_scatter_zaxis') }}</span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.zaxis"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addZaxis"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-item
+                            v-for="(item,index) in view.zaxis"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.zaxis || view.zaxis.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row> -->
                     <!--extStack-->
                     <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
                       <span style="width: 80px;text-align: right;">
@@ -567,8 +601,7 @@
                       </div>
                     </el-row>
                     <!--extBubble-->
-                    <el-row
-                      v-if="view.type && view.type.includes('scatter')"
+                    <el-row v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -1271,7 +1304,8 @@ import {
   DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_YAXIS_STYLE
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_ZAXIS_STYLE,
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -1402,6 +1436,7 @@ export default {
         extStack: [],
         drillFields: [],
         extBubble: [],
+        zaxis: [],
         show: true,
         type: 'bar',
         title: '',
@@ -1418,6 +1453,7 @@ export default {
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+          zAxis: DEFAULT_ZAXIS_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
@@ -1788,12 +1824,17 @@ export default {
         view.urlMap = view.urlMap
       }
 
+      if(view.type === '3dscatter') {
+        // view.zaxis
+      }
+
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.zaxis = JSON.stringify(view.zaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
@@ -1867,6 +1908,7 @@ export default {
       view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
+      view.zaxis = JSON.stringify(this.view.zaxis)
       view.extStack = JSON.stringify(this.view.extStack)
       view.drillFields = JSON.stringify(this.view.drillFields)
       view.extBubble = JSON.stringify(this.view.extBubble)
@@ -1932,6 +1974,7 @@ export default {
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
+          this.view.zaxis = this.view.zaxis ? JSON.parse(this.view.zaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -2276,6 +2319,9 @@ export default {
           } else if (this.itemForm.renameType === 'dimensionExt') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           }
+          //  else if (this.itemForm.renameType === '') {
+          //   this.view.zaxis[this.itemForm.index].name = this.itemForm.name
+          // }
           this.calcData(true)
           this.closeRename()
         } else {
@@ -2326,6 +2372,7 @@ export default {
       this.view = {
         xAxis: [],
         yAxis: [],
+        zAxis: [],
         type: ''
       }
     },
@@ -2357,6 +2404,7 @@ export default {
         this.view.xaxisExt = []
         this.view.yaxis = []
         this.view.yaxisExt = []
+        this.view.zaxis = []
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
@@ -2450,6 +2498,11 @@ export default {
       if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }
+      this.calcData(true)
+    },
+    addZaxis(e) {
+      this.dragMoveDuplicate(this.view.zaxis,e)
+
       this.calcData(true)
     },
     moveToDimension(e) {

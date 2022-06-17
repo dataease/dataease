@@ -1,0 +1,1 @@
+alter table portal_data modify column position_json longtext;

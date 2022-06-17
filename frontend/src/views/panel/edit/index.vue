@@ -637,7 +637,7 @@ export default {
       let style = {
         padding: this.componentGap + 'px'
       }
-      // console.log('this.canvasStyleData==========', this.canvasStyleData)
+      console.log('this.canvasStyleData==========', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
           style = {
@@ -655,8 +655,7 @@ export default {
       style.width = this.canvasStyleData.width + 'px'
       style.transform = `scale(${this.scaleRule})`
       style.height = this.canvasStyleData.height + 'px'
-      style.fontFamily = this.canvasStyleData.fontFamily
-      // console.log('shezhi===', style, this.canvasStyleData)
+      console.log('shezhi===', style, this.canvasStyleData)
       return style
     },
     editorStyle() {
@@ -766,7 +765,7 @@ export default {
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
     erd.listenTo(document.getElementById('canvasInfo-main'), element => {
-      // console.log('element=====', element)
+      console.log('element=====', element)
 
       this.detectZoom()
       _this.$nextTick(() => {
@@ -785,7 +784,7 @@ export default {
   },
   methods: {
     changeScale(e) {
-      // console.log('缩放值------', e)
+      console.log('缩放值------', e)
       this.scaleRule = e / 100
       this.$nextTick(() => {
         this.handleScroll()
@@ -796,25 +795,25 @@ export default {
       const screen = window.screen
       const ua = navigator.userAgent.toLowerCase()
       if (window.devicePixelRatio !== undefined) {
-        // console.log('window.devicePixelRatio', window.devicePixelRatio)
+        console.log('window.devicePixelRatio', window.devicePixelRatio)
         ratio = window.devicePixelRatio
       } else if (~ua.indexOf('msie')) {
         if (screen.deviceXDPI && screen.logicalXDPI) {
-          // console.log('suofang----------', screen.deviceXDPI, screen.logicalXDPI, screen.deviceXDPI / screen.logicalXDPI)
+          console.log('suofang----------', screen.deviceXDPI, screen.logicalXDPI, screen.deviceXDPI / screen.logicalXDPI)
           ratio = screen.deviceXDPI / screen.logicalXDPI
         }
       } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
         ratio = window.outerWidth / window.innerWidth
-        // console.log('suofang----------22222', window.outerWidth, window.innerWidth, window.outerWidth / window.innerWidth)
+        console.log('suofang----------22222', window.outerWidth, window.innerWidth, window.outerWidth / window.innerWidth)
       }
       if (ratio) {
         ratio = Math.round(ratio * 100)
       }
-      // console.log('window.screen.width * window.devicePixelRatio', window.screen.width * window.devicePixelRatio)
-      // console.log('detectZoom====缩放值-----', ratio)
+      console.log('window.screen.width * window.devicePixelRatio', window.screen.width * window.devicePixelRatio)
+      console.log('detectZoom====缩放值-----', ratio)
     },
     handleScroll() {
-      // console.log('21312321321')
+      console.log('21312321321')
       const screensRect = document
         .querySelector('#ruleBox')
         .getBoundingClientRect()
@@ -830,13 +829,13 @@ export default {
     initSize() {
       const wrapperRect = document.querySelector('#canvasInfo-main').getBoundingClientRect()
       const borderWidth = 1
-      // console.log('wrapperRect============', wrapperRect)
+      console.log('wrapperRect============', wrapperRect)
       this.ruleWidth = wrapperRect.width - this.thick - borderWidth
       this.ruleHeight = wrapperRect.height - this.thick - borderWidth
     },
     // 控制缩放值
     handleWheel(e) {
-      // console.log('是否触发-----', e)
+      console.log('是否触发-----', e)
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault()
         const nextScale = parseFloat(
@@ -848,7 +847,7 @@ export default {
         if (nextScale < 0.3) {
           return
         }
-        // console.log('nextScale', nextScale)
+        console.log('nextScale', nextScale)
         this.scaleRule = nextScale
         this.scaleValue = nextScale * 100
       }
@@ -857,7 +856,7 @@ export default {
       })
     },
     handleLine(lines) {
-      // console.log('lines====', this.canvasStyleData, lines)
+      console.log('lines====', this.canvasStyleData, lines)
       // this.lines = lines
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.ruleLines = lines
@@ -961,21 +960,21 @@ export default {
       return data
     },
     handleDrop(e) {
-      // console.log('拖拽：：：：', e, this.dragComponentInfo)
+      console.log('拖拽：：：：', e, this.dragComponentInfo)
       if (this.dragComponentInfo === null) return
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
-      // console.log('拖拽信息--------------', this.dropComponentInfo)
+      console.log('拖拽信息--------------', this.dropComponentInfo)
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
-      // console.log('componentInfo', componentInfo)
+      console.log('componentInfo', componentInfo)
       if (componentInfo.type === 'assist') {
-        // console.log('组件list', componentList)
+        console.log('组件list', componentList)
         // 辅助设计组件
         componentList.forEach(componentTemp => {
           if (componentInfo.id === componentTemp.id) {
@@ -1018,7 +1017,7 @@ export default {
           // 视图统一调整为复制
           this.$store.commit('addComponent', { component })
           this.$store.commit('recordSnapshot', 'handleDrop')
-          // console.log('这里吗？？？', component)
+          console.log('这里吗？？？', component)
           this.clearCurrentInfo()
           return
         }
@@ -1160,7 +1159,7 @@ export default {
       this.show = false
     },
     previewFullScreen() {
-      // console.log('触发全屏功能=====')
+      console.log('触发全屏功能=====')
       // this.previewVisible = true
       this.$nextTick(() => {
         this.previewVisible = true
@@ -1180,7 +1179,7 @@ export default {
     restore() {
       this.$nextTick(() => {
         const domInfo = this.mobileLayoutStatus ? document.getElementById('canvasInfoMobile') : document.getElementById('canvasInfo')
-        // console.log('此处更新视图状态------', domInfo.offsetHeight, domInfo.offsetWidth)
+        console.log('此处更新视图状态------', domInfo.offsetHeight, domInfo.offsetWidth)
         // this.initSize()
         if (domInfo) {
           // this.outStyle.height = domInfo.offsetHeight - this.getGap()
@@ -1192,7 +1191,7 @@ export default {
       })
     },
     getGap() {
-      // console.log('this.componentGap外层--------------------', this.mobileLayoutStatus, this.componentGap)
+      console.log('this.componentGap外层--------------------', this.mobileLayoutStatus, this.componentGap)
       return this.mobileLayoutStatus ? 0 : this.componentGap * 2
     },
     closeStyleDialog() {
@@ -1209,9 +1208,9 @@ export default {
         return
       }
       const fileList = e.target.files
-      // console.log('e.target==========', fileList)
+      console.log('e.target==========', fileList)
       for (const key in fileList) {
-        // console.log('遍历对象数组-----', key, fileList[key])
+        console.log('遍历对象数组-----', key, fileList[key])
         _this.addMorePirTure(fileList[key])
       }
       //
@@ -1418,7 +1417,7 @@ export default {
               enable: false
             }
           }
-          // console.log('图片的样式', img.width, img.height)
+          console.log('图片的样式', img.width, img.height)
           component.auxiliaryMatrix = false
           component.style.top = _this.dropComponentInfo.shadowStyle.y
           component.style.left = _this.dropComponentInfo.shadowStyle.x
@@ -1454,7 +1453,7 @@ export default {
       this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
-      // console.log(newViewInfo)
+      console.log(newViewInfo)
       let component
       const newComponentId = uuid.v1()
       // 用户视图设置 复制一个模板
@@ -1583,7 +1582,6 @@ export default {
     max-width: 60px;
     border: none;
     width: 60px;
-
   }
 
   .ms-main-container {
