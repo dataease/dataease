@@ -31,11 +31,11 @@
       </ux-grid>
 
       <el-row v-show="chart.type === 'table-info'" class="table-page">
-        <span class="total-style">
+        <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
           {{ $t('chart.items') }}
-        </span>
+        </span> -->
         <el-pagination
           small
           :current-page="currentPage.page"
