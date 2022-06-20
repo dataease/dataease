@@ -28,7 +28,6 @@
               <el-input
                 v-model="scope.row.name"
                 size="mini"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @blur="saveEdit(scope.row)"
                 @keyup.enter.native="saveEdit(scope.row)"
               />
@@ -40,7 +39,6 @@
                 v-model="scope.row.deType"
                 size="mini"
                 style="display: inline-block;width: 26px;"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @change="saveEdit(scope.row)"
               >
                 <el-option
@@ -149,7 +147,6 @@
                 icon="el-icon-sort"
                 size="mini"
                 circle
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @click="dqTrans(scope.row,'d')"
               />
             </template>
@@ -158,7 +155,6 @@
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.extField === 2"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 type="text"
                 size="mini"
                 @click="editField(scope.row)"
@@ -166,7 +162,6 @@
               </el-button>
               <el-button
                 v-if="scope.row.extField !== 0"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 type="text"
                 size="mini"
                 @click="deleteField(scope.row)"
@@ -184,7 +179,6 @@
               <el-input
                 v-model="scope.row.name"
                 size="mini"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @blur="saveEdit(scope.row)"
                 @keyup.enter.native="saveEdit(scope.row)"
               />
@@ -196,7 +190,6 @@
                 v-model="scope.row.deType"
                 size="mini"
                 style="display: inline-block;width: 26px;"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @change="saveEdit(scope.row)"
               >
                 <el-option
@@ -297,7 +290,6 @@
                 icon="el-icon-sort"
                 size="mini"
                 circle
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 @click="dqTrans(scope.row,'q')"
               />
             </template>
@@ -306,7 +298,6 @@
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.extField === 2"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 type="text"
                 size="mini"
                 @click="editField(scope.row)"
@@ -314,7 +305,6 @@
               </el-button>
               <el-button
                 v-if="scope.row.extField !== 0"
-                :disabled="!hasDataPermission('manage',param.privileges)"
                 type="text"
                 size="mini"
                 @click="deleteField(scope.row)"

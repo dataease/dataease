@@ -298,6 +298,7 @@ export default {
   watch: {
     'param': function() {
       this.initFunctions()
+      this.initDsFields()
     },
     'field': {
       handler: function() {
@@ -333,7 +334,7 @@ export default {
       this.$refs.myCm.codemirror.showHint()
     })
     this.initFunctions()
-    // this.initField()
+    this.initDsFields()
   },
   methods: {
     onCmReady(cm) {
@@ -364,8 +365,6 @@ export default {
       post('/dataset/function/listByTableId/' + this.param.tableId, null).then(response => {
         this.functions = response.data
         this.functionData = JSON.parse(JSON.stringify(this.functions))
-
-        this.initDsFields()
       })
     },
 
