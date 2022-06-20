@@ -43,6 +43,7 @@
         @resizeView="resizeView"
         @linkJumpSet="linkJumpSet"
         @bannerImg="bannerImg"
+        @setNavInfo="setNavInfo"
         @boardSet="boardSet"
       />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
@@ -922,7 +923,7 @@ export default {
         if (this.parent) {
           this.bounds = this.calcDragLimits()
         }
-        console.log('边界',this.bounds)
+        console.log('边界', this.bounds)
         var width = deepCopy(this.element.commonBackground)
         this.element.style.width = width.boxWidth
         this.element.style.height = width.boxHeight
@@ -1038,7 +1039,7 @@ export default {
       this.mouseClickPosition.height = this.height
       // 计算边界
       this.bounds = this.calcResizeLimits()
-      console.log('边界。。。。。',this.bounds)
+      console.log('边界。。。。。', this.bounds)
       // 添加事件
       addEvent(document.documentElement, eventsFor.move, this.move)
       addEvent(document.documentElement, eventsFor.stop, this.handleUp)
@@ -1049,11 +1050,11 @@ export default {
       console.log('计算调整大小范围')
       const minW = this.minW
       const minH = this.minH
-      console.log(minW,minH)
+      console.log(minW, minH)
       let maxW = this.maxW
       let maxH = this.maxH
       const [gridX, gridY] = this.grid
-      console.log('grid:::',gridX,gridY)
+      console.log('grid:::', gridX, gridY)
       // 获取矩形信息
       const width = this.width
       const height = this.height
@@ -1062,12 +1063,12 @@ export default {
       const right = this.right
       const bottom = this.bottom
       console.log('矩形信息：')
-      console.log('widht:',width)
-      console.log('height:',height)
-      console.log('left:',left)
-      console.log('top:',top)
-      console.log('right:',right)
-      console.log('bottom:',bottom)
+      console.log('widht:', width)
+      console.log('height:', height)
+      console.log('left:', left)
+      console.log('top:', top)
+      console.log('right:', right)
+      console.log('bottom:', bottom)
       // 对齐网格
       maxW = maxW - (maxW % gridX)
       maxH = maxH - (maxH % gridY)
@@ -1081,7 +1082,7 @@ export default {
         minBottom: null,
         maxBottom: null
       }
-      console.log('网格',maxW,maxH)
+      console.log('网格', maxW, maxH)
       // 边界限制
       if (this.parent) {
         console.log('11111111111111111')
@@ -1935,6 +1936,10 @@ export default {
     bannerImg() {
       console.log('-------------------------------------------------------2222222', this.element)
       this.$emit('bannerImg')
+    },
+    // 导航条状设置
+    setNavInfo() {
+      this.$emit('setNavInfo')
     }
   }
 

@@ -157,19 +157,27 @@ export const assistList = [
     icon: 'iconfont icon-juxing1',
     defaultClass: 'text-filter'
   },
-  {
-    id: '10006',
-    component: 'de-tabs',
-    type: 'de-tabs',
-    label: '选项卡',
-    icon: 'iconfont icon-tabs',
-    defaultClass: 'text-filter'
-  },
+  // {
+  //   id: '10006',
+  //   component: 'de-tabs',
+  //   type: 'de-tabs',
+  //   label: '选项卡',
+  //   icon: 'iconfont icon-tabs',
+  //   defaultClass: 'text-filter'
+  // },
   {
     id: '10007',
     component: 'de-banner',
     type: 'de-banner',
     label: '轮播组件',
+    icon: 'iconfont icon-tabs',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '10008',
+    component: 'de-nav',
+    type: 'de-nav',
+    label: '导航栏',
     icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
@@ -419,6 +427,40 @@ const list = [
     miniSizey: 1
   },
   {
+    id: '10008',
+    component: 'de-nav',
+    label: '导航组件',
+    propValue: '',
+    icon: 'tabs',
+    type: 'de-nav',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 100,
+      borderStyle: 'solid',
+      borderWidth: 0,
+      borderColor: '#000000'
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }],
+      navTabList: [],
+      fontSize: 12,
+      color: '#333',
+      vertical: 'center',
+      horizontal: 'center'
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
     id: '30001',
     component: 'de-show-date',
     label: '时间',
@@ -554,7 +596,7 @@ const list = [
     sizey: 5,
     miniSizex: 1,
     miniSizey: 1
-  },
+  }
 ]
 
 for (let i = 0, len = list.length; i < len; i++) {

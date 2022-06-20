@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-show="editControlButton" class="toolbar">
-      <span style="float: right;" v-show="linkageSettingStatus">
+      <span v-show="linkageSettingStatus" style="float: right;">
         <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
           {{ $t('commons.reset') }}
         </el-button>
@@ -12,7 +12,7 @@
           {{ $t('commons.cancel') }}
         </el-button>
       </span>
-      <span style="float: right;" v-show="checkboxStatus">
+      <span v-show="checkboxStatus" style="float: right;">
         <el-button size="mini" @click="checkDel">
           {{ $t('commons.delete') }}
         </el-button>
@@ -280,13 +280,13 @@ export default {
       // 保存到数据库
       console.log('this.canvasStyleData', this.componentData)
       this.componentData.forEach(ele => {
-        console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
-        ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
-        ele.commonBackground.boxHeight = document.getElementById('eleId' + ele.id).offsetHeight
-        ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
-        ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
+        // console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
+        // ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
+        // ele.commonBackground.boxHeight = document.getElementById('eleId' + ele.id).offsetHeight
+        // ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
+        // ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
 
-        console.log('获取盒子到左边和右边的距离', document.getElementById('eleId' + ele.id).offsetTop, document.getElementById('eleId' + ele.id).offsetLeft)
+        // console.log('获取盒子到左边和右边的距离', document.getElementById('eleId' + ele.id).offsetTop, document.getElementById('eleId' + ele.id).offsetLeft)
       })
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
@@ -336,12 +336,12 @@ export default {
     },
     clickCheckbox() {
       console.log('checkbox')
-      this.$store.commit('setCheckBoxStatus',[])
+      this.$store.commit('setCheckBoxStatus', [])
     },
-    checkDel(){
-      
+    checkDel() {
+
     },
-    checkCancel(){
+    checkCancel() {
       this.$store.commit('clearCheckBoxInfo')
     },
     changeAidedDesign() {

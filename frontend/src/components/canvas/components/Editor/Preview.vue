@@ -22,6 +22,7 @@
         <canvas-opt-bar />
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
+          v-if="exhibition(item)"
           :key="index"
           :config="item"
           :search-count="searchCount"
@@ -147,6 +148,23 @@ export default {
   created() {
   },
   computed: {
+    exhibition() {
+      return function(value) {
+        console.log('value===', value)
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return true
+          } else {
+            return false
+          }
+        } else {
+          return true
+        }
+      }
+      // console.log('item', item, this.canvasStyleData)
+      // console.log('this.showOrNot', this.showOrNot)
+      // return true
+    },
     scaleNewHeight() {
       var height = 800
       // if (this.offsetWidth <= this.canvasStyleData.width) {
@@ -184,6 +202,10 @@ export default {
           height: this.scaleNewHeight + 'px'
         }
       }
+    },
+    showOrNot() {
+      console.log('是否触发')
+      return this.canvasStyleData
     },
     customStyle() {
       let style = {
@@ -328,6 +350,7 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+
     detectZoom() {
       var ratio = 0; var // 浏览器当前缩放比
         screen = window.screen; var // 获取屏幕
