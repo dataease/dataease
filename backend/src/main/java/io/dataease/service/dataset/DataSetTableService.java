@@ -962,14 +962,22 @@ public class DataSetTableService {
     public String removeVariables(String sql) throws Exception {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(sql);
+        boolean hasVariables = false;
         while (matcher.find()) {
+            hasVariables = true;
             sql = sql.replace(matcher.group(), SubstitutedParams);
+        }
+        if(!hasVariables){
+            return sql;
         }
         CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
         Statement statement = CCJSqlParserUtil.parse(sql);
         Select select = (Select) statement;
         PlainSelect plainSelect = ((PlainSelect) select.getSelectBody());
         Expression expr = plainSelect.getWhere();
+        if(expr == null){
+            return sql;
+        }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = (BinaryExpression)expr;
 
