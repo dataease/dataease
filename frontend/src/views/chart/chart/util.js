@@ -237,14 +237,13 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector-ant-v': [
+        'gaugeMin',
         'gaugeMax',
         'gaugeStartAngle',
         'gaugeEndAngle'
       ],
       'label-selector-ant-v': [
-        'show',
-        'fontSize',
-        'color'
+        'labelGauge'
       ],
       'title-selector-ant-v': [
         'show',
