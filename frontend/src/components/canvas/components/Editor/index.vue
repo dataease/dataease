@@ -30,6 +30,7 @@
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
+      v-if="showOrNot(item)"
       ref="deDragRef"
       :key="item.id"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
@@ -60,6 +61,7 @@
       @onDragging="onDragging"
       @onResizing="onResizing"
       @bannerImg="bannerImg(item)"
+      @setNavInfo="setNavInfo(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -227,6 +229,18 @@
       <BannerSet v-if="bannerSetVisible" :element="bannerelement" @backgroundSetClose="bannerSetClose" />
       <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
     </el-dialog>
+    <el-dialog
+      :visible.sync="navVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <navgationSet v-if="navVisible" :element="navElement" @backgroundSetClose="navSetClose" />
+      <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -258,6 +272,7 @@ import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
 import BannerSet from '@/views/background/bannerSet'
+import navgationSet from '@/views/background/navgationSet'
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
 const eventsForBus = events.mouse
@@ -827,7 +842,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, BannerSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, BannerSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -899,8 +914,10 @@ export default {
         width: 0
       },
       baseLineShow: false,
+      navElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
+      navVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -973,6 +990,35 @@ export default {
   computed: {
     dialogVisible() {
       return this.chartDetailsVisible || this.linkJumpSetVisible
+    },
+    showOrDanne() {
+      return function(value) {
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return { opacity: 1 }
+          } else {
+            return { opacity: 0 }
+          }
+        } else {
+          return { opacity: 1 }
+        }
+      }
+    },
+    showOrNot(item) {
+      return function(value) {
+        console.log('value===', value)
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return true
+          } else {
+            return false
+          }
+        } else {
+          return true
+        }
+      }
+
+      // return true
     },
     // 挤占式画布设计
     coordinates() {
@@ -1093,11 +1139,27 @@ export default {
   created() {
   },
   methods: {
+    // showOrNot(item) {
+    //   console.log('判断展示数据', item, this.canvasStyleData)
+    //   // return true
+    //   if (item.showName) {
+    //     if (this.canvasStyleData.navShowKey === item.showName) {
+    //       return true
+    //     } else {
+    //       return false
+    //     }
+    //   } else {
+    //     return true
+    //   }
+    // },
     backgroundSetClose() {
       this.boardSetVisible = false
     },
     bannerSetClose() {
       this.bannerSetVisible = false
+    },
+    navSetClose() {
+      this.navVisible = false
     },
     boardSet(item) {
       // console.log('itsm00001', item)
@@ -1109,6 +1171,11 @@ export default {
       // console.log('item-------------------------------------------', item)
       this.bannerelement = item
       this.bannerSetVisible = true
+    },
+    setNavInfo(item) {
+      //
+      this.navElement = item
+      this.navVisible = true
     },
     changeStyleWithScale,
     setLine(e) {
@@ -1408,7 +1475,7 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     showViewDetails(index) {
-      console.log('删除第几个？',index)
+      console.log('删除第几个？', index)
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
 

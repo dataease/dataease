@@ -1,0 +1,120 @@
+<template>
+  <div>
+    <div class="nav_calss" :style="navStyleSet">
+      <div v-for="(item,index) in navList" :key="index" class="nav_info">
+        <span class="title_class" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapState } from 'vuex'
+export default {
+  props: {
+    element: {
+      type: Object,
+      default: () => {},
+      require: true
+    }
+  },
+
+  data() {
+    return {
+      // isShow: true,
+    }
+  },
+  computed: {
+    ...mapState([
+      'curComponent',
+      'componentData',
+      'canvasStyleData'
+    ]),
+    navStyleSet() {
+      const style = {}
+      style.fontSize = this.element.options.fontSize + 'px'
+      style.color = this.element.options.color
+      style.textAlign = this.element.options.horizontal
+      style.alignItems = this.element.options.vertical
+      style.height = this.element.style.height + 'px'
+      return style
+    },
+    navList() {
+      return this.element.options.navTabList
+    }
+  },
+  watch: {
+
+  },
+  created() {
+    // console.log('轮播图片组件', this.element)
+  },
+  mounted() {
+    // this.changeSlidesPerView()
+  },
+  methods: {
+    baseMoseDownEven(e) {
+      e.stopPropagation()
+    },
+    toggleNav(key) {
+      // 切换导航
+      console.log('切换导航------ ', this.componentData, this.canvasStyleData)
+      this.canvasStyleData.navShowKey = key.name
+    }
+  }
+}
+</script>
+<style >
+.nav_calss{
+  display:flex;
+  height: 100%;
+}
+.nav_info{
+  flex:1;
+}
+.title_class{
+  cursor: pointer;
+}
+  /* .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 200px;
+    margin: 0;
+  }
+
+  .el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+  }
+
+  .el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
+  } */
+  .recommendPage{
+    /* padding:10px; */
+  }
+  .recommendPage .swiper-container {
+  position: relative;
+  width: 100%;
+  /* height: 200px; */
+}
+.recommendPage .swiper-container .swiper-slide {
+  width: 100%;
+  /* line-height: 200px; */
+  /* border:1px solid green; */
+  color: #000;
+  font-size: 16px;
+  text-align: center;
+  vertical-align:middle;
+  height:100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.recommendPage .swiper-container .swiper-slide-active img{
+  /* height:100% !important;
+   */
+   height:100% !important;
+   /* transform:scaleX(1.5) */
+}
+</style>
+
