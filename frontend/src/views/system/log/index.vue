@@ -55,7 +55,8 @@ export default {
             multiple: true,
             class: 'de-log-filter',
             defaultOperator: 'in',
-            filterable: true
+            filterable: true,
+            'reserve-keyword': true
           },
           { field: 'nick_name', label: this.$t('log.user'), component: 'DeComplexInput', class: 'de-log-filter' },
 
