@@ -103,6 +103,8 @@ public class ChartViewService {
     private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
     @Resource
     private ChartViewCacheService chartViewCacheService;
+    @Resource
+    private ChartViewFieldService chartViewFieldService;
 
 
     //默认使用非公平
@@ -450,7 +452,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql =  dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
@@ -821,7 +823,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql =  dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
@@ -1344,6 +1346,7 @@ public class ChartViewService {
         extChartViewMapper.copyCache(sourceViewId, newViewId);
         extPanelGroupExtendDataMapper.copyExtendData(sourceViewId, newViewId, panelId);
         chartViewCacheService.refreshCache(newViewId);
+        chartViewFieldService.copyField(sourceViewId, newViewId);
         return newViewId;
     }
 
@@ -1492,17 +1495,17 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList)throws Exception{
-        if(requestList !=null &&CollectionUtils.isNotEmpty(requestList.getFilter()) ){
+    private String handleVariable(String sql, ChartExtRequest requestList) throws Exception {
+        if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
-                if(CollectionUtils.isEmpty(chartExtFilterRequest.getValue())){
+                if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }
-                if(chartExtFilterRequest.getValue().size() > 1){
+                if (chartExtFilterRequest.getValue().size() > 1) {
                     for (String parameter : chartExtFilterRequest.getParameters()) {
                         sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
                     }
-                }else {
+                } else {
                     for (String parameter : chartExtFilterRequest.getParameters()) {
                         sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
                     }

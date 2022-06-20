@@ -77,4 +77,17 @@ public class ChartViewFieldService {
             }
         }
     }
+
+    public void copyField(String sourceChartId, String targetChartId) {
+        ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
+        chartViewFieldExample.createCriteria().andChartIdEqualTo(sourceChartId);
+        List<ChartViewField> chartViewFields = chartViewFieldMapper.selectByExampleWithBLOBs(chartViewFieldExample);
+        if (CollectionUtils.isNotEmpty(chartViewFields)) {
+            for (ChartViewField field : chartViewFields) {
+                field.setId(null);
+                field.setChartId(targetChartId);
+                save(field);
+            }
+        }
+    }
 }
