@@ -11,14 +11,12 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.commons.utils.ZipUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
 import io.dataease.plugins.config.LoadjarUtil;
-import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -98,14 +95,14 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             String msg = "缺少插件描述文件【plugin.json】";
             LogUtil.error(msg);
-            DEException.throwException(new RuntimeException(msg));
+            DEException.throwException(msg);
         }
         MyPluginDTO myPlugin = formatJsonFile(jsonFiles[0]);
 
         if (!versionMatch(myPlugin.getRequire())) {
             String msg = "当前插件要求系统版本最低为：" + myPlugin.getRequire();
             LogUtil.error(msg);
-            DEException.throwException(new RuntimeException(msg));
+            DEException.throwException(msg);
         }
         //4.加载jar包 失败则 直接返回错误 删除文件
         File[] jarFiles = folderFile.listFiles(this::isPluginJar);
@@ -114,13 +111,13 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             String msg = "缺少插件jar文件";
             LogUtil.error(msg);
-            DEException.throwException(new RuntimeException(msg));
+            DEException.throwException(msg);
         }
 
         if (pluginExist(myPlugin)) {
             String msg = "插件【"+myPlugin.getName()+"】已存在，请先卸载";
             LogUtil.error(msg);
-            DEException.throwException(new RuntimeException(msg));
+            DEException.throwException(msg);
         }
         String targetDir = null;
         try {
@@ -188,7 +185,7 @@ public class PluginService {
         if (ObjectUtils.isEmpty(myPlugin)) {
             String msg = "当前插件不存在";
             LogUtil.error(msg);
-            DEException.throwException(new RuntimeException(msg));
+            DEException.throwException(msg);
         }
         deleteJarFile(myPlugin);
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
@@ -197,7 +194,7 @@ public class PluginService {
 
         if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
             if(CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))){
-                throw new RuntimeException(Translator.get("i18n_plugin_not_allow_delete"));
+                DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
             }
             loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
         }
