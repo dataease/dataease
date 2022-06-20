@@ -6,6 +6,7 @@ import {
 import { WordCloud } from '@antv/g2plot'
 
 export function baseWordCloudOptionAntV(plot, container, chart, action) {
+  console.log('词云',chart)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -51,6 +52,15 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
   //     }
   //   }
   // }
+  if(chart.customAttr) {
+    const customAttr = JSON.parse(chart.customAttr)
+    // console.log('/??????',customAttr)
+    if(customAttr.size) {
+      // console.log(customAttr.size)
+      options.wordStyle.fontSize[0] = customAttr.size.wordMin
+      options.wordStyle.fontSize[1] = customAttr.size.wordMax
+    }
+  }
 
   // 开始渲染
   if (plot) {

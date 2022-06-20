@@ -1721,13 +1721,15 @@ export default {
     position:relative;
   }
   .zoom_control{
-    position:absolute;
-    right:4%;
-    bottom:8%;
-    z-index:100;
-    width: 210px;
-    background: rgba(0,0,0,0.1);
-    padding: 20px 10px;
+    position: absolute;
+    font-size: 12px;
+    right: 1%;
+    bottom: 5%;
+    z-index: 100;
+    width: 110px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px 10px;
   }
   .this_canvas {
     width: 100%;

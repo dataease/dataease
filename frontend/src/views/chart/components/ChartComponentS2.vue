@@ -9,11 +9,11 @@
       <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
       <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
       <el-row v-show="chart.type === 'table-info'" class="table-page">
-        <span class="total-style">
+        <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
           {{ $t('chart.items') }}
-        </span>
+        </span> -->
         <el-pagination
           small
           :current-page="currentPage.page"

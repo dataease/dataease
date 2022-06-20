@@ -13,6 +13,7 @@
         </el-form-item>
       </el-form>
 
+      <!-- 折线设置 -->
       <el-form v-show="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />

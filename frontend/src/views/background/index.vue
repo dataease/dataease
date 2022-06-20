@@ -26,6 +26,25 @@
         </el-col>
       </el-row>
 
+      <!-- 文字轮播组件字体样式 -->
+      <div v-if="this.curComponent.component === 'de-rotation' && this.curComponent.type === 'custom'">
+        <el-row style="height: 50px;overflow: hidden">
+          <el-col :span="3">
+            <span class="params-title">{{ $t('panel.box_fontSize') }}</span>
+          </el-col>
+          <el-col :span="8">
+            <el-input-number v-model="curComponent.commonBackground.fontSize" :min="1" />
+          </el-col>
+        </el-row>
+        <el-row style="height: 50px;overflow: hidden" >
+          <el-col :span="3">
+            <span class="params-title">{{ $t('panel.box_fontColor') }}</span>
+          </el-col>
+          <el-col :span="8">
+            <el-color-picker v-model="curComponent.commonBackground.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+        </el-row>
+      </div>
       <el-row style="height: 50px;overflow: hidden">
         <el-col :span="3">
           <span class="params-title">{{ $t('panel.inner_padding') }}</span>
@@ -161,6 +180,7 @@ export default {
   },
   methods: {
     init() {
+      console.log('this.curComponent',this.curComponent)
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
@@ -183,6 +203,8 @@ export default {
       this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
       this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
       this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
+      this.curComponent.commonBackground.fontSize = this.backgroundOrigin.fontSize
+      this.curComponent.commonBackground.fontColor = this.backgroundOrigin.fontColor
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },

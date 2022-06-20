@@ -66,7 +66,7 @@ export const DEFAULT_COLOR_CASE = {
       options3d: {
         enabled: true,
         alpha: 10, // 内（X）旋转角度
-        beta: 10, // 外（Y）旋转角度
+        beta: 0, // 外（Y）旋转角度
         depth: 50, // 图表的总深度。
         viewDistance: 25
       },
@@ -145,8 +145,8 @@ export const DEFAULT_COLOR_CASE = {
       type: 'column',
       options3d: {
         enabled: true,
-        alpha: 15,
-        beta: 15,
+        alpha: 10,
+        beta: 0,
         viewDistance: 25,
         depth: 40
       },
