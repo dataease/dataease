@@ -13,6 +13,16 @@
         </el-form-item>
       </el-form>
 
+      <!-- 词云组件字体大小设置 -->
+      <el-form v-show="chart.type && chart.type === 'word-cloud'" ref="sizeFormWord" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.wordMin')" class="form-item">
+          <el-slider v-model="sizeForm.wordMin" show-input :show-input-controls="false" input-size="mini" :min="10" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.wordMax')" class="form-item">
+          <el-slider v-model="sizeForm.wordMax" show-input :show-input-controls="false" input-size="mini" :min="sizeForm.wordMin" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
       <el-form v-show="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />

@@ -40,6 +40,9 @@ export const DEFAULT_SIZE = {
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
 
+  wordMin: 10,
+  wordMax: 32,
+
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,

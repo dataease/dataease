@@ -767,8 +767,9 @@
                       @onSizeChange="onSizeChange"
                     />
                   </el-collapse-item>
+                  <!-- && chart.type !== 'word-cloud' -->
                   <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
+                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
                     name="size"
                     :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
                   >

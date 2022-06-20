@@ -4,7 +4,12 @@
       <el-carousel v-model="value" :height="element.style.height+'px'" trigger="click" :interval="5000" @change="changeCarousel">
         <el-carousel-item v-for="(item,index) in datas" :key="index" class="banner_class" :style="bannerStyle">
           <!-- <h3 class="small">{{ item }}</h3> -->
-          <span>{{ item.text }}</span>
+          <span :style="{
+            'font-size': `${element.commonBackground.fontSize}px`,
+            'color': element.commonBackground.fontColor
+          }">
+            {{ item.text }}
+          </span>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -159,6 +164,7 @@ export default {
 
   methods: {
     changeCarousel(e) {
+      console.log('element:',this.element)
       if (JSON.stringify(this.datas) !== '[]') {
         console.log('this.datas', this.datas)
         this.datas.forEach((item, index) => {
