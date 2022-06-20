@@ -25,6 +25,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180
     }
   }
+  const per = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
   // label
   if (customAttr.label) {
     const label = JSON.parse(JSON.stringify(customAttr.label))
@@ -49,7 +50,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     }
     labelFormatter = label.gaugeLabelFormatter ? label.gaugeLabelFormatter : DEFAULT_LABEL.gaugeLabelFormatter
   }
-  const per = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
 
   const range = [0]
   let index = 0
