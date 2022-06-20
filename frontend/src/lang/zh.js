@@ -727,6 +727,8 @@ export default {
     color_simple: '简洁',
     not_alpha: '不透明度',
     size: '大小',
+    wordMin: '字体最小值',
+    wordMax: '字体最大值',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',
