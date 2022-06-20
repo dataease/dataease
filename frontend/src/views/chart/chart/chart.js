@@ -294,6 +294,38 @@ export const DEFAULT_BACKGROUND_COLOR = {
   borderRadius: 0
 }
 
+export const DEFAULT_ZAXIS_STYLE = {
+  show: true,
+  position: 'left',
+  name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
+  axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
+    rotate: 0,
+    formatter: '{value}'
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null,
+    splitCount: null
+  }
+}
+
 export const THERMODYNAMIC_DIAGRAM = {
   title: {
     text: '',
@@ -783,6 +815,7 @@ export const BASE_CHART_STRING = {
   stylePriority: 'view',
   xaxis: '[]',
   yaxis: '[]',
+  zaxis: '[]',
   show: true,
   type: 'panel',
   title: '',
@@ -799,6 +832,7 @@ export const BASE_CHART_STRING = {
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+    zaxis: DEFAULT_ZAXIS_STYLE,
     background: DEFAULT_BACKGROUND_COLOR
   }),
   customFilter: '[]'
@@ -807,6 +841,7 @@ export const BASE_CHART_STRING = {
 export const BASE_CHART = {
   xaxis: [],
   yaxis: [],
+  zaxis: [],
   show: true,
   type: 'panel',
   title: '',
@@ -823,6 +858,7 @@ export const BASE_CHART = {
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+    zaxis: DEFAULT_ZAXIS_STYLE,
     background: DEFAULT_BACKGROUND_COLOR
   },
   customFilter: []

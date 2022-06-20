@@ -17,7 +17,7 @@
             :popper-append-to-body="false"
           >
             <template slot="title">
-              <i :class="[item.iconName]"></i>
+              <i :class="[item.iconName]" />
               <span slot="title">{{ item.label }}</span>
             </template>
             <template v-if="_checkArrayHasValue(item.children)">
@@ -30,7 +30,7 @@
                     :popper-append-to-body="false"
                   >
                     <template slot="title">
-                      <i :class="[sub.iconName]"></i>
+                      <i :class="[sub.iconName]" />
                       <span slot="title">{{ sub.label }}</span>
                     </template>
                     <template v-if="_checkArrayHasValue(sub.children)">
@@ -38,7 +38,7 @@
                         <!-- 三级 -->
                         <el-menu-item :key="subItem.id" :index="subItem.id">
                           <template slot="title">
-                            <i :class="[subItem.iconName]"></i>
+                            <i :class="[subItem.iconName]" />
                             <span slot="title">{{ subItem.label }}</span>
                           </template>
                         </el-menu-item>
@@ -49,7 +49,7 @@
                 <template v-else>
                   <el-menu-item :key="sub.id" :index="sub.id">
                     <template slot="title">
-                      <i :class="[sub.iconName]"></i>
+                      <i :class="[sub.iconName]" />
                       <span slot="title">{{ sub.label }}</span>
                     </template>
                   </el-menu-item>
@@ -62,7 +62,7 @@
           <!-- 二级 -->
           <el-menu-item :key="item.id" :index="item.id">
             <template slot="title">
-              <i :class="[item.iconName]"></i>
+              <i :class="[item.iconName]" />
               <span slot="title">{{ item.label }}</span>
             </template>
           </el-menu-item>
@@ -77,30 +77,30 @@ export default {
   props: {
     subTreeDatas: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     currentTreeNode: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     themeColor: {
       type: String,
-      default: "",
+      default: ''
     },
     mode: {
       type: String,
-      default: "horizontal"
+      default: 'horizontal'
     }
   },
 
   methods: {
     _checkArrayHasValue(arr) {
-      return arr && arr.length;
+      return arr && arr.length
     },
 
     handleMenuSelect(evt) {
       this.$emit('handleMenuSelect', evt)
     }
-  },
-};
+  }
+}
 </script>

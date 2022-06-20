@@ -5,6 +5,9 @@
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
+    <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px">
+      <el-checkbox v-model="check"/>
+    </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
@@ -88,7 +91,8 @@ export default {
         'view',
         'custom'
       ],
-      timer: null
+      timer: null,
+      check: false,
     }
   },
   mounted() {
@@ -98,9 +102,17 @@ export default {
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
     },
+    // 多选框 显示
+    checkboxShow() {
+      console.log('checkShow::::::',this.element)
+      return this.checkboxStatus && this.element.type === 'view'
+    },
+    checkInfo() {
+      return this.checkboxInfo[this.element.propValue.viewId]
+    },
     // 编辑或预览区域显示
     normalAreaShow() {
-      return !this.linkageSettingStatus
+      return !this.linkageSettingStatus && !this.checkboxStatus
     },
     existLinkage() {
       let linkageFiltersCount = 0
@@ -136,6 +148,7 @@ export default {
       'componentData',
       'canvasStyleData',
       'linkageSettingStatus',
+      'checkboxStatus',
       'targetLinkageInfo',
       'curLinkageView',
       'curCanvasScale'
