@@ -63,6 +63,12 @@ public class ChartViewFieldService {
         chartViewFieldMapper.deleteByExample(chartViewFieldExample);
     }
 
+    public void deleteByChartIds(List<String> chartIds) {
+        ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
+        chartViewFieldExample.createCriteria().andChartIdIn(chartIds);
+        chartViewFieldMapper.deleteByExample(chartViewFieldExample);
+    }
+
     public void checkFieldName(ChartViewField chartViewField) {
         if (StringUtils.isNotEmpty(chartViewField.getName()) && StringUtils.isNotEmpty(chartViewField.getChartId())) {
             ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
