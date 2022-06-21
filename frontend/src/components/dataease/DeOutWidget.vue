@@ -19,6 +19,7 @@
           <div class="first-element">
             <div
               :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''"
+              :style="deSelectGridBg"
               class="first-element-contaner"
             >
 
@@ -27,6 +28,7 @@
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
                 class="component-custom"
+                ref="deOutWidget"
                 :out-style="element.style"
                 :element="element"
                 :in-draw="inDraw"
@@ -44,8 +46,10 @@
 
 <script>
 import { mapState } from 'vuex'
+import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
 export default {
   name: 'DeOutWidget',
+  mixins: [inputStyleMixin],
   props: {
     element: {
       type: Object,
@@ -99,12 +103,23 @@ export default {
     },
     ...mapState([
       'curCanvasScale'
-    ])
+    ]),
+    deSelectGridBg() {
+      if (this.element.component !== 'de-select-grid') return null;
+      const { backgroundColorSelect, color  } = this.element.commonBackground;
+      return {
+        background: backgroundColorSelect ?  color : '#fff',
+        border: backgroundColorSelect ? 'none' : '1px solid #d7dae2'
+      }
+    },
+    isFilterComponent() {
+      return ['de-select', 'de-select-grid', 'de-date',  "de-input-search", "de-number-range", "de-select-tree"].includes(this.element.component)
+    }
   },
   watch: {
     'element.style': {
       handler(val) {
-        this.handlerPositionChange(val)
+        this.handlerPositionChange(val);
       },
       deep: true,
       immediate: true
@@ -114,9 +129,13 @@ export default {
     // this.watchSize()
   },
   created() {
-    const { horizontal, vertical } = this.element.style
+    // console.log('aaaaaa')
+    const { horizontal, vertical, brColor, wordColor, innerBgColor } = this.element.style
     this.$set(this.element.style, 'horizontal', horizontal || 'left')
     this.$set(this.element.style, 'vertical', vertical || 'center')
+    this.$set(this.element.style, 'brColor', brColor || '')
+    this.$set(this.element.style, 'wordColor', wordColor || '')
+    this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
     handlerPositionChange(val) {

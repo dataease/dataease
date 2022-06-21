@@ -6,6 +6,7 @@
         v-model="keyWord"
         :placeholder="$t('deinputsearch.placeholder')"
         :size="size"
+        ref="de-select-grid"
         prefix-icon="el-icon-search"
         clearable
       />
@@ -39,8 +40,9 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
-export default {
+import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
+export default {
   props: {
     element: {
       type: Object,
@@ -76,7 +78,7 @@ export default {
       show: true,
       datas: [],
       isIndeterminate: false,
-      checkAll: false
+      checkAll: false,
     }
   },
   computed: {
@@ -96,6 +98,10 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    cssArr() {
+        const { brColor, wordColor, innerBgColor } = this.element.style;
+        return { brColor, wordColor, innerBgColor }
     }
   },
   watch: {
@@ -130,6 +136,7 @@ export default {
           this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
+        this.changeInputStyle()
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
@@ -148,6 +155,7 @@ export default {
           this.checkAll = this.value.length === this.datas.length
           this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
         }
+        this.changeInputStyle();
       })
     },
     'element.options.attrs.sort': function(value, old) {
@@ -167,8 +175,14 @@ export default {
           this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
+        this.changeInputStyle()
       }) || (this.element.options.value = '')
-    }
+    },
+    cssArr: {
+        handler: 'changeInputStyle',
+        deep: true
+    },
+    keyWord: 'changeInputStyle'
   },
   created() {
     if (!this.element.options.attrs.sort) {
@@ -191,6 +205,24 @@ export default {
   },
 
   methods: {
+    changeInputStyle() {
+      if (!this.$parent.handlerInputStyle) return;
+      this.$nextTick(() => {
+          this.handlerInputStyle(this.element.style)
+      })
+    },
+    handlerInputStyle(newValue) {
+      let nodeCache = '';
+      if (!this.$refs['de-select-grid']) return
+        styleAttrs.forEach(ele => {
+            if (!nodeCache) {
+                nodeCache = this.$refs['de-select-grid'].$el.querySelector('.el-input__inner')
+            }
+            nodeCache.style[attrsMap[ele]] = newValue[ele];
+            this.textSelectGridWidget(this.$el, ele, newValue[ele])
+        })
+    },
+    textSelectGridWidget: textSelectGridWidget,
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
@@ -202,6 +234,7 @@ export default {
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
           this.datas = this.optionDatas(res.data)
+          this.changeInputStyle()
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
             this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length

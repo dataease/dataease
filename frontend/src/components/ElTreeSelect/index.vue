@@ -562,6 +562,7 @@ export default {
     // 显示弹出框的时候容错，查看是否和el宽度一致
     _popoverShowFun(val) {
       this._updateH()
+      this.$emit('onFoucs')
     },
     // 判断是否隐藏弹出框
     _popoverHideFun(e) {

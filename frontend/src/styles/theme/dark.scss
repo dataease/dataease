@@ -22,6 +22,32 @@ $--color-black: #FFFFFF;
 $--background-color-base: #171b22;
 
 
+/* 定义全局变量 */
+:root{
+  --BgSelectColor: #ffffff;
+  --SelectColor: #fff;
+  --BrSelectColor: #fff;
+
+  --BgSelectTreeColor: #ffffff;
+  --SelectTreeColor: #fff;
+  --BrSelectTreeColor: #fff;
+
+  --BgDateColor: #ffffff;
+  --DateColor: #fff;
+  --BrDateColor: #fff;
+
+  --BgRangeColor: #ffffff;
+  --RangeColor: #fff;
+  --BrRangeColor: #fff;
+
+  --BgSerachColor: #ffffff;
+  --SerachColor: #fff;
+  --BrSerachColor: #fff;
+
+  --BgSelectGridColor: #ffffff;
+  --SelectGridColor: #fff;
+  --BrSelectGridColor: #fff;
+}
 
 // 与CSS原生变量映射
 #app {
@@ -54,5 +80,6 @@ $--background-color-base: #171b22;
 
   
 }
+
 
 
