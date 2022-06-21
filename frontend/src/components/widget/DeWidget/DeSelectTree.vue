@@ -15,6 +15,7 @@
     @removeTag="changeNodeIds"
     @check="changeCheckNode"
     @select-clear="selectClear"
+    @onFoucs="onFoucs"
   />
 
 </template>
@@ -24,8 +25,11 @@ import { mappingFieldValues, linkMappingFieldValues } from '@/api/dataset/datase
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import ElTreeSelect from '@/components/ElTreeSelect'
+import customInput from '@/components/widget/DeWidget/customInput'
+
 export default {
   components: { ElTreeSelect },
+  mixins: [customInput],
   props: {
     element: {
       type: Object,
@@ -208,6 +212,11 @@ export default {
   },
 
   methods: {
+    onFoucs() {
+      this.$nextTick(() => {
+        this.handleCoustomStyle()
+      })
+    },
     selectClear() {
       this.changeValue(this.value)
     },
@@ -354,6 +363,33 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.test-class-wrap {
+  background: var(--BgSelectTreeColor, #FFFFFF) !important;
 
+  .popper__arrow,
+  .popper__arrow::after {
+    display: none !important;
+  }
+
+  .el-tree {
+    background: var(--BgSelectTreeColor, #FFFFFF) !important;
+    color: var(--SelectTreeColor, #606266) !important;
+  }
+
+  .el-input-group--append {
+    .el-input__inner {
+      background: var(--BgSelectTreeColor, #FFFFFF) !important;
+      color: var(--SelectTreeColor, #606266) !important;
+      border: 1px solid var(--BrSelectTreeColor, #606266) !important;
+    }
+
+    .el-input-group__append {
+      background: var(--BgSelectTreeColor, #FFFFFF) !important;
+      color: var(--SelectTreeColor, #606266) !important;
+      border: 1px solid var(--BrSelectTreeColor, #606266) !important;
+      border-left: none;
+    }
+  }
+}
 </style>

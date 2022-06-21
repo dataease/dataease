@@ -11,6 +11,8 @@
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
+    class="de-select-tag"
+    popper-class="coustom-de-select"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -32,8 +34,10 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
-export default {
+import customInput from '@/components/widget/DeWidget/customInput'
 
+export default {
+  mixins: [customInput],
   props: {
     element: {
       type: Object,
@@ -120,6 +124,7 @@ export default {
       this.show = false
       this.$nextTick(() => {
         this.show = true
+        this.handleCoustomStyle()
       })
     },
     'element.options.attrs.sort': function(value, old) {
@@ -253,6 +258,7 @@ export default {
       this.$nextTick(() => {
         // this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
         this.selectOptionWidth = event.srcElement.parentElement.parentElement.offsetWidth + 'px'
+        this.handleCoustomStyle()
       })
     }
 
@@ -261,6 +267,45 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.coustom-de-select {
+  background-color: var(--BgSelectColor, #FFFFFF) !important;
+  // .popper__arrow::after{
+  //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
+  // }
 
+  .popper__arrow,
+  .popper__arrow::after {
+    display: none !important;
+  }
+
+  .el-select-dropdown__item {
+    color: var(--SelectColor, #606266);
+  }
+
+  .el-select-dropdown__item.selected {
+    color: #409eff;
+    background-color: rgb(245, 247, 250, .5);
+  }
+
+  .el-select-dropdown__item.hover {
+    background-color: rgb(245, 247, 250, .5);
+  }
+}
+.de-select-tag {
+  .el-select__tags {
+    .el-tag {
+      background-color: var(--BgSelectColor, #f4f4f5) !important;
+      border-color: var(--BrSelectColor, #e9e9eb) !important;
+      color: var(--SelectColor, #909399) !important;
+  
+      i {
+        color: var(--SelectColor, #909399) !important;
+      }
+    }
+    .el-icon-close {
+      background-color: var(--BgSelectColor, #C0C4CC) !important;
+    }
+  }
+}
 </style>
