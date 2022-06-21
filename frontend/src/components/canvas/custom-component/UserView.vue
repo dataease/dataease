@@ -475,6 +475,7 @@ export default {
     // 监听外部计时器变化
     searchCount: function(val1) {
       if (val1 > 0 && this.requestStatus !== 'waiting') {
+        console.log('-----------计时器')
         this.getData(this.element.propValue.viewId)
       }
     },
@@ -628,6 +629,7 @@ export default {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
+        console.log('data--------')
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             // 将视图传入echart组件

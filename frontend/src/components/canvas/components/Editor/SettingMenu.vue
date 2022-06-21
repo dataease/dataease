@@ -15,6 +15,7 @@
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ '隐藏关联' }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -81,6 +82,27 @@ export default {
     },
 
     deleteComponent() {
+      console.log('curComponent----', this.curComponent)
+      let key = false
+      if (this.curComponent.type === 'de-nav') {
+        console.log(this.curComponent.options.navTabList)
+        if (JSON.stringify(this.curComponent.options.navTabList) !== '[]') {
+          this.curComponent.options.navTabList.forEach(ele => {
+            if (JSON.stringify(ele.relation) !== '[]') {
+              console.log('导航绑定值未解除')
+              key = true
+            }
+          })
+        }
+      }
+      if (key) {
+        this.$message({
+          message: '导航绑定值未解除,不能删除',
+          type: 'warning'
+        })
+        return
+      }
+
       this.$emit('amRemoveItem')
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
@@ -127,7 +149,7 @@ export default {
         'targetViewIds': targetViewIds
       }
       getViewLinkageGather(requestInfo).then(rsp => {
-        console.log('查询的数据',rsp)
+        console.log('查询的数据', rsp)
         this.$store.commit('setLinkageInfo', rsp.data)
       })
     },

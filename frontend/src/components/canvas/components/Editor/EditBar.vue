@@ -6,7 +6,7 @@
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
     <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px">
-      <el-checkbox v-model="check"/>
+      <el-checkbox v-model="check" />
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
@@ -34,6 +34,9 @@
       </span>
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-banner'" class="icon iconfont icon-genghuan" @click.stop="goBannerFile" />
+      </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-nav'" class="icon iconfont icon-genghuan" @click.stop="setNavInfo" />
       </span>
     </div>
     <!-- 轮播图的数据修改 -->
@@ -92,7 +95,7 @@ export default {
         'custom'
       ],
       timer: null,
-      check: false,
+      check: false
     }
   },
   mounted() {
@@ -104,7 +107,7 @@ export default {
     },
     // 多选框 显示
     checkboxShow() {
-      console.log('checkShow::::::',this.element)
+      console.log('checkShow::::::', this.element)
       return this.checkboxStatus && this.element.type === 'view'
     },
     checkInfo() {
@@ -273,6 +276,9 @@ export default {
       // this.dialogVisible = true
       console.log('-------------------------------------------------------', this.element)
       this.$emit('bannerImg')
+    },
+    setNavInfo() {
+      this.$emit('setNavInfo')
     },
     handleFileChange(e) {
       const file = e.target.files[0]

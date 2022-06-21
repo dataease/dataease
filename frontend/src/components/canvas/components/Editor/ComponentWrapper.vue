@@ -191,7 +191,7 @@ export default {
           height: '100%'
         }
       } else {
-        // console.log('getStyle', getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+        console.log('getStyle', getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
         return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
