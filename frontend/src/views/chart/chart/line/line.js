@@ -2,6 +2,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseLineOption(chart_option, chart) {
+  console.log('echarts,line',chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
