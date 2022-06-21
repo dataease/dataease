@@ -2,11 +2,13 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.pool.PriorityThreadPoolExecutor;
 import io.dataease.commons.utils.*;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
+import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.XpackEmailCreate;
@@ -17,18 +19,21 @@ import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
 import io.dataease.service.ScheduleService;
-import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 
-@Api(tags = "xpack：定时报告")
+@ApiIgnore
 @RequestMapping("/plugin/task")
 @RestController
 public class XEmailTaskServer {
@@ -39,16 +44,52 @@ public class XEmailTaskServer {
     @Resource
     private PriorityThreadPoolExecutor priorityExecutor;
 
+    @RequiresPermissions("task-email:read")
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
             @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        CurrentUserDto user = AuthUtils.getUser();
+        if (!user.getIsAdmin()) {
+            Long userId = user.getUserId();
+            XpackConditionEntity condition = new XpackConditionEntity();
+            condition.setField("u.user_id");
+            condition.setOperator("eq");
+            condition.setValue(userId);
+            List<XpackConditionEntity> conditions = CollectionUtils.isEmpty(request.getConditions()) ? new ArrayList<>() : request.getConditions();
+            conditions.add(condition);
+            request.setConditions(conditions);
+        }
+
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            tasks.forEach(item -> {
+                if (CronUtils.taskExpire(item.getEndTime())) {
+                    item.setNextExecTime(null);
+                }else {
+                    GlobalTaskEntity globalTaskEntity = new GlobalTaskEntity();
+                    globalTaskEntity.setRateType(item.getRateType());
+                    globalTaskEntity.setRateVal(item.getRateVal());
+                    try{
+                        String cron = CronUtils.cron(globalTaskEntity);
+                        if (StringUtils.isNotBlank(cron)) {
+                            Long nextTime = CronUtils.getNextTriggerTime(cron).getTime();
+                            item.setNextExecTime(nextTime);
+                        }
+                    }catch (Exception e) {
+                        item.setNextExecTime(null);
+                    }
+                }
+
+            });
+        }
+
         Pager<List<XpackTaskGridDTO>> listPager = PageUtils.setPageInfo(page, tasks);
         return listPager;
     }
 
+    @RequiresPermissions("task-email:add")
     @PostMapping("/save")
     public void save(@RequestBody XpackEmailCreate param) throws Exception {
         XpackEmailTaskRequest request = param.fillContent();
@@ -59,6 +100,7 @@ public class XEmailTaskServer {
         scheduleService.addSchedule(globalTask);
     }
 
+    @RequiresPermissions("task-email:read")
     @PostMapping("/queryForm/{taskId}")
     public XpackEmailCreate queryForm(@PathVariable Long taskId) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -119,6 +161,7 @@ public class XEmailTaskServer {
 
     }
 
+    @RequiresPermissions("task-email:del")
     @PostMapping("/delete/{taskId}")
     public void delete(@PathVariable Long taskId) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -131,6 +174,12 @@ public class XEmailTaskServer {
             LogUtil.error(e);
             DEException.throwException(e);
         }
+    }
+
+    @PostMapping("/stop/{taskId}")
+    public void stop(@PathVariable Long taskId) throws Exception {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        emailXpackService.stop(taskId);
     }
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")

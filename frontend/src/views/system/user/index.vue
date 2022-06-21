@@ -1,10 +1,10 @@
 <template>
-  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <layout-content>
     <complex-table
       v-if="canLoadDom"
+      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :data="data"
       :columns="columns"
-      local-key="userGrid"
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
@@ -107,9 +107,9 @@
             :load-options="loadDepts"
             style="width: 430px"
             :placeholder="$t('user.choose_org')"
-            :noChildrenText="$t('commons.treeselect.no_children_text')"
-            :noOptionsText="$t('commons.treeselect.no_options_text')"
-            :noResultsText="$t('commons.treeselect.no_results_text')"
+            :no-children-text="$t('commons.treeselect.no_children_text')"
+            :no-options-text="$t('commons.treeselect.no_options_text')"
+            :no-results-text="$t('commons.treeselect.no_results_text')"
           />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;" :label="$t('commons.role')" prop="roleIds">
@@ -182,7 +182,7 @@ import { pluginLoaded } from '@/api/user'
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
-
+import { mapGetters } from 'vuex'
 export default {
 
   components: { ComplexTable, LayoutContent, Treeselect },
@@ -319,6 +319,11 @@ export default {
       canLoadDom: false
     }
   },
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
   mounted() {
     this.allRoles()
     this.search()
@@ -419,7 +424,7 @@ export default {
             this.$success(this.$t('commons.modify_success'))
             this.editPasswordVisible = false
             this.search()
-            window.location.reload()
+            this.user && this.user.userId && (this.user.userId === editPasswordForm.userId) && window.location.reload()
           })
         } else {
           return false

@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini" :disabled="param && !hasDataPermission('manage',param.privileges)">
+      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.color')" class="form-item">
           <el-color-picker v-model="colorForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeBackgroundStyle" />
         </el-form-item>

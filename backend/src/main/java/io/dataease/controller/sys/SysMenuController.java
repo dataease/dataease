@@ -1,7 +1,7 @@
 package io.dataease.controller.sys;
 
 
-import io.dataease.base.domain.SysMenu;
+import io.dataease.plugins.common.base.domain.SysMenu;
 import io.dataease.commons.utils.BeanUtils;
 
 import io.dataease.controller.handler.annotation.I18n;

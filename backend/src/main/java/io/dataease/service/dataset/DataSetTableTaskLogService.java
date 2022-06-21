@@ -1,15 +1,16 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.DatasetTableTaskLog;
-import io.dataease.base.domain.DatasetTableTaskLogExample;
-import io.dataease.base.mapper.DatasetTableTaskLogMapper;
-import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
-import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.ext.ExtDataSetTaskMapper;
+import io.dataease.ext.query.GridExample;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
+import io.dataease.plugins.common.base.domain.DatasetTableTaskLog;
+import io.dataease.plugins.common.base.domain.DatasetTableTaskLogExample;
+import io.dataease.plugins.common.base.mapper.DatasetTableTaskLogMapper;
+import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,13 @@ public class DataSetTableTaskLogService {
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
     @Resource
     private ExtDataSetTaskMapper extDataSetTaskMapper;
+    @Resource
+    private DatasetTableTaskMapper datasetTableTaskMapper;
 
-    public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog) {
+    public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog, Boolean hasTask) {
+        if(hasTask && datasetTableTaskMapper.selectByPrimaryKey(datasetTableTaskLog.getTaskId()) == null){
+            return datasetTableTaskLog;
+        }
         if (StringUtils.isEmpty(datasetTableTaskLog.getId())) {
             datasetTableTaskLog.setId(UUID.randomUUID().toString());
             datasetTableTaskLog.setCreateTime(System.currentTimeMillis());

@@ -5,7 +5,8 @@ const getDefaultState = () => {
     panelInfo: {
       id: null,
       name: '',
-      preStyle: null
+      preStyle: null,
+      proxy: null
     },
     canvasStyleDataTemp: null, // 页面全局临时存储数据
     componentDataTemp: null, // 画布组件临时存储数据

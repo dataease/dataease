@@ -4,7 +4,7 @@ export function query(pageIndex, pageSize, data) {
   return request({
     url: '/api/sys_msg/list/' + pageIndex + '/' + pageSize,
     method: 'post',
-    loading: false,
+    loading: true,
     data
   })
 }

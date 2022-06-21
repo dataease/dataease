@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.ExtPanelStoreMapper">
+
+    <resultMap id="panelStoreMap" type="io.dataease.dto.panel.PanelStoreDto" >
+        <id column="store_id" property="storeId"></id>
+        <result column="panel_group_id" property="panelGroupId"></result>
+        <result column="name" property="name"></result>
+        <result column="status" property="status"></result>
+    </resultMap>
+
+
+
+
+    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="panelStoreMap">
+       select s.store_id,s.panel_group_id, g.name ,g.status
+       from panel_store s
+       inner join panel_group g on g.id = s.panel_group_id
+        <if test="_parameter != null">
+            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by s.create_time desc
+        </if>
+
+    </select>
+
+
+
+
+
+</mapper>

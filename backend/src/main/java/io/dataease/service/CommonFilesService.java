@@ -1,6 +1,6 @@
 package io.dataease.service;
 
-import io.dataease.base.domain.FileMetadata;
+import io.dataease.plugins.common.base.domain.FileMetadata;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

@@ -115,6 +115,11 @@ export default {
     terminalType: {
       type: String,
       default: 'pc'
+    },
+    scale: {
+      type: Number,
+      required: false,
+      default: 1
     }
   },
   data() {
@@ -210,7 +215,7 @@ export default {
       } else if (chart.type === 'radar') {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
       } else if (chart.type === 'gauge') {
-        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
+        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart, this.terminalType === 'pc' ? this.scale : '0.7')
       } else if (chart.type === 'scatter') {
         chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
       } else if (chart.type === 'treemap') {
@@ -218,7 +223,6 @@ export default {
       } else if (chart.type === 'chart-mix') {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
-      // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
@@ -229,7 +233,7 @@ export default {
           this.myChart.clear()
           return
         }
-        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        const cCode = this.chart.DetailAreaCode || this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)
@@ -373,7 +377,7 @@ export default {
 <style scoped>
   .map-zoom-box {
     position: absolute;
-    z-index: 999;
+    z-index: 0;
     left: 2%;
     bottom: 30px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

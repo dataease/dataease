@@ -2,6 +2,9 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.i18n.Translator;
@@ -16,20 +19,22 @@ import io.dataease.plugins.xpack.auth.service.ColumnPermissionService;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@ApiIgnore
 @RestController
 @RequestMapping("plugin/dataset/columnPermissions")
 public class ColumnPermissionsController {
 
-
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
-    public void save(@RequestBody DatasetColumnPermissions datasetColumnPermissions) throws Exception {
+    public DatasetColumnPermissions save(@RequestBody DatasetColumnPermissions datasetColumnPermissions) throws Exception {
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
         DataSetColumnPermissionsDTO request = new DataSetColumnPermissionsDTO();
         request.setAuthTargetType(datasetColumnPermissions.getAuthTargetType());
@@ -38,19 +43,20 @@ public class ColumnPermissionsController {
         List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = columnPermissionService.searchPermissions(request);
         if(StringUtils.isEmpty(datasetColumnPermissions.getId())){
             if(!CollectionUtils.isEmpty(columnPermissionsDTOS)){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }else {
             if(!CollectionUtils.isEmpty(columnPermissionsDTOS) && columnPermissionsDTOS.size() > 1){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
             if(columnPermissionsDTOS.size() == 1 && !columnPermissionsDTOS.get(0).getId().equalsIgnoreCase(datasetColumnPermissions.getId())){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }
-        columnPermissionService.save(datasetColumnPermissions);
+        return columnPermissionService.save(datasetColumnPermissions);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("/list")
     public List<DataSetColumnPermissionsDTO> searchPermissions(@RequestBody DataSetColumnPermissionsDTO request) {
@@ -58,13 +64,15 @@ public class ColumnPermissionsController {
        return columnPermissionService.searchPermissions(request);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
-    @PostMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
+    @PostMapping("/delete")
+    public void delete(@RequestBody DatasetColumnPermissions datasetColumnPermissions) {
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
-        columnPermissionService.delete(id);
+        columnPermissionService.delete(datasetColumnPermissions.getId());
     }
 
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{datasetId}/{goPage}/{pageSize}")
     public Pager<List<DataSetColumnPermissionsDTO>> rowPermissions(@PathVariable String datasetId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
@@ -80,6 +88,7 @@ public class ColumnPermissionsController {
         return PageUtils.setPageInfo(page, columnPermissionService.queryPermissions(request));
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("有权限的对象")
     @PostMapping("/authObjs")
     public List<Object> authObjs(@RequestBody DataSetColumnPermissionsDTO request) {
@@ -87,6 +96,7 @@ public class ColumnPermissionsController {
         return (List<Object>) columnPermissionService.authObjs(request);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("详情")
     @PostMapping("/permissionInfo")
     public DataSetColumnPermissionsDTO permissionInfo(@RequestBody DataSetColumnPermissionsDTO request) {

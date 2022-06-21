@@ -50,6 +50,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    scale: {
+      type: Number,
+      required: false,
+      default: 1
     }
   },
   data() {
@@ -153,7 +158,7 @@ export default {
       } else if (chart.type === 'radar') {
         this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'gauge') {
-        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.scale)
       } else if (chart.type === 'pie') {
         this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'pie-rose') {
@@ -186,7 +191,6 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param)
       if (this.chart.type === 'treemap') {
         this.pointParam = param.data.data
       } else {

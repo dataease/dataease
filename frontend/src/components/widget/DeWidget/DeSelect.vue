@@ -10,6 +10,9 @@
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
     :size="size"
+    :filterable="true"
+    class="de-select-tag"
+    popper-class="coustom-de-select"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -31,8 +34,10 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
-export default {
+import customInput from '@/components/widget/DeWidget/customInput'
 
+export default {
+  mixins: [customInput],
   props: {
     element: {
       type: Object,
@@ -73,6 +78,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
 
@@ -87,7 +95,7 @@ export default {
       this.changeValue(value)
     },
     'element.options.attrs.fieldId': function(value, old) {
-      if (typeof value === 'undefined' || value === old) return
+      if (value === null || typeof value === 'undefined' || value === old) return
       this.datas = []
 
       let method = multFieldValues
@@ -96,9 +104,13 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
-      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+      method(param).then(res => {
         this.datas = this.optionDatas(res.data)
       }) || (this.element.options.value = '')
     },
@@ -112,11 +124,35 @@ export default {
       this.show = false
       this.$nextTick(() => {
         this.show = true
+        this.handleCoustomStyle()
       })
+    },
+    'element.options.attrs.sort': function(value, old) {
+      if (value === null || typeof value === 'undefined' || value === old) return
+      this.datas = []
+
+      let method = multFieldValues
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = linkMultFieldValues
+      }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
+      this.element.options.attrs.fieldId &&
+      this.element.options.attrs.fieldId.length > 0 &&
+      method(param).then(res => {
+        this.datas = this.optionDatas(res.data)
+      }) || (this.element.options.value = '')
     }
 
   },
   created() {
+    if (!this.element.options.attrs.sort) {
+      this.element.options.attrs.sort = {}
+    }
     this.initLoad()
   },
   mounted() {
@@ -147,7 +183,7 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+        method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
           this.datas = this.optionDatas(res.data)
         })
       }
@@ -168,7 +204,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
       this.showNumber = false
 
       this.$nextTick(() => {
@@ -185,6 +220,7 @@ export default {
     },
 
     setCondition() {
+      console.log(this.element)
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
@@ -207,9 +243,6 @@ export default {
         return defaultV.split(',')[0]
       }
     },
-    styleChange() {
-      this.$store.commit('recordStyleChange')
-    },
     optionDatas(datas) {
       if (!datas) return null
       return datas.filter(item => !!item).map(item => {
@@ -223,7 +256,9 @@ export default {
       this.onFocus = true
       // 下拉框弹出时，设置弹框的宽度
       this.$nextTick(() => {
-        this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        // this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        this.selectOptionWidth = event.srcElement.parentElement.parentElement.offsetWidth + 'px'
+        this.handleCoustomStyle()
       })
     }
 
@@ -232,6 +267,45 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.coustom-de-select {
+  background-color: var(--BgSelectColor, #FFFFFF) !important;
+  // .popper__arrow::after{
+  //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
+  // }
 
+  .popper__arrow,
+  .popper__arrow::after {
+    display: none !important;
+  }
+
+  .el-select-dropdown__item {
+    color: var(--SelectColor, #606266);
+  }
+
+  .el-select-dropdown__item.selected {
+    color: #409eff;
+    background-color: rgb(245, 247, 250, .5);
+  }
+
+  .el-select-dropdown__item.hover {
+    background-color: rgb(245, 247, 250, .5);
+  }
+}
+.de-select-tag {
+  .el-select__tags {
+    .el-tag {
+      background-color: var(--BgSelectColor, #f4f4f5) !important;
+      border-color: var(--BrSelectColor, #e9e9eb) !important;
+      color: var(--SelectColor, #909399) !important;
+  
+      i {
+        color: var(--SelectColor, #909399) !important;
+      }
+    }
+    .el-icon-close {
+      background-color: var(--BgSelectColor, #C0C4CC) !important;
+    }
+  }
+}
 </style>

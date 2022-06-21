@@ -1,10 +1,7 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.DatasetTableMapper;
-import io.dataease.base.mapper.DatasetTableTaskMapper;
-import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
-import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.ext.ExtDataSetTaskMapper;
+import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
@@ -16,6 +13,9 @@ import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
+import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
 import io.dataease.service.ScheduleService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -108,30 +108,36 @@ public class DataSetTableTaskService {
                 DataEaseException.throwException(Translator.get("i18n_not_exec_add_sync"));
             }
         }
-        if (existSyncTask(dataSetTableService.get(datasetTableTask.getTableId()), datasetTableTask)) {
+        if (existSyncTask(datasetTableTask.getTableId(), datasetTableTask.getId())) {
             DataEaseException.throwException(Translator.get("i18n_sync_job_exists"));
         }
     }
 
-    private synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask) {
-        datasetTable.setSyncStatus(JobStatus.Underway.name());
+    private synchronized boolean existSyncTask(String datasetTableId, String datasetTableTaskId) {
+        DatasetTable record = new DatasetTable();
+        record.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
-        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
-        Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusIsNull());
+        Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(record, example) == 0;
         if (!existSyncTask) {
             Long startTime = System.currentTimeMillis();
-            datasetTableTask.setLastExecTime(startTime);
-            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-            datasetTableTask.setStatus(TaskStatus.Exec.name());
-            update(datasetTableTask);
+
+            DatasetTableTask datasetTableTaskRecord = new DatasetTableTask();
+            datasetTableTaskRecord.setLastExecTime(startTime);
+            datasetTableTaskRecord.setLastExecStatus(JobStatus.Underway.name());
+            datasetTableTaskRecord.setStatus(TaskStatus.Exec.name());
+            DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+            datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTaskId);
+            updateByExampleSelective(datasetTableTaskRecord, datasetTableTaskExample);
+
             DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-            datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
-            datasetTableTaskLog.setTaskId(datasetTableTask.getId());
+            datasetTableTaskLog.setTableId(datasetTableId);
+            datasetTableTaskLog.setTaskId(datasetTableTaskId);
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             datasetTableTaskLog.setStartTime(startTime);
             datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-            dataSetTableTaskLogService.save(datasetTableTaskLog);
+            dataSetTableTaskLogService.save(datasetTableTaskLog, true);
         }
         return existSyncTask;
     }
@@ -161,19 +167,19 @@ public class DataSetTableTaskService {
         return datasetTableTaskMapper.selectByPrimaryKey(id);
     }
 
-    public void updateTaskStatus(List<String> taskIds, JobStatus lastExecStatus) {
-        if (CollectionUtils.isEmpty(taskIds)) {
-            return;
-        }
-        DatasetTableTaskExample example = new DatasetTableTaskExample();
-        example.createCriteria().andIdIn(taskIds);
-        List<DatasetTableTask> datasetTableTasks = datasetTableTaskMapper.selectByExample(example);
+
+    public List<DatasetTableTask> list(DatasetTableTaskExample example) {
+        return datasetTableTaskMapper.selectByExample(example);
+    }
+
+
+    public void updateTaskStatus(List<DatasetTableTask> datasetTableTasks, JobStatus lastExecStatus) {
         for (DatasetTableTask tableTask : datasetTableTasks) {
             updateTaskStatus(tableTask, lastExecStatus);
         }
     }
 
-    public void checkTaskIsStopped(DatasetTableTask datasetTableTask) {
+    public void checkTaskIsStopped(final DatasetTableTask datasetTableTask) {
         if (StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")) {
             BaseGridRequest request = new BaseGridRequest();
             ConditionEntity conditionEntity = new ConditionEntity();
@@ -186,24 +192,30 @@ public class DataSetTableTaskService {
                 return;
             }
             if (dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0) {
-                datasetTableTask.setStatus(TaskStatus.Stopped.name());
-                update(datasetTableTask);
+                DatasetTableTask record = new DatasetTableTask();
+                record.setStatus(TaskStatus.Stopped.name());
+                DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+                datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTask.getId());
+                updateByExampleSelective(record, datasetTableTaskExample);
                 return;
             }
             if (dataSetTaskDTOS.get(0).getNextExecTime() > datasetTableTask.getEndTime()) {
-                datasetTableTask.setStatus(TaskStatus.Stopped.name());
-                update(datasetTableTask);
+                DatasetTableTask record = new DatasetTableTask();
+                record.setStatus(TaskStatus.Stopped.name());
+                DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+                datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTask.getId());
+                updateByExampleSelective(record, datasetTableTaskExample);
             }
         }
     }
 
     public void updateTaskStatus(DatasetTableTask datasetTableTask, JobStatus lastExecStatus) {
-        datasetTableTask.setLastExecStatus(lastExecStatus.name());
+        DatasetTableTask recore = new DatasetTableTask();
+        recore.setLastExecStatus(lastExecStatus.name());
         if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())) {
-            datasetTableTask.setStatus(TaskStatus.Stopped.name());
+            recore.setStatus(TaskStatus.Stopped.name());
         } else {
-            datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
-            datasetTableTask.setLastExecStatus(lastExecStatus.name());
+            recore.setLastExecStatus(lastExecStatus.name());
             if (StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")) {
                 BaseGridRequest request = new BaseGridRequest();
                 ConditionEntity conditionEntity = new ConditionEntity();
@@ -216,19 +228,25 @@ public class DataSetTableTaskService {
                     return;
                 }
                 if (dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0) {
-                    datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                    recore.setStatus(TaskStatus.Stopped.name());
                 } else {
-                    datasetTableTask.setStatus(TaskStatus.Underway.name());
+                    recore.setStatus(TaskStatus.Underway.name());
                 }
             } else {
-                datasetTableTask.setStatus(TaskStatus.Underway.name());
+                recore.setStatus(TaskStatus.Underway.name());
             }
         }
-        update(datasetTableTask);
+        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+        datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTask.getId());
+        updateByExampleSelective(recore, datasetTableTaskExample);
     }
 
-    public void update(DatasetTableTask datasetTableTask) {
-        datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
+    public DatasetTableTask selectByPrimaryKey(String id) {
+        return datasetTableTaskMapper.selectByPrimaryKey(id);
+    }
+
+    public void updateByExampleSelective(DatasetTableTask datasetTableTask, DatasetTableTaskExample datasetTableTaskExample) {
+        datasetTableTaskMapper.updateByExampleSelective(datasetTableTask, datasetTableTaskExample);
     }
 
     public List<DatasetTableTask> list(DatasetTableTask datasetTableTask) {

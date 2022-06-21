@@ -1,6 +1,17 @@
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import {
+  getTheme,
+  getLabel,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis,
+  getPadding,
+  getSlider,
+  getAnalyse
+} from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseScatterOptionAntV(plot, container, chart, action) {
   // theme
@@ -14,6 +25,9 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     theme: theme,
@@ -27,6 +41,8 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     pieStyle: {
       lineWidth: 0
     },
@@ -71,6 +87,8 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
       options.shape = s.scatterSymbol
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

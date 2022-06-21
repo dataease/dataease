@@ -3,6 +3,7 @@
     v-if="element.options!== null && element.options.attrs!==null"
     ref="dateRef"
     v-model="values"
+    popper-class="coustom-date-picker"
     :type="element.options.attrs.type"
     :range-separator="$t(element.options.attrs.rangeSeparator)"
     :start-placeholder="$t(element.options.attrs.startPlaceholder)"
@@ -26,8 +27,10 @@ import {
   timeSection
 } from '@/utils'
 import bus from '@/utils/bus'
-export default {
+import customInput from '@/components/widget/DeWidget/customInput'
 
+export default {
+  mixins: [customInput],
   props: {
     element: {
       type: Object,
@@ -133,6 +136,9 @@ export default {
     },
     toFocus() {
       this.onFocus = true
+      this.$nextTick(() => {
+        this.handleCoustomStyle()
+      })
     },
     search() {
       this.setCondition()
@@ -158,7 +164,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
     },
     formatFilterValue() {
       if (this.values === null) return []
@@ -184,9 +189,6 @@ export default {
         return timeSection(parseFloat(value), this.element.options.attrs.type)
       }
     },
-    styleChange() {
-      this.$store.commit('recordStyleChange')
-    },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.type === 'daterange') {
@@ -208,6 +210,44 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.coustom-date-picker {
+  border:1px solid var(--BrDateColor, #dfe4ed) !important;
+  background: var(--BgDateColor, #FFFFFF) !important;
+  // .popper__arrow::after{
+  //   border-bottom-color: var(--BgDateColor, #FFFFFF) !important;
+  // }
 
+  .popper__arrow,
+  .popper__arrow::after {
+    display: none !important;
+  }
+
+  .el-date-range-picker__content.is-left{
+    border-right:1px solid var(--BrDateColor, #e6ebf5) !important;
+  }
+
+  .el-date-table th,
+  .el-date-picker__header--bordered {
+    border-bottom:1px solid var(--BrDateColor, #e6ebf5) !important;
+  }
+
+  .el-date-range-picker__header,
+  .el-date-table th,
+  .el-date-table__row,
+  .el-month-table td .cell,
+  .el-year-table td .cell,
+  .el-picker-panel__icon-btn,
+  .el-date-picker__header-label{
+    color: var(--DateColor, #606266);
+
+  }
+
+  .el-month-table td.current:not(.disabled) .cell,
+  .el-month-table td.today:not(.disabled) .cell,
+  .el-year-table td.current:not(.disabled) .cell,
+  .el-year-table td.today:not(.disabled) .cell {
+    color: #409EFF;
+  }
+}
 </style>

@@ -1,21 +1,30 @@
 <template>
   <svg class="grid" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <!--      <pattern id="smallGrid" width="5" height="5" patternUnits="userSpaceOnUse">-->
-      <!--        <path-->
-      <!--          d="M 5 0 L 0 0 0 5"-->
-      <!--          fill="none"-->
-      <!--          stroke="rgba(207, 207, 207, 0.3)"-->
-      <!--          stroke-width="1"-->
-      <!--        />-->
-      <!--      </pattern>-->
-      <pattern id="grid" :width="matrixStyle.width" :height="matrixStyle.height" patternUnits="userSpaceOnUse">
-        <rect :width="matrixStyle.width" :height="matrixStyle.height" fill="url(#smallGrid)" />
+      <pattern id="smallGrid" :width="smallGridW" :height="smallGridH" patternUnits="userSpaceOnUse">
+        <path
+          :d="smallGridPathD"
+          fill="none"
+          stroke="rgba(207, 207, 207, 0.3)"
+          stroke-width="1"
+        />
+      </pattern>
+      <pattern id="middleGrid" :width="middleGridW" :height="middleGridH" patternUnits="userSpaceOnUse">
+        <rect :width="middleGridW" :height="middleGridH" fill="url(#smallGrid)" />
+        <path
+          :d="middleGridPathD"
+          fill="none"
+          stroke="rgba(207, 207, 207, 0.3)"
+          stroke-width="1.5"
+        />
+      </pattern>
+      <pattern id="grid" :width="gridW" :height="gridH" patternUnits="userSpaceOnUse">
+        <rect :width="gridW" :height="gridH" fill="url(#middleGrid)" />
         <path
           :d="pathD"
           fill="none"
-          stroke="rgba(186, 186, 186, 0.5)"
-          stroke-width="1"
+          stroke="rgba(207, 207, 207, 0.7)"
+          stroke-width="2.5"
         />
       </pattern>
     </defs>
@@ -24,6 +33,8 @@
 </template>
 
 <script>
+
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -40,8 +51,39 @@ export default {
 
   computed: {
     pathD: function() {
-      return 'M ' + this.matrixStyle.width + ' 0 L 0 0 0 ' + this.matrixStyle.height
-    }
+      return 'M ' + this.gridW + ' 0 L 0 0 0 ' + this.gridH
+    },
+    middleGridPathD: function() {
+      return 'M ' + this.middleGridW + ' 0 L 0 0 0 ' + this.middleGridH
+    },
+    smallGridPathD: function() {
+      return 'M ' + this.smallGridW + ' 0 L 0 0 0 ' + this.smallGridH
+    },
+    gridW: function() {
+      return this.matrixStyle.width * 2 * this.matrixBase
+    },
+    gridH: function() {
+      return this.matrixStyle.height * 2 * this.matrixBase
+    },
+    middleGridW: function() {
+      return this.matrixStyle.width * this.matrixBase
+    },
+    middleGridH: function() {
+      return this.matrixStyle.height * this.matrixBase
+    },
+    smallGridW: function() {
+      return this.matrixStyle.width
+    },
+    smallGridH: function() {
+      return this.matrixStyle.height
+    },
+    matrixBase: function() {
+      // return this.canvasStyleData.aidedDesign ? this.canvasStyleData.aidedDesign.matrixBase : 1
+      return this.canvasStyleData.aidedDesign.matrixBase
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
   }
 }
 </script>

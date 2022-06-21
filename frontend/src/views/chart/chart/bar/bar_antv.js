@@ -1,5 +1,16 @@
 import { Column, Bar } from '@antv/g2plot'
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import {
+  getTheme,
+  getLabel,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis,
+  getPadding,
+  getSlider,
+  getAnalyse
+} from '@/views/chart/chart/common/common_antv'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
@@ -13,6 +24,9 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     theme: theme,
@@ -26,6 +40,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -83,6 +99,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   } else {
     delete options.isStack
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
@@ -108,6 +126,9 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     theme: theme,
@@ -121,6 +142,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -178,6 +201,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   } else {
     delete options.isStack
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

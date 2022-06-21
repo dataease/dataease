@@ -28,7 +28,7 @@
                 <span style="float: left">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                  <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                  <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
                   <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 </span>
                 <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
@@ -48,7 +48,7 @@
                 <span style="float: left">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                  <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                  <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
                   <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 </span>
                 <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
@@ -108,7 +108,6 @@ export default {
   mounted() {
     // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
     checkSameDataSet(this.curLinkageView.propValue.viewId, this.element.propValue.viewId).then(res => {
-      console.log('linkageFields:' + JSON.stringify(this.linkageInfo.linkageFields))
       if (res.data === 'YES' && this.linkageInfo.linkageFields.length === 0) {
         this.sourceLinkageInfo.targetViewFields.forEach(item => {
           this.addLinkageField(item.id, item.id)

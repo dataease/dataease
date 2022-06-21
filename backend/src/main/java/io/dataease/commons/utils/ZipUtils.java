@@ -6,6 +6,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ZipUtils {
 
@@ -29,7 +31,7 @@ public class ZipUtils {
             ZipEntry ze = zis.getNextEntry();
             while (ze != null) {
                 String fileName = ze.getName();
-                File newFile = new File(outputFolder + File.separator + fileName);
+                File newFile = protectZipSlip(fileName, outputFolder);
                 //大部分网络上的源码，这里没有判断子目录
                 if (ze.isDirectory()) {
                     if (!newFile.mkdirs()) {
@@ -54,38 +56,34 @@ public class ZipUtils {
     }
 
     public static void unzip(File source, String out) throws IOException {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source))) {
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(source));
+        ZipEntry entry = zis.getNextEntry();
+        while (entry != null) {
+            File file = protectZipSlip(entry.getName(), out);
 
-            ZipEntry entry = zis.getNextEntry();
+            if (entry.isDirectory()) {
+                if (!file.mkdirs()) {
+                }
+            } else {
+                File parent = file.getParentFile();
 
-            while (entry != null) {
-
-                File file = new File(out, entry.getName());
-
-                if (entry.isDirectory()) {
-                    if (!file.mkdirs()) {
-                    }
-                } else {
-                    File parent = file.getParentFile();
-
-                    if (!parent.exists()) {
-                        if (!parent.mkdirs()) {
-                        }
-                    }
-
-                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
-
-                        byte[] buffer = new byte[Math.toIntExact(entry.getSize())];
-
-                        int location;
-
-                        while ((location = zis.read(buffer)) != -1) {
-                            bos.write(buffer, 0, location);
-                        }
+                if (!parent.exists()) {
+                    if (!parent.mkdirs()) {
                     }
                 }
-                entry = zis.getNextEntry();
+
+                try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
+
+                    byte[] buffer = new byte[Math.toIntExact(entry.getSize())];
+
+                    int location;
+
+                    while ((location = zis.read(buffer)) != -1) {
+                        bos.write(buffer, 0, location);
+                    }
+                }
             }
+            entry = zis.getNextEntry();
         }
     }
 
@@ -129,5 +127,18 @@ public class ZipUtils {
             in.close();
 
         }
+    }
+    public static File protectZipSlip(String fileName, String destDir) throws IOException{
+        Path destPath = Paths.get(destDir);
+        Path resolvedDest = destPath.resolve(fileName);
+        Path normalizedPath = resolvedDest.normalize();
+
+        // checking whether zipEntry filename has changed the destination
+        if (!normalizedPath.startsWith(destDir)) {
+            throw new IOException("Malicious zip entry found: " + fileName);
+        }
+
+        File newFile = normalizedPath.toFile();
+        return newFile;
     }
 }

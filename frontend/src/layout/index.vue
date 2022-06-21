@@ -4,7 +4,7 @@
     <topbar v-if="!fullHeightFlag && finishLoad" :show-tips="showTips" />
 
     <de-container :style="mainStyle">
-      <de-aside-container v-if="!sidebar.hide" class="le-aside-container">
+      <de-aside-container v-if="!sidebar.hide" type="system" class="le-aside-container">
         <sidebar class="sidebar-container" />
       </de-aside-container>
 
@@ -170,8 +170,8 @@ export default {
   .full-height {
     height: 100vh !important;
     ::-webkit-scrollbar {
-      width: 0px;
-      height: 0px;
+      width: 5px;
+      height: 5px;
     }
 
   }

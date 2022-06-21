@@ -8,7 +8,7 @@
         <view class="line-h"></view>
         <swiper :current="tabIndex" class="swiper-box" style="flex: 1;" :duration="300" @change="ontabchange">
             <swiper-item class="swiper-item" v-for="(tab,index1) in newsList" :key="index1">
-				
+
 				<!-- #ifndef APP-NVUE -->
 				<scroll-view class="scroll-v list" enableBackToTop="true" scroll-y @scrolltolower="loadMore(index1)">
 					<view v-for="(newsitem,index2) in tab.data" :key="newsitem.id">
@@ -18,23 +18,23 @@
 						<text class="loading-more-text">{{tab.loadingText}}</text>
 					</view>
 				</scroll-view>
-				
+
 				<!-- #endif -->
 				<!-- <uni-list>
-				
-				    <uni-list-item 
-				      v-for="(node, i) in tab.data" 
+
+				    <uni-list-item
+				      v-for="(node, i) in tab.data"
 				      :key="i"
 				      clickable
 				      @click="goDetail(node)"
-				      :title="node.title"   
-				      thumb="../../../static/yibiaobans.png" 
-				      thumb-size="base" 
-				      :rightText="node.rightText" 
+				      :title="node.title"
+				      thumb="../../../static/yibiaobans.png"
+				      thumb-size="base"
+				      :rightText="node.rightText"
 				    />
-				
-				    
-				    
+
+
+
 				</uni-list> -->
             </swiper-item>
         </swiper>
@@ -58,7 +58,7 @@
                 newsList: [],
                 cacheTab: [],
                 tabIndex: 0,
-                
+
                 scrollInto: "",
                 showTips: false,
                 navigateFlag: false,
@@ -69,8 +69,8 @@
 		computed: {
 		    tabBars() {
 		        return [
-		            {name: this.$t('home.tab1'), id: 'guanzhu'}, 
-		            {name: this.$t('home.tab2'), id: 'tuijian' }, 
+		            {name: this.$t('home.tab1'), id: 'guanzhu'},
+		            {name: this.$t('home.tab2'), id: 'tuijian' },
 		            {name: this.$t('home.tab3'), id: 'tiyu'}
 		        ]
 		    }
@@ -99,25 +99,28 @@
 			this.getList(this.tabIndex, true)
 		},
         methods: {
-			
-            
+
+
 			getList(index, replace) {
-				
+
 			    let activeTab = this.newsList[index]
 				if(replace) {
 					activeTab.lastTime = null
 				}
 			    if (index === 1) {
 			        this.loadRecentDats()
-			        return 
+			        return
 			    }
-				
+
 			    requestHome({type: index, lastTime: activeTab.lastTime}).then(res => {
 					var datas = res.data.listObject
 					if(datas.length > 0) {
 						datas.forEach(item => {
 							item.article_type = 1
 							item.image_url = '../../../static/yibiaobans.png'
+                            if(item.nickName) {
+                                item.title += ('(' + item.nickName + ')')
+                            }
 							if(item.time)
 							    item.rightText = formatHistoryDate(item.time)
 						})
@@ -127,12 +130,12 @@
 						}else {
 							activeTab.data = activeTab.data.concat(datas)
 						}
-						
+
 					}
 					activeTab.isLoading = false
-			        
+
 			        uni.stopPullDownRefresh()
-			    })            
+			    })
 			},
 			loadRecentDats() {
 			    let activeTab = this.newsList[1]
@@ -151,12 +154,14 @@
 			    const param = {
 			        id: node.id,
 			        title: node.title,
-			        index: this.tabIndex
+			        index: this.tabIndex,
+                    userId: node.userId
 			    }
 			    if(this.tabIndex === 1) {
 			        param.index = node.index
+                    param.userId = node.userId
 			    }
-			
+
 			    uni.navigateTo({
 			        url: './detail?detailDate=' + encodeURIComponent(JSON.stringify(param))
 			    })
@@ -166,18 +171,6 @@
 			    this.clearTabData(index)
 			    this.getList(index)
 			},
-            // goDetail(e) {
-            //     if (this.navigateFlag) {
-            //         return;
-            //     }
-            //     this.navigateFlag = true;
-            //     uni.navigateTo({
-            //         url: './detail/detail?title=' + e.title
-            //     });
-            //     setTimeout(() => {
-            //         this.navigateFlag = false;
-            //     }, 200)
-            // },
             close(index1, index2) {
                 uni.showModal({
                     content: '是否删除本条信息？',
@@ -200,8 +193,14 @@
                 this.switchTab(index);
             },
             ontabchange(e) {
-                // let index = e.target.current || e.detail.current;
+                let index = e.target.current || e.detail.current;
                 // this.switchTab(index);
+
+                if (this.tabIndex === index) {
+                    return;
+                }
+                this.tabIndex = index;
+                this.scrollInto = this.tabBars[index].id;
             },
             switchTab(index) {
                 if (this.newsList[index].data.length === 0) {
@@ -229,7 +228,6 @@
                     let cacheIndex = this.cacheTab[0];
                     this.clearTabData(cacheIndex);
                     this.cacheTab.splice(0, 1);
-                    //console.log("remove cache index:: " + cacheIndex);
                 }
             },
             clearTabData(e) {

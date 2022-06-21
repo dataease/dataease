@@ -1,11 +1,12 @@
 package io.dataease.controller.request.dataset;
 
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -33,9 +34,10 @@ public class DataSetTableRequest extends DatasetTable {
     @ApiModelProperty("类型过滤条件集合")
     private List<String> typeFilter;
     @ApiModelProperty("字段集合")
-    private List<TableFiled> fields;
+    private List<TableField> fields;
     @ApiModelProperty("excel sheet集合")
     private List<ExcelSheetData> sheets;
     @ApiModelProperty("是否合并sheet")
     private boolean mergeSheet = false;
+    private boolean previewForTask = false;
 }

@@ -1,429 +1,104 @@
 <template>
-  <div class="chart-type">
-    <div v-if="chart.render && chart.render === 'antv'">
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_table') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="table-normal" label="table-normal" border class="radio-style">
-              <span :title="$t('chart.chart_table_normal')">
-                <svg-icon icon-class="table-normal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_table_normal') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="table-info" label="table-info" border class="radio-style">
-              <span :title="$t('chart.chart_table_info')">
-                <svg-icon icon-class="table-info" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_table_info') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
+  <div v-if="loadFinish" class="chart-type">
+    <div v-for="(renderItem, category) in renderMap[chart.render]" :key="category">
+      <el-divider class="chart-type-divider">{{ $t(category) }}</el-divider>
 
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_quota') }}</el-divider>
-      <div style="display: block;">
+      <div v-for="(container, i) in renderItem" :key="i" style="display: block;">
         <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="text" label="text" border class="radio-style">
-              <span :title="$t('chart.chart_card')">
-                <svg-icon icon-class="text" class="chart-icon" />
+          <div v-for="(item, idx) in container" :key="idx" style="position: relative;display: block;" :style="{'top': item.isPlugin ? '5px' : '0'}">
+            <el-radio v-if="item.placeholder" value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+            <plugin-com v-else-if="item.isPlugin" :component-name="item.value + '-type'" />
+            <el-radio v-else :value="item.value" :label="item.value" border class="radio-style">
+              <span :title="$t(item.title)">
+                <svg-icon :icon-class="item.icon" class="chart-icon" />
               </span>
-              <p class="radio-label">{{ $t('chart.chart_card') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="gauge" label="gauge" border class="radio-style">
-              <span :title="$t('chart.chart_gauge')">
-                <svg-icon icon-class="gauge" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_gauge') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="liquid" label="liquid" border class="radio-style">
-              <span :title="$t('chart.chart_liquid')">
-                <svg-icon icon-class="liquid" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_liquid') }}</p>
+              <p class="radio-label">{{ $t(item.title) }}</p>
             </el-radio>
           </div>
         </div>
       </div>
 
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_trend') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="line" label="line" border class="radio-style">
-              <span :title="$t('chart.chart_line')">
-                <svg-icon icon-class="line" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_line') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="line-stack" label="line-stack" border class="radio-style">
-              <span :title="$t('chart.chart_line_stack')">
-                <svg-icon icon-class="line-stack" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_line_stack') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_compare') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="bar" label="bar" border class="radio-style">
-              <span :title="$t('chart.chart_bar')">
-                <svg-icon icon-class="bar" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-stack" label="bar-stack" border class="radio-style">
-              <span :title="$t('chart.chart_bar_stack')">
-                <svg-icon icon-class="bar-stack" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_stack') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="waterfall" label="waterfall" border class="radio-style">
-              <span :title="$t('chart.chart_waterfall')">
-                <svg-icon icon-class="waterfall" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_waterfall') }}</p>
-            </el-radio>
-          </div>
-        </div>
-      </div>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-horizontal" label="bar-horizontal" border class="radio-style">
-              <span :title="$t('chart.chart_bar_horizontal')">
-                <svg-icon icon-class="bar-horizontal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_horizontal') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal" border class="radio-style">
-              <span :title="$t('chart.chart_bar_stack_horizontal')">
-                <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_stack_horizontal') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_distribute') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="pie" label="pie" border class="radio-style">
-              <span :title="$t('chart.chart_pie')">
-                <svg-icon icon-class="pie" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_pie') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="pie-rose" label="pie-rose" border class="radio-style">
-              <span :title="$t('chart.chart_pie_rose')">
-                <svg-icon icon-class="pie-rose" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_pie_rose') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="radar" label="radar" border class="radio-style">
-              <span :title="$t('chart.chart_radar')">
-                <svg-icon icon-class="radar" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_radar') }}</p>
-            </el-radio>
-          </div>
-        </div>
-      </div>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="treemap" label="treemap" border class="radio-style">
-              <span :title="$t('chart.chart_treemap')">
-                <svg-icon icon-class="treemap" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_treemap') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="word-cloud" label="word-cloud" border class="radio-style">
-              <span :title="$t('chart.chart_word_cloud')">
-                <svg-icon icon-class="word-cloud" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_word_cloud') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_relation') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="scatter" label="scatter" border class="radio-style">
-              <span :title="$t('chart.chart_scatter')">
-                <svg-icon icon-class="scatter" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_scatter') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="funnel" label="funnel" border class="radio-style">
-              <span :title="$t('chart.chart_funnel')">
-                <svg-icon icon-class="funnel" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_funnel') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
     </div>
-    <div v-else-if="chart.render && chart.render === 'echarts'">
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_table') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="table-normal" label="table-normal" border class="radio-style">
-              <span :title="$t('chart.chart_table_normal')">
-                <svg-icon icon-class="table-normal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_table_normal') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="table-info" label="table-info" border class="radio-style">
-              <span :title="$t('chart.chart_table_info')">
-                <svg-icon icon-class="table-info" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_table_info') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_quota') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="text" label="text" border class="radio-style">
-              <span :title="$t('chart.chart_card')">
-                <svg-icon icon-class="text" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_card') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="gauge" label="gauge" border class="radio-style">
-              <span :title="$t('chart.chart_gauge')">
-                <svg-icon icon-class="gauge" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_gauge') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_trend') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="line" label="line" border class="radio-style">
-              <span :title="$t('chart.chart_line')">
-                <svg-icon icon-class="line" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_line') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="line-stack" label="line-stack" border class="radio-style">
-              <span :title="$t('chart.chart_line_stack')">
-                <svg-icon icon-class="line-stack" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_line_stack') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="chart-mix" label="chart-mix" border class="radio-style">
-              <span :title="$t('chart.chart_mix')">
-                <svg-icon icon-class="chart-mix" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_mix') }}</p>
-            </el-radio>
-          </div>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_compare') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="bar" label="bar" border class="radio-style">
-              <span :title="$t('chart.chart_bar')">
-                <svg-icon icon-class="bar" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-stack" label="bar-stack" border class="radio-style">
-              <span :title="$t('chart.chart_bar_stack')">
-                <svg-icon icon-class="bar-stack" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_stack') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-horizontal" label="bar-horizontal" border class="radio-style">
-              <span :title="$t('chart.chart_bar_horizontal')">
-                <svg-icon icon-class="bar-horizontal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_horizontal') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal" border class="radio-style">
-              <span :title="$t('chart.chart_bar_stack_horizontal')">
-                <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_bar_stack_horizontal') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_distribute') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="pie" label="pie" border class="radio-style">
-              <span :title="$t('chart.chart_pie')">
-                <svg-icon icon-class="pie" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_pie') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="pie-rose" label="pie-rose" border class="radio-style">
-              <span :title="$t('chart.chart_pie_rose')">
-                <svg-icon icon-class="pie-rose" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_pie_rose') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="radar" label="radar" border class="radio-style">
-              <span :title="$t('chart.chart_radar')">
-                <svg-icon icon-class="radar" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_radar') }}</p>
-            </el-radio>
-          </div>
-        </div>
-      </div>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="treemap" label="treemap" border class="radio-style">
-              <span :title="$t('chart.chart_treemap')">
-                <svg-icon icon-class="treemap" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_treemap') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_relation') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="scatter" label="scatter" border class="radio-style">
-              <span :title="$t('chart.chart_scatter')">
-                <svg-icon icon-class="scatter" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_scatter') }}</p>
-            </el-radio>
-          </div>
-          <div style="position: relative;display: block;">
-            <el-radio value="funnel" label="funnel" border class="radio-style">
-              <span :title="$t('chart.chart_funnel')">
-                <svg-icon icon-class="funnel" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_funnel') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-
-      <el-divider class="chart-type-divider">{{ $t('chart.chart_type_space') }}</el-divider>
-      <div style="display: block;">
-        <div class="radio-row">
-          <div style="position: relative;display: block;">
-            <el-radio value="map" label="map" border class="radio-style">
-              <span :title="$t('chart.chart_map')">
-                <svg-icon icon-class="map" class="chart-icon" />
-              </span>
-              <p class="radio-label">{{ $t('chart.chart_map') }}</p>
-            </el-radio>
-          </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-        </div>
-      </div>
-    </div>
-    <!--占位行-->
-  <!--                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">-->
-  <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
-  <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
-  <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
-  <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
-  <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
-  <!--                      </div>-->
   </div>
 </template>
 
 <script>
+import { TYPE_CONFIGS } from '@/views/chart/chart/util'
+import { pluginTypes } from '@/api/chart/chart'
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'ChartType',
+  components: { PluginCom },
   props: {
     chart: {
       type: Object,
       required: true
+    }
+  },
+  data() {
+    return {
+      defaultTypes: TYPE_CONFIGS,
+      renderMap: {},
+      loadFinish: false
+    }
+  },
+  created() {
+    const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
+    if (plugins) {
+      this.initTypes(plugins)
+    } else {
+      pluginTypes().then(res => {
+        const plugins = res.data
+        localStorage.setItem('plugin-views', JSON.stringify(plugins))
+        this.initTypes(plugins)
+      }).catch(e => {
+        localStorage.setItem('plugin-views', null)
+        this.initTypes([])
+      })
+    }
+  },
+  methods: {
+    currentIsPlugin(type) {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      return plugins.some(plugin => plugin.value === type)
+    },
+    initTypes(plugins) {
+      plugins.forEach(plugin => {
+        plugin.isPlugin = true
+      })
+      this.pluginTypes = [...this.defaultTypes, ...plugins]
+      this.formatTypes()
+      this.loadFinish = true
+    },
+    formatTypes() {
+      this.pluginTypes.forEach(item => {
+        const { render, category } = item
+        this.renderMap[render] = this.renderMap[render] || {}
+        const renderItem = this.renderMap[render]
+        renderItem[category] = renderItem[category] || []
+
+        const len = renderItem[category].length
+        if (len === 0 || renderItem[category][len - 1].length === 3) {
+          renderItem[category][len] = []
+          renderItem[category][len].push(item)
+        } else {
+          renderItem[category][len - 1].push(item)
+        }
+      })
+
+      // 填充占位符
+
+      Object.keys(this.renderMap).forEach(key => {
+        Object.keys(this.renderMap[key]).forEach(category => {
+          this.renderMap[key][category].forEach(container => {
+            const len = container.length
+            let reduc = 3 - len
+            while (reduc--) {
+              container.push({ placeholder: true })
+            }
+          })
+        })
+      })
     }
   }
 }

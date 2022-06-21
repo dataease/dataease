@@ -1,13 +1,13 @@
 import axios from 'axios'
 import Config from '@/settings'
-import { getToken, setToken, setUserInfo } from '@/common/utils'
+import { getToken, setToken, setUserInfo, parseLanguage } from '@/common/utils'
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const white_list = Config.WHITE_LIST
 
 
 let service = axios.create({
-  // baseURL: 'http://localhost:8081', 
+  // baseURL: 'http://localhost:8081',
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
 })
@@ -15,6 +15,17 @@ let service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+
+    let lang = parseLanguage() || uni.getLocale()
+    if (lang === 'en') {
+        config.headers['Accept-Language'] = 'en-US'
+    }else if(lang === 'zh-Hant'){
+        config.headers['Accept-Language'] = 'zh-TW'
+    }else {
+        config.headers['Accept-Language'] = 'zh-CN'
+    }
+
+
     if (white_list.includes(config.url)) {
         return config
     }
@@ -25,11 +36,11 @@ service.interceptors.request.use(
     else {
         logout()
     }
-        
+
     return config
   },
   error => {
-    
+
     return Promise.reject(error)
   }
 )
@@ -70,7 +81,7 @@ const checkAuth = response => {
         });
         logout()
     }
-  
+
     if (response.headers['authentication-status'] === 'invalid') {
         uni.showToast({
             icon: 'none',
@@ -79,13 +90,12 @@ const checkAuth = response => {
         logout()
     }
     // token到期后自动续命 刷新token
-    //   if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
     if (response.headers[RefreshTokenKey]) {
       const refreshToken = response.headers[RefreshTokenKey]
       setToken(refreshToken)
     }
-  
-    
+
+
   }
 
 

@@ -39,9 +39,10 @@
             <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
@@ -90,12 +91,13 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span :class="data.status" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
@@ -226,16 +228,13 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
-import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import { queryPanelJumpInfo } from '@/api/panel/linkJump'
+import {addGroup, delGroup, groupTree, defaultTree, panelSave, initPanelData, panelUpdate} from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
-import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'PanelList',
@@ -649,29 +648,7 @@ export default {
       if (data.nodeType === 'panel') {
         // 清理pc布局缓存
         this.$store.commit('setComponentDataCache', null)
-        // 加载视图数据
-        findOne(data.id).then(response => {
-          const componentDatas = JSON.parse(response.data.panelData)
-          panelInit(componentDatas)
-          this.$store.commit('setComponentData', this.resetID(componentDatas))
-          const temp = JSON.parse(response.data.panelStyle)
-          temp.refreshTime = (temp.refreshTime || 5)
-          temp.refreshViewLoading = (temp.refreshViewLoading || false)
-          temp.refreshUnit = (temp.refreshUnit || 'minute')
-
-          this.$store.commit('setCanvasStyle', temp)
-          this.$store.dispatch('panel/setPanelInfo', data)
-
-          // 刷新联动信息
-          getPanelAllLinkageInfo(data.id).then(rsp => {
-            this.$store.commit('setNowPanelTrackInfo', rsp.data)
-          })
-
-          // 刷新跳转信息
-          queryPanelJumpInfo(data.id).then(rsp => {
-            this.$store.commit('setNowPanelJumpInfo', rsp.data)
-          })
-
+        initPanelData(data.id, function(response) {
           bus.$emit('set-panel-show-type', 0)
         })
       }
@@ -709,14 +686,15 @@ export default {
     edit(data, node) {
       this.lastActiveNodeData = data
       this.lastActiveNode = node
-      // 清空当前缓存,快照
-      this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      // 清空临时画布数据
-      this.$store.dispatch('panel/setComponentDataTemp', null)
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
-      this.$store.dispatch('panel/setPanelInfo', data)
+      this.$store.dispatch('panel/setPanelInfo', {
+        id: data.id,
+        name: data.name,
+        privileges: data.privileges,
+        sourcePanelName: data.sourcePanelName,
+        status: data.status
+      })
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
     link(data) {
@@ -786,7 +764,6 @@ export default {
               children: res.data
             }
           ]
-          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
         } else {
           _this.tGroupData = res.data
         }
@@ -800,7 +777,7 @@ export default {
     saveMoveGroup() {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
-      panelSave(this.moveInfo).then(response => {
+      panelUpdate(this.moveInfo).then(response => {
         this.tree()
         this.closeMoveGroup()
       })
@@ -832,6 +809,11 @@ export default {
     },
     editFromPanelViewShow() {
       this.edit(this.lastActiveNodeData, this.lastActiveNode)
+    },
+    editPanelBashInfo(params) {
+      if (params.operation === 'status') {
+        this.lastActiveNodeData.status = params.value
+      }
     }
   }
 }
@@ -880,6 +862,13 @@ export default {
   .father:hover .child {
     /*display: inline;*/
     visibility: visible;
+  }
+
+  .unpublished {
+    color: #b2b2b2
+  }
+
+  .publish {
   }
 
 </style>

@@ -60,6 +60,38 @@
             />
           </el-popover>
         </span>
+        <span v-show="element.component === 'de-select'" style="padding-left: 10px;">
+          <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
+            {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
+
+          <el-popover  placement="bottom-end" :disabled="!attrs.enableParameters" width="200">
+            <div class="view-container-class">
+              <el-checkbox-group v-model="attrs.parameters">
+                <el-checkbox
+                  v-for="(item ) in childViews.datasetParams"
+                  :key="item.variableName"
+                  :label="item.variableName"
+                  class="de-checkbox"
+                >
+                  <div class="span-div">
+                    <svg-icon :icon-class="item.type" class="chart-icon" />
+                    <span v-if="item.variableName && item.variableName.length <= 7" style="margin-left: 6px">{{ item.variableName }}</span>
+                    <el-tooltip v-else class="item" effect="dark" :content="item.variableName" placement="left">
+                      <span style="margin-left: 6px">{{ item.variableName }}</span>
+                    </el-tooltip>
+                  </div>
+
+                </el-checkbox>
+              </el-checkbox-group>
+            </div>
+
+            <i
+              slot="reference"
+              :class="{'i-filter-active': attrs.enableParameters, 'i-filter-inactive': !attrs.enableParameters}"
+              class="el-icon-setting i-filter"
+            />
+          </el-popover>
+        </span>
       </div>
 
     </el-col>
@@ -94,13 +126,16 @@ export default {
     return {
       attrs: null,
       titlePopovervisible: false,
-      popovervisible: false
+      popovervisible: false,
+      parametersVisible: false
 
     }
   },
 
   created() {
     this.attrs = this.controlAttrs
+    console.log(this.childViews)
+    console.log(this.attrs)
   },
   methods: {
     multipleChange(value) {
@@ -112,6 +147,12 @@ export default {
     enableRangeChange(value) {
       if (!value) {
         this.attrs.viewIds = []
+      }
+      this.fillAttrs2Filter()
+    },
+    enableParametersChange(value) {
+      if (!value) {
+        this.attrs.parameters = []
       }
       this.fillAttrs2Filter()
     },

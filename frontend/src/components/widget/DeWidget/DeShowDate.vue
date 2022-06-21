@@ -37,7 +37,6 @@ export default {
 
   methods: {
     chartResize() {
-      // console.log('11111')
       this.$nextTick(() => {
         this.$refs[this.element.id] && this.$refs[this.element.id].resize && this.$refs[this.element.id].resize()
       })

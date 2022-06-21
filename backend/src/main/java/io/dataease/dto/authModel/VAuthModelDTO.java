@@ -1,7 +1,7 @@
 package io.dataease.dto.authModel;
 
-import io.dataease.base.domain.VAuthModelWithBLOBs;
-import io.dataease.commons.model.ITreeBase;
+import io.dataease.plugins.common.base.domain.VAuthModelWithBLOBs;
+import io.dataease.plugins.common.model.ITreeBase;
 import lombok.Data;
 
 import java.util.List;
@@ -12,10 +12,18 @@ import java.util.List;
  * Description:
  */
 @Data
-public class VAuthModelDTO extends VAuthModelWithBLOBs  implements ITreeBase<VAuthModelDTO> {
+public class VAuthModelDTO extends VAuthModelWithBLOBs implements ITreeBase<VAuthModelDTO> {
 
     private String privileges;
 
     private List<VAuthModelDTO> children;
+
     private long allLeafs = 0l;
+
+    private String innerId;
+
+    public String toString(){
+        return this.getName();
+    }
+
 }

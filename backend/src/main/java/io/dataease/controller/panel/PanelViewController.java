@@ -1,14 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.PanelGroup;
-import io.dataease.base.domain.PanelGroupWithBLOBs;
-import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.request.panel.PanelGroupRequest;
-import io.dataease.dto.chart.ChartViewDTO;
-import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.PanelViewTableDTO;
-import io.dataease.service.panel.PanelGroupService;
 import io.dataease.service.panel.PanelViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

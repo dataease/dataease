@@ -1,8 +1,9 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.dto.datasource.TableFiled;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class ExcelSheetData {
     @ApiModelProperty("数据集合")
     private List<List<String>> data;
     @ApiModelProperty("字段集合")
-    private List<TableFiled> fields;
+    private List<TableField> fields;
     @ApiModelProperty("是否sheet")
     private boolean isSheet = true;
     @ApiModelProperty("json数组")
@@ -29,4 +30,7 @@ public class ExcelSheetData {
     private String path;
     @ApiModelProperty("字段MD5")
     private String fieldsMd5;
+    @ApiModelProperty("字段变更")
+    private Boolean changeFiled = false;
+    private Boolean effectExtField = false;
 }

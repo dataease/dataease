@@ -1494,6 +1494,11 @@ checkbox-group label {
     content: '\e411';
 }
 
+.uni-page-head .uni-icon-clear {
+    display: none !important;
+}
+
+
 .uni-icon-close-filled:before,
 .uni-icon-clear:before {
     content: '\e434';

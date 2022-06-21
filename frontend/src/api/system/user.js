@@ -4,6 +4,7 @@ const pathMap = {
   personInfoPath: '/api/user/personInfo/',
   piupdatePath: '/api/user/updatePersonInfo/',
   queryPath: '/api/user/userGrid/',
+  queryWithOutPagePath: '/api/user/userLists',
   deletePath: '/api/user/delete/',
   createPath: '/api/user/create',
   updatePath: '/api/user/update',
@@ -13,6 +14,15 @@ const pathMap = {
 export function userLists(page, size, data) {
   return request({
     url: pathMap.queryPath + page + '/' + size,
+    method: 'post',
+    data,
+    loading: true
+  })
+}
+
+export function userListsWithOutPage(data) {
+  return request({
+    url: pathMap.queryWithOutPagePath,
     method: 'post',
     data,
     loading: true
@@ -58,7 +68,7 @@ export const editStatus = (data) => {
   })
 }
 
-export const persionInfo = () => {
+export const personInfo = () => {
   return request({
     url: pathMap.personInfoPath,
     method: 'post'
@@ -123,4 +133,4 @@ export function existLdapUsers() {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, personInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }

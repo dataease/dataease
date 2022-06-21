@@ -1,16 +1,21 @@
 package io.dataease.controller.dataset;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.filter.F2CLinkFilter;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
 import io.dataease.controller.response.DatasetTableField4Type;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -23,13 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import cn.hutool.core.collection.CollectionUtil;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Author gin
@@ -51,6 +56,7 @@ public class DataSetTableFieldController {
     @Resource
     private PermissionService permissionService;
 
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("list/{tableId}")
     public List<DatasetTableField> list(@PathVariable String tableId) {
@@ -61,6 +67,32 @@ public class DataSetTableFieldController {
         return fields;
     }
 
+    @DePermission(type = DePermissionType.DATASET)
+    @ApiOperation("查询表下属字段")
+    @PostMapping("listWithPermission/{tableId}")
+    public List<DatasetTableField> listWithPermission(@PathVariable String tableId) {
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
+        datasetTableField.setTableId(tableId);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        List<String> desensitizationList = new ArrayList<>();
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, tableId, null);
+        fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName())).collect(Collectors.toList());
+        return fields;
+    }
+
+    //管理权限，可以列出所有字段
+    @DePermission(type = DePermissionType.DATASET)
+    @ApiOperation("查询表下属字段")
+    @PostMapping("listForPermissionSeting/{tableId}")
+    public List<DatasetTableField> listForPermissionSeting(@PathVariable String tableId) {
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
+        datasetTableField.setTableId(tableId);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        return fields;
+    }
+
+    //管理权限，可以列出所有字段
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
     public DatasetTableField4Type listByDQ(@PathVariable String tableId) {
@@ -68,10 +100,8 @@ public class DataSetTableFieldController {
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
         List<DatasetTableField> dimensionList = dataSetTableFieldsService.list(datasetTableField);
-        dimensionList = permissionService.filterColumnPermissons(dimensionList, new ArrayList<>(), tableId, null);
         datasetTableField.setGroupType("q");
         List<DatasetTableField> quotaList = dataSetTableFieldsService.list(datasetTableField);
-        quotaList = permissionService.filterColumnPermissons(quotaList, new ArrayList<>(), tableId, null);
 
         DatasetTableField4Type datasetTableField4Type = new DatasetTableField4Type();
         datasetTableField4Type.setDimensionList(dimensionList);
@@ -79,12 +109,14 @@ public class DataSetTableFieldController {
         return datasetTableField4Type;
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("批量更新")
     @PostMapping("batchEdit")
     public void batchEdit(@RequestBody List<DatasetTableField> list) {
         dataSetTableFieldsService.batchEdit(list);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
@@ -101,13 +133,16 @@ public class DataSetTableFieldController {
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, paramIndex = 1)
+    })
     @ApiOperation("删除")
-    @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
+    @PostMapping("delete/{id}/{tableId}")
+    public void delete(@PathVariable String id, @PathVariable String tableId) {
         dataSetTableFieldsService.delete(id);
     }
 
-    @ApiOperation("多字段值枚举")
+    @ApiIgnore
     @PostMapping("linkMultFieldValues")
     public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest)
             throws Exception {
@@ -120,12 +155,44 @@ public class DataSetTableFieldController {
         return multFieldValues(multFieldValuesRequest);
     }
 
-    @ApiOperation("多字段值枚举")
+    @ApiIgnore
     @PostMapping("multFieldValues")
     public List<Object> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
-            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId());
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, false);
+            if (CollectionUtil.isNotEmpty(fieldValues)) {
+                results.addAll(fieldValues);
+            }
+
+        }
+        List<Object> list = results.stream().distinct().collect(Collectors.toList());
+        return list;
+    }
+
+    @ApiIgnore
+    @PostMapping("linkMappingFieldValues")
+    public List<Object> linkMappingFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long userId = jwt.getClaim("userId").asLong();
+        multFieldValuesRequest.setUserId(userId);
+        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, true,false);
+    }
+
+    @ApiIgnore
+    @PostMapping("mappingFieldValues")
+    public List<Object> mappingFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, true, false);
+    }
+
+    @ApiIgnore
+    @PostMapping("multFieldValuesForPermissions")
+    public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        List<Object> results = new ArrayList<>();
+        for (String fieldId : multFieldValuesRequest.getFieldIds()) {
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false, true);
             if (CollectionUtil.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }

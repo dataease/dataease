@@ -1,6 +1,6 @@
 package io.dataease.auth.util;
 
-import io.dataease.base.domain.PanelLink;
+import io.dataease.plugins.common.base.domain.PanelLink;
 import io.dataease.service.panel.PanelLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

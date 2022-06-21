@@ -4,18 +4,18 @@
     style="height: 100%;width: 100%;"
     :element-loading-text="$t('panel.data_loading')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 1)"
+    element-loading-background="rgba(220,220,220, 1)"
   >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
 
-      <el-row v-if="showType === 2" class="panel-design-head panel-share-head">
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+      <el-row v-if="showType === 2" class="panel-design-head panel-share-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
+        <div style="height: 100%;">
           <share-head />
         </div>
       </el-row>
-      <el-row v-else class="panel-design-head">
+      <el-row v-else class="panel-design-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
         <!--仪表板头部区域-->
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+        <div style="height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
             &nbsp;
@@ -23,48 +23,62 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
+
             <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
               <el-button size="mini" type="primary" @click="editPanel">
                 {{ $t('commons.edit') }}
               </el-button>
             </span>
 
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
+              <el-button size="mini" type="primary" @click="changePublishState">
+                <span v-if="panelInfo.status==='publish'">{{ $t('commons.unpublished') }}</span>
+                <span v-if="panelInfo.status!=='publish'">{{ $t('commons.publish') }}</span>
+              </el-button>
+            </span>
+
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.save_to_panel')">
                 <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
               </el-tooltip>
             </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_panel')">
-                <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
-              </el-tooltip>
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+              <el-dropdown>
+                <el-button size="mini" class="el-icon-download" circle />
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_pdf')">
-                <el-button class="el-icon-notebook-2" size="mini" circle @click="downloadAsPDF" />
-              </el-tooltip>
-            </span>
-            <span style="float: right;margin-right: 10px">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>
 
-            <span style="float: right;margin-right: 10px">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.new_tab_preview')">
                 <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.store')">
                 <el-button class="el-icon-star-off" size="mini" circle @click="star" />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.cancel')">
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
+              </el-tooltip>
+            </span>
+
+            <span style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('commons.refresh')">
+                <el-button class="el-icon-refresh" size="mini" circle @click="refreshPanel" />
               </el-tooltip>
             </span>
 
@@ -76,7 +90,16 @@
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <Preview
+              v-if="showMainFlag"
+              :component-data="componentData"
+              :canvas-style-data="canvasStyleData"
+              :active-tab="activeTab"
+              :in-screen="!fullscreen"
+              :show-type="'width'"
+              :panel-info="panelInfo"
+              :screen-shot="dataLoading"
+            />
           </fullscreen>
         </div>
       </el-row>
@@ -130,6 +153,10 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
+import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import { dataURLToBlob } from '@/components/canvas/utils/utils'
+import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'PanelViewShow',
@@ -155,15 +182,16 @@ export default {
       snapshotInfo: '',
       showType: 0,
       dataLoading: false,
-      exporting: false
+      exporting: false,
+      shareUserId: null
     }
   },
   computed: {
     imageWrapperStyle() {
       if (this.exporting) {
         return {
-          width: '4096px',
-          height: '2160px'
+          width: '2560px',
+          height: '1440px'
         }
       } else {
         return {
@@ -180,7 +208,8 @@ export default {
     },
     ...mapState([
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'panelViewDetailsInfo'
     ])
   },
   watch: {
@@ -206,6 +235,9 @@ export default {
     bus.$on('set-panel-show-type', type => {
       this.showType = type || 0
     })
+    bus.$on('set-panel-share-user', userId => {
+      this.shareUserId = userId
+    })
     this.initPdfTemplate()
   },
   methods: {
@@ -219,7 +251,10 @@ export default {
       this.fullscreen = true
     },
     newTab() {
-      const url = '#/preview/' + this.$store.state.panel.panelInfo.id
+      let url = '#/preview/' + this.$store.state.panel.panelInfo.id
+      if (this.showType === 1 && this.shareUserId !== null) {
+        url += ('|' + this.shareUserId)
+      }
       window.open(url, '_blank')
     },
     saveToTemplate() {
@@ -239,32 +274,94 @@ export default {
               nodeType: 'template',
               level: 1,
               pid: null,
-              dynamicData: ''
+              dynamicData: JSON.stringify(this.panelViewDetailsInfo)
             }
           }
         })
       }, 50)
     },
     downloadToTemplate() {
+      const _this = this
+      _this.dataLoading = true
+      try {
+        _this.findStaticSource(function(staticResource) {
+          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+            _this.dataLoading = false
+            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            if (snapshot !== '') {
+              _this.templateInfo = {
+                name: _this.$store.state.panel.panelInfo.name,
+                templateType: 'self',
+                snapshot: snapshot,
+                panelStyle: JSON.stringify(_this.canvasStyleData),
+                panelData: JSON.stringify(_this.componentData),
+                dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
+                staticResource: JSON.stringify(staticResource || {})
+              }
+              const blob = new Blob([JSON.stringify(_this.templateInfo)], { type: '' })
+              FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
+            }
+          })
+        })
+      } catch (e) {
+        console.error(e)
+        _this.dataLoading = false
+      }
+    },
+    // 解析静态文件
+    findStaticSource(callBack) {
+      const staticResource = []
+      // 系统背景文件
+      if (typeof this.canvasStyleData.panel.imageUrl === 'string' && this.canvasStyleData.panel.imageUrl.indexOf('static-resource') > -1) {
+        staticResource.push(this.canvasStyleData.panel.imageUrl)
+      }
+      this.componentData.forEach(item => {
+        if (typeof item.commonBackground.outerImage === 'string' && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
+          staticResource.push(item.commonBackground.outerImage)
+        }
+      })
+      if (staticResource.length > 0) {
+        try {
+          findResourceAsBase64({ resourcePathList: staticResource }).then((rsp) => {
+            callBack(rsp.data)
+          })
+        } catch (e) {
+          console.error('findResourceAsBase64 error', e)
+          callBack()
+        }
+      } else {
+        setTimeout(() => {
+          callBack()
+        }, 0)
+      }
+    },
+
+    downloadAsImage() {
       this.dataLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-          this.dataLoading = false
-          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-          if (snapshot !== '') {
-            this.templateInfo = {
-              name: this.$store.state.panel.panelInfo.name,
-              templateType: 'self',
-              snapshot: snapshot,
-              panelStyle: JSON.stringify(this.canvasStyleData),
-              panelData: JSON.stringify(this.componentData),
-              dynamicData: ''
-            }
-            const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
-          }
-        })
-      }, 50)
+        this.exporting = true
+        setTimeout(() => {
+          const canvasID = document.getElementById('canvasInfoTemp')
+          const a = document.createElement('a')
+          html2canvas(canvasID).then(canvas => {
+            this.exporting = false
+            const dom = document.body.appendChild(canvas)
+            dom.style.display = 'none'
+            a.style.display = 'none'
+            document.body.removeChild(dom)
+            const blob = dataURLToBlob(dom.toDataURL('image/png', 1))
+            a.setAttribute('href', URL.createObjectURL(blob))
+            a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
+            document.body.appendChild(a)
+            a.click()
+            URL.revokeObjectURL(blob)
+            document.body.removeChild(a)
+            setTimeout(() => {
+              this.dataLoading = false
+            }, 300)
+          })
+        }, 1500)
+      }, 500)
     },
 
     downloadAsPDF() {
@@ -317,7 +414,7 @@ export default {
       })
     },
     initHasStar() {
-      starStatus(this.panelInfo.id).then(res => {
+      this.panelInfo && this.panelInfo.id && starStatus(this.panelInfo.id).then(res => {
         this.hasStar = res.data
       })
     },
@@ -334,8 +431,25 @@ export default {
     },
     editPanel() {
       this.$emit('editPanel')
+    },
+    refreshPanel() {
+      if (this.showType === 1 && this.shareUserId !== null) {
+        const param = { userId: this.shareUserId }
+        proxyInitPanelData(this.panelInfo.id, param, null)
+      } else { initPanelData(this.panelInfo.id) }
+    },
+    changePublishState() {
+      if (this.panelInfo.status === 'publish') {
+        this.panelInfo.status = 'unpublished'
+      } else {
+        this.panelInfo.status = 'publish'
+      }
+      updatePanelStatus(this.panelInfo.id, { 'status': this.panelInfo.status })
+      this.$emit('editPanelBashInfo', {
+        'operation': 'status',
+        'value': this.panelInfo.status
+      })
     }
-
   }
 }
 </script>

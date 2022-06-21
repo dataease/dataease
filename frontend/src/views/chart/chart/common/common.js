@@ -1,5 +1,10 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_YAXIS_EXT_STYLE } from '@/views/chart/chart/chart'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
+
+let xAxisLabelFormatter = null
+let yAxisLabelFormatter = null
+let yExtAxisLabelFormatter = null
 
 export function componentStyle(chart_option, chart) {
   const padding = '8px'
@@ -80,6 +85,8 @@ export function componentStyle(chart_option, chart) {
           customStyle.xAxis.axisValue.max && (chart_option.xAxis.max = parseFloat(customStyle.xAxis.axisValue.max))
           customStyle.xAxis.axisValue.split && (chart_option.xAxis.interval = parseFloat(customStyle.xAxis.axisValue.split))
         }
+        xAxisLabelFormatter = customStyle.xAxis.axisLabelFormatter
+        chart_option.xAxis.axisLabel.formatter = xFormatter
       }
     }
     if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
@@ -107,6 +114,8 @@ export function componentStyle(chart_option, chart) {
           customStyle.yAxis.axisValue.max && (chart_option.yAxis.max = parseFloat(customStyle.yAxis.axisValue.max))
           customStyle.yAxis.axisValue.split && (chart_option.yAxis.interval = parseFloat(customStyle.yAxis.axisValue.split))
         }
+        yAxisLabelFormatter = customStyle.yAxis.axisLabelFormatter
+        chart_option.yAxis.axisLabel.formatter = yFormatter
       }
     }
     if (customStyle.yAxis && chart.type === 'chart-mix') {
@@ -134,6 +143,8 @@ export function componentStyle(chart_option, chart) {
           customStyle.yAxis.axisValue.max && (chart_option.yAxis[0].max = parseFloat(customStyle.yAxis.axisValue.max))
           customStyle.yAxis.axisValue.split && (chart_option.yAxis[0].interval = parseFloat(customStyle.yAxis.axisValue.split))
         }
+        yAxisLabelFormatter = customStyle.yAxis.axisLabelFormatter
+        chart_option.yAxis[0].axisLabel.formatter = yFormatter
       }
 
       // axis ext
@@ -162,6 +173,8 @@ export function componentStyle(chart_option, chart) {
           customStyle.yAxisExt.axisValue.max && (chart_option.yAxis[1].max = parseFloat(customStyle.yAxisExt.axisValue.max))
           customStyle.yAxisExt.axisValue.split && (chart_option.yAxis[1].interval = parseFloat(customStyle.yAxisExt.axisValue.split))
         }
+        yExtAxisLabelFormatter = customStyle.yAxisExt.axisLabelFormatter
+        chart_option.yAxis[1].axisLabel.formatter = yExtFormatter
       }
     }
     if (customStyle.split && chart.type.includes('radar')) {
@@ -176,5 +189,120 @@ export function componentStyle(chart_option, chart) {
     if (customStyle.background) {
       chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
+  }
+}
+
+export function seniorCfg(chart_option, chart) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+    const senior = JSON.parse(chart.senior)
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        chart_option.dataZoom = [
+          {
+            type: 'inside',
+            start: parseInt(senior.functionCfg.sliderRange[0]),
+            end: parseInt(senior.functionCfg.sliderRange[1])
+          },
+          {
+            type: 'slider',
+            start: parseInt(senior.functionCfg.sliderRange[0]),
+            end: parseInt(senior.functionCfg.sliderRange[1])
+          }
+        ]
+        if (chart.type.includes('horizontal')) {
+          chart_option.dataZoom[0].yAxisIndex = [0]
+          chart_option.dataZoom[1].yAxisIndex = [0]
+          chart_option.dataZoom[1].left = '10px'
+        }
+      }
+    }
+    // begin mark line settings
+    chart_option.series[0].markLine = {
+      symbol: 'none',
+      data: []
+    }
+    if (senior.assistLine && senior.assistLine.length > 0) {
+      if (chart_option.series && chart_option.series.length > 0) {
+        const customStyle = JSON.parse(chart.customStyle)
+        let xAxis, yAxis
+        if (customStyle.xAxis) {
+          xAxis = JSON.parse(JSON.stringify(customStyle.xAxis))
+        }
+        if (customStyle.yAxis) {
+          yAxis = JSON.parse(JSON.stringify(customStyle.yAxis))
+        }
+        senior.assistLine.forEach(ele => {
+          if (chart.type.includes('horizontal')) {
+            chart_option.series[0].markLine.data.push({
+              symbol: 'none',
+              xAxis: parseFloat(ele.value),
+              name: ele.name,
+              lineStyle: {
+                color: ele.color,
+                type: ele.lineType
+              },
+              label: {
+                show: true,
+                color: ele.color,
+                fontSize: 10,
+                position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
+                formatter: function(param) {
+                  return ele.name + ' : ' + param.value
+                }
+              },
+              tooltip: {
+                show: false
+              }
+            })
+          } else {
+            chart_option.series[0].markLine.data.push({
+              symbol: 'none',
+              yAxis: parseFloat(ele.value),
+              name: ele.name,
+              lineStyle: {
+                color: ele.color,
+                type: ele.lineType
+              },
+              label: {
+                show: true,
+                color: ele.color,
+                fontSize: 10,
+                position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
+                formatter: function(param) {
+                  return ele.name + ' : ' + param.value
+                }
+              },
+              tooltip: {
+                show: false
+              }
+            })
+          }
+        })
+      }
+    }
+  }
+}
+
+const xFormatter = function(value) {
+  if (!xAxisLabelFormatter) {
+    return valueFormatter(value, formatterItem)
+  } else {
+    return valueFormatter(value, xAxisLabelFormatter)
+  }
+}
+
+const yFormatter = function(value) {
+  if (!yAxisLabelFormatter) {
+    return valueFormatter(value, formatterItem)
+  } else {
+    return valueFormatter(value, yAxisLabelFormatter)
+  }
+}
+
+const yExtFormatter = function(value) {
+  if (!yExtAxisLabelFormatter) {
+    return valueFormatter(value, formatterItem)
+  } else {
+    return valueFormatter(value, yExtAxisLabelFormatter)
   }
 }

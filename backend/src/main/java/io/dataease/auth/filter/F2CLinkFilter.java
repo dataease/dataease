@@ -2,12 +2,11 @@ package io.dataease.auth.filter;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.LinkUtil;
-import io.dataease.base.domain.PanelLink;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.plugins.common.base.domain.PanelLink;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
 
 import javax.servlet.ServletRequest;

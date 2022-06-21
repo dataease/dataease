@@ -1,8 +1,8 @@
 package io.dataease.listener;
 
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.DatasetTableExample;
-import io.dataease.base.mapper.DatasetTableMapper;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.DatasetTableExample;
+import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,7 +33,7 @@ public class DatasetCheckListener implements ApplicationListener<ApplicationRead
         // 项目启动查找是否有'自定义数据集'
         DatasetTableExample datasetTableExample = new DatasetTableExample();
         datasetTableExample.createCriteria().andTypeEqualTo("custom");
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
         CacheUtils.put(CACHE_NAME, CACHE_KEY, CollectionUtils.isEmpty(datasetTables), null, null);
     }
 }

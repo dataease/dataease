@@ -65,22 +65,12 @@ export function baseMapOption(chart_option, chart) {
         chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
       }
       for (let i = 0; i < valueArr.length; i++) {
-        // const y = {
-        //   name: chart.data.x[i],
-        //   value: valueArr[i]
-        // }
         const y = valueArr[i]
         y.name = chart.data.x[i]
-        // color
-        // y.itemStyle = {
-        //   color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
-        //   borderRadius: 0
-        // }
         chart_option.series[0].data.push(y)
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

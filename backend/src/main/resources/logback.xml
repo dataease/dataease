@@ -153,7 +153,11 @@
 		<appender-ref ref="errorAsyncAppender"/>
 	</logger>
 
-	<logger name="io.dataease.base.mapper" level="${logger.sql.level}">
+	<logger name="io.dataease.plugins.common.base.mapper" level="${logger.sql.level}">
+		<appender-ref ref="console"/>
+	</logger>
+
+	<logger name="io.dataease.ext" level="${logger.sql.level}">
 		<appender-ref ref="console"/>
 	</logger>
 

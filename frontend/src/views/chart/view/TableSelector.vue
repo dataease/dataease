@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :clearEmptyDir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
+      <dataset-group-selector-tree :checked-table="checkedTable" :privileges="privileges" :mode="mode" :clear-empty-dir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -48,13 +48,23 @@ export default {
     privileges: {
       type: String,
       required: false,
-      default: 'use'
+      default: null
+    },
+    previewForTask: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     clearEmptyDir: {
       type: Boolean,
       required: false,
       default: false
     },
+    checkedTable: {
+      type: Object,
+      required: false,
+      default: null
+    }
   },
   data() {
     return {
@@ -65,12 +75,14 @@ export default {
   created() {
   },
   mounted() {
+    this.getTable(this.checkedTable)
   },
   methods: {
     getTable(table) {
       // this.table = table
-      getTable(table.id).then(response => {
+      table && table.id && getTable(table.id).then(response => {
         this.table = response.data
+        this.table.previewForTask = this.previewForTask
         this.$emit('getTable', this.table)
       }).catch(res => {
         this.table = {}

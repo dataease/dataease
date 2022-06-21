@@ -110,7 +110,9 @@ export default {
       if (!tag || !tag.shareId) return
       const param = {
         panelId: this.panelInfo.id,
-        shareId: tag.shareId
+        shareId: tag.shareId,
+        targetId: tag.targetId,
+        type: tag.type
       }
       removeShares(param).then(res => {
         this.initTagDatas()

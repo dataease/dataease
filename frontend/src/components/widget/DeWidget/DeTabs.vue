@@ -1,8 +1,24 @@
 <template>
   <div class="de-tabs-div">
-    <el-tabs v-model="activeTabName" type="card" class="de-tabs">
+    <async-solt-component
+      v-model="activeTabName"
+      :url="url"
+      type="card"
+      style-type="radioGroup"
+      class="de-tabs-height"
+      :class="isCurrentEdit ? 'de-tabs-edit' : ''"
+      :font-color="fontColor"
+      :active-color="activeColor"
+      :border-color="borderColor"
+      :border-active-color="borderActiveColor"
+      :addable="isEdit"
+      @tab-add="addTab"
+      @tab-click="handleClick"
+    >
+      <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
+      <!-- <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick"> -->
       <el-tab-pane
-        v-for="(item, index) in tabList"
+        v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
         :lazy="true"
         :name="item.name"
@@ -26,20 +42,50 @@
                 {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
-              <el-dropdown-item v-if="tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
+              <el-dropdown-item :command="beforeHandleCommond('selectOthers', item)">
+                {{ $t('detabs.selectOthers') }}
+              </el-dropdown-item>
+
+              <el-dropdown-item
+                v-if=" element.options.tabList.length > 1"
+                :command="beforeHandleCommond('deleteCur', item)"
+              >
                 {{ $t('table.delete') }}
               </el-dropdown-item>
 
             </el-dropdown-menu>
           </el-dropdown>
         </span>
-
+        <component
+          :is="item.content.component"
+          v-if="item.content && item.content.type!=='view'"
+          :ref="item.name"
+          :in-tab="true"
+          :is-edit="isEdit"
+          :active="active"
+          :element="item.content"
+          :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
+          :out-style="outStyle"
+          :edit-mode="editMode"
+          :h="tabH"
+        />
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :in-tab="true" :is-edit="isEdit" :active="active" :element="item.content" :out-style="outStyle" />
+          <user-view
+            v-if="item.content && item.content.type==='view' && item.content.propValue && item.content.propValue.viewId"
+            :ref="item.name"
+            :in-tab="true"
+            :is-edit="isEdit"
+            :active="active"
+            :element="item.content"
+            :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
+            :out-style="outStyle"
+            :canvas-style-data="canvasStyleData"
+          />
         </div>
 
       </el-tab-pane>
-    </el-tabs>
+    </async-solt-component>
+    <!-- </el-tabs> -->
 
     <el-dialog
       :title="$t('detabs.eidttitle')"
@@ -60,7 +106,7 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
+        <el-button :disabled="!titleValid" type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -84,21 +130,41 @@
       </span>
     </el-dialog>
 
+    <el-dialog
+      :title="$t('detabs.availableComponents')"
+      :append-to-body="true"
+      :visible.sync="otherComponentDialogVisible"
+      width="300px"
+      height="250px"
+      :show-close="false"
+      :close-on-click-modal="false"
+      center
+    >
+      <tab-use-list v-if="otherComponentDialogVisible" ref="otherComponentSelect" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="otherComponentDialogVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="sureOtherComponentSelector">{{ $t('table.confirm') }}</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 
 </template>
 
 <script>
-
+import AsyncSoltComponent from '@/components/AsyncSoltComponent'
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { mapState } from 'vuex'
+import { chartCopy } from '@/api/chart/chart'
+import { buildFilterMap } from '@/utils/conditionUtil'
+import TabUseList from '@/views/panel/AssistComponent/tabUseList'
 
 export default {
   name: 'DeTabls',
-  components: { ViewSelect },
+  components: { TabUseList, ViewSelect, AsyncSoltComponent },
   props: {
     element: {
       type: Object,
@@ -118,6 +184,15 @@ export default {
       default: function() {
         return {}
       }
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'edit'
+    },
+    h: {
+      type: Number,
+      default: 200
     }
   },
   data() {
@@ -131,29 +206,82 @@ export default {
       textarea: '',
       curItem: null,
       viewDialogVisible: false,
-      tabList: []
+      otherComponentDialogVisible: false,
+      url: '/api/pluginCommon/component/dataease-tabs'
+      /* fontColor: '#999999',
+        activeColor: '#f18406',
+
+        borderColor: '#999999',
+        borderActiveColor: '#f18406' */
+
     }
   },
   computed: {
+    tabH() {
+      return this.h - 50
+    },
     dropdownShow() {
       return this.isEdit && !this.mobileLayoutStatus
     },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    filterMap() {
+      const map = buildFilterMap(this.componentData)
+      return map
+    },
+
     ...mapState([
+      'componentData',
       'curComponent',
-      'mobileLayoutStatus'
-    ])
+      'mobileLayoutStatus',
+      'canvasStyleData'
+    ]),
+    fontColor() {
+      return this.element && this.element.style && this.element.style.headFontColor || 'none'
+    },
+    activeColor() {
+      return this.element && this.element.style && this.element.style.headFontActiveColor || 'none'
+    },
+    borderColor() {
+      return this.element && this.element.style && this.element.style.headBorderColor || 'none'
+    },
+    borderActiveColor() {
+      return this.element && this.element.style && this.element.style.headBorderActiveColor || 'none'
+    },
+    titleValid() {
+      return !!this.textarea && !!this.textarea.trim()
+    },
+    isCurrentEdit() {
+      return this.isEdit && this.curComponent && this.curComponent.id === this.element.id
+    }
   },
   watch: {
-    curComponent: {
+    // curComponent: {
+    //   handler(newVal, oldVla) {
+    //   },
+    //   deep: true
+    // },
+    active: {
       handler(newVal, oldVla) {
-      },
-      deep: true
+        let activeTabInner
+        this.element.options.tabList.forEach(item => {
+          if (item && item.name === this.activeTabName && item.content) {
+            activeTabInner = item.content
+          }
+        })
+        if (newVal && activeTabInner) {
+          this.$store.commit('setCurActiveTabInner', activeTabInner)
+        } else {
+          this.$store.commit('setCurActiveTabInner', null)
+        }
+      }
+
     }
   },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
-    this.tabList = this.element.options && this.element.options.tabList
-    this.activeTabName = this.tabList[0].name
+    this.activeTabName = this.element.options.tabList[0].name
   },
   methods: {
     beforeHandleCommond(item, param) {
@@ -173,6 +301,9 @@ export default {
         case 'selectView':
           this.selectView(command.param)
           break
+        case 'selectOthers':
+          this.selectOthers(command.param)
+          break
       }
     },
     selectView(param) {
@@ -180,10 +311,39 @@ export default {
       this.curItem = param
       this.viewDialogVisible = true
     },
+    selectOthers(param) {
+      this.activeTabName = param.name
+      this.curItem = param
+      this.otherComponentDialogVisible = true
+    },
+    sureOtherComponentSelector() {
+      const curSelectedId = this.$refs.otherComponentSelect.getCurSelectedComponent()
+      if (curSelectedId) {
+        let component
+        const newComponentId = uuid.v1()
+        componentList.forEach(componentTemp => {
+          if (componentTemp.id === curSelectedId) {
+            component = JSON.parse(JSON.stringify(componentTemp))
+            component.style.width = '100%'
+            component.style.height = '100%'
+            this.curItem.content = component
+            this.curItem.name = newComponentId
+            this.activeTabName = newComponentId
+            this.$store.commit('setCurActiveTabInner', component)
+            this.styleChange()
+          }
+        })
+        this.otherComponentDialogVisible = false
+        return
+      }
+      this.$warning(this.$t('detabs.please') + this.$t('detabs.selectOthers'))
+      
+    },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
       if (!nodes || nodes.length === 0) {
-        this.viewDialogVisible = false
+        this.$warning(this.$t('detabs.please') + this.$t('detabs.selectview'))
+        
         return
       }
       const node = nodes[0]
@@ -192,7 +352,8 @@ export default {
       const newComponentId = uuid.v1()
       const componentInfo = {
         type: 'view',
-        id: node.id
+        /* id: node.id */
+        id: node.innerId
       }
 
       componentList.forEach(componentTemp => {
@@ -210,16 +371,19 @@ export default {
       component.id = newComponentId
       component.style.width = '100%'
       component.style.height = '100%'
-      this.curItem.content = component
-      this.curItem.name = newComponentId
-      this.viewDialogVisible = false
-      this.activeTabName = newComponentId
-      this.styleChange()
+      chartCopy(node.innerId, this.panelInfo.id).then(res => {
+        component.propValue.viewId = res.data
+        this.curItem.content = component
+        this.curItem.name = newComponentId
+        this.viewDialogVisible = false
+        this.activeTabName = newComponentId
+        this.$store.dispatch('chart/setViewId', component.propValue.viewId)
+        this.styleChange()
+      })
       // this.setComponentInfo()
     },
 
     setComponentInfo() {
-      console.log('aaa')
     },
 
     editCurTitle(param) {
@@ -239,12 +403,16 @@ export default {
       while (len--) {
         if (this.element.options.tabList[len].name === param.name) {
           this.element.options.tabList.splice(len, 1)
-          this.tabList = this.element.options.tabList
+
           const activIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
           this.activeTabName = this.element.options.tabList[activIndex].name
         }
       }
+      this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
+    },
+    addTab() {
+      this.addNewTab(this.element.id)
     },
 
     addNewTab(componentId) {
@@ -256,7 +424,7 @@ export default {
         content: null
       }
       this.element.options.tabList.push(tab)
-      this.tabList = this.element.options.tabList
+
       this.styleChange()
     },
     styleChange() {
@@ -264,18 +432,31 @@ export default {
     },
     chartResize() {
       // this.$refs[this.activeTabName]
+    },
+    handleClick(tab) {
+      const name = tab.name
+      this.element.options.tabList.forEach(item => {
+        if (item && item.name === name && item.content) {
+          this.$store.commit('setCurActiveTabInner', item.content)
+          if (item.content.propValue && item.content.propValue.viewId) {
+            this.filterMap[item.content.propValue.viewId] = item.content.filters
+            this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
+          }
+        }
+      })
     }
-
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
   .de-tabs-div {
     height: 100%;
     overflow: hidden;
   }
-  .de-tabs {
+
+  .de-tabs-height {
     height: 100%;
   }
 

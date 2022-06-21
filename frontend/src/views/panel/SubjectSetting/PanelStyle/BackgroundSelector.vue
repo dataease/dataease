@@ -25,12 +25,11 @@
                 accept=".jpeg,.jpg,.png,.gif"
                 class="avatar-uploader"
                 list-type="picture-card"
+                :http-request="upload"
                 :class="{disabled:uploadDisabled}"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
-                :http-request="upload"
                 :file-list="fileList"
-                :on-change="onChange"
               >
                 <i class="el-icon-plus" />
               </el-upload>
@@ -51,6 +50,7 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'BackgroundSelector',
@@ -98,19 +98,13 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    onChange(file, fileList) {
-      var _this = this
-      _this.uploadDisabled = true
-      const reader = new FileReader()
-      reader.onload = function() {
-        _this.panel.imageUrl = reader.result
-        this.commitStyle()
-      }
-      this.$store.state.styleChangeTimes++
-      reader.readAsDataURL(file.raw)
-    },
     upload(file) {
-      // console.log('this is upload')
+      const _this = this
+      uploadFileResult(file, (fileUrl) => {
+        _this.$store.state.styleChangeTimes++
+        _this.panel.imageUrl = fileUrl
+        _this.commitStyle()
+      })
     }
   }
 }

@@ -23,7 +23,7 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item prop="username">
-                <el-input v-model="loginForm.username" placeholder="ID" autofocus />
+                <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
@@ -33,12 +33,13 @@
                   maxlength="30"
                   show-word-limit
                   autocomplete="new-password"
+                  :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
                   @keypress.enter.native="handleLogin"
                 />
               </el-form-item>
             </div>
             <div class="login-btn">
-              <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
+              <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
                 {{ $t('commons.login') }}
               </el-button>
               <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
@@ -64,7 +65,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
@@ -98,7 +99,8 @@ export default {
         'panel-default-tree',
         'chart-tree',
         'dataset-tree'
-      ]
+      ],
+      defaultType: 0
     }
   },
   computed: {
@@ -127,18 +129,27 @@ export default {
       if (res.success && res.data) {
         this.loginTypes.push(1)
       }
+      this.setDefaultType()
     })
 
     oidcStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(2)
       }
+      this.setDefaultType()
     })
     getPublicKey().then(res => {
       if (res.success && res.data) {
         // 保存公钥
         localStorage.setItem('publicKey', res.data)
       }
+    })
+    defaultLoginType().then(res => {
+      console.log('default login type is :' + res.data)
+      if (res && res.success) {
+        this.defaultType = res.data
+      }
+      this.setDefaultType()
     })
   },
 
@@ -164,6 +175,14 @@ export default {
   },
 
   methods: {
+    setDefaultType() {
+      if (this.loginTypes.includes(this.defaultType)) {
+        this.loginForm.loginType = this.defaultType
+        this.$nextTick(() => {
+          this.changeLoginType(this.loginForm.loginType)
+        })
+      }
+    },
     clearOidcMsg() {
       Cookies.remove('OidcError')
       Cookies.remove('IdToken')
@@ -201,8 +220,6 @@ export default {
             password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
-          const publicKey = localStorage.getItem('publicKey')
-          console.log(publicKey)
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false

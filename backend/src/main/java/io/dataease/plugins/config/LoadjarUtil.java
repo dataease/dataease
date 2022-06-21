@@ -1,6 +1,6 @@
 package io.dataease.plugins.config;
 
-import io.dataease.base.domain.MyPlugin;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.plugins.loader.ControllerLoader;
 import io.dataease.plugins.loader.ModuleClassLoader;
@@ -26,8 +26,7 @@ public class LoadjarUtil {
     public List<?> loadJar(String jarPath, MyPlugin myPlugin)  throws Exception{
         File jar = new File(jarPath);
         URI uri = jar.toURI();
-        String moduleName = jarPath.substring(jarPath.lastIndexOf("/")+1,jarPath.lastIndexOf("."));
-
+        String moduleName = myPlugin.getModuleName() + "-" + myPlugin.getVersion();
 
         if(ClassloaderResponsity.getInstance().containsClassLoader(moduleName)){
             ClassloaderResponsity.getInstance().removeClassLoader(moduleName);

@@ -3,13 +3,24 @@
     <el-row>
       <span class="header-title">{{ $t('panel.share_in') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree ref="topTree" :data="datas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expanded-keys="expandNodes" @node-click="handleNodeClick">
+        <el-tree
+          ref="topTree"
+          :data="datas"
+          :props="defaultProps"
+          :highlight-current="true"
+          node-key="name"
+          :default-expanded-keys="expandNodes"
+          @node-click="handleNodeClick"
+        >
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" :class="!!data.msgNode ? 'msg-node-class': ''">
               <span v-if="!!data.id">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span
+                :class="data.status"
+                style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+              >{{ data.name }}</span>
             </span>
 
           </span>
@@ -20,13 +31,23 @@
     <el-row>
       <span class="header-title">{{ $t('panel.share_out') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree ref="botTree" :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true">
+        <el-tree
+          ref="botTree"
+          :data="outDatas"
+          :props="defaultProps"
+          :highlight-current="true"
+          node-key="name"
+          :default-expand-all="true"
+        >
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" @click="viewMyShare(data)">
               <span v-if="!!data.id">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span
+                :class="data.status"
+                style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+              >{{ data.name }}</span>
             </span>
 
             <span class="child">
@@ -50,8 +71,10 @@
 <script>
 import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
-import { get } from '@/api/panel/panel'
+import { initPanelData } from '@/api/panel/panel'
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import bus from '@/utils/bus'
+
 export default {
   name: 'ShareTree',
   props: {
@@ -103,21 +126,18 @@ export default {
       return loadShareOutTree()
     },
     handleNodeClick(data) {
-      get('panel/group/findOne/' + data.id).then(response => {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-
-        this.$store.dispatch('panel/setPanelInfo', data)
+      if (!data || !data.userId || !data.id) {
+        return
+      }
+      const param = { userId: data.userId }
+      proxyInitPanelData(data.id, param, function() {
         bus.$emit('set-panel-show-type', 1)
+        bus.$emit('set-panel-share-user', data.userId)
       })
       this.$refs['botTree'].setCurrentKey(null)
     },
     viewMyShare(data) {
-      get('panel/group/findOne/' + data.id).then(response => {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-
-        this.$store.dispatch('panel/setPanelInfo', data)
+      initPanelData(data.id, function() {
         bus.$emit('set-panel-show-type', 2)
       })
       this.$refs['topTree'].setCurrentKey(null)
@@ -132,7 +152,6 @@ export default {
       return data
     },
     expandMsgNode(panelIds) {
-      // console.log(panelIds)
       this.$nextTick(() => {
         this.getMsgNodes(panelIds)
       })
@@ -182,7 +201,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header-title {
+  .header-title {
     font-size: 14px;
     flex: 1;
     color: var(--TextPrimary, #606266);
@@ -191,19 +210,22 @@ export default {
     height: 100%;
     /*line-height: 36px;*/
   }
-.msg-node-class {
-  color: red;
-  >>> i{
+
+  .msg-node-class {
     color: red;
+
+    > > > i {
+      color: red;
+    }
   }
-}
- .custom-tree-node {
+
+  .custom-tree-node {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right:8px;
+    padding-right: 8px;
   }
 
   .custom-tree-node-list {
@@ -212,14 +234,24 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    padding: 0 8px;
   }
+
   .father .child {
     /*display: none;*/
     visibility: hidden;
   }
+
   .father:hover .child {
     /*display: inline;*/
     visibility: visible;
   }
+
+  .unpublished {
+    color: #b2b2b2
+  }
+
+  .publish {
+  }
+
 </style>

@@ -1,6 +1,6 @@
 package io.dataease.dto.dataset.union;
 
-import io.dataease.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.DatasetTable;
 import lombok.Data;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 package io.dataease.controller.sys;
 
-import io.dataease.base.domain.SysDept;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.DeptTreeNode;
+import io.dataease.plugins.common.base.domain.SysDept;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

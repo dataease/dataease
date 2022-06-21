@@ -5,11 +5,14 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@ApiIgnore
 @RequestMapping("/plugin/oidc")
 @RestController
 public class XOidcServer {
@@ -21,6 +24,7 @@ public class XOidcServer {
         return oidcXpackService.oidcSettings();
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/save")
     public void save(@RequestBody List<SysSettingDto> settings) {
         OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);

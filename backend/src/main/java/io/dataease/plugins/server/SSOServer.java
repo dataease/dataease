@@ -2,6 +2,7 @@ package io.dataease.plugins.server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,7 +31,9 @@ import io.dataease.plugins.xpack.oidc.dto.SSOToken;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import io.dataease.service.sys.SysUserService;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @RequestMapping("/sso")
 @Controller
 public class SSOServer {
@@ -111,7 +114,8 @@ public class SSOServer {
     }
     private Map<String, String> config(OidcXpackService oidcXpackService) {
         List<SysSettingDto> sysSettingDtos = oidcXpackService.oidcSettings();
-        Map<String, String> config = sysSettingDtos.stream().collect(Collectors.toMap(SysSettingDto::getParamKey, SysSettingDto::getParamValue));
+        Map<String, String> config = sysSettingDtos.stream().collect(HashMap::new,(m, v)->m.put(v.getParamKey(), v.getParamValue()), HashMap::putAll);
+
         return config;
     }
     

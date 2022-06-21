@@ -1,14 +1,42 @@
 <template>
   <div style="width: 100%;">
     <el-col>
-      <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :disabled="!hasDataPermission('manage',param.privileges)" :model="labelForm" label-width="80px" size="mini">
+      <el-form ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+        <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
+          <el-checkbox v-model="labelForm.show" @change="changeLabelAttr('show')">{{ $t('chart.show') }}</el-checkbox>
+        </el-form-item>
+        <div v-show="labelForm.show">
+          <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
+            <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr('fontSize')">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
+            <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('color')" />
+          </el-form-item>
+          <el-form-item v-show="showProperty('position-v')" :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
+              <el-option v-for="option in labelPositionV" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('position-pie')" :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
+              <el-option v-for="option in labelPositionPie" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('position-h')" :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
+              <el-option v-for="option in labelPositionH" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+        </div>
+      </el-form>
+
+      <el-form v-show="showProperty('labelGauge') && chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="labelForm.show">
-          <!--          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">-->
-          <!--            <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>-->
-          <!--          </el-form-item>-->
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -17,26 +45,26 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
-          <el-form-item v-show="chart.type && chart.type !== 'liquid' && chart.type !== 'pie-rose' && !chart.type.includes('line') && chart.type !== 'treemap'" :label="$t('chart.label_position')" class="form-item">
-            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
-              <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
+            <el-select v-model="labelForm.gaugeLabelFormatter.type" @change="changeLabelAttr">
+              <el-option v-for="type in typeList" :key="type.value" :label="$t('chart.' + type.name)" :value="type.value" />
             </el-select>
           </el-form-item>
+          <el-form-item v-show="labelForm.gaugeLabelFormatter.type !== 'auto'" :label="$t('chart.value_formatter_decimal_count')" class="form-item">
+            <el-input-number v-model="labelForm.gaugeLabelFormatter.decimalCount" :precision="0" :min="0" :max="10" size="mini" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="labelForm.gaugeLabelFormatter.type !== 'percent'" :label="$t('chart.value_formatter_unit')" class="form-item">
+            <el-select v-model="labelForm.gaugeLabelFormatter.unit" :placeholder="$t('chart.pls_select_field')" size="mini" @change="changeLabelAttr">
+              <el-option v-for="item in unitList" :key="item.value" :label="$t('chart.' + item.name)" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('chart.value_formatter_suffix')" class="form-item">
+            <el-input v-model="labelForm.gaugeLabelFormatter.suffix" size="mini" clearable :placeholder="$t('commons.input_content')" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.value_formatter_thousand_separator')" class="form-item">
+            <el-checkbox v-model="labelForm.gaugeLabelFormatter.thousandSeparator" @change="changeLabelAttr" />
+          </el-form-item>
         </div>
-      </el-form>
-
-      <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :disabled="!hasDataPermission('manage',param.privileges)" :model="labelForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
-        </el-form-item>
-        <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
-          <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('chart.text_color')" class="form-item">
-          <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
-        </el-form-item>
       </el-form>
     </el-col>
   </div>
@@ -44,6 +72,7 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
+import { formatterType, unitList } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'LabelSelectorAntV',
@@ -55,6 +84,13 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    propertyInner: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -77,7 +113,9 @@ export default {
         { name: this.$t('chart.center'), value: 'middle' },
         { name: this.$t('chart.text_pos_bottom'), value: 'bottom' }
       ],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      typeList: formatterType,
+      unitList: unitList
     }
   },
   watch: {
@@ -108,6 +146,9 @@ export default {
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
+          if (!this.labelForm.gaugeLabelFormatter) {
+            this.labelForm.gaugeLabelFormatter = JSON.parse(JSON.stringify(DEFAULT_LABEL.gaugeLabelFormatter))
+          }
         }
       }
     },
@@ -121,10 +162,11 @@ export default {
       }
       this.fontSize = arr
     },
-    changeLabelAttr() {
+    changeLabelAttr(modifyName) {
       if (!this.labelForm.show) {
         this.isSetting = false
       }
+      this.labelForm['modifyName'] = modifyName
       this.$emit('onLabelChange', this.labelForm)
     },
     initOptions() {
@@ -138,6 +180,9 @@ export default {
           this.labelPosition = this.labelPositionV
         }
       }
+    },
+    showProperty(property) {
+      return this.propertyInner.includes(property)
     }
   }
 }

@@ -1,6 +1,6 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.plugins.common.base.domain.DatasetTableTaskLog;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

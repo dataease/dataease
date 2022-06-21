@@ -33,26 +33,28 @@
                   v-if="showDomType === 'tree'"
                   :default-expanded-keys="expandedArray"
                   node-key="id"
-                  :data="datas"
+                  :data="tempTreeDatas || datas"
                   :props="defaultProps"
-                  lazy
-                  :load="loadTree"
+
                   @node-click="handleNodeClick"
                 >
-                  <div slot-scope="{ node, data }" class="custom-tree-node">
+                  <span slot-scope="{ node, data }" style="display: flex;flex: 1;width: 0%;" class="custom-tree-node">
                     <span>
-                      <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                      <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                      <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                      <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-                      <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                      <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                      <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                      <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                      <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                      <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                      <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
                     </span>
-                    <el-tooltip class="item" effect="dark" placement="top">
-                      <div slot="content">{{ node.label }}</div>
-                      <span class="label-span">{{ node.label }}</span>
-                    </el-tooltip>
+                    <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
+                      <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                      <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                    </span>
 
-                  </div>
+                    <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="node.label">{{ node.label }}</span>
+
+                  </span>
                 </el-tree>
 
                 <div v-if="showDomType === 'field'">
@@ -66,13 +68,19 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))"
+                        v-for="item in fieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
+                        style="margin: 5px 0;"
                       >
-                        <i class="el-icon-s-data" />
-                        <span> {{ item.name }}</span>
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                        </span>
                       </div>
                     </transition-group>
                   </draggable>
@@ -121,8 +129,15 @@
                   <el-table-column prop="name" :label="$t('commons.name')">
                     <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
                       <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
-                        <i class="el-icon-s-data" />
-                        <span> {{ scope.row.name }}</span>
+                        <!-- <i class="el-icon-s-data" />
+                        <span> {{ scope.row.name }}</span> -->
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="scope.row.name">{{ scope.row.name }}</span>
+                        </span>
                       </div>
                     </template>
                   </el-table-column>
@@ -139,13 +154,20 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                        v-for="item in comFieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
+                        style="margin: 5px 0;"
                       >
-                        <i class="el-icon-s-data" />
-                        <span> {{ item.name }}</span>
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                        </span>
+
                       </div>
                     </transition-group>
                   </draggable>
@@ -159,7 +181,7 @@
 
     <de-main-container class="ms-main-container">
       <div v-if="currentElement.options && currentElement.options.attrs">
-        <filter-head :element="currentElement" />
+        <filter-head :element="currentElement" :all-fields="allFields" :widget="widget" />
 
         <filter-control :element="currentElement" :widget="widget" :control-attrs="myAttrs" :child-views="childViews" />
 
@@ -179,15 +201,16 @@ import FilterHead from './filterMain/FilterHead'
 import FilterControl from './filterMain/FilterControl'
 import FilterFoot from './filterMain/FilterFoot'
 import bus from '@/utils/bus'
+import { queryAuthModel } from '@/api/authModel/authModel'
 import {
   mapState
 } from 'vuex'
 import {
   groupTree,
-  fieldList,
-  post
+  fieldListWithPermission
 } from '@/api/dataset/dataset'
 import {
+  paramsWithIds,
   viewsWithIds
 } from '@/api/panel/view'
 import {
@@ -236,7 +259,9 @@ export default {
       sceneDatas: [],
       //   viewDatas: [],
       fieldDatas: [],
+      originFieldDatas: [],
       comFieldDatas: [],
+      originComFieldDatas: [],
       defaultProps: {
         label: 'name',
         children: 'children',
@@ -270,7 +295,9 @@ export default {
       childViews: {
         viewInfos: []
       },
-      currentElement: null
+      currentElement: null,
+      allFields: [],
+      tempTreeDatas: null
     }
   },
   computed: {
@@ -294,9 +321,15 @@ export default {
       }
       this.enableSureButton()
     },
+
     keyWord(val) {
       this.expandedArray = []
       if (this.showDomType === 'field') {
+        let results = this.originFieldDatas
+        if (val) {
+          results = this.originFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+        }
+        this.fieldDatas = JSON.parse(JSON.stringify(results))
         return
       }
       if (this.timer) {
@@ -305,6 +338,16 @@ export default {
       this.timer = setTimeout(() => {
         this.getTreeData(val)
       }, (val && val !== '') ? 1000 : 0)
+    },
+
+    viewKeyWord(val) {
+      if (this.comShowDomType === 'field') {
+        let results = this.originComFieldDatas
+        if (val) {
+          results = this.originComFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+        }
+        this.comFieldDatas = JSON.parse(JSON.stringify(results))
+      }
     }
   },
   created() {
@@ -326,6 +369,26 @@ export default {
   },
 
   methods: {
+
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+        const results = this.buildTree(this.tData)
+        this.defaultDatas = JSON.parse(JSON.stringify(results))
+        this.datas = JSON.parse(JSON.stringify(results))
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+          const results = this.buildTree(this.tData)
+          this.defaultDatas = JSON.parse(JSON.stringify(results))
+          this.datas = JSON.parse(JSON.stringify(results))
+        }
+      })
+    },
     initWithField() {
       if (this.myAttrs && this.myAttrs.activeName) {
         this.activeName = this.myAttrs.activeName
@@ -365,7 +428,6 @@ export default {
       }, {})
       const roots = []
       arrs.forEach(el => {
-        // 判断根节点 ###
         el.type = el.modelInnerType
         el.isLeaf = el.leaf
         if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this
@@ -373,55 +435,61 @@ export default {
           roots.push(el)
           return
         }
-        // 用映射表找到父元素
         const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]]
-        // 把当前元素添加到父元素的`children`数组中
         parentEl.children = [...(parentEl.children || []), el]
 
-        // 设置展开节点 如果没有子节点则不进行展开
         if (parentEl.children.length > 0) {
           this.expandedArray.push(parentEl[this.defaultProps.id])
         }
       })
       return roots
     },
+    getNode(id, roots) {
+      for (let index = 0; index < roots.length; index++) {
+        const node = roots[index]
+        if (node.id === id) return node
+
+        if (node && node.children && node.children.length) {
+          const temp = this.getNode(id, node.children)
+          if (temp) return temp
+        }
+      }
+      return null
+    },
+
     loadViews() {
-      const viewIds = this.componentData
-        .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
-        .map(item => item.propValue.viewId)
+      let viewIds = []; let tabViewIds = []
+      for (let index = 0; index < this.componentData.length; index++) {
+        const element = this.componentData[index]
+        if (element.type && element.propValue && element.propValue.viewId && element.type === 'view') {
+          viewIds.push(element.propValue.viewId)
+        }
+
+        if (element.type && element.type === 'de-tabs') {
+          tabViewIds = element.options.tabList.filter(item => item.content && item.content.type === 'view' && item.content.propValue && item.content.propValue.viewId).map(item => item.content.propValue.viewId)
+        }
+        viewIds = [...viewIds, ...tabViewIds]
+      }
       viewIds && viewIds.length > 0 && viewsWithIds(viewIds).then(res => {
         const datas = res.data
+
         this.viewInfos = datas
         this.childViews.viewInfos = datas
       })
-    },
-    handleNodeClick(data) {
-      if (data.type !== 'group') {
-        this.showFieldDatas(data)
-      }
-    },
-    loadTree(node, resolve) {
-      if (!this.isTreeSearch) {
-        if (node.level > 0) {
-          if (node.data.id) {
-            post('/dataset/table/listAndGroup', {
-              sort: 'type asc,name asc,create_time desc',
-              sceneId: node.data.id
-            }).then(res => {
-              resolve(res.data)
-            })
-          }
-        }
-      } else {
-        node.data.children && resolve(node.data.children)
-      }
-    },
-    treeNode(group) {
-      post('/dataset/group/treeNode', group).then(res => {
-        this.defaultDatas = res.data
-        this.datas = res.data
+      viewIds && viewIds.length > 0 && paramsWithIds(viewIds).then(res => {
+        const datas = res.data
+
+        this.childViews.datasetParams = datas
       })
     },
+    handleNodeClick(data) {
+      if (data.modelInnerType !== 'group') {
+        this.showFieldDatas(data)
+      } else {
+        this.showNextGroup(data)
+      }
+    },
+
     loadDataSetTree() {
       groupTree({}).then(res => {
         const datas = res.data
@@ -432,7 +500,7 @@ export default {
 
     setTailLink(node) {
       const tail = this.dataSetBreads[this.dataSetBreads.length - 1]
-      tail.type = node.type
+      tail.type = node.modelInnerType
       tail.link = true
     },
     comSetTailLink(node) {
@@ -444,9 +512,57 @@ export default {
       const tail = {
         link: false,
         label: node.label || node.name,
-        type: node.type
+        type: node.modelInnerType,
+        id: node.id
       }
       this.dataSetBreads.push(tail)
+    },
+    addQueue(node) {
+      this.dataSetBreads = this.dataSetBreads.slice(0, 1)
+      const root = {
+        id: null,
+        children: JSON.parse(JSON.stringify(this.datas))
+      }
+      this.getPathById(node.id, root, res => {
+        if (res.length > 1) {
+          for (let index = 1; index < res.length; index++) {
+            const node = res[index]
+            const temp = {
+              link: true,
+              label: node.label || node.name,
+              type: node.modelInnerType,
+              id: node.id
+            }
+            this.dataSetBreads.push(temp)
+            this.dataSetBreads[0].link = true
+          }
+
+          this.dataSetBreads[this.dataSetBreads.length - 1].link = false
+        }
+      })
+    },
+    getPathById(id, catalog, callback) {
+      var temppath = []
+      try {
+        const getNodePath = function(node) {
+          temppath.push(node)
+          if (node.id === id) {
+            // eslint-disable-next-line no-throw-literal
+            throw ('GOT IT!')
+          }
+          if (node.children && node.children.length > 0) {
+            for (var i = 0; i < node.children.length; i++) {
+              getNodePath(node.children[i])
+            }
+            temppath.pop()
+          } else {
+            temppath.pop()
+          }
+        }
+        getNodePath(catalog)
+      } catch (e) {
+        callback(temppath)
+      }
     },
     comAddTail(node) {
       const tail = {
@@ -458,9 +574,14 @@ export default {
     },
 
     removeTail(bread) {
+      if (!bread.id) {
+        this.dataSetBreads = this.dataSetBreads.slice(0, 1)
+        this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
+        return
+      }
       for (let index = 0; index < this.dataSetBreads.length; index++) {
         const element = this.dataSetBreads[index]
-        if (element.type === bread.type) {
+        if (element.type === bread.type && element.id === bread.id) {
           this.dataSetBreads = this.dataSetBreads.slice(0, index + 1)
           this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
           return
@@ -479,6 +600,15 @@ export default {
         this.expandedArray = []
         this.keyWord = ''
         this.isTreeSearch = false
+        if (bread.id) {
+          const node = this.getNode(bread.id, this.datas)
+          if (node) {
+            this.tempTreeDatas = node.children
+          }
+        } else {
+          this.tempTreeDatas = null
+        }
+
         this.datas = JSON.parse(JSON.stringify(this.defaultDatas))
       })
     },
@@ -489,30 +619,39 @@ export default {
     },
 
     loadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
+        this.allFields = JSON.parse(JSON.stringify(datas))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
-        this.fieldDatas = datas
+        this.originFieldDatas = datas
+        this.fieldDatas = JSON.parse(JSON.stringify(datas))
       })
     },
     comLoadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
+        this.allFields = JSON.parse(JSON.stringify(datas))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
-        this.comFieldDatas = datas
+        this.originComFieldDatas = datas
+        this.comFieldDatas = JSON.parse(JSON.stringify(datas))
       })
     },
     showFieldDatas(row) {
       this.keyWord = ''
       this.showDomType = 'field'
-      this.setTailLink(row)
-      this.addTail(row)
+      this.addQueue(row)
       this.fieldsParent = row
       this.loadField(row.id)
+    },
+    showNextGroup(row) {
+      this.tempTreeDatas = JSON.parse(JSON.stringify(row.children))
+      this.keyWord = ''
+      this.showDomType = 'tree'
+      this.addQueue(row)
     },
     comShowFieldDatas(row) {
       this.viewKeyWord = ''

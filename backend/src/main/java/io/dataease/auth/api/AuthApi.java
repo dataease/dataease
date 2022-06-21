@@ -30,9 +30,17 @@ public interface AuthApi {
     @PostMapping("/useInitPwd")
     Boolean useInitPwd();
 
+    @ApiOperation("用户初始密码")
+    @PostMapping("/defaultPwd")
+    String defaultPwd();
+
     @ApiOperation("登出")
     @PostMapping("/logout")
     String logout();
+
+    @ApiIgnore
+    @PostMapping("/deLogout")
+    String deLogout();
 
     @ApiOperation("验证账号")
     @PostMapping("/validateName")
@@ -45,6 +53,10 @@ public interface AuthApi {
     @ApiOperation("是否开启oidc")
     @PostMapping("/isOpenOidc")
     boolean isOpenOidc();
+
+    @ApiOperation("是否开启cas")
+    @PostMapping("/isOpenCas")
+    boolean isOpenCas();
 
     @ApiIgnore
     @PostMapping("/isPluginLoaded")

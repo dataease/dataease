@@ -1,20 +1,12 @@
 import request from '@/utils/request'
+import store from '@/store'
+import { queryPanelComponents } from '@/api/panel/panel'
 
-export function post(url, data) {
+export function post(url, data, loading = false) {
   return request({
     url: url,
     method: 'post',
-    loading: true,
-    data
-  })
-}
-
-export function ajaxGetData(id, data) {
-  return request({
-    url: '/chart/view/getOneWithPermission/' + id,
-    method: 'post',
-    loading: true,
-    hideMsg: true,
+    loading: loading,
     data
   })
 }
@@ -23,16 +15,24 @@ export function getChartTree(data) {
   return request({
     url: 'api',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
 
-export function chartCopy(id) {
+export function chartCopy(id, panelId) {
   return request({
-    url: '/chart/view/chartCopy/' + id,
+    url: '/chart/view/chartCopy/' + id + '/' + panelId,
     method: 'post',
-    loading: true
+    loading: false
+  })
+}
+export function chartBatchCopy(params, panelId) {
+  return request({
+    url: '/chart/view/chartBatchCopy/' + panelId,
+    method: 'post',
+    data: params,
+    loading: false
   })
 }
 export function chartGroupTree(data) {
@@ -48,7 +48,7 @@ export function searchAdviceSceneId(panelId) {
   return request({
     url: '/chart/view/searchAdviceSceneId/' + panelId,
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 
@@ -60,12 +60,77 @@ export function checkSameDataSet(viewIdSource, viewIdTarget) {
   })
 }
 
-export function ajaxGetDataOnly(id, data) {
+export function ajaxGetDataOnly(id, panelId, data) {
   return request({
-    url: '/chart/view/getData/' + id,
+    url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
-    loading: true,
+    loading: false,
     hideMsg: true,
+    data
+  })
+}
+
+export function pluginTypes() {
+  return request({
+    url: '/plugin/view/types',
+    method: 'post'
+  })
+}
+
+export function deleteCircle(id) {
+  return request({
+    url: '/chart/group/deleteCircle/' + id,
+    method: 'post',
+    loading: true
+  })
+}
+
+export function getChartDetails(id, panelId, data) {
+  return request({
+    url: '/chart/view/get/' + id + '/' + panelId,
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+export function viewEditSave(panelId, data) {
+  return request({
+    url: '/chart/view/viewEditSave/' + panelId,
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+export function resetViewCacheCallBack(viewId, panelId, callback) {
+  // 加载仪表板组件视图数据
+  resetViewCache(viewId, panelId).then(rep => {
+    callback(rep)
+  })
+}
+export function resetViewCache(viewId, panelId) {
+  return request({
+    url: '/chart/view/resetViewCache/' + viewId + '/' + panelId,
+    method: 'post',
+    loading: false
+  })
+}
+
+export function checkTitle(data) {
+  return request({
+    url: '/chart/view/checkTitle',
+    method: 'post',
+    data: data,
+    loading: false
+  })
+}
+
+export function viewPropsSave(panelId, data) {
+  return request({
+    url: '/chart/view/viewPropsSave/' + panelId,
+    method: 'post',
+    loading: false,
     data
   })
 }

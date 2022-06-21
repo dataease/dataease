@@ -1,7 +1,7 @@
 package io.dataease.commons.utils;
-import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -33,7 +33,7 @@ import java.util.*;
 public class ExcelXlsxReader extends DefaultHandler {
 
     /**
-     * 自定义获取表格某些信息
+     * 自定义获取表格某些信
      */
     public Map map = new TreeMap<String,String>();
     /**
@@ -100,6 +100,8 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     private String formatString;
 
+
+
     //定义前一个元素和当前元素的位置，用来计算其中空的单元格数量，如A6和A8等
     private String preRef = null, ref = null;
 
@@ -111,7 +113,7 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     private StylesTable stylesTable;
 
-    public List<TableFiled> fields = new ArrayList<>();
+    public List<TableField> fields = new ArrayList<>();
     public List<List<String>> data = new ArrayList<>();
     public List<ExcelSheetData> totalSheets = new ArrayList<>();
     /**
@@ -119,12 +121,21 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     private boolean isDateFormat = false;
 
+    public Integer getObtainedNum() {
+        return obtainedNum;
+    }
 
-    public List<TableFiled> getFields() {
+    public void setObtainedNum(Integer obtainedNum) {
+        this.obtainedNum = obtainedNum;
+    }
+
+    private Integer obtainedNum = null;
+
+    public List<TableField> getFields() {
         return fields;
     }
 
-    public void setFields(List<TableFiled> fields) {
+    public void setFields(List<TableField> fields) {
         this.fields = fields;
     }
 
@@ -142,6 +153,9 @@ public class ExcelXlsxReader extends DefaultHandler {
         stylesTable = xssfReader.getStylesTable();
         SharedStringsTable sst = xssfReader.getSharedStringsTable();
         XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+        parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         this.sst = sst;
         parser.setContentHandler(this);
         XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) xssfReader.getSheetsData();
@@ -176,7 +190,7 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     @Override
     public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
-        if(curRow>101){
+        if(this.obtainedNum !=null && curRow>this.obtainedNum){
             return;
         }
 
@@ -214,7 +228,7 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if(curRow>101){
+        if(this.obtainedNum !=null && curRow>this.obtainedNum){
             return;
         }
         lastIndex += new String(ch, start, length);
@@ -230,7 +244,7 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     @Override
     public void endElement(String uri, String localName, String name) throws SAXException {
-        if(curRow>101){
+        if(this.obtainedNum !=null && curRow>this.obtainedNum){
             return;
         }
         //t元素也包含字符串
@@ -238,12 +252,12 @@ public class ExcelXlsxReader extends DefaultHandler {
             //将单元格内容加入rowlist中，在这之前先去掉字符串前后的空白符
             String value = lastIndex.trim();
             if(curRow==1){
-                TableFiled tableFiled = new TableFiled();
-                tableFiled.setFieldType("TEXT");
-                tableFiled.setFieldSize(65533);
-                tableFiled.setFieldName(value);
-                tableFiled.setRemarks(value);
-                this.fields.add(tableFiled);
+                TableField tableField = new TableField();
+                tableField.setFieldType("TEXT");
+                tableField.setFieldSize(65533);
+                tableField.setFieldName(value);
+                tableField.setRemarks(value);
+                this.fields.add(tableField);
             }
             cellList.add(curCol, value);
             curCol++;
@@ -296,6 +310,9 @@ public class ExcelXlsxReader extends DefaultHandler {
                     maxRef = ref;
                 }
                 if(curRow>1){
+                    for (int i=cellList.size();i<this.fields.size();i++){
+                        cellList.add("");
+                    }
                     List<String> tmp = new ArrayList<>(cellList);
                     this.getData().add(tmp);
                 }
@@ -451,15 +468,15 @@ public class ExcelXlsxReader extends DefaultHandler {
     }
 
     private void addField(String columeName, Integer index){
-        TableFiled tableFiled = new TableFiled();
-        tableFiled.setFieldType("TEXT");
-        tableFiled.setFieldSize(65533);
-        tableFiled.setFieldName(columeName);
-        tableFiled.setRemarks(columeName);
+        TableField tableField = new TableField();
+        tableField.setFieldType("TEXT");
+        tableField.setFieldSize(65533);
+        tableField.setFieldName(columeName);
+        tableField.setRemarks(columeName);
         if(index != null){
-            this.fields.add(index, tableFiled);
+            this.fields.add(index, tableField);
         }else {
-            this.fields.add(tableFiled);
+            this.fields.add(tableField);
         }
     }
     private String getType(String thisStr){

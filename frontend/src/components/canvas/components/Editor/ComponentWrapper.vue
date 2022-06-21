@@ -6,34 +6,41 @@
     @mousedown="elementMouseDown"
   >
     <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
-    <close-bar v-if="previewVisible" @closePreview="closePreview" />
-    <de-out-widget
-      v-if="config.type==='custom'"
-      :id="'component' + config.id"
-      class="component-custom"
-      :style="getComponentStyleDefault(config.style)"
-      style="overflow: hidden"
-      :out-style="config.style"
-      :element="config"
-      :in-screen="inScreen"
-      :edit-mode="'preview'"
-      :h="config.style.height"
-    />
-    <component
-      :is="config.component"
-      v-else
-      ref="wrapperChild"
-      :out-style="config.style"
-      :style="getComponentStyleDefault(config.style)"
-      :prop-value="config.propValue"
-      :is-edit="false"
-      :active="componentActiveFlag"
-      :element="config"
-      :search-count="searchCount"
-      :h="config.style.height"
-      :edit-mode="'preview'"
-      :terminal="terminal"
-    />
+    <div :id="componentCanvasId" :style="commonStyle" class="main_view">
+      <close-bar v-if="previewVisible" @closePreview="closePreview" />
+      <de-out-widget
+        v-if="config.type==='custom'"
+        :id="'component' + config.id"
+        class="component-custom"
+        :style="getComponentStyleDefault(config.style)"
+        style="overflow: hidden"
+        :out-style="config.style"
+        :element="config"
+        :in-screen="inScreen"
+        :edit-mode="'preview'"
+        :h="config.style.height"
+      />
+      <component
+        :is="config.component"
+        v-else
+        ref="wrapperChild"
+        :out-style="config.style"
+        :style="getComponentStyleDefault(config.style)"
+        :prop-value="config.propValue"
+        :is-edit="false"
+        :in-screen="inScreen"
+        :active="componentActiveFlag"
+        :element="config"
+        :search-count="searchCount"
+        :h="config.style.height"
+        :edit-mode="'preview'"
+        :filters="filters"
+        :terminal="terminal"
+        :screen-shot="screenShot"
+        :canvas-style-data="canvasStyleData"
+        :show-position="showPosition"
+      />
+    </div>
   </div>
 </template>
 
@@ -46,6 +53,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
@@ -74,6 +82,26 @@ export default {
     terminal: {
       type: String,
       default: 'pc'
+    },
+    filters: {
+      type: Array,
+      default: () => []
+    },
+    screenShot: {
+      type: Boolean,
+      default: false
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -82,15 +110,52 @@ export default {
     }
   },
   computed: {
+    componentCanvasId() {
+      if (this.config.type === 'view') {
+        return 'user-view-' + this.config.propValue.viewId
+      } else {
+        return 'components-' + this.config.id
+      }
+    },
+    commonStyle() {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.config.commonBackground) {
+        style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (this.config.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+        }
+        if (this.config.commonBackground.enable) {
+          if (this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
+            let innerImage = this.config.commonBackground.innerImage
+            if (this.screenShot) {
+              innerImage = innerImage.replace('svg', 'png')
+            }
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
+          }
+        } else {
+          style['background-color'] = colorRGBA
+        }
+        style['overflow'] = 'hidden'
+      }
+      return style
+    },
     componentActiveFlag() {
-      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible
+      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible && !this.showPosition.includes('multiplexing')
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
     },
     ...mapState([
       'mobileLayoutStatus',
-      'canvasStyleData',
       'curComponent',
       'componentGap'
     ])
@@ -150,19 +215,17 @@ export default {
           height: '100%'
         }
       } else {
-        if (this.terminal === 'pc') {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-        } else {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'fontSize'])
-        }
+        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
 
     handleClick() {
       const events = this.config.events
-      Object.keys(events).forEach(event => {
-        this[event](events[event])
-      })
+      if (events) {
+        Object.keys(events).forEach(event => {
+          this[event](events[event])
+        })
+      }
     },
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
@@ -174,8 +237,8 @@ export default {
       e.stopPropagation()
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
-    showViewDetails() {
-      this.$refs.wrapperChild.openChartDetailsDialog()
+    showViewDetails(params) {
+      this.$refs.wrapperChild.openChartDetailsDialog(params)
     },
     closePreview() {
       this.previewVisible = false
@@ -201,5 +264,8 @@ export default {
     outline: none;
     width: 100% !important;
     height: 100%;
+  }
+  .main_view{
+    background-size: 100% 100%!important;
   }
 </style>

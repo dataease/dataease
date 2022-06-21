@@ -1,6 +1,6 @@
 package io.dataease.controller.request.chart;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

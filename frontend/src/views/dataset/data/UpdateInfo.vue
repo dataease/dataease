@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel'" icon="el-icon-setting" size="mini" @click="showConfig">
+      <el-button v-if="hasDataPermission('manage',param.privileges) && enableUpdate" icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
       <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
@@ -263,7 +263,7 @@
 
       <el-divider />
 
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" v-if="table.type !== 'api'">
         <el-row>
           <el-col :span="4"><span>{{ $t('dataset.incremental_update_type') }}:</span></el-col>
           <el-col :span="18">
@@ -275,7 +275,7 @@
         </el-row>
       </el-row>
 
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" v-if="table.type !== 'api'">
         <el-row>
           <el-col :span="4" style="height: 26px;"><span style="display: inline-block;height: 26px;line-height: 26px;">{{ $t('dataset.param') }}:</span></el-col>
           <el-col :span="18">
@@ -285,7 +285,7 @@
         </el-row>
       </el-row>
 
-      <el-row>
+      <el-row v-if="table.type !== 'api'">
         <el-col style="min-width: 200px;">
           <codemirror
             ref="myCm"
@@ -334,7 +334,8 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 // vue-cron
 import cron from '@/components/cron/cron'
-
+import {hasDataPermission} from '@/utils/permission'
+import {engineMode} from "@/api/system/engine";
 export default {
   name: 'UpdateInfo',
   components: { codemirror, cron },
@@ -379,7 +380,7 @@ export default {
       taskFormRules: {
         name: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' },
-          { min: 2, max: 50, message: this.$t('datasource.input_limit_0_50', [2, 50]), trigger: 'blur' }
+          { min: 2, max: 50, message: this.$t('datasource.input_limit_2_50', [2, 50]), trigger: 'blur' }
         ],
         type: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' }
@@ -411,7 +412,9 @@ export default {
       cronEdit: false,
       lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       taskLastRequestComplete: true,
-      taskLogLastRequestComplete: true
+      taskLogLastRequestComplete: true,
+      enableUpdate: true,
+      engineMode: 'local'
     }
   },
   computed: {
@@ -422,7 +425,9 @@ export default {
   watch: {
     table: {
       handler() {
-        this.listTask()
+        if(hasDataPermission('manage',this.param.privileges)){
+          this.listTask()
+        }
         this.listTaskLog()
       },
       immediate: true
@@ -447,8 +452,27 @@ export default {
       } else {
         this.taskLastRequestComplete = false
       }
-      this.listTask(false)
+      if(hasDataPermission('manage',this.param.privileges)){
+        this.listTask(false)
+      }
     }, 10000)
+
+    engineMode().then(res => {
+      this.engineMode = res.data
+      if (this.engineMode === 'simple' ) {
+        if(this.table.type === 'api'){
+          this.enableUpdate = true
+        }else {
+          this.enableUpdate = false
+        }
+      } else {
+        if(this.table.type === 'excel'){
+          this.enableUpdate = false
+        }else {
+          this.enableUpdate = true
+        }
+      }
+    })
   },
   beforeDestroy() {
     clearInterval(this.taskTimer)
@@ -537,12 +561,19 @@ export default {
     getIncrementalConfig() {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
-        this.incrementalUpdateType = 'incrementalAdd'
-        if (this.incrementalConfig.incrementalAdd) {
+        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0 ) {
+          this.incrementalUpdateType = 'incrementalAdd'
+          this.sql = ''
+          return
+        }
+        if (this.incrementalConfig.incrementalAdd.length > 0) {
+          this.incrementalUpdateType = 'incrementalAdd'
           this.sql = this.incrementalConfig.incrementalAdd
         } else {
-          this.sql = ''
+          this.incrementalUpdateType = 'incrementalDelete'
+          this.sql = this.incrementalConfig.incrementalDelete
         }
+
       })
     },
     saveIncrementalConfig() {
@@ -671,7 +702,7 @@ export default {
     },
     listTaskLog(loading = true) {
       const params = { 'conditions': [{ 'field': 'dataset_table_task_log.table_id', 'operator': 'eq', 'value': this.table.id }], 'orders': [] }
-      post('/dataset/taskLog/list/' + this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
+      post('/dataset/taskLog/listForDataset/' + this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
         this.taskLogLastRequestComplete = true
@@ -708,10 +739,8 @@ export default {
       this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
     onCmFocus(cm) {
-      // console.log('the editor is focus!', cm)
     },
     onCmCodeChange(newCode) {
-      // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
     },

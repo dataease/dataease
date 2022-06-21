@@ -1,16 +1,18 @@
 package io.dataease.controller.sys;
 
-import io.dataease.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.listener.DatasetCheckListener;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.service.FileService;
 import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,11 +41,13 @@ public class SystemParameterController {
     private EmailService emailService;
 
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/mail/info")
     public MailInfo mailInfo() {
         return emailService.mailInfo();
     }
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/basic/info")
     public BasicInfo basicInfo() {
         return systemParameterService.basicInfo();
@@ -55,14 +59,23 @@ public class SystemParameterController {
         return StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10;
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
         emailService.editMail(systemParameter);
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/basic")
-    public void editBasic(@RequestBody List<SystemParameter> systemParameter) {
-        systemParameterService.editBasic(systemParameter);
+    public CasSaveResult editBasic(@RequestBody List<SystemParameter> systemParameter) {
+        String value = systemParameter.stream().filter(parameter -> parameter.getParamKey().equals("basic.frontTimeOut")).findFirst().get().getParamValue();
+        if (StringUtils.isNotBlank(value)) {
+            int timeout = Integer.parseInt(value);
+            if (timeout < 0 || timeout > 300) { //增加了合法性检验
+                throw new NumberFormatException("Timeout Range Error!");
+            }
+        }
+        return systemParameterService.editBasic(systemParameter);
     }
 
     @PostMapping("/testConnection")
@@ -76,6 +89,7 @@ public class SystemParameterController {
     }
 
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/base/info")
     public List<SystemParameterDTO> getBaseInfo() {
         return systemParameterService.getSystemParameterInfo(ParamConstants.Classify.BASE.getValue());
@@ -107,6 +121,11 @@ public class SystemParameterController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @PostMapping(value = "/defaultLoginType")
+    public Integer defaultLoginType() {
+        return systemParameterService.defaultLoginType();
     }
 
 }

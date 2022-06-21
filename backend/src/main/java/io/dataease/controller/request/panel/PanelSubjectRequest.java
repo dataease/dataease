@@ -1,6 +1,6 @@
 package io.dataease.controller.request.panel;
 
-import io.dataease.base.domain.PanelSubject;
+import io.dataease.plugins.common.base.domain.PanelSubject;
 
 /**
  * Author: wangjiahao

@@ -45,21 +45,27 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
         <!-- 模型对象 -->
-        <javaModelGenerator targetPackage="io.dataease.base.domain" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="io.dataease.plugins.common.base.domain" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!-- XML映射文件 -->
-        <sqlMapGenerator targetPackage="io.dataease.base.mapper" targetProject="src/main/java">
+        <sqlMapGenerator targetPackage="io.dataease.plugins.common.base.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
         <!-- 接口 -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="io.dataease.base.mapper"
+        <javaClientGenerator type="XMLMAPPER" targetPackage="io.dataease.plugins.common.base.mapper"
                              targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="dataset_column_permissions"/>
+<!--        <table tableName="de_engine">-->
+<!--            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>-->
+<!--        </table>-->
+        <table tableName="panel_link_jump"/>
+        <table tableName="panel_link_jump_info"/>
+<!--        <table tableName="panel_outer_params_info"/>-->
+<!--        <table tableName="panel_outer_params_target_view_info"/>-->
     </context>
 </generatorConfiguration>

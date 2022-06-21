@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 public class PanelSharePo {
@@ -15,6 +14,9 @@ public class PanelSharePo {
     private String name;
     @ApiModelProperty("节点父ID")
     private String creator;
-
+    @ApiModelProperty("分享人ID")
+    private Long userId;
+    @ApiModelProperty("仪表板状态")
+    private String status;
 
 }

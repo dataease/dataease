@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtPanelViewLinkageMapper">
+
+    <resultMap id="TableFieldMap" type="io.dataease.plugins.common.base.domain.DatasetTableField">
+        <result column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
+        <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="de_type" jdbcType="INTEGER" property="deType"/>
+    </resultMap>
+
+    <resultMap id="LinkageGatherMap" type="io.dataease.dto.PanelViewLinkageDTO">
+        <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+        <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
+        <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
+        <result column="linkageActive" property="linkageActive"/>
+        <collection property="targetViewFields" ofType="io.dataease.plugins.common.base.domain.DatasetTableField" column="table_id"
+                    select="queryTableField">
+        </collection>
+        <collection property="linkageFields" ofType="io.dataease.plugins.common.base.domain.PanelViewLinkageField">
+            <result column="source_field" jdbcType="VARCHAR" property="sourceField"/>
+            <result column="target_field" jdbcType="VARCHAR" property="targetField"/>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="AllLinkageMap" type="io.dataease.dto.LinkageInfoDTO">
+        <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <collection property="targetInfoList" ofType="String">
+            <result column="targetInfo" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
+        SELECT
+        chart_view.`name` as 'targetViewName',
+        chart_view.id as 'target_view_id',
+        chart_view.table_id,
+        (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
+        panel_view_linkage_field.source_field,
+        panel_view_linkage_field.target_field
+        FROM
+        chart_view
+        LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
+        AND panel_view_linkage.panel_id = #{panelId}
+        AND panel_view_linkage.source_view_id = #{sourceViewId}
+        LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+        where chart_view.id in
+        <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
+            #{targetViewId}
+        </foreach>
+    </select>
+
+    <select id="queryTableField" resultMap="TableFieldMap">
+       select
+       dataset_table_field.id,
+       dataset_table_field.table_id,
+       dataset_table_field.origin_name,
+       dataset_table_field.`name`,
+       dataset_table_field.de_type
+    from dataset_table_field where table_id = #{table_id}
+    </select>
+
+    <select id="queryTableFieldWithViewId" resultMap="TableFieldMap">
+        select
+       dataset_table_field.id,
+       dataset_table_field.table_id,
+       dataset_table_field.origin_name,
+       dataset_table_field.`name`,
+       dataset_table_field.de_type
+        from dataset_table_field
+		left join chart_view on dataset_table_field.table_id= chart_view.table_id
+		where chart_view.id = #{viewId}
+    </select>
+
+
+    <delete id="deleteViewLinkage">
+        delete from panel_view_linkage where   panel_view_linkage.panel_id = #{panelId}
+        AND panel_view_linkage.source_view_id = #{sourceViewId}
+    </delete>
+
+
+    <delete id="deleteViewLinkageField">
+      DELETE pvl
+        FROM
+            panel_view_linkage pvl,
+            panel_view_linkage_field pvlf
+        WHERE
+            pvl.id = pvlf.linkage_id
+            AND pvl.source_view_id = #{panelId}
+            AND pvl.panel_id = #{panelId}
+    </delete>
+
+    <insert id="savePluginMenu">
+        INSERT INTO `panel_view_linkage` ( menu_id, title, pid, sub_count, permission, hidden,i_frame ) VALUES
+        <foreach collection="menuList" item="menu" index="index" separator=",">
+            (#{menu.menuId},#{menu.title},#{menu.pid},#{menu.subCount},#{menu.permission},#{menu.hidden},ifnull(#{menu.hidden},0))
+        </foreach>
+    </insert>
+
+    <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
+      SELECT
+        distinct
+        CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS 'sourceInfo',
+        CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS 'targetInfo'
+        FROM
+            panel_view_linkage
+            LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+        WHERE
+            panel_view_linkage.panel_id = #{panelId}
+    </select>
+
+    <insert id="copyViewLinkage">
+        INSERT INTO panel_view_linkage (
+                id,
+                panel_id,
+                source_view_id,
+                target_view_id,
+                update_time,
+                update_people,
+                ext1,
+                ext2,
+                copy_from,
+                copy_id
+            ) SELECT
+            UUID() AS id,
+            pv_source_copy.t_panel_id AS panel_id,
+            pv_source_copy.t_chart_view_id AS source_view_id,
+            pv_target_copy.t_chart_view_id target_view_id,
+            update_time,
+            update_people,
+            ext1,
+            ext2,
+            id as copy_from,
+            #{copyId} as copy_id
+            FROM
+                panel_view_linkage
+                INNER JOIN (
+                SELECT
+                    pvs.panel_id AS s_panel_id,
+                    pvs.chart_view_id AS s_chart_view_id,
+                    pvt.panel_id AS t_panel_id,
+                    pvt.chart_view_id AS t_chart_view_id
+                FROM
+                    panel_view pvt
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                WHERE
+                    pvt.copy_id = #{copyId}
+                ) pv_source_copy ON panel_view_linkage.panel_id = pv_source_copy.s_panel_id
+                AND panel_view_linkage.source_view_id = pv_source_copy.s_chart_view_id
+                INNER JOIN (
+                SELECT
+                    pvs.panel_id AS s_panel_id,
+                    pvs.chart_view_id AS s_chart_view_id,
+                    pvt.panel_id AS t_panel_id,
+                    pvt.chart_view_id AS t_chart_view_id
+                FROM
+                    panel_view pvt
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                WHERE
+                    pvt.copy_id = #{copyId}
+                ) pv_target_copy ON panel_view_linkage.panel_id = pv_target_copy.s_panel_id
+                AND panel_view_linkage.target_view_id = pv_target_copy.s_chart_view_id
+
+    </insert>
+
+    <insert id ="copyViewLinkageField">
+        INSERT INTO panel_view_linkage_field (
+            id,
+            linkage_id,
+            source_field,
+            target_field,
+            update_time,
+            copy_from,
+            copy_id
+        ) SELECT
+        uuid() AS id,
+        pvlf_copy.t_id,
+        source_field,
+        target_field,
+        update_time,
+        id AS copy_from,
+        #{copyId} AS copy_id
+        FROM
+            panel_view_linkage_field
+            INNER JOIN (
+            SELECT
+                id AS t_id,
+                copy_from AS s_id
+            FROM
+                panel_view_linkage
+            WHERE
+                copy_id = #{copyId}
+            ) pvlf_copy ON panel_view_linkage_field.linkage_id = pvlf_copy.s_id
+
+    </insert>
+</mapper>

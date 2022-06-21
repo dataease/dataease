@@ -1,5 +1,16 @@
 import { Line, Area } from '@antv/g2plot'
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import {
+  getTheme,
+  getLabel,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis,
+  getPadding,
+  getSlider,
+  getAnalyse
+} from '@/views/chart/chart/common/common_antv'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
   // theme
@@ -13,6 +24,9 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -27,6 +41,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -75,6 +91,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
       }
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
@@ -100,6 +118,9 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -114,6 +135,8 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -157,11 +180,15 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
         size: parseInt(s.lineSymbolSize),
         shape: s.lineSymbol
       }
-      options.lineStyle = {
-        lineWidth: parseInt(s.lineWidth)
+      options.line = {
+        style: {
+          lineWidth: parseInt(s.lineWidth)
+        }
       }
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

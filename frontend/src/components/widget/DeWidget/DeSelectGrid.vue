@@ -6,6 +6,7 @@
         v-model="keyWord"
         :placeholder="$t('deinputsearch.placeholder')"
         :size="size"
+        ref="de-select-grid"
         prefix-icon="el-icon-search"
         clearable
       />
@@ -39,8 +40,9 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
-export default {
+import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
+export default {
   props: {
     element: {
       type: Object,
@@ -76,7 +78,7 @@ export default {
       show: true,
       datas: [],
       isIndeterminate: false,
-      checkAll: false
+      checkAll: false,
     }
   },
   computed: {
@@ -93,6 +95,13 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    cssArr() {
+        const { brColor, wordColor, innerBgColor } = this.element.style;
+        return { brColor, wordColor, innerBgColor }
     }
   },
   watch: {
@@ -119,26 +128,66 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
       this.element.options.attrs.fieldId &&
           this.element.options.attrs.fieldId.length > 0 &&
-      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+      method(param).then(res => {
         this.datas = this.optionDatas(res.data)
+        this.changeInputStyle()
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
-      // if (!this.inDraw) {
-      this.value = value ? [] : null
-      this.element.options.value = ''
-      // }
+      if (!this.inDraw) {
+        this.value = value ? [] : null
+        this.element.options.value = ''
+      } else {
+        this.value = this.fillValueDerfault()
+      }
 
       this.show = false
       this.$nextTick(() => {
         this.show = true
+        if (value) {
+          this.checkAll = this.value.length === this.datas.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        }
+        this.changeInputStyle();
       })
-    }
+    },
+    'element.options.attrs.sort': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.datas = []
+      let method = multFieldValues
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = linkMultFieldValues
+      }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
+      this.element.options.attrs.fieldId &&
+          this.element.options.attrs.fieldId.length > 0 &&
+      method(param).then(res => {
+        this.datas = this.optionDatas(res.data)
+        this.changeInputStyle()
+      }) || (this.element.options.value = '')
+    },
+    cssArr: {
+        handler: 'changeInputStyle',
+        deep: true
+    },
+    keyWord: 'changeInputStyle'
   },
   created() {
+    if (!this.element.options.attrs.sort) {
+      this.element.options.attrs.sort = {}
+    }
     this.initLoad()
   },
   mounted() {
@@ -156,6 +205,24 @@ export default {
   },
 
   methods: {
+    changeInputStyle() {
+      if (!this.$parent.handlerInputStyle) return;
+      this.$nextTick(() => {
+          this.handlerInputStyle(this.element.style)
+      })
+    },
+    handlerInputStyle(newValue) {
+      let nodeCache = '';
+      if (!this.$refs['de-select-grid']) return
+        styleAttrs.forEach(ele => {
+            if (!nodeCache) {
+                nodeCache = this.$refs['de-select-grid'].$el.querySelector('.el-input__inner')
+            }
+            nodeCache.style[attrsMap[ele]] = newValue[ele];
+            this.textSelectGridWidget(this.$el, ele, newValue[ele])
+        })
+    },
+    textSelectGridWidget: textSelectGridWidget,
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
@@ -165,8 +232,9 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+        method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
           this.datas = this.optionDatas(res.data)
+          this.changeInputStyle()
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
             this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
@@ -190,7 +258,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
     },
 
     setCondition() {
@@ -215,10 +282,6 @@ export default {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return null }
         return defaultV.split(',')[0]
       }
-    },
-
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
     optionDatas(datas) {
       if (!datas) return null

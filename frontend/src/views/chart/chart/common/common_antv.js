@@ -1,4 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -112,7 +113,13 @@ export function getLabel(chart) {
       if (l.show) {
         if (chart.type === 'pie') {
           label = {
-            type: l.position
+            type: l.position,
+            autoRotate: false
+          }
+        } else if (chart.type.includes('line')) {
+          label = {
+            position: l.position,
+            offsetY: -8
           }
         } else {
           label = {
@@ -261,6 +268,17 @@ export function getXAxis(chart) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
+          },
+          formatter: function(value) {
+            if (chart.type.includes('horizontal')) {
+              if (!a.axisLabelFormatter) {
+                return valueFormatter(value, formatterItem)
+              } else {
+                return valueFormatter(value, a.axisLabelFormatter)
+              }
+            } else {
+              return value
+            }
           }
         } : null
 
@@ -321,6 +339,17 @@ export function getYAxis(chart) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
+          },
+          formatter: function(value) {
+            if (!chart.type.includes('horizontal')) {
+              if (!a.axisLabelFormatter) {
+                return valueFormatter(value, formatterItem)
+              } else {
+                return valueFormatter(value, a.axisLabelFormatter)
+              }
+            } else {
+              return value
+            }
           }
         } : null
 
@@ -415,9 +444,9 @@ function transAxisPosition(chart, axis) {
   if (chart.type.includes('horizontal')) {
     switch (axis.position) {
       case 'top':
-        return 'right'
-      case 'bottom':
         return 'left'
+      case 'bottom':
+        return 'right'
       case 'left':
         return 'bottom'
       case 'right':
@@ -427,5 +456,96 @@ function transAxisPosition(chart, axis) {
     }
   } else {
     return axis.position
+  }
+}
+
+export function getSlider(chart) {
+  let senior = {}
+  let cfg = false
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+    senior = JSON.parse(chart.senior)
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        cfg = {
+          start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
+          end: parseInt(senior.functionCfg.sliderRange[1]) / 100
+        }
+      }
+    }
+  }
+  return cfg
+}
+
+export function getAnalyse(chart) {
+  let senior = {}
+  const assistLine = []
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+    senior = JSON.parse(chart.senior)
+    if (senior.assistLine && senior.assistLine.length > 0) {
+      const customStyle = JSON.parse(chart.customStyle)
+      let xAxisPosition, yAxisPosition
+      if (customStyle.xAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+        xAxisPosition = transAxisPosition(chart, a)
+      }
+      if (customStyle.yAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+        yAxisPosition = transAxisPosition(chart, a)
+      }
+      senior.assistLine.forEach(ele => {
+        const content = ele.name + ' : ' + parseFloat(ele.value)
+        assistLine.push({
+          type: 'line',
+          start: ['start', parseFloat(ele.value)],
+          end: ['end', parseFloat(ele.value)],
+          style: {
+            stroke: ele.color,
+            lineDash: getLineDash(ele.lineType)
+          }
+        })
+        if (!chart.type.includes('horizontal')) {
+          assistLine.push({
+            type: 'text',
+            position: [yAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            content: content,
+            offsetY: -2,
+            offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: 10
+            }
+          })
+        } else {
+          assistLine.push({
+            type: 'text',
+            position: [xAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            content: content,
+            offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
+            offsetX: 2,
+            rotate: Math.PI / 2,
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: 10
+            }
+          })
+        }
+      })
+    }
+  }
+  return assistLine
+}
+
+function getLineDash(type) {
+  switch (type) {
+    case 'solid':
+      return [0, 0]
+    case 'dashed':
+      return [10, 8]
+    case 'dotted':
+      return [2, 2]
+    default:
+      return [0, 0]
   }
 }

@@ -1,5 +1,7 @@
 
 import { Condition } from '@/components/widget/bean/Condition'
+import { ApplicationContext } from '@/utils/ApplicationContext'
+
 /**
  * 判断两个conditions数组是否相同
  * @param {*} conditions1
@@ -24,10 +26,22 @@ export const valueValid = condition => {
 }
 
 export const formatCondition = obj => {
-  const { component, value, operator } = obj
-  const fieldId = component.options.attrs.fieldId
+  const { component, value, operator, isTree } = obj
+
+  let fieldId = component.options.attrs.fieldId
   const viewIds = component.options.attrs.viewIds
-  const condition = new Condition(component.id, fieldId, operator, value, viewIds)
+  const parameters = component.options.attrs.parameters
+  if (isTree && !component.options.attrs.multiple && value && value.length) {
+    // 单选树
+    const val = value[0]
+    if (val) {
+      const len = val.split(',').length
+      if (len) {
+        fieldId = fieldId.split(',').slice(0, len).join(',')
+      }
+    }
+  }
+  const condition = new Condition(component.id, fieldId, operator, value, viewIds, parameters, isTree)
   return condition
 }
 
@@ -35,4 +49,44 @@ export const formatLinkageCondition = obj => {
   const { viewIds, fieldId, value, operator } = obj
   const condition = new Condition(null, fieldId, operator, value, viewIds)
   return condition
+}
+
+export const buildFilterMap = panelItems => {
+  const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+  const result = {}
+  panelItems.forEach(element => {
+    if (element.type === 'view') {
+      result[element.propValue.viewId] = []
+    }
+    if (element.type === 'de-tabs') {
+      element.options.tabList && element.options.tabList.forEach(tab => {
+        if (tab.content && tab.content.propValue && tab.content.propValue.viewId) {
+          result[tab.content.propValue.viewId] = []
+        }
+      })
+    }
+  })
+  panelItems.forEach(element => {
+    if (element.type !== 'custom') {
+      return true
+    }
+    const widget = ApplicationContext.getService(element.serviceName)
+    const param = widget.getParam(element)
+    const condition = formatCondition(param)
+    const vValid = valueValid(condition)
+    const filterComponentId = condition.componentId
+    Object.keys(result).forEach(viewId => {
+      const vidMatch = viewIdMatch(condition.viewIds, viewId)
+      const viewFilters = result[viewId]
+      let j = viewFilters.length
+      while (j--) {
+        const filter = viewFilters[j]
+        if (filter.componentId === filterComponentId) {
+          viewFilters.splice(j, 1)
+        }
+      }
+      vidMatch && vValid && viewFilters.push(condition)
+    })
+  })
+  return result
 }

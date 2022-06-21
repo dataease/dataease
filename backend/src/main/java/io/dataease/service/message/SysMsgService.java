@@ -1,12 +1,6 @@
 package io.dataease.service.message;
 
-
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.SysMsgChannelMapper;
-import io.dataease.base.mapper.SysMsgMapper;
-import io.dataease.base.mapper.SysMsgSettingMapper;
-import io.dataease.base.mapper.SysMsgTypeMapper;
-import io.dataease.base.mapper.ext.ExtSysMsgMapper;
+import io.dataease.ext.ExtSysMsgMapper;
 import io.dataease.commons.constants.SysMsgConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -16,6 +10,11 @@ import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.SysMsgChannelMapper;
+import io.dataease.plugins.common.base.mapper.SysMsgMapper;
+import io.dataease.plugins.common.base.mapper.SysMsgSettingMapper;
+import io.dataease.plugins.common.base.mapper.SysMsgTypeMapper;
 import io.dataease.service.message.service.SendService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections.CollectionUtils;
@@ -115,7 +114,7 @@ public class SysMsgService {
         return buildTree(sysMsgTypes);
     }
 
-    @Cacheable(SysMsgConstants.SYS_MSG_TYPE)
+    /*@Cacheable(SysMsgConstants.SYS_MSG_TYPE)*/
     public List<SysMsgType> queryMsgTypes() {
         SysMsgTypeExample example = new SysMsgTypeExample();
         return sysMsgTypeMapper.selectByExample(example);

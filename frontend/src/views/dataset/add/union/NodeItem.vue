@@ -4,6 +4,7 @@
       <svg-icon v-if="currentNode.currentDs.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
       <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
       <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
 
       <span class="node-name" :title="currentNode.currentDs.name">{{ currentNode.currentDs.name }}</span>
 
@@ -29,7 +30,7 @@
 
     <!--选择数据集-->
     <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
+      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" clear-empty-dir="true" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
         <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
@@ -79,7 +80,7 @@ export default {
         },
         allChildCount: 0
       },
-      customType: ['db', 'sql', 'excel'],
+      customType: ['db', 'sql', 'excel', 'api'],
       selectDsDialog: false,
       // 弹框临时选中的数据集
       tempDs: {},
@@ -129,7 +130,7 @@ export default {
     selectDs() {
       // 根据父级node，过滤不同的数据集
       if (this.currentNode.currentDs.mode === 1) {
-        this.customType = ['db', 'sql', 'excel']
+        this.customType = ['db', 'sql', 'excel', 'api']
       } else if (this.currentNode.currentDs.mode === 0) {
         if (this.currentNode.currentDs.modelInnerType === 'db') {
           this.customType = ['db']

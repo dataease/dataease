@@ -8,9 +8,8 @@
       @search="search"
     >
       <template #toolbar>
-        <!-- <el-button @click="create">{{ $t('plugin.local_install') }}</el-button> -->
-
         <el-upload
+          v-permission="['plugin:upload']"
           :action="baseUrl+'api/plugin/upload'"
           :multiple="false"
           :show-file-list="false"
@@ -30,7 +29,11 @@
       </template>
 
       <el-table-column prop="name" :label="$t('plugin.name')" />
-      <el-table-column prop="free" :label="$t('plugin.free')" />
+      <!--  <el-table-column prop="free" :label="$t('plugin.free')">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.free ? '是' : '否' }}</span>
+        </template>
+      </el-table-column> -->
       <el-table-column prop="cost" :label="$t('plugin.cost')" />
 
       <el-table-column :show-overflow-tooltip="true" prop="descript" :label="$t('plugin.descript')" />
@@ -42,7 +45,7 @@
           <span>{{ scope.row.installTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
-      <fu-table-operations :buttons="buttons" label="操作" fix />
+      <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
     </complex-table>
 
   </layout-content>
@@ -52,8 +55,8 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
-// import { checkPermission } from '@/utils/permission'
-import { formatCondition } from '@/utils/index'
+import { checkPermission } from '@/utils/permission'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { pluginLists, uninstall } from '@/api/system/plugin'
 import { getToken } from '@/utils/auth'
 export default {
@@ -68,23 +71,17 @@ export default {
         //   label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
         //   show: checkPermission(['user:del'])
         // }
+        {
+          label: this.$t('plugin.un_install'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          show: checkPermission(['plugin:uninstall']),
+          disabled: this.btnDisabled
+        }
       ],
       searchConfig: {
-        useQuickSearch: false,
+        useQuickSearch: true,
         quickPlaceholder: this.$t('role.search_by_name'),
         components: [
-          { field: 'name', label: this.$t('plugin.name'), component: 'FuComplexInput' }
-
-        //   {
-        //     field: 'u.enabled',
-        //     label: '状态',
-        //     component: 'FuComplexSelect',
-        //     options: [
-        //       { label: '启用', value: '1' },
-        //       { label: '禁用', value: '0' }
-        //     ],
-        //     multiple: false
-        //   }
+          { field: 'name', label: this.$t('plugin.name'), component: 'DeComplexInput' }
         ]
       },
       paginationConfig: {
@@ -107,6 +104,7 @@ export default {
   methods: {
 
     search(condition) {
+      condition = formatQuickCondition(condition, 'name')
       const temp = formatCondition(condition)
       const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig
@@ -119,6 +117,18 @@ export default {
       this.uploading = true
     },
     uploadFail(response, file, fileList) {
+      const msg = response && response.message || '安装失败'
+      try {
+        const result = JSON.parse(msg)
+        if (result && result.message) {
+          this.$error(result.message)
+          this.uploading = false
+        }
+        return
+      } catch (e) {
+        console.error(e)
+      }
+      this.$error(msg)
       this.uploading = false
     },
     uploadSuccess(response, file, fileList) {
@@ -127,20 +137,23 @@ export default {
     },
 
     del(row) {
-      this.$confirm(this.$t('user.delete_confirm'), '', {
+      this.$confirm(this.$t('plugin.uninstall_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         uninstall(row.pluginId).then(res => {
           this.search()
-          this.$success('卸载成功')
+          this.$success(this.$t('plugin.un_install_success'))
         }).catch(() => {
-          this.$error('卸载失败')
+          this.$error(this.$t('plugin.un_install_error'))
         })
       }).catch(() => {
-        this.$info(this.$t('commons.delete_cancel'))
+        this.$info(this.$t('plugin.uninstall_cancel'))
       })
+    },
+    btnDisabled(row) {
+      return row.pluginId < 4
     }
 
   }

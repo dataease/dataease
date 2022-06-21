@@ -2,14 +2,18 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
-import io.dataease.base.domain.SysUser;
-import io.dataease.base.mapper.SysUserMapper;
-import io.dataease.base.mapper.ext.AuthMapper;
+import io.dataease.commons.utils.CodingUtil;
+import io.dataease.exception.DataEaseException;
+import io.dataease.ext.*;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.SysUser;
+import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
@@ -63,6 +67,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public SysUserEntity getLdapUserByName(String username) {
         return authMapper.findLdapUserByName(username);
+    }
+
+    @Override
+    public SysUserEntity getCasUserByName(String username) {
+        return authMapper.findCasUserByName(username);
     }
 
     @Override
@@ -148,6 +157,15 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public Boolean supportCas() {
+        Map<String, CasXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((CasXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+        if (ObjectUtils.isEmpty(casXpackService)) return false;
+        return casXpackService.suuportCas();
+    }
+
+    @Override
     public Boolean pluginLoaded() {
         Map<String, PluginCommonService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((PluginCommonService.class));
         if (beansOfType.keySet().size() == 0) return false;
@@ -156,5 +174,20 @@ public class AuthUserServiceImpl implements AuthUserService {
         return pluginCommonService.isPluginLoaded();
     }
 
+    @Override
+    public void checkAdmin(String uname, String pwd) {
 
+        SysUserEntity user = getUserByName(uname);
+        if (ObjectUtils.isEmpty(user)) {
+            DataEaseException.throwException(Translator.get("i18n_user_not_exist"));
+        }
+        if (!user.getIsAdmin()) {
+            DataEaseException.throwException(Translator.get("i18n_not_admin_error"));
+        }
+        String realPwd = user.getPassword();
+        pwd = CodingUtil.md5(pwd);
+        if (!StringUtils.equals(pwd, realPwd)) {
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+        }
+    }
 }

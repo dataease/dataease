@@ -1,7 +1,7 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <de-aside-container>
+    <de-aside-container type="dataset">
       <group :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
 
@@ -20,6 +20,7 @@ import Group from './group/Group'
 import DataHome from './data/DataHome'
 import ViewTable from './data/ViewTable'
 import AddDB from './add/AddDB'
+import AddApi from './add/AddApi'
 import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
@@ -29,7 +30,7 @@ import { removeClass } from '@/utils'
 import { checkCustomDs } from '@/api/dataset/dataset'
 export default {
   name: 'DataSet',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom, AddApi },
   data() {
     return {
       component: DataHome,
@@ -75,6 +76,9 @@ export default {
           break
         case 'FieldEdit':
           this.component = FieldEdit
+          break
+        case 'AddApi':
+          this.component = AddApi
           break
         default:
           this.component = DataHome

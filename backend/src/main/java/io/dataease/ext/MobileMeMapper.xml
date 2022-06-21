@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.MobileMeMapper">
+
+    <select id="query" resultType="io.dataease.mobile.dto.MeItemDTO">
+       select
+        d.name as dept_name,
+        u.create_time
+       from sys_user u
+       left join sys_dept d on d.dept_id = u.dept_id
+       where u.user_id = #{userId}
+    </select>
+
+
+
+</mapper>

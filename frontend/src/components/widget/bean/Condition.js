@@ -5,11 +5,13 @@
  * viewIds 过滤视图范围
  */
 export class Condition {
-  constructor(componentId, fieldId, operator, value, viewIds) {
+  constructor(componentId, fieldId, operator, value, viewIds, parameters, isTree) {
     this.componentId = componentId
     this.fieldId = fieldId
     this.operator = operator || 'eq'
     this.value = value
     this.viewIds = viewIds
+    this.parameters = parameters
+    this.isTree = isTree || false
   }
 }

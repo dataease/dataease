@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.PanelViewLinkageField;
+import io.dataease.plugins.common.base.domain.PanelViewLinkageField;
 
 /**
  * Author: wangjiahao

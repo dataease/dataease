@@ -38,19 +38,6 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
       }
     ]
   }
-  // size
-  // let customAttr = {}
-  // if (chart.customAttr) {
-  //   customAttr = JSON.parse(chart.customAttr)
-  //   if (customAttr.size) {
-  //     const s = JSON.parse(JSON.stringify(customAttr.size))
-  //     if (s.barDefault) {
-  //       delete options.marginRatio
-  //     } else {
-  //       options.marginRatio = s.barGap
-  //     }
-  //   }
-  // }
 
   // 开始渲染
   if (plot) {

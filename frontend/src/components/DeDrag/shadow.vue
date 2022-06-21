@@ -1,7 +1,5 @@
 <template>
-  <div class="main-shadow" style="z-index:-1" :style="styleInfo">
-    <!--    {{ curComponent }}-->
-  </div>
+  <div class="main-shadow" style="z-index:-1" :style="styleInfo" />
 </template>
 
 <script>
@@ -11,17 +9,12 @@ export default {
   name: 'Shadow',
   computed: {
     styleInfo() {
-      // console.log('styleInfo==>')
-      // debugger
-      // console.log('dragComponentInfo==>' + this.dragComponentInfo.shadowStyle.x)
       let left = 0
       let top = 0
       let width = 0
       let height = 0
       let transition = 0
-      // if (this.dragComponentInfo && !this.dragComponentInfo.auxiliaryMatrix) {
       if (this.dragComponentInfo) {
-        // console.log('shadowDrag=')
         // 组件移入
         if (this.dragComponentInfo.auxiliaryMatrix) {
           left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleWidth
@@ -36,8 +29,6 @@ export default {
           width = this.dragComponentInfo.style.width
           height = this.dragComponentInfo.style.height
         }
-
-        // console.log('left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       } else {
         // temp 临时测试
         // left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100
@@ -50,12 +41,10 @@ export default {
         if (this.curComponent.optStatus.dragging) {
           transition = 0.1
         }
-        // console.log('curComponent left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       }
 
       // 防止阴影区超出边界
       const xGap = left + width - this.canvasWidth
-      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         left = left - xGap
       }
@@ -67,7 +56,6 @@ export default {
       if (transition > 0) {
         style.transition = transition + 's'
       }
-      // console.log('style=>' + JSON.stringify(style))
       // 记录外部拖拽进入仪表板时阴影区域宽高
       if (this.dragComponentInfo) {
         this.recordShadowStyle(left, top, width, height)

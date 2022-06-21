@@ -97,6 +97,7 @@
                   <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                   <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                  <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
                 </span>
                 <span v-if="data.type === 'db' || data.type === 'sql'">
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -114,6 +115,7 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'DatasetGroupSelector',
@@ -218,6 +220,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   methods: {
     filterNode(value, data) {
@@ -270,7 +275,7 @@ export default {
             return !(ele.mode === 0 && ele.type === 'sql')
           })
           for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+            if (this.tables[i].mode === 1 && this.kettleRunning === false && this.engineMode !== 'simple' ) {
               this.$set(this.tables[i], 'disabled', true)
             }
           }
@@ -301,7 +306,6 @@ export default {
       //     this.expandedArray.splice(index, 1)
       //   }
       // }
-      // console.log(this.expandedArray);
     },
 
     back() {

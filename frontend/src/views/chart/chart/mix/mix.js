@@ -1,5 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle } from '../common/common'
+import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseMixOption(chart_option, chart) {
   // 处理shape attr
@@ -27,7 +27,7 @@ export function baseMixOption(chart_option, chart) {
       y.type = y.type ? y.type : 'bar'
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
       // size
       if (customAttr.size) {
@@ -66,7 +66,7 @@ export function baseMixOption(chart_option, chart) {
       chart_option.series.push(y)
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
+  seniorCfg(chart_option, chart)
   return chart_option
 }

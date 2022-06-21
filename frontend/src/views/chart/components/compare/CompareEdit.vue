@@ -62,7 +62,12 @@ export default {
   methods: {
     // 过滤xaxis，extStack所有日期字段
     initFieldList() {
-      const xAxis = JSON.parse(this.chart.xaxis)
+      let xAxis = null
+      if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
+        xAxis = JSON.parse(JSON.stringify(this.chart.xaxis))
+      } else {
+        xAxis = JSON.parse(this.chart.xaxis)
+      }
       const t1 = xAxis.filter(ele => { return ele.deType === 1 })
       this.fieldList = t1
       // 如果没有选中字段，则默认选中第一个

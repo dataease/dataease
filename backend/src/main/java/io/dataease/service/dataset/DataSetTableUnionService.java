@@ -1,12 +1,12 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.DatasetTableUnion;
-import io.dataease.base.domain.DatasetTableUnionExample;
-import io.dataease.base.mapper.DatasetTableUnionMapper;
-import io.dataease.base.mapper.ext.ExtDatasetTableUnionMapper;
+import io.dataease.ext.ExtDatasetTableUnionMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.DatasetTableUnion;
+import io.dataease.plugins.common.base.domain.DatasetTableUnionExample;
+import io.dataease.plugins.common.base.mapper.DatasetTableUnionMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

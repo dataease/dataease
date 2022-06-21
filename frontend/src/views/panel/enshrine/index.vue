@@ -10,9 +10,13 @@
       <el-table-column prop="name" :label="$t('commons.name')">
         <template :id="scope.row.storeId" slot-scope="scope">
           <div class="start-item">
-            <div class="filter-db-row star-item-content" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" @click="showPanel(scope.row)">
-              <svg-icon icon-class="panel" class="ds-icon-scene" />
-              <span> {{ scope.row.name }}</span>
+            <div
+              class="filter-db-row star-item-content"
+              style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+              @click="showPanel(scope.row)"
+            >
+              <svg-icon :icon-class="'panel-'+scope.row.status" class="ds-icon-scene" />
+              <span :class="scope.row.status"> {{ scope.row.name }}</span>
             </div>
             <div class="star-item-close">
               <i class="el-icon-delete " @click="remove(scope.row)" />
@@ -27,8 +31,9 @@
 <script>
 import { deleteEnshrine, enshrineList } from '@/api/panel/enshrine'
 import { uuid } from 'vue-uuid'
-import { get } from '@/api/panel/panel'
+import { initPanelData } from '@/api/panel/panel'
 import bus from '@/utils/bus'
+
 export default {
   name: 'Enshrine',
   data() {
@@ -47,14 +52,7 @@ export default {
   },
   methods: {
     showPanel(row) {
-      get('panel/group/findOne/' + row.panelGroupId).then(response => {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-        const data = {
-          id: row.panelGroupId,
-          name: row.name
-        }
-        this.$store.dispatch('panel/setPanelInfo', data)
+      initPanelData(row.panelGroupId, function() {
         bus.$emit('set-panel-show-type', 0)
       })
     },
@@ -90,24 +88,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.start-item {
+  .start-item {
     width: 100%;
     height: 25px;
     margin: 0 0 0 10px;
-}
-.star-item-content {
+  }
+
+  .star-item-content {
     width: calc(100% - 60px);
     position: absolute;
-}
-.star-item-close {
+  }
+
+  .star-item-close {
     width: 25px;
     right: 5px;
     position: absolute;
     display: none;
-}
-.start-item:hover {
+  }
+
+  .start-item:hover {
     .star-item-close {
-        display: block;
+      display: block;
     }
-}
+  }
+
+  .unpublished {
+    color: #b2b2b2
+  }
+
+  .publish {
+  }
+
 </style>

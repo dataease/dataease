@@ -191,7 +191,6 @@ export default {
       }
       // 防止toolbar超出边界
       const xGap = ps + 345 - this.canvasWidth
-      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         return ps - xGap
       } else {

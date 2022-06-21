@@ -1,10 +1,10 @@
 package io.dataease.controller.panel.server;
 
-import io.dataease.base.domain.ChartView;
-import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.panel.api.ViewApi;
 import io.dataease.dto.panel.PanelViewDto;
+import io.dataease.plugins.common.base.domain.ChartView;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;

@@ -1,11 +1,11 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.DatasetTableFieldExample;
-import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.exception.DEException;
-import io.dataease.commons.utils.DorisTableUtils;
+import io.dataease.commons.utils.TableUtils;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
+import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +36,7 @@ public class DataSetTableFieldsService {
             datasetTableField.setId(UUID.randomUUID().toString());
             // 若dataeasename为空，则用MD5(id)作为dataeasename
             if (StringUtils.isEmpty(datasetTableField.getDataeaseName())) {
-                datasetTableField.setDataeaseName(DorisTableUtils.columnName(datasetTableField.getId()));
+                datasetTableField.setDataeaseName(TableUtils.columnName(datasetTableField.getId()));
             }
             if (ObjectUtils.isEmpty(datasetTableField.getLastSyncTime())) {
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());

@@ -1,7 +1,7 @@
 <template>
   <div ref="myContainer" class="my-container">
-    <div ref="conditionMain" class="condition-main" :class="mainClass">
-      <div v-if="element.options.attrs.title" ref="deTitleContainer" class="condition-title">
+    <div ref="conditionMain" :style="outsideStyle" class="condition-main">
+      <div v-if="element.options.attrs.title" ref="deTitleContainer" :style="titleStyle" class="condition-title">
         <div class="condition-title-absolute">
           <div class="first-title">
             <div class="span-container">
@@ -19,6 +19,7 @@
           <div class="first-element">
             <div
               :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''"
+              :style="deSelectGridBg"
               class="first-element-contaner"
             >
 
@@ -27,6 +28,7 @@
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
                 class="component-custom"
+                ref="deOutWidget"
                 :out-style="element.style"
                 :element="element"
                 :in-draw="inDraw"
@@ -43,10 +45,11 @@
 </template>
 
 <script>
-import elementResizeDetectorMaker from 'element-resize-detector'
 import { mapState } from 'vuex'
+import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
 export default {
   name: 'DeOutWidget',
+  mixins: [inputStyleMixin],
   props: {
     element: {
       type: Object,
@@ -81,7 +84,9 @@ export default {
       showNumber: false,
       mainClass: '',
       mainHeight: 75,
-      duHeight: 46
+      duHeight: 46,
+      titleStyle: null,
+      outsideStyle: null
     }
   },
   computed: {
@@ -98,65 +103,60 @@ export default {
     },
     ...mapState([
       'curCanvasScale'
-    ])
+    ]),
+    deSelectGridBg() {
+      if (this.element.component !== 'de-select-grid') return null;
+      const { backgroundColorSelect, color  } = this.element.commonBackground;
+      return {
+        background: backgroundColorSelect ?  color : '#fff',
+        border: backgroundColorSelect ? 'none' : '1px solid #d7dae2'
+      }
+    },
+    isFilterComponent() {
+      return ['de-select', 'de-select-grid', 'de-date',  "de-input-search", "de-number-range", "de-select-tree"].includes(this.element.component)
+    }
   },
   watch: {
-    element: {
-      handler() {
-        this.watchSize()
+    'element.style': {
+      handler(val) {
+        this.handlerPositionChange(val);
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   mounted() {
-    this.watchSize()
+    // this.watchSize()
   },
   created() {
     // console.log('aaaaaa')
+    const { horizontal, vertical, brColor, wordColor, innerBgColor } = this.element.style
+    this.$set(this.element.style, 'horizontal', horizontal || 'left')
+    this.$set(this.element.style, 'vertical', vertical || 'center')
+    this.$set(this.element.style, 'brColor', brColor || '')
+    this.$set(this.element.style, 'wordColor', wordColor || '')
+    this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
-
-    watchSize() {
-      const erd = elementResizeDetectorMaker()
-      erd.listenTo(this.$refs.myContainer, ele => {
-        const deContentContainer = this.$refs.deContentContainer
-        const height = ele.offsetHeight
-        this.mainHeight = height
-        if (!this.element.options.attrs.title) {
-          this.duHeight = this.mainHeight
-          deContentContainer.style.marginLeft = '0px'
-          return
+    handlerPositionChange(val) {
+      const { horizontal = 'left', vertical = 'center' } = val
+      this.titleStyle = {
+        width: '100%',
+        textAlign: horizontal
+      }
+      this.outsideStyle = {
+        flexWrap: 'wrap'
+      }
+      if (vertical !== 'top') {
+        this.titleStyle = null
+        this.outsideStyle = {
+          flexDirection: horizontal === 'right' ? 'row-reverse' : '',
+          alignItems: 'center'
         }
-        const titleWidth = this.$refs.deTitle.offsetWidth
-        this.$nextTick(() => {
-          let numRange = 0
-          let min = this.element.style.fontSize * 2 + 30
-          if (this.element.component === 'de-number-range') {
-            min = this.element.style.fontSize * 2 + 55
-            numRange = 25
-          }
-          if (height < min) {
-            this.duHeight = height - numRange
-            this.mainClass = 'condition-main-line'
-
-            if (deContentContainer) {
-              deContentContainer.style.top = '0px'
-              deContentContainer.style.marginLeft = (titleWidth + 15) + 'px'
-            }
-          } else {
-            this.duHeight = height - titleWidth + numRange
-            this.mainClass = ''
-            if (deContentContainer) {
-              deContentContainer.style.top = '2em'
-              deContentContainer.style.marginLeft = '0px'
-            }
-          }
-        })
-      })
+      }
     }
   }
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -168,7 +168,6 @@ export default {
     bottom: 0px;
     left: 0px;
   }
-
   .ccondition-main {
     position: absolute;
     overflow: auto;
@@ -176,53 +175,24 @@ export default {
     right: 0px;
     bottom: 0px;
     left: 0px;
+    display: flex;
   }
-
   .condition-title {
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    position: absolute;
     height: 2em;
     cursor: -webkit-grab;
+    line-height: 2em;
+    white-space: nowrap;
   }
-
-  .first-title {
-    width: 100%;
-    overflow: hidden;
-    position: absolute;
-    color: inherit;
-    display: flex;
-    align-items: center;
-  }
-
-  .condition-title-absolute {
-    right: 0px;
-    bottom: 0px;
-    position: absolute;
-    top: 0px;
-    left: 4px;
-    display: flex;
-    align-items: flex-end;
-  }
-
   .span-container {
     overflow: hidden auto;
     position: relative;
     padding: 0 5px;
   }
-
   .condition-content {
     overflow: auto hidden;
-    top: 2em;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    position: absolute;
     letter-spacing: 0px !important;
+    width: 100%;
   }
-
   .condition-content-container {
     position: relative;
     display: table;
@@ -230,7 +200,6 @@ export default {
     height: 100%;
     white-space: nowrap;
   }
-
   .first-element {
     position: relative;
     display: table-cell;
@@ -239,34 +208,29 @@ export default {
     padding: 0px;
     height: 100%;
   }
-
   .first-element-contaner {
     width: calc(100% - 10px);
     background: initial;
-    position: absolute;
-    bottom: 5px;
     margin: 0 4px;
-
     div {
       width: 100%;
     }
-
     display: flex;
     align-items: flex-end;
   }
-
   .first-element-grid-contaner {
     background: #fff;
     border: 1px solid #d7dae2;
     top: 5px;
   }
-
   .condition-main-line {
     height: 40px !important;
   }
-
+  .condition-main {
+    display: flex;
+    padding-top: 5px;
+  }
   .condition-content-default {
     inset: 0px 0px 0px !important;
   }
-
 </style>

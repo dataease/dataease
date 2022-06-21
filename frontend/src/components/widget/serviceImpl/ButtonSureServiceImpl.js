@@ -25,7 +25,9 @@ const drawPanel = {
     },
     value: '测试按钮'
   },
-  component: 'de-button'
+  component: 'de-button',
+  miniSizex: 1,
+  miniSizey: 1
 }
 
 class ButtonSureServiceImpl extends WidgetService {

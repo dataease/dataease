@@ -1,10 +1,10 @@
 package io.dataease.service.sys;
 
 
-import io.dataease.base.domain.SysRole;
-import io.dataease.base.mapper.ext.ExtSysRoleMapper;
+import io.dataease.ext.ExtSysRoleMapper;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
+import io.dataease.plugins.common.base.domain.SysRole;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

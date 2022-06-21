@@ -7,5 +7,8 @@ import lombok.Setter;
 @Setter
 public class DorisConfiguration extends MysqlConfiguration {
 
-    private Integer httpPort;
+    private Integer httpPort = 8030;
+
+    private Integer replicationNum = 1;
+    private Integer bucketNum = 10;
 }

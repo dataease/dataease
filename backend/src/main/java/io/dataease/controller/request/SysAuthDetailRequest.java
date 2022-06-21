@@ -1,6 +1,6 @@
 package io.dataease.controller.request;
 
-import io.dataease.base.domain.SysAuthDetail;
+import io.dataease.plugins.common.base.domain.SysAuthDetail;
 
 /**
  * Author: wangjiahao

@@ -1,10 +1,9 @@
 package io.dataease.controller.panel.server;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.filter.F2CLinkFilter;
-import io.dataease.base.domain.PanelLink;
+import io.dataease.plugins.common.base.domain.PanelLink;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.*;
@@ -25,17 +24,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.util.Map;
 
-
 @RestController
 public class LinkServer implements LinkApi {
-
 
     @Autowired
     private PanelLinkService panelLinkService;
 
     @Resource
     private ChartViewService chartViewService;
-
 
     @Override
     public void replacePwd(@RequestBody PasswordRequest request) {
@@ -46,7 +42,6 @@ public class LinkServer implements LinkApi {
     public void enablePwd(@RequestBody EnablePwdRequest request) {
         panelLinkService.changeEnablePwd(request);
     }
-
 
     @Override
     public void resetOverTime(@RequestBody OverTimeRequest request) {
@@ -70,9 +65,14 @@ public class LinkServer implements LinkApi {
         link = URLDecoder.decode(link, "UTF-8");
         String json = panelLinkService.decryptParam(link);
 
+        String user = request.getUser();
+        user = URLDecoder.decode(user, "UTF-8");
+        user = panelLinkService.decryptParam(user);
+
         ValidateDto dto = new ValidateDto();
+        dto.setUserId(user);
         String resourceId = json;
-        PanelLink one = panelLinkService.findOne(resourceId, request.getUser());
+        PanelLink one = panelLinkService.findOne(resourceId, Long.valueOf(user));
         dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)) {
             dto.setValid(false);
@@ -96,15 +96,15 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public Object viewDetail(String viewId, ChartExtRequest requestList) throws Exception {
-        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    public Object viewDetail(String viewId, String panelId, ChartExtRequest requestList) throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
         requestList.setUser(userId);
         return chartViewService.getData(viewId, requestList);
     }
-
 
     @Override
     public String shortUrl(Map<String, String> param) {

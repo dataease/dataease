@@ -3,11 +3,11 @@
   <el-form v-if="element.options!== null && element.options.attrs!==null" ref="form" :model="form" :rules="rules">
     <div class="de-number-range-container">
       <el-form-item prop="min">
-        <el-input v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" :size="size" @input="inputChange" @change="handleMinChange" />
+        <el-input ref='de-number-range-min' v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" :size="size" @input="inputChange" @change="handleMinChange" />
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
-        <el-input v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" :size="size" @input="inputChange" @change="handleMaxChange" />
+        <el-input ref='de-number-range-max' v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" :size="size" @input="inputChange" @change="handleMaxChange" />
       </el-form-item>
     </div>
   </el-form>
@@ -185,7 +185,6 @@ export default {
           }
 
           this.setCondition()
-          this.$store.commit('recordStyleChange')
         })
       })
     },
@@ -218,9 +217,6 @@ export default {
         this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
-    },
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
 
     inputChange(val) {

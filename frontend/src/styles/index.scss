@@ -27,7 +27,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial,FangSong,SimHei,STHeiti,STKaiti,STSong,STFangsong sans-serif;
 }
 
 label {
@@ -143,7 +143,9 @@ div:focus {
     height: 100vh !important;
   }
 }
-
+.de-tabs-edit>.el-tabs__header{
+    padding-right: 50px !important;
+}
 .de-tabs {
   .el-tabs__header {
     margin: 0 0 0 0 !important;
@@ -151,6 +153,7 @@ div:focus {
 
   .el-tabs__content {
     height: calc(100% - 55px) !important;
+    margin-top: 5px;
 
     .el-tab-pane {
       height: 100% !important;
@@ -350,6 +353,14 @@ div:focus {
   margin: 0 2px 0 0;
 }
 
+.ds-icon-api {
+  width: 14px;
+  height: 14px;
+  color: #13227a;
+  margin: 0 2px 0 0;
+}
+
+
 .showRightPanel {
   .el-popper {
     position: fixed !important;
@@ -391,9 +402,9 @@ div:focus {
   height: 5px;
 }
 
-.el-color-dropdown__link-btn {
+/* .el-color-dropdown__link-btn {
   display: none !important;
-}
+} */
 
 .el-table {
   background-color: var(--TableBG) !important;
@@ -541,11 +552,11 @@ div:focus {
 }
 
 .blackTheme .el-tabs__item:not(.is-active) {
-  color: var(--TextPrimary) !important;
+  color: var(--TextPrimary);
 }
 
 .blackTheme .el-tabs__item:hover {
-  color: var(--Main) !important;
+  color: var(--Main);
 }
 
 .blackTheme:not(.in-panel) .elx-table--main-wrapper {
@@ -784,4 +795,41 @@ div:focus {
   .el-form-item__content {
     margin-left: 10px !important;
   }
+}
+
+.picker-color-div {
+  height: 32px;
+  margin-top: 32px;
+}
+
+
+
+.theme-input {
+  >input {
+    padding-left: 40px !important;
+  }
+
+  >span.el-input__prefix {
+    padding-top: 0px;
+  }
+}
+
+.pwd-tips > span {
+
+    font-weight: 800;
+    color: #F56C6C;
+}
+.amap-container{
+  // position: inherit !important;
+  right: 0px;
+}
+.l7-scene {
+  // position: relative !important;
+  right: 0px;
+}
+.fu-operator-component__operator {
+  display: none !important;
+}
+.fu-operator-component__label {
+  width: 100px !important;
 }

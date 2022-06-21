@@ -1,12 +1,15 @@
 <template>
   <div class="bar-main">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
-      <el-checkbox v-model="linkageInfo.linkageActive" />
+    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
+      <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
+    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
+      <el-checkbox size="medium" @change="batchOptChange" />
+    </div>
     <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
@@ -21,13 +24,21 @@
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+      </span>
+      <span :title="$t('panel.enlarge')">
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
+      </span>
+      <span :title="$t('panel.jump')">
+        <a v-if="showJumpFlag" :title="curComponent.hyperlinks.content " :target="curComponent.hyperlinks.openMode " :href="curComponent.hyperlinks.content ">
+          <i class="icon iconfont icon-com-jump" />
+        </a>
       </span>
     </div>
   </div>
@@ -78,13 +89,20 @@ export default {
   mounted() {
   },
   computed: {
+    showJumpFlag() {
+      return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
+    },
+    // batch operation area
+    batchOptAreaShow() {
+      return this.batchOptStatus && this.element.type === 'view' && !this.element.isPlugin
+    },
     // 联动区域按钮显示
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
     },
     // 编辑或预览区域显示
     normalAreaShow() {
-      return !this.linkageSettingStatus
+      return !this.linkageSettingStatus && !this.batchOptStatus
     },
     existLinkage() {
       let linkageFiltersCount = 0
@@ -102,6 +120,16 @@ export default {
     linkageInfo() {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
+    miniHeight() {
+      let miniHeight = this.curComponent.miniSizey || 1
+      if (this.element.component === 'de-number-range') {
+        miniHeight = this.curComponent.miniSizey || 2
+      }
+      return miniHeight
+    },
+    miniWidth() {
+      return this.curComponent.miniSizex || 1
+    },
     ...mapState([
       'menuTop',
       'menuLeft',
@@ -112,7 +140,9 @@ export default {
       'linkageSettingStatus',
       'targetLinkageInfo',
       'curLinkageView',
-      'curCanvasScale'
+      'curCanvasScale',
+      'batchOptStatus',
+      'curBatchOptComponents'
     ])
   },
   beforeDestroy() {
@@ -121,21 +151,14 @@ export default {
     closePreview() {
       this.$emit('closePreview')
     },
-    createTimer() {
-      if (!this.timer) {
-        this.timer = setInterval(() => {
-          console.log('t=' + this.curComponent.auxiliaryMatrix)
-        }, 5000)
-      }
-    },
     destroyTimer() {
       if (this.timer) {
         clearInterval(this.timer)
         this.timer = null
       }
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
+    showViewDetails(openType = 'details') {
+      this.$emit('showViewDetails', { openType: openType })
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {
@@ -146,6 +169,8 @@ export default {
         this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
         this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.sizey = this.curComponent.sizey > this.miniHeight ? this.curComponent.sizey : this.miniHeight
+        this.curComponent.sizex = this.curComponent.sizex > this.miniWidth ? this.curComponent.sizex : this.miniWidth
         this.curComponent.auxiliaryMatrix = true
         this.$emit('amAddItem')
       }
@@ -157,7 +182,6 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      // debugger
       const left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleHeight
       const width = this.curComponent.sizex * this.curCanvasScale.matrixStyleWidth
@@ -172,22 +196,29 @@ export default {
       // resize
       this.$emit('resizeView')
     },
+    // edit() {
+    //   // 编辑时临时保存 当前修改的画布
+    //   this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
+    //   this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
+    //   if (this.curComponent.type === 'view') {
+    //     this.$store.dispatch('chart/setViewId', null)
+    //     this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+    //     bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
+    //   }
+    //   if (this.curComponent.type === 'custom') {
+    //     bus.$emit('component-dialog-edit')
+    //   }
+    //   // 编辑样式组件
+    //   if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+    //     bus.$emit('component-dialog-style')
+    //   }
+    // },
     edit() {
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      if (this.curComponent.type === 'view') {
-        this.$store.dispatch('chart/setViewId', null)
-        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
-      }
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
-      }
-      // 编辑样式组件
-      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
-      }
+      } else { bus.$emit('change_panel_right_draw', true) }
     },
     linkageEdit() {
 
@@ -230,6 +261,18 @@ export default {
       }
 
       reader.readAsDataURL(file)
+    },
+    boardSet() {
+      this.$emit('boardSet')
+    },
+    batchOptChange(val) {
+      if (val) {
+        // push
+        this.$store.commit('addCurBatchComponent', this.element.propValue.viewId)
+      } else {
+        // remove
+        this.$store.commit('removeCurBatchComponentWithId', this.element.propValue.viewId)
+      }
     }
   }
 }
@@ -242,15 +285,24 @@ export default {
     float:right;
     z-index: 2;
     border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
+    padding-left: 3px;
+    padding-right: 0px;
     cursor:pointer!important;
-    background-color: #0a7be0;
+    background-color: rgba(10,123,224, 1);
   }
   .bar-main i{
     color: white;
     float: right;
     margin-right: 3px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner{
+    width: 16px;
+    height: 16px;
+  }
+
+  .bar-main ::v-deep .el-checkbox__inner::after{
+    width: 4.5px;
   }
 
 </style>

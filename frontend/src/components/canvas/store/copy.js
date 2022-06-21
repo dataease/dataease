@@ -2,15 +2,66 @@ import store from '@/store/index'
 import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { chartCopy } from '@/api/chart/chart'
+import { chartBatchCopy, chartCopy } from '@/api/chart/chart'
 import { uuid } from 'vue-uuid'
 
 export default {
   state: {
     copyData: null, // 复制粘贴剪切
-    isCut: false
+    isCut: false,
+    viewBase: {
+      style: {
+        width: 300,
+        height: 200,
+        top: 0,
+        left: 0
+      },
+      x: 1,
+      y: 108,
+      sizex: 48,
+      sizey: 24
+    }
   },
   mutations: {
+    copyMultiplexingComponents(state) {
+      const _this = this
+      state.isCut = false
+      const canvasStyleData = state.canvasStyleData
+      const curCanvasScale = state.curCanvasScale
+      const componentGap = state.componentGap
+      Object.keys(state.curMultiplexingComponents).forEach(function(viewId, index) {
+        const component =
+          {
+            ...deepCopy(state.curMultiplexingComponents[viewId]),
+            ...deepCopy(state.viewBase),
+            'auxiliaryMatrix': canvasStyleData.auxiliaryMatrix
+          }
+
+        const tilePosition = index % 3
+        const divisiblePosition = parseInt(index / 3)
+        if (canvasStyleData.auxiliaryMatrix) {
+          const width = component.sizex * curCanvasScale.matrixStyleOriginWidth
+          // 取余 平铺4个 此处x 位置偏移
+          component.x = component.x + component.sizex * tilePosition
+          component.style.left = (component.x - 1) * curCanvasScale.matrixStyleOriginWidth
+          component.style.top = (component.y - 1) * curCanvasScale.matrixStyleOriginHeight
+          component.style.width = width
+          component.style.height = component.sizey * curCanvasScale.matrixStyleOriginHeight
+        } else {
+          const width = component.style.width
+          const height = component.style.height
+          component.style.top = component.style.top + divisiblePosition * (height + componentGap)
+          component.style.left = component.style.left + tilePosition * (width + componentGap)
+          component.style.width = width
+          component.style.height = height
+        }
+        state.copyData = {
+          data: component,
+          index: index
+        }
+        _this.commit('paste', true)
+      })
+    },
     copy(state) {
       if (!state.curComponent) return
       state.copyData = {
@@ -47,11 +98,24 @@ export default {
 
       // 如果是用户视图 测先进行底层复制
       if (data.type === 'view') {
-        chartCopy(data.propValue.viewId).then(res => {
+        chartCopy(data.propValue.viewId, state.panel.panelInfo.id).then(res => {
           const newView = deepCopy(data)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
           store.commit('addComponent', { component: newView })
+        })
+      } else if (data.type === 'de-tabs') {
+        const sourceAndTargetIds = {}
+        const newCop = deepCopy(data)
+        newCop.options.tabList.forEach((item) => {
+          if (item.content && item.content.type === 'view') {
+            const newViewId = uuid.v1()
+            sourceAndTargetIds[item.content.propValue.viewId] = newViewId
+            item.content.propValue.viewId = newViewId
+          }
+        })
+        chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
+          store.commit('addComponent', { component: newCop })
         })
       } else {
         const newCop = deepCopy(data)

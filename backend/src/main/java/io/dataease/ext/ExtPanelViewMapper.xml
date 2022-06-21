@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.ExtPanelViewMapper">
+
+    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelViewDto">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="pid" property="pid" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <resultMap extends="io.dataease.plugins.common.base.mapper.ChartViewMapper.BaseResultMap" id="PanelViewDetailsMap" type="io.dataease.dto.panel.PanelViewTableDTO">
+        <result column="panel_id" property="panelId" />
+        <collection property="tableFields" ofType="io.dataease.plugins.common.base.domain.DatasetTableField">
+            <result column="field_id" jdbcType="VARCHAR" property="id"/>
+            <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
+            <result column="field_name" jdbcType="VARCHAR" property="name"/>
+            <result column="field_type" jdbcType="VARCHAR" property="type"/>
+            <result column="de_type" jdbcType="VARCHAR" property="deType"/>
+        </collection>
+    </resultMap>
+
+    <select id="getPanelViewDetails"  resultMap="PanelViewDetailsMap">
+       	SELECT
+            chart_view.id,
+            chart_view.`name`,
+            chart_view.scene_id,
+            chart_view.table_id,
+            chart_view.`type`,
+            chart_view.render,
+            chart_view.title,
+            chart_view.create_by,
+            chart_view.create_time,
+            chart_view.update_time,
+            chart_view.style_priority,
+            ifnull(chart_view.is_plugin,0) as 'is_plugin',
+            panel_view.panel_id,
+            dataset_table_field.id as 'field_id',
+            dataset_table_field.origin_name,
+            dataset_table_field.`name` as 'field_name',
+            dataset_table_field.type as 'field_type',
+            dataset_table_field.de_type
+        FROM
+            panel_view
+            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+            left join dataset_table_field on chart_view.table_id = dataset_table_field.table_id
+            where panel_view.panel_id =#{panelId} and chart_view.id is not null
+    </select>
+
+    <select id="groups"  resultMap="treeNodeMap">
+        select id, ifnull(pid,0) as pid,  name, `type`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_group
+        <where>
+            FIND_IN_SET(chart_group.id,cids)
+        </where>
+        order by `type` desc,name asc
+
+    </select>
+
+    <select id="views" resultMap="treeNodeMap">
+        select id, scene_id  as pid , name, `type`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t, chart_view
+        <where>
+            FIND_IN_SET(chart_view.id,cids)
+        </where>
+        order by `type` desc,name asc
+    </select>
+
+
+    <delete id="deleteWithPanelId">
+        delete from panel_view where panel_id =#{panelId}
+    </delete>
+
+    <insert id="savePanelView">
+        INSERT INTO `panel_view` (id,chart_view_id, panel_id) VALUES
+        <foreach collection="panelViews" item="panelView" index="index" separator=",">
+            (uuid(),#{panelView.chartViewId},#{panelView.panelId})
+        </foreach>
+    </insert>
+
+    <insert id="copyFromPanel">
+        INSERT INTO panel_view (id,
+        panel_id,
+        chart_view_id,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        `position`,
+        copy_from_panel,
+        copy_from_view,
+        copy_from,
+        copy_id)
+        SELECT
+        uuid() AS id,
+        #{newPanelId},
+        uuid() AS chart_view_id,
+        panel_view.create_by,
+        panel_view.create_time,
+        panel_view.update_by,
+        panel_view.update_time,
+        panel_view.`position`,
+        panel_view.panel_id as copy_from_panel,
+        panel_view.chart_view_id as copy_from_view,
+        panel_view.id AS copy_from,
+        #{copyId} as copyId
+        FROM
+            panel_view  inner join chart_view on panel_view.chart_view_id = chart_view.id
+        WHERE
+            panel_id = #{sourcePanelId}
+            and chart_view.id is not null
+    </insert>
+
+</mapper>

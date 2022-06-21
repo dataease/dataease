@@ -1,7 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.PanelPdfTemplate;
+import io.dataease.plugins.common.base.domain.PanelPdfTemplate;
 import io.dataease.service.panel.PanelPdfTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

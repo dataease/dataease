@@ -1,5 +1,5 @@
 <template>
-  <layout-content v-if="!noLayout" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
+  <layout-content v-if="!noLayout" v-loading="jsname && !innerLoadingNames.includes(jsname) && $store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
     <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
     <div v-else>
       <h1>未知组件无法展示</h1>
@@ -46,13 +46,13 @@ export default {
       header: null,
       backName: null,
       baseUrl: '/api/pluginCommon/async/',
-      url: null
+      url: null,
+      innerLoadingNames: ['SystemDept', 'SystemRole']
     }
   },
   created() {
     if (this.jsname && this.menuid) {
       this.showAsync = true
-      // console.log(this.jsname)
       this.url = this.baseUrl + this.menuid
       //   this.url = 'http://localhost:8081/PluginDemo.js'
     //   this.url = 'http://localhost:8081/SystemParam.js'
@@ -88,8 +88,6 @@ export default {
       this.backName = backName
     },
     pluginCallBack(param) {
-      // console.log(param)
-
       const { eventName, eventParam } = param
       bus.$emit(eventName, eventParam)
     }

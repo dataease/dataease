@@ -33,15 +33,11 @@ export function basePieOption(chart_option, chart) {
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
-        // const y = {
-        //   name: chart.data.x[i],
-        //   value: valueArr[i]
-        // }
         const y = valueArr[i]
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           borderRadius: 0
         }
         y.type = 'pie'
@@ -49,7 +45,6 @@ export function basePieOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }
@@ -86,15 +81,11 @@ export function rosePieOption(chart_option, chart) {
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
-        // const y = {
-        //   name: chart.data.x[i],
-        //   value: valueArr[i]
-        // }
         const y = valueArr[i]
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           borderRadius: customAttr.size.pieRoseRadius
         }
         y.type = 'pie'
@@ -102,7 +93,6 @@ export function rosePieOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

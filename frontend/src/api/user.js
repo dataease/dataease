@@ -22,9 +22,23 @@ export function logout() {
   })
 }
 
+export function deLogout() {
+  return request({
+    url: '/api/auth/deLogout',
+    method: 'post'
+  })
+}
+
 export function needModifyPwd() {
   return request({
     url: '/api/auth/useInitPwd',
+    method: 'post'
+  })
+}
+
+export function defaultPwd() {
+  return request({
+    url: '/api/auth/defaultPwd',
     method: 'post'
   })
 }
@@ -72,6 +86,13 @@ export function oidcStatus() {
   })
 }
 
+export function casStatus() {
+  return request({
+    url: '/api/auth/isOpenCas',
+    method: 'post'
+  })
+}
+
 export function pluginLoaded() {
   return request({
     url: '/api/auth/isPluginLoaded',
@@ -83,5 +104,12 @@ export function getPublicKey() {
   return request({
     url: '/api/auth/getPublicKey',
     method: 'get'
+  })
+}
+
+export function defaultLoginType() {
+  return request({
+    url: '/system/defaultLoginType',
+    method: 'post'
   })
 }

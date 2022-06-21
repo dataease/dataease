@@ -11,6 +11,7 @@
         [classNameRotatable]: rotatable,
         [classNameActive]: enabled ,
         ['linkageSetting']:linkageActive,
+        ['batchSetting']:batchOptActive,
         ['positionChange']:!(dragging || resizing||rotating)
       },
       className
@@ -30,9 +31,24 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @boardSet="boardSet"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
-      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
+      <div
+        v-if="resizing"
+        style="transform: translateZ(11px);position: absolute; z-index: 3"
+        :style="resizeShadowStyle"
+      />
       <div
         v-for="(handlei, indexi) in actualHandles"
         :key="indexi"
@@ -43,7 +59,9 @@
       >
         <slot :name="handlei" />
       </div>
-      <slot />
+      <div :id="componentCanvasId" :style="mainSlotStyleInner" class="main-background">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -52,6 +70,7 @@
 import { matchesSelectorToParentElements, getComputedSize, addEvent, removeEvent } from '../../utils/dom'
 import { computeWidth, computeHeight, restrictToBounds, snapToGrid, rotatedPoint, getAngle } from '../../utils/fns'
 import { events, userSelectNone, userSelectAuto } from './option.js'
+
 let eventsFor = events.mouse
 
 // private
@@ -59,6 +78,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   replace: true,
@@ -329,6 +349,11 @@ export default {
     linkageActive: {
       type: Boolean,
       default: false
+    },
+    // batch operation
+    batchOptActive: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -376,10 +401,17 @@ export default {
     }
   },
   computed: {
+    componentCanvasId() {
+      if (this.element.type === 'view') {
+        return 'user-view-' + this.element.propValue.viewId
+      } else {
+        return 'components-' + this.element.id
+      }
+    },
     // 编辑组件显示
     editBarShow() {
-      // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
-      return this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus
+      // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置状态 3.当前不在移动端画布编辑状态 4.或者批量操作状态
+      return (this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus) || this.batchOptStatus
     },
     // 移动端编辑组件选择按钮显示
     mobileCheckBarShow() {
@@ -533,11 +565,48 @@ export default {
       }
       return style
     },
+    mainSlotStyleInner() {
+      const style = {}
+      if (this.element.commonBackground) {
+        let colorRGBA = ''
+        if (this.element.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+        }
+        style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        if (this.element.commonBackground.enable) {
+          if (this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
+          }
+        } else {
+          style['background-color'] = colorRGBA
+        }
+      }
+      return style
+    },
     curComponent() {
       return this.$store.state.curComponent
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
+    },
+    miniWidth() {
+      return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleWidth * (this.element.miniSizex || 1) : 0
+    },
+    miniHeight() {
+      if (this.element.auxiliaryMatrix) {
+        if (this.element.component === 'de-number-range') {
+          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.element.miniSizey || 2) : 0
+        } else {
+          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.element.miniSizey || 1) : 0
+        }
+      } else {
+        return 0
+      }
     },
     ...mapState([
       'editor',
@@ -546,7 +615,8 @@ export default {
       'linkageSettingStatus',
       'mobileLayoutStatus',
       'componentGap',
-      'scrollAutoMove'
+      'scrollAutoMove',
+      'batchOptStatus'
     ])
   },
   watch: {
@@ -620,15 +690,12 @@ export default {
       this.maxH = val
     },
     w(val) {
-      // console.log('changeWidthCK：' + this.resizing)
-
       if (this.resizing || this.dragging) {
         return
       }
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
-      // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
     h(val) {
@@ -713,6 +780,9 @@ export default {
       }
       return [null, null]
     },
+    triggerPluginEdit(e) {
+      this.elementMouseDown(e)
+    },
     // 元素触摸按下
     elementTouchDown(e) {
       eventsFor = events.touch
@@ -721,7 +791,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
+      if (this.element.component !== 'de-frame' && this.element.component !== 'v-text' && this.element.component !== 'de-rich-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
         e.preventDefault()
       }
       // 阻止冒泡事件
@@ -964,7 +1034,7 @@ export default {
     move(e) {
       if (this.resizing) {
         this.handleResize(e)
-      } else if (this.dragging) {
+      } else if (this.dragging && !this.element.editing) {
         this.handleDrag(e)
       } else if (this.rotating) {
         this.handleRotate(e)
@@ -1010,7 +1080,6 @@ export default {
       const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
       // mY 鼠标指针移动的点 mY - this.latestMoveY 是计算向下移动还是向上移动
       const offsetY = mY - this.latestMoveY
-      // console.log('mY:' + mY + ';latestMoveY=' + this.latestMoveY + ';offsetY=' + offsetY)
       this.$emit('canvasDragging', mY, offsetY)
       this.latestMoveY = mY
       const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, this.scaleRatio)
@@ -1190,11 +1259,12 @@ export default {
         newH = restrictToBounds(newH, 0, this.parentHeight)
       }
       // 外部传参限制大小
-      newW = restrictToBounds(newW, this.minW || 0, this.maxW)
-      newH = restrictToBounds(newH, this.minH || 0, this.maxH)
+      // newW = restrictToBounds(newW, this.minW || 0, this.maxW)
+      // newH = restrictToBounds(newH, this.minH || 0, this.maxH)
+      newW = restrictToBounds(newW, this.miniWidth || 0, this.maxW)
+      newH = restrictToBounds(newH, this.miniHeight || 0, this.maxH)
       // 纵横比
       if (this.lockAspectRatio) {
-        // console.log(this.lockAspectRatio, this.aspectFactor)
         if (newW / newH > this.aspectFactor) {
           newW = newH * this.aspectFactor
         } else {
@@ -1202,7 +1272,6 @@ export default {
         }
       }
       this.width = newW
-      // console.log('width2:' + this.width)
       this.height = newH
 
       // this.$emit('resizing', this.left, this.top, this.width, this.height)
@@ -1213,8 +1282,6 @@ export default {
       this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
     },
     changeWidth(val) {
-      // console.log('parentWidth', this.parentWidth)
-      // console.log('parentHeight', this.parentHeight)
       // eslint-disable-next-line no-unused-vars
       const [newWidth, _] = snapToGrid(this.grid, val, 0, this.scale)
       // const right = restrictToBounds(this.parentWidth - newWidth - this.left, this.bounds.minRight, this.bounds.maxRight)
@@ -1229,15 +1296,15 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {
       // eslint-disable-next-line no-unused-vars
       const [_, newHeight] = snapToGrid(this.grid, 0, val, this.scale)
       // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, this.bounds.minBottom, this.bounds.maxBottom)
-      // private 将 this.bounds.minBottom 设置为0
-      const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      // private 将 this.bounds.minBottom parentHeight理论不设上限 所以这里不再检验bottom底部距离
+      // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      const bottom = this.parentHeight - newHeight - this.top
       let right = this.right
       if (this.lockAspectRatio) {
         right = this.right - (this.bottom - bottom) * this.aspectFactor
@@ -1247,7 +1314,6 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width4:' + this.width)
       this.height = height
     },
     // 从控制柄松开
@@ -1265,7 +1331,6 @@ export default {
       this.lastMouseY = mouseY
       if (this.resizing) {
         this.resizing = false
-        // console.log('resizing2:' + this.resizing)
         this.conflictCheck()
         this.$emit('refLineParams', refLine)
         // this.$emit('resizestop', this.left, this.top, this.width, this.height)
@@ -1352,7 +1417,6 @@ export default {
               this.top = this.mouseClickPosition.top
               this.left = this.mouseClickPosition.left
               this.width = this.mouseClickPosition.width
-              // console.log('width5:' + this.width)
               this.height = this.mouseClickPosition.height
             }
           }
@@ -1536,7 +1600,6 @@ export default {
       let groupLeft = 0
       let groupTop = 0
       for (const item of nodes) {
-        // console.log('===' + typeof item.tagName)
         // 修复判断条件
         // if (item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {
         if (item.tagName !== 'svg' && item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {
@@ -1579,7 +1642,6 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
-      // debugger
       const style = {
         ...this.defaultStyle
       }
@@ -1594,7 +1656,6 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
-      // debugger
       const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
       const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
@@ -1619,7 +1680,6 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      // debugger
       const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
       const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
@@ -1639,7 +1699,6 @@ export default {
       style.height = height
       style.rotate = this.rotate
       // this.hasMove = true
-      // console.log('recordMatrixCurShadowStyle:t1:' + JSON.stringify(style))
 
       this.$store.commit('setShapeStyle', style)
 
@@ -1669,7 +1728,6 @@ export default {
         this.aspectFactor = this.outsideAspectRatio
       }
       this.width = this.w !== 'auto' ? this.w : width
-      // console.log('width1:' + this.width)
       this.height = this.h !== 'auto' ? this.h : height
       this.right = this.parentWidth - this.width - this.left
       this.bottom = this.parentHeight - this.height - this.top
@@ -1712,8 +1770,8 @@ export default {
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
     },
-    showViewDetails() {
-      this.$emit('showViewDetails')
+    showViewDetails(params) {
+      this.$emit('showViewDetails', params)
     },
     amAddItem() {
       this.$emit('amAddItem')
@@ -1727,6 +1785,10 @@ export default {
     // 跳转设置
     linkJumpSet() {
       this.$emit('linkJumpSet')
+    },
+    // 跳转设置
+    boardSet() {
+      this.$emit('boardSet')
     }
   }
 
@@ -1736,7 +1798,7 @@ export default {
 .vdr {
   touch-action: none;
   position: absolute;
-  transform-style:preserve-3d;
+  transform-style: preserve-3d;
   border: 1px
 }
 
@@ -1748,30 +1810,39 @@ export default {
   border-radius: 50%;
   z-index: 2;
 }
+
 .handle-tl {
   cursor: nw-resize;
 }
+
 .handle-tm {
   cursor: n-resize;
 }
+
 .handle-tr {
   cursor: ne-resize;
 }
+
 .handle-ml {
   cursor: w-resize;
 }
+
 .handle-mr {
   cursor: e-resize;
 }
+
 .handle-bl {
   cursor: sw-resize;
 }
+
 .handle-bm {
   cursor: s-resize;
 }
+
 .handle-br {
   cursor: se-resize;
 }
+
 /* 新增 旋转控制柄 */
 
 .handle-rot {
@@ -1784,6 +1855,7 @@ export default {
   text-indent: -9999px;
   vertical-align: middle;
 }
+
 .handle-rot:before,
 .handle-rot:after {
   content: "";
@@ -1793,6 +1865,7 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .handle-rot:before {
   /* display: block; */
   width: 1em;
@@ -1801,6 +1874,7 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
 }
+
 .handle-rot:after {
   width: 0px;
   height: 0px;
@@ -1816,19 +1890,30 @@ export default {
   user-select: none;
 }
 
-.linkageSetting{
+.linkageSetting {
   opacity: 0.5;
 }
 
-.positionChange{
+.batchSetting {
+  opacity: 0.9;
+}
+
+.positionChange {
   transition: 0.2s
 }
 
-.de-drag-active{
+.de-drag-active {
   user-select: none;
 }
 
-.de-drag-active-inner{
+.de-drag-active-inner {
   outline: 1px solid #70c0ff;
+}
+
+.main-background {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
 }
 </style>

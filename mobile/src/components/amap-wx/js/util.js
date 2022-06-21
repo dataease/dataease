@@ -159,7 +159,6 @@ const util = {
 			key: 'search:history',
 			data: searchHistory,
 			success: function() {
-				// console.log('success');
 			}
 		});
 	},

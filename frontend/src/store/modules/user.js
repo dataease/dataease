@@ -1,4 +1,4 @@
-import { login, logout, getInfo, getUIinfo, languageApi } from '@/api/user'
+import { login, logout, deLogout, getInfo, getUIinfo, languageApi } from '@/api/user'
 import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
@@ -136,13 +136,15 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, state }, param) {
+    const method = param && param.casEnable ? deLogout : logout
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      method(state.token).then(res => {
+        debugger
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
-        resolve()
+        resolve(res.data)
       }).catch(error => {
         reject(error)
       })

@@ -1,74 +1,84 @@
 package io.dataease.provider;
 
-import io.dataease.commons.constants.DatasourceTypes;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.query.DDLProvider;
-import io.dataease.provider.query.QueryProvider;
-import org.springframework.beans.BeansException;
+import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.datasource.query.QueryProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import io.dataease.plugins.datasource.provider.Provider;
 
+import java.util.Map;
 
-@Component
+@Configuration
 public class ProviderFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;
+    public void setApplicationContext(final ApplicationContext ctx) {
+        this.context =  ctx;
+        for(final DatasourceTypes d: DatasourceTypes.values()) {
+            final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
+            if(d.isDatasource()){
+                DataSourceType dataSourceType = new DataSourceType(d.getType(), d.getName(), false, d.getExtraParams(), d.getCalculationMode(), d.isJdbc());
+                if(dataSourceType.getType().equalsIgnoreCase("oracle")){
+                    dataSourceType.setCharset(d.getCharset());
+                }
+                beanFactory.registerSingleton(d.getType(), dataSourceType);
+            }
+        }
     }
 
-    public static DatasourceProvider getProvider(String type) {
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        switch (datasourceType) {
-            case es:
-                return context.getBean("es", DatasourceProvider.class);
-            default:
-                return context.getBean("jdbc", DatasourceProvider.class);
+
+    public static Provider getProvider(String type) {
+        if(type.equalsIgnoreCase(DatasourceTypes.engine_doris.toString()) || type.equalsIgnoreCase(DatasourceTypes.engine_mysql.toString())){
+            return context.getBean("jdbc", Provider.class);
         }
+
+        Map<String, DataSourceType> dataSourceTypeMap = SpringContextUtil.getApplicationContext().getBeansOfType((DataSourceType.class));
+        if(dataSourceTypeMap.keySet().contains(type)){
+            DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
+            switch (datasourceType) {
+                case es:
+                    return context.getBean("esProviders", Provider.class);
+                case api:
+                    return context.getBean("apiProvider", Provider.class);
+                default:
+                    return context.getBean("jdbc", Provider.class);
+            }
+        }
+
+        return SpringContextUtil.getApplicationContext().getBean(type + "DsProvider", Provider.class);
+
     }
 
     public static QueryProvider getQueryProvider(String type) {
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        switch (datasourceType) {
-            case mysql:
-            case mariadb:
-            case ds_doris:
-                return context.getBean("mysqlQuery", QueryProvider.class);
-            case de_doris:
-                return context.getBean("dorisQuery", QueryProvider.class);
-            case sqlServer:
-                return context.getBean("sqlserverQuery", QueryProvider.class);
-            case pg:
-                return context.getBean("pgQuery", QueryProvider.class);
-            case oracle:
-                return context.getBean("oracleQuery", QueryProvider.class);
-            case es:
-                return context.getBean("esQuery", QueryProvider.class);
-            case ck:
-                return context.getBean("ckQuery", QueryProvider.class);
-            case mongo:
-                return context.getBean("mongoQuery", QueryProvider.class);
-            case redshift:
-                return context.getBean("redshiftQuery", QueryProvider.class);
-            case hive:
-                return context.getBean("hiveQuery", QueryProvider.class);
-            case db2:
-                return context.getBean("db2Query", QueryProvider.class);
+        switch (type) {
+            case "mysql":
+            case "mariadb":
+            case "ds_doris":
+            case "TiDB":
+            case "StarRocks":
+                return context.getBean("mysqlQueryProvider", QueryProvider.class);
             default:
-                return context.getBean("mysqlQuery", QueryProvider.class);
+                return SpringContextUtil.getApplicationContext().getBean(type + "QueryProvider", QueryProvider.class);
         }
+
     }
 
     public static DDLProvider getDDLProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
-            case de_doris:
-                return context.getBean("dorisDDL", DDLProvider.class);
+            case engine_doris:
+                return context.getBean("dorisEngineDDL", DDLProvider.class);
+            case engine_mysql:
+                return context.getBean("mysqlEngineDDL", DDLProvider.class);
             default:
-                return context.getBean("dorisDDL", DDLProvider.class);
+                return context.getBean("dorisEngineDDL", DDLProvider.class);
         }
     }
 

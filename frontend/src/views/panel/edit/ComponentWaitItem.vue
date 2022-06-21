@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-proportion="0.8"
-    :style="componentItemStyle"
-  >
+  <div class="component-item">
     <mobile-check-bar v-if="mobileCheckBarShow" :element="config" />
     <de-out-widget
       v-if="config.type==='custom'"
@@ -23,6 +20,7 @@
       :is-edit="false"
       :element="config"
       :h="outItemHeight"
+      :canvas-style-data="canvasStyleData"
     />
   </div>
 </template>
@@ -70,14 +68,10 @@ export default {
       })
       return result
     },
-    componentItemStyle() {
-      return {
-        padding: '5px'
-      }
-    },
     ...mapState([
       'mobileLayoutStatus',
       'componentData',
+      'canvasStyleData',
       'componentGap'
     ])
   },
@@ -95,5 +89,10 @@ export default {
     outline: none;
     width: 100% !important;
     height: 100%;
+  }
+  .component-item {
+    padding: 5px;
+    height: 200px!important;
+    position: relative;
   }
 </style>

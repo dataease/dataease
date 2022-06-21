@@ -1,6 +1,7 @@
 package io.dataease.dto.panel.po;
 
-import io.dataease.base.domain.PanelView;
+
+import io.dataease.plugins.common.base.domain.PanelView;
 
 /**
  * Author: wangjiahao
@@ -16,6 +17,13 @@ public class PanelViewInsertDTO extends PanelView {
         super();
         super.setChartViewId(chartViewId);
         super.setPanelId(panelGroupId);
+        super.setPosition("panel");
+    }
+    public PanelViewInsertDTO(String chartViewId,String panelGroupId,String position) {
+        super();
+        super.setChartViewId(chartViewId);
+        super.setPanelId(panelGroupId);
+        super.setPosition(position);
     }
 
 }

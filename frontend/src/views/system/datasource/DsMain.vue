@@ -1,11 +1,18 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-    <de-aside-container style="padding: 0 0;">
-      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain"/>
+    <de-aside-container style="padding: 0 0;" type="datasource">
+      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param" :tData="tData" @refresh-type="refreshType"
-                 @switch-component="switchMain"/>
+      <component
+        :is="component"
+        v-if="!!component"
+        :params="param"
+        :t-data="tData"
+        :ds-types="dsTypes"
+        @refresh-type="refreshType"
+        @switch-component="switchMain"
+      />
     </de-main-container>
   </de-container>
 </template>
@@ -15,18 +22,20 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import DsTree from './DsTree'
-import DsForm from './form'
+import DsForm from './DsForm'
+import DriverForm from "./DriverForm";
 import DataHome from './DataHome'
 
 export default {
   name: 'DsMain',
-  components: {DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome},
+  components: { DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome },
   data() {
     return {
       component: DataHome,
       datasource: {},
       param: null,
-      tData: null
+      tData: null,
+      dsTypes: []
     }
   },
   computed: {},
@@ -37,8 +46,7 @@ export default {
   methods: {
     // 切换main区内容
     switchMain(param) {
-      console.log(param)
-      const {component, componentParam, tData} = param
+      const { component, componentParam, tData, dsTypes} = param
       this.component = DataHome
       this.param = null
       this.$nextTick(() => {
@@ -47,6 +55,13 @@ export default {
             this.component = DsForm
             this.param = componentParam
             this.tData = tData
+            this.dsTypes = dsTypes
+            break
+          case 'DriverForm':
+            this.component = DriverForm
+            this.param = componentParam
+            this.tData = tData
+            this.dsTypes = dsTypes
             break
           default:
             this.component = DataHome
@@ -56,7 +71,7 @@ export default {
       })
     },
     refreshType(datasource) {
-      this.datasource = datasource;
+      this.datasource = datasource
       this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource)
     },
     msg2Current(sourceParam) {

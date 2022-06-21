@@ -5,10 +5,12 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
 import io.dataease.plugins.xpack.ukey.service.UkeyXpackService;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.ServletRequest;
 import java.util.List;
 
+@ApiIgnore
 @RequestMapping("/plugin/ukey")
 @RestController
 public class XUserKeysServer {

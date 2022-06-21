@@ -168,7 +168,6 @@ export default {
       this.$emit('templateEdit', this.template)
     },
     handleDelete() {
-      // console.log('handleDelete')
     }
   }
 }

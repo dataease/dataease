@@ -18,7 +18,8 @@
         "tw": "繁體中文",
         "zh": "简体中文",
         "sysLanguage": "Follow System",
-        "tips": "Tips"
+        "tips": "Tips",
+        "loading": "loading"
         
     },
     "login": {
@@ -29,7 +30,8 @@
         "passwordPlaceholder": "Please Input Password:",
         "loginbtn": "Login",
         "pwdFmtError": "Password Must More Than 6 Characters",
-        "uOrpwdError": "Invalid Account Or Password"
+        "uOrpwdError": "Invalid Account Or Password",
+		"accFmtError": "Account Must More Than 1 Characters"
     },
     "home": {
         "tab1": "My Favorites",

@@ -77,6 +77,14 @@ export function listDatasource() {
   })
 }
 
+export function listApiDatasource() {
+  return request({
+    url: '/datasource/list/api',
+    loading: true,
+    method: 'get'
+  })
+}
+
 export function getTable(id, hideMsg = false) {
   return request({
     url: '/dataset/table/get/' + id,
@@ -98,6 +106,14 @@ export function getPreviewData(data) {
 export function fieldList(id, showLoading = true) {
   return request({
     url: '/dataset/field/list/' + id,
+    loading: showLoading,
+    method: 'post'
+  })
+}
+
+export function fieldListWithPermission(id, showLoading = true) {
+  return request({
+    url: '/dataset/field/listWithPermission/' + id,
     loading: showLoading,
     method: 'post'
   })
@@ -129,11 +145,21 @@ export function post(url, data, showLoading = true, timeout = 60000) {
   })
 }
 
-export function fieldValues(fieldId) {
+export function mappingFieldValues(data) {
   return request({
-    url: '/dataset/field/fieldValues/' + fieldId,
+    url: '/dataset/field/mappingFieldValues',
     method: 'post',
-    loading: true
+    loading: true,
+    data
+  })
+}
+
+export function linkMappingFieldValues(data) {
+  return request({
+    url: '/dataset/field/linkMappingFieldValues',
+    method: 'post',
+    loading: true,
+    data
   })
 }
 
@@ -197,5 +223,4 @@ export function checkCustomDs() {
     loading: true
   })
 }
-
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

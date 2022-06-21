@@ -1,23 +1,9 @@
 <template>
-  <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
-      <span style="float: left">
-        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
-      </span>
-      <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-      <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
-      <span v-if="item.deType === 1" class="summary-span">
-        {{ $t('chart.' + item.dateStyle) }}
-      </span>
-    </el-tag>
-    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
+  <span style="position: relative;display: inline-block;">
+    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
+    <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
+        <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -27,6 +13,7 @@
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+          <field-error-tips v-if="tagType === 'danger'" />
           <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
           <span v-if="item.deType === 1" class="summary-span">
             {{ $t('chart.' + item.dateStyle) }}
@@ -120,8 +107,13 @@
 </template>
 
 <script>
+import { getItemType } from '@/views/chart/components/drag-item/utils'
+import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import bus from '@/utils/bus'
+
 export default {
   name: 'ChartDragItem',
+  components: { FieldErrorTips },
   props: {
     param: {
       type: Object,
@@ -138,13 +130,34 @@ export default {
     conf: {
       type: String,
       required: true
+    },
+    dimensionData: {
+      type: Array,
+      required: true
+    },
+    quotaData: {
+      type: Array,
+      required: true
     }
   },
   data() {
     return {
+      tagType: 'success'
+    }
+  },
+  watch: {
+    dimensionData: function() {
+      this.getItemTagType()
+    },
+    quotaData: function() {
+      this.getItemTagType()
+    },
+    item: function() {
+      this.getItemTagType()
     }
   },
   mounted() {
+    bus.$on('reset-change-table', () => this.getItemTagType())
   },
   methods: {
     clickItem(param) {
@@ -165,7 +178,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onItemChange', this.item)
     },
@@ -175,7 +187,6 @@ export default {
       }
     },
     summary(param) {
-      // console.log(param)
       this.item.summary = param.type
       this.$emit('onItemChange', this.item)
     },
@@ -190,7 +201,6 @@ export default {
     },
 
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onItemChange', this.item)
     },
@@ -200,7 +210,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onItemChange', this.item)
     },
@@ -208,6 +217,9 @@ export default {
       return {
         type: type
       }
+    },
+    getItemTagType() {
+      this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
     }
   }
 }
@@ -245,7 +257,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 70px;
+    width: 80px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -260,6 +272,6 @@ export default {
     margin-left: 4px;
     color: #878d9f;
     position: absolute;
-    right: 25px;
+    right: 40px;
   }
 </style>
