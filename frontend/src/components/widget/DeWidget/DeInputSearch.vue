@@ -6,6 +6,8 @@
     resize="vertical"
     :placeholder="$t(element.options.attrs.placeholder)"
     :size="size"
+    class="de-range-tag"
+    ref="de-input-search"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
@@ -111,6 +113,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+// .de-range-tag {
+//   input::placeholder {
+//     color: var(--CustomColor, #909399) !important;
+//   }
+// }
 </style>
