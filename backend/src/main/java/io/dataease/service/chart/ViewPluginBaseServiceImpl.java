@@ -107,6 +107,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                     break;
                 case SQL:
                     tableName = dataSetTableService.handleVariableDefaultValue(dataTableInfoDTO.getSql(), pluginViewSet.getSqlVariableDetails());
+                    tableName = "(" + tableName + ")";
                     break;
                 case CUSTOM:
                     List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
