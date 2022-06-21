@@ -1501,6 +1501,9 @@ public class ChartViewService {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }
+                if(CollectionUtils.isEmpty(chartExtFilterRequest.getParameters())){
+                    continue;
+                }
                 if (chartExtFilterRequest.getValue().size() > 1) {
                     for (String parameter : chartExtFilterRequest.getParameters()) {
                         sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
