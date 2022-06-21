@@ -82,6 +82,27 @@ export default {
     },
 
     deleteComponent() {
+      console.log('curComponent----', this.curComponent)
+      let key = false
+      if (this.curComponent.type === 'de-nav') {
+        console.log(this.curComponent.options.navTabList)
+        if (JSON.stringify(this.curComponent.options.navTabList) !== '[]') {
+          this.curComponent.options.navTabList.forEach(ele => {
+            if (JSON.stringify(ele.relation) !== '[]') {
+              console.log('导航绑定值未解除')
+              key = true
+            }
+          })
+        }
+      }
+      if (key) {
+        this.$message({
+          message: '导航绑定值未解除,不能删除',
+          type: 'warning'
+        })
+        return
+      }
+
       this.$emit('amRemoveItem')
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')

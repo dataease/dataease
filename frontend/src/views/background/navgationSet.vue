@@ -99,7 +99,7 @@
           </el-col>
           <el-col :span="20">
             <!-- 多项选择框 -->
-            <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly" @blur="blurSelect">
+            <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly">
               <el-option
                 v-for="items in optionsData"
                 v-show="items.label!=='导航组件'"
@@ -191,7 +191,7 @@ export default {
       this.navInfoLis.forEach(res => {
         data = data.concat(res.relation)
       })
-      const opSetInfo = deepCopy(this.options)
+      const opSetInfo = this.options
       opSetInfo.forEach(item => {
         data.forEach(e => {
           if (e === item.id) {
@@ -205,22 +205,54 @@ export default {
   },
   created() {
     // this.init()
+
   },
   mounted() {
-    this.componentData.forEach(res => {
-      if (res.showName) {
-        res.showName = ''
-      }
-    })
-    console.log('componentData获取数据--', this.componentData, this.curComponent)
-    this.navInfoLis = this.element.options.navTabList
-    // this.navInfoLis.forEach(res => {
-    //   res.options = deepCopy(this.componentData)
+    // this.componentData.forEach(res => {
+    //   if (res.showName) {
+    //     res.showName = ''
+    //   }
     // })
-    this.options = deepCopy(this.componentData)
-    this.options.forEach(ele => {
-      ele.disabled = false
+    console.log('componentData获取数据--', this.componentData, this.curComponent)
+    // const seltOps = []
+    this.navInfoLis = this.element.options.navTabList
+    this.navInfoLis.forEach(res => {
+      res.relation = []
     })
+    this.navInfoLis.forEach(ele => {
+      console.log('ele::::', ele)
+      this.componentData.forEach(res => {
+        if (res.showName === ele.name) {
+          // res.showName = ''
+          ele.relation.push(res.id)
+          delete res.showName
+        }
+      })
+    })
+    console.log(' this.componentData', this.componentData)
+    const newArrr = deepCopy(this.componentData)
+    newArrr.forEach(ele => {
+      ele.disabled = true
+      if (!ele.hasOwnProperty('showName')) {
+        console.log('满足条件的ele', ele)
+        ele.disabled = false
+      }
+
+      // if (ele.showName === '') {
+
+      // }
+      console.log('ele----', ele)
+    })
+    this.navInfoLis.forEach(res => {
+      res.relation.forEach(e => {
+        newArrr.forEach(item => {
+          if (item.id === e) {
+            item.disable = true
+          }
+        })
+      })
+    })
+    this.options = deepCopy(newArrr)
   },
 
   methods: {
