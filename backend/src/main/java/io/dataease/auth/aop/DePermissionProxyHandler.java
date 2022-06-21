@@ -44,7 +44,6 @@ public class DePermissionProxyHandler {
             return point.proceed(args);
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
-            /* throw new RuntimeException(throwable.getMessage()); */
             DataEaseException.throwException(throwable);
         } finally {
             AuthUtils.cleanProxyUser();
