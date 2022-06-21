@@ -118,6 +118,16 @@ export default {
     },
     uploadFail(response, file, fileList) {
       const msg = response && response.message || '安装失败'
+      try {
+        const result = JSON.parse(msg)
+        if (result && result.message) {
+          this.$error(result.message)
+          this.uploading = false
+        }
+        return
+      } catch (e) {
+        console.error(e)
+      }
       this.$error(msg)
       this.uploading = false
     },
