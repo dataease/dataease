@@ -54,7 +54,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## 模板市场
 
-![模板市场](https://github.com/dataease/docs/blob/master/docs/img/index/%E6%A8%A1%E6%9D%BF%E5%B8%82%E5%9C%BA.gif)
+![模板市场](https://dataease.io/images/templates/templates.gif)
 
 ## 在线体验
 
