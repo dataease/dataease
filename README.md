@@ -52,9 +52,9 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 > 更多数据源支持持续增加中...
 
-## UI 展示
+## 模板市场
 
-![de-ui](https://dataease.io/docs/img/index/%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA.gif)
+![模板市场](https://dataease.io/images/templates/templates.gif)
 
 ## 在线体验
 
