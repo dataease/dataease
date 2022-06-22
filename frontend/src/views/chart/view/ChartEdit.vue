@@ -2723,6 +2723,7 @@ export default {
       })
     },
     changeEditStatus(status) {
+      console.log('changeEditStatus',status)
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },

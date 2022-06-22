@@ -634,7 +634,134 @@ export default {
           .then((response) => {
             // 将视图传入echart组件
             if (response.success) {
-              // console.log('查出的数据', response.data)
+              console.log('查出的数据', response.data)
+              let arr = []
+              let arr2 = [] 
+              if(response.data.type.includes('line') && response.data.data) {
+                if(response.data.render === 'antv' ) {
+                  if(response.data.xaxis) {
+                    let axisobj = JSON.parse(response.data.xaxis)[0]
+                    // console.log('antv::::xaxis',axisobj)
+                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if(axisobj.sort !== 'none') {
+                        let data = response.data.data.datas
+                        // console.log(axisobj.sort,data)
+                        // antv x轴排序改变
+                        if(axisobj.sort === 'asc') {
+                          arr = data.sort((a,b) => {
+                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                              return parseInt(a.field) - parseInt(b.field)
+                            } else {
+                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              return months.indexOf(a.field) - months.indexOf(b.field)
+                            }
+                          })
+                        } else if (axisobj.sort = 'desc') {
+                          arr = data.sort((a,b) => {
+                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                              return parseInt(b.field) - parseInt(a.field)
+                            } else {
+                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              return months.indexOf(a.field) - months.indexOf(b.field)
+                            }
+                          })
+                        }
+                      }
+                    } 
+                  }
+                } else if (response.data.render === 'echarts') {
+                  if(response.data.xaxis) {
+                    let axisobj = JSON.parse(response.data.xaxis)[0]
+                    // console.log('echarts:::xaxis',axisobj)
+                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if(axisobj.sort !== 'none') {
+                        let data = response.data.data.x
+                        let data1 = response.data.data.series
+                        // console.log(axisobj.sort,data)
+                        if(axisobj.sort === 'asc') {
+                          // echarts X轴升序排序改变
+                          arr = data.sort((a,b) => {
+                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                              return parseInt(a) - parseInt(b)
+                            } else {
+                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              return months.indexOf(a) - months.indexOf(b)
+                            }
+                          })
+                          
+                          // echarts Y轴值升序排序改变
+                          arr2 = data1.forEach(item => {
+                            let ele = item.data
+                            ele.sort((a,b) => {
+                              let obj1 = {}
+                              let obj2 = {}
+                              a.dimensionList.forEach(e => {
+                                if(e.value.includes('月')){
+                                  obj1 = e.value
+                                }
+                              })
+                              b.dimensionList.forEach(e => {
+                                if(e.value.includes('月')){
+                                  obj2 = e.value
+                                }
+                              })
+
+                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                                return parseInt(obj1) - parseInt(obj2)
+                              }else {
+                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                                return months.indexOf(obj1) - months.indexOf(obj2)
+                              }
+                            })
+                          })
+
+                          // console.log('asc改变后：',arr,arr2)
+                          
+                        } else if (axisobj.sort = 'desc') {
+                          // echarts X轴降序排序改变
+                          arr = data.sort((a,b) => {
+                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                              return parseInt(b) - parseInt(a)
+                            } else {
+                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              return months.indexOf(a) - months.indexOf(b)
+                            }
+                          })
+
+                          // echarts Y轴值降序排序改变
+                          arr2 = data1.forEach(item => {
+                            let ele = item.data
+                            ele.sort((a,b) => {
+                              let obj1 = {}
+                              let obj2 = {}
+                              a.dimensionList.forEach(e => {
+                                if(e.value.includes('月')){
+                                  obj1 = e.value
+                                }
+                              })
+                              b.dimensionList.forEach(e => {
+                                if(e.value.includes('月')){
+                                  obj2 = e.value
+                                }
+                              })
+
+                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                                return parseInt(obj2) - parseInt(obj1)
+                              }else {
+                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                                return months.indexOf(obj2) - months.indexOf(obj1)
+                              }
+                            })
+                          })
+
+                          // console.log('desc改变后：',arr,arr2)
+                        }
+                      }
+                    } 
+                  }
+                }
+                
+              }
               this.chart = response.data
               // console.log('this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -670,6 +797,7 @@ export default {
             return true
           })
           .catch((err) => {
+            console.log(err)
             this.requestStatus = 'error'
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
@@ -975,7 +1103,7 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
-      // console.log('getDataEdit::::', param)
+      console.log('getDataEdit::::', param)
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
         this.getData(param.viewId, false)

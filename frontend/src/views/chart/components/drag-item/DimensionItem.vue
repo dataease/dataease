@@ -135,6 +135,7 @@ export default {
   },
   methods: {
     clickItem(param) {
+      // console.log('clickItem,,,,,',param)
       if (!param) {
         return
       }
@@ -158,7 +159,7 @@ export default {
       }
     },
     sort(param) {
-      console.log('sort,param',param)
+      // console.log('sort,param',param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

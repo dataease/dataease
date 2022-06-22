@@ -29,7 +29,7 @@ export const COMMON_BACKGROUND = {
   boxHeight: 0,
   boxWidth: 0,
   fontSize: 16,
-  fontColor: "#000000"
+  fontColor: '#000000'
 }
 
 // 空组件仪表板样式
@@ -45,7 +45,7 @@ export const COMMON_BACKGROUND_NONE = {
   boxHeight: 0,
   boxWidth: 0,
   fontSize: 16,
-  fontColor: "#000000"
+  fontColor: '#000000'
 }
 
 // 公共样式
@@ -451,7 +451,8 @@ const list = [
       fontSize: 12,
       color: '#333',
       vertical: 'center',
-      horizontal: 'center'
+      horizontal: 'center',
+      highlight: '#333'
     },
     x: 1,
     y: 1,
@@ -501,7 +502,8 @@ const list = [
     id: '30002',
     component: 'de-frame',
     type: 'de-frame',
-    label: '',
+
+    label: '网页',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,

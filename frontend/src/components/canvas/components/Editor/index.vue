@@ -28,11 +28,13 @@
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
     <!--页面组件列表展示-->
+    <!-- v-if="showOrNot(item)" -->
     <de-drag
       v-for="(item, index) in componentData"
-      v-if="showOrNot(item)"
+
       ref="deDragRef"
       :key="item.id"
+      :style="{opacity:opacityClass(item)}"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
       :index="index"
       :x="getShapeStyleIntDeDrag(item.style,'left')"
@@ -1004,17 +1006,34 @@ export default {
         }
       }
     },
+    opacityClass() {
+      return function(value) {
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return 1
+          } else {
+            return 0
+          }
+        } else {
+          return 1
+        }
+      }
+    },
     showOrNot(item) {
       return function(value) {
         console.log('value===', value)
-        if (this.canvasStyleData.navShowKey && value.showName) {
-          if (this.canvasStyleData.navShowKey === value.showName) {
-            return true
-          } else {
-            return false
-          }
-        } else {
+        if (item.type === 'de-frame') {
           return true
+        } else {
+          if (this.canvasStyleData.navShowKey && value.showName) {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return true
+          }
         }
       }
 
