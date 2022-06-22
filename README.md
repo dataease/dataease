@@ -31,28 +31,28 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## DataEase 支持的数据源
 
-- Excel
-- MySQL
-- Oracle
-- SQL Server
-- PostgreSQL
-- Elasticsearch
-- MariaDB
-- Apache Doris
-- ClickHouse
-- MongoDB
-- Amazon Redshift
-- Hive
-- DB2
-- API
-- Impala
-- TiDB
-- StarRocks
-- Presto
+<p align="center">
+  <img src="https://dataease.io/images/dataSource/excel.jpg" alt="excel" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mysql.png" alt="mysql" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/oracle.jpg" alt="oracle" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/sqlservel.jpg" alt="sqlserver" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mariadb.jpg" alt="mariadb" border="0" width="155" height="107"/>  
+  <img src="https://dataease.io/images/dataSource/elasticsearch.jpg" alt="elasticsearch" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/clickhouse.jpg" alt="clickhouse" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/doris.jpg" alt="doris" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mongodb.jpg" alt="mongodb" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/redshift.jpg" alt="redshift" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/hive.png" alt="hive" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/DB2.jpg" alt="DB2" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/API.jpg" alt="API" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/TiDB.jpg" alt="TiDB" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/StarRocks.jpg" alt="StarRocks" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/PrestoDB.jpg" alt="PrestoDB" border="0" width="155" height="107"/>
+</p>
 
 > 更多数据源支持持续增加中...
 
-## 模板市场
+## DataEase 模板市场
 
 ![模板市场](https://dataease.io/images/templates/templates.gif)
 
