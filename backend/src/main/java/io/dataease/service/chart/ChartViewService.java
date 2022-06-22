@@ -545,9 +545,14 @@ public class ChartViewService {
         }.getType();
 
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
-        Map<String, List<ChartViewFieldDTO>> extFieldsMap = null;
+        final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(viewFields)) {
-            extFieldsMap = viewFields.stream().collect(Collectors.groupingBy(ChartViewFieldDTO::getBusiType));
+            viewFields.forEach(field -> {
+                String busiType = field.getBusiType();
+                List<ChartViewFieldDTO> list = extFieldsMap.containsKey(busiType) ? extFieldsMap.get(busiType) : new ArrayList<>();
+                list.add(field);
+                extFieldsMap.put(field.getBusiType(), list);
+            });
         }
 
 
@@ -775,12 +780,12 @@ public class ChartViewService {
 
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
-            Map<String, List<ChartViewFieldDTO>> fieldMap = ObjectUtils.isEmpty(extFieldsMap) ? new HashMap<>() : extFieldsMap;
+            Map<String, List<ChartViewFieldDTO>> fieldMap = ObjectUtils.isEmpty(extFieldsMap) ? new LinkedHashMap<>() : extFieldsMap;
 
-            fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
+            fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
