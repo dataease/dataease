@@ -11,7 +11,7 @@ export function getPadding(chart) {
 // color,label,tooltip,axis,legend,background
 export function getTheme(chart) {
   const colors = []
-  let bgColor, labelFontsize, labelColor, tooltipColor, tooltipFontsize, legendColor, legendFontsize
+  let bgColor, labelFontsize, labelColor, tooltipColor, tooltipFontsize, tooltipBackgroundColor, legendColor, legendFontsize
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -33,6 +33,7 @@ export function getTheme(chart) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       tooltipColor = t.textStyle.color
       tooltipFontsize = t.textStyle.fontSize
+      tooltipBackgroundColor = t.backgroundColor
     }
   }
 
@@ -84,7 +85,8 @@ export function getTheme(chart) {
         domStyles: {
           'g2-tooltip': {
             color: tooltipColor,
-            fontSize: tooltipFontsize + 'px'
+            fontSize: tooltipFontsize + 'px',
+            background: tooltipBackgroundColor
           }
         }
       },

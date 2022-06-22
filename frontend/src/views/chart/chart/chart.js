@@ -102,7 +102,8 @@ export const DEFAULT_TOOLTIP = {
     fontSize: '10',
     color: '#909399'
   },
-  formatter: ''
+  formatter: '',
+  backgroundColor: '#ffffff'
 }
 export const DEFAULT_TOTAL = {
   row: {

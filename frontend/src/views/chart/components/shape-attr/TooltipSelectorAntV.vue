@@ -14,6 +14,9 @@
           <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
           </el-form-item>
+          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.background')" class="form-item">
+            <el-color-picker v-model="tooltipForm.backgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
@@ -73,6 +76,8 @@ export default {
         }
         if (customAttr.tooltip) {
           this.tooltipForm = customAttr.tooltip
+
+          this.tooltipForm.backgroundColor = this.tooltipForm.backgroundColor ? this.tooltipForm.backgroundColor : DEFAULT_TOOLTIP.backgroundColor
         }
       }
     },
