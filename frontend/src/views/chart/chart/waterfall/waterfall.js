@@ -9,7 +9,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { Waterfall } from '@antv/g2plot'
 
-export function baseWaterfallOptionAntV(plot, container, chart, action) {
+export function baseWaterfallOptionAntV(plot, container, chart, action,cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -17,8 +17,8 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   // const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // fix yAxis
   if (yAxis) {
     yAxis.min = yAxis.minLimit

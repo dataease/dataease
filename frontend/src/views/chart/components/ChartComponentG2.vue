@@ -136,24 +136,25 @@ export default {
           ]
         }
       }
+      // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
-        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
-        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
-        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
-        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line') {
-        this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
-        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'scatter') {
-        this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'radar') {
-        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'gauge') {
-        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'pie-rose') {
@@ -163,11 +164,11 @@ export default {
       } else if (chart.type === 'treemap') {
         this.myChart = baseTreemapOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'liquid') {
-        this.myChart = baseLiquid(this.myChart, this.chartId, chart)
+        this.myChart = baseLiquid(this.myChart, this.chartId, chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'waterfall') {
-        this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else if (chart.type === 'word-cloud') {
-        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.$store.state.canvasStyleData)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false

@@ -2,7 +2,7 @@ import { Liquid } from '@antv/g2plot'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
-export function baseLiquid(plot, container, chart) {
+export function baseLiquid(plot, container, chart, cstyle = {}) {
   let value = 0
   const colors = []
   let max, radius, bgColor, shape, labelContent, title
@@ -35,7 +35,8 @@ export function baseLiquid(plot, container, chart) {
         labelContent = {
           style: ({ percent }) => ({
             fontSize: parseInt(label.fontSize),
-            color: label.color
+            color: label.color,
+            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
           })
         }
       } else {

@@ -2,7 +2,7 @@ import { getPadding, getTheme } from '@/views/chart/chart/common/common_antv'
 import { Gauge } from '@antv/g2plot'
 import { DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 
-export function baseGaugeOptionAntV(plot, container, chart, action) {
+export function baseGaugeOptionAntV(plot, container, chart, action, cstyle = {}) {
   let max, labelContent, startAngel, endAngel
   // theme
   const theme = getTheme(chart)
@@ -26,7 +26,8 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
       labelContent = {
         style: ({ percent }) => ({
           fontSize: parseInt(label.fontSize),
-          color: label.color
+          color: label.color,
+          fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
         })
       }
     } else {
