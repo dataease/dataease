@@ -1,5 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
+import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 let bubbleArray = []
 let terminalType = 'pc'
@@ -19,6 +20,10 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
+
+      const bgColor = tooltip.backgroundColor ? tooltip.backgroundColor : DEFAULT_TOOLTIP.backgroundColor
+      chart_option.tooltip.backgroundColor = bgColor
+      chart_option.tooltip.borderColor = bgColor
     }
   }
   // 处理data

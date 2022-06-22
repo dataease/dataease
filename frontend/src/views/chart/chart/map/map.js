@@ -1,5 +1,6 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
+import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseMapOption(chart_option, chart) {
   // 处理shape attr
@@ -21,6 +22,10 @@ export function baseMapOption(chart_option, chart) {
         return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
       chart_option.tooltip = tooltip
+
+      const bgColor = tooltip.backgroundColor ? tooltip.backgroundColor : DEFAULT_TOOLTIP.backgroundColor
+      chart_option.tooltip.backgroundColor = bgColor
+      chart_option.tooltip.borderColor = bgColor
     }
   }
   // 处理data
