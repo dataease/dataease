@@ -20,10 +20,12 @@
 
         </el-row>
         <canvas-opt-bar />
+        <!-- v-if="exhibition(item)" -->
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
-          v-if="exhibition(item)"
+
           :key="index"
+          :style="{opacity:opacityClass(item)}"
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
@@ -164,6 +166,20 @@ export default {
       // console.log('item', item, this.canvasStyleData)
       // console.log('this.showOrNot', this.showOrNot)
       // return true
+    },
+    opacityClass() {
+      return function(value) {
+        console.log('value-----', value)
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return 1
+          } else {
+            return 0
+          }
+        } else {
+          return 1
+        }
+      }
     },
     scaleNewHeight() {
       var height = 800

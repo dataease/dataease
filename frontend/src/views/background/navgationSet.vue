@@ -43,6 +43,14 @@
           </el-radio-group>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="4">
+          <span class="params-title">{{ '高亮字体颜色' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.highlight" />
+        </el-col>
+      </el-row>
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
       <!-- 轮播的图片 -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">

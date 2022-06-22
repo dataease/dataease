@@ -2,7 +2,7 @@
   <div>
     <div class="nav_calss" :style="navStyleSet">
       <div v-for="(item,index) in navList" :key="index" class="nav_info">
-        <span class="title_class" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+        <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
       </div>
     </div>
   </div>
@@ -21,6 +21,7 @@ export default {
   data() {
     return {
       // isShow: true,
+      heightKey: ''
     }
   },
   computed: {
@@ -37,6 +38,16 @@ export default {
       style.alignItems = this.element.options.vertical
       style.height = this.element.style.height + 'px'
       return style
+    },
+    heightlight() {
+      return function(value) {
+        if (this.canvasStyleData.navShowKey === value.name) {
+          return this.element.options.highlight
+          // return this.element.options.color
+        } else {
+          return this.element.options.color
+        }
+      }
     },
     navList() {
       return this.element.options.navTabList
@@ -59,6 +70,7 @@ export default {
       // 切换导航
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       this.canvasStyleData.navShowKey = key.name
+      this.heightKey = key.name
     }
   }
 }
