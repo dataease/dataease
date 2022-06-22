@@ -382,8 +382,7 @@ export default {
         this.fieldForm.tableId = this.param.id
         this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
-      this.fieldForm.originName = this.setNameIdTrans('name', 'id', originName)
-      post('/dataset/field/save', this.fieldForm).then(response => {
+      post('/dataset/field/save', {...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         this.closeCalcField()
       })
     },
