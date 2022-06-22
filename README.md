@@ -31,38 +31,44 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## DataEase 支持的数据源
 
-- Excel
-- MySQL
-- Oracle
-- SQL Server
-- PostgreSQL
-- Elasticsearch
-- MariaDB
-- Apache Doris
-- ClickHouse
-- MongoDB
-- Amazon Redshift
-- Hive
-- DB2
-- API
-- Impala
-- TiDB
-- StarRocks
-- Presto
+<p align="center">
+  <img src="https://dataease.io/images/dataSource/excel.jpg" alt="excel" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mysql.png" alt="mysql" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/oracle.jpg" alt="oracle" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/sqlservel.jpg" alt="sqlserver" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mariadb.jpg" alt="mariadb" border="0" width="155" height="107"/>  
+  <img src="https://dataease.io/images/dataSource/elasticsearch.jpg" alt="elasticsearch" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/clickhouse.jpg" alt="clickhouse" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/doris.jpg" alt="doris" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/mongodb.jpg" alt="mongodb" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/redshift.jpg" alt="redshift" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/hive.png" alt="hive" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/DB2.jpg" alt="DB2" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/API.jpg" alt="API" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/TiDB.jpg" alt="TiDB" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/StarRocks.jpg" alt="StarRocks" border="0" width="155" height="107"/>
+  <img src="https://dataease.io/images/dataSource/PrestoDB.jpg" alt="PrestoDB" border="0" width="155" height="107"/>
+</p>
 
 > 更多数据源支持持续增加中...
 
-## UI 展示
+## DataEase 模板市场
 
-![de-ui](https://dataease.io/docs/img/index/%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA.gif)
+-   [模板市场](https://dataease.io/templates/)
 
-## 在线体验
+![模板市场](https://dataease.io/images/templates/templates.gif)
+
+> 更多优质模板持续增加中...
+
+## 快速开始
+
+**在线体验**
 
 -   环境地址：<https://dataease.fit2cloud.com/>
 -   用户名：demo
 -   密码：dataease
 
-## 快速开始
+**一键安装**
 
 仅需两步快速安装 DataEase：
 
@@ -73,15 +79,17 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_start.sh | sh
 ```
 
+**学习资料**
+
 -   [在线文档](https://dataease.io/docs/)
 -   [教学视频](https://dataease.io/video.html)
 -   [在线学习班](https://edu.fit2cloud.com/page/2635362?navIndex=0)
 
-## 微信群
+**加入微信交流群**
 
 <img src="https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png" width="156" height="156"/>
 
-## 技术栈
+## DataEase 的技术栈
 
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)

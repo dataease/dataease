@@ -470,15 +470,26 @@ export default {
     _treeCheckFun(data, node, vm) {
       this.ids = []
       const { propsValue } = this
-      node.checkedNodes.forEach(item => {
+      const checkKeys = this.$refs.tree.getCheckedKeys()
+      checkKeys.forEach((i, n) => {
+        const node = this.$refs.tree.getNode(i)
+        if (!node.visible && node.checked) {
+          this.$refs.tree.setChecked(i, false)
+        }
+      })
+
+      const checkedNodes = this.$refs.tree.getCheckedNodes()
+
+      checkedNodes.forEach(item => {
         this.ids.push(item[propsValue])
       })
       /*
-            点击复选框，对外抛出   `data, node, vm`<br>
-            `data:` 当前点击的节点数据<br>
-            `node:` 当前点击的node<br>
-            `vm:` 当前组件的vm
-            */
+        点击复选框，对外抛出   `data, node, vm`<br>
+        `data:` 当前点击的节点数据<br>
+        `node:` 当前点击的node<br>
+        `vm:` 当前组件的vm
+        */
+      node.checkedKeys = checkedNodes.map(node => node.id)
       this.$emit('check', data, node, vm)
       this._emitFun()
     },
@@ -551,6 +562,7 @@ export default {
     // 显示弹出框的时候容错，查看是否和el宽度一致
     _popoverShowFun(val) {
       this._updateH()
+      this.$emit('onFoucs')
     },
     // 判断是否隐藏弹出框
     _popoverHideFun(e) {

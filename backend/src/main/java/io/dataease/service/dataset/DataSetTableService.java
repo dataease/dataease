@@ -8,6 +8,8 @@ import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.controller.request.chart.ChartExtRequest;
+import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
@@ -32,7 +34,6 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.datasource.TableField;
-import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -80,7 +81,6 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -133,6 +133,8 @@ public class DataSetTableService {
     private SysAuthService sysAuthService;
     @Resource
     private ChartViewMapper chartViewMapper;
+    @Resource
+    private DataSetTableTaskLogService dataSetTableTaskLogService;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -526,6 +528,7 @@ public class DataSetTableService {
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
                                               List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
+        String sycnStatus = "";
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
                 .checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
@@ -737,6 +740,20 @@ public class DataSetTableService {
                 logger.error(e.getMessage());
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
+            BaseGridRequest request = new BaseGridRequest();
+            ConditionEntity entity2 = new ConditionEntity();
+            entity2.setField("dataset_table_task_log.table_id");
+            entity2.setOperator("eq");
+            entity2.setValue(dataSetTableRequest.getId());
+            List<ConditionEntity> conditionEntities = new ArrayList<>();
+            conditionEntities.add(entity2);
+            request.setConditions(conditionEntities);
+            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = dataSetTableTaskLogService.listTaskLog(request, "excel");
+            if(CollectionUtils.isNotEmpty(dataSetTaskLogDTOS)){
+                dataSetTaskLogDTOS.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name());
+                sycnStatus = dataSetTaskLogDTOS.get(0).getStatus();
+            }
+
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
                 Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
@@ -902,6 +919,7 @@ public class DataSetTableService {
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("page", dataSetPreviewPage);
+        map.put("sycnStatus", sycnStatus);
 
         return map;
     }
@@ -962,14 +980,22 @@ public class DataSetTableService {
     public String removeVariables(String sql) throws Exception {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(sql);
+        boolean hasVariables = false;
         while (matcher.find()) {
+            hasVariables = true;
             sql = sql.replace(matcher.group(), SubstitutedParams);
+        }
+        if(!hasVariables){
+            return sql;
         }
         CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
         Statement statement = CCJSqlParserUtil.parse(sql);
         Select select = (Select) statement;
         PlainSelect plainSelect = ((PlainSelect) select.getSelectBody());
         Expression expr = plainSelect.getWhere();
+        if(expr == null){
+            return sql;
+        }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = (BinaryExpression)expr;
 
@@ -1814,11 +1840,11 @@ public class DataSetTableService {
                     }
                     datasetTableField.setSize(filed.getFieldSize());
                     datasetTableField.setChecked(true);
-                    datasetTableField.setColumnIndex(i);
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
                     datasetTableField.setGroupType((datasetTableField.getDeType() < 2 || datasetTableField.getDeType() == 6) ? "d" : "q");
                 }
+                datasetTableField.setColumnIndex(i);
                 dataSetTableFieldsService.save(datasetTableField);
             }
             // delete 数据库中多余的字段
@@ -2517,11 +2543,11 @@ public class DataSetTableService {
                     return;
                 }
 
-                visitBinaryExpression(likeExpression, (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
-                Expression escape = likeExpression.getEscape();
+                visitBinaryExpression(likeExpression,
+                        (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
+                String escape = likeExpression.getEscape();
                 if (escape != null) {
-                    getBuffer().append(" ESCAPE ");
-                    likeExpression.getEscape().accept(this);
+                    buffer.append(" ESCAPE '").append(escape).append('\'');
                 }
             }
 

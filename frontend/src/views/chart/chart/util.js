@@ -237,14 +237,13 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector-ant-v': [
+        'gaugeMin',
         'gaugeMax',
         'gaugeStartAngle',
         'gaugeEndAngle'
       ],
       'label-selector-ant-v': [
-        'show',
-        'fontSize',
-        'color'
+        'labelGauge'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1550,16 +1549,7 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector': [
-        'barDefault',
-        'barWidth',
-        'barGap',
-        'lineWidth',
-        'lineType',
-        'lineSymbol',
-        'lineSymbolSize',
-        'lineArea',
-        'bubble_scatterSymbol',
-        'bubble_scatterSymbolSize'
+        'mix'
       ],
       'label-selector': [
         'show',

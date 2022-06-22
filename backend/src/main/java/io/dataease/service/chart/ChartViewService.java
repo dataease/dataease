@@ -103,6 +103,8 @@ public class ChartViewService {
     private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
     @Resource
     private ChartViewCacheService chartViewCacheService;
+    @Resource
+    private ChartViewFieldService chartViewFieldService;
 
 
     //默认使用非公平
@@ -450,7 +452,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql =  dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
@@ -543,9 +545,14 @@ public class ChartViewService {
         }.getType();
 
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
-        Map<String, List<ChartViewFieldDTO>> extFieldsMap = null;
+        final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(viewFields)) {
-            extFieldsMap = viewFields.stream().collect(Collectors.groupingBy(ChartViewFieldDTO::getBusiType));
+            viewFields.forEach(field -> {
+                String busiType = field.getBusiType();
+                List<ChartViewFieldDTO> list = extFieldsMap.containsKey(busiType) ? extFieldsMap.get(busiType) : new ArrayList<>();
+                list.add(field);
+                extFieldsMap.put(field.getBusiType(), list);
+            });
         }
 
 
@@ -773,12 +780,12 @@ public class ChartViewService {
 
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
-            Map<String, List<ChartViewFieldDTO>> fieldMap = ObjectUtils.isEmpty(extFieldsMap) ? new HashMap<>() : extFieldsMap;
+            Map<String, List<ChartViewFieldDTO>> fieldMap = ObjectUtils.isEmpty(extFieldsMap) ? new LinkedHashMap<>() : extFieldsMap;
 
-            fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
+            fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
@@ -821,7 +828,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql =  dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
@@ -1344,6 +1351,7 @@ public class ChartViewService {
         extChartViewMapper.copyCache(sourceViewId, newViewId);
         extPanelGroupExtendDataMapper.copyExtendData(sourceViewId, newViewId, panelId);
         chartViewCacheService.refreshCache(newViewId);
+        chartViewFieldService.copyField(sourceViewId, newViewId);
         return newViewId;
     }
 
@@ -1492,17 +1500,20 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList)throws Exception{
-        if(requestList !=null &&CollectionUtils.isNotEmpty(requestList.getFilter()) ){
+    private String handleVariable(String sql, ChartExtRequest requestList) throws Exception {
+        if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
-                if(CollectionUtils.isEmpty(chartExtFilterRequest.getValue())){
+                if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }
-                if(chartExtFilterRequest.getValue().size() > 1){
+                if(CollectionUtils.isEmpty(chartExtFilterRequest.getParameters())){
+                    continue;
+                }
+                if (chartExtFilterRequest.getValue().size() > 1) {
                     for (String parameter : chartExtFilterRequest.getParameters()) {
                         sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
                     }
-                }else {
+                } else {
                     for (String parameter : chartExtFilterRequest.getParameters()) {
                         sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
                     }

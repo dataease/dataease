@@ -1,10 +1,13 @@
 import { getPadding, getTheme } from '@/views/chart/chart/common/common_antv'
 import { Gauge } from '@antv/g2plot'
-import { DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
+import { DEFAULT_LABEL, DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 import { getScaleValue } from '@/components/canvas/utils/style'
+import { valueFormatter } from '@/views/chart/chart/formatter'
+
+let labelFormatter = null
 
 export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
-  let max, labelContent, startAngel, endAngel
+  let min, max, labelContent, startAngel, endAngel, tickCount
   // theme
   const theme = getTheme(chart)
   // data
@@ -15,11 +18,14 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.size) {
       const size = JSON.parse(JSON.stringify(customAttr.size))
+      min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
       max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+      tickCount = size.gaugeTickCount ? size.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
       startAngel = parseInt(size.gaugeStartAngle) * Math.PI / 180
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180
     }
   }
+  const per = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
   // label
   if (customAttr.label) {
     const label = JSON.parse(JSON.stringify(customAttr.label))
@@ -28,13 +34,22 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
         style: ({ percent }) => ({
           fontSize: parseInt(label.fontSize),
           color: label.color
-        })
+        }),
+        formatter: function(v) {
+          let value
+          if (labelFormatter.type === 'percent') {
+            value = per
+          } else {
+            value = data
+          }
+          return valueFormatter(value, labelFormatter)
+        }
       }
     } else {
       labelContent = false
     }
+    labelFormatter = label.gaugeLabelFormatter ? label.gaugeLabelFormatter : DEFAULT_LABEL.gaugeLabelFormatter
   }
-  const per = (parseFloat(data) / parseFloat(max))
 
   const range = [0]
   let index = 0
@@ -75,9 +90,13 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       content: labelContent
     },
     axis: {
+      tickInterval: 1 / tickCount,
       label: {
         style: {
           fontSize: getScaleValue(14, scale) // 刻度值字体大小
+        },
+        formatter: function(v) {
+          return Number(v) * (max - min) + min
         }
       },
       tickLine: {

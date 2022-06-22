@@ -1,5 +1,5 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :class="isAbsoluteContainer ? 'abs-container' : ''">
     <de-main-container v-show="showChartCanvas">
       <div id="chartCanvas" class="canvas-class" :style="customStyle">
         <div class="canvas-class" :style="commonStyle">
@@ -66,7 +66,9 @@ export default {
     }
   },
   computed: {
-
+    isAbsoluteContainer() {
+      return this.chart.type === 'symbol-map'
+    },
     showChartCanvas() {
       return this.openType === 'enlarge'
     },
@@ -228,5 +230,10 @@ export default {
     width: 100%;
     height: 100%;
     background-size: 100% 100% !important;
+  }
+  .abs-container {
+    position: absolute;
+    width: 100%;
+    margin-left: -20px;
   }
 </style>

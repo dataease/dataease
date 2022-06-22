@@ -68,11 +68,12 @@ public class SystemParameterController {
     @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/basic")
     public CasSaveResult editBasic(@RequestBody List<SystemParameter> systemParameter) {
-        int timeout = Integer.parseInt(systemParameter.stream().filter(
-                parameter -> parameter.getParamKey().equals("basic.frontTimeOut")
-        ).findFirst().get().getParamValue());
-        if (timeout < 0 || timeout > 300) { //增加了合法性检验
-            throw new NumberFormatException("Timeout Range Error!");
+        String value = systemParameter.stream().filter(parameter -> parameter.getParamKey().equals("basic.frontTimeOut")).findFirst().get().getParamValue();
+        if (StringUtils.isNotBlank(value)) {
+            int timeout = Integer.parseInt(value);
+            if (timeout < 0 || timeout > 300) { //增加了合法性检验
+                throw new NumberFormatException("Timeout Range Error!");
+            }
         }
         return systemParameterService.editBasic(systemParameter);
     }

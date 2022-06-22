@@ -3,7 +3,6 @@ package io.dataease.controller.dataset;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
-import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.plugins.common.base.domain.DatasetTableFunction;
 import io.dataease.service.dataset.DatasetFunctionService;
 import io.swagger.annotations.Api;
@@ -28,7 +27,7 @@ public class DatasetFunctionController {
     @Resource
     private DatasetFunctionService datasetFunctionService;
 
-    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询")
     @PostMapping("listByTableId/{tableId}")
     public List<DatasetTableFunction> listByTableId(@PathVariable String tableId) {

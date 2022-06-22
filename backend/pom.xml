@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <artifactId>dataease-server</artifactId>
         <groupId>io.dataease</groupId>
@@ -11,26 +12,22 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>backend</artifactId>
 
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <shiro.version>1.7.1</shiro.version>
         <java.version>1.8</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
-
         <buji.version>4.0.0</buji.version>
         <pac4j.version>3.3.0</pac4j.version>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -39,14 +36,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -57,18 +51,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
@@ -86,9 +77,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -97,7 +85,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <!-- flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -112,7 +99,7 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
-            <version>5.0.3</version>
+            <version>5.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -179,7 +166,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.fit2cloud</groupId>
             <artifactId>quartz-spring-boot-starter</artifactId>
@@ -191,15 +177,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.21</version>
         </dependency>
-
         <!--xpath不加这个依赖会报错-->
         <dependency>
             <groupId>jaxen</groupId>
@@ -229,8 +211,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
@@ -246,8 +226,6 @@
             <artifactId>dataease-plugin-datasource</artifactId>
             <version>1.12.0</version>
         </dependency>
-
-
         <!-- kettle及数据源依赖 -->
         <dependency>
             <groupId>pentaho-kettle</groupId>
@@ -296,18 +274,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.14.3</version>
         </dependency>
-
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -319,20 +294,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>4.4</version>
         </dependency>
     </dependencies>
 
@@ -348,7 +316,6 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>static/**/*.woff</exclude>
@@ -357,7 +324,6 @@
                     <exclude>static/**/*.ico</exclude>
                 </excludes>
             </resource>
-
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
@@ -369,8 +335,8 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
 
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -401,12 +367,6 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.4.3</version>
-            </plugin>-->
-
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <configuration>
@@ -436,14 +396,12 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
             <!-- Overlay guacamole-common-js (zip) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
             </plugin>
-
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -465,8 +423,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
-
         </plugins>
     </build>
 
@@ -481,7 +437,6 @@
             </activation>
             <build>
                 <plugins>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -502,17 +457,13 @@
                                                 <include name="*.html"/>
                                             </fileset>
                                         </move>
-
                                         <copy todir="src/main/resources/static/de-app">
                                             <fileset dir="../mobile/dist">
                                                 <exclude name="*.html"/>
                                             </fileset>
                                         </copy>
-
-
-                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
-
-
+                                        <copy file="../mobile/dist/index.html"
+                                              tofile="src/main/resources/templates/app.html"/>
                                     </target>
                                 </configuration>
                                 <goals>
@@ -524,7 +475,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>stage</id>
             <properties>
@@ -532,7 +482,6 @@
             </properties>
         </profile>
     </profiles>
-
 
     <repositories>
         <repository>

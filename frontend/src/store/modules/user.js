@@ -140,7 +140,6 @@ const actions = {
     const method = param && param.casEnable ? deLogout : logout
     return new Promise((resolve, reject) => {
       method(state.token).then(res => {
-        debugger
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')

@@ -101,12 +101,13 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
             tableName = TableUtils.tableName(pluginViewSet.getTabelId());
         }else {
-            switch (DatasetType.valueOf(pluginViewSet.getType())) {
+            switch (DatasetType.getEnumObjByKey(pluginViewSet.getType())) {
                 case DB:
                     tableName = dataTableInfoDTO.getTable();
                     break;
                 case SQL:
                     tableName = dataSetTableService.handleVariableDefaultValue(dataTableInfoDTO.getSql(), pluginViewSet.getSqlVariableDetails());
+                    tableName = "(" + tableName + ")";
                     break;
                 case CUSTOM:
                     List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());

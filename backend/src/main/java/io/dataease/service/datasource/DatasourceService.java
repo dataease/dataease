@@ -143,7 +143,8 @@ public class DatasourceService {
             }
 
             if(datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.mysql.toString())){
-                datasourceDTO.setConfiguration(datasourceDTO.getConfiguration());
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class);
+                datasourceDTO.setConfiguration(new Gson().toJson(mysqlConfiguration));
             }
             if (datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())) {
                List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasourceDTO.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>() {}.getType());

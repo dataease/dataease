@@ -661,7 +661,8 @@ export default {
     tip: '提示：僅用來作爲測試郵件收件人',
     engine_mode_setting: '引擎設置',
     kettle_setting: 'Kettle 設置',
-    cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄'
+    cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄',
+    cas_reset: 'CAS切換回默認登錄方式訪問API：'
   },
   chart: {
     view_reset: '視圖重置',
@@ -1114,6 +1115,7 @@ export default {
     form_type: '類別'
   },
   dataset: {
+    dataset_sync: ' ( 資料同步中... )',
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
     datalist: '數據集',
     name: '數據集名稱',

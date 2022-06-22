@@ -63,6 +63,12 @@ public class ChartViewFieldService {
         chartViewFieldMapper.deleteByExample(chartViewFieldExample);
     }
 
+    public void deleteByChartIds(List<String> chartIds) {
+        ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
+        chartViewFieldExample.createCriteria().andChartIdIn(chartIds);
+        chartViewFieldMapper.deleteByExample(chartViewFieldExample);
+    }
+
     public void checkFieldName(ChartViewField chartViewField) {
         if (StringUtils.isNotEmpty(chartViewField.getName()) && StringUtils.isNotEmpty(chartViewField.getChartId())) {
             ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
@@ -74,6 +80,19 @@ public class ChartViewFieldService {
             List<ChartViewField> datasetTableFields = chartViewFieldMapper.selectByExample(chartViewFieldExample);
             if (CollectionUtils.isNotEmpty(datasetTableFields)) {
                 DEException.throwException(Translator.get("i18n_field_name_repeat"));
+            }
+        }
+    }
+
+    public void copyField(String sourceChartId, String targetChartId) {
+        ChartViewFieldExample chartViewFieldExample = new ChartViewFieldExample();
+        chartViewFieldExample.createCriteria().andChartIdEqualTo(sourceChartId);
+        List<ChartViewField> chartViewFields = chartViewFieldMapper.selectByExampleWithBLOBs(chartViewFieldExample);
+        if (CollectionUtils.isNotEmpty(chartViewFields)) {
+            for (ChartViewField field : chartViewFields) {
+                field.setId(null);
+                field.setChartId(targetChartId);
+                save(field);
             }
         }
     }

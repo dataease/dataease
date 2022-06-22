@@ -93,6 +93,29 @@
           </el-col>
         </el-row>
       </el-row>
+      <el-row v-if="isFilterComponent" style="height: 40px;overflow: hidden;">
+        <el-col :span="5" style="padding-left: 10px;padding-top: 8px">
+          输入框样式(颜色):
+        </el-col>
+        <el-col :span="2" style="padding-left: 10px;padding-top: 8px">
+          边框
+        </el-col>
+        <el-col :span="3" style="padding-top: 5px">
+          <el-color-picker v-model="curComponent.style.brColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+        </el-col>
+        <el-col :span="2" style="padding-left: 10px;padding-top: 8px">
+          文字
+        </el-col>
+        <el-col :span="3" style="padding-top: 5px">
+          <el-color-picker v-model="curComponent.style.wordColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+        </el-col>
+        <el-col :span="2" style="padding-left: 10px;padding-top: 8px">
+          背景
+        </el-col>
+        <el-col :span="3" style="padding-top: 5px">
+          <el-color-picker v-model="curComponent.style.innerBgColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+        </el-col>
+      </el-row>
 
     </el-row>
     <el-row class="root-class">
@@ -139,7 +162,10 @@ export default {
     ...mapState([
       'curComponent',
       'componentData'
-    ])
+    ]),
+    isFilterComponent() {
+      return ['de-select', 'de-select-grid', 'de-date',  "de-input-search", "de-number-range", "de-select-tree"].includes(this.curComponent.component)
+    }
   },
   methods: {
     init() {

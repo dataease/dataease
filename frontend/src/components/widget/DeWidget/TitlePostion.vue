@@ -9,7 +9,7 @@
         <el-form-item :label="$t('chart.text_h_position')" class="form-item">
           <el-radio-group v-model="styleInfo.horizontal" size="mini">
             <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-            <el-radio-button :disabled="styleInfo.vertical === 'center'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+            <el-radio-button :disabled="styleInfo.vertical === 'center' && this.elementType !== 'de-select-grid'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
             <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
@@ -40,7 +40,11 @@ export default {
     showVertical: {
       type: Boolean,
       default: false
-    }
+    },
+    elementType: {
+      type: String,
+      default: ''
+    },
   }
 
 }

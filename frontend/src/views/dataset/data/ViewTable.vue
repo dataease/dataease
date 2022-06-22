@@ -4,6 +4,9 @@
       <span class="title-text" style="line-height: 26px;">
         {{ table.name }}
       </span>
+      <span v-if="sycnStatus === 'Underway'" class="blue-color" style="line-height: 26px;">
+        {{ $t('dataset.dataset_sync') }}
+      </span>
       <el-popover
         placement="right-start"
         width="400"
@@ -102,6 +105,8 @@ export default {
       },
       fields: [],
       data: [],
+      sycnStatus: '',
+      lastRequestComplete: true,
       page: {
         page: 1,
         pageSize: 1000,
@@ -132,7 +137,22 @@ export default {
     })
   },
   created() {
-
+    this.taskLogTimer = setInterval(() => {
+      console.log(this.sycnStatus)
+      console.log(this.lastRequestComplete)
+      if (this.sycnStatus !== 'Underway') {
+        return;
+      }
+      if (!this.lastRequestComplete) {
+        return
+      } else {
+        this.lastRequestComplete = false
+      }
+      this.initPreviewData(this.page)
+    }, 5000)
+  },
+  beforeDestroy() {
+    clearInterval(this.taskLogTimer)
   },
   mounted() {
     this.initTable(this.param.id)
@@ -160,13 +180,16 @@ export default {
           this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page
+          this.sycnStatus = response.data.sycnStatus
           if (response.data.status === 'warnning') {
             this.$warning(response.data.msg, 3000)
           }
           if (response.data.status === 'error') {
             this.$error(response.data.msg, 3000)
           }
+          this.lastRequestComplete = true
         }).catch(response => {
+          this.lastRequestComplete = true
           this.fields = []
           this.data = []
           this.page = {
