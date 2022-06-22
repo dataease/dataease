@@ -628,6 +628,7 @@ public class DataSetTableService {
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
+                logger.error(datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
