@@ -147,7 +147,7 @@ export default {
       this.outsideStyle = {
         flexWrap: 'wrap'
       }
-      if (vertical !== 'top') {
+      if (vertical !== 'top' && this.element.component !== 'de-select-grid') {
         this.titleStyle = null
         this.outsideStyle = {
           flexDirection: horizontal === 'right' ? 'row-reverse' : '',

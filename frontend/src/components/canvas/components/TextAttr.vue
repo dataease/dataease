@@ -153,7 +153,7 @@
 
       <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="标题位置">
-          <title-postion :show-vertical="showVertical" :style-info="styleInfo" />
+          <title-postion :elementType="elementType" :show-vertical="showVertical" :style-info="styleInfo" />
         </el-tooltip>
       </div>
       <!--tab 内部组件样式-->
@@ -351,6 +351,9 @@ export default {
     },
     styleInfo() {
       return this.$store.state.curComponent.style
+    },
+    elementType() {
+      return this.$store.state.curComponent.component
     },
     canvasWidth() {
       return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
