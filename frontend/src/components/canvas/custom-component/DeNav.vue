@@ -42,8 +42,8 @@ export default {
     heightlight() {
       return function(value) {
         if (this.canvasStyleData.navShowKey === value.name) {
-          // return this.element.options.highlight
-          return this.element.options.color
+          return this.element.options.highlight
+          // return this.element.options.color
         } else {
           return this.element.options.color
         }

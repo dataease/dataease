@@ -169,6 +169,7 @@ export default {
     },
     opacityClass() {
       return function(value) {
+        console.log('value-----', value)
         if (this.canvasStyleData.navShowKey && value.showName) {
           if (this.canvasStyleData.navShowKey === value.showName) {
             return 1
