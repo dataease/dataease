@@ -22,3 +22,8 @@ CREATE TABLE `chart_view_field`
 
 
 ALTER TABLE `dataset_table` ADD COLUMN `sql_variable_details` LONGTEXT NULL AFTER `last_update_time`;
+
+INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`,
+                         `install_time`, `module_name`, `ds_type`)
+VALUES ('达梦数据源插件', 'default', '0', '0', 'datasource', '达梦数据源插件', '1.0-SNAPSHOT', 'DATAEASE', '0',
+        '1650765903630', 'dm-backend', 'dm');
