@@ -3,10 +3,10 @@
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
       <el-input
+        ref="de-select-grid"
         v-model="keyWord"
         :placeholder="$t('deinputsearch.placeholder')"
         :size="size"
-        ref="de-select-grid"
         prefix-icon="el-icon-search"
         clearable
       />
@@ -78,7 +78,7 @@ export default {
       show: true,
       datas: [],
       isIndeterminate: false,
-      checkAll: false,
+      checkAll: false
     }
   },
   computed: {
@@ -100,8 +100,8 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     cssArr() {
-        const { brColor, wordColor, innerBgColor } = this.element.style;
-        return { brColor, wordColor, innerBgColor }
+      const { brColor, wordColor, innerBgColor } = this.element.style
+      return { brColor, wordColor, innerBgColor }
     }
   },
   watch: {
@@ -137,6 +137,10 @@ export default {
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
         this.changeInputStyle()
+        if (this.element.options.attrs.multiple) {
+          this.checkAll = this.value.length === this.datas.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        }
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
@@ -155,7 +159,7 @@ export default {
           this.checkAll = this.value.length === this.datas.length
           this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
         }
-        this.changeInputStyle();
+        this.changeInputStyle()
       })
     },
     'element.options.attrs.sort': function(value, old) {
@@ -176,11 +180,15 @@ export default {
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
         this.changeInputStyle()
+        if (this.element.options.attrs.multiple) {
+          this.checkAll = this.value.length === this.datas.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        }
       }) || (this.element.options.value = '')
     },
     cssArr: {
-        handler: 'changeInputStyle',
-        deep: true
+      handler: 'changeInputStyle',
+      deep: true
     },
     keyWord: 'changeInputStyle'
   },
@@ -206,21 +214,21 @@ export default {
 
   methods: {
     changeInputStyle() {
-      if (!this.$parent.handlerInputStyle) return;
+      if (!this.$parent.handlerInputStyle) return
       this.$nextTick(() => {
-          this.handlerInputStyle(this.element.style)
+        this.handlerInputStyle(this.element.style)
       })
     },
     handlerInputStyle(newValue) {
-      let nodeCache = '';
+      let nodeCache = ''
       if (!this.$refs['de-select-grid']) return
-        styleAttrs.forEach(ele => {
-            if (!nodeCache) {
-                nodeCache = this.$refs['de-select-grid'].$el.querySelector('.el-input__inner')
-            }
-            nodeCache.style[attrsMap[ele]] = newValue[ele];
-            this.textSelectGridWidget(this.$el, ele, newValue[ele])
-        })
+      styleAttrs.forEach(ele => {
+        if (!nodeCache) {
+          nodeCache = this.$refs['de-select-grid'].$el.querySelector('.el-input__inner')
+        }
+        nodeCache.style[attrsMap[ele]] = newValue[ele]
+        this.textSelectGridWidget(this.$el, ele, newValue[ele])
+      })
     },
     textSelectGridWidget: textSelectGridWidget,
     initLoad() {
