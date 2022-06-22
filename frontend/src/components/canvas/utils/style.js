@@ -303,7 +303,7 @@ export function recursionThemTransObj(template, infoObj, color) {
     } else {
       // 如果是对象 继续进行递归
       if (infoObj[templateKey]) {
-        recursionTransObj(template[templateKey], infoObj[templateKey], color)
+        recursionThemTransObj(template[templateKey], infoObj[templateKey], color)
       }
     }
   }

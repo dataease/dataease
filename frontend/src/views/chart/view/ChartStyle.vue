@@ -12,20 +12,6 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
-      <el-row v-if="!batchOptStatus" class="padding-lr">
-        <span class="title-text">{{ $t('chart.style_priority') }}</span>
-        <el-row>
-          <el-radio-group
-            v-model="view.stylePriority"
-            class="radio-span"
-            size="mini"
-            @change="calcStyle"
-          >
-            <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-            <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-          </el-radio-group>
-        </el-row>
-      </el-row>
       <el-row>
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse v-model="attrActiveNames" class="style-collapse">

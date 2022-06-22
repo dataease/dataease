@@ -65,6 +65,7 @@ import {
   LIGHT_THEME_PANEL_BACKGROUND
 } from '@/components/canvas/utils/style'
 import bus from '@/utils/bus'
+import { DEFAULT_COLOR_CASE_DARK, DEFAULT_TITLE_STYLE_DARK, DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 export default {
   name: 'OverallSetting',
   data() {
@@ -74,12 +75,6 @@ export default {
     }
   },
   watch: {
-    // canvasStyleData: {
-    //   handler(newVal, oldVla) {
-    //     console.log('canvasStyleData=' + JSON.stringify(this.canvasStyleData))
-    //   },
-    //   deep: true
-    // }
   },
   computed: {
     ...mapState([
@@ -100,9 +95,13 @@ export default {
         if (this.overallSettingForm.panel.themeColor === 'light') {
           this.canvasStyleData.panel.color = LIGHT_THEME_PANEL_BACKGROUND
           this.canvasStyleData.chartInfo.chartCommonStyle.color = LIGHT_THEME_COMPONENT_BACKGROUND
+          this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE
+          this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE
         } else {
           this.canvasStyleData.panel.color = DARK_THEME_PANEL_BACKGROUND
           this.canvasStyleData.chartInfo.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
+          this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE_DARK
+          this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE_DARK
         }
         adaptCurThemeCommonStyleAll()
         bus.$emit('onThemeColorChange')

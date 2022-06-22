@@ -426,7 +426,7 @@ export default {
     },
     optFromBatchSingleProp(param) {
       this.$store.state.styleChangeTimes++
-      const updateParams = { }
+      const updateParams = { 'id': this.chart.id }
       if (param.custom === 'customAttr') {
         const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
         sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
@@ -444,15 +444,14 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },
-    optFromBatchThemeChange() {
-      const updateParams = { }
+    optFromBatchThemeChange(changeType) {
+      const updateParams = { 'id': this.chart.id }
       const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
       const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
       adaptCurTheme(sourceCustomStyle, sourceCustomAttr)
       this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
       this.chart.customAttr = this.sourceCustomAttrStr
       updateParams['customAttr'] = this.sourceCustomAttrStr
-
       this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
       this.chart.customStyle = this.sourceCustomStyleStr
       updateParams['customStyle'] = this.sourceCustomStyleStr
@@ -488,10 +487,10 @@ export default {
         this.batchOptChange(param)
       })
       bus.$on('onSubjectChange', () => {
-        this.optFromBatchThemeChange()
+        this.optFromBatchThemeChange('subject')
       })
       bus.$on('onThemeColorChange', () => {
-        this.optFromBatchThemeChange()
+        this.optFromBatchThemeChange('themeColor')
       })
       bus.$on('onThemeAttrChange', (param) => {
         this.optFromBatchSingleProp(param)
