@@ -1115,6 +1115,7 @@ export default {
     form_type: '類別'
   },
   dataset: {
+    dataset_sync: ' ( 資料同步中... )',
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
     datalist: '數據集',
     name: '數據集名稱',

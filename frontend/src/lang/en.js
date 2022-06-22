@@ -1115,6 +1115,7 @@ export default {
     form_type: 'From Type'
   },
   dataset: {
+    dataset_sync: ' ( Data sync... )',
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
     datalist: 'Data Set',
     name: 'DataSet Name',
