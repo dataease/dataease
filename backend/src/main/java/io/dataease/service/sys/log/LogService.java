@@ -264,7 +264,7 @@ public class LogService {
             //文件名称
             String fileName = "DataEase操作日志";
             String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename="+encodeFileName+".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename="+encodeFileName+".xls");
             wb.write(outputStream);
             outputStream.flush();
             outputStream.close();

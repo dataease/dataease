@@ -118,7 +118,7 @@ export default {
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = 'DataEase操作日志.xlsx' // 下载的文件名
+        link.download = 'DataEase操作日志.xls' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
