@@ -1550,16 +1550,7 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector': [
-        'barDefault',
-        'barWidth',
-        'barGap',
-        'lineWidth',
-        'lineType',
-        'lineSymbol',
-        'lineSymbolSize',
-        'lineArea',
-        'bubble_scatterSymbol',
-        'bubble_scatterSymbolSize'
+        'mix'
       ],
       'label-selector': [
         'show',
