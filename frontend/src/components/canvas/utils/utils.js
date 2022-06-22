@@ -8,7 +8,7 @@ import {
 } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
-import { AIDED_DESIGN } from '@/views/panel/panel'
+import { AIDED_DESIGN, PANEL_CHART_INFO } from '@/views/panel/panel'
 import html2canvas from 'html2canvasde'
 
 export function deepCopy(target) {
@@ -81,6 +81,9 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
+  componentStyle.chartInfo = (componentStyle.chartInfo || deepCopy(PANEL_CHART_INFO))
+  componentStyle.themeId = (componentStyle.themeId || 'NO_THEME')
+  componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&

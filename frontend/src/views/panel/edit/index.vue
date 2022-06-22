@@ -369,6 +369,7 @@ import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
+import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 export default {
   name: 'PanelEdit',
   components: {
@@ -733,7 +734,8 @@ export default {
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
-      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix) {
+      const elButton = evt.target.closest('.el-button')
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix&& !elButton) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -1036,6 +1038,8 @@ export default {
       component.id = newComponentId
       // 统一设置背景信息
       component.commonBackground = deepCopy(COMMON_BACKGROUND)
+      // 适配当前主题
+      adaptCurThemeCommonStyle(component)
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
       this.clearCurrentInfo()

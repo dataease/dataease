@@ -315,6 +315,7 @@ import {
   DEFAULT_TOTAL
 } from '../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
+import { adaptCurTheme } from '@/components/canvas/utils/style'
 
 export default {
   name: 'Group',
@@ -792,22 +793,26 @@ export default {
       view.render = this.view.render
       view.resultMode = 'custom'
       view.resultCount = 1000
-      view.customAttr = JSON.stringify({
+      const customAttr = {
         color: DEFAULT_COLOR_CASE,
         tableColor: DEFAULT_COLOR_CASE,
         size: DEFAULT_SIZE,
         label: DEFAULT_LABEL,
         tooltip: DEFAULT_TOOLTIP,
         totalCfg: DEFAULT_TOTAL
-      })
-      view.customStyle = JSON.stringify({
+      }
+      const customStyle = {
         text: DEFAULT_TITLE_STYLE,
         legend: DEFAULT_LEGEND_STYLE,
         xAxis: DEFAULT_XAXIS_STYLE,
         yAxis: DEFAULT_YAXIS_STYLE,
         yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
         split: DEFAULT_SPLIT
-      })
+      }
+      // 新建的视图应用当前主题
+      adaptCurTheme(customStyle, customAttr)
+      view.customAttr = JSON.stringify(customAttr)
+      view.customStyle = JSON.stringify(customStyle)
       view.senior = JSON.stringify({
         functionCfg: DEFAULT_FUNCTION_CFG,
         assistLine: [],
@@ -824,6 +829,7 @@ export default {
       view.extBubble = JSON.stringify([])
       view.viewFields = JSON.stringify([])
       this.setChartDefaultOptions(view)
+
       const _this = this
       post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
         this.closeCreateChart()

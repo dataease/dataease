@@ -119,7 +119,7 @@ import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
-import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
+import { adaptCurTheme, customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
@@ -354,7 +354,7 @@ export default {
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
       handler(newVal, oldVla) {
-        this.mergeStyle()
+        // this.mergeStyle()
         // 如果视图结果模式模式 或者 视图结果获取数量改变 刷新视图
         if (!this.preCanvasPanel || this.preCanvasPanel.resultCount !== newVal.panel.resultCount || this.preCanvasPanel.resultMode !== newVal.panel.resultMode) {
           this.getData(this.element.propValue.viewId, false)
@@ -421,30 +421,44 @@ export default {
     },
     batchOptChange(param) {
       if (this.curBatchOptComponents.includes(this.element.propValue.viewId)) {
-        this.$store.state.styleChangeTimes++
-        // stylePriority change to 'view'
-        const updateParams = { 'id': this.chart.id, 'stylePriority': 'view' }
-        if (param.custom === 'customAttr') {
-          const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
-          sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
-          this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
-          this.chart.customAttr = this.sourceCustomAttrStr
-          updateParams['customAttr'] = this.sourceCustomAttrStr
-        } else if (param.custom === 'customStyle') {
-          const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
-          // view's title use history
-          // if (param.property === 'text') {
-          //   param.value.title = sourceCustomStyle.text.title
-          // }
-          sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
-          this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
-          this.chart.customStyle = this.sourceCustomStyleStr
-          updateParams['customStyle'] = this.sourceCustomStyleStr
-        }
-        viewPropsSave(this.panelInfo.id, updateParams)
-        this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
-        this.mergeScale()
+        this.optFromBatchSingleProp(param)
       }
+    },
+    optFromBatchSingleProp(param) {
+      this.$store.state.styleChangeTimes++
+      const updateParams = { }
+      if (param.custom === 'customAttr') {
+        const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
+        sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+        this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
+        this.chart.customAttr = this.sourceCustomAttrStr
+        updateParams['customAttr'] = this.sourceCustomAttrStr
+      } else if (param.custom === 'customStyle') {
+        const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+        sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+        this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
+        this.chart.customStyle = this.sourceCustomStyleStr
+        updateParams['customStyle'] = this.sourceCustomStyleStr
+      }
+      viewPropsSave(this.panelInfo.id, updateParams)
+      this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
+      this.mergeScale()
+    },
+    optFromBatchThemeChange() {
+      const updateParams = { }
+      const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
+      const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+      adaptCurTheme(sourceCustomStyle, sourceCustomAttr)
+      this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
+      this.chart.customAttr = this.sourceCustomAttrStr
+      updateParams['customAttr'] = this.sourceCustomAttrStr
+
+      this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
+      this.chart.customStyle = this.sourceCustomStyleStr
+      updateParams['customStyle'] = this.sourceCustomStyleStr
+      viewPropsSave(this.panelInfo.id, updateParams)
+      this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
+      this.mergeScale()
     },
     resizeChart() {
       if (this.chart.type === 'map') {
@@ -473,6 +487,15 @@ export default {
       bus.$on('batch-opt-change', param => {
         this.batchOptChange(param)
       })
+      bus.$on('onSubjectChange', () => {
+        this.optFromBatchThemeChange()
+      })
+      bus.$on('onThemeColorChange', () => {
+        this.optFromBatchThemeChange()
+      })
+      bus.$on('onThemeAttrChange', (param) => {
+        this.optFromBatchSingleProp(param)
+      })
     },
 
     addViewTrackFilter(linkageParam) {
@@ -485,7 +508,6 @@ export default {
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
       recursionTransObj(customAttrTrans, customAttrChart, this.scale, this.scaleCoefficientType)
       recursionTransObj(customStyleTrans, customStyleChart, this.scale, this.scaleCoefficientType)
-
       // 移动端地图标签不显示
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
@@ -494,32 +516,6 @@ export default {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
-      }
-      this.mergeStyle()
-    },
-    mergeStyle() {
-      if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
-        const customAttrChart = JSON.parse(this.chart.customAttr)
-        const customStyleChart = JSON.parse(this.chart.customStyle)
-        const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
-        const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
-        if (customStyleChart.background) {
-          // 组件样式-背景设置
-          customStyleChart.background = customStylePanel.background
-        }
-        // 图形属性-颜色设置
-        if (this.chart.type.includes('table')) {
-          customAttrChart.color = customAttrPanel.tableColor
-        } else {
-          customAttrChart.color['value'] = customAttrPanel.color['value']
-          customAttrChart.color['colors'] = customAttrPanel.color['colors']
-          customAttrChart.color['alpha'] = customAttrPanel.color['alpha']
-        }
-        this.chart = {
-          ...this.chart,
-          customAttr: JSON.stringify(customAttrChart),
-          customStyle: JSON.stringify(customStyleChart)
-        }
       }
     },
     getData(id, cache = true, dataBroadcast = false) {

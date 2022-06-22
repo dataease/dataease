@@ -1,47 +1,50 @@
 <template>
-  <div>
-    <div style="width: 100%;">
-      <el-popover
-        placement="right"
-        width="250"
-        trigger="click"
-      >
-        <el-col>
-          <el-row>
-            <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{ $t('chart.color') }}</el-radio>
-            </el-col>
-            <el-col :span="18">
-              <el-color-picker v-model="panel.color" :predefine="predefineColors" size="mini" style="cursor: pointer;z-index: 1004;" @change="onChangeType" />
-            </el-col>
-          </el-row>
-          <el-row style="height: 60px;margin-top:10px;overflow: hidden">
-            <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
-            </el-col>
-            <el-col :span="18">
-              <el-upload
-                action=""
-                accept=".jpeg,.jpg,.png,.gif"
-                class="avatar-uploader"
-                list-type="picture-card"
-                :http-request="upload"
-                :class="{disabled:uploadDisabled}"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-              >
-                <i class="el-icon-plus" />
-              </el-upload>
-              <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
-                <img width="100%" :src="dialogImageUrl" alt="">
-              </el-dialog>
-            </el-col>
-          </el-row>
-        </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.background') }} <i class="el-icon-setting el-icon--right" /></el-button>
-      </el-popover>
-    </div>
+  <div style="width: 100%;">
+    <el-form ref="overallSettingForm" :model="overallSettingForm" size="mini">
+      <el-col style="padding-bottom: 10px;">
+        <el-row>
+          <el-col class="custom-item">
+            <el-radio v-model="panel.backgroundType" label="color" style="float: right" @change="onChangeType">
+              <span style="font-size: 12px">{{ $t('chart.color') }}</span>
+            </el-radio>
+          </el-col>
+          <el-col :span="10">
+            <el-color-picker
+              v-model="panel.color"
+              :predefine="predefineColors"
+              size="mini"
+              class="color-picker-custom"
+              @change="onChangeType"
+            />
+          </el-col>
+        </el-row>
+        <el-row style="height: 60px;margin-top:10px;overflow: hidden">
+          <el-col class="custom-item">
+            <el-radio v-model="panel.backgroundType" label="image" style="float: right" @change="onChangeType">
+              <span style="font-size: 12px">{{ $t('panel.photo') }}</span>
+            </el-radio>
+          </el-col>
+          <el-col :span="15">
+            <el-upload
+              action=""
+              accept=".jpeg,.jpg,.png,.gif"
+              class="avatar-uploader"
+              list-type="picture-card"
+              :http-request="upload"
+              :class="{disabled:uploadDisabled}"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+            >
+              <i class="el-icon-plus" />
+            </el-upload>
+            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-form>
   </div>
 </template>
 
@@ -61,8 +64,8 @@ export default {
       dialogVisible: false,
       uploadDisabled: false,
       panel: null,
-      predefineColors: COLOR_PANEL
-
+      predefineColors: COLOR_PANEL,
+      overallSettingForm: {}
     }
   },
   computed: mapState([
@@ -111,40 +114,62 @@ export default {
 </script>
 
 <style scoped>
-  .avatar-uploader>>>.el-upload {
-    width: 100px;
-    height: 60px;
-    line-height: 70px;
-  }
-  .avatar-uploader>>>.el-upload-list li{
-    width: 100px !important;
-    height: 60px !important;
-  }
-  .disabled>>>.el-upload--picture-card {
-    display: none;
-  }
-  .shape-item{
-    padding: 6px;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .form-item-slider>>>.el-form-item__label{
-    font-size: 12px;
-    line-height: 38px;
-  }
-  .form-item>>>.el-form-item__label{
-    font-size: 12px;
-  }
-  .el-select-dropdown__item{
-    padding: 0 20px;
-  }
-  span{
-    font-size: 12px
-  }
-  .el-form-item{
-    margin-bottom: 6px;
-  }
+.avatar-uploader {
+  margin-left: 10px;
+}
+
+.avatar-uploader ::v-deep .el-upload {
+  width: 100px;
+  height: 60px;
+  line-height: 70px;
+}
+
+.avatar-uploader ::v-deep .el-upload-list li {
+  width: 100px !important;
+  height: 60px !important;
+}
+
+.disabled ::v-deep .el-upload--picture-card {
+  display: none;
+}
+
+.shape-item {
+  padding: 6px;
+  border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-item-slider ::v-deep .el-form-item__label {
+  font-size: 12px;
+  line-height: 38px;
+}
+
+.form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
+
+.el-select-dropdown__item {
+  padding: 0 20px;
+}
+
+span {
+  font-size: 12px
+}
+
+.el-form-item {
+  margin-bottom: 6px;
+}
+
+.color-picker-custom {
+  margin-left: 10px;
+  cursor: pointer;
+  z-index: 1004;
+}
+
+.custom-item{
+  width: 70px;
+}
 </style>

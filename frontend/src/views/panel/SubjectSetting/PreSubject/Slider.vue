@@ -81,6 +81,9 @@
 import SubjectTemplateItem from './SubjectTemplateItem'
 import { querySubjectWithGroup, saveOrUpdateSubject, deleteSubject } from '@/api/panel/panel'
 import { mapState } from 'vuex'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import { uuid } from 'vue-uuid'
+
 
 export default {
   name: 'Slider',
@@ -138,8 +141,10 @@ export default {
       })
     },
     saveSelfSubject() {
+      const canvasStyle = deepCopy(this.canvasStyleData)
+      canvasStyle.themeId = uuid.v1()
       const request = {
-        details: JSON.stringify(this.canvasStyleData)
+        details: JSON.stringify(canvasStyle)
       }
       this.slidersLoading = true
       saveOrUpdateSubject(request).then(response => {

@@ -664,9 +664,9 @@ export default {
     cas_selected_warn: '選擇CAS方式保存後會註銷當前回話，重新登錄'
   },
   chart: {
-    view_reset: '视图重置',
-    view_reset_tips: '放弃对视图的修改？',
-    export_img: '导出图片',
+    view_reset: '視圖重置',
+    view_reset_tips: '放棄對視圖的修改？',
+    export_img: '導出圖片',
     title_repeat: '當前標題已存在',
     save_snapshot: '保存縮略圖',
     datalist: '視圖',
@@ -1260,7 +1260,7 @@ export default {
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',
       change_success: '狀態切換成功',
-      excel_replace_msg: '可能會影響計算欄位、自定義數据集、關聯數据集、儀錶板等，確認替換？',
+      excel_replace_msg: '可能會影響計算欄位、自定義數據集、關聯數據集、儀錶板等，確認替換？',
       effect_ext_field: '會影響計算欄位'
     },
     field_group_type: '分類',
@@ -1463,10 +1463,21 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    theme_change_warn: '主題更換',
+    theme_change_tips: '更換主題將會覆蓋視圖相關主題屬性建議提前備份,是否繼續更換？',
+    theme_color_change_warn: '主題色更換',
+    theme_color_change_tips: '主題色變更將會覆蓋原有視圖屬性',
+    theme_color: '主題色',
+    theme_color_dark: '深色',
+    theme_color_light: '淺色',
+    refresh_frequency: '刷新頻率',
+    card_color_matching: '卡片配色',
+    table_color_matching: '表格配色',
+    background_color: '背景顏色',
     more: '更多',
-    level: '层级',
+    level: '層級',
     enlarge: '放大',
-    panel_style: '仪表板样式',
+    panel_style: '儀表板樣式',
     multiplexing: '復用',
     panel_off: '儀表板已下架',
     batch_opt: '批量操作',
@@ -1703,7 +1714,7 @@ export default {
     web_url: '網頁地址',
     video_add_tips: '請點擊添加配置視頻信息...',
     web_add_tips: '請點擊添加網頁信息...',
-    panel_view_result_show: '視圖結果展示',
+    panel_view_result_show: '視圖結果',
     panel_view_result_tips: '選擇儀錶闆會覆蓋視圖的結果展示數量，取值範圍1~10000',
     timeout_refresh: '請求超時，稍後刷新...',
     mobile_layout: '移動端佈局',
@@ -1916,7 +1927,7 @@ export default {
     placeholder: '請選擇'
   },
   detextselectTree: {
-    label: '下拉树',
+    label: '下拉樹',
     placeholder: '請選擇'
   },
   detextgridselect: {

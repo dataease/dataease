@@ -1,8 +1,16 @@
 <template>
   <div class="subject-template">
-    <div class="vertical-layout" @click.stop="subjectChange">
+    <div
+      :class="[
+        {
+          ['vertical-layout-selected']: themeSelected
+        },
+        'vertical-layout'
+      ]"
+      @click.stop="subjectChange"
+    >
       <i v-if="subjectItem.type==='self'" class="el-icon-error" @click.stop="subjectDelete" />
-      <!--      <i class="el-icon-edit" />-->
+      <span v-show="themeSelected" class="el-icon-success theme-selected-icon" />
       <!-- 背景-->
       <div class="allBack" :style="customBackground" style="inset: 1px; position: absolute;" />
       <!-- 视图组件 背景-->
@@ -66,6 +74,7 @@ import { chartTransStr2Object } from '@/views/panel/panel'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { saveOrUpdateSubject } from '@/api/panel/panel'
+import { resetViewCacheCallBack } from '@/api/chart/chart'
 
 export default {
   name: 'StyleTemplateItem',
@@ -111,8 +120,8 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
-          background: this.subjectItemDetails.chart.customAttr.color.colors[0]
+          opacity: this.subjectItemDetails.chartInfo.chartColor.alpha / 100,
+          background: this.subjectItemDetails.chartInfo.chartColor.colors[0]
         }
       }
       return style
@@ -121,8 +130,8 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
-          background: this.subjectItemDetails.chart.customAttr.color.colors[1]
+          opacity: this.subjectItemDetails.chartInfo.chartColor.alpha / 100,
+          background: this.subjectItemDetails.chartInfo.chartColor.colors[1]
         }
       }
       return style
@@ -131,8 +140,8 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
-          background: this.subjectItemDetails.chart.customAttr.color.colors[2]
+          opacity: this.subjectItemDetails.chartInfo.chartColor.alpha / 100,
+          background: this.subjectItemDetails.chartInfo.chartColor.colors[2]
         }
       }
       return style
@@ -141,8 +150,8 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.tableColor.alpha / 100,
-          background: this.subjectItemDetails.chart.customAttr.tableColor.tableHeaderBgColor
+          opacity: this.subjectItemDetails.chartInfo.chartColor.alpha / 100,
+          background: this.subjectItemDetails.chartInfo.chartColor.tableHeaderBgColor
         }
       }
       return style
@@ -151,20 +160,23 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          background: this.subjectItemDetails.chart.customAttr.tableColor.tableFontColor
+          background: this.subjectItemDetails.chartInfo.chartColor.tableFontColor
         }
       }
       return style
     },
     chartBackground() {
       let style = {}
-      if (this.subjectItemDetails && this.subjectItemDetails.chart.customStyle.background) {
+      if (this.subjectItemDetails && this.subjectItemDetails.chartInfo.chartCommonStyle.backgroundColorSelect) {
         style = {
-          background: this.subjectItemDetails.chart.customStyle.background.color,
-          opacity: this.subjectItemDetails.chart.customStyle.background.alpha / 100
+          background: this.subjectItemDetails.chartInfo.chartCommonStyle.color,
+          opacity: this.subjectItemDetails.chartInfo.chartCommonStyle.alpha / 100
         }
       }
       return style
+    },
+    themeSelected() {
+      return this.subjectItemDetails && this.subjectItemDetails.themeId === this.canvasStyleData.themeId
     },
     ...mapState([
       'canvasStyleData'
@@ -187,19 +199,21 @@ export default {
   methods: {
     subjectDelete() {
       this.$emit('subjectDelete', this.subjectItem.id)
-      // this.$alert('是否删除主题：' + this.subjectItem.name + '？', '', {
-      //   confirmButtonText: '确认',
-      //   callback: (action) => {
-      //     if (action === 'confirm') {
-      //       this.$emit('subjectDelete', this.subjectItem.id)
-      //     }
-      //   }
-      // })
     },
     subjectChange() {
-      this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
-      this.$store.commit('recordSnapshot', 'subjectChange')
-      bus.$emit('onSubjectChange')
+      if (!this.themeSelected) {
+        this.$confirm(this.$t('panel.theme_change_tips'), this.$t('panel.theme_change_warn'), {
+          confirmButtonText: this.$t('commons.confirm'),
+          cancelButtonText: this.$t('commons.cancel'),
+          type: 'warning'
+        }).then(() => {
+          this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
+          this.$store.commit('recordSnapshot', 'subjectChange')
+          bus.$emit('onSubjectChange')
+        }).catch(() => {
+          // Do Nothing
+        })
+      }
     },
     templateEdit() {
       this.$emit('templateEdit', this.template)
@@ -283,6 +297,11 @@ export default {
     border-radius: 3px;
   }
 
+  .vertical-layout-selected{
+    border: solid 2px #4b8fdf;
+    border-radius: 3px;
+  }
+
   .vertical-layout:hover {
     border: solid 1px #4b8fdf;
     border-radius: 3px;
@@ -305,16 +324,16 @@ export default {
     z-index: 10;
     display:block;
   }
-
-  .vertical-layout:hover > .el-icon-edit {
-    z-index: 10;
-    display:block;
-  }
   .vertical-layout>>>.el-icon-error {
     display:none
   }
-  .vertical-layout>>>.el-icon-edit {
-    display:none
+  .theme-selected-icon {
+    z-index: 2;
+    font-size: 16px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    color: #4b8fdf;
   }
 
 </style>
