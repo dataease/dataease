@@ -144,7 +144,7 @@
       top="5vh"
     >
       <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-        <el-button v-if="showChartInfoType==='enlarge'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+        <el-button v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
           {{ $t('chart.export_img') }}
         </el-button>
         <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
