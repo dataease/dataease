@@ -64,72 +64,69 @@
             <span class="params-title">添加文字描述</span>
           </el-col>
         </el-row>
-        <el-col v-for="(item,index) in curComponent.options.bannerImgList" :key="index">
-          <el-row>
-            <el-col :span="24">
-              <span class="params-title">图{{index +1}}、</span>
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="2">
-              <span class="params-title">{{$t('commons.title')}}</span>
-            </el-col>
-            <el-col :span="8">
-              <el-input v-model="item.imgTitle" placeholder="请输入内容" />
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="2">
-              <span class="params-title">{{$t('panel.content')}}</span>
-            </el-col>
-            <el-col :span="20">
-              <el-input
-                v-model="item.imgContent"
-                type="textarea"
-                :rows="2"
-                placeholder="请输入内容"
-              />
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="3">
-              <span class="params-title">{{ $t('chart.text_fontsize') }}</span>
-            </el-col>
-            <el-col :span="8">
-              <el-input-number v-model="item.imgFontSize" :min="10" />
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="3">
-              <span class="params-title">{{ $t('chart.text_color') }}</span>
-            </el-col>
-            <el-col :span="8">
-              <el-color-picker 
-                v-model="item.imgFontColor" 
-                class="color-picker-style" 
-                :predefine="predefineColors"/>
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="3">
-              <span class="params-title">{{ $t('chart.box_background') }}</span>
-            </el-col>
-            <el-col :span="8">
-              <el-color-picker 
-                v-model="item.imgBackgroundColor" 
-                class="color-picker-style" 
-                :predefine="predefineColors"/>
-            </el-col>
-          </el-row>
-          <el-row style="padding:5px;">
-            <el-col :span="3">
-              <span class="params-title">{{ $t('chart.box_background_opacity') }}</span>
-            </el-col>
-            <el-col :span="8">
-              <el-input-number v-model="item.imgOpacity" :min="0" :max="1" :step="0.1" />
-            </el-col>
-          </el-row>
-        </el-col>
+        <el-collapse v-model="activeName">
+          <el-collapse-item v-for="(item,index) in curComponent.options.bannerImgList" :title="`图${index+1}`" :key="index" :name="index">
+            <el-row style="padding:5px;">
+              <el-col :span="2">
+                <span class="params-title">{{$t('commons.title')}}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-input v-model="item.imgTitle" placeholder="请输入内容" />
+              </el-col>
+            </el-row>
+            <el-row style="padding:5px;">
+              <el-col :span="2">
+                <span class="params-title">{{$t('panel.content')}}</span>
+              </el-col>
+              <el-col :span="20">
+                <el-input
+                  v-model="item.imgContent"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入内容"
+                />
+              </el-col>
+            </el-row>
+            <el-row style="padding:5px;">
+              <el-col :span="3">
+                <span class="params-title">{{ $t('chart.text_fontsize') }}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-input-number v-model="item.imgFontSize" :min="10" />
+              </el-col>
+            </el-row>
+            <el-row style="padding:5px;">
+              <el-col :span="3">
+                <span class="params-title">{{ $t('chart.text_color') }}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-color-picker 
+                  v-model="item.imgFontColor" 
+                  class="color-picker-style" 
+                  :predefine="predefineColors"/>
+              </el-col>
+            </el-row>
+            <el-row style="padding:5px;">
+              <el-col :span="3">
+                <span class="params-title">{{ $t('chart.box_background') }}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-color-picker 
+                  v-model="item.imgBackgroundColor" 
+                  class="color-picker-style" 
+                  :predefine="predefineColors"/>
+              </el-col>
+            </el-row>
+            <el-row style="padding:5px;">
+              <el-col :span="3">
+                <span class="params-title">{{ $t('chart.box_background_opacity') }}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-input-number v-model="item.imgOpacity" :min="0" :max="1" :step="0.1" />
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
       </el-row>
     </el-row>
     <el-row class="root-class">
@@ -161,6 +158,7 @@ export default {
   },
   data() {
     return {
+      activeName: null,
       input: '',
       BackgroundShowMap: {},
       imgUrlList: [],
