@@ -30,8 +30,8 @@
     <!-- 弹出框 -->
     <el-popover ref="popover" v-model="visible" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click">
       <!-- 是否显示搜索框 -->
-      <el-input v-if="treeParams.filterable" v-model="keywords" size="mini" class="input-with-select mb10" @change="_searchFun">
-        <el-button slot="append" icon="el-icon-search" />
+      <el-input v-if="treeParams.filterable" v-model="keywords" size="mini" class="input-with-select mb10">
+        <el-button slot="append" icon="el-icon-search" @click="_searchFun" />
       </el-input>
       <el-scrollbar tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
         <!-- 树列表 -->
