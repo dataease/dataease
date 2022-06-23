@@ -231,7 +231,7 @@ export default {
         type: 'text',
         enable: true,
         required: true,
-        uuid: this.uuid(),
+        uuid: uuid.v1,
         contentType: 'text/plain'
       }));
     }
