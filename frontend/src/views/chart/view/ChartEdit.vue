@@ -765,6 +765,7 @@
               :obj="{chart}"
               :chart-id="chart.id"
               :chart="chart"
+              :theme-style="curComponent.commonBackground"
               class="chart-class"
               @onChartClick="chartClick"
             />
@@ -774,6 +775,7 @@
               :chart-id="chart.id"
               :chart="chart"
               class="chart-class"
+              :theme-style="curComponent.commonBackground"
               @onChartClick="chartClick"
             />
             <chart-component-g2

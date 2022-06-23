@@ -774,6 +774,7 @@ export const BASE_MAP = {
     inRange: {
       color: ['lightskyblue', 'yellow', 'orangered']
     },
+    textStyle: {},
     right: 0
   },
   series: [

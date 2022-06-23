@@ -1,8 +1,8 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle } from '../common/common'
+import { componentStyle, reverseColor } from '../common/common'
 import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
-export function baseMapOption(chart_option, chart) {
+export function baseMapOption(chart_option, chart, themeStyle) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -68,6 +68,11 @@ export function baseMapOption(chart_option, chart) {
       if (customAttr.color && customAttr.color.colors) {
         chart_option.visualMap.inRange.color = customAttr.color.colors
         chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
+      }
+      if (themeStyle && themeStyle.backgroundColorSelect) {
+        const panelColor = themeStyle.color
+        const reverseValue = reverseColor(panelColor)
+        chart_option.visualMap.textStyle = { color: reverseValue }
       }
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]

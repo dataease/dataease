@@ -120,6 +120,11 @@ export default {
       type: Number,
       required: false,
       default: 1
+    },
+    themeStyle: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -279,7 +284,11 @@ export default {
       this.$echarts.registerMap('MAP', geoJson)
       // this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
-      const chart_option = baseMapOption(base_json, chart)
+      let themeStyle = null
+      if (this.themeStyle) {
+        themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
+      }
+      const chart_option = baseMapOption(base_json, chart, themeStyle)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {
