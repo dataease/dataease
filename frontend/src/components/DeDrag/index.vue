@@ -1934,7 +1934,7 @@ export default {
     },
     // 跳转设置
     bannerImg() {
-      console.log('-------------------------------------------------------2222222', this.element)
+      console.log('-----------2222222', this.element)
       this.$emit('bannerImg')
     },
     // 导航条状设置
