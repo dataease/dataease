@@ -66,6 +66,7 @@ import {
 } from '@/components/canvas/utils/style'
 import bus from '@/utils/bus'
 import { DEFAULT_COLOR_CASE_DARK, DEFAULT_TITLE_STYLE_DARK, DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { FILTER_COMMON_STYLE, FILTER_COMMON_STYLE_DARK } from '@/views/panel/panel'
 export default {
   name: 'OverallSetting',
   data() {
@@ -92,16 +93,19 @@ export default {
       if (modifyName === 'themeColor') {
         // 主题变更
         this.canvasStyleData.chartInfo.chartCommonStyle.backgroundColorSelect = true
+        this.canvasStyleData.panel.backgroundType = 'color'
         if (this.overallSettingForm.panel.themeColor === 'light') {
           this.canvasStyleData.panel.color = LIGHT_THEME_PANEL_BACKGROUND
           this.canvasStyleData.chartInfo.chartCommonStyle.color = LIGHT_THEME_COMPONENT_BACKGROUND
           this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE
           this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE
+          this.canvasStyleData.chartInfo.filterStyle = FILTER_COMMON_STYLE
         } else {
           this.canvasStyleData.panel.color = DARK_THEME_PANEL_BACKGROUND
           this.canvasStyleData.chartInfo.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
           this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE_DARK
           this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE_DARK
+          this.canvasStyleData.chartInfo.filterStyle = FILTER_COMMON_STYLE_DARK
         }
         adaptCurThemeCommonStyleAll()
         bus.$emit('onThemeColorChange')

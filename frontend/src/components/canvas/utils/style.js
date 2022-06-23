@@ -332,12 +332,21 @@ export function adaptCurTheme(customStyle, customAttr) {
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
   customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'] }
+  if (customStyle.background) {
+    delete customStyle.background
+  }
 }
 
 export function adaptCurThemeCommonStyle(component) {
   const commonStyle = store.state.canvasStyleData.chartInfo.chartCommonStyle
   for (const key in commonStyle) {
     component.commonBackground[key] = commonStyle[key]
+  }
+  if (isFilterComponent(component.component)) {
+    const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
+    for (const styleKey in component.style) {
+      component.style[styleKey] = filterStyle[styleKey]
+    }
   }
   return component
 }
@@ -347,5 +356,19 @@ export function adaptCurThemeCommonStyleAll() {
   componentData.forEach((item) => {
     adaptCurThemeCommonStyle(item)
   })
+}
+
+export function adaptCurThemeFilterStyleAll(styleKey) {
+  const componentData = store.state.componentData
+  const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
+  componentData.forEach((item) => {
+    if (isFilterComponent(item.component)) {
+      item.style[styleKey] = filterStyle[styleKey]
+    }
+  })
+}
+
+export function isFilterComponent(component) {
+  return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(component)
 }
 

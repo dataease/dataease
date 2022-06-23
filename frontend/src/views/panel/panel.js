@@ -3,6 +3,24 @@ import { DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/cha
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COMMON_BACKGROUND_BASE } from '@/components/canvas/custom-component/component-list'
 
+export const FILTER_COMMON_STYLE = {
+  horizontal: 'left',
+  vertical: 'center',
+  color: '#000000',
+  brColor: '',
+  wordColor: '',
+  innerBgColor: ''
+}
+
+export const FILTER_COMMON_STYLE_DARK = {
+  horizontal: 'left',
+  vertical: 'center',
+  color: '#FFFFFF',
+  brColor: '',
+  wordColor: '#4E4B4B',
+  innerBgColor: '#131E42'
+}
+
 export const DEFAULT_PANEL_STYLE = {
   themeColor: 'light',
   color: '#ffffff',
@@ -11,6 +29,13 @@ export const DEFAULT_PANEL_STYLE = {
   gap: 'yes',
   resultMode: 'all', // 视图结果显示模式 all 视图 custom 仪表板自定义
   resultCount: 1000 // 视图结果显示条数
+}
+
+export const PANEL_CHART_INFO = {
+  chartTitle: DEFAULT_TITLE_STYLE,
+  chartColor: DEFAULT_COLOR_CASE,
+  chartCommonStyle: COMMON_BACKGROUND_BASE,
+  filterStyle: FILTER_COMMON_STYLE
 }
 
 export const CANVAS_STYLE = {
@@ -32,12 +57,6 @@ export const CANVAS_STYLE = {
   refreshTime: 5, // 仪表板刷新时间 默认5分钟
   themeId: 'system_1', // 当前所选主题ID 默认系统主题1
   chartInfo: PANEL_CHART_INFO
-}
-
-export const PANEL_CHART_INFO = {
-  chartTitle: DEFAULT_TITLE_STYLE,
-  chartColor: DEFAULT_COLOR_CASE,
-  chartCommonStyle: COMMON_BACKGROUND_BASE
 }
 
 export const AIDED_DESIGN = {

@@ -27,6 +27,9 @@
         <el-collapse-item :title="'图表标题'" name="table">
           <view-title @onTextChange="onTextChange" />
         </el-collapse-item>
+        <el-collapse-item :title="'过滤组件'" name="filterComponent">
+          <FilterStyleSelector />
+        </el-collapse-item>
       </el-collapse>
     </div>
   </el-row>
@@ -42,9 +45,11 @@ import OverallSetting from '@/views/panel/SubjectSetting/PanelStyle/OverallSetti
 import ViewTitle from '@/views/panel/SubjectSetting/PanelStyle/ViewTitle'
 import ComponentStyle from '@/views/panel/SubjectSetting/PanelStyle/ComponentStyle'
 import { adaptCurThemeCommonStyleAll } from '@/components/canvas/utils/style'
+import FilterStyleSelector from '@/views/panel/SubjectSetting/PanelStyle/FilterStyleSelector'
 
 export default {
   components: {
+    FilterStyleSelector,
     ComponentStyle,
     ViewTitle,
     slider,
