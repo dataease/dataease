@@ -51,11 +51,13 @@ function textSelectWidget(nodeCache, style) {
             const textNode = item.querySelector('.el-select__tags-text');
             const closeNode = item.querySelector('.el-tag__close');
             textNode.style.width = '100%';
+            item.style.position = 'relative';
             textNode.style.padding = '0 20px 0 8px';
             textNode.style.borderRadius = '3px';
             if (closeNode) {
                 closeNode.style.position = 'absolute';
-                closeNode.style.top = '8px';
+                closeNode.style.top = '60%';
+                closeNode.style.transform = 'translateY(-50%)';
                 closeNode.style.right = '2px';
             }
             styleAttrs.forEach((ele) => {
