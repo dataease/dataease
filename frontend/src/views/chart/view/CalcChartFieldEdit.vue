@@ -11,7 +11,17 @@
       <el-col :span="14" style="height: 100%">
         <el-row>
           <el-row v-show="mode === 'normal'">
-            <span>{{ $t('dataset.field_exp') }}</span>
+            <span>
+              {{ $t('dataset.field_exp') }}
+              <el-tooltip class="item" effect="dark" placement="bottom">
+                <div slot="content">
+                  表达式语法请遵循该数据源对应的数据库语法。
+                  <br>
+                  字段类型将使用原始类型，如有需要，请在表达式中自行转换。
+                </div>
+                <i class="el-icon-info" style="cursor: pointer;" />
+              </el-tooltip>
+            </span>
             <codemirror
               ref="myCm"
               v-model="fieldForm.originName"
@@ -25,7 +35,15 @@
           <el-row style="margin-top: 10px;">
             <el-form ref="form" :model="fieldForm" size="mini" class="row-style">
               <el-form-item>
-                <span style="width: 80px;font-size: 12px">{{ $t('dataset.data_type') }}</span>
+                <span style="width: 80px;font-size: 12px">
+                  {{ $t('dataset.data_type') }}
+                  <el-tooltip class="item" effect="dark" placement="bottom">
+                    <div slot="content">
+                      若字段表达式中使用聚合函数，则字段不能设置为维度使用。
+                    </div>
+                    <i class="el-icon-info" style="cursor: pointer;" />
+                  </el-tooltip>
+                </span>
                 <el-radio-group v-model="fieldForm.groupType" size="mini">
                   <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>
                   <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>
@@ -97,14 +115,14 @@
                   :title="item.name"
                   @click="insertFieldToCodeMirror('['+item.name+']')"
                 >
-                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon v-if="item.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon v-if="item.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon
-                    v-if="item.deType === 2 || item.deType === 3"
+                    v-if="item.deExtractType === 2 || item.deExtractType === 3"
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                  <svg-icon v-if="item.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
                   {{ item.name }}
                 </span>
               </transition-group>
@@ -127,14 +145,14 @@
                   :title="item.name"
                   @click="insertFieldToCodeMirror('['+item.name+']')"
                 >
-                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon v-if="item.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon v-if="item.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon
-                    v-if="item.deType === 2 || item.deType === 3"
+                    v-if="item.deExtractType === 2 || item.deExtractType === 3"
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                  <svg-icon v-if="item.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
                   <span>{{ item.name }}</span>
                 </span>
               </transition-group>

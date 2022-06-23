@@ -141,7 +141,18 @@
               <span v-if="scope.row.extField === 2" class="from-type-span">{{ $t('chart.calc_field') }}</span>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" :label="$t('dataset.d_q_trans')" width="120">
+          <el-table-column property="groupType" width="120">
+            <template slot="header">
+              <span style="font-size: 12px;">
+                {{ $t('dataset.d_q_trans') }}
+                <el-tooltip class="item" effect="dark" placement="bottom">
+                  <div slot="content">
+                    若字段表达式中使用聚合函数，则字段不能设置为维度使用。
+                  </div>
+                  <i class="el-icon-info" style="cursor: pointer;" />
+                </el-tooltip>
+              </span>
+            </template>
             <template slot-scope="scope">
               <el-button
                 icon="el-icon-sort"
@@ -284,7 +295,18 @@
               <span v-if="scope.row.extField === 2" class="from-type-span">{{ $t('chart.calc_field') }}</span>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" :label="$t('dataset.d_q_trans')" width="120">
+          <el-table-column property="groupType" width="120">
+            <template slot="header">
+              <span style="font-size: 12px;">
+                {{ $t('dataset.d_q_trans') }}
+                <el-tooltip class="item" effect="dark" placement="bottom">
+                  <div slot="content">
+                    若字段表达式中使用聚合函数，则字段不能设置为维度使用。
+                  </div>
+                  <i class="el-icon-info" style="cursor: pointer;" />
+                </el-tooltip>
+              </span>
+            </template>
             <template slot-scope="scope">
               <el-button
                 icon="el-icon-sort"

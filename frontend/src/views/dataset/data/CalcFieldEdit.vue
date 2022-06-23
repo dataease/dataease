@@ -11,7 +11,17 @@
       <el-col :span="14" style="height: 100%">
         <el-row>
           <el-row>
-            <span>{{ $t('dataset.field_exp') }}</span>
+            <span>
+              {{ $t('dataset.field_exp') }}
+              <el-tooltip class="item" effect="dark" placement="bottom">
+                <div slot="content">
+                  表达式语法请遵循该数据源对应的数据库语法。
+                  <br>
+                  数据集中不支持聚合运算。
+                </div>
+                <i class="el-icon-info" style="cursor: pointer;" />
+              </el-tooltip>
+            </span>
             <codemirror
               ref="myCm"
               v-model="fieldForm.originName"
