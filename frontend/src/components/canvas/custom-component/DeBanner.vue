@@ -166,7 +166,10 @@ export default {
     },
     //hex -> rgba
     hexToRgba(hex, opacity) {
-      console.log('转化',hex,opacity)
+      // console.log('转化',hex,opacity,typeof hex)
+      if(typeof(hex) !== 'string') {
+        return 'none'
+      }
       return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ','
             + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')';
     }
