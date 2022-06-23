@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '../util.js'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseBarOption(chart_option, chart) {
+export function baseBarOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -47,13 +47,13 @@ export function baseBarOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
 
-export function stackBarOption(chart_option, chart) {
-  baseBarOption(chart_option, chart)
+export function stackBarOption(chart_option, chart,cstyle = {}) {
+  baseBarOption(chart_option, chart,cstyle)
 
   // ext
   chart_option.series.forEach(function(s) {
@@ -65,7 +65,7 @@ export function stackBarOption(chart_option, chart) {
   return chart_option
 }
 
-export function horizontalBarOption(chart_option, chart) {
+export function horizontalBarOption(chart_option, chart,cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -110,13 +110,13 @@ export function horizontalBarOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
 
-export function horizontalStackBarOption(chart_option, chart) {
-  horizontalBarOption(chart_option, chart)
+export function horizontalStackBarOption(chart_option, chart,cstyle = {}) {
+  horizontalBarOption(chart_option, chart,cstyle)
 
   // ext
   chart_option.series.forEach(function(s) {

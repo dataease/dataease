@@ -11,8 +11,8 @@ import {
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
 
-export function baseLineOptionAntV(plot, container, chart, action) {
-  console.log('折线，antv，line',chart)
+export function baseLineOptionAntV(plot, container, chart, action,cstyle = {}) {
+  console.log('折线，antv，line',chart,cstyle)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -20,8 +20,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   const data = chart.data.datas
   // config
@@ -104,7 +104,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   return plot
 }
 
-export function baseAreaOptionAntV(plot, container, chart, action) {
+export function baseAreaOptionAntV(plot, container, chart, action, cstyle = {}) {
   console.log('折线，antv，line_stack',plot, container, chart)
   // theme
   const theme = getTheme(chart)
@@ -113,8 +113,8 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   const data = chart.data.datas
   // config

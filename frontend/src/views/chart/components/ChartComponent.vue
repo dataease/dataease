@@ -193,39 +193,40 @@ export default {
       const chart = this.chart
       let chart_option = {}
       // type
+      // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
-        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart,this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
-        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart,this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
-        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart,this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
-        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart,this.$store.state.canvasStyleData)
       } else if (chart.type === 'line') {
-        chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+        chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
-        chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+        chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
-        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
-        chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+        chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-txture') {
-        chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+        chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'diagram') {
-        chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
+        chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart, this.$store.state.canvasStyleData)
         // chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
       } else if (chart.type === 'funnel') {
-        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
+        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'radar') {
-        chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
+        chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'gauge') {
-        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
+        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'scatter') {
-        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
+        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === 'treemap') {
-        chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
+        chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'chart-mix') {
-        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
+        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart, this.$store.state.canvasStyleData)
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {

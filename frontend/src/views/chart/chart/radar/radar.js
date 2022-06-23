@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function baseRadarOption(chart_option, chart) {
+export function baseRadarOption(chart_option, chart,cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -63,7 +63,7 @@ export function baseRadarOption(chart_option, chart) {
     })
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }
 

@@ -54,7 +54,7 @@ function sortDatas(data) {
     return isSort ? b.field.split('月')[0] - a.field.split('月')[0] : a.field.split('月')[0] - b.field.split('月')[0]
   })
 }
-export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -62,8 +62,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   // const data = chart.data.datas
   const data = sortDatas(chart)
@@ -155,7 +155,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   return plot
 }
 
-export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -163,8 +163,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   const data = chart.data.datas
   // config

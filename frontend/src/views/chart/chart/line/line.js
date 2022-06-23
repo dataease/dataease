@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseLineOption(chart_option, chart) {
+export function baseLineOption(chart_option, chart,cstyle = {}) {
   console.log('echarts,line',chart)
   // 处理shape attr
   let customAttr = {}
@@ -56,13 +56,13 @@ export function baseLineOption(chart_option, chart) {
   }
   console.log('图表数据修改===+++++++++++++++', chart_option, chart)
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
 
-export function stackLineOption(chart_option, chart) {
-  baseLineOption(chart_option, chart)
+export function stackLineOption(chart_option, chart,cstyle = {}) {
+  baseLineOption(chart_option, chart,cstyle)
 
   // ext
   // chart_option.tooltip.trigger = 'axis'
@@ -72,7 +72,7 @@ export function stackLineOption(chart_option, chart) {
   return chart_option
 }
 
-export function heatMapOption(chart_option, chart) {
+export function heatMapOption(chart_option, chart,cstyle = {}) {
   console.log('数据改变的值++++++++++', chart_option, chart)
   let customAttr = {}
 
@@ -158,7 +158,7 @@ export function heatMapOption(chart_option, chart) {
     }
   }
   console.log('最种的渲染样式=====chart_option', chart_option)
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }

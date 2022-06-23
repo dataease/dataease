@@ -12,7 +12,7 @@ import {
 
 import { Scatter } from '@antv/g2plot'
 
-export function baseScatterOptionAntV(plot, container, chart, action) {
+export function baseScatterOptionAntV(plot, container, chart, action,cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -20,8 +20,8 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle = {})
+  const yAxis = getYAxis(chart,cstyle = {})
   // data
   const data = chart.data.datas
   // config

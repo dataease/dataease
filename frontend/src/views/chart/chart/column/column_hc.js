@@ -213,7 +213,7 @@ export const DEFAULT_COLOR_CASE = {
   }
   
   let terminalType = 'pc'
-  export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack) {
+  export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack,cstyle = {}) {
     terminalType = terminal
     let customAttr = {}
     // console.log('column,chart: ', chart)
@@ -313,10 +313,10 @@ export const DEFAULT_COLOR_CASE = {
       }
     }
   
-    componentStyle(chart_option, chart)
+    componentStyle(chart_option, chart,cstyle)
     return chart_option
   }
-  export function componentStyle(chart_option, chart) {
+  export function componentStyle(chart_option, chart,cstyle) {
     const padding = '8px'
     console.log('column_hc,样式：：：',chart)
     if (chart.customStyle) {
@@ -327,6 +327,7 @@ export const DEFAULT_COLOR_CASE = {
         const style = chart_option.title.style ? chart_option.title.style : {}
         style.fontSize = customStyle.text.fontSize
         style.color = customStyle.text.color
+        style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
         customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
         customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
         chart_option.title.textStyle = style
@@ -342,6 +343,7 @@ export const DEFAULT_COLOR_CASE = {
         chart_option.legend.align = customStyle.legend.hPosition
   
         chart_option.legend.itemStyle = customStyle.legend.textStyle
+        chart_option.legend.itemStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       }
   
       if (customStyle.background) {
@@ -352,25 +354,29 @@ export const DEFAULT_COLOR_CASE = {
       if (customStyle.xAxis) {
         chart_option.xAxis.visible = customStyle.xAxis.show //展示
         chart_option.xAxis.title.text = customStyle.xAxis.name //描述
-        chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 字体颜色
+        chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 描述字体颜色
+        chart_option.xAxis.title.style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : '' // 描述字体
         chart_option.xAxis.gridLineColor = customStyle.xAxis.splitLine.lineStyle.color // 轴线颜色
         chart_option.xAxis.gridLineWidth = customStyle.xAxis.splitLine.lineStyle.width // 轴线宽度
         chart_option.xAxis.gridLineDashStyle = customStyle.xAxis.splitLine.lineStyle.type // 轴线线条样式
         chart_option.xAxis.labels.enabled = customStyle.xAxis.axisLabel.show // 轴标签展示
         chart_option.xAxis.labels.style.color = customStyle.xAxis.axisLabel.color //轴标签颜色
         chart_option.xAxis.labels.style.fontSize = customStyle.xAxis.axisLabel.fontSize //轴标签字体大小
+        chart_option.xAxis.labels.style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : '' // 轴标签字体
         // chart_option.xAxis.labels.rotation = customStyle.xAxis.axisLabel.rotate // 轴标签旋转角度
       }
       if(customStyle.yAxis) {
         chart_option.yAxis.visible = customStyle.yAxis.show // 展示
         chart_option.yAxis.title.text = customStyle.yAxis.name //描述
         chart_option.yAxis.title.style = customStyle.yAxis.nameTextStyle // 字体颜色
+        chart_option.yAxis.title.style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : '' // 描述字体
         chart_option.yAxis.gridLineColor = customStyle.yAxis.splitLine.lineStyle.color // 轴线颜色
         chart_option.yAxis.gridLineWidth = customStyle.yAxis.splitLine.lineStyle.width // 轴线宽度
         chart_option.yAxis.gridLineDashStyle = customStyle.yAxis.splitLine.lineStyle.type // 轴线线条样式
         chart_option.yAxis.labels.enabled = customStyle.yAxis.axisLabel.show // 轴标签展示
         chart_option.yAxis.labels.style.color = customStyle.yAxis.axisLabel.color //轴标签颜色
         chart_option.yAxis.labels.style.fontSize = customStyle.yAxis.axisLabel.fontSize //轴标签字体大小
+        chart_option.yAxis.labels.style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : '' // 轴标签字体
       }
 
     }

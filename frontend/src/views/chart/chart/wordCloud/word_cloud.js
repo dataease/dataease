@@ -5,7 +5,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { WordCloud } from '@antv/g2plot'
 
-export function baseWordCloudOptionAntV(plot, container, chart, action) {
+export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = {}) {
   console.log('词云',chart)
   // theme
   const theme = getTheme(chart)
@@ -21,7 +21,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     weightField: 'value',
     colorField: 'field',
     wordStyle: {
-      fontFamily: 'Verdana',
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : 'Verdana',
       fontSize: [8, 32],
       rotation: [0, 0],
       padding: 6

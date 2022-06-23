@@ -166,10 +166,11 @@ export default {
           } else if (this.chart.type === '3dpyramid') {
             // 金字塔图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_PYRAMID)))
-          } else if (this.chart.type === '3dscatter') {
-            // 散点图
-            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
           }
+          //  else if (this.chart.type === '3dscatter') {
+          //   // 散点图
+          //   this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
+          // }
         
         }
         this.drawEcharts()
@@ -195,25 +196,27 @@ export default {
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
+      console.log(this.$store.state.canvasStyleData)
       if(chart.type === '3dpie') {
         const base_json = JSON.parse(JSON.stringify(BASE_PIE))
-        chart_option = basePieOption(base_json, chart, this.terminalType)
+        chart_option = basePieOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
       } else if (chart.type === '3dcolumn') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
-        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false)
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false,this.$store.state.canvasStyleData)
       } else if (chart.type === '3dcolumn_stack') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_STACK))
-        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true)
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true,this.$store.state.canvasStyleData)
       } else if (chart.type === '3dfunnel') {
         const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
-        chart_option = baseFunnelOption(base_json, chart, this.terminalType)
+        chart_option = baseFunnelOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dpyramid') {
         const base_json = JSON.parse(JSON.stringify(BASE_PYRAMID))
-        chart_option = basePyramidOption(base_json, chart, this.terminalType)
-      } else if (chart.type === '3dscatter') {
-        const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
-        chart_option = baseScatterOption(base_json, chart, this.terminalType)
+        chart_option = basePyramidOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
       }
+      //  else if (chart.type === '3dscatter') {
+      //   const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
+      //   chart_option = baseScatterOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
+      // }
       
       this.myEcharts(chart_option,chart.type)
     },
