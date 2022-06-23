@@ -16,6 +16,7 @@
     @check="changeCheckNode"
     @select-clear="selectClear"
     @onFoucs="onFoucs"
+    @treeCheckChange="change"
   />
 
 </template>
@@ -26,6 +27,7 @@ import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import ElTreeSelect from '@/components/ElTreeSelect'
 import customInput from '@/components/widget/DeWidget/customInput'
+import {  textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
   components: { ElTreeSelect },
@@ -217,6 +219,12 @@ export default {
         this.handleCoustomStyle()
       })
     },
+    change() {
+      setTimeout(() => {
+        console.log(123, this.$refs.deSelectTree.$refs.select.$el);
+        textSelectWidget(this.$refs.deSelectTree.$refs.select.$el, this.element.style)
+      }, 50)
+    },
     selectClear() {
       this.changeValue(this.value)
     },
@@ -366,6 +374,7 @@ export default {
 <style lang="scss">
 .test-class-wrap {
   background: var(--BgSelectTreeColor, #FFFFFF) !important;
+  border-color: var(--BrSelectTreeColor, #E4E7ED) !important;
 
   .popper__arrow,
   .popper__arrow::after {

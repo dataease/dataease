@@ -48,6 +48,7 @@
           :render-content="treeRenderFun"
           @node-click="_treeNodeClickFun"
           @check="_treeCheckFun"
+          @check-change="_treeCheckChange"
         />
         <!-- 暂无数据 -->
         <div v-if="data.length === 0" class="no-data">暂无数据</div>
@@ -282,6 +283,9 @@ export default {
     off(document, 'mouseup', this._popoverHideFun)
   },
   methods: {
+    _treeCheckChange() {
+      this.$emit("treeCheckChange")
+    },
     // 根据类型判断单选，多选
     _setMultipleFun() {
       let multiple = false
