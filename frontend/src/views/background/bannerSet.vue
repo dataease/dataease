@@ -58,35 +58,77 @@
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
       </el-row>
-      <el-row style="height: 50px;overflow: hidden;">
-        <el-col :span="4">
-          <span class="params-title">添加文字描述</span>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <span class="params-title">图1、</span>
-        </el-col>
-      </el-row>
-      <el-row style="padding:5px;">
-        <el-col :span="2">
-          <span class="params-title">标题</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="input" placeholder="请输入内容" />
-        </el-col>
-      </el-row>
-      <el-row style="padding:5px;">
-        <el-col :span="2">
-          <span class="params-title">内容</span>
-        </el-col>
-        <el-col :span="20">
-          <el-input
-            v-model="input"
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-          />
+      <el-row v-if="curComponent.options.bannerImgList.length">
+        <el-row style="height: 50px;overflow: hidden;">
+          <el-col :span="4">
+            <span class="params-title">添加文字描述</span>
+          </el-col>
+        </el-row>
+        <el-col v-for="(item,index) in curComponent.options.bannerImgList" :key="index">
+          <el-row>
+            <el-col :span="24">
+              <span class="params-title">图{{index +1}}、</span>
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="2">
+              <span class="params-title">{{$t('commons.title')}}</span>
+            </el-col>
+            <el-col :span="8">
+              <el-input v-model="item.imgTitle" placeholder="请输入内容" />
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="2">
+              <span class="params-title">{{$t('panel.content')}}</span>
+            </el-col>
+            <el-col :span="20">
+              <el-input
+                v-model="item.imgContent"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容"
+              />
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="3">
+              <span class="params-title">{{ $t('chart.text_fontsize') }}</span>
+            </el-col>
+            <el-col :span="8">
+              <el-input-number v-model="item.imgFontSize" :min="10" />
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="3">
+              <span class="params-title">{{ $t('chart.text_color') }}</span>
+            </el-col>
+            <el-col :span="8">
+              <el-color-picker 
+                v-model="item.imgFontColor" 
+                class="color-picker-style" 
+                :predefine="predefineColors"/>
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="3">
+              <span class="params-title">{{ $t('chart.box_background') }}</span>
+            </el-col>
+            <el-col :span="8">
+              <el-color-picker 
+                v-model="item.imgBackgroundColor" 
+                class="color-picker-style" 
+                :predefine="predefineColors"/>
+            </el-col>
+          </el-row>
+          <el-row style="padding:5px;">
+            <el-col :span="3">
+              <span class="params-title">{{ $t('chart.box_background_opacity') }}</span>
+            </el-col>
+            <el-col :span="8">
+              <el-input-number v-model="item.imgOpacity" :min="0" :max="1" :step="0.1" />
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
     </el-row>
@@ -167,7 +209,7 @@ export default {
       console.log('componentData--------', this.componentData, this.curComponent)
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
-          this.fileList.push({ url: res })
+          this.fileList.push(res)
         })
       }
       // if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
@@ -175,7 +217,10 @@ export default {
       //     this.fileList.push({ url: res })
       //   })
       // }
-      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      console.log('init,filelist.....',this.fileList)
+      // this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      this.backgroundOrigin = deepCopy(this.curComponent.options)
+      console.log(this.backgroundOrigin)
       this.queryBackground()
     },
     queryBackground() {
@@ -184,16 +229,8 @@ export default {
       })
     },
     cancel() {
-      this.curComponent.commonBackground.enable = this.backgroundOrigin.enable
-      this.curComponent.commonBackground.backgroundType = this.backgroundOrigin.backgroundType
-      this.curComponent.commonBackground.color = this.backgroundOrigin.color
-      this.curComponent.commonBackground.innerImage = this.backgroundOrigin.innerImage
-      this.curComponent.commonBackground.outerImage = this.backgroundOrigin.outerImage
-      this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
-      this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
-      this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
-      this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
-      this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
+      this.curComponent.options = this.backgroundOrigin
+      
       console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
@@ -215,21 +252,28 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
+      console.log('remove',file, fileList)
       var _this = this
       _this.fileList = fileList
       _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
-        console.log('itemssss', item)
         if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
             console.log('reader.result7777777', reader.result)
-            _this.curComponent.options.bannerImgList.push(reader.result)
+            _this.curComponent.options.bannerImgList.push({
+              url:reader.result,
+              imgTitle: '',
+              imgContent: '',  // 有点问题这里
+              imgFontSize: 10,
+              imgFontColor: '#000000',
+              imgBackgroundColor: '#ffffff',
+              imgOpacity: 0.5
+            })
           }
           reader.readAsDataURL(item.raw)
         } else {
-          _this.curComponent.options.bannerImgList.push(item.url)
+          _this.curComponent.options.bannerImgList.push(item)
         }
       })
       // this.uploadDisabled = false
@@ -262,11 +306,19 @@ export default {
           reader.onload = function() {
             console.log('reader.result6666666', reader.result)
             // _this.imgUrlList.push(reader.result)
-            _this.curComponent.options.bannerImgList.push(reader.result)
+            _this.curComponent.options.bannerImgList.push({
+              url: reader.result,
+              imgTitle: '',
+              imgContent: '',
+              imgFontSize: 10,
+              imgFontColor: '#000000',
+              imgBackgroundColor: '#ffffff',
+              imgOpacity: 0.5
+            })
           }
           reader.readAsDataURL(item.raw)
         } else {
-          _this.curComponent.options.bannerImgList.push(item.url)
+          _this.curComponent.options.bannerImgList.push(item)
         }
       })
       console.log('222222', file, fileList)

@@ -1187,7 +1187,7 @@ export default {
       this.boardSetVisible = true
     },
     bannerImg(item) {
-      // console.log('item-------------------------------------------', item)
+      console.log('bannerImg,item-----', item)
       this.bannerelement = item
       this.bannerSetVisible = true
     },
