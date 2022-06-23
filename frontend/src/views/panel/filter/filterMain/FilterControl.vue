@@ -9,8 +9,13 @@
           :inactive-text="$t('panel.single_choice')"
           @change="multipleChange"
         />
+
+        <span v-if="widget.showVisual" style="padding-left: 20px;">
+          <el-checkbox v-model="attrs.visual" @change="showVisualChange">虚拟化</el-checkbox>
+        </span>
       </div>
     </el-col>
+
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
@@ -64,7 +69,7 @@
           <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
             {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
 
-          <el-popover  placement="bottom-end" :disabled="!attrs.enableParameters" width="200">
+          <el-popover placement="bottom-end" :disabled="!attrs.enableParameters" width="200">
             <div class="view-container-class">
               <el-checkbox-group v-model="attrs.parameters">
                 <el-checkbox
@@ -99,7 +104,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import { mapState } from 'vuex'
 
 export default {
   name: 'FilterControl',
@@ -161,6 +166,9 @@ export default {
         this.attrs.title = ''
         this.element.style.backgroundColor = ''
       }
+      this.fillAttrs2Filter()
+    },
+    showVisualChange(value) {
       this.fillAttrs2Filter()
     },
 

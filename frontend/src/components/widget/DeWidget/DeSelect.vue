@@ -1,9 +1,10 @@
 <template>
-
-  <el-select
-    v-if="element.options!== null && element.options.attrs!==null && show"
+  <component
+    :is="mode"
+    v-if="element.options!== null && element.options.attrs!==null && show "
     ref="deSelect"
     v-model="value"
+    :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
     :multiple="element.options.attrs.multiple"
@@ -13,12 +14,13 @@
     :filterable="true"
     class="de-select-tag"
     popper-class="coustom-de-select"
+    :list="datas"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
   >
     <el-option
-      v-for="item in datas"
+      v-for="item in templateDatas || datas"
       :key="item[element.options.attrs.key]"
       :style="{width:selectOptionWidth}"
       :label="item[element.options.attrs.label]"
@@ -26,17 +28,19 @@
     >
       <span :title="item[element.options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[element.options.attrs.label] }}</span>
     </el-option>
-  </el-select>
+  </component>
 
 </template>
 
 <script>
+import ElVisualSelect from '@/components/ElVisualSelect'
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/DeWidget/customInput'
 
 export default {
+  components: { ElVisualSelect },
   mixins: [customInput],
   props: {
     element: {
@@ -65,6 +69,16 @@ export default {
     }
   },
   computed: {
+    mode() {
+      let result = 'el-select'
+      if (this.element.options && this.element.options.attrs && this.element.options.attrs.visual) {
+        result = 'el-visual-select'
+      }
+      return result
+    },
+    templateDatas() {
+      return this.mode === 'el-visual-select' ? [] : null
+    },
     operator() {
       return this.element.options.attrs.multiple ? 'in' : 'eq'
     },
@@ -298,7 +312,7 @@ export default {
       background-color: var(--BgSelectColor, #f4f4f5) !important;
       border-color: var(--BrSelectColor, #e9e9eb) !important;
       color: var(--SelectColor, #909399) !important;
-  
+
       i {
         color: var(--SelectColor, #909399) !important;
       }

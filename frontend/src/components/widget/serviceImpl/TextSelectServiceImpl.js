@@ -19,7 +19,8 @@ const dialogPanel = {
       value: 'id',
       fieldId: '',
       dragItems: [],
-      sort: {}
+      sort: {},
+      visual: false
     },
     value: '',
     manualModify: false
@@ -52,6 +53,7 @@ class TextSelectServiceImpl extends WidgetService {
     super(options)
     this.filterDialog = true
     this.showSwitch = true
+    this.showVisual = true
   }
 
   initLeftPanel() {
