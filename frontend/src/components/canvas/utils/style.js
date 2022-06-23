@@ -344,7 +344,7 @@ export function adaptCurThemeCommonStyle(component) {
   }
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
-    for (const styleKey in component.style) {
+    for (const styleKey in filterStyle) {
       component.style[styleKey] = filterStyle[styleKey]
     }
   }
@@ -366,6 +366,7 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
       item.style[styleKey] = filterStyle[styleKey]
     }
   })
+  console.log('componentData=' + JSON.stringify(componentData))
 }
 
 export function isFilterComponent(component) {

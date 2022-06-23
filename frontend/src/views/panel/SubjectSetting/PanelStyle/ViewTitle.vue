@@ -39,7 +39,9 @@
 </template>
 
 <script>
-import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   name: 'TitleSelector',
@@ -47,26 +49,28 @@ export default {
   },
   data() {
     return {
-      titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
+      titleForm: {},
       fontSize: [],
       isSetting: false,
       predefineColors: COLOR_PANEL
     }
   },
-  computed: {
-
-  },
-  watch: {
-    'chart': {
-      handler: function() {
-        this.initData()
-      }
-    }
+  computed: mapState([
+    'canvasStyleData'
+  ]),
+  created() {
+    this.initForm()
+    bus.$on('onThemeColorChange', () => {
+      this.initForm()
+    })
   },
   mounted() {
     this.init()
   },
   methods: {
+    initForm() {
+      this.titleForm = this.canvasStyleData.chartInfo.chartTitle
+    },
     init() {
       const arr = []
       for (let i = 10; i <= 60; i = i + 2) {
@@ -80,9 +84,6 @@ export default {
     changeTitleStyle(modifyName) {
       this.titleForm['modifyName'] = modifyName
       this.$emit('onTextChange', this.titleForm)
-    },
-    inputOnInput: function(e) {
-      this.$forceUpdate()
     },
     showProperty(property) {
       return this.propertyInner.includes(property)

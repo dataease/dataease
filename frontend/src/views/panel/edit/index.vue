@@ -766,7 +766,6 @@ export default {
             component = deepCopy(componentTemp)
           }
         })
-
         if (component.type === 'picture-add') {
           this.goFile()
           this.clearCurrentInfo()
@@ -851,6 +850,7 @@ export default {
         this.$store.commit('addComponent', { component })
         this.$store.commit('recordSnapshot', 'handleDrop')
       }
+      adaptCurThemeCommonStyle(component)
       this.clearCurrentInfo()
     },
     clearCurrentInfo() {
@@ -889,6 +889,7 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
+      adaptCurThemeCommonStyle(this.currentFilterCom)
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })

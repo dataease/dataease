@@ -82,6 +82,7 @@
 <script>
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
+import bus from "@/utils/bus";
 
 export default {
   name: 'ColorSelector',
@@ -180,21 +181,11 @@ export default {
   computed: mapState([
     'canvasStyleData'
   ]),
-  watch: {
-    'chart.id': {
-      handler: function() {
-        this.customColor = null
-        this.colorIndex = 0
-      }
-    },
-    'chart': {
-      handler: function() {
-        this.init()
-      }
-    }
-  },
   created() {
     this.initForm()
+    bus.$on('onThemeColorChange', () => {
+      this.initForm()
+    })
   },
   mounted() {
   },
@@ -214,7 +205,6 @@ export default {
 
       // reset custom color
       this.colorForm.seriesColors = []
-
       this.changeColorCase(modifyName)
     },
     changeColorCase(modifyName) {
