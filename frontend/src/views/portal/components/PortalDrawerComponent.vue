@@ -25,7 +25,7 @@
                 @change="handleEditPreivewTab"
               >
                 <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview" :disabled="true">预览</el-radio-button>
+                <el-radio-button label="preview" :disabled="true">预览1</el-radio-button>
               </el-radio-group>
             </div>
             <div class="wrapper">
@@ -123,7 +123,7 @@
           </el-container>
           <div class="right-config-container">
             <div class="title">门户配置</div>
-            <div class="config-wrapper">
+            <div class="config-wrapper" :style="{height:configHeight()}">
               <div class="wrapper horization">
                 <div class="name">标题设置</div>
                 <el-input
@@ -328,6 +328,7 @@
                   >
                     <i class="el-icon-plus" />
                   </el-upload>
+
                   <!-- <el-dialog top="25vh" width="600px" :modal-append-to-body="true" :visible.sync="dialogVisible">
                     <img width="100%" :src="dialogImageUrl" alt="">
                   </el-dialog> -->
@@ -504,6 +505,11 @@ export default {
   },
 
   methods: {
+    configHeight() {
+      // let a = document.documentElement.clientHeight
+      console.log('document.body.offsetHeight', document.body.offsetHeight, document.documentElement.clientHeight)
+      return (document.body.offsetHeight - 180) + 'px'
+    },
     formatTooltip(val) {
       return val / 10
     },
@@ -810,7 +816,7 @@ export default {
           box-sizing: border-box;
         }
         .config-wrapper {
-          max-height:580px;
+          // max-height:580px;
           overflow-y:scroll;
           .wrapper.horization {
             display: flex;

@@ -25,7 +25,7 @@
                 <el-radio-button
                   label="preview"
                   :disabled="!priviewBtnEnable"
-                >预览</el-radio-button>
+                >预览2</el-radio-button>
               </el-radio-group>
             </div>
             <div class="wrapper">
@@ -584,7 +584,7 @@ export default {
         return
       }
 
-      if (this.openType == 'add') {
+      if (this.openType === 'add') {
         bus.$emit('savePortal', { positionJson })
       } else {
         bus.$emit('updatePortal', { id: this.portalId, positionJson })
@@ -596,7 +596,7 @@ export default {
     // 点击编辑和预览
     handleEditPreivewTab(evt) {
       console.log('evt -- ', evt)
-      if (evt == 'edit') {
+      if (evt === 'edit') {
         return
       }
       this.privewPortal = {
@@ -605,6 +605,13 @@ export default {
         themeColor: this.themeColor, // 默认
         portalName: this.portalName || '未命名站点', // 站点名称
         lastTreeId: this.treeId,
+        headerNavStyle: this.headerNavStyle, // 0 默认 1浮动
+        floatPosition: this.floatPosition, // 浮动位置
+        titleWidth: this.titleWidth, // 标题宽度
+        menuWidth: this.menuWidth, // 菜单宽度
+        navBageImg: this.navBageImg,
+        titleFontSet: this.titleFontSet,
+        menuFontSet: this.menuFontSet,
         config: {
           treeData: this.treeData
         }

@@ -21,11 +21,12 @@
         </el-row>
         <canvas-opt-bar />
         <!-- v-if="exhibition(item)" -->
+        <!-- display:displayClass(item) -->
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
 
           :key="index"
-          :style="{opacity:opacityClass(item),display:displayClass(item)}"
+          :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
@@ -184,19 +185,19 @@ export default {
     displayClass() {
       return function(value) {
         console.log('value-----', value)
-        if (value.type === 'de-frame') {
-          if (this.canvasStyleData.navShowKey && value.showName) {
-            if (this.canvasStyleData.navShowKey === value.showName) {
-              return 'block'
-            } else {
-              return 'none'
-            }
+        // if (value.type === 'de-frame') {
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return 'visible'
           } else {
-            return 'block'
+            return 'hidden'
           }
         } else {
-          return 'block'
+          return 'visible'
         }
+        // } else {
+        //   return 'visible'
+        // }
       }
     },
     scaleNewHeight() {
