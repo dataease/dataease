@@ -34,7 +34,7 @@
 
       ref="deDragRef"
       :key="item.id"
-      :style="{opacity:opacityClass(item)}"
+      :style="{opacity:opacityClass(item),display:displayClass(item)}"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
       :index="index"
       :x="getShapeStyleIntDeDrag(item.style,'left')"
@@ -1016,6 +1016,24 @@ export default {
           }
         } else {
           return 1
+        }
+      }
+    },
+    displayClass() {
+      return function(value) {
+        console.log('value-----', value)
+        if (value.type === 'de-frame') {
+          if (this.canvasStyleData.navShowKey && value.showName) {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 'block'
+            } else {
+              return 'none'
+            }
+          } else {
+            return 'block'
+          }
+        } else {
+          return 'block'
         }
       }
     },
