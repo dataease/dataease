@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function basePieOption(chart_option, chart) {
+export function basePieOption(chart_option, chart,cstyle = {}) {
   console.log('chart data pie: ', chart)
   // 处理shape attr
   let customAttr = {}
@@ -55,11 +55,11 @@ export function basePieOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }
 
-export function rosePieOption(chart_option, chart) {
+export function rosePieOption(chart_option, chart,cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -108,11 +108,11 @@ export function rosePieOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }
 
-export function texturePieOption(chart_option, chart) {
+export function texturePieOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -161,11 +161,11 @@ export function texturePieOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }
 
-export function newHartOption(chart_option, chart) {
+export function newHartOption(chart_option, chart,cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -214,7 +214,7 @@ export function newHartOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }
 

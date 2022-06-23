@@ -2,8 +2,20 @@
   <div>
     <div class="recommendPage swiper-no-swiping">
       <swiper v-if="isShow&&bannerImgList.length>0" ref="mySwiper" :options="swiperOption" class="swiper-wrapper" :style="bannerStyle">
-        <swiper-slide v-for="(item,index) in bannerImgList" :key="index">
-          <img :src="item" style="width:100%;height:92%;">
+        <swiper-slide v-for="(item,index) in bannerImgList" :key="index" style="position: relative;">
+          <img :src="item.url" style="width:100%;height:92%;">
+          <div class="img_box" :style="{
+            'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
+          }">
+            <div :style="{
+              'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
+              'color': item.imgFontColor
+            }">{{item.imgTitle}}</div>
+            <div :style="{
+              'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
+              'color': item.imgFontColor
+            }">{{item.imgContent}}</div>
+          </div>
         </swiper-slide>
         <div slot="pagination" class="swiper-pagination" />
         <!-- <div slot="button-prev" class="swiper-button-prev" /> -->
@@ -151,11 +163,33 @@ export default {
       this.$nextTick(() => {
         this.isShow = true
       })
+    },
+    //hex -> rgba
+    hexToRgba(hex, opacity) {
+      // console.log('转化',hex,opacity,typeof hex)
+      if(typeof(hex) !== 'string') {
+        return 'none'
+      }
+      return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ','
+            + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')';
     }
   }
 }
 </script>
 <style >
+  .img_box {
+    position: absolute;
+    left: 0px;
+    width: 35%;
+    height: 100%;
+    /* opacity: 0.5; */
+  }
+  .img_box div {
+    width: 100%;
+    word-wrap: break-word;
+	  word-break: break-all;
+    white-space: break-spaces;
+  }
   /* .el-carousel__item h3 {
     color: #475669;
     font-size: 14px;

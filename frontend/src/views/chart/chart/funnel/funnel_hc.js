@@ -106,7 +106,7 @@ export const DEFAULT_COLOR_CASE = {
   }
   
   let terminalType = 'pc'
-  export function baseFunnelOption(chart_option, chart, terminal = 'pc') {
+  export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {}) {
     terminalType = terminal
     let customAttr = {}
     // console.log('funnel,chart.customAttr: ', chart.customAttr)
@@ -177,10 +177,10 @@ export const DEFAULT_COLOR_CASE = {
       }
     }
   
-    componentStyle(chart_option, chart)
+    componentStyle(chart_option, chart,cstyle)
     return chart_option
   }
-  export function componentStyle(chart_option, chart) {
+  export function componentStyle(chart_option, chart,cstyle) {
     const padding = '8px'
     if (chart.customStyle) {
       const customStyle = JSON.parse(chart.customStyle)
@@ -190,6 +190,7 @@ export const DEFAULT_COLOR_CASE = {
         const style = chart_option.title.style ? chart_option.title.style : {}
         style.fontSize = customStyle.text.fontSize
         style.color = customStyle.text.color
+        style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
         customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
         customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
         chart_option.title.textStyle = style
@@ -205,6 +206,7 @@ export const DEFAULT_COLOR_CASE = {
         chart_option.legend.align = customStyle.legend.hPosition
   
         chart_option.legend.itemStyle = customStyle.legend.textStyle
+        chart_option.legend.itemStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       }
   
       if (customStyle.background) {

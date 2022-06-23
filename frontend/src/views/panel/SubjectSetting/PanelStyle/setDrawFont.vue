@@ -118,6 +118,7 @@ export default {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
     this.fontValue = this.canvasStyleData.fontFamily
+    console.log(this.canvasStyleData.fontFamily)
     // this.height = this.canvasStyleData.height
     if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
       this.fileList.push({ url: this.panel.imageUrl })

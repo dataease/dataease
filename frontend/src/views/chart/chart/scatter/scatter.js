@@ -4,7 +4,7 @@ import { componentStyle, seniorCfg } from '../common/common'
 let bubbleArray = []
 let terminalType = 'pc'
 
-export function baseScatterOption(chart_option, chart, terminal = 'pc') {
+export function baseScatterOption(chart_option, chart, terminal = 'pc',cstyle = {}) {
   terminalType = terminal
   // 处理shape attr
   let customAttr = {}
@@ -57,7 +57,7 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
     console.log('散点图数据：',chart_option)
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }

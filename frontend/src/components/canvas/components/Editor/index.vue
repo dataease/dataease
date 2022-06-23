@@ -29,12 +29,13 @@
     <canvas-opt-bar />
     <!--页面组件列表展示-->
     <!-- v-if="showOrNot(item)" -->
+    <!-- display:displayClass(item) -->
     <de-drag
       v-for="(item, index) in componentData"
 
       ref="deDragRef"
       :key="item.id"
-      :style="{opacity:opacityClass(item)}"
+      :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
       :index="index"
       :x="getShapeStyleIntDeDrag(item.style,'left')"
@@ -1019,6 +1020,24 @@ export default {
         }
       }
     },
+    displayClass() {
+      return function(value) {
+        console.log('value-----', value)
+        // if (value.type === 'de-frame') {
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return 'visible'
+          } else {
+            return 'hidden'
+          }
+        } else {
+          return 'visible'
+        }
+        // } else {
+        //   return 'visible'
+        // }
+      }
+    },
     showOrNot(item) {
       return function(value) {
         console.log('value===', value)
@@ -1187,7 +1206,7 @@ export default {
       this.boardSetVisible = true
     },
     bannerImg(item) {
-      // console.log('item-------------------------------------------', item)
+      console.log('bannerImg,item-----', item)
       this.bannerelement = item
       this.bannerSetVisible = true
     },

@@ -1,7 +1,7 @@
 import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
 import { Radar } from '@antv/g2plot'
 
-export function baseRadarOptionAntV(plot, container, chart, action) {
+export function baseRadarOptionAntV(plot, container, chart, action,cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -98,7 +98,8 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
         xAxis.label = {
           style: {
             fill: s.name.color,
-            fontSize: parseInt(s.name.fontSize)
+            fontSize: parseInt(s.name.fontSize),
+            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
           }
         }
       } else {

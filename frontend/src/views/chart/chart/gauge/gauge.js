@@ -2,7 +2,7 @@ import { componentStyle } from '../common/common'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 
-export function baseGaugeOption(chart_option, chart) {
+export function baseGaugeOption(chart_option, chart,cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -104,6 +104,6 @@ export function baseGaugeOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   return chart_option
 }

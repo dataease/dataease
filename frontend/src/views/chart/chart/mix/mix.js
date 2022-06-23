@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseMixOption(chart_option, chart) {
+export function baseMixOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   const yAxis = JSON.parse(chart.yaxis)
@@ -67,7 +67,7 @@ export function baseMixOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart)
+  componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
