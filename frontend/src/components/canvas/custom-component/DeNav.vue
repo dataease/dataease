@@ -69,7 +69,18 @@ export default {
     toggleNav(key) {
       // 切换导航
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
+
       this.canvasStyleData.navShowKey = key.name
+      this.componentData.forEach((ele, index) => {
+        console.log('-----------', ele.showName, key)
+        if (ele.showName === key.name) {
+          console.log('层级数据处理----')
+          // this.curComponent = ele
+          // this.$store.commit('topComponent')
+          // this.$store.commit('recordSnapshot', 'topComponent')
+          // this.componentData.push(this.componentData.splice(index, 1)[0])
+        }
+      })
       this.heightKey = key.name
     }
   }
