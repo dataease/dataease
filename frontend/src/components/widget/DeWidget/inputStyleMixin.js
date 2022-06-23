@@ -26,11 +26,27 @@ export default {
             },
             deep: true
         },
+        multiple: {
+            handler() {
+                if (!['de-select-tree', 'de-select'].includes(this.element.component)) return;
+                const time = setTimeout(() => {
+                    clearTimeout(time)
+                    this.typeTransform().forEach(ele => {
+                        this.handlerInputStyle(ele, this.cssArr)
+                    })
+                }, 100)
+            },
+            deep: true
+        }
     },
     computed: {
         cssArr() {
             const { brColor, wordColor, innerBgColor } = this.element.style;
             return { brColor, wordColor, innerBgColor }
+        },
+        multiple() {
+            const { multiple = false } = this.element.options.attrs
+            return multiple;
         }
     },
     mounted() {
