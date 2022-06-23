@@ -735,7 +735,7 @@ export default {
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
       const elButton = evt.target.closest('.el-button')
-      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix&& !elButton) {
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix && !elButton) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -1143,6 +1143,7 @@ export default {
 
   .de-header {
     height: 56px !important;
+    padding: 0px!important;
     border-bottom: 1px solid #E6E6E6;
     background-color: var(--SiderBG, white);
   }

@@ -3,12 +3,10 @@
     <div class="switch-position">
       <el-radio-group v-model="mobileLayoutInitStatus" size="mini" @change="openMobileLayout">
         <el-radio-button :label="false">
-          <span style="float: left;">
-            <i class="el-icon-monitor" />
-          </span>
+          <svg-icon icon-class="icon_pc_outlined" class="toolbar-icon-active text16" />
         </el-radio-button>
         <el-radio-button :label="true">
-          <span class="icon iconfont icon-yidongduan" />
+          <svg-icon icon-class="icon_phone_outlined" class="toolbar-icon-active text16" />
         </el-radio-button>
       </el-radio-group>
     </div>
@@ -28,69 +26,73 @@
 
     <div v-show="!editControlButton" class="toolbar">
       <div class="panel-info-area">
-        <el-tooltip :content="$t('panel.back') ">
-          <span class="icon iconfont icon-jiantou insert" @click="closePanelEdit" />
-        </el-tooltip>
-        <span class="text">
+        <svg-icon
+          icon-class="icon_left_outlined"
+          class="toolbar-icon-active icon20 margin-left20"
+          @click="closePanelEdit"
+        />
+        <span class="text16 margin-left12">
           {{ panelInfo.name }}
         </span>
       </div>
       <el-tooltip :content="$t('panel.undo') ">
-        <span class="icon iconfont icon-outline-undo insert" @click="undo" />
+        <svg-icon icon-class="icon_undo_outlined" class="toolbar-icon-active icon16 margin-right20" @click="undo" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.redo') ">
-        <span class="icon iconfont icon-outline-redo insert" @click="redo" />
+        <svg-icon icon-class="icon_redo_outlined" class="toolbar-icon-active icon16 margin-right20" @click="redo" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.fullscreen_preview')">
-        <span class="icon iconfont icon-fangda insert" @click="clickPreview" />
+        <svg-icon icon-class="icon_magnify_outlined" class="toolbar-icon-active icon16" @click="clickPreview" />
       </el-tooltip>
-      <el-divider direction="vertical" />
-
+      <el-divider style="margin-left: 20px" direction="vertical" />
       <span class="button_self">
-        <el-dropdown :hide-on-click="false" trigger="click" placement="bottom-start" size="mini">
-          <span class="icon iconfont icon-gengduo insert de-icon-base"><span class="icon-font-margin">{{ $t('panel.more') }}</span></span>
+        <el-dropdown :hide-on-click="false" trigger="click" placement="bottom-start">
+          <span class="icon iconfont icon-gengduo insert margin-right20">
+            <span class="icon-font-margin">{{ $t('panel.more') }}</span>
+          </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
-              <el-dropdown placement="right-start" size="mini" style="width: 100%">
+              <el-dropdown placement="right-start">
                 <span>
-                  <span
-                    class="icon iconfont"
-                    :class="[canvasStyleData.auxiliaryMatrix?'icon-shujujuzhen':'icon-xuanfuanniu']"
-                  />
-                  <span class="icon-font-margin" style="font-size: 12px">{{ $t('panel.new_element_distribution') }}</span>
-                  <i class="el-icon-arrow-right el-icon--right" />
+                  <svg-icon icon-class="icon_moments-categories_outlined" class="toolbar-icon-active text16" @click="clickPreview" />
+                  <span class="text14 margin-left8">{{ $t('panel.new_element_distribution') }}</span>
+                  <svg-icon icon-class="icon_right_outlined" class="icon16 margin-left8" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="auxiliaryMatrixChange">
-                    <span :class="[!canvasStyleData.auxiliaryMatrix?'font-active':'']"> {{ $t('panel.suspension') }} </span>
-                    <i v-if="!canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check" />
+                  <el-dropdown-item @click.native="auxiliaryMatrixChange(false)">
+                    <span class="text14"> {{ $t('panel.suspension') }} </span>
+                    <i v-if="!canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check margin-left52" />
                   </el-dropdown-item>
-                  <el-dropdown-item @click.native="auxiliaryMatrixChange">
-                    <span :class="[canvasStyleData.auxiliaryMatrix?'font-active':'']"> {{ $t('panel.matrix') }} </span>
-                    <i v-if="canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check" />
+                  <el-dropdown-item @click.native="auxiliaryMatrixChange(true)">
+                    <span class="text14"> {{ $t('panel.matrix') }} </span>
+                    <i v-if="canvasStyleData.auxiliaryMatrix" class=" font-active el-icon-check margin-left52" />
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-dropdown-item>
             <el-dropdown-item>
-              <span class="icon iconfont-tb" :class="[canvasStyleData.aidedDesign.showGrid?'icon-wangge-open':'icon-wangge-close']" />
-              <span class="icon-font-margin">{{ $t('panel.aided_grid') }}</span>
-              <el-switch v-model="showGridSwitch" size="mini" @change="showGridChange" />
+              <svg-icon icon-class="icon_dialpad_outlined" class="icon16" />
+              <span class="text14 margin-left8">{{ $t('panel.aided_grid') }}</span>
+              <el-switch v-model="showGridSwitch" class="margin-left8" size="mini" @change="showGridChange" />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
-              <span class="icon iconfont-tb icon-canshu" />
-              <span class="icon-font-margin">{{ $t('panel.params_setting') }}</span>
+              <svg-icon icon-class="icon-quicksetting" class="icon16" />
+              <span class="text14 margin-left8">{{ $t('panel.params_setting') }}</span>
             </el-dropdown-item>
             <el-dropdown-item @click.native="clearCanvas">
-              <span class="icon iconfont-tb icon-qingkong" />
-              <span class="icon-font-margin">{{ $t('panel.clean_canvas') }}</span>
+              <svg-icon icon-class="icon_clear_outlined" class="icon16" />
+              <span class="text14 margin-left8">{{ $t('panel.clean_canvas') }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
-      <span class="icon iconfont icon-magic-line insert" @click="showPanel"><span class="icon-font-margin">{{ $t('panel.panel_style') }}</span></span>
-      <span class="icon iconfont icon-piliang-copy insert" @click="batchOption"><span class="icon-font-margin">{{ $t('panel.batch_opt') }}</span></span>
-      <span style="float: right;margin-left: 10px">
+      <span class="icon iconfont icon-magic-line insert margin-right20" @click="showPanel">
+        <span class="icon-font-margin">{{ $t('panel.panel_style') }}</span>
+      </span>
+      <span class="icon iconfont icon-piliang-copy insert margin-right20" @click="batchOption"><span
+        class="icon-font-margin"
+      >{{ $t('panel.batch_opt') }}</span></span>
+      <span style="float: right;margin-right: 24px">
         <el-button size="mini" type="primary" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
@@ -110,7 +112,9 @@
           <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
         </el-col>
         <el-col :span="20">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_save_warn_tips') }}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{
+            $t('panel.panel_save_warn_tips')
+          }}</span>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
@@ -435,8 +439,8 @@ export default {
     cancelLinkageSettingStatus() {
       this.$store.commit('clearLinkageSettingInfo')
     },
-    auxiliaryMatrixChange() {
-      this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
+    auxiliaryMatrixChange(value) {
+      this.canvasStyleData.auxiliaryMatrix = value
     },
     showGridChange() {
       this.$store.state.styleChangeTimes++
@@ -496,141 +500,237 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .toolbar {
-    float: right;
-    height: 56px;
-    line-height: 56px;
-    min-width: 400px;
+.toolbar {
+  float: right;
+  height: 56px;
+  line-height: 56px;
+  min-width: 400px;
 
-    .canvas-config {
-      display: inline-block;
+  .canvas-config {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+
+    input {
+      width: 50px;
       margin-left: 10px;
-      font-size: 14px;
-
-      input {
-        width: 50px;
-        margin-left: 10px;
-        outline: none;
-        padding: 0 5px;
-        border: 1px solid #ddd;
-      }
-
-      span {
-        margin-left: 10px;
-      }
+      outline: none;
+      padding: 0 5px;
+      border: 1px solid #ddd;
     }
 
-    .insert {
-      display: inline-block;
-      font-weight: 400 !important;
-      font-size: 14px !important;
-      font-family: PingFang SC;
-      line-height: 1;
-      white-space: nowrap;
-      cursor: pointer;
-      color: var(--TextPrimary, #606266);
-      -webkit-appearance: none;
-      text-align: center;
-      box-sizing: border-box;
+    span {
+      margin-left: 10px;
+    }
+  }
+
+  .insert {
+    display: inline-block;
+    font-weight: 400 !important;
+    font-size: 16px;
+    font-family: PingFang SC;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    color: var(--TextPrimary, #1F2329);
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: 0;
+    margin: 0;
+    transition: .1s;
+    padding: 2px 4px;
+    border-radius: 3px;
+
+    &:active {
+      color: #000;
+      border-color: #3a8ee6;
+      background-color: red;
       outline: 0;
-      margin: 0;
-      transition: .1s;
-      padding: 5px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
+    }
 
-      &:active {
-        color: #000;
-        border-color: #3a8ee6;
-        background-color: red;
-        outline: 0;
-      }
-
-      &:hover {
-        background-color: #ecf5ff;
-        color: #3a8ee6;
-      }
+    &:hover {
+      background-color: rgba(31, 35, 41, 0.1);
+      color: #3a8ee6;
     }
   }
+}
 
-  .button-show {
-    background-color: #ebf2fe !important;
+.button-show {
+  background-color: #ebf2fe !important;
+}
+
+.button-closed {
+  background-color: #ffffff !important;
+}
+
+::v-deep .el-switch__core {
+  width: 30px !important;
+  height: 15px;
+}
+
+/*设置圆*/
+::v-deep .el-switch__core::after {
+  width: 14px;
+  height: 14px;
+  margin-top: -1px;
+  margin-bottom: 2px;
+}
+
+.iconfont-tb {
+  font-family: "iconfont" !important;
+  font-size: 12px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.switch-position {
+  position: absolute;
+  top: 13px;
+  right: 50%;
+  width: 100px;
+}
+
+.button_self {
+  margin-right: 5px;
+}
+
+.button_self ::v-deep .el-button--mini {
+  padding: 7px 7px !important;
+}
+
+.font-active {
+  font-color: #3a8ee6 !important;
+}
+
+.icon-active {
+  color: #3a8ee6;
+}
+
+.icon-unactivated {
+  display: none;
+}
+
+.panel-info-area {
+  position: absolute;
+  line-height: 56px;
+  left: 0px;
+}
+
+.icon-font-margin {
+  margin-left: 4px;
+  font-size: 14px !important;
+}
+
+.margin-left8 {
+  margin-left: 8px;
+}
+
+.toolbar-icon-active {
+  cursor: pointer;
+  transition: .1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
   }
 
-  .button-closed {
-    background-color: #ffffff !important;
-  }
-
-  ::v-deep .el-switch__core {
-    width: 30px !important;
-    height: 15px;
-  }
-
-  /*设置圆*/
-  ::v-deep .el-switch__core::after {
-    width: 14px;
-    height: 14px;
-    margin-top: -1px;
-    margin-bottom: 2px;
-  }
-
-  .iconfont-tb {
-    font-family: "iconfont" !important;
-    font-size: 12px;
-    font-style: normal;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  .switch-position {
-    position: absolute;
-    top: 13px;
-    right: 50%;
-    width: 100px;
-  }
-
-  .button_self {
-    margin-right: 5px;
-  }
-
-  .button_self ::v-deep .el-button--mini {
-    padding: 7px 7px !important;
-  }
-
-  .font-active {
-    font-color: #3a8ee6 !important;
-  }
-
-  .icon-active {
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
     color: #3a8ee6;
   }
+}
 
-  .icon-unactivated {
-    display: none;
+.toolbar-icon-middle {
+  font-size: 16px;
+  color: var(--TextPrimary, #1F2329);
+  cursor: pointer;
+  transition: .1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
   }
 
-  .panel-info-area {
-    position: absolute;
-    left: 10px;
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
 
-    .text {
-      margin-left: 15px;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--TextPrimary, #606266);
-    }
-  ;
+.toolbar-icon {
+  font-size: 20px;
+  color: var(--TextPrimary, #1F2329);
+  cursor: pointer;
+  transition: .1s;
+  border-radius: 3px;
 
-    .icon-back {
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--MenuActiveBG, #409EFF);
-    }
-
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
   }
 
-  .icon-font-margin{
-    margin-left: 2px;
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6 !important;
   }
+}
 
+.margin-left20 {
+  margin-left: 20px !important;
+}
+
+.margin-right20 {
+  margin-right: 20px !important;
+}
+
+.margin-right12 {
+  margin-right: 12px !important;
+}
+
+.icon20 {
+  font-size: 20px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.icon16 {
+  font-size: 16px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.text16 {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.text14 {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--TextPrimary, #1F2329);
+}
+.margin-left52 {
+  margin-left: 52px !important;
+}
+.margin-left12 {
+  margin-left: 12px !important;
+}
+
+.el-divider--vertical {
+  margin: 0 20px 0 20px
+}
+.el-dropdown-menu__item{
+  line-height: 32px;
+}
 </style>
