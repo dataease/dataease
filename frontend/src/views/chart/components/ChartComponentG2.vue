@@ -79,7 +79,7 @@ export default {
         textAlign: 'left',
         fontStyle: 'normal',
         fontWeight: 'normal',
-        background: hexColorToRGBA('#ffffff', 0)
+        background: ''
       },
       title_show: true,
       antVRenderStatus: false

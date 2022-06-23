@@ -29,7 +29,6 @@ export default {
   name: 'ComponentStyle',
   data() {
     return {
-      basePath: 'chartInfo.chartCommonStyle.',
       predefineColors: COLOR_PANEL,
       componentStyleForm: {}
     }

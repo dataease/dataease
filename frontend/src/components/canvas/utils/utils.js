@@ -8,7 +8,7 @@ import {
 } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
-import { AIDED_DESIGN, PANEL_CHART_INFO } from '@/views/panel/panel'
+import { AIDED_DESIGN, FILTER_COMMON_STYLE, PANEL_CHART_INFO } from '@/views/panel/panel'
 import html2canvas from 'html2canvasde'
 
 export function deepCopy(target) {
