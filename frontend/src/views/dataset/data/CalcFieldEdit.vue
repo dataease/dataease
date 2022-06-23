@@ -361,12 +361,15 @@ export default {
         pre[next[from]] = next[to]
         return pre
       }, {})
-      originName.match(/(?<=\[).+?(?=\])/g).forEach(ele => {
-        if (name2Auto) {
-          name2Auto.push(nameIdMap[ele])
-        }
-        name2Id = name2Id.replace(ele, nameIdMap[ele])
-      })
+      const on = originName.match(/(?<=\[).+?(?=\])/g)
+      if (on) {
+        on.forEach(ele => {
+          if (name2Auto) {
+            name2Auto.push(nameIdMap[ele])
+          }
+          name2Id = name2Id.replace(ele, nameIdMap[ele])
+        })
+      }
       return name2Id
     },
 
@@ -382,7 +385,8 @@ export default {
         this.fieldForm.tableId = this.param.id
         this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
-      post('/dataset/field/save', {...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
+      post('/dataset/field/save', { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
+        localStorage.setItem('reloadDsData', 'true')
         this.closeCalcField()
       })
     },
