@@ -128,7 +128,6 @@ export default {
 <style lang="scss" scoped>
 .slider-container {
   width: 100%;
-  overflow: hidden auto;
   min-height: 24px;
   padding-top: 0px;
   padding-bottom: 0px;

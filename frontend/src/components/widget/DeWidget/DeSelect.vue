@@ -12,7 +12,6 @@
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
-    class="de-select-tag"
     popper-class="coustom-de-select"
     :list="datas"
     @change="changeValue"
@@ -38,6 +37,7 @@ import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/DeWidget/customInput'
+import {  textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
   components: { ElVisualSelect },
@@ -187,6 +187,11 @@ export default {
     onBlur() {
       this.onFocus = false
     },
+    handleElTagStyle() {
+      setTimeout(() => {
+        textSelectWidget(this.$refs["deSelect"].$el, this.element.style)
+      }, 50)
+    },
     initLoad() {
       this.value = this.fillValueDerfault()
       this.datas = []
@@ -230,6 +235,7 @@ export default {
           contentWidth += kid.offsetWidth
         })
         this.showNumber = contentWidth > ((this.$refs.deSelect.$refs.tags.clientWidth - 30) * 0.9)
+        this.handleElTagStyle()
       })
     },
 
@@ -284,6 +290,7 @@ export default {
 <style lang="scss">
 .coustom-de-select {
   background-color: var(--BgSelectColor, #FFFFFF) !important;
+  border-color: var(--BrSelectColor, #E4E7ED) !important;
   // .popper__arrow::after{
   //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
   // }
@@ -306,20 +313,13 @@ export default {
     background-color: rgb(245, 247, 250, .5);
   }
 }
-.de-select-tag {
-  .el-select__tags {
-    .el-tag {
-      background-color: var(--BgSelectColor, #f4f4f5) !important;
-      border-color: var(--BrSelectColor, #e9e9eb) !important;
-      color: var(--SelectColor, #909399) !important;
 
-      i {
-        color: var(--SelectColor, #909399) !important;
-      }
-    }
-    .el-icon-close {
-      background-color: var(--BgSelectColor, #C0C4CC) !important;
-    }
+.coustom-de-select.is-multiple {
+  .el-select-dropdown__item.selected {
+    background-color: rgb(245, 247, 250, .5) !important;
+  }
+  .el-select-dropdown__item.hover {
+    background-color: rgb(245, 247, 250, .5) !important;
   }
 }
 </style>
