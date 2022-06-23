@@ -306,3 +306,9 @@ const yExtFormatter = function(value) {
     return valueFormatter(value, yExtAxisLabelFormatter)
   }
 }
+
+export const reverseColor = colorValue => {
+  colorValue = '0x' + colorValue.replace(/#/g, '')
+  const str = '000000' + (0xFFFFFF - colorValue).toString(16)
+  return '#' + str.substring(str.length - 6, str.length)
+}

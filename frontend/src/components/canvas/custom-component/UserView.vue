@@ -33,6 +33,7 @@
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
       :scale="scale"
+      :theme-style="element.commonBackground"
       class="chart-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
@@ -47,6 +48,7 @@
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
       :scale="scale"
+      :theme-style="element.commonBackground"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
