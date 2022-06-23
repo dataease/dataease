@@ -5,7 +5,7 @@
         <swiper-slide v-for="(item,index) in bannerImgList" :key="index" style="position: relative;">
           <img :src="item.url" style="width:100%;height:92%;">
           <div class="img_box" :style="{
-            'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : '',
+            'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
           }">
             <div :style="{
               'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
@@ -166,6 +166,7 @@ export default {
     },
     //hex -> rgba
     hexToRgba(hex, opacity) {
+      console.log('转化',hex,opacity)
       return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ','
             + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')';
     }
