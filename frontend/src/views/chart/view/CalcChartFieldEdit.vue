@@ -427,8 +427,7 @@ export default {
         this.fieldForm.columnIndex = 0
         this.fieldForm.chartId = this.param.id
       }
-      this.fieldForm.originName = this.setNameIdTrans('name', 'id', originName)
-      post('/chart/field/save/' + this.panelInfo.id, this.fieldForm).then(response => {
+      post('/chart/field/save/' + this.panelInfo.id, { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         this.closeCalcField()
       })
     },
