@@ -6,14 +6,14 @@
           <el-form-item :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="filterForm.horizontal" size="mini" @change="themeChange('horizontal')">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button :disabled="filterForm.vertical === 'center'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="$t('chart.text_v_position')" class="form-item">
             <el-radio-group v-model="filterForm.vertical" size="mini" @change="themeChange('vertical')">
               <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
-              <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button :disabled="filterForm.horizontal === 'center'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="'标题颜色'" class="form-item">
@@ -25,19 +25,19 @@
               边框
             </el-col>
             <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.brColor" size="mini" class="color-picker-style" @change="themeChange('brColor')" :predefine="predefineColors" />
+              <el-color-picker v-model="filterForm.brColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('brColor')" />
             </el-col>
             <el-col :span="4" style="padding-left: 10px;padding-top: 8px">
               文字
             </el-col>
             <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.wordColor" size="mini" class="color-picker-style"  @change="themeChange('wordColor')"  :predefine="predefineColors" />
+              <el-color-picker v-model="filterForm.wordColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('wordColor')" />
             </el-col>
             <el-col :span="4" style="padding-left: 10px;padding-top: 8px">
               背景
             </el-col>
             <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.innerBgColor" size="mini" class="color-picker-style"  @change="themeChange('innerBgColor')"  :predefine="predefineColors" />
+              <el-color-picker v-model="filterForm.innerBgColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('innerBgColor')" />
             </el-col>
           </el-row>
         </div>
@@ -50,6 +50,7 @@
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { adaptCurThemeFilterStyleAll } from '@/components/canvas/utils/style'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   name: 'FilterStyleSelector',
@@ -68,10 +69,13 @@ export default {
       'canvasStyleData'
     ])
   },
-  watch: {
+  created() {
+    this.initForm()
+    bus.$on('onThemeColorChange', () => {
+      this.initForm()
+    })
   },
   mounted() {
-    this.initForm()
   },
   methods: {
     initForm() {

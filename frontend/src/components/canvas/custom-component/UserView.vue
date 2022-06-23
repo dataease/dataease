@@ -206,7 +206,6 @@ export default {
       changeIndex: 0,
       changeScaleIndex: 0,
       pre: null,
-      preCanvasPanel: null,
       // string
       sourceCustomAttrStr: null,
       // obj
@@ -315,6 +314,9 @@ export default {
     resultCount() {
       return this.canvasStyleData.panel && this.canvasStyleData.panel.resultCount || null
     },
+    gap() {
+      return this.canvasStyleData.panel && this.canvasStyleData.panel.gap || null
+    },
     innerPadding() {
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
@@ -353,21 +355,14 @@ export default {
       },
       deep: true
     },
-    // deep监听panel 如果改变 提交到 store
-    canvasStyleData: {
-      handler(newVal, oldVla) {
-        // this.mergeStyle()
-        // 如果视图结果模式模式 或者 视图结果获取数量改变 刷新视图
-        if (!this.preCanvasPanel || this.preCanvasPanel.resultCount !== newVal.panel.resultCount || this.preCanvasPanel.resultMode !== newVal.panel.resultMode) {
-          this.getData(this.element.propValue.viewId, false)
-        }
-        // 如果gap有变化刷新
-        if (this.preCanvasPanel && this.preCanvasPanel.gap !== newVal.panel.gap) {
-          this.resizeChart()
-        }
-        this.preCanvasPanel = deepCopy(newVal.panel)
-      },
-      deep: true
+    resultCount: function() {
+      this.getData(this.element.propValue.viewId, false)
+    },
+    resultMode: function() {
+      this.getData(this.element.propValue.viewId, false)
+    },
+    gap: function() {
+      this.resizeChart()
     },
     // 监听外部的样式变化 （非实时性要求）
     'hw': {

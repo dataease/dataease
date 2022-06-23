@@ -16,7 +16,7 @@
         </el-form-item>
         <el-form-item :label="$t('panel.refresh_frequency')" class="form-item">
           <el-input v-model="overallSettingForm.refreshTime" class="el-input-refresh-time" type="number" size="mini" controls-position="right" :min="1" :max="3600" @change="themeChange" />
-          <el-select v-model="overallSettingForm.refreshUnit" class="el-input-refresh-unit" @change="themeChange">
+          <el-select v-model="overallSettingForm.refreshUnit" class="el-input-refresh-unit margin-left4" @change="themeChange">
             <el-option :label="$t('panel.minute')" :value="'minute'" />
             <el-option :label="$t('panel.second')" :value="'second'" />
           </el-select>
@@ -67,6 +67,8 @@ import {
 import bus from '@/utils/bus'
 import { DEFAULT_COLOR_CASE_DARK, DEFAULT_TITLE_STYLE_DARK, DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { FILTER_COMMON_STYLE, FILTER_COMMON_STYLE_DARK } from '@/views/panel/panel'
+import { deepCopy } from '@/components/canvas/utils/utils'
+
 export default {
   name: 'OverallSetting',
   data() {
@@ -95,17 +97,17 @@ export default {
         this.canvasStyleData.chartInfo.chartCommonStyle.backgroundColorSelect = true
         this.canvasStyleData.panel.backgroundType = 'color'
         if (this.overallSettingForm.panel.themeColor === 'light') {
-          this.canvasStyleData.panel.color = LIGHT_THEME_PANEL_BACKGROUND
-          this.canvasStyleData.chartInfo.chartCommonStyle.color = LIGHT_THEME_COMPONENT_BACKGROUND
-          this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE
-          this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE
-          this.canvasStyleData.chartInfo.filterStyle = FILTER_COMMON_STYLE
+          this.canvasStyleData.panel.color = deepCopy(LIGHT_THEME_PANEL_BACKGROUND)
+          this.canvasStyleData.chartInfo.chartCommonStyle.color = deepCopy(LIGHT_THEME_COMPONENT_BACKGROUND)
+          this.canvasStyleData.chartInfo.chartTitle = deepCopy(DEFAULT_TITLE_STYLE)
+          this.canvasStyleData.chartInfo.chartColor = deepCopy(DEFAULT_COLOR_CASE)
+          this.canvasStyleData.chartInfo.filterStyle = deepCopy(FILTER_COMMON_STYLE)
         } else {
-          this.canvasStyleData.panel.color = DARK_THEME_PANEL_BACKGROUND
-          this.canvasStyleData.chartInfo.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
-          this.canvasStyleData.chartInfo.chartTitle = DEFAULT_TITLE_STYLE_DARK
-          this.canvasStyleData.chartInfo.chartColor = DEFAULT_COLOR_CASE_DARK
-          this.canvasStyleData.chartInfo.filterStyle = FILTER_COMMON_STYLE_DARK
+          this.canvasStyleData.panel.color = deepCopy(DARK_THEME_PANEL_BACKGROUND)
+          this.canvasStyleData.chartInfo.chartCommonStyle.color = deepCopy(DARK_THEME_COMPONENT_BACKGROUND)
+          this.canvasStyleData.chartInfo.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
+          this.canvasStyleData.chartInfo.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
+          this.canvasStyleData.chartInfo.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
         }
         adaptCurThemeCommonStyleAll()
         bus.$emit('onThemeColorChange')
@@ -127,8 +129,11 @@ export default {
 }
 
 .el-input-refresh-loading{
-  margin-left: 5px;
+  margin-left: 4px;
   font-size: 12px;
+}
+.margin-left4{
+  margin-left: 4px;
 }
 ::v-deep .el-input__inner{
   padding: 0px 5px!important;

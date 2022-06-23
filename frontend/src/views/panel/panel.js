@@ -5,7 +5,7 @@ import { COMMON_BACKGROUND_BASE } from '@/components/canvas/custom-component/com
 
 export const FILTER_COMMON_STYLE = {
   horizontal: 'left',
-  vertical: 'center',
+  vertical: 'top',
   color: '#000000',
   brColor: '',
   wordColor: '',
@@ -14,9 +14,9 @@ export const FILTER_COMMON_STYLE = {
 
 export const FILTER_COMMON_STYLE_DARK = {
   horizontal: 'left',
-  vertical: 'center',
+  vertical: 'top',
   color: '#FFFFFF',
-  brColor: '',
+  brColor: '#4E4B4B',
   wordColor: '#4E4B4B',
   innerBgColor: '#131E42'
 }

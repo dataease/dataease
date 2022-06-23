@@ -25,6 +25,7 @@
 
 import { mapState } from 'vuex'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import bus from '@/utils/bus'
 export default {
   name: 'ComponentStyle',
   data() {
@@ -37,10 +38,11 @@ export default {
     'canvasStyleData',
     'componentData'
   ]),
-  watch: {
-  },
   created() {
     this.initForm()
+    bus.$on('onThemeColorChange', () => {
+      this.initForm()
+    })
   },
   methods: {
     initForm() {
