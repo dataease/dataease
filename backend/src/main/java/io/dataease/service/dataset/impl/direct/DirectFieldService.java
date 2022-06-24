@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.BaseTreeNode;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.dto.dataset.DeSortDTO;
 import io.dataease.plugins.common.base.domain.DatasetTable;
@@ -164,9 +165,9 @@ public class DirectFieldService implements DataSetFieldService {
             String tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter));
+            datasourceRequest.setQuery(qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, deSortFields));
         }
-        System.out.println(datasourceRequest.getQuery());
+        LogUtil.info(datasourceRequest.getQuery());
         List<String[]> rows = datasourceProvider.getData(datasourceRequest);
         if (!needMapping) {
             List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
