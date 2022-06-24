@@ -9,28 +9,30 @@
     </div>
     <!--折叠面板-->
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
-      <el-collapse v-model="activeNames" @change="handleChange">
-        <el-collapse-item :title="'整体配置'" name="panel">
-          <el-row class="selector-div">
-            <overall-setting />
-          </el-row>
-        </el-collapse-item>
-        <el-collapse-item :title="'仪表板背景'" name="panelBackground">
-          <background-selector />
-        </el-collapse-item>
-        <el-collapse-item :title="'组件样式'" name="componentStyle">
-          <component-style />
-        </el-collapse-item>
-        <el-collapse-item :title="'组件配色'" name="graphical">
-          <panel-color-selector @onColorChange="onColorChange" />
-        </el-collapse-item>
-        <el-collapse-item :title="'图表标题'" name="table">
-          <view-title @onTextChange="onTextChange" />
-        </el-collapse-item>
-        <el-collapse-item :title="'过滤组件'" name="filterComponent">
-          <FilterStyleSelector />
-        </el-collapse-item>
-      </el-collapse>
+      <div>
+        <el-collapse v-model="activeNames" @change="handleChange">
+          <el-collapse-item :title="'整体配置'" name="panel">
+            <el-row class="selector-div">
+              <overall-setting />
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item :title="'仪表板背景'" name="panelBackground">
+            <background-selector />
+          </el-collapse-item>
+          <el-collapse-item :title="'组件样式'" name="componentStyle">
+            <component-style />
+          </el-collapse-item>
+          <el-collapse-item :title="'组件配色'" name="graphical">
+            <panel-color-selector @onColorChange="onColorChange" />
+          </el-collapse-item>
+          <el-collapse-item :title="'图表标题'" name="table">
+            <view-title @onTextChange="onTextChange" />
+          </el-collapse-item>
+          <el-collapse-item :title="'过滤组件'" name="filterComponent">
+            <FilterStyleSelector />
+          </el-collapse-item>
+        </el-collapse>
+      </div>
     </div>
   </el-row>
 </template>

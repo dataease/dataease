@@ -2664,12 +2664,12 @@ export default {
   background-color: #f7f8fa;
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 96px);
 }
 
 .view-panel-Mask {
   display: flex;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 80px);
   background-color: rgba(92,94,97, 0.7);
   position:absolute;
   top:0px;
@@ -2828,7 +2828,7 @@ span {
 }
 
 .attr-style {
-  height: calc(100vh - 56px - 60px - 40px - 40px);
+  height: calc(100vh - 76px - 60px - 40px - 40px);
 }
 
 .blackTheme .attr-style {
