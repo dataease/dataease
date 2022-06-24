@@ -130,6 +130,7 @@ const data = {
     },
 
     setCanvasStyle(state, style) {
+      console.log('设置样式：',style)
       if (style) {
         style['selfAdaption'] = true
       }

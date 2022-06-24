@@ -154,11 +154,14 @@ export default {
       })
     },
     querySubjectWithGroup() {
+      console.log('sliderrrrrrrrrr',this.slidersLoading,)
+
       const _this = this
       _this.slidersLoading = true
       querySubjectWithGroup({}).then(response => {
         _this.sliders = []
         _this.sliders = response.data
+        console.log('主题集合',_this.sliders)
         _this.slidersLoading = false
         if (_this.sliders.length < _this.currentIndex) {
           _this.currentIndex = 1

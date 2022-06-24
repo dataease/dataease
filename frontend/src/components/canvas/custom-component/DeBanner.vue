@@ -2,19 +2,23 @@
   <div>
     <div class="recommendPage swiper-no-swiping">
       <swiper v-if="isShow&&bannerImgList.length>0" ref="mySwiper" :options="swiperOption" class="swiper-wrapper" :style="bannerStyle">
-        <swiper-slide v-for="(item,index) in bannerImgList" :key="index" style="position: relative;">
-          <img :src="item.url" style="width:100%;height:92%;">
-          <div class="img_box" :style="{
-            'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
-          }">
-            <div :style="{
-              'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
-              'color': item.imgFontColor
-            }">{{item.imgTitle}}</div>
-            <div :style="{
-              'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
-              'color': item.imgFontColor
-            }">{{item.imgContent}}</div>
+        <swiper-slide v-for="(item,index) in bannerImgList" :key="index">
+          <div style="width: 100%;height: 100%;">
+            <div style="width: 100%;height: 70%;">
+              <img :src="item.url" style="width:100%;height:100%;">
+            </div>
+            <div class="img_box" :style="{
+              'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
+            }">
+              <div :style="{
+                'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
+                'color': item.imgFontColor
+              }">{{item.imgTitle}}</div>
+              <div :style="{
+                'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
+                'color': item.imgFontColor
+              }">{{item.imgContent}}</div>
+            </div>
           </div>
         </swiper-slide>
         <div slot="pagination" class="swiper-pagination" />
@@ -178,11 +182,8 @@ export default {
 </script>
 <style >
   .img_box {
-    position: absolute;
-    left: 0px;
-    width: 35%;
-    height: 100%;
-    /* opacity: 0.5; */
+    width: 100%;
+    height: 30%;
   }
   .img_box div {
     width: 100%;
