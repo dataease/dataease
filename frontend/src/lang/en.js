@@ -1464,6 +1464,17 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    pic_adaptation: 'Adaptation',
+    pic_equiratio: 'Equiratio',
+    pic_original: 'Original',
+    pic_size: 'Image Size',
+    web_addr: 'Web Address',
+    stream_media_info: 'Stream Media Info',
+    video_info: 'Video Info',
+    title_position: 'Title Position',
+    tab_inner_style: 'Tab Inner Style',
+    data_format: 'Data Format',
+    border_color: 'Border Color',
     theme_change_warn: 'Subject Change',
     theme_change_tips: 'Changing the theme will overwrite the view related theme attributes. It is recommended to back up in advance. Do you want to continue the replacement?',
     theme_color_change_warn: 'Theme Color Change',

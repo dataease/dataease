@@ -341,7 +341,7 @@ import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
-  HYPERLINKS
+  HYPERLINKS, PIC_STYLE
 } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
@@ -967,7 +967,7 @@ export default {
             propValue: fileResult,
             commonBackground: deepCopy(COMMON_BACKGROUND),
             style: {
-              ...commonStyle
+              ...PIC_STYLE
             }
           }
           component.auxiliaryMatrix = false
