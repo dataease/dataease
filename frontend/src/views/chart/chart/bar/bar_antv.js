@@ -55,6 +55,7 @@ function sortDatas(data) {
   })
 }
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
+  console.log('bar_antv,chart',chart)
   // theme
   const theme = getTheme(chart)
   // attr
