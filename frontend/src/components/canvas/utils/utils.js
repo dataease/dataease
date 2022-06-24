@@ -123,6 +123,10 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
       item.commonBackground.enable = false
       item.commonBackground.backgroundType = 'innerImage'
     }
+    // picture component
+    if (item.component && item.component === 'Picture') {
+      item.style.adaptation = item.style.adaptation || 'adaptation'
+    }
   })
   // 初始化密度为最高密度
   componentStyle.aidedDesign.matrixBase = 4

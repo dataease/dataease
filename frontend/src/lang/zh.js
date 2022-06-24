@@ -1472,6 +1472,17 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    pic_adaptation: '适应组件',
+    pic_equiratio: '等比适应',
+    pic_original: '原始尺寸',
+    pic_size: '图片尺寸',
+    web_addr: '网页地址',
+    stream_media_info: '流媒体信息',
+    video_info: '视频信息',
+    title_position: '标题位置',
+    tab_inner_style: 'tab内部样式',
+    data_format: '日期格式',
+    border_color: '边框颜色',
     theme_change_warn: '主题更换',
     theme_change_tips: '更换主题将会覆盖视图相关主题属性建议提前备份,是否继续更换？',
     theme_color_change_warn: '主题色更换',
