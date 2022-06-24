@@ -126,7 +126,6 @@
           </div>
         </div>
       </de-aside-container>
-
       <!--画布区域-->
       <de-main-container id="canvasInfo-main">
         <!--左侧抽屉-->
@@ -141,12 +140,12 @@
           :close-on-press-escape="false"
           :modal-append-to-body="true"
         >
-          <!--          <view-select v-show=" show && showIndex===0" @newChart="newChart" />-->
-          <filter-group v-show=" show &&showIndex===1" />
-          <subject-setting v-show=" show &&showIndex===2" />
-          <assist-component v-show=" show &&showIndex===3" />
+          <div style="width: 295px">
+            <filter-group v-show=" show &&showIndex===1" />
+            <subject-setting v-show=" show &&showIndex===2" />
+            <assist-component v-show=" show &&showIndex===3" />
+          </div>
         </el-drawer>
-
         <!--PC端画布区域-->
         <div
           v-if="!previewVisible&&!mobileLayoutStatus"

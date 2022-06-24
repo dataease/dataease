@@ -121,11 +121,11 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 35px);
+    height: calc(100vh - 56px);
   }
 
   .batch-opt-main{
-    height:  calc(100vh - 35px);
+    height:  calc(100vh - 56px);
     overflow-y: hidden;
     width: 100%;
     border-left: 1px solid #E6E6E6
