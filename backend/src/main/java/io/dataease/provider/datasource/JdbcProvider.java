@@ -221,6 +221,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
             JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
             if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
                 charset = jdbcConfiguration.getCharset();
+            }
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
         }

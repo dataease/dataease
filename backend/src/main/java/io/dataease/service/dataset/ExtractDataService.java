@@ -921,7 +921,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, mysqlConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql, mysqlConfiguration);
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
@@ -929,7 +929,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, sqlServerConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer, sqlServerConfiguration);
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
@@ -937,7 +937,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, pgConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.pg);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.pg, pgConfiguration);
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
@@ -950,7 +950,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, oracleConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle, oracleConfiguration);
                 break;
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasource.getConfiguration(), CHConfiguration.class);
@@ -959,7 +959,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, chConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck, chConfiguration);
                 break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasource.getConfiguration(), Db2Configuration.class);
@@ -968,11 +968,11 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL, db2Configuration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.db2);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration);
                 break;
             case excel:
                 inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.excel);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.excel, null);
             default:
                 break;
         }
@@ -1036,9 +1036,6 @@ public class ExtractDataService {
         DatabaseMeta database = transMeta.findDatabase(DatasetType.DB.name());
         tableInput.setDatabaseMeta(database);
         tableInput.setSQL(selectSQL);
-        if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
-            tableInput.setLazyConversionActive(true);
-        }
         StepMeta fromStep = new StepMeta("TableInput", "Data Input", tableInput);
         fromStep.setDraw(true);
         fromStep.setLocation(100, 100);
@@ -1098,12 +1095,7 @@ public class ExtractDataService {
 
     private StepMeta outputStep(String dorisOutputTable, List<DatasetTableField> datasetTableFields, Datasource datasource) {
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
-        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
-        if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
-            textFileOutputMeta.setEncoding(jdbcConfiguration.getTargetCharset());
-        }else {
-            textFileOutputMeta.setEncoding("UTF-8");
-        }
+        textFileOutputMeta.setEncoding("UTF-8");
         textFileOutputMeta.setHeaderEnabled(false);
         textFileOutputMeta.setFilename(root_path + dorisOutputTable);
         textFileOutputMeta.setSeparator(separator);
@@ -1173,7 +1165,7 @@ public class ExtractDataService {
         return outputStep;
     }
 
-    private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
+    private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType, JdbcConfiguration jdbcConfiguration) {
         StringBuilder handleBinaryTypeCode = new StringBuilder();
         String excelCompletion = "";
 
@@ -1192,10 +1184,23 @@ public class ExtractDataService {
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
 
         String Column_Fields;
+
         if (datasourceType.equals(DatasourceTypes.oracle) || datasourceType.equals(DatasourceTypes.db2)) {
             Column_Fields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.joining(","));
+            String charset = null;
+            String targetCharset = "UTF-8";
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
+                charset = jdbcConfiguration.getCharset();
+            }
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
+                targetCharset = jdbcConfiguration.getTargetCharset();
+            }
+            if (StringUtils.isNotEmpty(charset)) {
+                tmp_code = code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset));
+            }
         } else {
             Column_Fields = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
+            tmp_code = code.replace("handleCharset", "");
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
@@ -1306,6 +1311,13 @@ public class ExtractDataService {
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
             "        } \n";
 
+    private final static String handleCharset = "\tif(tmp != null){\n" +
+            "  \t\t\ttry {\n" +
+            "            \t\tSystem.out.println(new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
+            "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"ISO-8859-1\"), \"GBK\"));\n" +
+            "       \t\t}catch (Exception e){}\n" +
+            "\t\t}";
+
     private final static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
             "import java.io.File;\n" +
@@ -1335,6 +1347,7 @@ public class ExtractDataService {
             "    List<String> fileds = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
+            "handleCharset \n" +
             "handleWraps \n" +
             "ExcelCompletion \n" +
             "handleBinaryType \n" +

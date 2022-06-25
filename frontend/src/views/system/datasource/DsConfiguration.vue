@@ -228,7 +228,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.charset')">
+          <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.targetCharset')">
             <el-select v-model="form.configuration.targetCharset" filterable
                        :placeholder="$t('datasource.please_choose_targetCharset')"
                        class="select-width">
