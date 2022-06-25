@@ -27,8 +27,8 @@
                 :is="element.component"
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
-                class="component-custom"
                 ref="deOutWidget"
+                class="component-custom"
                 :out-style="element.style"
                 :element="element"
                 :in-draw="inDraw"
@@ -105,31 +105,29 @@ export default {
       'curCanvasScale'
     ]),
     deSelectGridBg() {
-      if (this.element.component !== 'de-select-grid') return null;
-      const { backgroundColorSelect, color  } = this.element.commonBackground;
+      if (this.element.component !== 'de-select-grid') return null
+      const { backgroundColorSelect, color } = this.element.commonBackground
       return {
-        background: backgroundColorSelect ?  color : '#fff',
+        background: backgroundColorSelect ? color : '#fff',
         border: backgroundColorSelect ? 'none' : '1px solid #d7dae2'
       }
     },
     isFilterComponent() {
-      return ['de-select', 'de-select-grid', 'de-date',  "de-input-search", "de-number-range", "de-select-tree"].includes(this.element.component)
+      return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(this.element.component)
     }
   },
   watch: {
     'element.style': {
       handler(val) {
-        this.handlerPositionChange(val);
+        this.handlerPositionChange(val)
       },
       deep: true,
       immediate: true
     }
   },
   mounted() {
-    // this.watchSize()
   },
   created() {
-    // console.log('aaaaaa')
     const { horizontal, vertical, brColor, wordColor, innerBgColor } = this.element.style
     this.$set(this.element.style, 'horizontal', horizontal || 'left')
     this.$set(this.element.style, 'vertical', vertical || 'center')
@@ -147,7 +145,7 @@ export default {
       this.outsideStyle = {
         flexWrap: 'wrap'
       }
-      if (vertical !== 'top') {
+      if (vertical !== 'top' && this.element.component !== 'de-select-grid') {
         this.titleStyle = null
         this.outsideStyle = {
           flexDirection: horizontal === 'right' ? 'row-reverse' : '',

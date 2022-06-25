@@ -11,13 +11,6 @@
             <el-form-item :label="'辅助网格'" class="form-item form-item-slider">
               <el-checkbox v-model="aidedDesign.showGrid" size="mini" @change="onChangePanelStyle" />
             </el-form-item>
-<!--            <el-form-item :label="'矩阵密度'" class="form-item form-item-slider">-->
-<!--              <el-radio-group v-model="aidedDesign.matrixBase" size="mini" @change="onChangePanelStyle">-->
-<!--                <el-radio-button :label="1">普通</el-radio-button>-->
-<!--                <el-radio-button :label="2">适中</el-radio-button>-->
-<!--                <el-radio-button :label="4">密集</el-radio-button>-->
-<!--              </el-radio-group>-->
-<!--            </el-form-item>-->
           </el-form>
         </el-col>
         <el-button slot="reference" size="mini" class="shape-item">辅助设计 <i

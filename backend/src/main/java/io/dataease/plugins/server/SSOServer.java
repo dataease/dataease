@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -46,13 +45,13 @@ public class SSOServer {
 
     @GetMapping("/callBack")
     public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/"); 
-        HttpServletResponse response = ServletUtils.response();   
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
+        HttpServletResponse response = ServletUtils.response();
         OidcXpackService oidcXpackService = null;
         String idToken = null;
         try {
             Map<String, OidcXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((OidcXpackService.class));
-            if(beansOfType.keySet().size() == 0) {
+            if (beansOfType.keySet().size() == 0) {
                 DEException.throwException("缺少oidc插件");
             }
             oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
@@ -60,17 +59,18 @@ public class SSOServer {
             if (!suuportOIDC) {
                 DEException.throwException("未开启oidc");
             }
-            Map<String, String> config = config(oidcXpackService);            
+            Map<String, String> config = config(oidcXpackService);
             SSOToken ssoToken = oidcXpackService.requestSsoToken(config, code, state);
             idToken = ssoToken.getIdToken();
-            Cookie cookie_id_token = new Cookie("IdToken", ssoToken.getIdToken());cookie_id_token.setPath("/");
+            Cookie cookie_id_token = new Cookie("IdToken", ssoToken.getIdToken());
+            cookie_id_token.setPath("/");
             response.addCookie(cookie_id_token);
-            
+
             SSOUserInfo ssoUserInfo = oidcXpackService.requestUserInfo(config, ssoToken.getAccessToken());
 
-            
+
             SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
-            if(null == sysUserEntity){
+            if (null == sysUserEntity) {
                 sysUserService.validateExistUser(ssoUserInfo.getUsername(), ssoUserInfo.getNickName(), ssoUserInfo.getEmail());
                 sysUserService.saveOIDCUser(ssoUserInfo);
                 sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
@@ -79,17 +79,19 @@ public class SSOServer {
             String realPwd = CodingUtil.md5(sysUserService.defaultPWD());
             String token = JWTUtils.sign(tokenInfo, realPwd);
             ServletUtils.setToken(token);
-            
-            
-            Cookie cookie_token = new Cookie("Authorization", token);cookie_token.setPath("/");
-           
-            Cookie cookie_ac_token = new Cookie("AccessToken", ssoToken.getAccessToken());cookie_ac_token.setPath("/");
+
+
+            Cookie cookie_token = new Cookie("Authorization", token);
+            cookie_token.setPath("/");
+
+            Cookie cookie_ac_token = new Cookie("AccessToken", ssoToken.getAccessToken());
+            cookie_ac_token.setPath("/");
 
             response.addCookie(cookie_token);
-            
+
             response.addCookie(cookie_ac_token);
-        }catch(Exception e) {
-            
+        } catch (Exception e) {
+
             String msg = e.getMessage();
             if (null != e.getCause()) {
                 msg = e.getCause().getMessage();
@@ -107,19 +109,18 @@ public class SSOServer {
             } catch (UnsupportedEncodingException e1) {
                 e.printStackTrace();
             }
-            
-            
-        } 
+
+
+        }
         return modelAndView;
     }
+
     private Map<String, String> config(OidcXpackService oidcXpackService) {
         List<SysSettingDto> sysSettingDtos = oidcXpackService.oidcSettings();
-        Map<String, String> config = sysSettingDtos.stream().collect(HashMap::new,(m, v)->m.put(v.getParamKey(), v.getParamValue()), HashMap::putAll);
+        Map<String, String> config = sysSettingDtos.stream().collect(HashMap::new, (m, v) -> m.put(v.getParamKey(), v.getParamValue()), HashMap::putAll);
 
         return config;
     }
-    
 
-    
-    
+
 }

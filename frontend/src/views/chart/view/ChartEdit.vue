@@ -765,6 +765,7 @@
               :obj="{chart}"
               :chart-id="chart.id"
               :chart="chart"
+              :theme-style="curComponent.commonBackground"
               class="chart-class"
               @onChartClick="chartClick"
             />
@@ -774,6 +775,7 @@
               :chart-id="chart.id"
               :chart="chart"
               class="chart-class"
+              :theme-style="curComponent.commonBackground"
               @onChartClick="chartClick"
             />
             <chart-component-g2
@@ -1075,7 +1077,6 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
-import { delGroup } from '@/api/panel/panel'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 
@@ -2482,7 +2483,6 @@ export default {
 
     reset() {
       const _this = this
-
       this.$confirm(this.$t('chart.view_reset_tips'), this.$t('chart.view_reset'), {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
@@ -2664,12 +2664,12 @@ export default {
   background-color: #f7f8fa;
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 96px);
 }
 
 .view-panel-Mask {
   display: flex;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 80px);
   background-color: rgba(92,94,97, 0.7);
   position:absolute;
   top:0px;
@@ -2828,7 +2828,7 @@ span {
 }
 
 .attr-style {
-  height: calc(100vh - 56px - 60px - 40px - 40px);
+  height: calc(100vh - 76px - 60px - 40px - 40px);
 }
 
 .blackTheme .attr-style {

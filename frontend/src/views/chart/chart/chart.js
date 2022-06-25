@@ -2,13 +2,27 @@ export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#e1eaff',
-  tableItemBgColor: '#ffffff',
+  tableHeaderBgColor: '#6D9A49',
+  tableItemBgColor: '#FFFFFF',
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',
-  quotaColor: '#000000',
-  tableBorderColor: '#cfdaf4',
+  quotaColor: '#4E81BB',
+  tableBorderColor: '#E6E7E4',
+  seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
+}
+
+export const DEFAULT_COLOR_CASE_DARK = {
+  value: 'default',
+  colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+  alpha: 100,
+  tableHeaderBgColor: '#4E81BB',
+  tableItemBgColor: '#131E42',
+  tableFontColor: '#ffffff',
+  tableStripe: true,
+  dimensionColor: '#ffffff',
+  quotaColor: '#4E81BB',
+  tableBorderColor: '#CCCCCC',
   seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
 }
 export const DEFAULT_SIZE = {
@@ -88,7 +102,8 @@ export const DEFAULT_TOOLTIP = {
     fontSize: '10',
     color: '#909399'
   },
-  formatter: ''
+  formatter: '',
+  backgroundColor: '#ffffff'
 }
 export const DEFAULT_TOTAL = {
   row: {
@@ -125,12 +140,23 @@ export const DEFAULT_TOTAL = {
 export const DEFAULT_TITLE_STYLE = {
   show: true,
   fontSize: '18',
-  color: '#303133',
-  hPosition: 'center',
+  color: '#000000',
+  hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
-  isBolder: false
+  isBolder: true
 }
+
+export const DEFAULT_TITLE_STYLE_DARK = {
+  show: true,
+  fontSize: '18',
+  color: '#FFFFFF',
+  hPosition: 'left',
+  vPosition: 'top',
+  isItalic: false,
+  isBolder: true
+}
+
 export const DEFAULT_LEGEND_STYLE = {
   show: true,
   hPosition: 'center',
@@ -748,6 +774,7 @@ export const BASE_MAP = {
     inRange: {
       color: ['lightskyblue', 'yellow', 'orangered']
     },
+    textStyle: {},
     right: 0
   },
   series: [

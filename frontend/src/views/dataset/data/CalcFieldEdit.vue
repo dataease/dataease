@@ -11,7 +11,17 @@
       <el-col :span="14" style="height: 100%">
         <el-row>
           <el-row>
-            <span>{{ $t('dataset.field_exp') }}</span>
+            <span>
+              {{ $t('dataset.field_exp') }}
+              <el-tooltip class="item" effect="dark" placement="bottom">
+                <div slot="content">
+                  表达式语法请遵循该数据源对应的数据库语法。
+                  <br>
+                  数据集中不支持聚合运算。
+                </div>
+                <i class="el-icon-info" style="cursor: pointer;" />
+              </el-tooltip>
+            </span>
             <codemirror
               ref="myCm"
               v-model="fieldForm.originName"
@@ -361,12 +371,15 @@ export default {
         pre[next[from]] = next[to]
         return pre
       }, {})
-      originName.match(/(?<=\[).+?(?=\])/g).forEach(ele => {
-        if (name2Auto) {
-          name2Auto.push(nameIdMap[ele])
-        }
-        name2Id = name2Id.replace(ele, nameIdMap[ele])
-      })
+      const on = originName.match(/(?<=\[).+?(?=\])/g)
+      if (on) {
+        on.forEach(ele => {
+          if (name2Auto) {
+            name2Auto.push(nameIdMap[ele])
+          }
+          name2Id = name2Id.replace(ele, nameIdMap[ele])
+        })
+      }
       return name2Id
     },
 
@@ -382,8 +395,8 @@ export default {
         this.fieldForm.tableId = this.param.id
         this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
-      this.fieldForm.originName = this.setNameIdTrans('name', 'id', originName)
-      post('/dataset/field/save', this.fieldForm).then(response => {
+      post('/dataset/field/save', { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
+        localStorage.setItem('reloadDsData', 'true')
         this.closeCalcField()
       })
     },

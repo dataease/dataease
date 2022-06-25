@@ -1,44 +1,35 @@
 <template>
   <div>
     <div style="width: 100%;">
-      <el-popover
-        placement="right"
-        width="400"
-        trigger="click"
-      >
-        <el-row>
-          <el-col :span="16">
-            <el-radio-group v-model="panel.resultMode" class="radio-span" size="mini" @change="onChangePanelStyle">
-              <el-radio label="all"><span>{{ $t('panel.view') }}</span></el-radio>
-              <el-radio label="custom">
-                <span>{{ $t('panel.panel') }} </span>
-              </el-radio>
-            </el-radio-group>
-          </el-col>
-          <el-col :span="8" class="slider-area">
-            <el-slider
-              v-model="panel.resultCount"
-              :disabled="panel.resultMode==='all'"
-              style="margin-left: 5px"
-              show-input
-              :show-input-controls="false"
-              :show-tooltip="false"
-              input-size="mini"
-              :min="1"
-              :max="10000"
-              @change="onChangePanelStyle"
-            />
-          </el-col>
-        </el-row>
-        <el-row>
-          <span style="color: #909399; font-size: 8px;margin-left: 3px">
-            Tips: {{ $t('panel.panel_view_result_tips') }}
-          </span>
-        </el-row>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.panel_view_result_show') }}<i
-          class="el-icon-setting el-icon--right"
-        /></el-button>
-      </el-popover>
+      <el-row>
+        <el-col :span="16">
+          <el-radio-group v-model="panel.resultMode" class="radio-span" size="mini" @change="onChangePanelStyle">
+            <el-radio label="all"><span>{{ $t('panel.view') }}</span></el-radio>
+            <el-radio label="custom">
+              <span>{{ $t('panel.panel') }} </span>
+            </el-radio>
+          </el-radio-group>
+        </el-col>
+        <el-col :span="8" class="slider-area">
+          <el-slider
+            v-model="panel.resultCount"
+            :disabled="panel.resultMode==='all'"
+            style="margin-left: 5px"
+            show-input
+            :show-input-controls="false"
+            :show-tooltip="false"
+            input-size="mini"
+            :min="1"
+            :max="10000"
+            @change="onChangePanelStyle"
+          />
+        </el-col>
+      </el-row>
+      <el-row>
+        <span style="color: #909399; font-size: 8px;margin-left: 3px">
+          Tips: {{ $t('panel.panel_view_result_tips') }}
+        </span>
+      </el-row>
     </div>
   </div>
 </template>

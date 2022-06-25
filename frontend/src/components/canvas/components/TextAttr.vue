@@ -105,7 +105,7 @@
       </div>
       <div v-if="attrShow('borderColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
-          <el-tooltip content="边框颜色">
+          <el-tooltip :content="$t('panel.border_color')">
             <i class="iconfont icon-huabi" @click="goBoardColor" />
           </el-tooltip>
           <div :style="boardDivColor" />
@@ -115,7 +115,7 @@
 
       <div v-if="attrShow('backgroundColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
-          <el-tooltip content="背景颜色">
+          <el-tooltip :content="$t('panel.background_color')">
             <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
           </el-tooltip>
           <div :style="backgroundDivColor" />
@@ -123,58 +123,70 @@
         </div>
       </div>
       <div v-if="attrShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip content="视频信息">
+        <el-tooltip :content="$t('panel.video_info')">
           <VideoLinks :link-info="curComponent.videoLinks" />
         </el-tooltip>
       </div>
 
       <div v-if="attrShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip content="流媒体信息">
+        <el-tooltip :content="$t('panel.stream_media_info')">
           <StreamMediaLinks :link-info="curComponent.streamMediaLinks" />
         </el-tooltip>
       </div>
 
       <div v-if="attrShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip content="网页地址">
+        <el-tooltip :content="$t('panel.web_addr')">
           <FrameLinks :link-info="curComponent.frameLinks" />
         </el-tooltip>
       </div>
       <div v-if="attrShow('date-format')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="日期格式">
+        <el-tooltip :content="$t('panel.data_format')">
           <date-format :format-info="curComponent.formatInfo" />
         </el-tooltip>
       </div>
 
       <div v-if="attrShow('deTabStyle')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="tab内部样式">
+        <el-tooltip :content="$t('panel.tab_inner_style')">
           <tab-style :style-info="styleInfo" />
         </el-tooltip>
       </div>
 
       <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="标题位置">
-          <title-postion :show-vertical="showVertical" :style-info="styleInfo" />
+        <el-tooltip :content="$t('panel.title_position')">
+          <title-postion :element-type="elementType" :show-vertical="showVertical" :style-info="styleInfo" />
         </el-tooltip>
       </div>
       <!--tab 内部组件样式-->
       <div v-if="attrTabShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="视频信息">
+        <el-tooltip :content="$t('panel.video_info')">
           <VideoLinks :attr-position="'tab'" :link-info="curActiveTabInner.videoLinks" />
         </el-tooltip>
       </div>
 
       <div v-if="attrTabShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="流媒体信息">
+        <el-tooltip :content="$t('panel.stream_media_info')">
           <StreamMediaLinks :attr-position="'tab'" :link-info="curActiveTabInner.streamMediaLinks" />
         </el-tooltip>
       </div>
 
       <div v-if="attrTabShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
-        <el-tooltip content="网页地址">
+        <el-tooltip :content="$t('panel.web_addr')">
           <FrameLinks :attr-position="'tab'" :link-info="curActiveTabInner.frameLinks" />
         </el-tooltip>
       </div>
 
+      <div v-if="attrShow('adaptation')" style="width: 100px;margin-top: 2px;margin-right:2px;float: left">
+        <el-tooltip :content="$t('panel.pic_size')">
+          <el-select v-model="styleInfo.adaptation" size="mini" @change="styleChange">
+            <el-option
+              v-for="item in pictureAdaptation"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-tooltip>
+      </div>
     </div>
   </el-card>
 </template>
@@ -257,12 +269,23 @@ export default {
         value: '5',
         label: '5'
       }],
+      pictureAdaptation: [{
+        value: 'adaptation',
+        label: this.$t('panel.pic_adaptation')
+      }, {
+        value: 'equiratio',
+        label: this.$t('panel.pic_equiratio')
+      }, {
+        value: 'original',
+        label: this.$t('panel.pic_original')
+      }],
       // 矩形组件显示的属性
       'picture-add': [
         'borderStyle',
         'borderWidth',
         'borderColor',
-        'hyperlinks'
+        'hyperlinks',
+        'adaptation'
       ],
       // 过滤组件显示的属性
       'custom': [
@@ -345,12 +368,15 @@ export default {
     mainStyle() {
       const style = {
         left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
+        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop + 25) + 'px'
       }
       return style
     },
     styleInfo() {
       return this.$store.state.curComponent.style
+    },
+    elementType() {
+      return this.$store.state.curComponent.component
     },
     canvasWidth() {
       return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
@@ -477,6 +503,7 @@ export default {
   .el-card-main {
     height: 34px;
     z-index: 10;
+    padding-right: 2px;
     position: absolute;
 
   }

@@ -49,6 +49,7 @@ export default {
   },
   methods: {
     initDs() {
+      localStorage.setItem('reloadDsData', 'false')
       checkCustomDs().then(res => {
         this.$store.dispatch('dataset/setHideCustomDs', res.data)
       })

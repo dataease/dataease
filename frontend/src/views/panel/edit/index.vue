@@ -126,7 +126,6 @@
           </div>
         </div>
       </de-aside-container>
-
       <!--画布区域-->
       <de-main-container id="canvasInfo-main">
         <!--左侧抽屉-->
@@ -141,12 +140,12 @@
           :close-on-press-escape="false"
           :modal-append-to-body="true"
         >
-          <!--          <view-select v-show=" show && showIndex===0" @newChart="newChart" />-->
-          <filter-group v-show=" show &&showIndex===1" />
-          <subject-setting v-show=" show &&showIndex===2" />
-          <assist-component v-show=" show &&showIndex===3" />
+          <div style="width: 295px">
+            <filter-group v-show=" show &&showIndex===1" />
+            <subject-setting v-show=" show &&showIndex===2" />
+            <assist-component v-show=" show &&showIndex===3" />
+          </div>
         </el-drawer>
-
         <!--PC端画布区域-->
         <div
           v-if="!previewVisible&&!mobileLayoutStatus"
@@ -342,7 +341,7 @@ import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
-  HYPERLINKS
+  HYPERLINKS, PIC_STYLE
 } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
@@ -369,6 +368,7 @@ import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
+import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 export default {
   name: 'PanelEdit',
   components: {
@@ -733,7 +733,8 @@ export default {
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
-      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix) {
+      const elButton = evt.target.closest('.el-button')
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix && !elButton) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -764,7 +765,6 @@ export default {
             component = deepCopy(componentTemp)
           }
         })
-
         if (component.type === 'picture-add') {
           this.goFile()
           this.clearCurrentInfo()
@@ -849,6 +849,7 @@ export default {
         this.$store.commit('addComponent', { component })
         this.$store.commit('recordSnapshot', 'handleDrop')
       }
+      adaptCurThemeCommonStyle(component)
       this.clearCurrentInfo()
     },
     clearCurrentInfo() {
@@ -887,6 +888,7 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
+      adaptCurThemeCommonStyle(this.currentFilterCom)
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
@@ -965,7 +967,7 @@ export default {
             propValue: fileResult,
             commonBackground: deepCopy(COMMON_BACKGROUND),
             style: {
-              ...commonStyle
+              ...PIC_STYLE
             }
           }
           component.auxiliaryMatrix = false
@@ -1036,6 +1038,8 @@ export default {
       component.id = newComponentId
       // 统一设置背景信息
       component.commonBackground = deepCopy(COMMON_BACKGROUND)
+      // 适配当前主题
+      adaptCurThemeCommonStyle(component)
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
       this.clearCurrentInfo()
@@ -1139,6 +1143,7 @@ export default {
 
   .de-header {
     height: 56px !important;
+    padding: 0px!important;
     border-bottom: 1px solid #E6E6E6;
     background-color: var(--SiderBG, white);
   }

@@ -37,10 +37,48 @@ function textSelectGridWidget (nodeCache, name, value) {
         }
     }
 }
+
+function textSelectTreeWidget(nodeCache, style) {
+    textSelectWidget(nodeCache, style)
+}
+
+function textSelectWidget(nodeCache, style) {
+    let elTag = nodeCache.querySelectorAll('.el-tag.el-tag--info')
+    if (elTag.length) {
+        elTag.forEach(item => {
+            item.style.flexWrap = 'wrap'
+            item.style.padding = '0'
+            const textNode = item.querySelector('.el-select__tags-text');
+            const closeNode = item.querySelector('.el-tag__close');
+            textNode.style.width = '100%';
+            item.style.position = 'relative';
+            textNode.style.padding = '0 20px 0 8px';
+            textNode.style.borderRadius = '3px';
+            if (closeNode) {
+                closeNode.style.position = 'absolute';
+                closeNode.style.top = '60%';
+                closeNode.style.transform = 'translateY(-50%)';
+                closeNode.style.right = '2px';
+            }
+            styleAttrs.forEach((ele) => {
+                if (ele !== 'brColor' && closeNode) {
+                    closeNode.style[attrsMap[ele]] = style[ele];
+                } else {
+                    item.style[attrsMap[ele]] = style[ele];
+                }
+                textNode.style[attrsMap[ele]] = style[ele];
+            })
+            
+        });
+    }
+}
+
 export {
     attrsMap,
     styleAttrs,
     timeDateRangeWidget,
     textInputWidget,
     textSelectGridWidget,
+    textSelectTreeWidget,
+    textSelectWidget
 }

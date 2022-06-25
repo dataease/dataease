@@ -1,9 +1,10 @@
 <template>
-
-  <el-select
-    v-if="element.options!== null && element.options.attrs!==null && show"
+  <component
+    :is="mode"
+    v-if="element.options!== null && element.options.attrs!==null && show "
     ref="deSelect"
     v-model="value"
+    :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
     :multiple="element.options.attrs.multiple"
@@ -11,14 +12,14 @@
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
-    class="de-select-tag"
     popper-class="coustom-de-select"
+    :list="datas"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
   >
     <el-option
-      v-for="item in datas"
+      v-for="item in templateDatas || datas"
       :key="item[element.options.attrs.key]"
       :style="{width:selectOptionWidth}"
       :label="item[element.options.attrs.label]"
@@ -26,17 +27,20 @@
     >
       <span :title="item[element.options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[element.options.attrs.label] }}</span>
     </el-option>
-  </el-select>
+  </component>
 
 </template>
 
 <script>
+import ElVisualSelect from '@/components/ElVisualSelect'
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/DeWidget/customInput'
+import {  textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
+  components: { ElVisualSelect },
   mixins: [customInput],
   props: {
     element: {
@@ -65,6 +69,16 @@ export default {
     }
   },
   computed: {
+    mode() {
+      let result = 'el-select'
+      if (this.element.options && this.element.options.attrs && this.element.options.attrs.visual) {
+        result = 'el-visual-select'
+      }
+      return result
+    },
+    templateDatas() {
+      return this.mode === 'el-visual-select' ? [] : null
+    },
     operator() {
       return this.element.options.attrs.multiple ? 'in' : 'eq'
     },
@@ -173,6 +187,11 @@ export default {
     onBlur() {
       this.onFocus = false
     },
+    handleElTagStyle() {
+      setTimeout(() => {
+        textSelectWidget(this.$refs["deSelect"].$el, this.element.style)
+      }, 50)
+    },
     initLoad() {
       this.value = this.fillValueDerfault()
       this.datas = []
@@ -216,6 +235,7 @@ export default {
           contentWidth += kid.offsetWidth
         })
         this.showNumber = contentWidth > ((this.$refs.deSelect.$refs.tags.clientWidth - 30) * 0.9)
+        this.handleElTagStyle()
       })
     },
 
@@ -270,6 +290,7 @@ export default {
 <style lang="scss">
 .coustom-de-select {
   background-color: var(--BgSelectColor, #FFFFFF) !important;
+  border-color: var(--BrSelectColor, #E4E7ED) !important;
   // .popper__arrow::after{
   //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
   // }
@@ -292,20 +313,13 @@ export default {
     background-color: rgb(245, 247, 250, .5);
   }
 }
-.de-select-tag {
-  .el-select__tags {
-    .el-tag {
-      background-color: var(--BgSelectColor, #f4f4f5) !important;
-      border-color: var(--BrSelectColor, #e9e9eb) !important;
-      color: var(--SelectColor, #909399) !important;
-  
-      i {
-        color: var(--SelectColor, #909399) !important;
-      }
-    }
-    .el-icon-close {
-      background-color: var(--BgSelectColor, #C0C4CC) !important;
-    }
+
+.coustom-de-select.is-multiple {
+  .el-select-dropdown__item.selected {
+    background-color: rgb(245, 247, 250, .5) !important;
+  }
+  .el-select-dropdown__item.hover {
+    background-color: rgb(245, 247, 250, .5) !important;
   }
 }
 </style>

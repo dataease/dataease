@@ -87,7 +87,7 @@ export default {
         textAlign: 'left',
         fontStyle: 'normal',
         fontWeight: 'normal',
-        background: hexColorToRGBA('#ffffff', 0)
+        background: ''
       },
       container_bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
