@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    default_value: 'Default Value',
     publish: 'publish',
     unpublished: 'unpublished',
     default_pwd: 'Default Pwd',
@@ -1115,6 +1116,14 @@ export default {
     form_type: 'From Type'
   },
   dataset: {
+    select_year: 'Select Year',
+    select_month: 'Select Month',
+    select_date: 'Select Date',
+    select_time: 'Select Time',
+    time_year: 'Date-Year',
+    time_year_month: 'Date-Yearmonth',
+    time_year_month_day: 'Date-YearMonthDay',
+    time_all: 'TIme',
     dataset_sync: ' ( Data sync... )',
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
     datalist: 'Data Set',

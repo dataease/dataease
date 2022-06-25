@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    default_value: '默认值',
     publish: '发布',
     unpublished: '取消发布',
     default_pwd: '初始密码',
@@ -1117,6 +1118,14 @@ export default {
     form_type: '类别'
   },
   dataset: {
+    select_year: '选择年',
+    select_month: '选择月',
+    select_date: '选择日期',
+    select_time: '选择时间',
+    time_year: '日期-年',
+    time_year_month: '日期-年月',
+    time_year_month_day: '日期-年月日',
+    time_all: '日期-年月日时分秒',
     dataset_sync: ' ( 数据同步中... )',
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
     datalist: '数据集',

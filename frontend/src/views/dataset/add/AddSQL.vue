@@ -105,29 +105,50 @@
       <el-dialog :title="dialogTitle" :visible="showVariableMgm" :before-close="closeVariableMgm" width="60%"
                  class="dialog-css" append-to-body>
               <el-table :data="variablesTmp" style="width: 80%">
-                <el-table-column prop="variableName" label="名称" width="180">
+                <el-table-column prop="variableName" :label="$t('commons.name')" width="180">
                 </el-table-column>
-                <el-table-column label="类型" width="180">
+                <el-table-column :label="$t('table.type')" width="180">
                     <template  slot-scope="scope">
-                      <el-select v-model="scope.row.type" size="mini" style="display: inline-block;width: 120px;">
-                        <el-option
-                          v-for="item in fieldOptions"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value">
-                                <span style="float: left">
-                                  <svg-icon v-if="item.value === 'TEXT'" icon-class="field_text" class="field-icon-text" />
-                                  <svg-icon v-if="item.value === 'DATETIME'" icon-class="field_time" class="field-icon-time" />
-                                  <svg-icon v-if="item.value === 'LONG' || item.value === 'DOUBLE'" icon-class="field_value" class="field-icon-value" />
-                                </span>
-                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
-                        </el-option>
-                      </el-select>
+                      <el-cascader v-model="scope.row.type" size="mini" style="display: inline-block;width: 120px;" :options="fieldOptions" @change="variableTypeChange(scope.row)">
+                      </el-cascader>
                     </template>
                 </el-table-column>
-                <el-table-column prop="defaultValue" label="默认值">
+                <el-table-column prop="defaultValue" :label="$t('commons.default_value')">
                   <template slot-scope="scope">
-                    <input type="text" v-model="scope.row.defaultValue" />
+                    <input v-if="scope.row.type[0] === 'TEXT'" type="text" v-model="scope.row.defaultValue" />
+                    <input v-if="scope.row.type[0] === 'LONG' || scope.row.type[0] === 'DOUBLE'" type="number" v-model="scope.row.defaultValue" />
+
+                    <el-date-picker v-if="scope.row.type[0] === 'DATETIME-YEAR'"
+                      v-model="scope.row.defaultValue"
+                      type="year"
+                      value-format="yyyy"
+                      :placeholder="$t('dataset.select_year')">
+                    </el-date-picker>
+
+                    <el-date-picker v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
+                                    v-model="scope.row.defaultValue"
+                                    type="month"
+                                    :format="scope.row.type[1]"
+                                    :value-format="scope.row.type[1]"
+                                    :placeholder="$t('dataset.select_month')">
+                    </el-date-picker>
+
+                    <el-date-picker v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH-DAY'"
+                                    v-model="scope.row.defaultValue"
+                                    type="date"
+                                    :format="scope.row.type[1]"
+                                    :value-format="scope.row.type[1]"
+                                    :placeholder="$t('dataset.select_date')">
+                    </el-date-picker>
+
+                    <el-date-picker v-if="scope.row.type[0] === 'DATETIME'"
+                                    v-model="scope.row.defaultValue"
+                                    type="datetime"
+                                    :format="scope.row.type[1]"
+                                    :value-format="scope.row.type[1]"
+                                    :placeholder="$t('dataset.select_time')">
+                    </el-date-picker>
+
                   </template>
                 </el-table-column>
               </el-table>
@@ -210,9 +231,36 @@ export default {
       variablesTmp: [],
       fieldOptions: [
         { label: this.$t('dataset.text'), value: 'TEXT' },
-        { label: this.$t('dataset.time'), value: 'DATETIME' },
         { label: this.$t('dataset.value'), value: 'LONG' },
-        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' }
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' },
+        { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
+        { label: this.$t('dataset.time_year_month'), value: 'DATETIME-YEAR-MONTH',
+          children: [{
+            value: 'yyyy-MM',
+            label: 'YYYY-MM'
+          }, {
+            value: 'yyyy/MM',
+            label: 'YYYY/MM'
+          }]
+        },
+        { label: this.$t('dataset.time_year_month_day'), value: 'DATETIME-YEAR-MONTH-DAY',
+          children: [{
+            value: 'yyyy-MM-dd',
+            label: 'YYYY-MM-DD'
+          }, {
+            value: 'yyyy/MM/dd',
+            label: 'YYYY/MM/DD'
+          }]
+        },
+        { label: this.$t('dataset.time_all'), value: 'DATETIME',
+          children: [{
+            value: 'yyyy-MM-dd HH:mm:ss',
+            label: 'YYYY-MM-DD HH:MI:SS'
+          }, {
+            value: 'yyyy/MM/dd HH:mm:ss',
+            label: 'YYYY/MM/DD HH:MI:SS'
+          }]
+        }
       ],
     }
   },
@@ -303,6 +351,7 @@ export default {
         })
         return
       }
+      this.parseVariable()
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
@@ -341,6 +390,7 @@ export default {
         })
         return
       }
+      this.parseVariable()
       const table = {
         id: this.param.tableId,
         name: this.name,
@@ -353,14 +403,12 @@ export default {
         info: JSON.stringify({sql: this.sql.trim()})
       }
       post('/dataset/table/update', table).then(response => {
-        // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.$emit('saveSuccess', table)
         this.cancel()
       })
     },
 
     cancel() {
-      // this.dataReset()
       if (this.param.tableId) {
         this.$emit('switchComponent', {name: 'ViewTable', param: this.param.table})
       } else {
@@ -392,6 +440,11 @@ export default {
     },
 
     variableMgm() {
+      this.parseVariable()
+      this.dialogTitle = this.$t('sql_variable.variable_mgm')
+      this.showVariableMgm = true
+    },
+    parseVariable(){
       this.variablesTmp = []
       var reg = new RegExp("\\${(.*?)}", "gim");
       var match = this.sql.match(reg);
@@ -408,15 +461,14 @@ export default {
               }
             }
             if(obj === undefined){
-              obj = {variableName: name, alias: '', type: 'TEXT', required: false, defaultValue: '', details: ''}
+              obj = {variableName: name, alias: '', type: [], required: false, defaultValue: '', details: ''}
+              obj.type.push('TEXT')
             }
             this.variablesTmp.push(obj)
           }
         }
       }
       this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat()
-      this.dialogTitle = this.$t('sql_variable.variable_mgm')
-      this.showVariableMgm = true
     },
     closeVariableMgm() {
       this.showVariableMgm = false
@@ -424,6 +476,9 @@ export default {
     saveVariable(){
       this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat()
       this.showVariableMgm = false
+    },
+    variableTypeChange(row){
+      row.defaultValue = ''
     }
   }
 }
