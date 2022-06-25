@@ -361,6 +361,10 @@ export default {
     },
     changeBarSizeCase(modifyName) {
       this.sizeForm['modifyName'] = modifyName
+      if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
+        this.$message.error(this.$t('chart.max_more_than_mix'))
+        return
+      }
       this.$emit('onSizeChange', this.sizeForm)
     },
     showProperty(property) {
