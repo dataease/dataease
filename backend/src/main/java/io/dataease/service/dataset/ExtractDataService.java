@@ -1195,11 +1195,11 @@ public class ExtractDataService {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
             if (StringUtils.isNotEmpty(charset)) {
-                tmp_code = code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset));
+                tmp_code = tmp_code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset));
             }
         } else {
             Column_Fields = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
-            tmp_code = code.replace("handleCharset", "");
+            tmp_code = tmp_code.replace("handleCharset", "");
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
