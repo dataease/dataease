@@ -1312,8 +1312,7 @@ public class ExtractDataService {
 
     private final static String handleCharset = "\tif(tmp != null){\n" +
             "  \t\t\ttry {\n" +
-            "            \t\tSystem.out.println(new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
-            "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"ISO-8859-1\"), \"GBK\"));\n" +
+            "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
             "       \t\t}catch (Exception e){}\n" +
             "\t\t}";
 
