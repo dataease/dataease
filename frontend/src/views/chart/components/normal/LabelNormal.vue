@@ -7,8 +7,8 @@
       :style="content_class"
     >
       <span :style="label_class">
-        <p v-for="item in chart.data.series" :key="item.name" :style="label_content_class">
-          {{ item.data[0] }}
+        <p :style="label_content_class">
+          {{ result }}
         </p>
       </span>
       <span v-if="dimensionShow" :style="label_space">
@@ -23,6 +23,7 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'LabelNormal',
@@ -76,7 +77,8 @@ export default {
         background: hexColorToRGBA('#ffffff', 0)
       },
       title_show: true,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      result: ''
     }
   },
   computed: {
@@ -105,6 +107,7 @@ export default {
     init() {
       const that = this
       this.initStyle()
+      this.resultFormat()
       window.onresize = function() {
         that.calcHeight()
       }
@@ -219,6 +222,24 @@ export default {
         } else {
           this.label_content_class.color = valueColor
         }
+      }
+    },
+
+    resultFormat() {
+      const value = this.chart.data.series[0].data[0]
+      let yAxis = []
+      try {
+        yAxis = JSON.parse(this.chart.yaxis)
+      } catch (err) {
+        yAxis = JSON.parse(JSON.stringify(this.chart.yaxis))
+      }
+      const f = yAxis[0]
+      if (f && f.formatterCfg) {
+        const v = valueFormatter(value, f.formatterCfg)
+        this.result = v.includes('NaN') ? value : v
+      } else {
+        const v = valueFormatter(value, formatterItem)
+        this.result = v.includes('NaN') ? value : v
       }
     }
   }
