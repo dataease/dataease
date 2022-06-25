@@ -13,6 +13,7 @@ import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.provider.DDLProvider;
@@ -919,7 +920,7 @@ public class ExtractDataService {
                 }
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, mysqlConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql);
                 break;
             case sqlServer:
@@ -927,7 +928,7 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfiguration.getHost().trim(), sqlServerConfiguration.getDataBase(), sqlServerConfiguration.getPort().toString(), sqlServerConfiguration.getUsername(), sqlServerConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, sqlServerConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer);
                 break;
             case pg:
@@ -935,7 +936,7 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfiguration.getHost().trim(), pgConfiguration.getDataBase(), pgConfiguration.getPort().toString(), pgConfiguration.getUsername(), pgConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, pgConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.pg);
                 break;
             case oracle:
@@ -947,9 +948,8 @@ public class ExtractDataService {
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfiguration.getHost().trim(), oracleConfiguration.getDataBase(), oracleConfiguration.getPort().toString(), oracleConfiguration.getUsername(), oracleConfiguration.getPassword());
                 }
                 transMeta.addDatabase(dataMeta);
-
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, oracleConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
                 break;
             case ck:
@@ -958,7 +958,7 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, chConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.ck);
                 break;
             case db2:
@@ -967,7 +967,7 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("DB2");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL, db2Configuration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.db2);
                 break;
             case excel:
@@ -1031,11 +1031,14 @@ public class ExtractDataService {
         return selectSQL;
     }
 
-    private StepMeta inputStep(TransMeta transMeta, String selectSQL) {
+    private StepMeta inputStep(TransMeta transMeta, String selectSQL, JdbcConfiguration jdbcConfiguration) {
         TableInputMeta tableInput = new TableInputMeta();
         DatabaseMeta database = transMeta.findDatabase(DatasetType.DB.name());
         tableInput.setDatabaseMeta(database);
         tableInput.setSQL(selectSQL);
+        if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
+            tableInput.setLazyConversionActive(true);
+        }
         StepMeta fromStep = new StepMeta("TableInput", "Data Input", tableInput);
         fromStep.setDraw(true);
         fromStep.setLocation(100, 100);
@@ -1095,7 +1098,12 @@ public class ExtractDataService {
 
     private StepMeta outputStep(String dorisOutputTable, List<DatasetTableField> datasetTableFields, Datasource datasource) {
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
-        textFileOutputMeta.setEncoding("UTF-8");
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
+        if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
+            textFileOutputMeta.setEncoding(jdbcConfiguration.getTargetCharset());
+        }else {
+            textFileOutputMeta.setEncoding("UTF-8");
+        }
         textFileOutputMeta.setHeaderEnabled(false);
         textFileOutputMeta.setFilename(root_path + dorisOutputTable);
         textFileOutputMeta.setSeparator(separator);

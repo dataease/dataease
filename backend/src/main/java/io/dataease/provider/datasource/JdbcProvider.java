@@ -216,10 +216,12 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     private List<String[]> getDataResult(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         String charset = null;
+        String targetCharset = "UTF-8";
         if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
-            JdbcConfiguration JdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
-            if (StringUtils.isNotEmpty(JdbcConfiguration.getCharset()) && !JdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
-                charset = JdbcConfiguration.getCharset();
+            JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
+                charset = jdbcConfiguration.getCharset();
+                targetCharset = jdbcConfiguration.getTargetCharset();
             }
         }
         List<String[]> list = new LinkedList<>();
@@ -239,11 +241,17 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         row[j] = rs.getBoolean(j + 1) ? "1" : "0";
                         break;
                     default:
-                        if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
-                            row[j] = new String(rs.getString(j + 1).getBytes(charset), "UTF-8");
+                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                            row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
                         } else {
-                            row[j] = rs.getString(j + 1);
+                            if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
+                                String orginStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
+                                row[j] = new String(orginStr.getBytes("UTF-8"), "UTF-8");
+                            } else {
+                                row[j] = rs.getString(j + 1);
+                            }
                         }
+
                         break;
                 }
             }
@@ -308,7 +316,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
-            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName() , e);
+            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
             io.dataease.plugins.common.exception.DataEaseException.throwException(e.getMessage());
         }
         return "Success";
@@ -452,7 +460,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
         } else {
-            if(deDriver == null){
+            if (deDriver == null) {
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
             }
             driverClassName = deDriver.getDriverClass();
