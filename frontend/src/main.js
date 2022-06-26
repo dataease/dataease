@@ -72,6 +72,8 @@ if (process.env.NODE_ENV === 'production') {
 // set ElementUI lang to EN
 // Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
+ElementUI.Dialog.props.closeOnClickModal.default = false
+ElementUI.Dialog.props.closeOnPressEscape.default = false
 Vue.use(ElementUI, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
