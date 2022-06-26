@@ -1113,7 +1113,13 @@ export default {
     chart_field_edit: 'Chart Field Manage',
     copy_field: 'Copy Field',
     calc_field: 'Calculate Field',
-    form_type: 'From Type'
+    form_type: 'From Type',
+    scroll_cfg: 'Scroll Config',
+    scroll: 'Scroll',
+    open: 'Open',
+    row: 'Row',
+    interval: 'Interval',
+    max_more_than_mix: 'Max must more than Min'
   },
   dataset: {
     select_year: 'Select Year',

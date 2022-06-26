@@ -339,6 +339,11 @@ export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',
   labelThreshold: []
 }
+export const DEFAULT_SCROLL = {
+  open: false,
+  row: 1,
+  interval: 2000
+}
 // chart config
 export const BASE_BAR = {
   title: {
