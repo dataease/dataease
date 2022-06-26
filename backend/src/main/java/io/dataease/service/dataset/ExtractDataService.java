@@ -1196,6 +1196,8 @@ public class ExtractDataService {
             }
             if (StringUtils.isNotEmpty(charset)) {
                 tmp_code = tmp_code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset));
+            }else {
+                tmp_code = tmp_code.replace("handleCharset", "");
             }
         } else {
             Column_Fields = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
