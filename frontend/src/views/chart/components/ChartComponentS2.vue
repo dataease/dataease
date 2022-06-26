@@ -100,7 +100,9 @@ export default {
         show: 0
       },
       tableData: [],
-      showPage: false
+      showPage: false,
+      scrollTimer: null,
+      scrollTop: 0
     }
   },
 
@@ -132,6 +134,9 @@ export default {
   },
   mounted() {
     this.preDraw()
+  },
+  beforeDestroy() {
+    clearInterval(this.scrollTimer)
   },
   methods: {
     initData() {
@@ -208,6 +213,7 @@ export default {
 
       if (this.myChart && this.antVRenderStatus) {
         this.myChart.render()
+        this.initScroll()
       }
       this.setBackGroundBorder()
     },
@@ -370,6 +376,34 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
+      }
+    },
+
+    initScroll() {
+      clearInterval(this.scrollTimer)
+      // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
+      const customAttr = JSON.parse(this.chart.customAttr)
+      const senior = JSON.parse(this.chart.senior)
+
+      this.scrollTop = 0
+      this.myChart.store.set('scrollY', this.scrollTop)
+      this.myChart.render()
+
+      if (senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+        const rowHeight = customAttr.size.tableItemHeight
+        const headerHeight = customAttr.size.tableTitleHeight
+
+        this.scrollTimer = setInterval(() => {
+          const top = rowHeight * senior.scrollCfg.row
+          const dom = document.getElementById(this.chartId)
+          if ((dom.offsetHeight - headerHeight + this.scrollTop) < rowHeight * this.chart.data.tableRow.length) {
+            this.scrollTop += top
+          } else {
+            this.scrollTop = 0
+          }
+          this.myChart.store.set('scrollY', this.scrollTop)
+          this.myChart.render()
+        }, senior.scrollCfg.interval)
       }
     }
   }

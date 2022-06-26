@@ -119,7 +119,9 @@ export default {
         show: 0
       },
       showPage: false,
-      columnWidth: DEFAULT_SIZE.tableColumnWidth
+      columnWidth: DEFAULT_SIZE.tableColumnWidth,
+      scrollTimer: null,
+      scrollTop: 0
     }
   },
   computed: {
@@ -142,6 +144,9 @@ export default {
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
     })
+  },
+  beforeDestroy() {
+    clearInterval(this.scrollTimer)
   },
   methods: {
     init() {
@@ -224,6 +229,10 @@ export default {
           } else {
             this.height = 'auto'
           }
+
+          this.$nextTick(() => {
+            this.initScroll()
+          })
         }
       })
     },
@@ -354,6 +363,42 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
+      }
+    },
+
+    initScroll() {
+      clearInterval(this.scrollTimer)
+      // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
+      const customAttr = JSON.parse(this.chart.customAttr)
+      const senior = JSON.parse(this.chart.senior)
+
+      const scrollContainer = document.getElementsByClassName(this.chart.id)[0].getElementsByClassName('elx-table--body-wrapper')[0]
+
+      this.scrollTop = 0
+      setTimeout(() => {
+        scrollContainer.scrollTo({
+          top: this.scrollTop,
+          behavior: this.scrollTop === 0 ? 'instant' : 'smooth'
+        })
+      }, 0)
+
+      if (senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+        let rowHeight = customAttr.size.tableItemHeight
+        if (rowHeight < 36) {
+          rowHeight = 36
+        }
+        this.scrollTimer = setInterval(() => {
+          const top = rowHeight * senior.scrollCfg.row
+          if (scrollContainer.clientHeight + scrollContainer.scrollTop < scrollContainer.scrollHeight) {
+            this.scrollTop += top
+          } else {
+            this.scrollTop = 0
+          }
+          scrollContainer.scrollTo({
+            top: this.scrollTop,
+            behavior: this.scrollTop === 0 ? 'instant' : 'smooth'
+          })
+        }, senior.scrollCfg.interval)
       }
     }
   }

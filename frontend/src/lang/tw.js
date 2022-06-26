@@ -1113,7 +1113,13 @@ export default {
     chart_field_edit: '視圖字段管理',
     copy_field: '復製字段',
     calc_field: '計算字段',
-    form_type: '類別'
+    form_type: '類別',
+    scroll_cfg: '滾動設置',
+    scroll: '滾動',
+    open: '開啟',
+    row: '行數',
+    interval: '間隔',
+    max_more_than_mix: '最大值必須大於最小值'
   },
   dataset: {
     select_year: '選擇年',

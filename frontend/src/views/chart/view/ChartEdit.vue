@@ -32,8 +32,8 @@
       </span>
     </el-row>
     <el-row class="view-panel-row">
-      <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 350px">
+      <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
+        <el-tab-pane name="data" :label="$t('chart.chart_data')" class="padding-tab" style="width: 350px">
           <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
             <span style="opacity: 1;">
               <el-button
@@ -95,7 +95,7 @@
                 />
               </div>
 
-              <div v-if="fieldShow" class="field-split">
+              <div v-if="fieldShow && tabActive === 'data'" class="field-split">
                 <fu-split-pane top="50%" direction="vertical">
                   <template v-slot:top>
                     <div class="padding-lr field-height">
@@ -669,7 +669,7 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 350px">
+        <el-tab-pane name="style" :label="$t('chart.chart_style')" class="padding-tab" style="width: 350px">
           <chart-style
             v-if="chartProperties || view.isPlugin"
             :param="param"
@@ -694,24 +694,32 @@
             @onChangeBackgroundForm="onChangeBackgroundForm"
           />
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
+        <el-tab-pane name="senior" :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text'"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text' || view.type === 'table-normal' || view.type === 'table-info'"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('table'))"
               >
                 <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
-                  <el-collapse-item name="function" :title="$t('chart.function_cfg')">
+                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))" name="function" :title="$t('chart.function_cfg')">
                     <function-cfg
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
                       @onFunctionCfgChange="onFunctionCfgChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item v-if="false && view.type && (view.type.includes('table'))" name="scroll" :title="$t('chart.scroll_cfg')">
+                    <scroll-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onScrollCfgChange="onScrollChange"
                     />
                   </el-collapse-item>
                 </el-collapse>
@@ -1077,12 +1085,14 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 
 export default {
   name: 'ChartEdit',
   components: {
+    ScrollCfg,
     CalcChartFieldEdit,
     ChartFieldEdit,
     CustomSortEdit,
@@ -1231,7 +1241,8 @@ export default {
       showEditChartField: false,
       currEditField: {},
       editChartCalcField: false,
-      fieldShow: false
+      fieldShow: false,
+      tabActive: 'data'
 
     }
   },
@@ -1950,6 +1961,11 @@ export default {
 
     onThresholdChange(val) {
       this.view.senior.threshold = val
+      this.calcStyle()
+    },
+
+    onScrollChange(val) {
+      this.view.senior.scrollCfg = val
       this.calcStyle()
     },
 
@@ -2695,6 +2711,7 @@ export default {
 .drag-list {
   height: calc(100% - 26px);
   overflow: auto;
+  padding: 2px 0;
 }
 
 .item-dimension {
@@ -3060,6 +3077,14 @@ span {
 
 .field-split{
   height: calc(100% - 40px);
+}
+
+.field-split >>> .fu-split-pane__left{
+  padding-right: 0!important;
+}
+
+.field-split >>> .fu-split-pane__right{
+  padding-left: 0!important;
 }
 
 </style>

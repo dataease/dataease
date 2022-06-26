@@ -1115,7 +1115,13 @@ export default {
     chart_field_edit: '视图字段管理',
     copy_field: '复制字段',
     calc_field: '计算字段',
-    form_type: '类别'
+    form_type: '类别',
+    scroll_cfg: '滚动设置',
+    scroll: '滚动',
+    open: '开启',
+    row: '行数',
+    interval: '间隔',
+    max_more_than_mix: '最大值必须大于最小值'
   },
   dataset: {
     select_year: '选择年',
