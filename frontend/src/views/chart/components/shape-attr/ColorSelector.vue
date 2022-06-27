@@ -231,6 +231,7 @@ export default {
       // this.colorIndex = 0
     },
     init() {
+      console.log('chart是否改变,color',this.chart)
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
         let customAttr = null

@@ -18,6 +18,7 @@
           <!-- <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ '隐藏关联' }}</el-dropdown-item> -->
         </el-dropdown-menu>
       </el-dropdown>
+
     </div>
   </div>
 </template>
