@@ -17,6 +17,7 @@
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
+    @visual-change="visualChange"
   >
     <el-option
       v-for="item in templateDatas || datas"
@@ -37,7 +38,7 @@ import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/DeWidget/customInput'
-import {  textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
+import { textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
   components: { ElVisualSelect },
@@ -182,6 +183,9 @@ export default {
       }
     })
   },
+  beforeDestroy() {
+    bus.$off('reset-default-value')
+  },
 
   methods: {
     onBlur() {
@@ -189,7 +193,7 @@ export default {
     },
     handleElTagStyle() {
       setTimeout(() => {
-        textSelectWidget(this.$refs["deSelect"].$el, this.element.style)
+        textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
       }, 50)
     },
     initLoad() {
@@ -210,6 +214,9 @@ export default {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
+    },
+    visualChange(value) {
+      this.value = value
     },
     changeValue(value) {
       if (!this.inDraw) {
@@ -240,7 +247,6 @@ export default {
     },
 
     setCondition() {
-      console.log(this.element)
       const param = {
         component: this.element,
         value: this.formatFilterValue(),

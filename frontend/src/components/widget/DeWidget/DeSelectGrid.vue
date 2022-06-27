@@ -211,6 +211,9 @@ export default {
       }
     })
   },
+  beforeDestroy() {
+    bus.$off('reset-default-value')
+  },
 
   methods: {
     changeInputStyle() {

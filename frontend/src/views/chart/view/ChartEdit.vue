@@ -714,7 +714,7 @@
                       @onFunctionCfgChange="onFunctionCfgChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="false && view.type && (view.type.includes('table'))" name="scroll" :title="$t('chart.scroll_cfg')">
+                  <el-collapse-item v-if="view.type && (view.type.includes('table'))" name="scroll" :title="$t('chart.scroll_cfg')">
                     <scroll-cfg
                       :param="param"
                       class="attr-selector"

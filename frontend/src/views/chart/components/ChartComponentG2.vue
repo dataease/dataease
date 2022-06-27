@@ -82,7 +82,10 @@ export default {
         background: ''
       },
       title_show: true,
-      antVRenderStatus: false
+      antVRenderStatus: false,
+      linkageActiveParam: null,
+      linkageActiveHistory: false
+
     }
   },
 
@@ -115,6 +118,43 @@ export default {
     this.preDraw()
   },
   methods: {
+    reDrawView() {
+      this.linkageActiveHistory = false
+      this.myChart.render()
+    },
+    linkageActivePre() {
+      if (this.linkageActiveHistory) {
+        this.reDrawView()
+      }
+      this.$nextTick(() => {
+        this.linkageActive()
+      })
+    },
+    linkageActive() {
+      this.linkageActiveHistory = true
+      this.myChart.setState('selected', (param) => {
+        if (Array.isArray(param)) {
+          return false
+        } else {
+          if (this.checkSelected(param)) {
+            return true
+          }
+        }
+      })
+      this.myChart.setState('inactive', (param) => {
+        if (Array.isArray(param)) {
+          return false
+        } else {
+          if (!this.checkSelected(param)) {
+            return true
+          }
+        }
+      })
+    },
+    checkSelected(param) {
+      return (this.linkageActiveParam.name.indexOf(param.name) > -1) &&
+        (this.linkageActiveParam.category === param.category)
+    },
     preDraw() {
       this.initTitle()
       this.calcHeightDelay()
@@ -186,6 +226,9 @@ export default {
 
       if (this.antVRenderStatus) {
         this.myChart.render()
+        if (this.linkageActiveHistory) {
+          this.linkageActive()
+        }
       }
       this.setBackGroundBorder()
     },
@@ -195,6 +238,10 @@ export default {
         this.pointParam = param.data.data
       } else {
         this.pointParam = param.data
+      }
+      this.linkageActiveParam = {
+        category: this.pointParam.data.category ? this.pointParam.data.category : 'NO_DATA',
+        name: this.pointParam.data.name ? this.pointParam.data.name : 'NO_DATA'
       }
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
@@ -236,11 +283,13 @@ export default {
         dimensionList: this.pointParam.data.dimensionList,
         quotaList: this.pointParam.data.quotaList
       }
+
       switch (trackAction) {
         case 'drill':
           this.$emit('onChartClick', this.pointParam)
           break
         case 'linkage':
+          this.linkageActivePre()
           this.$store.commit('addViewTrackFilter', linkageParam)
           break
         case 'jump':

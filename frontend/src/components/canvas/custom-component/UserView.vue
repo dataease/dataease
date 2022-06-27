@@ -492,6 +492,11 @@ export default {
       bus.$on('onThemeAttrChange', (param) => {
         this.optFromBatchSingleProp(param)
       })
+      bus.$on('clear_panel_linkage', (param) => {
+        if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
+          this.$refs[this.element.propValue.id].reDrawView()
+        }
+      })
     },
 
     addViewTrackFilter(linkageParam) {

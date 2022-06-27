@@ -30,12 +30,6 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     tooltip: tooltip,
     legend: false,
     interactions: [
-      {
-        type: 'element-active', cfg: {
-          start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
-          end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
-        }
-      }
     ]
   }
 
