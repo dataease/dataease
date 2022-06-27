@@ -17,6 +17,7 @@
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
+    @visual-change="visualChange"
   >
     <el-option
       v-for="item in templateDatas || datas"
@@ -214,6 +215,9 @@ export default {
         this.changeValue(this.value)
       }
     },
+    visualChange(value) {
+      this.value = value
+    },
     changeValue(value) {
       if (!this.inDraw) {
         if (value === null) {
@@ -248,7 +252,6 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
-      console.log(param.value)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

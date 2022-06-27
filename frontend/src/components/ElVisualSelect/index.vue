@@ -4,8 +4,10 @@
     v-model="selectValue"
     :class="classId"
     popper-class="VisualSelects"
+    no-match-text=" "
     v-bind="$attrs"
     v-on="$listeners"
+    @change="visualChange"
     @visible-change="popChange"
   >
     <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id" />
@@ -54,6 +56,9 @@ export default {
     }
   },
   watch: {
+    value(val) {
+      this.selectValue = val
+    },
     selectValue(val) {
       this.$emit('update', val)
       if (!val) {
@@ -102,6 +107,7 @@ export default {
       )
       this.scrollbar = document.querySelector(`.${this.classId} .el-select-dropdown .el-scrollbar`)
       this.slectBoxDom = document.querySelector(`.${this.classId} .el-select-dropdown__wrap`)
+      if (!this.slectBoxDom || !this.slectBoxDom.style) return
       this.slectBoxDom.style.display = 'flex'
       this.slectBoxDom.style.flexDirection = 'row'
       this.domList = selectDom.querySelector(
@@ -117,6 +123,7 @@ export default {
     },
 
     callback() {
+      if (!this.scrollbar) return
       const scrollTop = this.scrollbar.scrollTop
       this.startIndex = parseInt(scrollTop / this.itemHeight)
       this.endIndex = this.startIndex + this.maxLength
@@ -129,6 +136,9 @@ export default {
 
       this.resetList()
       this.reCacularHeight()
+    },
+    visualChange(val) {
+      this.$emit('visual-change', val)
     }
   }
 
