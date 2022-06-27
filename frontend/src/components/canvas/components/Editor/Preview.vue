@@ -170,7 +170,7 @@ export default {
     },
     opacityClass() {
       return function(value) {
-        console.log('value-----', value)
+        // console.log('value-----', value)
         if (this.canvasStyleData.navShowKey && value.showName) {
           if (this.canvasStyleData.navShowKey === value.showName) {
             return 1
@@ -184,7 +184,7 @@ export default {
     },
     displayClass() {
       return function(value) {
-        console.log('value-----', value)
+        // console.log('value-----', value)
         // if (value.type === 'de-frame') {
         if (this.canvasStyleData.navShowKey && value.showName) {
           if (this.canvasStyleData.navShowKey === value.showName) {

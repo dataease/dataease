@@ -45,6 +45,7 @@
         @bannerImg="bannerImg"
         @setNavInfo="setNavInfo"
         @boardSet="boardSet"
+        @tabRelation="tabRelation"
       />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
@@ -1930,7 +1931,11 @@ export default {
     },
     // 跳转设置
     boardSet() {
+      console.log('是否触发这3333')
       this.$emit('boardSet')
+    },
+    tabRelation() {
+      this.$emit('tabRelation')
     },
     // 跳转设置
     bannerImg() {

@@ -15,7 +15,7 @@
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
-          <!-- <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ '隐藏关联' }}</el-dropdown-item> -->
+          <el-dropdown-item v-if="'de-nav'!==curComponent.type" icon="el-icon-connection" @click.native="tabRelation">{{ '导航关联' }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
@@ -165,6 +165,10 @@ export default {
     boardSet() {
       console.log('点击条状组件样式设置窗口====')
       this.$emit('boardSet')
+    },
+    tabRelation() {
+      console.log('第一层')
+      this.$emit('tabRelation')
     }
   }
 }
