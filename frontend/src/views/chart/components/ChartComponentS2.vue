@@ -389,7 +389,7 @@ export default {
       this.myChart.store.set('scrollY', this.scrollTop)
       this.myChart.render()
 
-      if (senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+      if (senior.scroll && senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
         const rowHeight = customAttr.size.tableItemHeight
         const headerHeight = customAttr.size.tableTitleHeight
 

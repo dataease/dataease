@@ -382,7 +382,7 @@ export default {
         })
       }, 0)
 
-      if (senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+      if (senior.scrollCfg && senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
         let rowHeight = customAttr.size.tableItemHeight
         if (rowHeight < 36) {
           rowHeight = 36
