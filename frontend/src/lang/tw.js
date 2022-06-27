@@ -1596,7 +1596,7 @@ export default {
     select_by_table: '按錶選擇',
     data_list: '數據列錶',
     component_list: '組件列錶',
-    custom_scope: '自定義控製範圍',
+    custom_scope: '控製範圍',
     multiple_choice: '多選',
     single_choice: '單選',
     field: '字段',
@@ -1723,13 +1723,14 @@ export default {
     component_hidden: '隱藏的組件',
     public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉',
     input_title: '請輸入標題',
-    show_title: '顯示標題',
+    show_title: '標題',
     default_settings: '默認值設置',
     choose_background: '選擇組件背景',
     choose_background_tips: '組件自有的背景設置會覆蓋當前設置',
     setting_background: '設置背景',
     setting_jump: '跳轉設置',
-    select_view: '請選擇視圖...'
+    select_view: '請選擇視圖...',
+    visual: '虛擬化'
   },
   plugin: {
     local_install: '本地安裝',
