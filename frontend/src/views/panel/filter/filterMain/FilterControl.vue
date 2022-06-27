@@ -6,12 +6,11 @@
           v-if="widget.showSwitch"
           v-model="attrs.multiple"
           :active-text="$t('panel.multiple_choice')"
-          :inactive-text="$t('panel.single_choice')"
           @change="multipleChange"
         />
 
-        <span v-if="widget.showVisual" style="padding-left: 20px;">
-          <el-checkbox v-model="attrs.visual" @change="showVisualChange">虚拟化</el-checkbox>
+        <span v-if="widget.showVisual" style="padding-left: 16px;">
+          <el-checkbox v-model="attrs.visual" @change="showVisualChange">{{ $t('panel.visual') }}</el-checkbox>
         </span>
       </div>
     </el-col>
