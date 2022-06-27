@@ -1624,7 +1624,7 @@ export default {
     select_by_table: 'Select by table',
     data_list: 'Data list',
     component_list: 'Component list',
-    custom_scope: 'Custom control range',
+    custom_scope: 'Target',
     multiple_choice: 'Multiple choice',
     single_choice: 'Single choice',
     field: 'Field',
@@ -1751,10 +1751,12 @@ export default {
     component_hidden: 'Component Hidden',
     public_link_tips: 'Currently in public link mode, the target panel does not have a public link and cannot jump to it',
     input_title: 'Input Title',
-    show_title: 'Show Title',
+    show_title: 'Title',
     default_settings: 'Default Settings',
     choose_background: 'Choose Component Background',
-    choose_background_tips: 'The component`s own background settings will overwrite the current settings'
+    choose_background_tips: 'The component`s own background settings will overwrite the current settings',
+    visual: 'Visual',
+    prohibit_multiple: 'Prohibit multiple fields in the same dataset'
   },
   plugin: {
     local_install: 'Local installation',

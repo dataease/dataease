@@ -1632,8 +1632,8 @@ export default {
     select_by_table: '按表选择',
     data_list: '数据列表',
     component_list: '组件列表',
-    custom_scope: '自定义控制范围',
-    binding_parameters: '绑定参数',
+    custom_scope: '控制范围',
+    binding_parameters: '参数',
     multiple_choice: '多选',
     single_choice: '单选',
     field: '字段',
@@ -1761,13 +1761,15 @@ export default {
     component_hidden: '隐藏的组件',
     public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
     input_title: '请输入标题',
-    show_title: '显示标题',
+    show_title: '标题',
     default_settings: '默认值设置',
     choose_background: '选择组件背景',
     choose_background_tips: '组件自有的背景设置会覆盖当前设置',
     setting_background: '设置背景',
     setting_jump: '跳转设置',
-    select_view: '请选择视图...'
+    select_view: '请选择视图...',
+    visual: '虚拟化',
+    prohibit_multiple: '禁止同数据集多字段'
   },
   plugin: {
     local_install: '本地安装',

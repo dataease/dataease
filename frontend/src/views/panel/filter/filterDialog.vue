@@ -64,7 +64,7 @@
                     animation="300"
                     :move="onMove"
                     class="drag-list"
-                    @end="end"
+                    @end="endDs"
                   >
                     <transition-group>
                       <div
@@ -150,7 +150,7 @@
                     animation="300"
                     :move="onMove"
                     class="drag-list"
-                    @end="end"
+                    @end="endVw"
                   >
                     <transition-group>
                       <div
@@ -301,7 +301,9 @@ export default {
     }
   },
   computed: {
-
+    isTree() {
+      return this.widget && this.widget.isTree
+    },
     ...mapState([
       'componentData'
     ])
@@ -361,6 +363,7 @@ export default {
     }
     this.initWithField()
     this.loadViews()
+    this.ProhibitMultiple()
   },
   mounted() {
     bus.$on('valid-values-change', valid => {
@@ -666,19 +669,23 @@ export default {
       return true
     },
 
-    end(e) {
-      this.refuseMove(e)
+    endDs(e) {
+      this.refuseMove(e, this.fieldDatas)
+      this.removeCheckedKey(e)
+    },
+    endVw(e) {
+      this.refuseMove(e, this.comFieldDatas)
       this.removeCheckedKey(e)
     },
 
-    refuseMove(e) {
+    refuseMove(e, datas) {
       const that = this
-      const xItems = this.fieldDatas.filter(function(m) {
+      const xItems = datas.filter(function(m) {
         return m.id === that.moveId
       })
 
       if (xItems && xItems.length > 1) {
-        this.fieldDatas.splice(e.newDraggableIndex, 1)
+        this.datas.splice(e.newDraggableIndex, 1)
       }
     },
     removeCheckedKey(e) {
@@ -691,6 +698,19 @@ export default {
       if (xItems && xItems.length > 1) {
         this.currentElement.options.attrs.dragItems.splice(e.newDraggableIndex, 1)
       }
+      this.ProhibitMultiple()
+    },
+
+    ProhibitMultiple() {
+      if (this.isTree) return
+      const sourceLen = this.currentElement.options.attrs.dragItems.length
+      if (!sourceLen) return
+      const res = new Map()
+
+      const result = this.currentElement.options.attrs.dragItems.filter(item => !res.has(item.tableId) && res.set(item.tableId), 1)
+      this.currentElement.options.attrs.dragItems = result
+      const newLen = result.length
+      if (sourceLen > newLen) this.$warning(this.$t('panel.prohibit_multiple'))
     },
 
     enableSureButton() {
