@@ -48,12 +48,6 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
     },
     interactions: [
       {
-        type: 'element-active', cfg: {
-          start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
-          end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
-        }
-      },
-      {
         type: 'legend-active', cfg: {
           start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
           end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
