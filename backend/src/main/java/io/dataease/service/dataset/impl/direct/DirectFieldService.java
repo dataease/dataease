@@ -142,9 +142,8 @@ public class DirectFieldService implements DataSetFieldService {
                 datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
-                if (rowAndColumnMgm) {
-                    sql = dataSetTableService.removeVariables(sql);
-                }
+
+                sql = dataSetTableService.removeVariables(sql);
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
