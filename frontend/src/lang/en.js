@@ -1122,6 +1122,7 @@ export default {
     max_more_than_mix: 'Max must more than Min'
   },
   dataset: {
+    sql_variable_limit: 'SQL variables can only be used in where conditions',
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',

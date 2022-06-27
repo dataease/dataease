@@ -1125,6 +1125,7 @@ export default {
   },
   dataset: {
     select_year: '选择年',
+    sql_variable_limit: 'SQL 变量只能在 WHERE 条件中使用',
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',

@@ -46,12 +46,26 @@
                 <el-option :label="$t('dataset.sync_latter')" value="sync_latter"/>
               </el-select>
             </el-form-item>
+            <el-form-item>
+              <span  v-if="mode === '0'" style="line-height: 26px;">
+                <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
+                  <div slot="content">
+                    {{ $t('dataset.sql_variable_limit') }}<br>
+                  </div>
+                  <i class="el-icon-info" style="cursor: pointer;" />
+                </el-tooltip>
+              </span>
+            </el-form-item>
+
           </el-form>
         </el-col>
         <el-col :span="8">
-          <el-button v-if="mode === '0'" type="text" size="mini" style="float: right;" @click="variableMgm">
-            {{ $t('sql_variable.variable_mgm') }}
-          </el-button>
+
+          <el-tooltip tyle="float: right;"  v-if="mode === '0'" class="item" effect="dark" :content="$t('dataset.sql_variable_limit')" placement="left">
+            <el-button   type="text" size="mini" style="float: right;" @click="variableMgm">
+              {{ $t('sql_variable.variable_mgm') }}
+            </el-button>
+          </el-tooltip>
         </el-col>
       </el-row>
       <el-row>
