@@ -8,6 +8,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   computed: {
@@ -27,6 +28,7 @@ export default {
   methods: {
     clearAllLinkage() {
       this.$store.commit('clearPanelLinkageInfo')
+      bus.$emit('clear_panel_linkage', { viewId: 'all' })
     }
   }
 }
