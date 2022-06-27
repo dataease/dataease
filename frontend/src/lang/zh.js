@@ -1767,7 +1767,8 @@ export default {
     setting_background: '设置背景',
     setting_jump: '跳转设置',
     select_view: '请选择视图...',
-    visual: '虚拟化'
+    visual: '虚拟化',
+    prohibit_multiple: '禁止同数据集多字段'
   },
   plugin: {
     local_install: '本地安装',
