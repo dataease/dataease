@@ -813,7 +813,7 @@ export default {
       console.log('detectZoom====缩放值-----', ratio)
     },
     handleScroll() {
-      console.log('21312321321')
+      // console.log('21312321321')
       const screensRect = document
         .querySelector('#ruleBox')
         .getBoundingClientRect()

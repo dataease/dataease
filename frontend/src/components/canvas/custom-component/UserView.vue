@@ -388,6 +388,7 @@ export default {
     },
     ...mapState([
       'canvasStyleData',
+      'templateStatus',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
@@ -583,6 +584,7 @@ export default {
       this.mergeStyle()
     },
     mergeStyle() {
+      console.log(this.canvasStyleData)
       if (
         (this.requestStatus === 'success' || this.requestStatus === 'merging') &&
         this.chart.stylePriority === 'panel' &&
@@ -600,7 +602,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        // console.log('customAttrChart=====6666', customAttrChart)
+        console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -609,6 +611,7 @@ export default {
       }
     },
     getData(id, cache = true) {
+      console.log('templateStatus',this.templateStatus,this.canvasStyleData)
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -763,7 +766,11 @@ export default {
                 
               }
               this.chart = response.data
-              // console.log('this.chart: ', this.chart)
+
+              if(this.templateStatus) {
+                this.chart.customAttr = this.canvasStyleData.chart.customAttr
+              }
+              console.log('userView,,,,this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)

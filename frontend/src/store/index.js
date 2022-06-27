@@ -67,6 +67,8 @@ const data = {
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
     canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 主题模板是否为改变
+    templateStatus: false,
     // 多选选择状态
     checkboxStatus: false,
     // 多选选中组件数据
@@ -134,8 +136,13 @@ const data = {
       if (style) {
         style['selfAdaption'] = true
       }
+      
       state.canvasStyleData = style
     },
+    setTemplateStatus(state,status) {
+      console.log('设置status',status)
+      state.templateStatus = status
+    }, 
 
     setCurComponent(state, { component, index }) {
       // 当前视图操作状态置空

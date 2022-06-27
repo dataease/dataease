@@ -136,6 +136,7 @@ export default {
       chart.customStyle = JSON.parse(chart.customStyle)
       chart.customFilter = JSON.parse(chart.customFilter)
       this.chart = chart
+      console.log('subject-setting,,init:::::',this.chart)
 
       // 因为 table 的color 设置和view的共用 所以单独设置一个对象
       this.tableChart = deepCopy(this.chart)

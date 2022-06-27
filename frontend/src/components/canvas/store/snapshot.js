@@ -33,6 +33,7 @@ export default {
     },
 
     recordSnapshot(state) {
+      console.log('这里？record,,,,',state)
       state.changeTimes++
       // console.log('recordSnapshot')
       // 添加新的快照
