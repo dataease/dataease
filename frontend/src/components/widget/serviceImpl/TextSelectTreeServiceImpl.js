@@ -52,6 +52,7 @@ class TextSelectTreeServiceImpl extends WidgetService {
     super(options)
     this.filterDialog = true
     this.showSwitch = true
+    this.isTree = true
   }
 
   initLeftPanel() {

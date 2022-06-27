@@ -103,7 +103,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 
 export default {
   name: 'FilterControl',
@@ -134,6 +133,9 @@ export default {
       parametersVisible: false
 
     }
+  },
+  computed: {
+
   },
 
   created() {
