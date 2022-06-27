@@ -446,13 +446,13 @@ export default {
       titleFontSet: {
         height: 60,
         color: '#000',
-        fontSize: 12,
+        fontSize: 20,
         fontFamily: '',
         opacity: '1'
       },
       menuFontSet: {
         color: '#000',
-        fontSize: 12,
+        fontSize: 20,
         fontFamily: ''
       },
       navBageImg: ''// 导航背景图  style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`

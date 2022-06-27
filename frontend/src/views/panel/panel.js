@@ -18,6 +18,7 @@ export const CANVAS_STYLE = {
   scaleWidth: 100,
   scaleHeight: 100,
   selfAdaption: true,
+  navShowKey: '',
   auxiliaryMatrix: false,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,

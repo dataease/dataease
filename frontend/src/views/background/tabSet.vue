@@ -2,26 +2,33 @@
   <el-row>
     <el-row>
       <el-col :span="24">
-        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ '导航设置' }}</span>
+        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ '导航关联设置' }}</span>
       </el-col>
     </el-row>
     <el-row class="main-content">
 
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
-        <el-col :span="4">
-          <span class="params-title">{{ '字体大小' }}</span>
+        <el-col :span="6">
+          <span class="params-title">{{ '当前组件关联导航' }}</span>
         </el-col>
-        <el-col :span="8">
-          <el-input-number v-model="curComponent.options.fontSize" :min="1" />
+        <el-col :span="10">
+          <el-select v-model="curComponent.showName" clearable placeholder="请选择">
+            <el-option
+              v-for="(item,index) in options"
+              :key="index"
+              :label="item.name"
+              :value="item.name"
+            />
+          </el-select>
         </el-col>
-        <el-col :span="4">
+        <!-- <el-col :span="4">
           <span class="params-title">{{ '字体颜色' }}</span>
         </el-col>
         <el-col :span="8">
           <el-color-picker v-model="curComponent.options.color" />
-        </el-col>
+        </el-col> -->
       </el-row>
-      <el-row style="height: 50px;overflow: hidden;margin-top:0px;">
+      <!-- <el-row style="height: 50px;overflow: hidden;margin-top:0px;">
         <el-col :span="4">
           <span class="params-title">{{ '水平对齐方式' }}</span>
         </el-col>
@@ -42,15 +49,15 @@
             <el-radio label="flex-end">下</el-radio>
           </el-radio-group>
         </el-col>
-      </el-row>
-      <el-row>
+      </el-row> -->
+      <!-- <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
         </el-col>
         <el-col :span="8">
           <el-color-picker v-model="curComponent.options.highlight" />
         </el-col>
-      </el-row>
+      </el-row> -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
       <!-- 轮播的图片 -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
@@ -76,50 +83,20 @@
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
       </el-row> -->
-      <el-row style="height: 50px;overflow: hidden;">
+      <!-- <el-row style="height: 50px;overflow: hidden;">
         <el-col :span="4">
           <span class="params-title">导航设置</span>
         </el-col>
         <el-col :span="4" style="height:40px;line-height:40px;">
           <el-button type="primary" size="mini" @click="addNavInfo()">{{ '添加导航' }}</el-button>
         </el-col>
-      </el-row>
+      </el-row> -->
       <!-- <el-row>
         <el-col :span="24">
           <span class="params-title">图1、</span>
         </el-col>
       </el-row> -->
-      <div v-for="(item,index) in navInfoLis" :key="index">
-        <el-row style="padding:5px;">
-          <el-col :span="4">
-            <span class="params-title">导航标题</span>
-          </el-col>
-          <el-col :span="8">
-            <el-input v-model="item.name" placeholder="请输入内容" />
-          </el-col>
-          <el-col v-show="navInfoLis.length>1" :span="4" :offset="2" style="height:40px;line-height:40px;">
-            <el-button type="danger" size="mini" @click="deleteNav(item,index)">{{ '删除导航' }}</el-button>
-          </el-col>
-        </el-row>
-        <el-row style="padding:5px;">
-          <el-col :span="4">
-            <span class="params-title">关联设置</span>
-          </el-col>
-          <el-col :span="20">
-            <!-- 多项选择框 -->
-            <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly">
-              <el-option
-                v-for="items in optionsData"
-                v-show="items.label!=='导航组件'"
-                :key="items.id"
-                :label="items.label"
-                :value="items.id"
-                :disabled="items.disabled"
-              />
-            </el-select>
-          </el-col>
-        </el-row>
-      </div>
+
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -171,96 +148,46 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       textData: [],
-      options: [{
-        value: 1000,
-        label: '1秒'
-      }, {
-        value: 2000,
-        label: '双皮奶'
-      }, {
-        value: 3000,
-        label: '蚵仔煎'
-      }, {
-        value: 4000,
-        label: '龙须面'
-      }, {
-        value: 5000,
-        label: '北京烤鸭'
-      }]
+      options: []
     }
   },
   computed: {
     ...mapState([
       'curComponent',
       'componentData'
-    ]),
-    optionsData() {
-      let data = []
-      this.navInfoLis.forEach(res => {
-        data = data.concat(res.relation)
-      })
-      const opSetInfo = this.options
-      opSetInfo.forEach(item => {
-        data.forEach(e => {
-          if (e === item.id) {
-            item.disabled = true
-          }
-        })
-      })
-      console.log(data)
-      return opSetInfo
-    }
+    ])
+    // optionsData() {
+    //   let data = []
+    //   this.navInfoLis.forEach(res => {
+    //     data = data.concat(res.relation)
+    //   })
+    //   const opSetInfo = this.options
+    //   opSetInfo.forEach(item => {
+    //     data.forEach(e => {
+    //       if (e === item.id) {
+    //         item.disabled = true
+    //       }
+    //     })
+    //   })
+    //   console.log(data)
+    //   return opSetInfo
+    // }
   },
   created() {
     // this.init()
 
   },
   mounted() {
-    // this.componentData.forEach(res => {
-    //   if (res.showName) {
-    //     res.showName = ''
-    //   }
-    // })
-    console.log('componentData获取数据--', this.componentData, this.curComponent)
-    // const seltOps = []
-    this.navInfoLis = this.element.options.navTabList
-    this.navInfoLis.forEach(res => {
-      res.relation = []
-    })
-    this.navInfoLis.forEach(ele => {
-      console.log('ele::::', ele)
-      this.componentData.forEach(res => {
-        if (res.showName === ele.name) {
-          // res.showName = ''
-          ele.relation.push(res.id)
-          delete res.showName
-        }
-      })
-    })
-    console.log(' this.componentData', this.componentData)
-    const newArrr = deepCopy(this.componentData)
-    newArrr.forEach(ele => {
-      ele.disabled = true
-      if (!ele.hasOwnProperty('showName')) {
-        console.log('满足条件的ele', ele)
-        ele.disabled = false
+    console.log('this.curComponent', this.curComponent)
+    console.log('this.componentData', this.componentData)
+    // let dataArr = []
+    this.componentData.forEach(res => {
+      if (res.type === 'de-nav') {
+        console.log('res', res)
+        this.options.push.apply(this.options, res.options.navTabList)
       }
-
-      // if (ele.showName === '') {
-
-      // }
-      console.log('ele----', ele)
     })
-    this.navInfoLis.forEach(res => {
-      res.relation.forEach(e => {
-        newArrr.forEach(item => {
-          if (item.id === e) {
-            item.disable = true
-          }
-        })
-      })
-    })
-    this.options = deepCopy(newArrr)
+    console.log('this.options', this.options)
   },
 
   methods: {
@@ -308,16 +235,6 @@ export default {
       })
     },
     cancel() {
-      this.curComponent.options.navTabList = this.navInfoLis
-      this.navInfoLis.forEach(ele => {
-        ele.relation.forEach(item => {
-          this.componentData.forEach(res => {
-            if (res.id === item) {
-              res.showName = ele.name
-            }
-          })
-        })
-      })
       // this.curComponent.commonBackground.enable = this.backgroundOrigin.enable
       // this.curComponent.commonBackground.backgroundType = this.backgroundOrigin.backgroundType
       // this.curComponent.commonBackground.color = this.backgroundOrigin.color
@@ -332,20 +249,20 @@ export default {
       this.$emit('backgroundSetClose')
     },
     save() {
-      this.curComponent.options.navTabList = this.navInfoLis
-      this.navInfoLis.forEach(ele => {
-        ele.relation.forEach(item => {
-          this.componentData.forEach(res => {
-            if (res.id === item) {
-              res.showName = ele.name
-            }
-          })
-        })
-      })
-      console.log('this.fileList', this.fileList)
+      // this.curComponent.options.navTabList = this.navInfoLis
+      // this.navInfoLis.forEach(ele => {
+      //   ele.relation.forEach(item => {
+      //     this.componentData.forEach(res => {
+      //       if (res.id === item) {
+      //         res.showName = ele.name
+      //       }
+      //     })
+      //   })
+      // })
+      // console.log('this.fileList', this.fileList)
 
-      console.log('this.imgUrlList', this.imgUrlList)
-      this.$store.commit('recordSnapshot')
+      // console.log('this.imgUrlList', this.imgUrlList)
+      // this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     commitStyle() {

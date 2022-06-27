@@ -70,6 +70,7 @@
       @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
       @boardSet="boardSet(item)"
+      @tabRelation="tabRelation(item)"
       @canvasDragging="canvasDragging"
       @editComponent="editComponent(index,item)"
     >
@@ -244,6 +245,17 @@
       <navgationSet v-if="navVisible" :element="navElement" @backgroundSetClose="navSetClose" />
       <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
     </el-dialog>
+    <el-dialog
+      :visible.sync="tabVisible"
+      width="600px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <tabSet v-if="tabVisible" :element="tabElement" @backgroundSetClose="tabSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -276,6 +288,7 @@ import $ from 'jquery'
 import Background from '@/views/background/index'
 import BannerSet from '@/views/background/bannerSet'
 import navgationSet from '@/views/background/navgationSet'
+import tabSet from '@/views/background/tabSet'
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
 const eventsForBus = events.mouse
@@ -845,7 +858,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, BannerSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, BannerSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -918,9 +931,11 @@ export default {
       },
       baseLineShow: false,
       navElement: {},
+      tabElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
       navVisible: false,
+      tabVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1022,7 +1037,7 @@ export default {
     },
     displayClass() {
       return function(value) {
-        console.log('value-----', value)
+        // console.log('value-----', value)
         // if (value.type === 'de-frame') {
         if (this.canvasStyleData.navShowKey && value.showName) {
           if (this.canvasStyleData.navShowKey === value.showName) {
@@ -1199,11 +1214,20 @@ export default {
     navSetClose() {
       this.navVisible = false
     },
+    tabSetClose() {
+      this.tabVisible = false
+    },
     boardSet(item) {
       // console.log('itsm00001', item)
       this.$emit('boardSet', item)
 
       this.boardSetVisible = true
+    },
+    tabRelation(item) {
+      this.tabElement = item
+      this.tabVisible = true
+      // console.log('最终触发呗')
+      // this.boardSetVisible = true
     },
     bannerImg(item) {
       console.log('bannerImg,item-----', item)

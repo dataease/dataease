@@ -9,7 +9,7 @@
       <el-checkbox v-model="check" />
     </div>
     <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @tabRelation="tabRelation" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
@@ -298,6 +298,11 @@ export default {
     boardSet() {
       console.log('添加设置功能', 1111)
       this.$emit('boardSet')
+    },
+
+    tabRelation() {
+      console.log('第二层', 1111)
+      this.$emit('tabRelation')
     }
   }
 }
