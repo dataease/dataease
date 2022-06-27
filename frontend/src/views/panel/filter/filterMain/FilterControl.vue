@@ -140,8 +140,6 @@ export default {
 
   created() {
     this.attrs = this.controlAttrs
-    console.log(this.childViews)
-    console.log(this.attrs)
   },
   methods: {
     multipleChange(value) {
