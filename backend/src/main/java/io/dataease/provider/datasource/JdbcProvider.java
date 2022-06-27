@@ -10,6 +10,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.constants.datasource.MySQLConstants;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
@@ -88,7 +89,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 }
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
+            String tableNamePattern = datasourceRequest.getTable();
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
+                tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+            }
+            ResultSet resultSet = databaseMetaData.getColumns(null, "%", tableNamePattern, "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;

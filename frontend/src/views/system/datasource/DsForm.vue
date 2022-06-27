@@ -147,7 +147,8 @@ export default {
           acquireIncrement: 5,
           idleConnectionTestPeriod: 5,
           connectTimeout: 5,
-          customDriver: 'default'
+          customDriver: 'default',
+          queryTimeout: 30
         },
         apiConfiguration: []
       },
