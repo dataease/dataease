@@ -1431,6 +1431,7 @@ export default {
     please_input_replication_num: 'Please enter Replication number',
     acquire_increment: 'Growth number',
     connect_timeout: 'Connection timeout (seconds)',
+    query_timeout: 'Query timeout（seconds）',
     please_input_initial_pool_size: 'Please enter the number of initial connections',
     please_input_min_pool_size: 'Please enter the minimum number of connections',
     please_input_max_pool_size: 'Please enter the maximum number of connections',

@@ -1432,6 +1432,7 @@ export default {
     please_input_replication_num: '請輸入副本數量',
     acquire_increment: '增長數',
     connect_timeout: '連接超時(秒)',
+    query_timeout: '査詢超時（秒）',
     please_input_initial_pool_size: '請輸入初始連接數',
     please_input_min_pool_size: '請輸入最小連接數',
     please_input_max_pool_size: '請輸入最大連接數',

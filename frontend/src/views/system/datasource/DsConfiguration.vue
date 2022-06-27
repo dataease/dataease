@@ -248,6 +248,9 @@
               <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
                 <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
               </el-form-item>
+              <el-form-item v-if="datasourceType.isJdbc" :label="$t('datasource.query_timeout')" prop="configuration.queryTimeout">
+                <el-input v-model="form.configuration.queryTimeout" autocomplete="off" type="number" min="0"/>
+              </el-form-item>
             </el-collapse-item>
           </el-collapse>
         </el-form>
@@ -298,7 +301,8 @@ export default {
             maxIdleTime: 30,
             acquireIncrement: 5,
             idleConnectionTestPeriod: 5,
-            connectTimeout: 5
+            connectTimeout: 5,
+            queryTimeout: 30
           },
           apiConfiguration: []
         }
@@ -358,6 +362,11 @@ export default {
         'configuration.acquireIncrement': [{
           required: true,
           message: i18n.t('datasource.please_input_acquire_increment'),
+          trigger: 'blur'
+        }],
+        'configuration.queryTimeout': [{
+          required: true,
+          message: i18n.t('datasource.please_input_query_timeout'),
           trigger: 'blur'
         }],
         'configuration.connectTimeout': [{
