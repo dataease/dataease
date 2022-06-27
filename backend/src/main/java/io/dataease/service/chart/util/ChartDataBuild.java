@@ -127,6 +127,7 @@ public class ChartDataBuild {
                     }
                 }
                 axisChartDataDTO.setField(a.toString());
+                axisChartDataDTO.setName(a.toString());
                 axisChartDataDTO.setCategory(row[xAxis.size()]);
 
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
@@ -177,6 +178,7 @@ public class ChartDataBuild {
                 for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                     AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                     axisChartDataDTO.setField(a.toString());
+                    axisChartDataDTO.setName(a.toString());
 
                     List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                     List<ChartQuotaDTO> quotaList = new ArrayList<>();
@@ -232,6 +234,7 @@ public class ChartDataBuild {
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
+                axisChartDataDTO.setName(a.toString());
 
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                 List<ChartQuotaDTO> quotaList = new ArrayList<>();
