@@ -27,7 +27,7 @@ import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
 import ElTreeSelect from '@/components/ElTreeSelect'
 import customInput from '@/components/widget/DeWidget/customInput'
-import {  textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
+import { textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
   components: { ElTreeSelect },
@@ -212,6 +212,9 @@ export default {
       }
     })
   },
+  beforeDestroy() {
+    bus.$off('reset-default-value')
+  },
 
   methods: {
     onFoucs() {
@@ -221,7 +224,7 @@ export default {
     },
     change() {
       setTimeout(() => {
-        console.log(123, this.$refs.deSelectTree.$refs.select.$el);
+        console.log(123, this.$refs.deSelectTree.$refs.select.$el)
         textSelectWidget(this.$refs.deSelectTree.$refs.select.$el, this.element.style)
       }, 50)
     },

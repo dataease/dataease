@@ -2,12 +2,12 @@
 
   <el-input
     v-if="element.options!== null && element.options.attrs!==null"
+    ref="de-input-search"
     v-model="value"
     resize="vertical"
     :placeholder="$t(element.options.attrs.placeholder)"
     :size="size"
     class="de-range-tag"
-    ref="de-input-search"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
@@ -77,6 +77,9 @@ export default {
         this.search()
       }
     })
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value')
   },
   methods: {
     search() {
