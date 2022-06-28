@@ -839,7 +839,7 @@ export default {
       }
     },
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
-      console.log('111',data)
+      // console.log('111',data)
       if (!data.resultCount ||
         data.resultCount === '' ||
         isNaN(Number(data.resultCount)) ||

@@ -278,7 +278,7 @@ export default {
       // 清理联动信息
       this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
-      console.log('this.canvasStyleData', this.componentData,this.canvasStyleData)
+      // console.log('this.canvasStyleData', this.componentData,this.canvasStyleData)
       this.componentData.forEach(ele => {
         // console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
         // ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
@@ -306,7 +306,7 @@ export default {
       })
       // 无需保存条件
       requestInfo.panelData = JSON.stringify(components)
-      console.log('保存的数据',requestInfo)
+      // console.log('保存的数据',requestInfo)
       panelSave(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({

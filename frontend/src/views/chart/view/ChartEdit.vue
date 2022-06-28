@@ -1921,7 +1921,7 @@ export default {
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
-      console.log('calcStyle,,,,',this.panelInfo,view)
+      // console.log('calcStyle,,,,',this.panelInfo,view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return
