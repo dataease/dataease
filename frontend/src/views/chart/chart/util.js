@@ -240,7 +240,8 @@ export const TYPE_CONFIGS = [
         'gaugeMin',
         'gaugeMax',
         'gaugeStartAngle',
-        'gaugeEndAngle'
+        'gaugeEndAngle',
+        'gaugeTickCount'
       ],
       'label-selector-ant-v': [
         'labelGauge'

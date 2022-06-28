@@ -277,7 +277,7 @@
       <!--table-end-->
 
       <!--gauge-begin-->
-      <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
+      <el-form ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="showProperty('gaugeMin')" :label="$t('chart.min')" class="form-item form-item-slider">
           <el-input-number v-model="sizeForm.gaugeMin" size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -314,22 +314,15 @@
             @change="changeBarSizeCase('gaugeEndAngle')"
           />
         </el-form-item>
-        <el-form-item v-show="showProperty('quotaFontSize')" :label="$t('chart.quota_font_size')" class="form-item">
-          <el-select
-            v-model="sizeForm.quotaFontSize"
-            :placeholder="$t('chart.quota_font_size')"
-            @change="changeBarSizeCase('quotaFontSize')"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('chart.tick_count')" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase" />
+        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">
+          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />
         </el-form-item>
       </el-form>
       <!--gauge-end-->
 
-      <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
-          <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
+      <el-form ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item v-show="showProperty('quotaFontSize')" :label="$t('chart.quota_font_size')" class="form-item">
+          <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase('quotaFontSize')">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
