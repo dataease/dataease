@@ -87,6 +87,13 @@
       :chart="chart"
       class="table-class"
     />
+    <scrollTable
+      v-else-if="tableRollFlag"
+      :ref="element.propValue.id"
+      :show-summary="chart.type === 'roll-elemnt'"
+      :chart="chart"
+      class="table-class"
+    />
     <label-normal
       v-else-if="labelShowFlag"
       :ref="element.propValue.id"
@@ -110,6 +117,7 @@ import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
+import scrollTable from '@/views/chart/components/table/scrollTable'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -124,6 +132,7 @@ import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import ChartComponentHc from '@/views/chart/components/ChartComponentHc.vue'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
+import { save2Cache } from '@/api/chart/chart'
 import {
   customAttrTrans,
   customStyleTrans,
@@ -146,7 +155,8 @@ export default {
     DrillPath,
     ChartComponentG2,
     ChartComponentH3,
-    ChartComponentHc
+    ChartComponentHc,
+    scrollTable
   },
   props: {
     element: {
@@ -259,20 +269,24 @@ export default {
       )
     },
     charViewG2ShowFlag() {
+      console.log('----------3333', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         !this.chart.type.includes('table') &&
+        !this.chart.type.includes('roll') &&
         !this.chart.type.includes('text') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'antv'
       )
     },
     charViewS2ShowFlag() {
+      console.log('----------4444', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         this.chart.type.includes('table') &&
+        !this.chart.type.includes('roll') &&
         !this.chart.type.includes('text') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'antv'
@@ -286,11 +300,21 @@ export default {
       )
     },
     tableShowFlag() {
+      console.log('----------22222222', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         this.chart.type.includes('table') &&
         this.renderComponent() === 'echarts'
+      )
+    },
+    tableRollFlag() {
+      console.log('----------111111', this.chart)
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type.includes('roll') &&
+        this.renderComponent() === 'antv'
       )
     },
     labelShowFlag() {
@@ -388,6 +412,7 @@ export default {
     },
     ...mapState([
       'canvasStyleData',
+      'templateStatus',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
@@ -583,6 +608,7 @@ export default {
       this.mergeStyle()
     },
     mergeStyle() {
+      console.log(this.canvasStyleData)
       if (
         (this.requestStatus === 'success' || this.requestStatus === 'merging') &&
         this.chart.stylePriority === 'panel' &&
@@ -600,7 +626,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        // console.log('customAttrChart=====6666', customAttrChart)
+        console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -609,6 +635,7 @@ export default {
       }
     },
     getData(id, cache = true) {
+      console.log('templateStatus',this.templateStatus,this.canvasStyleData)
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -636,119 +663,118 @@ export default {
             if (response.success) {
               console.log('查出的数据', response.data)
               let arr = []
-              let arr2 = [] 
-              if(response.data.type.includes('line') && response.data.data) {
-                if(response.data.render === 'antv' ) {
-                  if(response.data.xaxis) {
-                    let axisobj = JSON.parse(response.data.xaxis)[0]
+              let arr2 = []
+              if (response.data.type.includes('line') && response.data.data) {
+                if (response.data.render === 'antv') {
+                  if (response.data.xaxis) {
+                    const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('antv::::xaxis',axisobj)
-                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
-                      if(axisobj.sort !== 'none') {
-                        let data = response.data.data.datas
+                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if (axisobj.sort !== 'none') {
+                        const data = response.data.data.datas
                         // console.log(axisobj.sort,data)
                         // antv x轴排序改变
-                        if(axisobj.sort === 'asc') {
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                        if (axisobj.sort === 'asc') {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
                               return parseInt(a.field) - parseInt(b.field)
                             } else {
-                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                               return months.indexOf(a.field) - months.indexOf(b.field)
                             }
                           })
                         } else if (axisobj.sort = 'desc') {
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
                               return parseInt(b.field) - parseInt(a.field)
                             } else {
-                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              const months = ['十二月', '十一月', '十月', '九月', '八月', '七月', '六月', '五月', '四月', '三月', '二月', '一月']
                               return months.indexOf(a.field) - months.indexOf(b.field)
                             }
                           })
                         }
                       }
-                    } 
+                    }
                   }
                 } else if (response.data.render === 'echarts') {
-                  if(response.data.xaxis) {
-                    let axisobj = JSON.parse(response.data.xaxis)[0]
+                  if (response.data.xaxis) {
+                    const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('echarts:::xaxis',axisobj)
-                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
-                      if(axisobj.sort !== 'none') {
-                        let data = response.data.data.x
-                        let data1 = response.data.data.series
+                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if (axisobj.sort !== 'none') {
+                        const data = response.data.data.x
+                        const data1 = response.data.data.series
                         // console.log(axisobj.sort,data)
-                        if(axisobj.sort === 'asc') {
+                        if (axisobj.sort === 'asc') {
                           // echarts X轴升序排序改变
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
                               return parseInt(a) - parseInt(b)
                             } else {
-                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                               return months.indexOf(a) - months.indexOf(b)
                             }
                           })
-                          
+
                           // echarts Y轴值升序排序改变
                           arr2 = data1.forEach(item => {
-                            let ele = item.data
-                            ele.sort((a,b) => {
+                            const ele = item.data
+                            ele.sort((a, b) => {
                               let obj1 = {}
                               let obj2 = {}
                               a.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj1 = e.value
                                 }
                               })
                               b.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj2 = e.value
                                 }
                               })
 
-                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                              if (!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
                                 return parseInt(obj1) - parseInt(obj2)
-                              }else {
-                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              } else {
+                                const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                                 return months.indexOf(obj1) - months.indexOf(obj2)
                               }
                             })
                           })
 
                           // console.log('asc改变后：',arr,arr2)
-                          
                         } else if (axisobj.sort = 'desc') {
                           // echarts X轴降序排序改变
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
                               return parseInt(b) - parseInt(a)
                             } else {
-                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              const months = ['十二月', '十一月', '十月', '九月', '八月', '七月', '六月', '五月', '四月', '三月', '二月', '一月']
                               return months.indexOf(a) - months.indexOf(b)
                             }
                           })
 
                           // echarts Y轴值降序排序改变
                           arr2 = data1.forEach(item => {
-                            let ele = item.data
-                            ele.sort((a,b) => {
+                            const ele = item.data
+                            ele.sort((a, b) => {
                               let obj1 = {}
                               let obj2 = {}
                               a.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj1 = e.value
                                 }
                               })
                               b.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj2 = e.value
                                 }
                               })
 
-                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                              if (!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
                                 return parseInt(obj2) - parseInt(obj1)
-                              }else {
-                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              } else {
+                                const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                                 return months.indexOf(obj2) - months.indexOf(obj1)
                               }
                             })
@@ -757,13 +783,31 @@ export default {
                           // console.log('desc改变后：',arr,arr2)
                         }
                       }
-                    } 
+                    }
                   }
                 }
-                
               }
               this.chart = response.data
-              // console.log('this.chart: ', this.chart)
+
+              if(this.templateStatus) {
+                this.chart.customAttr = this.canvasStyleData.chart.customAttr
+                let deepCacheInfo = deepCopy(this.chart)
+
+                deepCacheInfo.xaxis = JSON.parse(this.chart.xaxis)
+                deepCacheInfo.xaxisExt = JSON.parse(this.chart.xaxisExt)
+                deepCacheInfo.yaxis = JSON.parse(this.chart.yaxis)
+                deepCacheInfo.yaxisExt = JSON.parse(this.chart.yaxisExt)
+                deepCacheInfo.customAttr = JSON.parse(this.chart.customAttr)
+                deepCacheInfo.customStyle = JSON.parse(this.chart.customStyle)
+                deepCacheInfo.customFilter = JSON.parse(this.chart.customFilter)
+                deepCacheInfo.extStack = JSON.parse(this.chart.extStack)
+                deepCacheInfo.drillFields = JSON.parse(this.chart.drillFields)
+                deepCacheInfo.extBubble = JSON.parse(this.chart.extBubble)
+                deepCacheInfo.senior = JSON.parse(this.chart.senior)
+
+                this.saveThemeInfo(deepCacheInfo,'chart', false, false)
+              }
+              console.log('userView,,,,this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -779,6 +823,7 @@ export default {
                 )
                 this.resetDrill()
               }
+              console.log('执行此处问题-----')
               this.drillFilters = JSON.parse(
                 JSON.stringify(
                   response.data.drillFilters ? response.data.drillFilters : []
@@ -789,6 +834,7 @@ export default {
               this.mergeScale()
               this.requestStatus = 'success'
               this.httpRequest.status = true
+              console.log('thissssss', this.chart)
             } else {
               this.requestStatus = 'error'
               this.message = response.message
@@ -814,6 +860,210 @@ export default {
             return true
           })
       }
+    },
+    saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
+      // console.log('111',data)
+      if (!data.resultCount ||
+        data.resultCount === '' ||
+        isNaN(Number(data.resultCount)) ||
+        String(data.resultCount).includes('.') ||
+        parseInt(data.resultCount) < 1) {
+        data.resultCount = '1000'
+      }
+      if (switchType && (data.type === 'table-info' || this.chart.type === 'table-info') && data.xaxis.length > 0) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        data.xaxis = []
+      }
+      const view = JSON.parse(JSON.stringify(data))
+      view.id = data.id
+      view.sceneId = data.sceneId
+      view.name = data.title
+      if (view.title.length > 50) {
+        this.$error(this.$t('chart.title_limit'))
+        return
+      }
+      view.tableId = data.tableId
+      if (view.type === 'map' && view.xaxis.length > 1) {
+        view.xaxis = [view.xaxis[0]]
+      }
+      view.xaxis.forEach(function(ele) {
+        // if (!ele.summary || ele.summary === '') {
+        //   ele.summary = 'sum'
+        // }
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
+        }
+      })
+      if (view.type === 'table-pivot') {
+        view.xaxisExt.forEach(function(ele) {
+          if (!ele.dateStyle || ele.dateStyle === '') {
+            ele.dateStyle = 'y_M_d'
+          }
+          if (!ele.datePattern || ele.datePattern === '') {
+            ele.datePattern = 'date_sub'
+          }
+          if (!ele.sort || ele.sort === '') {
+            ele.sort = 'none'
+          }
+          if (!ele.filter) {
+            ele.filter = []
+          }
+        })
+      }
+      if (view.type === 'map' && view.yaxis.length > 1) {
+        view.yaxis = [view.yaxis[0]]
+      }
+      view.yaxis.forEach(function(ele) {
+        if (!ele.chartType) {
+          ele.chartType = 'bar'
+        }
+        if (!ele.summary || ele.summary === '') {
+          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
+        }
+        if (!ele.compareCalc) {
+          ele.compareCalc = compareItem
+        }
+      })
+      if (view.type === 'chart-mix') {
+        view.yaxisExt.forEach(function(ele) {
+          if (!ele.chartType) {
+            ele.chartType = 'bar'
+          }
+          if (!ele.summary || ele.summary === '') {
+            if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+              ele.summary = 'count'
+            } else {
+              ele.summary = 'sum'
+            }
+          }
+          if (!ele.sort || ele.sort === '') {
+            ele.sort = 'none'
+          }
+          if (!ele.filter) {
+            ele.filter = []
+          }
+          if (!ele.compareCalc) {
+            ele.compareCalc = compareItem
+          }
+        })
+      }
+      view.extStack.forEach(function(ele) {
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+      })
+      view.extBubble.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
+        }
+      })
+      if (view.type === 'label') {
+        if (view.xaxis.length > 1) {
+          view.xaxis.splice(1, view.xaxis.length)
+        }
+      }
+      if (view.type.startsWith('pie') ||
+        view.type.startsWith('funnel') ||
+        view.type.startsWith('text') ||
+        view.type.startsWith('gauge') ||
+        view.type === 'treemap' ||
+        view.type === 'liquid' ||
+        view.type === 'word-cloud' ||
+        view.type === 'waterfall') {
+        if (view.yaxis.length > 1) {
+          view.yaxis.splice(1, view.yaxis.length)
+        }
+      }
+      if (view.type === 'line-stack' && trigger === 'chart') {
+        view.customAttr.size.lineArea = true
+      }
+      if (view.type === 'line' && trigger === 'chart') {
+        view.customAttr.size.lineArea = false
+      }
+      if (view.type === 'treemap' && trigger === 'chart') {
+        view.customAttr.label.show = true
+      }
+      if (view.type === 'liquid' ||
+        (view.type.includes('table') && view.render === 'echarts') ||
+        view.type.includes('text') ||
+        view.type.includes('gauge') ||
+        view.type === 'table-pivot') {
+        view.drillFields = []
+      }
+      view.customFilter.forEach(function(ele) {
+        if (ele && !ele.filter) {
+          ele.filter = []
+        }
+      })
+
+      if(!view.drillFilters.length) {
+        view.drillFilters = null
+      }
+      // view.isLeaf = null
+      // view.pid = null
+      // view.position = null
+      // view.privileges = null
+      view.snapshot = null
+      // view.sql = null
+      
+
+      if (view.type === 'arc_map') {
+        view.urlMap = view.urlMap
+      }
+
+      if(view.type === '3dscatter') {
+        // view.zaxis
+      }
+      // stringify json param
+      view.xaxis = JSON.stringify(view.xaxis)
+      view.xaxisExt = JSON.stringify(view.xaxisExt)
+      view.yaxis = JSON.stringify(view.yaxis)
+      // view.zaxis = JSON.stringify(view.zaxis)
+      view.yaxisExt = JSON.stringify(view.yaxisExt)
+      view.customAttr = JSON.stringify(view.customAttr)
+      view.customStyle = JSON.stringify(view.customStyle)
+      view.customFilter = JSON.stringify(view.customFilter)
+      view.extStack = JSON.stringify(view.extStack)
+      view.drillFields = JSON.stringify(view.drillFields)
+      view.extBubble = JSON.stringify(view.extBubble)
+      view.senior = JSON.stringify(view.senior)
+      
+      delete view.data
+      console.log('处理后：', view)
+      save2Cache(view.sceneId,view)
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)

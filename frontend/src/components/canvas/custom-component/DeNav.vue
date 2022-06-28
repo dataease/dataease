@@ -28,11 +28,12 @@ export default {
     ...mapState([
       'curComponent',
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'previewCanvasScale'
     ]),
     navStyleSet() {
       const style = {}
-      style.fontSize = this.element.options.fontSize + 'px'
+      style.fontSize = (this.element.options.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
       style.color = this.element.options.color
       style.textAlign = this.element.options.horizontal
       style.alignItems = this.element.options.vertical
@@ -68,20 +69,22 @@ export default {
     },
     toggleNav(key) {
       // 切换导航
+      console.log('previewCanvasScale', this.previewCanvasScale)
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
-
+      const iframeArr = []
       this.canvasStyleData.navShowKey = key.name
       this.componentData.forEach((ele, index) => {
-        console.log('-----------', ele.showName, key)
-        if (ele.showName === key.name) {
-          console.log('层级数据处理----')
-          // this.curComponent = ele
-          // this.$store.commit('topComponent')
-          // this.$store.commit('recordSnapshot', 'topComponent')
-          // this.componentData.push(this.componentData.splice(index, 1)[0])
+        if (ele.type === 'de-frame') {
+          iframeArr.push(ele)
         }
       })
       this.heightKey = key.name
+
+      console.log('key---')
+      iframeArr.forEach(ele => {
+        document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
+        console.log('网页插件', ele)
+      })
     }
   }
 }

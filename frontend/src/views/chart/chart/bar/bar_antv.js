@@ -14,7 +14,7 @@ import {
 function sortDatas(data) {
   var sort1 = JSON.parse(data.xaxis)
   var sort2 = sort1[0].sort
-  console.log(sort1.sort)
+  // console.log(sort1.sort)
   let isSort
   if (sort2 === undefined) {
     isSort = false
@@ -55,7 +55,7 @@ function sortDatas(data) {
   })
 }
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
-  console.log('bar_antv,chart',chart)
+  // console.log('bar_antv,chart',chart)
   // theme
   const theme = getTheme(chart)
   // attr
