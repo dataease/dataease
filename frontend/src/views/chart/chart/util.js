@@ -38,6 +38,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'antv',
     category: 'chart.chart_type_table',
+    value: 'roll-elemnt',
+    title: '滚动表格',
+    icon: 'table-normal'
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
     icon: 'table-info'
@@ -378,7 +385,6 @@ export const TYPE_CONFIGS = [
   //   title: 'chart.chart_3dscatter',
   //   icon: '3dscatter'
   // },
-
 
   {
     render: 'other',
