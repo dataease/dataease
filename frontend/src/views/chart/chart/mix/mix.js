@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseMixOption(chart_option, chart) {
   // 处理shape attr
@@ -68,6 +68,9 @@ export function baseMixOption(chart_option, chart) {
       }
       chart_option.legend.data.push(y.name)
       i >= yAxis.length ? (y.yAxisIndex = 1) : (y.yAxisIndex = 0)
+
+      y.selectedMode = true
+      y.select = BASE_ECHARTS_SELECT
       chart_option.series.push(y)
     }
   }
