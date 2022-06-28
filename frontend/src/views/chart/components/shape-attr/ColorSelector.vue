@@ -250,6 +250,7 @@ export default {
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
         }
       }
+      console.log('this.colorForm,,,',this.colorForm)
     },
 
     switchColor(index) {
