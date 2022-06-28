@@ -297,7 +297,8 @@ export default {
         acquireIncrement: 5,
         idleConnectionTestPeriod: 5,
         connectTimeout: 5,
-        customDriver: 'default'
+        customDriver: 'default',
+        queryTimeout: 30
       }
     },
     changeEdit() {
@@ -318,6 +319,9 @@ export default {
 
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
+        if(this.form.configuration.queryTimeout === undefined){
+          this.form.configuration.queryTimeout = 30
+        }
       }
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     },
