@@ -1,27 +1,31 @@
 <template>
-  <div class="component-item">
-    <mobile-check-bar v-if="mobileCheckBarShow" :element="config" />
-    <de-out-widget
-      v-if="config.type==='custom'"
-      :id="'component' + config.id"
-      class="component-custom"
-      :style="getComponentStyleDefault(config.style)"
-      :out-style="outStyle"
-      :element="config"
-      :in-screen="true"
-    />
-    <component
-      :is="config.component"
-      v-else
-      ref="wrapperChild"
-      :out-style="outStyle"
-      :prop-value="config.propValue"
-      :style="getComponentStyleDefault(config.style)"
-      :is-edit="false"
-      :element="config"
-      :h="outItemHeight"
-      :canvas-style-data="canvasStyleData"
-    />
+  <div class="component-item" >
+    <div :style="commonStyle">
+      <mobile-check-bar v-if="mobileCheckBarShow" :element="config" />
+      <de-out-widget
+        v-if="config.type==='custom'"
+        :id="'component' + config.id"
+        class="component-custom"
+        :style="getComponentStyleDefault(config.style)"
+        :out-style="outStyle"
+        :element="config"
+        :in-screen="true"
+      />
+      <component
+        :is="config.component"
+        v-else
+        ref="wrapperChild"
+        :out-style="outStyle"
+        :prop-value="config.propValue"
+        :style="getComponentStyleDefault(config.style)"
+        :is-edit="false"
+        :element="config"
+        :h="outItemHeight"
+        :canvas-style-data="canvasStyleData"
+      />
+
+    </div>
+
   </div>
 </template>
 
@@ -30,6 +34,7 @@ import { mapState } from 'vuex'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { getStyle } from '@/components/canvas/utils/style'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'ComponentWaitItem',
@@ -51,6 +56,37 @@ export default {
     }
   },
   computed: {
+    commonStyle() {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.config.commonBackground) {
+        style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (this.config.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+        }
+        if (this.config.commonBackground.enable) {
+          if (this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
+            let innerImage = this.config.commonBackground.innerImage
+            if (this.screenShot) {
+              innerImage = innerImage.replace('svg', 'png')
+            }
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
+          }
+        } else {
+          style['background-color'] = colorRGBA
+        }
+        style['overflow'] = 'hidden'
+      }
+      return style
+    },
     outItemHeight() {
       return this.itemHeight - (4 * this.componentGap)
     },
