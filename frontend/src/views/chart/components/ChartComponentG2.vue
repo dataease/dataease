@@ -132,7 +132,7 @@ export default {
     },
     linkageActive() {
       this.linkageActiveHistory = true
-      this.myChart.setState('selected', (param) => {
+      this.myChart.setState('active', (param) => {
         if (Array.isArray(param)) {
           return false
         } else {

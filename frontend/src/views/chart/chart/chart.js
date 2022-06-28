@@ -958,3 +958,9 @@ export const COLOR_PANEL = [
   '#000000',
   '#FFFFFF'
 ]
+
+export const BASE_ECHARTS_SELECT = {
+  itemStyle: {
+    shadowBlur: 2
+  }
+}

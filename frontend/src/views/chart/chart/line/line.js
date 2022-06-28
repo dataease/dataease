@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseLineOption(chart_option, chart) {
   // 处理shape attr
@@ -49,6 +49,8 @@ export function baseLineOption(chart_option, chart) {
           delete y.areaStyle
         }
       }
+      y.selectedMode = true
+      y.select = BASE_ECHARTS_SELECT
       // label
       if (customAttr.label) {
         y.label = customAttr.label

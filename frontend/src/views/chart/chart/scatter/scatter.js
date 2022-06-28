@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import {BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP} from '@/views/chart/chart/chart'
 
 let bubbleArray = []
 let terminalType = 'pc'
@@ -56,6 +56,8 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
         y.label = customAttr.label
       }
       y.type = 'scatter'
+      y.selectedMode = true
+      y.select = BASE_ECHARTS_SELECT
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }

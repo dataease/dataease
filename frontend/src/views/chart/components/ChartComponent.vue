@@ -74,7 +74,6 @@ import {
 import {
   baseMixOption
 } from '@/views/chart/chart/mix/mix'
-// import eventBus from '@/components/canvas/utils/eventBus'
 import {
   uuid
 } from 'vue-uuid'
@@ -82,6 +81,7 @@ import {
   geoJson
 } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'ChartComponent',
@@ -138,10 +138,10 @@ export default {
         top: '0px'
       },
       pointParam: null,
-
       dynamicAreaCode: null,
       borderRadius: '0px',
-      mapCenter: null
+      mapCenter: null,
+      linkageActiveParam: null
     }
   },
 
@@ -168,6 +168,17 @@ export default {
     this.myChart.dispose()
   },
   methods: {
+    reDrawView() {
+      this.myChart.dispatchAction({ type: 'unselect', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+      this.myChart.dispatchAction({ type: 'downplay', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+      this.linkageActiveParam = null
+    },
+    linkageActive() {
+      if (this.linkageActiveParam) {
+        this.myChart.dispatchAction({ type: 'select', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+        this.myChart.dispatchAction({ type: 'highlight', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+      }
+    },
     preDraw() {
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
@@ -185,6 +196,13 @@ export default {
         this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
+          if (that.linkageActiveParam) {
+            that.reDrawView()
+          }
+          that.linkageActiveParam = {
+            seriesIndex: that.pointParam.seriesIndex,
+            name: that.pointParam.name
+          }
           if (that.trackMenu.length < 2) { // 只有一个事件直接调用
             that.trackClick(that.trackMenu[0])
           } else { // 视图关联多个事件
@@ -195,7 +213,7 @@ export default {
         })
       })
     },
-    drawEcharts() {
+    drawEcharts(activeParam) {
       const chart = this.chart
       let chart_option = {}
       // type
@@ -231,7 +249,6 @@ export default {
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
-
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
         if (!customAttr.areaCode) {
@@ -256,33 +273,14 @@ export default {
         return
       }
       this.myEcharts(chart_option)
+      this.$nextTick(() => (this.linkageActive()))
     },
     registerDynamicMap(areaCode) {
       this.dynamicAreaCode = areaCode
-      //   if (this.$store.getters.geoMap[areaCode]) {
-      //     const json = this.$store.getters.geoMap[areaCode]
-      //     this.myChart.dispose()
-      //     this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-      //     this.$echarts.registerMap('MAP', json)
-      //     return
-      //   }
-      //   geoJson(areaCode).then(res => {
-      //     this.$store.dispatch('map/setGeo', {
-      //       key: areaCode,
-      //       value: res
-      //     }).then(() => {
-      //       this.myChart.dispose()
-      //       this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-      //       this.$echarts.registerMap('MAP', res)
-      //     })
-      //   }).catch(() => {
-      //     this.downOrUp = true
-      //   })
     },
 
     initMapChart(geoJson, chart) {
       this.$echarts.registerMap('MAP', geoJson)
-      // this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       let themeStyle = null
       if (this.themeStyle) {
@@ -351,6 +349,7 @@ export default {
           this.$emit('onChartClick', this.pointParam)
           break
         case 'linkage':
+          this.linkageActive()
           this.$store.commit('addViewTrackFilter', linkageParam)
           break
         case 'jump':

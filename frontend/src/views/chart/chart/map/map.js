@@ -1,6 +1,6 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, reverseColor } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseMapOption(chart_option, chart, themeStyle) {
   // 处理shape attr
@@ -33,6 +33,8 @@ export function baseMapOption(chart_option, chart, themeStyle) {
     chart_option.title.text = chart.title
     if (chart.data.series && chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
+      chart_option.series[0].selectedMode = true
+      chart_option.series[0].select = BASE_ECHARTS_SELECT
       // label
       if (customAttr.label) {
         const text = customAttr.label.formatter
