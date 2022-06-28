@@ -1621,9 +1621,6 @@ export default {
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
-      // bus.$on('theme-in-cache', (params) => {
-      //   console.log('传过来了',params)
-      // })
     },
     initTableData(id) {
       if (id != null) {
