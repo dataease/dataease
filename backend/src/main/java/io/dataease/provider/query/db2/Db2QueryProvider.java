@@ -117,7 +117,9 @@ public class Db2QueryProvider extends QueryProvider {
                     } else {
                         if (f.getType().equalsIgnoreCase("TIME")) {
                             fieldName = String.format(Db2Constants.FORMAT_TIME, originField, Db2Constants.DEFAULT_DATE_FORMAT);
-                        } else {
+                        } else if(f.getType().equalsIgnoreCase("DATE")) {
+                            fieldName = String.format(Db2Constants.FORMAT_DATE, originField, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
                             fieldName = originField;
                         }
                     }
@@ -194,7 +196,9 @@ public class Db2QueryProvider extends QueryProvider {
             } else {
                 if (f.getType().equalsIgnoreCase("TIME")) {
                     fieldName = String.format(Db2Constants.FORMAT_TIME, originField, Db2Constants.DEFAULT_DATE_FORMAT);
-                } else {
+                } else if(f.getType().equalsIgnoreCase("DATE")) {
+                    fieldName = String.format(Db2Constants.FORMAT_DATE, originField, Db2Constants.DEFAULT_DATE_FORMAT);
+                }else {
                     fieldName = originField;
                 }
             }
@@ -857,7 +861,9 @@ public class Db2QueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     if (field.getType().equalsIgnoreCase("TIME")) {
                         whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
-                    } else {
+                    }else if(field.getType().equalsIgnoreCase("DATE")) {
+                        whereName = String.format(Db2Constants.FORMAT_DATE, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }else {
                         whereName = originName;
                     }
                 }
@@ -965,7 +971,9 @@ public class Db2QueryProvider extends QueryProvider {
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
                         if (field.getType().equalsIgnoreCase("TIME")) {
                             whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
-                        } else {
+                        } else if(field.getType().equalsIgnoreCase("DATE")) {
+                            whereName = String.format(Db2Constants.FORMAT_DATE, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                        }else {
                             whereName = originName;
                         }
                     }
@@ -1068,7 +1076,9 @@ public class Db2QueryProvider extends QueryProvider {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getType().equalsIgnoreCase("TIME")) {
                     fieldName = String.format(Db2Constants.FORMAT_TIME, originField, format);
-                } else {
+                } else if(x.getType().equalsIgnoreCase("DATE")){
+                    fieldName = String.format(Db2Constants.FORMAT_DATE, originField, format);
+                }else {
                     fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
                 }
             } else {
