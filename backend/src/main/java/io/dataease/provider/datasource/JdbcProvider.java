@@ -156,7 +156,12 @@ public class JdbcProvider extends DefaultJdbcProvider {
             } else {
                 String size = resultSet.getString("COLUMN_SIZE");
                 if (size == null) {
-                    tableField.setFieldSize(1);
+                    if(dbType.equals("JSON") && datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
+                        tableField.setFieldSize(65535);
+                    }else {
+                        tableField.setFieldSize(1);
+                    }
+
                 } else {
                     tableField.setFieldSize(Integer.valueOf(size));
                 }
