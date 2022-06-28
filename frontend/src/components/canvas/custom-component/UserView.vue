@@ -87,6 +87,13 @@
       :chart="chart"
       class="table-class"
     />
+    <scrollTable
+      v-else-if="tableRollFlag"
+      :ref="element.propValue.id"
+      :show-summary="chart.type === 'roll-elemnt'"
+      :chart="chart"
+      class="table-class"
+    />
     <label-normal
       v-else-if="labelShowFlag"
       :ref="element.propValue.id"
@@ -110,6 +117,7 @@ import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
+import scrollTable from '@/views/chart/components/table/scrollTable'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -147,7 +155,8 @@ export default {
     DrillPath,
     ChartComponentG2,
     ChartComponentH3,
-    ChartComponentHc
+    ChartComponentHc,
+    scrollTable
   },
   props: {
     element: {
@@ -260,20 +269,24 @@ export default {
       )
     },
     charViewG2ShowFlag() {
+      console.log('----------3333', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         !this.chart.type.includes('table') &&
+        !this.chart.type.includes('roll') &&
         !this.chart.type.includes('text') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'antv'
       )
     },
     charViewS2ShowFlag() {
+      console.log('----------4444', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         this.chart.type.includes('table') &&
+        !this.chart.type.includes('roll') &&
         !this.chart.type.includes('text') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'antv'
@@ -287,11 +300,21 @@ export default {
       )
     },
     tableShowFlag() {
+      console.log('----------22222222', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
         this.chart.type.includes('table') &&
         this.renderComponent() === 'echarts'
+      )
+    },
+    tableRollFlag() {
+      console.log('----------111111', this.chart)
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type.includes('roll') &&
+        this.renderComponent() === 'antv'
       )
     },
     labelShowFlag() {
@@ -640,119 +663,118 @@ export default {
             if (response.success) {
               console.log('查出的数据', response.data)
               let arr = []
-              let arr2 = [] 
-              if(response.data.type.includes('line') && response.data.data) {
-                if(response.data.render === 'antv' ) {
-                  if(response.data.xaxis) {
-                    let axisobj = JSON.parse(response.data.xaxis)[0]
+              let arr2 = []
+              if (response.data.type.includes('line') && response.data.data) {
+                if (response.data.render === 'antv') {
+                  if (response.data.xaxis) {
+                    const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('antv::::xaxis',axisobj)
-                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
-                      if(axisobj.sort !== 'none') {
-                        let data = response.data.data.datas
+                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if (axisobj.sort !== 'none') {
+                        const data = response.data.data.datas
                         // console.log(axisobj.sort,data)
                         // antv x轴排序改变
-                        if(axisobj.sort === 'asc') {
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                        if (axisobj.sort === 'asc') {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
                               return parseInt(a.field) - parseInt(b.field)
                             } else {
-                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                               return months.indexOf(a.field) - months.indexOf(b.field)
                             }
                           })
                         } else if (axisobj.sort = 'desc') {
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a.field)) && !isNaN(parseInt(b.field))) {
                               return parseInt(b.field) - parseInt(a.field)
                             } else {
-                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              const months = ['十二月', '十一月', '十月', '九月', '八月', '七月', '六月', '五月', '四月', '三月', '二月', '一月']
                               return months.indexOf(a.field) - months.indexOf(b.field)
                             }
                           })
                         }
                       }
-                    } 
+                    }
                   }
                 } else if (response.data.render === 'echarts') {
-                  if(response.data.xaxis) {
-                    let axisobj = JSON.parse(response.data.xaxis)[0]
+                  if (response.data.xaxis) {
+                    const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('echarts:::xaxis',axisobj)
-                    if(axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
-                      if(axisobj.sort !== 'none') {
-                        let data = response.data.data.x
-                        let data1 = response.data.data.series
+                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                      if (axisobj.sort !== 'none') {
+                        const data = response.data.data.x
+                        const data1 = response.data.data.series
                         // console.log(axisobj.sort,data)
-                        if(axisobj.sort === 'asc') {
+                        if (axisobj.sort === 'asc') {
                           // echarts X轴升序排序改变
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
                               return parseInt(a) - parseInt(b)
                             } else {
-                              const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                               return months.indexOf(a) - months.indexOf(b)
                             }
                           })
-                          
+
                           // echarts Y轴值升序排序改变
                           arr2 = data1.forEach(item => {
-                            let ele = item.data
-                            ele.sort((a,b) => {
+                            const ele = item.data
+                            ele.sort((a, b) => {
                               let obj1 = {}
                               let obj2 = {}
                               a.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj1 = e.value
                                 }
                               })
                               b.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj2 = e.value
                                 }
                               })
 
-                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                              if (!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
                                 return parseInt(obj1) - parseInt(obj2)
-                              }else {
-                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              } else {
+                                const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                                 return months.indexOf(obj1) - months.indexOf(obj2)
                               }
                             })
                           })
 
                           // console.log('asc改变后：',arr,arr2)
-                          
                         } else if (axisobj.sort = 'desc') {
                           // echarts X轴降序排序改变
-                          arr = data.sort((a,b) => {
-                            if(!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
+                          arr = data.sort((a, b) => {
+                            if (!isNaN(parseInt(a)) && !isNaN(parseInt(b))) {
                               return parseInt(b) - parseInt(a)
                             } else {
-                              const months = ['十二月','十一月','十月','九月','八月','七月','六月','五月','四月','三月','二月','一月']
+                              const months = ['十二月', '十一月', '十月', '九月', '八月', '七月', '六月', '五月', '四月', '三月', '二月', '一月']
                               return months.indexOf(a) - months.indexOf(b)
                             }
                           })
 
                           // echarts Y轴值降序排序改变
                           arr2 = data1.forEach(item => {
-                            let ele = item.data
-                            ele.sort((a,b) => {
+                            const ele = item.data
+                            ele.sort((a, b) => {
                               let obj1 = {}
                               let obj2 = {}
                               a.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj1 = e.value
                                 }
                               })
                               b.dimensionList.forEach(e => {
-                                if(e.value.includes('月')){
+                                if (e.value.includes('月')) {
                                   obj2 = e.value
                                 }
                               })
 
-                              if(!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
+                              if (!isNaN(parseInt(obj1)) && !isNaN(parseInt(obj2))) {
                                 return parseInt(obj2) - parseInt(obj1)
-                              }else {
-                                const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+                              } else {
+                                const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
                                 return months.indexOf(obj2) - months.indexOf(obj1)
                               }
                             })
@@ -761,10 +783,9 @@ export default {
                           // console.log('desc改变后：',arr,arr2)
                         }
                       }
-                    } 
+                    }
                   }
                 }
-                
               }
               this.chart = response.data
 
@@ -802,6 +823,7 @@ export default {
                 )
                 this.resetDrill()
               }
+              console.log('执行此处问题-----')
               this.drillFilters = JSON.parse(
                 JSON.stringify(
                   response.data.drillFilters ? response.data.drillFilters : []
@@ -812,6 +834,7 @@ export default {
               this.mergeScale()
               this.requestStatus = 'success'
               this.httpRequest.status = true
+              console.log('thissssss', this.chart)
             } else {
               this.requestStatus = 'error'
               this.message = response.message

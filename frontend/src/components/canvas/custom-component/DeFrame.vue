@@ -1,7 +1,7 @@
 <template>
   <el-row class="main-frame">
     <div v-if="element.frameLinks.src" class="main-frame">
-      <iframe v-if="frameShow" id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
+      <iframe v-if="frameShow" :id="'iframe'+element.id" ref="iframesssssssss" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
       <div v-if="editMode==='edit'" class="frame-mask">
         <span style="opacity: 1;">
           <span style="font-weight: bold;color: lawngreen;">{{ $t('panel.edit_web_tips') }}</span>
