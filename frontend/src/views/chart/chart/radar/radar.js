@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseRadarOption(chart_option, chart) {
   // 处理shape attr
@@ -58,6 +58,8 @@ export function baseRadarOption(chart_option, chart) {
         ]
       }
       y.value = JSON.parse(JSON.stringify(y.data))
+      chart_option.series[0].selectedMode = true
+      chart_option.series[0].select = BASE_ECHARTS_SELECT
       chart_option.series.push(d)
 
       maxValues.push(Math.max.apply(null, y.value))

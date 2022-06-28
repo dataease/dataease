@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function basePieOption(chart_option, chart) {
   // 处理shape attr
@@ -27,6 +27,8 @@ export function basePieOption(chart_option, chart) {
     chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
+      chart_option.series[0].selectedMode = true
+      chart_option.series[0].select = BASE_ECHARTS_SELECT
       // size
       if (customAttr.size) {
         chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
@@ -79,6 +81,8 @@ export function rosePieOption(chart_option, chart) {
     chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
+      chart_option.series[0].selectedMode = true
+      chart_option.series[0].select = BASE_ECHARTS_SELECT
       // size
       if (customAttr.size) {
         chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']

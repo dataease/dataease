@@ -1,6 +1,6 @@
 import { componentStyle } from '../common/common'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 import { getScaleValue } from '@/components/canvas/utils/style'
 
 export function baseGaugeOption(chart_option, chart, scale = 1) {
@@ -44,6 +44,8 @@ export function baseGaugeOption(chart_option, chart, scale = 1) {
       chart_option.series[0].itemStyle = {
         color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
       }
+      chart_option.series[0].selectedMode = true
+      chart_option.series[0].select = BASE_ECHARTS_SELECT
       // data只取第一个
       const y = {
         // name: chart.data.x[0],

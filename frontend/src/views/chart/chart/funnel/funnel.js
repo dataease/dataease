@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
-import { DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseFunnelOption(chart_option, chart) {
   // 处理shape attr
@@ -47,6 +47,8 @@ export function baseFunnelOption(chart_option, chart) {
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         }
+        y.selectedMode = true
+        y.select = BASE_ECHARTS_SELECT
         // y.type = 'funnel'
         chart_option.series[0].data.push(y)
       }
