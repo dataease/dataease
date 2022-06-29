@@ -69,12 +69,16 @@ export default {
     },
     list() {
       this.resetList()
-      this.init()
+      this.$nextTick(() => {
+        this.init()
+      })
     }
   },
   mounted() {
     this.resetList()
-    this.init()
+    this.$nextTick(() => {
+      this.init()
+    })
   },
   methods: {
     addScrollDiv(selectDom) {
@@ -101,13 +105,13 @@ export default {
       if (this.defaultFirst && this.list.length > 0) {
         this.selectValue = this.list[0].value
       }
+      if (!this.list || !this.list.length) return
 
       const selectDom = document.querySelector(
         `.${this.classId} .el-select-dropdown .el-select-dropdown__wrap`
       )
       this.scrollbar = document.querySelector(`.${this.classId} .el-select-dropdown .el-scrollbar`)
       this.slectBoxDom = document.querySelector(`.${this.classId} .el-select-dropdown__wrap`)
-      if (!this.slectBoxDom || !this.slectBoxDom.style) return
       this.slectBoxDom.style.display = 'flex'
       this.slectBoxDom.style.flexDirection = 'row'
       this.domList = selectDom.querySelector(
