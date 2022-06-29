@@ -1,32 +1,20 @@
 <template>
   <el-row>
     <el-row v-loading="slidersLoading">
-      <div class="direction-left">
+      <el-col :span="2">
         <span>&nbsp;</span>
         <ul v-show="currentIndex>1" class="direction">
           <li class="left" @click="move(sliderWidth, 1, speed)">
-            <svg
-              class="icon"
-              width="15px"
-              height="15.00px"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="#ffffff"
-                d="M481.233 904c8.189 0 16.379-3.124 22.628-9.372 12.496-12.497 12.496-32.759 0-45.256L166.488 512l337.373-337.373c12.496-12.497 12.496-32.758 0-45.255-12.498-12.497-32.758-12.497-45.256 0l-360 360c-12.496 12.497-12.496 32.758 0 45.255l360 360c6.249 6.249 14.439 9.373 22.628 9.373z"
-              />
-            </svg>
+            <svg class="icon" width="15px" height="15.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M481.233 904c8.189 0 16.379-3.124 22.628-9.372 12.496-12.497 12.496-32.759 0-45.256L166.488 512l337.373-337.373c12.496-12.497 12.496-32.758 0-45.255-12.498-12.497-32.758-12.497-45.256 0l-360 360c-12.496 12.497-12.496 32.758 0 45.255l360 360c6.249 6.249 14.439 9.373 22.628 9.373z" /></svg>
           </li>
         </ul>
-      </div>
-      <el-col :span="24">
+      </el-col>
+      <el-col :span="20">
         <el-row id="slider">
           <div class="window">
             <ul v-if="!slidersLoading" class="container" :style="containerStyle">
               <li>
-                <div style="width:290px; height: 250px;overflow: hidden">
+                <div style="width:240px; height: 208px;overflow: hidden">
                   <subject-template-item
                     v-for="item in sliders[sliders.length - 1]"
                     :key="item.id"
@@ -36,7 +24,7 @@
                 </div>
               </li>
               <li v-for="(itemSlider, index) in sliders" :key="index">
-                <div style="width:290px; height: 250px;">
+                <div style="width:240px; height: 208px;">
                   <subject-template-item
                     v-for="item in itemSlider"
                     :key="item.id"
@@ -46,7 +34,7 @@
                 </div>
               </li>
               <li>
-                <div style="width:290px; height: 250px;">
+                <div style="width:240px; height: 208px;">
                   <subject-template-item
                     v-for="item in sliders[0]"
                     :key="item.id"
@@ -59,26 +47,14 @@
           </div>
         </el-row>
       </el-col>
-      <div class="direction-right">
+      <el-col :span="2">
         <span>&nbsp;</span>
         <ul v-show="currentIndex<sliders.length" class="direction">
           <li class="right" @click="move(sliderWidth, -1, speed)">
-            <svg
-              class="icon"
-              width="15px"
-              height="15.00px"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="#ffffff"
-                d="M557.179 904c-8.189 0-16.379-3.124-22.628-9.372-12.496-12.497-12.496-32.759 0-45.256L871.924 512 534.551 174.627c-12.496-12.497-12.496-32.758 0-45.255 12.498-12.497 32.758-12.497 45.256 0l360 360c12.496 12.497 12.496 32.758 0 45.255l-360 360c-6.249 6.249-14.439 9.373-22.628 9.373z"
-              />
-            </svg>
+            <svg class="icon" width="15px" height="15.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M557.179 904c-8.189 0-16.379-3.124-22.628-9.372-12.496-12.497-12.496-32.759 0-45.256L871.924 512 534.551 174.627c-12.496-12.497-12.496-32.758 0-45.255 12.498-12.497 32.758-12.497 45.256 0l360 360c12.496 12.497 12.496 32.758 0 45.255l-360 360c-6.249 6.249-14.439 9.373-22.628 9.373z" /></svg>
           </li>
         </ul>
-      </div>
+      </el-col>
     </el-row>
     <el-row>
       <el-col :span="7" style="height: 30px" />
@@ -108,6 +84,7 @@ import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { uuid } from 'vue-uuid'
 
+
 export default {
   name: 'Slider',
   components: {
@@ -127,10 +104,10 @@ export default {
     return {
       sliders: [],
       slidersLoading: false,
-      sliderWidth: 290,
-      imgWidth: 290,
+      sliderWidth: 240,
+      imgWidth: 240,
       currentIndex: 1,
-      distance: -290,
+      distance: -240,
       transitionEnd: true,
       speed: this.initialSpeed,
       saveSubjectVisible: false
@@ -233,99 +210,69 @@ export default {
 }
 </script>
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-ol, ul {
-  list-style: none;
-}
-
-#slider {
-  text-align: center;
-}
-
-.window {
-  position: relative;
-  width: 290px;
-  height: 250px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.container {
-  display: flex;
-  position: absolute;
-}
-
-.left, .right {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  background-color: rgba(0, 0, 0, .3);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.left {
-  padding-left: 5px;
-  padding-top: 2px;
-}
-
-.right {
-  padding-right: 5px;
-  padding-top: 2px;
-}
-
-img {
-  user-select: none;
-}
-
-.dots {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.dots li {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin: 0 3px;
-  border: 1px solid white;
-  border-radius: 50%;
-  background-color: #333;
-  cursor: pointer;
-}
-
-.dots .dotted {
-  background-color: orange;
-}
-
-.direction {
-  width: 100%;
-}
-
-.direction-left {
-  z-index: 2;
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  top: 110px;
-  left: 2px;
-}
-
-.direction-right {
-  z-index: 2;
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  top: 110px;
-  right: 2px;
-}
+  *{
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+  }
+  ol,ul{
+    list-style: none;
+  }
+  #slider{
+    text-align: center;
+  }
+  .window{
+    position:relative;
+    width:240px;
+    height:208px;
+    margin:0 auto;
+    overflow:hidden;
+  }
+  .container{
+    display:flex;
+    position:absolute;
+  }
+  .left, .right{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:20px;
+    height:20px;
+    background-color:rgba(0,0,0,.3);
+    border-radius:50%;
+    cursor:pointer;
+  }
+  .left{
+    padding-left:5px;
+    padding-top:2px;
+  }
+  .right{
+    padding-right:5px;
+    padding-top:2px;
+  }
+  img{
+    user-select: none;
+  }
+  .dots{
+    position:absolute;
+    bottom:10px;
+    left:50%;
+    transform:translateX(-50%);
+  }
+  .dots li{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    margin:0 3px;
+    border:1px solid white;
+    border-radius:50%;
+    background-color:#333;
+    cursor:pointer;
+  }
+  .dots .dotted{
+    background-color:orange;
+  }
+  .direction{
+    width: 100%;
+  }
 </style>
