@@ -36,6 +36,7 @@
 import ElVisualSelect from '@/components/ElVisualSelect'
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
+import { isSameVueObj } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/DeWidget/customInput'
 import { textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
@@ -143,7 +144,9 @@ export default {
       })
     },
     'element.options.attrs.sort': function(value, old) {
-      if (value === null || typeof value === 'undefined' || value === old) return
+      if (value === null || typeof value === 'undefined' || value === old || isSameVueObj(value, old)) return
+      this.show = false
+
       this.datas = []
 
       let method = multFieldValues
@@ -160,6 +163,10 @@ export default {
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
+        this.$nextTick(() => {
+          this.show = true
+          this.handleCoustomStyle()
+        })
       }) || (this.element.options.value = '')
     }
 
