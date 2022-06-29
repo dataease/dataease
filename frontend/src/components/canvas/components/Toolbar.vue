@@ -467,7 +467,8 @@ export default {
       }
     },
     editReset() {
-      this.cancelMobileLayoutStatue(JSON.parse(this.componentDataCache))
+      this.$store.commit('setComponentData', JSON.parse(this.componentDataCache))
+      this.$store.commit('setMobileLayoutStatus', false)
       this.$store.commit('openMobileLayout')
     },
     editCancel() {
