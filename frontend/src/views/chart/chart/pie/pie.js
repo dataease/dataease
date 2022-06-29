@@ -40,7 +40,6 @@ export function basePieOption(chart_option, chart,cstyle = {}) {
         // }
         const y = valueArr[i]
 
-        console.log('valueArr: ', y)
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
@@ -48,7 +47,6 @@ export function basePieOption(chart_option, chart,cstyle = {}) {
           borderRadius: 0
         }
         y.type = 'pie'
-        console.log('y: ', y)
         chart_option.series[0].data.push(y)
       }
       console.log('chart_option.series[0]: ', chart_option.series[0])
