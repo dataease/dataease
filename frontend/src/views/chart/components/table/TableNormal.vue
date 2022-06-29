@@ -24,8 +24,7 @@
           sortable
           :title="field.name"
           :width="columnWidth"
-        >
-        </ux-table-column>
+        />
       </ux-grid>
 
       <el-row v-show="showPage" class="table-page">
@@ -71,6 +70,11 @@ export default {
       }
     },
     showSummary: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    enableScroll: {
       type: Boolean,
       required: false,
       default: true
@@ -230,9 +234,11 @@ export default {
             this.height = 'auto'
           }
 
-          this.$nextTick(() => {
-            this.initScroll()
-          })
+          if (this.enableScroll) {
+            this.$nextTick(() => {
+              this.initScroll()
+            })
+          }
         }
       })
     },

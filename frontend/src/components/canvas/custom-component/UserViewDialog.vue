@@ -19,7 +19,7 @@
       </div>
     </de-main-container>
     <de-main-container v-show="!showChartCanvas">
-      <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
+      <table-normal :enable-scroll="false" :chart="chartTable" :show-summary="false" class="table-class" />
     </de-main-container>
   </de-container>
 </template>
