@@ -293,7 +293,8 @@ export default {
       myAttrs: null,
 
       childViews: {
-        viewInfos: []
+        viewInfos: [],
+        datasetParams: []
       },
       currentElement: null,
       allFields: [],
