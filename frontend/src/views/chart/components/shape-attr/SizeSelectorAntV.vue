@@ -90,7 +90,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('table')||chart.type.includes('roll')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
@@ -121,21 +121,28 @@
             <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="'是否启用轮播'" class="form-item">
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'是否启用轮播'" class="form-item">
           <el-radio-group v-model="sizeForm.automatic" @change="changeBarSizeCase">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="'轮播间隔时间'" class="form-item">
+        </el-form-item> -->
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播间隔时间'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
+        </el-form-item> -->
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'滚动速率'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableRollingRate" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮透明度'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableHeightLight" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
 
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -367,6 +374,7 @@ export default {
   methods: {
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
+      console.log('chartchartchartchartchartchartchartchartchartchartchartchart', chart)
       if (chart.customAttr) {
         let customAttr = null
         if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
@@ -374,6 +382,7 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
+        console.log('customAttr', customAttr)
         if (customAttr.size) {
           this.sizeForm = customAttr.size
           this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
@@ -410,10 +419,10 @@ export default {
     },
     changeBarSizeCase(e, key) {
       console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)
-      if (this.sizeForm.automatic && e !== true) {
-        this.$message.warning('修改前请关闭轮播效果')
-        return
-      }
+      // if (this.sizeForm.automatic && e !== true) {
+      //   this.$message.warning('修改前请关闭轮播效果')
+      //   return
+      // }
       this.$emit('onSizeChange', this.sizeForm)
     }
   }
