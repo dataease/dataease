@@ -3,7 +3,7 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
+          <el-form-item v-show="chart.type && !chart.type.includes('table')&& !chart.type.includes('roll') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -53,19 +53,22 @@
           </el-form-item>
         </div>
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
+          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
+          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="'表格'+$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮颜色'" class="form-item">
+            <el-color-picker v-model="colorForm.tableHeightColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="'表格'+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableInfoFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!--              暂时不支持该功能-->
@@ -231,7 +234,7 @@ export default {
       // this.colorIndex = 0
     },
     init() {
-      console.log('chart是否改变,color',this.chart)
+      console.log('chart是否改变,color', this.chart)
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
         let customAttr = null
@@ -250,7 +253,7 @@ export default {
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
         }
       }
-      console.log('this.colorForm,,,',this.colorForm)
+      console.log('this.colorForm,,,', this.colorForm)
     },
 
     switchColor(index) {

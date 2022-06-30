@@ -6,6 +6,7 @@ export const DEFAULT_COLOR_CASE = {
   tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
   tableInfoFontColor: '#000000',
+  tableHeightColor: '#fff',
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
@@ -14,6 +15,7 @@ export const DEFAULT_COLOR_CASE = {
 export const DEFAULT_SIZE = {
   automatic: false,
   automaticTime: 2000,
+  tableHeightLight: 0,
   barDefault: true,
   barWidth: 40,
   barGap: 0.4,

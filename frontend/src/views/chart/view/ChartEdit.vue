@@ -353,7 +353,8 @@
                       </div>
                     </el-row>
                     <!--xAxis-->
-                    <el-row v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
+                    <el-row
+                      v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
@@ -380,7 +381,7 @@
                           $t('chart.drag_block_word_cloud_label')
                         }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
-                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info')}}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info') }}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
@@ -417,7 +418,8 @@
                       </div>
                     </el-row>
                     <!--yaxis-->
-                    <el-row v-if="view.type !=='table-info' && view.type !=='label'"
+                    <el-row
+                      v-if="view.type !=='table-info' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -456,7 +458,7 @@
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
                           $t('chart.drag_block_word_cloud_size')
                         }}</span>
-                        <span v-else-if="view.type && view.type === 'arc_map'">{{$t('chart.drag_block_arc_map_coordinate')}}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_coordinate') }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
@@ -601,7 +603,8 @@
                       </div>
                     </el-row>
                     <!--extBubble-->
-                    <el-row v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
+                    <el-row
+                      v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -771,7 +774,7 @@
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
                     name="size"
-                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
+                    :title="(chart.type && chart.type.includes('table')|| chart.type.includes('roll') ) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -852,10 +855,10 @@
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
-                    v-show="view.type 
-                      && (view.type.includes('bar') || view.type.includes('line') 
-                        || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
-                        || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
+                    v-show="view.type
+                      && (view.type.includes('bar') || view.type.includes('line')
+                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
@@ -882,8 +885,8 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type 
-                      && (view.type.includes('bar') || view.type.includes('line') 
+                    v-show="view.type
+                      && (view.type.includes('bar') || view.type.includes('line')
                       || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
                       || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
                     name="yAxis"
@@ -982,12 +985,12 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type !== 'map' 
-                      && view.type !== 'arc_map' && !view.type.includes('table') 
+                    v-show="view.type && view.type !== 'map'
+                      && view.type !== 'arc_map' && !view.type.includes('table')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
-                      && !view.type.includes('text') && view.type !== 'label' 
-                      && (chart.type !== 'treemap' || chart.render === 'antv') 
-                      && view.type !== 'liquid' && view.type !== 'waterfall' 
+                      && !view.type.includes('text') && view.type !== 'label'
+                      && (chart.type !== 'treemap' || chart.render === 'antv')
+                      && view.type !== 'liquid' && view.type !== 'waterfall'
                       && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
                     name="legend"
                     :title="$t('chart.legend')"
@@ -1306,7 +1309,7 @@ import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE,
-  DEFAULT_ZAXIS_STYLE,
+  DEFAULT_ZAXIS_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -1346,8 +1349,8 @@ import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtIte
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
-import XAxisSelectorHc from "@/views/chart/components/component-style/XAxisSelectorHc"
-import YAxisSelectorHc from "@/views/chart/components/component-style/YAxisSelectorHc"
+import XAxisSelectorHc from '@/views/chart/components/component-style/XAxisSelectorHc'
+import YAxisSelectorHc from '@/views/chart/components/component-style/YAxisSelectorHc'
 
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
@@ -1446,7 +1449,7 @@ export default {
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
           tooltip: DEFAULT_TOOLTIP,
-          totalCfg: DEFAULT_TOTAL,
+          totalCfg: DEFAULT_TOTAL
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -1828,7 +1831,7 @@ export default {
         view.urlMap = view.urlMap
       }
 
-      if(view.type === '3dscatter') {
+      if (view.type === '3dscatter') {
         // view.zaxis
       }
 
@@ -1897,7 +1900,7 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
-      console.log('calcData：', this.panelInfo,view)
+      console.log('calcData：', this.panelInfo, view)
       if (!view) return
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
       save2Cache(this.panelInfo.id, view).then(() => {
@@ -1924,7 +1927,7 @@ export default {
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
-      console.log('calcStyle,,,,',this.panelInfo,view)
+      console.log('calcStyle,,,,', this.panelInfo, view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return
@@ -2505,7 +2508,7 @@ export default {
       this.calcData(true)
     },
     addZaxis(e) {
-      this.dragMoveDuplicate(this.view.zaxis,e)
+      this.dragMoveDuplicate(this.view.zaxis, e)
 
       this.calcData(true)
     },
@@ -2726,7 +2729,7 @@ export default {
       })
     },
     changeEditStatus(status) {
-      console.log('changeEditStatus',status)
+      console.log('changeEditStatus', status)
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },

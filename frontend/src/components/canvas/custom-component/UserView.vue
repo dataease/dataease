@@ -90,6 +90,7 @@
     <scrollTable
       v-else-if="tableRollFlag"
       :ref="element.propValue.id"
+      :element="element"
       :show-summary="chart.type === 'roll-elemnt'"
       :chart="chart"
       class="table-class"
@@ -634,7 +635,7 @@ export default {
       }
     },
     getData(id, cache = true) {
-      console.log('templateStatus',this.templateStatus,this.canvasStyleData)
+      console.log('templateStatus', this.templateStatus, this.canvasStyleData)
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -788,7 +789,7 @@ export default {
               }
               this.chart = response.data
 
-              if(this.templateStatus) {
+              if (this.templateStatus) {
                 this.chart.customAttr = this.canvasStyleData.chart.customAttr
               }
               console.log('userView,,,,this.chart: ', this.chart)
