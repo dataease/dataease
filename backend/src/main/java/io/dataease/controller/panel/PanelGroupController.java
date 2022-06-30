@@ -6,7 +6,6 @@ import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.plugins.common.base.domain.PanelGroup;
-import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
@@ -19,10 +18,8 @@ import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
-
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

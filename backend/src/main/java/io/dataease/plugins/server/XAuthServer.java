@@ -20,10 +20,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
 import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.*;
-import java.util.stream.Collectors;
-
 @ApiIgnore
 @RequestMapping("/plugin/auth")
 @RestController
