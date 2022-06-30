@@ -278,3 +278,11 @@ export function isMobile() {
   const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
   return flag
 }
+
+export const isSameVueObj = (source, target) => {
+  if (!source && !target) return true
+  if (!!source && !!target) {
+    return JSON.stringify(source) === JSON.stringify(target)
+  }
+  return false
+}
