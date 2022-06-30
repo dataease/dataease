@@ -289,6 +289,11 @@ export default {
     },
     // 设置侧边栏的显示和隐藏
     setSidebarHide(route) {
+      const hidePaths = ['/person-info', '/person-pwd', '/about']
+      if (hidePaths.includes(route.path)) {
+        this.$store.dispatch('app/toggleSideBarHide', true)
+        return
+      }
       //   if (!route.children || route.children.length === 1) {
       if (route.name !== 'system' && (!route.children || this.showChildLength(route) === 1)) {
         this.$store.dispatch('app/toggleSideBarHide', true)
