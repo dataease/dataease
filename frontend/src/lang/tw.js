@@ -138,6 +138,7 @@ export default {
     stop: '停止',
     first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
     roger_that: '知道了',
+    donot_noti: '不再提示',
     apply: '應用',
     search: '搜索',
     folder: '目錄',
