@@ -40,6 +40,7 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
+import { isSameVueObj } from '@/utils'
 import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
@@ -144,7 +145,7 @@ export default {
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
-      if (typeof old === 'undefined' || value === old) return
+      if (typeof old === 'undefined' || value === old || isSameVueObj(value, old)) return
       if (!this.inDraw) {
         this.value = value ? [] : null
         this.element.options.value = ''
