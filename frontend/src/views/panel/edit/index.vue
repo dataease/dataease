@@ -1353,17 +1353,6 @@ export default {
     height: 600px;
   }
 
-  .info-class {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #FFFFFF;
-    font-size: 12px;
-    color: #9ea6b2;
-  }
-
   ::-webkit-scrollbar {
     width: 2px !important;
     height: 2px !important;
