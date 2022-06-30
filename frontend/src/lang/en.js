@@ -1122,7 +1122,8 @@ export default {
     max_more_than_mix: 'Max must more than Min'
   },
   dataset: {
-    sql_variable_limit: 'SQL variables can only be used in where conditions',
+    sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
+    sql_variable_limit_2: '2、Example：select * from table_name where column_name=‘${parm_name}',
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',

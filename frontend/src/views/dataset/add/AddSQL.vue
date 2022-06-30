@@ -46,26 +46,7 @@
                 <el-option :label="$t('dataset.sync_latter')" value="sync_latter"/>
               </el-select>
             </el-form-item>
-            <el-form-item>
-              <span  v-if="mode === '0'" style="line-height: 26px;">
-                <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
-                  <div slot="content">
-                    {{ $t('dataset.sql_variable_limit') }}<br>
-                  </div>
-                  <i class="el-icon-info" style="cursor: pointer;" />
-                </el-tooltip>
-              </span>
-            </el-form-item>
-
           </el-form>
-        </el-col>
-        <el-col :span="8">
-
-          <el-tooltip tyle="float: right;"  v-if="mode === '0'" class="item" effect="dark" :content="$t('dataset.sql_variable_limit')" placement="left">
-            <el-button   type="text" size="mini" style="float: right;" @click="variableMgm">
-              {{ $t('sql_variable.variable_mgm') }}
-            </el-button>
-          </el-tooltip>
         </el-col>
       </el-row>
       <el-row>
@@ -118,6 +99,19 @@
 
       <el-dialog :title="dialogTitle" :visible="showVariableMgm" :before-close="closeVariableMgm" width="60%"
                  class="dialog-css" append-to-body>
+
+              <div slot="title" class="header-title">
+                <span>{{dialogTitle}}</span>
+                <span>
+                  <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
+                    <div slot="content">
+                      {{ $t('dataset.sql_variable_limit_1') }}<br>
+                      {{ $t('dataset.sql_variable_limit_2') }}<br>
+                    </div>
+                    <i class="el-icon-info" style="cursor: pointer;" />
+                  </el-tooltip>
+                </span>
+              </div>
               <el-table :data="variablesTmp" style="width: 80%">
                 <el-table-column prop="variableName" :label="$t('commons.name')" width="180">
                 </el-table-column>
@@ -129,8 +123,8 @@
                 </el-table-column>
                 <el-table-column prop="defaultValue" :label="$t('commons.default_value')">
                   <template slot-scope="scope">
-                    <input v-if="scope.row.type[0] === 'TEXT'" type="text" v-model="scope.row.defaultValue" />
-                    <input v-if="scope.row.type[0] === 'LONG' || scope.row.type[0] === 'DOUBLE'" type="number" v-model="scope.row.defaultValue" />
+                    <el-input size="mini" v-if="scope.row.type[0] === 'TEXT'" type="text" v-model="scope.row.defaultValue" />
+                    <el-input  size="mini" v-if="scope.row.type[0] === 'LONG' || scope.row.type[0] === 'DOUBLE'" type="number" v-model="scope.row.defaultValue" />
 
                     <el-date-picker v-if="scope.row.type[0] === 'DATETIME-YEAR'"
                       v-model="scope.row.defaultValue"
@@ -247,34 +241,35 @@ export default {
         { label: this.$t('dataset.text'), value: 'TEXT' },
         { label: this.$t('dataset.value'), value: 'LONG' },
         { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' },
-        { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
-        { label: this.$t('dataset.time_year_month'), value: 'DATETIME-YEAR-MONTH',
-          children: [{
-            value: 'yyyy-MM',
-            label: 'YYYY-MM'
-          }, {
-            value: 'yyyy/MM',
-            label: 'YYYY/MM'
-          }]
-        },
-        { label: this.$t('dataset.time_year_month_day'), value: 'DATETIME-YEAR-MONTH-DAY',
-          children: [{
-            value: 'yyyy-MM-dd',
-            label: 'YYYY-MM-DD'
-          }, {
-            value: 'yyyy/MM/dd',
-            label: 'YYYY/MM/DD'
-          }]
-        },
-        { label: this.$t('dataset.time_all'), value: 'DATETIME',
-          children: [{
-            value: 'yyyy-MM-dd HH:mm:ss',
-            label: 'YYYY-MM-DD HH:MI:SS'
-          }, {
-            value: 'yyyy/MM/dd HH:mm:ss',
-            label: 'YYYY/MM/DD HH:MI:SS'
-          }]
-        }
+        // { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
+        // { label: this.$t('dataset.time_year_month'), value: 'DATETIME-YEAR-MONTH',
+        //   children: [{
+        //     value: 'yyyy-MM',
+        //     label: 'YYYY-MM'
+        //   }, {
+        //     value: 'yyyy/MM',
+        //     label: 'YYYY/MM'
+        //   }]
+        // },
+        // { label: this.$t('dataset.time_year_month_day'), value: 'DATETIME-YEAR-MONTH-DAY',
+        //   children: [{
+        //     value: 'yyyy-MM-dd',
+        //     label: 'YYYY-MM-DD'
+        //   }, {
+        //     value: 'yyyy/MM/dd',
+        //     label: 'YYYY/MM/DD'
+        //   }]
+        // },
+        // { label: this.$t('dataset.time_all'), value: 'DATETIME',
+        //   children: [{
+        //     value: 'yyyy-MM-dd HH:mm:ss',
+        //     label: 'YYYY-MM-DD HH:MI:SS'
+        //   }, {
+        //     value: 'yyyy/MM/dd HH:mm:ss',
+        //     label: 'YYYY/MM/DD HH:MI:SS'
+        //   }
+        //   ]
+        // }
       ],
     }
   },
@@ -455,7 +450,7 @@ export default {
 
     variableMgm() {
       this.parseVariable()
-      this.dialogTitle = this.$t('sql_variable.variable_mgm')
+      this.dialogTitle = this.$t('sql_variable.variable_mgm') + ' '
       this.showVariableMgm = true
     },
     parseVariable(){
