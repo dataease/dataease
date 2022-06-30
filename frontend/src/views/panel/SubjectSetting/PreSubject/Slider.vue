@@ -23,7 +23,7 @@
       </div>
       <el-col :span="24">
         <el-row id="slider">
-          <div class="window">
+          <div class="slider-window">
             <ul v-if="!slidersLoading" class="container" :style="containerStyle">
               <li>
                 <div style="width:290px; height: 250px;overflow: hidden">
@@ -247,7 +247,7 @@ ol, ul {
   text-align: center;
 }
 
-.window {
+.slider-window {
   position: relative;
   width: 290px;
   height: 250px;
