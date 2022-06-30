@@ -40,6 +40,7 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
+import { isSameVueObj } from '@/utils'
 import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
@@ -144,7 +145,7 @@ export default {
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
-      if (typeof old === 'undefined' || value === old) return
+      if (typeof old === 'undefined' || value === old || isSameVueObj(value, old)) return
       if (!this.inDraw) {
         this.value = value ? [] : null
         this.element.options.value = ''
@@ -199,7 +200,13 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('reset-default-value', id => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
@@ -209,13 +216,7 @@ export default {
           this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
         }
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-
-  methods: {
+    },
     changeInputStyle() {
       if (!this.$parent.handlerInputStyle) return
       this.$nextTick(() => {

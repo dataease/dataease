@@ -157,7 +157,10 @@ export default {
     }
   },
   mounted() {
-    bus.$on('reset-change-table', () => this.getItemTagType())
+    bus.$on('reset-change-table', this.getItemTagType)
+  },
+  beforeDestroy() {
+    bus.$off('reset-change-table', this.getItemTagType)
   },
   methods: {
     clickItem(param) {

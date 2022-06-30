@@ -9,9 +9,6 @@
           @change="multipleChange"
         />
 
-        <span v-if="widget.showVisual" style="padding-left: 16px;">
-          <el-checkbox v-model="attrs.visual" @change="showVisualChange">{{ $t('panel.visual') }}</el-checkbox>
-        </span>
       </div>
     </el-col>
 
@@ -64,7 +61,7 @@
             />
           </el-popover>
         </span>
-        <span v-show="element.component === 'de-select'" style="padding-left: 10px;">
+        <span v-if="element.component === 'de-select'" style="padding-left: 10px;">
           <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
             {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
 

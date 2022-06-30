@@ -1,5 +1,6 @@
 import { sin, cos } from '@/components/canvas/utils/translate'
 import store from '@/store'
+import { colorReverse } from '@/components/canvas/utils/utils'
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
@@ -257,6 +258,10 @@ export const THEME_ATTR_TRANS_MAIN = {
   }
 }
 
+export const THEME_ATTR_TRANS_SLAVE1_BACKGROUND = {
+  'tooltip': ['backgroundColor']
+}
+
 // 移动端特殊属性
 export const mobileSpecialProps = {
   'lineWidth': 3, // 线宽固定值
@@ -325,10 +330,12 @@ export function adaptCurTheme(customStyle, customAttr) {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, LIGHT_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, LIGHT_THEME_COLOR_SLAVE1)
     recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, LIGHT_THEME_COLOR_MAIN)
+    recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, LIGHT_THEME_COMPONENT_BACKGROUND)
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
     recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
+    recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND)
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
   customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'] }
@@ -346,6 +353,14 @@ export function adaptCurThemeCommonStyle(component) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
       component.style[styleKey] = filterStyle[styleKey]
+    }
+  } else {
+    if (component.style.color) {
+      if (store.state.canvasStyleData.panel.themeColor === 'light') {
+        component.style.color = LIGHT_THEME_COLOR_MAIN
+      } else {
+        component.style.color = DARK_THEME_COLOR_MAIN
+      }
     }
   }
   return component
@@ -366,7 +381,6 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
       item.style[styleKey] = filterStyle[styleKey]
     }
   })
-  console.log('componentData=' + JSON.stringify(componentData))
 }
 
 export function isFilterComponent(component) {

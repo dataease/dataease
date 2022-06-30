@@ -94,32 +94,30 @@ export default {
     // 先加载消息类型
     loadMsgTypes()
     this.queryCount()
-    // this.search()
-    // 每30s定时刷新拉取消息
-    /* this.timer = setInterval(() => {
-      this.queryCount()
-    }, 30000) */
   },
   mounted() {
-    bus.$on('refresh-top-notification', () => {
-      if (this.visible) this.search()
-      else this.queryCount()
-    })
-
-    bus.$on('web-msg-topic-call', msg => {
-      this.count = (this.count || this.paginationConfig.total) + 1
-      // this.queryCount()
-      // this.search()
-    })
+    this.initEvents()
   },
   beforeDestroy() {
     this.timer && clearInterval(this.timer)
+    bus.$off('refresh-top-notification', this.refreshTopNotification)
+    bus.$off('web-msg-topic-call', this.webMsgTopicCall)
   },
   destroyed() {
     this.timer && clearInterval(this.timer)
   },
   methods: {
-
+    refreshTopNotification() {
+      if (this.visible) this.search()
+      else this.queryCount()
+    },
+    webMsgTopicCall() {
+      this.count = (this.count || this.paginationConfig.total) + 1
+    },
+    initEvents() {
+      bus.$on('refresh-top-notification', this.refreshTopNotification)
+      bus.$on('web-msg-topic-call', this.webMsgTopicCall)
+    },
     showDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
       this.visible = false

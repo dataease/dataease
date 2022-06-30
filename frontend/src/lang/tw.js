@@ -138,6 +138,7 @@ export default {
     stop: '停止',
     first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
     roger_that: '知道了',
+    donot_noti: '不再提示',
     apply: '應用',
     search: '搜索',
     folder: '目錄',
@@ -1761,7 +1762,8 @@ export default {
     setting_jump: '跳轉設置',
     select_view: '請選擇視圖...',
     visual: '虛擬化',
-    prohibit_multiple: '禁止同數據集多字段'
+    prohibit_multiple: '禁止同數據集多字段',
+    be_empty_dir: '是空目錄'
   },
   plugin: {
     local_install: '本地安裝',

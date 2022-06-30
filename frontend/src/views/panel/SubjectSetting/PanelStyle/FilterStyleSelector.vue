@@ -71,9 +71,10 @@ export default {
   },
   created() {
     this.initForm()
-    bus.$on('onThemeColorChange', () => {
-      this.initForm()
-    })
+    bus.$on('onThemeColorChange', this.initForm)
+  },
+  beforeDestroy() {
+    bus.$off('onThemeColorChange', this.initForm)
   },
   mounted() {
   },

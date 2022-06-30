@@ -173,8 +173,6 @@ export default {
   },
   created() {
     this.taskLogTimer = setInterval(() => {
-      console.log(this.sycnStatus)
-      console.log(this.lastRequestComplete)
       if (this.sycnStatus !== 'Underway') {
         return;
       }

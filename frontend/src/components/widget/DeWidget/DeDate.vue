@@ -112,12 +112,20 @@ export default {
     }
   },
   mounted() {
-    bus.$on('onScroll', () => {
+    bus.$on('onScroll', this.onScroll)
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('onScroll', this.onScroll)
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    onScroll() {
       if (this.onFocus) {
         this.$refs.dateRef.hidePicker()
       }
-    })
-    bus.$on('reset-default-value', id => {
+    },
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         if (!this.element.options.attrs.default.isDynamic) {
           this.values = this.fillValueDerfault()
@@ -128,12 +136,7 @@ export default {
         this.values = widget.dynamicDateFormNow(this.element)
         this.dateChange(this.values)
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-  methods: {
+    },
     onBlur() {
       this.onFocus = false
     },

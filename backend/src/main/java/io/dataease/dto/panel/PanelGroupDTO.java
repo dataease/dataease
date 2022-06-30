@@ -5,8 +5,6 @@ import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.model.ITreeBase;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

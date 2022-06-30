@@ -404,6 +404,17 @@ export default {
     this.bindPluginEvent()
   },
 
+  beforeDestroy() {
+    bus.$off('plugin-chart-click', this.pluginChartClick)
+    bus.$off('plugin-jump-click', this.pluginJumpClick)
+    bus.$off('plugin-add-view-track-filter', this.pluginAddViewTrackFilter)
+    bus.$off('view-in-cache', this.viewInCache)
+    bus.$off('batch-opt-change', this.batchOptChange)
+    bus.$off('onSubjectChange', this.optFromBatchThemeChange)
+    bus.$off('onThemeColorChange', this.optFromBatchThemeChange)
+    bus.$off('onThemeAttrChange', this.optFromBatchSingleProp)
+    bus.$off('clear_panel_linkage', this.clearPanelLinkage)
+  },
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
@@ -441,7 +452,7 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },
-    optFromBatchThemeChange(changeType) {
+    optFromBatchThemeChange() {
       const updateParams = { 'id': this.chart.id }
       const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
       const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
@@ -467,38 +478,34 @@ export default {
           : this.$refs[this.element.propValue.id].chartResize()
       }
     },
-    bindPluginEvent() {
-      bus.$on('plugin-chart-click', param => {
-        param.viewId && param.viewId === this.element.propValue.viewId && this.chartClick(param)
-      })
-      bus.$on('plugin-jump-click', param => {
-        param.viewId && param.viewId === this.element.propValue.viewId && this.jumpClick(param)
-      })
-      bus.$on('plugin-add-view-track-filter', param => {
-        param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
-      })
-      bus.$on('view-in-cache', param => {
-        param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
-      })
-      bus.$on('batch-opt-change', param => {
-        this.batchOptChange(param)
-      })
-      bus.$on('onSubjectChange', () => {
-        this.optFromBatchThemeChange('subject')
-      })
-      bus.$on('onThemeColorChange', () => {
-        this.optFromBatchThemeChange('themeColor')
-      })
-      bus.$on('onThemeAttrChange', (param) => {
-        this.optFromBatchSingleProp(param)
-      })
-      bus.$on('clear_panel_linkage', (param) => {
-        if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
-          this.$refs[this.element.propValue.id].reDrawView()
-        }
-      })
+    pluginChartClick(param) {
+      param.viewId && param.viewId === this.element.propValue.viewId && this.chartClick(param)
     },
-
+    pluginJumpClick(param) {
+      param.viewId && param.viewId === this.element.propValue.viewId && this.jumpClick(param)
+    },
+    pluginAddViewTrackFilter(param) {
+      param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
+    },
+    viewInCache(param) {
+      param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
+    },
+    clearPanelLinkage(param) {
+      if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
+        this.$refs[this.element.propValue.id].reDrawView()
+      }
+    },
+    bindPluginEvent() {
+      bus.$on('plugin-chart-click', this.pluginChartClick)
+      bus.$on('plugin-jump-click', this.pluginJumpClick)
+      bus.$on('plugin-add-view-track-filter', this.pluginAddViewTrackFilter)
+      bus.$on('view-in-cache', this.viewInCache)
+      bus.$on('batch-opt-change', this.batchOptChange)
+      bus.$on('onSubjectChange', this.optFromBatchThemeChange)
+      bus.$on('onThemeColorChange', this.optFromBatchThemeChange)
+      bus.$on('onThemeAttrChange', this.optFromBatchSingleProp)
+      bus.$on('clear_panel_linkage', this.clearPanelLinkage)
+    },
     addViewTrackFilter(linkageParam) {
       this.$store.commit('addViewTrackFilter', linkageParam)
     },

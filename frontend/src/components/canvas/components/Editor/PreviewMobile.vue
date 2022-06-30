@@ -178,6 +178,7 @@ export default {
     _this.canvasStyleDataInit()
   },
   beforeDestroy() {
+    eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
     clearInterval(this.timer)
   },
   methods: {

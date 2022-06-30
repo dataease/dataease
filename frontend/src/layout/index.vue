@@ -15,6 +15,7 @@
     <div v-if="showTips" class="pwd-tips">
       <span>{{ $t('commons.first_login_tips') }}</span>
       <div style="text-align: right; margin-bottom: 10px;">
+        <el-button size="mini" :disabled="buttonDisable" style="padding-right: 65px;" type="text" @click="doNotNoti">{{ $t('commons.donot_noti') }}</el-button>
         <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button>
       </div>
       <div class="arrow" />
@@ -31,7 +32,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import bus from '@/utils/bus'
 
-import { needModifyPwd } from '@/api/user'
+import { needModifyPwd, removePwdTips } from '@/api/user'
 
 export default {
   name: 'Layout',
@@ -49,7 +50,8 @@ export default {
     return {
       componentName: 'PanelMain',
       showTips: false,
-      finishLoad: false
+      finishLoad: false,
+      buttonDisable: false
     }
   },
   computed: {
@@ -97,13 +99,26 @@ export default {
     })
   },
   mounted() {
-    bus.$on('PanelSwitchComponent', (c) => {
-      this.componentName = c.name
-    })
+    bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
+  },
+  beforeDestroy() {
+    bus.$off('PanelSwitchComponent', this.panelSwitchComponent)
   },
   methods: {
+    panelSwitchComponent(c) {
+      this.componentName = c.name
+    },
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    doNotNoti() {
+      this.buttonDisable = true
+      removePwdTips().then(res => {
+        this.showTips = false
+        this.buttonDisable = false
+      }).catch(e => {
+        this.buttonDisable = false
+      })
     }
   }
 }

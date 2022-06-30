@@ -1,5 +1,5 @@
 import {
-  BASE_MOBILE_STYLE, COMMON_BACKGROUND, COMMON_BACKGROUND_NONE,
+  BASE_MOBILE_STYLE, COMMON_BACKGROUND_NONE,
   HYPERLINKS
 } from '@/components/canvas/custom-component/component-list'
 
@@ -174,7 +174,6 @@ export function checkViewTitle(opt, id, tile) {
       return false
     }
   } catch (e) {
-    console.log('checkViewTitle error', e)
     return false
   }
 }
@@ -204,4 +203,10 @@ export function dataURLToBlob(dataurl) { // ie 图片转格式
     u8arr[n] = bstr.charCodeAt(n)
   }
   return new Blob([u8arr], { type: mime })
+}
+
+export function colorReverse(OldColorValue) {
+  OldColorValue = '0x' + OldColorValue.replace(/#/g, '')
+  const str = '000000' + (0xFFFFFF - OldColorValue).toString(16)
+  return '#' + str.substring(str.length - 6, str.length)
 }

@@ -36,6 +36,13 @@ export function needModifyPwd() {
   })
 }
 
+export function removePwdTips() {
+  return request({
+    url: '/api/auth/removeNoti',
+    method: 'post'
+  })
+}
+
 export function defaultPwd() {
   return request({
     url: '/api/auth/defaultPwd',

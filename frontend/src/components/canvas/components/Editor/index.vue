@@ -1051,9 +1051,7 @@ export default {
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
-    eventBus.$on('hideArea', () => {
-      this.hideArea()
-    })
+    eventBus.$on('hideArea', this.hideArea)
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
@@ -1064,6 +1062,12 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
+  },
+  beforeDestroy() {
+    eventBus.$off('hideArea', this.hideArea)
+    eventBus.$off('startMoveIn', this.startMoveIn)
+    eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
+    bus.$off('onRemoveLastItem', this.removeLastItem)
   },
   created() {
   },

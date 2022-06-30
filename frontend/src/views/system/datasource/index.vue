@@ -23,9 +23,10 @@ export default {
     }
   },
   mounted() {
-    bus.$on('to-msg-ds', params => {
-      this.toMsgDs(params)
-    })
+    bus.$on('to-msg-ds', this.toMsgDs)
+  },
+  beforeDestroy() {
+    bus.$off('to-msg-ds', this.toMsgDs)
   },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)

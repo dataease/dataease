@@ -293,7 +293,8 @@ export default {
       myAttrs: null,
 
       childViews: {
-        viewInfos: []
+        viewInfos: [],
+        datasetParams: []
       },
       currentElement: null,
       allFields: [],
@@ -366,11 +367,11 @@ export default {
     this.ProhibitMultiple()
   },
   mounted() {
-    bus.$on('valid-values-change', valid => {
-      this.validateFilterValue(valid)
-    })
+    bus.$on('valid-values-change', this.validateFilterValue)
   },
-
+  beforeDestroy() {
+    bus.$off('valid-values-change', this.validateFilterValue)
+  },
   methods: {
 
     treeNode(cache) {
@@ -489,6 +490,12 @@ export default {
       if (data.modelInnerType !== 'group') {
         this.showFieldDatas(data)
       } else {
+        if (!data.children || !data.children.length) {
+          const name = data.name
+          const msg = `[${name}]` + this.$t('panel.be_empty_dir')
+          this.$warning(msg)
+          return
+        }
         this.showNextGroup(data)
       }
     },

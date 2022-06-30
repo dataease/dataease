@@ -40,10 +40,10 @@ export default {
     eventBus.$on('move', (isDownward, isRightward) => {
       this.showLine(isDownward, isRightward)
     })
-
-    eventBus.$on('unmove', () => {
-      this.hideLine()
-    })
+    eventBus.$on('unmove', this.hideLine)
+  },
+  beforeDestroy() {
+    eventBus.$off('unmove', this.hideLine)
   },
   methods: {
     hideLine() {

@@ -84,7 +84,14 @@ export default {
   },
   mounted() {
     this.initOption()
-    bus.$on('streamMediaLinksChange-' + this.element.id, () => {
+    bus.$on('streamMediaLinksChange-' + this.element.id, this.streamMediaLinksChange)
+  },
+  beforeDestroy() {
+    bus.$off('streamMediaLinksChange-' + this.element.id, this.streamMediaLinksChange)
+    this.destroyPlayer()
+  },
+  methods: {
+    streamMediaLinksChange() {
       this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
       this.flvPlayer = null
       this.videoShow = false
@@ -92,12 +99,7 @@ export default {
         this.videoShow = true
         this.initOption()
       })
-    })
-  },
-  beforeDestroy() {
-    this.destroyPlayer()
-  },
-  methods: {
+    },
     initOption() {
       if (flvjs.isSupported() && this.pOption.url) {
         this.destroyPlayer()
@@ -139,7 +141,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: beige;
+    background-color: rgba(245, 245, 220, 0.3);
     font-size: 12px;
     color: #000000;
   }

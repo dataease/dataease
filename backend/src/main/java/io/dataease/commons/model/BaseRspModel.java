@@ -3,9 +3,7 @@ package io.dataease.commons.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 public class BaseRspModel implements Serializable {

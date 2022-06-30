@@ -12,18 +12,13 @@ import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.DataSetColumnPermissionsDTO;
-import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
 import io.dataease.plugins.xpack.auth.dto.request.DatasetColumnPermissions;
-import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
 import io.dataease.plugins.xpack.auth.service.ColumnPermissionService;
-import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 @ApiIgnore

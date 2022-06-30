@@ -24,6 +24,7 @@
 <script>
 import { mappingFieldValues, linkMappingFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
+import { isSameVueObj } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import ElTreeSelect from '@/components/ElTreeSelect'
 import customInput from '@/components/widget/DeWidget/customInput'
@@ -170,7 +171,7 @@ export default {
       })
     },
     'element.options.attrs.sort': function(value, old) {
-      if (value === null || typeof value === 'undefined' || value === old) return
+      if (value === null || typeof value === 'undefined' || value === old || isSameVueObj(value, old)) return
       this.datas = []
 
       let method = mappingFieldValues
@@ -202,21 +203,19 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('onScroll', () => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
 
-    })
-    bus.$on('reset-default-value', id => {
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-
-  methods: {
+    },
     onFoucs() {
       this.$nextTick(() => {
         this.handleCoustomStyle()
@@ -224,7 +223,6 @@ export default {
     },
     change() {
       setTimeout(() => {
-        console.log(123, this.$refs.deSelectTree.$refs.select.$el)
         textSelectWidget(this.$refs.deSelectTree.$refs.select.$el, this.element.style)
       }, 50)
     },
@@ -349,11 +347,9 @@ export default {
     },
     // 树点击
     _nodeClickFun(data, node, vm) {
-      console.log('this _nodeClickFun', this.value, data, node)
     },
     // 树过滤
     _searchFun(value) {
-      console.log(value, '<--_searchFun')
       // 自行判断 是走后台查询，还是前端过滤
       this.$refs.deSelectTree.filterFun(value)
       // 后台查询
