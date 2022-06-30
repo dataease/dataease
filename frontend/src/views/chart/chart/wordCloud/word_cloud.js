@@ -24,7 +24,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
       fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : 'Verdana',
       fontSize: [8, 32],
       rotation: [0, 0],
-      padding: 6
+      padding: 2
     },
     random: () => 0.5,
     appendPadding: getPadding(chart),
