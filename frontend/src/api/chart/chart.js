@@ -87,7 +87,7 @@ export function getChartDetails(id, panelId, data) {
 }
 
 export function save2Cache(panelId, data) {
-  console.log('缓存了',panelId,data)
+  // console.log('缓存了',panelId,data)
   return request({
     url: '/chart/view/save2Cache/' + panelId,
     method: 'post',

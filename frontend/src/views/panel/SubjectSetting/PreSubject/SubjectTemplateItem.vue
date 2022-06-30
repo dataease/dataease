@@ -202,7 +202,6 @@ export default {
       this.$store.commit('setTemplateStatus',true)
       this.$store.commit('recordSnapshot', 'subjectChange')
       bus.$emit('onSubjectChange')
-      // bus.$emit('theme-in-cache', this.subjectItem.details)
     },
     templateEdit() {
       this.$emit('templateEdit', this.template)

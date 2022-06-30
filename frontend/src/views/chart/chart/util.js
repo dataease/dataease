@@ -341,6 +341,14 @@ export const TYPE_CONFIGS = [
     title: 'chart.heat_map',
     icon: 'diagram'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'graph',
+    title: 'chart.chart_graph',
+    icon: 'graph'
+  },
+  
   /* 下面是highcharts图表类型 */
   // highcharts
   {

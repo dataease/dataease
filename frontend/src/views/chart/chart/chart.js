@@ -1066,6 +1066,86 @@ export const BASE_MIX = {
   ]
 }
 
+export const BASE_GRAPH = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  animationDurationUpdate: function (idx) {
+    // 越往后的数据时长越大
+    return idx * 100;
+  },
+  animationEasingUpdate: "bounceIn",
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    show: false,
+    data: [],
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      type: "graph",
+      layout: "force",
+      force: {
+        repulsion: 500,
+        edgeLength: 10,
+      },
+      roam: true,
+      label: {
+        normal: {
+          show: true,
+          fontSize: 12
+        },
+      },
+      data: []
+    }
+  ],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
+}
+
 export const COLOR_PANEL = [
   '#ff4500',
   '#ff8c00',

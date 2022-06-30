@@ -38,7 +38,8 @@ import {
   BASE_MAP,
   BASE_SCATTER,
   BASE_TREEMAP,
-  BASE_MIX
+  BASE_MIX,
+  BASE_GRAPH
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -69,6 +70,9 @@ import {
 import {
   baseGaugeOption
 } from '../chart/gauge/gauge'
+import {
+  baseGraphOption
+} from '../chart/graph/graph'
 import {
   baseScatterOption
 } from '../chart/scatter/scatter'
@@ -227,6 +231,8 @@ export default {
         chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'chart-mix') {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'graph') {
+        chart_option = baseGraphOption(JSON.parse(JSON.stringify(BASE_GRAPH)), chart, this.$store.state.canvasStyleData)
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {

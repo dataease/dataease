@@ -1624,9 +1624,6 @@ export default {
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
-      // bus.$on('theme-in-cache', (params) => {
-      //   console.log('传过来了',params)
-      // })
     },
     initTableData(id) {
       if (id != null) {
@@ -1928,6 +1925,7 @@ export default {
       // view.data = this.data
       this.chart = view
       console.log('calcStyle,,,,', this.panelInfo, view)
+      // console.log('calcStyle,,,,',this.panelInfo,view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return

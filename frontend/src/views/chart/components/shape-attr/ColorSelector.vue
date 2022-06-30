@@ -235,6 +235,7 @@ export default {
     },
     init() {
       console.log('chart是否改变,color', this.chart)
+      // console.log('chart是否改变,color',this.chart)
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
         let customAttr = null
@@ -254,6 +255,7 @@ export default {
         }
       }
       console.log('this.colorForm,,,', this.colorForm)
+      // console.log('this.colorForm,,,',this.colorForm)
     },
 
     switchColor(index) {
