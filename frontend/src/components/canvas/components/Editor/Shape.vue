@@ -94,13 +94,17 @@ export default {
     }
     this.element.type === 'custom' && (this.pointList = ['l', 'r'])
 
-    eventBus.$on('runAnimation', () => {
+    eventBus.$on('runAnimation', this.runAnimation)
+  },
+  beforeDestroy() {
+    eventBus.$off('runAnimation', this.runAnimation)
+  },
+  methods: {
+    runAnimation() {
       if (this.element === this.curComponent) {
         runAnimation(this.$el, this.curComponent.animations)
       }
-    })
-  },
-  methods: {
+    },
     // 鼠标移入事件
     enter() {
       this.mouseOn = true

@@ -202,6 +202,11 @@ export default {
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
   },
+  beforeDestroy() {
+    eventBus.$off('preview', this.preview)
+    eventBus.$off('save', this.save)
+    eventBus.$off('clearCanvas', this.clearCanvas)
+  },
   methods: {
     close() {
       // 关闭页面清理缓存
@@ -733,5 +738,9 @@ export default {
 }
 .el-dropdown-menu__item{
   line-height: 32px;
+}
+
+::v-deep .el-radio-button__inner{
+padding:7px 7px
 }
 </style>

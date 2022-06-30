@@ -610,25 +610,7 @@ export default {
     this.init(this.$store.state.panel.panelInfo.id)
   },
   mounted() {
-    // this.insertToBody()
-    bus.$on('component-on-drag', () => {
-      this.show = false
-    })
-
-    bus.$on('component-dialog-edit', () => {
-      this.editDialog()
-    })
-    bus.$on('component-dialog-style', () => {
-      this.styleDialogVisible = true
-    })
-
-    bus.$on('previewFullScreenClose', () => {
-      this.previewVisible = false
-    })
-
-    bus.$on('change_panel_right_draw', (param) => {
-      this.changeRightDrawOpen(param)
-    })
+    this.initEvents()
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
@@ -640,10 +622,31 @@ export default {
     this.loadMultiplexingViewTree()
   },
   beforeDestroy() {
+    bus.$off('component-on-drag', this.componentOnDrag)
+    bus.$off('component-dialog-edit', this.editDialog)
+    bus.$off('component-dialog-style', this.componentDialogStyle)
+    bus.$off('previewFullScreenClose', this.previewFullScreenClose)
+    bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
   methods: {
+    componentOnDrag() {
+      this.show = false
+    },
+    componentDialogStyle() {
+      this.styleDialogVisible = true
+    },
+    previewFullScreenClose() {
+      this.previewVisible = false
+    },
+    initEvents() {
+      bus.$on('component-on-drag', this.componentOnDrag)
+      bus.$on('component-dialog-edit', this.editDialog)
+      bus.$on('component-dialog-style', this.componentDialogStyle)
+      bus.$on('previewFullScreenClose', this.previewFullScreenClose)
+      bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
+    },
     loadMultiplexingViewTree() {
       queryPanelMultiplexingViewTree().then(res => {
         this.viewData = res.data

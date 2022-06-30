@@ -67,14 +67,18 @@ export default {
   created() {
   },
   mounted() {
-    bus.$on('frameLinksChange-' + this.element.id, () => {
+    bus.$on('frameLinksChange-' + this.element.id, this.frameLinksChange)
+  },
+  beforeDestroy() {
+    bus.$off('frameLinksChange-' + this.element.id, this.frameLinksChange)
+  },
+  methods: {
+    frameLinksChange() {
       this.frameShow = false
       this.$nextTick(() => {
         this.frameShow = true
       })
-    })
-  },
-  methods: {
+    },
     loaded(e) {
     },
     onError(e) {

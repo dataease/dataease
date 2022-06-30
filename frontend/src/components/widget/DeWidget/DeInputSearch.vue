@@ -71,17 +71,18 @@ export default {
     }
   },
   mounted() {
-    bus.$on('reset-default-value', id => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.search()
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-  methods: {
+    },
     search() {
       if (!this.inDraw) {
         this.element.options.value = this.value

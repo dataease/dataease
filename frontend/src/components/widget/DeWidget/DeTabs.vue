@@ -283,6 +283,9 @@ export default {
     bus.$on('add-new-tab', this.addNewTab)
     this.activeTabName = this.element.options.tabList[0].name
   },
+  beforeDestroy() {
+    bus.$off('add-new-tab', this.addNewTab)
+  },
   methods: {
     beforeHandleCommond(item, param) {
       return {
@@ -337,13 +340,12 @@ export default {
         return
       }
       this.$warning(this.$t('detabs.please') + this.$t('detabs.selectOthers'))
-      
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
       if (!nodes || nodes.length === 0) {
         this.$warning(this.$t('detabs.please') + this.$t('detabs.selectview'))
-        
+
         return
       }
       const node = nodes[0]

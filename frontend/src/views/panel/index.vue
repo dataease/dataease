@@ -45,14 +45,12 @@ export default {
     // }
   },
   mounted() {
-    bus.$on('to-msg-share', params => {
-      this.toMsgShare(params)
-    })
-    bus.$on('PanelSwitchComponent', (c) => {
-      this.param = c.param
-      this.componentName = c.name
-      this.$store.dispatch('panel/setMainActiveName', c.name)
-    })
+    bus.$on('to-msg-share', this.toMsgShare)
+    bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
+  },
+  beforeDestroy() {
+    bus.$off('to-msg-share', this.toMsgShare)
+    bus.$off('PanelSwitchComponent', this.panelSwitchComponent)
   },
   created() {
     bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
@@ -61,6 +59,11 @@ export default {
     this.toMsgShare(routerParam)
   },
   methods: {
+    panelSwitchComponent(c) {
+      this.param = c.param
+      this.componentName = c.name
+      this.$store.dispatch('panel/setMainActiveName', c.name)
+    },
     toMsgShare(routerParam) {
       if (routerParam !== null && routerParam.msgNotification) {
         const panelShareTypeIds = [1, 2, 3]
