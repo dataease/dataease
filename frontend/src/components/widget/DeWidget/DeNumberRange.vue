@@ -104,7 +104,13 @@ export default {
     }
   },
   mounted() {
-    bus.$on('reset-default-value', id => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         const values = this.element.options.value
         this.form.min = values[0]
@@ -113,12 +119,7 @@ export default {
         }
         this.search()
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-  methods: {
+    },
     searchWithKey(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {

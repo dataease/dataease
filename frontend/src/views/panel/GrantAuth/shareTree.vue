@@ -100,12 +100,7 @@ export default {
     }
   },
   created() {
-    bus.$on('refresh-my-share-out', () => {
-      this.initOutData().then(res => {
-        this.outDatas = res.data
-        this.setMainNull()
-      })
-    })
+    bus.$on('refresh-my-share-out', this.refreshMyShareOut)
     this.initData().then(res => {
       this.datas = res.data
       if (this.msgPanelIds && this.msgPanelIds.length > 0) {
@@ -116,8 +111,16 @@ export default {
       this.outDatas = res.data
     })
   },
-
+  beforeDestroy() {
+    bus.$off('refresh-my-share-out', this.refreshMyShareOut)
+  },
   methods: {
+    refreshMyShareOut() {
+      this.initOutData().then(res => {
+        this.outDatas = res.data
+        this.setMainNull()
+      })
+    },
     initData() {
       const param = {}
       return loadTree(param)

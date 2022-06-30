@@ -197,13 +197,18 @@ export default {
     bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
-    bus.$on('sys-logout', param => {
-      this.logout(param)
-    })
+    bus.$on('sys-logout', this.logout)
     this.showTips && this.$nextTick(() => {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
     })
+  },
+  beforeDestroy() {
+    bus.$off('set-top-menu-info', this.setTopMenuInfo)
+    bus.$off('set-top-menu-active-info', this.setTopMenuActiveInfo)
+    bus.$off('set-top-text-info', this.setTopTextInfo)
+    bus.$off('set-top-text-active-info', this.setTopTextActiveInfo)
+    bus.$off('sys-logout', this.logout)
   },
   created() {
     this.loadUiInfo()

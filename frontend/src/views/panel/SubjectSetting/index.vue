@@ -75,20 +75,24 @@ export default {
   watch: {},
 
   mounted() {
-    bus.$on('onSubjectChange', () => {
-      this.collapseShow = false
-      this.$nextTick(() => {
-        this.init()
-        this.dataMerge()
-        this.collapseShow = true
-      })
-    })
+    bus.$on('onSubjectChange', this.onSubjectChange)
+  },
+  beforeDestroy() {
+    bus.$off('onSubjectChange', this.onSubjectChange)
   },
   created() {
     this.init()
   },
 
   methods: {
+    onSubjectChange() {
+      this.collapseShow = false
+      this.$nextTick(() => {
+        this.init()
+        this.dataMerge()
+        this.collapseShow = true
+      })
+    },
     sliderReload() {
       this.sliderShow = false
       this.$nextTick(() => {
@@ -189,6 +193,5 @@ export default {
   color: var(--TextPrimary, #1F2329);
   padding: 0!important;
 }
-
 
 </style>

@@ -1334,6 +1334,16 @@ export default {
   },
   mounted() {
   },
+  beforeDestroy() {
+    bus.$off('show-dimension-edit-filter', this.showDimensionEditFilter)
+    bus.$off('show-rename', this.showRename)
+    bus.$off('show-quota-edit-filter', this.showQuotaEditFilter)
+    bus.$off('show-quota-edit-compare', this.showQuotaEditCompare)
+    bus.$off('show-edit-filter', this.showEditFilter)
+    bus.$off('calc-data', this.calcData)
+    bus.$off('plugins-calc-style', this.calcStyle)
+    bus.$off('plugin-chart-click', this.chartClick)
+  },
   activated() {
   },
 

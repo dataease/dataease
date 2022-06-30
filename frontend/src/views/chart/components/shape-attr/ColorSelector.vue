@@ -251,9 +251,10 @@ export default {
   },
   mounted() {
     this.init()
-    bus.$on('prop-change-data', () => {
-      this.initCustomColor()
-    })
+    bus.$on('prop-change-data', this.initCustomColor)
+  },
+  beforeDestroy() {
+    bus.$off('prop-change-data', this.initCustomColor)
   },
   methods: {
     changeColorOption(modifyName = 'value') {

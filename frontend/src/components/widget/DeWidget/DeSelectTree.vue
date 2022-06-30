@@ -202,21 +202,19 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('onScroll', () => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
 
-    })
-    bus.$on('reset-default-value', id => {
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-
-  methods: {
+    },
     onFoucs() {
       this.$nextTick(() => {
         this.handleCoustomStyle()

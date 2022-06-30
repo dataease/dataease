@@ -97,11 +97,15 @@ export default {
     })
   },
   mounted() {
-    bus.$on('PanelSwitchComponent', (c) => {
-      this.componentName = c.name
-    })
+    bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
+  },
+  beforeDestroy() {
+    bus.$off('PanelSwitchComponent', this.panelSwitchComponent)
   },
   methods: {
+    panelSwitchComponent(c) {
+      this.componentName = c.name
+    },
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
     }

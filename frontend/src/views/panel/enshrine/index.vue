@@ -50,6 +50,9 @@ export default {
     bus.$on('panle_start_list_refresh', this.refreshStarts)
     this.initData()
   },
+  beforeDestroy() {
+    bus.$off('panle_start_list_refresh', this.refreshStarts)
+  },
   methods: {
     showPanel(row) {
       initPanelData(row.panelGroupId, function() {

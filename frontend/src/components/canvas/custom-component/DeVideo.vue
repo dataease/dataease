@@ -90,15 +90,19 @@ export default {
     this.initOption()
   },
   mounted() {
-    bus.$on('videoLinksChange-' + this.element.id, () => {
+    bus.$on('videoLinksChange-' + this.element.id, this.videoLinksChange)
+  },
+  beforeDestroy() {
+    bus.$off('videoLinksChange-' + this.element.id, this.videoLinksChange)
+  },
+  methods: {
+    videoLinksChange() {
       this.showVideo = false
       this.$nextTick(() => {
         this.showVideo = true
         this.initOption()
       })
-    })
-  },
-  methods: {
+    },
     initOption() {
       this.pOption = this.element.videoLinks[this.element.videoLinks.videoType]
       this.pOption.height = this.h - (this.curGap * 2)

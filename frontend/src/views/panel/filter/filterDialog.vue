@@ -366,11 +366,11 @@ export default {
     this.ProhibitMultiple()
   },
   mounted() {
-    bus.$on('valid-values-change', valid => {
-      this.validateFilterValue(valid)
-    })
+    bus.$on('valid-values-change', this.validateFilterValue)
   },
-
+  beforeDestroy() {
+    bus.$off('valid-values-change', this.validateFilterValue)
+  },
   methods: {
 
     treeNode(cache) {
