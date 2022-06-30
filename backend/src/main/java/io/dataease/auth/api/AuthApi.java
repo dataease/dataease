@@ -30,6 +30,10 @@ public interface AuthApi {
     @PostMapping("/useInitPwd")
     Boolean useInitPwd();
 
+    @ApiOperation("不再提示修改密码")
+    @PostMapping("/removeNoti")
+    void removeNoti();
+
     @ApiOperation("用户初始密码")
     @PostMapping("/defaultPwd")
     String defaultPwd();
