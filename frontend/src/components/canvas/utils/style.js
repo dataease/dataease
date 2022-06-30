@@ -366,7 +366,6 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
       item.style[styleKey] = filterStyle[styleKey]
     }
   })
-  console.log('componentData=' + JSON.stringify(componentData))
 }
 
 export function isFilterComponent(component) {

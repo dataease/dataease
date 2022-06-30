@@ -86,7 +86,6 @@ export default {
           updatePersonPwd(param).then(res => {
             this.$success(this.$t('commons.save_success'))
             this.logout()
-            // this.$router.push('/panel/index')
           })
         } else {
           return false

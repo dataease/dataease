@@ -238,11 +238,7 @@ const data = {
       })
     },
     addViewFilter(state, data) {
-      console.log('data ')
-      console.log(data)
       const condition = formatCondition(data)
-      console.log('condition ')
-      console.log(condition)
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
       const filterComponentId = condition.componentId
@@ -252,8 +248,6 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
-        console.log('element: ')
-        console.log(element)
         if (element.type && element.type === 'de-tabs') {
           for (let idx = 0; idx < element.options.tabList.length; idx++) {
             const ele = element.options.tabList[idx].content
@@ -278,8 +272,6 @@ const data = {
         if (!element.type || element.type !== 'view') continue
         const currentFilters = element.filters || []
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
-        console.log(vidMatch)
-
         let j = currentFilters.length
         while (j--) {
           const filter = currentFilters[j]

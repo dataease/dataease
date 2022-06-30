@@ -174,7 +174,6 @@ export function checkViewTitle(opt, id, tile) {
       return false
     }
   } catch (e) {
-    console.log('checkViewTitle error', e)
     return false
   }
 }
