@@ -14,6 +14,7 @@ export const DEFAULT_COLOR_CASE = {
 }
 export const DEFAULT_SIZE = {
   automatic: false,
+  tableRollingRate: 30,
   automaticTime: 2000,
   tableHeightLight: 0,
   barDefault: true,
@@ -1077,11 +1078,11 @@ export const BASE_GRAPH = {
     containLabel: true
   },
   tooltip: {},
-  animationDurationUpdate: function (idx) {
+  animationDurationUpdate: function(idx) {
     // 越往后的数据时长越大
-    return idx * 100;
+    return idx * 100
   },
-  animationEasingUpdate: "bounceIn",
+  animationEasingUpdate: 'bounceIn',
   legend: {
     show: true,
     type: 'scroll',
@@ -1092,25 +1093,25 @@ export const BASE_GRAPH = {
   },
   xAxis: {
     show: false,
-    data: [],
+    data: []
   },
   yAxis: {
     type: 'value'
   },
   series: [
     {
-      type: "graph",
-      layout: "force",
+      type: 'graph',
+      layout: 'force',
       force: {
         repulsion: 500,
-        edgeLength: 10,
+        edgeLength: 10
       },
       roam: true,
       label: {
         normal: {
           show: true,
           fontSize: 12
-        },
+        }
       },
       data: []
     }
