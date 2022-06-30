@@ -141,7 +141,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: beige;
+    background-color: rgba(245, 245, 220, 0.3);
     font-size: 12px;
     color: #000000;
   }

@@ -139,7 +139,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #FFFFFF;
+    background-color: rgba(255,255,255,0.3);
     font-size: 12px;
     color: #9ea6b2;
   }
