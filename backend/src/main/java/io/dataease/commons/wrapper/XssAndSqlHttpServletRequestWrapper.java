@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.ServletUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StreamUtils;

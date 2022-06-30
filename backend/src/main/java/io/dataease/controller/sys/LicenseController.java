@@ -1,8 +1,5 @@
 package io.dataease.controller.sys;
 
-
-
-import com.google.gson.Gson;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.controller.ResultHolder;
@@ -12,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.annotation.Resource;
 
 @ApiIgnore

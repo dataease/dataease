@@ -9,7 +9,6 @@ import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.plugins.common.base.domain.ChartGroup;
 import io.dataease.plugins.common.base.domain.ChartGroupExample;
 import io.dataease.plugins.common.base.mapper.ChartGroupMapper;
-import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
