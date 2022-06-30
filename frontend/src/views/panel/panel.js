@@ -24,7 +24,8 @@ export const CANVAS_STYLE = {
   panel: DEFAULT_PANEL_STYLE,
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
-  refreshTime: 5 // 仪表板刷新时间 默认5分钟
+  refreshTime: 5, // 仪表板刷新时间 默认5分钟
+  fontFamily: '' // 字体样式
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {

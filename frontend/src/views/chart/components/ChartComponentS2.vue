@@ -14,7 +14,7 @@
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
           {{ $t('chart.items') }}
         </span> -->
-        <el-pagination
+        <!-- <el-pagination
           small
           :current-page="currentPage.page"
           :page-sizes="[10,20,50,100]"
@@ -25,7 +25,7 @@
           class="page-style"
           @current-change="pageClick"
           @size-change="pageChange"
-        />
+        /> -->
       </el-row>
     </div>
   </div>
