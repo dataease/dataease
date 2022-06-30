@@ -1762,7 +1762,8 @@ export default {
     setting_jump: '跳轉設置',
     select_view: '請選擇視圖...',
     visual: '虛擬化',
-    prohibit_multiple: '禁止同數據集多字段'
+    prohibit_multiple: '禁止同數據集多字段',
+    be_empty_dir: '是空目錄'
   },
   plugin: {
     local_install: '本地安裝',
