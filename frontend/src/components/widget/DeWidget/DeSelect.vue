@@ -172,11 +172,16 @@ export default {
 
   },
   created() {
+    if (this.element && this.element.options && this.element.options.attrs) {
+      this.element.options.attrs.visual = true
+    }
+
     if (!this.element.options.attrs.sort) {
       this.element.options.attrs.sort = {}
     }
     this.initLoad()
   },
+
   mounted() {
     bus.$on('onScroll', this.onScroll)
     bus.$on('reset-default-value', this.resetDefaultValue)
