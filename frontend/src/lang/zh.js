@@ -1771,7 +1771,8 @@ export default {
     setting_jump: '跳转设置',
     select_view: '请选择视图...',
     visual: '虚拟化',
-    prohibit_multiple: '禁止同数据集多字段'
+    prohibit_multiple: '禁止同数据集多字段',
+    be_empty_dir: '是空目录！'
   },
   plugin: {
     local_install: '本地安装',

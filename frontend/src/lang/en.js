@@ -1757,7 +1757,8 @@ export default {
     choose_background: 'Choose Component Background',
     choose_background_tips: 'The component`s own background settings will overwrite the current settings',
     visual: 'Visual',
-    prohibit_multiple: 'Prohibit multiple fields in the same dataset'
+    prohibit_multiple: 'Prohibit multiple fields in the same dataset',
+    be_empty_dir: 'is empty dir'
   },
   plugin: {
     local_install: 'Local installation',
