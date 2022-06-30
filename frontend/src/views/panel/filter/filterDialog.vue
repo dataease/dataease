@@ -489,6 +489,12 @@ export default {
       if (data.modelInnerType !== 'group') {
         this.showFieldDatas(data)
       } else {
+        if (!data.children || !data.children.length) {
+          const name = data.name
+          const msg = `[${name}]` + this.$t('panel.be_empty_dir')
+          this.$warning(msg)
+          return
+        }
         this.showNextGroup(data)
       }
     },
