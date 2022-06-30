@@ -171,8 +171,9 @@ export default {
       },
       setStyle: {
         opacity: 1,
-        backgroundColor: '#fff'
-
+        backgroundColor: '#fff',
+        top: '40px',
+        height: '40px'
       },
       bodyHeight: 30,
       rollingRate: 30
@@ -192,7 +193,7 @@ export default {
         hoverStop: true,
         // 滚动组数
         limitMoveNum: 5,
-        // singleHeight: this.bodyHeight, // 单行停顿
+        singleHeight: this.bodyHeight, // 单行停顿
         // 监听刷新
         openWatch: true
       }
@@ -352,6 +353,8 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.setStyle.opacity = customAttr.size.tableHeightLight / 100
+          this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
+          this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
           // this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
           console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)

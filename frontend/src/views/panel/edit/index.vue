@@ -1388,12 +1388,19 @@ export default {
       // })
     },
     addMorePirTure(file) {
+      console.log('this.canvasStyleData', this.canvasStyleData)
       const _this = this
       const reader = new FileReader()
       reader.onload = (res) => {
         const fileResult = res.target.result
         const img = new Image()
         img.onload = () => {
+          let imgWidth = img.width
+          let imgHeight = img.height
+          if (img.width >= this.canvasStyleData.width) {
+            imgWidth = this.canvasStyleData.width
+            imgHeight = (img.width / this.canvasStyleData.width) * img.height
+          }
           const component = {
             ...commonAttr,
             id: generateID(),
@@ -1411,18 +1418,18 @@ export default {
               alpha: 100,
               backgroundType: 'color',
               borderRadius: 0,
-              boxHeight: img.width,
-              boxWidth: img.height,
+              boxHeight: imgWidth,
+              boxWidth: imgHeight,
               color: '#FFFFFF',
               enable: false
             }
           }
-          console.log('图片的样式', img.width, img.height)
+          console.log('图片的样式', img.width, img.height, imgWidth, imgHeight)
           component.auxiliaryMatrix = false
           component.style.top = _this.dropComponentInfo.shadowStyle.y
           component.style.left = _this.dropComponentInfo.shadowStyle.x
-          component.style.width = img.width
-          component.style.height = img.height
+          component.style.width = imgWidth
+          component.style.height = imgHeight
           this.$store.commit('addComponent', {
             component: component
           })
