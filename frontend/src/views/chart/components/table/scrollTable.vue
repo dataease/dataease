@@ -2,7 +2,54 @@
   <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <el-row style="height: 100%;">
       <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
-      <ux-grid
+      <!-- <el-table class="hidden-tbody" style="width: 100%;margina-top: 15px;">
+        <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
+      </el-table> -->
+      <div class="table_new_header" :style="table_header_class">
+        <div v-for="(item,index) in fields" :key="index" class="header_title">{{ item.name }}</div>
+      </div>
+      <div class="content" style="height:70%;overflow: hidden;">
+        <div class="purchaseActive" :style="setStyle" />
+        <vue-seamless-scroll
+          :class-option="classOption"
+          :data="dataInfo"
+          :style="table_item_class"
+          class="infinite-list"
+        >
+          <!-- <div class="table_body_class">
+            <div v-for="(item,index) in dataInfo" :key="index" class="header_title">
+              <div v-for="(items,index) in dataInfo"></div>
+            </div>
+          </div> -->
+          <!-- <el-table :data="dataInfo" class="custom-table-2 hidden-thead">
+            <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name">
+              <template slot-scope="scope">
+                {{ scope.row[item.datainsName] }}
+              </template>
+            </el-table-column>
+          </el-table> -->
+          <ul class="item bgHeightLight">
+            <li v-for="(items,inde) in dataInfo" :key="inde" class="table_bode_li" :style="newHeight">
+              <div v-for="(item,index) in fields" :key="index" class="body_info">
+                {{ items[item.datainsName] }}
+              </div>
+            </li>
+          </ul>
+
+          <!--包ul和li-->
+          <!-- <ul class="item-box">
+            <li
+              v-for="item in fields"
+              :key="item"
+              class="item"
+            >
+              相关内容
+            </li>
+          </ul> -->
+        </vue-seamless-scroll>
+      </div>
+
+      <!-- <ux-grid
         ref="plxTable"
         size="mini"
         style="width: 100%;"
@@ -23,19 +70,10 @@
           :resizable="true"
           sortable
           :title="field.name"
-        >
-          <!--        <template slot="header">-->
-          <!--          <span>{{ field.name }}</span>-->
-          <!--        </template>-->
-        </ux-table-column>
-      </ux-grid>
+        />
+      </ux-grid> -->
 
-      <el-row v-show="chart.type === 'table-info'" class="table-page">
-        <!-- <span class="total-style">
-          {{ $t('chart.total') }}
-          <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
-          {{ $t('chart.items') }}
-        </span> -->
+      <!-- <el-row v-show="chart.type === 'table-info'" class="table-page">
         <el-pagination
           small
           :current-page="currentPage.page"
@@ -48,18 +86,26 @@
           @current-change="pageClick"
           @size-change="pageChange"
         />
-      </el-row>
+      </el-row> -->
     </el-row>
   </div>
 </template>
 
 <script>
 import { hexColorToRGBA } from '../../chart/util'
+import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'TableNormal',
+  components: {
+    vueSeamlessScroll
+  },
   props: {
+    element: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true
@@ -80,6 +126,8 @@ export default {
   data() {
     return {
       fields: [],
+      info: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      dataInfo: [],
       height: 'auto',
       title_class: {
         margin: '0 0',
@@ -98,13 +146,15 @@ export default {
         fontSize: '12px',
         color: '#606266',
         background: '#e8eaec',
-        height: '36px'
+        height: '36px',
+        textAlign: 'left'
       },
       table_item_class: {
         fontSize: '12px',
         color: '#606266',
         background: '#ffffff',
-        height: '36px'
+        // height: '36px',a
+        textAlign: 'left'
       },
       table_item_class_stripe: {
         fontSize: '12px',
@@ -118,10 +168,34 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
-      }
+      },
+      setStyle: {
+        opacity: 1,
+        backgroundColor: '#fff'
+
+      },
+      bodyHeight: 30
     }
   },
   computed: {
+    newHeight() {
+      const style = {}
+      style.height = this.bodyHeight + 'px'
+      return style
+    },
+    classOption() {
+      return {
+        // 滚动速度
+        step: 0.3,
+        // 鼠标悬停停止滚动
+        hoverStop: true,
+        // 滚动组数
+        limitMoveNum: 5,
+        // singleHeight: this.bodyHeight, // 单行停顿
+        // 监听刷新
+        openWatch: true
+      }
+    },
     bg_class() {
       return {
         background: hexColorToRGBA('#ffffff', 0),
@@ -131,18 +205,52 @@ export default {
   },
   watch: {
     chart: function() {
-      this.resetPage()
-      this.init()
+      console.log('this.chart.data----------！！！！！！', this.chart.data)
+      console.log('this.chart.data----------2222', this.chart)
+      this.prossData()
+      // this.resetPage()
+      // this.init()
     }
   },
   mounted() {
-    this.init()
+    console.log('this.fields', this.fields)
+    console.log('获取边框数据', this.element)
+    console.log('this.chart---', this.chart.data)
+    this.prossData()
+    // this.init()
     // 监听元素变动事件
-    eventBus.$on('resizing', (componentId) => {
-      this.chartResize()
-    })
+    // eventBus.$on('resizing', (componentId) => {
+    //   this.chartResize()
+    // })
   },
   methods: {
+    prossData() {
+      this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
+      this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      this.initStyle()
+      // this.$nextTick(() => {
+
+      // })
+    },
+    scroll() {
+      const self = this
+      const parentNode = document.getElementsByClassName('infinite-list')[0]
+        .parentNode.parentNode
+      const translates = parentNode.style.transform
+      const result = translates.match(/\(([^)]*)\)/) // 正则()内容
+      const matrix = result ? result[1].split(',') : translates.split(',')
+      const y = parseFloat(matrix[1]) // 拿到transyform的y的值
+      const height = Math.floor(Math.abs(y) / 36) + 1
+      const child = document.getElementsByClassName('infinite-list')[1]
+        .childNodes
+      if (height >= self.data.length) {
+        child[0].classList.add('item-active')
+        self.clickSelectedUnit(0)
+      } else {
+        child[0].classList.remove('item-active')
+        self.clickSelectedUnit(height)
+      }
+    },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
@@ -186,7 +294,7 @@ export default {
         datas = []
         this.resetPage()
       }
-      this.$refs.plxTable.reloadData(datas)
+      // this.$refs.plxTable.reloadData(datas)
       this.$nextTick(() => {
         this.initStyle()
       })
@@ -229,17 +337,24 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
+        console.log('是否触发此处修改------------', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
-          this.table_item_class.color = customAttr.color.tableFontColor
+          this.table_item_class.color = customAttr.color.tableInfoFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          this.setStyle.backgroundColor = customAttr.color.tableHeightColor
         }
         if (customAttr.size) {
+          this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
-          this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
+          this.setStyle.opacity = customAttr.size.tableHeightLight / 100
+          // this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
+          console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
+          this.bodyHeight = customAttr.size.tableItemHeight
+          this.table_item_class.textAlign = customAttr.size.tableItemAlign
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 暂不支持斑马纹
@@ -356,7 +471,123 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.table_new_header{
+  display:flex;
+  align-items:center;
+  .header_title{
+    flex:1
+  }
+}
+.content{
+  position:relative;
+}
+.purchaseActive{
+  position:absolute;
+  top:40%;
+  width:100%;
+  height:30px;
+  background-color:rgba(153,153,153);
+
+  // z-index:10;
+    // rgba(153,153,153,0.9) 0%,
+    // rgba(153,153,153,0.8) 5%,
+    // rgba(153,153,153,0.7) 10%,
+    // rgba(153,153,153,0.6) 15%,
+    // rgba(153,153,153,0.5) 20%,
+    // rgba(153,153,153,0.4) 25%,
+    // rgba(153,153,153,0.3) 30%,
+    // rgba(153,153,153,0.2) 35%,
+    // rgba(153,153,153,0.1) 40%,
+    // rgba(153,153,153,0)  45%,
+    // rgba(153,153,153,0) 50%,
+    // rgba(153,153,153,0) 55%,
+    // rgba(153,153,153,0.1) 60%,
+    // rgba(153,153,153,0.2) 65%,
+    // rgba(153,153,153,0.3) 70%,
+    // rgba(153,153,153,0.4) 75%,
+    // rgba(153,153,153,0.5) 80%,
+    // rgba(153,153,153,0.6)  85%,
+    // rgba(153,153,153,0.7)  90%,
+    // rgba(153,153,153,0.8)  95%,
+    // rgba(153,153,153,0.9) 100%,
+  // background-image: linear-gradient(
+  //   to bottom,
+  //   rgba(153,153,153,0) 0%,
+  //   rgba(153,153,153,0) 5%,
+  //   rgba(153,153,153,0) 10%,
+  //   rgba(153,153,153,0) 15%,
+  //   rgba(153,153,153,0) 20%,
+  //   rgba(153,153,153,0) 25%,
+  //   rgba(153,153,153,0) 30%,
+  //   rgba(153,153,153,0) 35%,
+  //   rgba(153,153,153,0) 40%,
+  //   rgba(153,153,153,1) 45%,
+  //   rgba(153,153,153,1) 50%,
+  //   rgba(153,153,153,1) 55%,
+  //   rgba(153,153,153,0) 60%,
+  //   rgba(153,153,153,0) 65%,
+  //   rgba(153,153,153,0) 70%,
+  //   rgba(153,153,153,0) 75%,
+  //   rgba(153,153,153,0) 80%,
+  //   rgba(153,153,153,0)  85%,
+  //   rgba(153,153,153,0)  90%,
+  //   rgba(153,153,153,0)  95%,
+  //   rgba(153,153,153,0) 100%,
+  // );
+}
+.table_body_class{
+  // display:flex;
+}
+.bgHeightLight{
+    // background-image: linear-gradient(rgb(6 26 85), rgba(6, 26, 85, 0), rgb(6 26 85));
+}
+.table_bode_li{
+  display:flex;
+  align-items:center;
+}
+.body_info{
+  flex:1;
+  white-space: nowrap;
+	overflow: hidden;
+  text-overflow: ellipsis;
+
+  // .child{
+
+	// }
+}
+ .hidden-tbody.el-table {
+    height: 34px;
+    box-sizing: border-box;
+    tbody { //隐藏上面表格的tbody
+      display: none;
+      overflow: hidden;
+    }
+  }
+.hidden-thead.el-table {
+    border-top: none; //防止边框重叠
+    thead { //隐藏下面表格的thead
+      display: none;
+      overflow: hidden;
+    }
+  }
+  .hidden-thead .el-table__header-wrapper{
+    display:none
+  }
+  //   .hidden-thead.el-table {
+  //   border-top: none; //防止边框重叠
+  //   thead { //隐藏下面表格的thead
+  //     display: none;
+  //     overflow: hidden;
+  //   }
+  // }
+  .mytable_header .el-table__empty-block{
+    display: none;
+  }
+  .mytable_header_no .has-gutter{
+    display: none;
+  }
+
   .table-class>>>.body--wrapper{
     background: rgba(1,1,1,0);
   }

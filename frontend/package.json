@@ -69,6 +69,7 @@
     "vue-proportion-directive": "^1.1.0",
     "vue-router": "3.0.6",
     "vue-ruler-tool": "^1.2.4",
+    "vue-seamless-scroll": "^1.1.23",
     "vue-sketch-ruler": "^1.0.3",
     "vue-to-pdf": "^1.0.0",
     "vue-uuid": "2.0.2",

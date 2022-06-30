@@ -6,6 +6,7 @@ export const DEFAULT_COLOR_CASE = {
   tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
   tableInfoFontColor: '#000000',
+  tableHeightColor: '#fff',
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
@@ -14,6 +15,7 @@ export const DEFAULT_COLOR_CASE = {
 export const DEFAULT_SIZE = {
   automatic: false,
   automaticTime: 2000,
+  tableHeightLight: 0,
   barDefault: true,
   barWidth: 40,
   barGap: 0.4,
@@ -1033,6 +1035,86 @@ export const BASE_MIX = {
     }
   ],
   series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
+}
+
+export const BASE_GRAPH = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  animationDurationUpdate: function (idx) {
+    // 越往后的数据时长越大
+    return idx * 100;
+  },
+  animationEasingUpdate: "bounceIn",
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    show: false,
+    data: [],
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      type: "graph",
+      layout: "force",
+      force: {
+        repulsion: 500,
+        edgeLength: 10,
+      },
+      roam: true,
+      label: {
+        normal: {
+          show: true,
+          fontSize: 12
+        },
+      },
+      data: []
+    }
+  ],
   dataZoom: [
     {
       type: 'slider',
