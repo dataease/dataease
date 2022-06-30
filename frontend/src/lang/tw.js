@@ -1123,7 +1123,8 @@ export default {
     max_more_than_mix: '最大值必須大於最小值'
   },
   dataset: {
-    sql_variable_limit: 'SQL 變數只能在 WHERE 條件中使用',
+    sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name=‘${parm_name}',
     select_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',
