@@ -158,7 +158,16 @@ public class AuthServer implements AuthApi {
             return false;
         }
         String md5 = CodingUtil.md5(DEFAULT_PWD);
-        return StringUtils.equals(AuthUtils.getUser().getPassword(), md5);
+        boolean isInitPwd = StringUtils.equals(AuthUtils.getUser().getPassword(), md5);
+        if (isInitPwd) {
+            return sysUserService.needPwdNoti(user.getUserId());
+        }
+        return false;
+    }
+
+    @Override
+    public void removeNoti() {
+        sysUserService.saveUserAssist(false);
     }
 
     @Override

@@ -58,3 +58,10 @@ INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, 
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('be90dc66-f5c7-11ec-bbef-0242ac130004', 'be9028cb-f5c7-11ec-bbef-0242ac130004', 'i18n_auth_grant', 15, 1, 'grant', '基础权限-授权', 'auto', 1656299878000, NULL, NULL, NULL);
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('be90ddbc-f5c7-11ec-bbef-0242ac130004', 'be9028cb-f5c7-11ec-bbef-0242ac130004', 'i18n_auth_manage', 3, 1, 'manage', '基础权限-管理', 'auto', 1656299878000, NULL, NULL, NULL);
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('be911f44-f5c7-11ec-bbef-0242ac130004', 'be9028cb-f5c7-11ec-bbef-0242ac130004', 'i18n_auth_use', 1, 1, 'use', '基础权限-使用', 'auto', 1656299878000, NULL, NULL, NULL);
+
+DROP TABLE IF EXISTS `sys_user_assist`;
+CREATE TABLE `sys_user_assist` (
+   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+   `need_first_noti` bit(1) DEFAULT NULL COMMENT '是否需要首登提示',
+   PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
