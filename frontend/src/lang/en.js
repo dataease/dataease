@@ -138,6 +138,7 @@ export default {
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
+    donot_noti: 'Do not tips',
     apply: 'Apply',
     search: 'Search',
     folder: 'Folder',
