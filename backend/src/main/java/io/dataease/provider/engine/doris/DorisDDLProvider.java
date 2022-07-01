@@ -66,7 +66,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     break;
                 case 1:
                     size  = size < 50? 50 : size;
-                    Column_Fields.append("varchar(length)".replace("length", String.valueOf(size))).append(",`");
+                    Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
                     break;
                 case 2:
                     Column_Fields.append("bigint").append(",`");
@@ -78,7 +78,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(size))).append(",`");
                     break;
                 default:
-                    Column_Fields.append("varchar(length)".replace("length", String.valueOf(size))).append(",`");
+                    Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
                     break;
             }
         }
