@@ -1,5 +1,6 @@
 <template>
-  <div v-if="editStatus" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
+  <div v-if="editStatus" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup"
+    :style="textStyle">
     <!-- tabindex >= 0 使得双击时聚集该元素 -->
     <div
       v-if="canEdit"
@@ -26,7 +27,7 @@
       v-html="element.propValue"
     />
   </div>
-  <div v-else class="v-text" style="cursor: default">
+  <div v-else class="v-text" style="cursor: default" :style="textStyle">
     <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
   </div>
 </template>
@@ -70,6 +71,7 @@ export default {
       return this.editMode === 'edit' && !this.mobileLayoutStatus
     },
     textInfo() {
+      console.log('text.........',this.element,this.canvasStyleData)
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
         return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
       } else {
@@ -77,8 +79,14 @@ export default {
       }
     },
     ...mapState([
-      'mobileLayoutStatus'
-    ])
+      'mobileLayoutStatus',
+      'canvasStyleData'
+    ]),
+    textStyle() {
+      const style = {}
+      style.fontFamily = this.canvasStyleData.fontFamily
+      return style
+    }
   },
 
   watch: {

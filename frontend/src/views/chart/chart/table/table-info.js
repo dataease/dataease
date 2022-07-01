@@ -2,7 +2,7 @@ import { TableSheet, S2Event, PivotSheet } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 
-export function baseTableInfo(s2, container, chart, action, tableData) {
+export function baseTableInfo(s2, container, chart, action, tableData,fontFamily = '') {
   const containerDom = document.getElementById(container)
 
   // fields
@@ -96,13 +96,15 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
   s2.on(S2Event.DATA_CELL_CLICK, action)
 
   // theme
-  const customTheme = getCustomTheme(chart)
+  console.log('theme,,,,',fontFamily)
+  const customTheme = getCustomTheme(chart,fontFamily)
+  console.log('表格样式',customTheme)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
 }
 
-export function baseTableNormal(s2, container, chart, action, tableData) {
+export function baseTableNormal(s2, container, chart, action, tableData,fontFamily = '') {
   // console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
 
@@ -194,14 +196,14 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   s2.on(S2Event.DATA_CELL_CLICK, action)
 
   // theme
-  const customTheme = getCustomTheme(chart)
+  const customTheme = getCustomTheme(chart,fontFamily)
   // console.log('customTheme', customTheme)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
 }
 
-export function baseTablePivot(s2, container, chart, action, tableData) {
+export function baseTablePivot(s2, container, chart, action, tableData,fontFamily = '') {
   const containerDom = document.getElementById(container)
 
   // row and column
@@ -323,7 +325,7 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   s2.on(S2Event.DATA_CELL_CLICK, action)
 
   // theme
-  const customTheme = getCustomTheme(chart)
+  const customTheme = getCustomTheme(chart,fontFamily)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2

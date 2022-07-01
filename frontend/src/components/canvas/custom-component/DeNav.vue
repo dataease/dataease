@@ -38,6 +38,7 @@ export default {
       style.textAlign = this.element.options.horizontal
       style.alignItems = this.element.options.vertical
       style.height = this.element.style.height + 'px'
+      style.fontFamily = this.canvasStyleData.fontFamily
       return style
     },
     heightlight() {
