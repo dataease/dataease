@@ -16,7 +16,7 @@
     @check="changeCheckNode"
     @select-clear="selectClear"
     @onFoucs="onFoucs"
-    @treeCheckChange="change"
+    @treeCheckChange="handleElTagStyle"
   />
 
 </template>
@@ -221,7 +221,7 @@ export default {
         this.handleCoustomStyle()
       })
     },
-    change() {
+    handleElTagStyle() {
       setTimeout(() => {
         textSelectWidget(this.$refs.deSelectTree.$refs.select.$el, this.element.style)
       }, 50)
@@ -383,7 +383,20 @@ export default {
   .el-tree {
     background: var(--BgSelectTreeColor, #FFFFFF) !important;
     color: var(--SelectTreeColor, #606266) !important;
+
+    .el-tree-node.is-current {
+      background-color: rgb(245, 247, 250, .5) !important;
+    }
+    .el-tree-node:focus>.el-tree-node__content {
+      background-color: rgb(245, 247, 250, .5) !important;
+    }
+
+    .el-tree-node__content:hover {
+      background-color: rgb(245, 247, 250, .5) !important;
+    }
   }
+
+  
 
   .el-input-group--append {
     .el-input__inner {
