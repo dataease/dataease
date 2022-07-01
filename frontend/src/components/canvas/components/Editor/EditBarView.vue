@@ -7,6 +7,9 @@
       <span :title="$t('panel.details')">
         <i class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
       </span>
+      <span :title="$t('panel.enlarge')">
+        <i class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
+      </span>
     </div>
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
       <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
@@ -88,7 +91,7 @@ export default {
       this.$emit('amRemoveItem')
     },
     showViewDetails(params) {
-      this.$emit('showViewDetails', params)
+      this.$emit('showViewDetails', { openType: params })
     },
     positionCheck(position) {
       return this.showPosition.includes(position)
