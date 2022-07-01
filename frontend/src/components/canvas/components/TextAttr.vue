@@ -1,6 +1,6 @@
 <template>
-  <el-card class="el-card-main" :style="mainStyle">
-    <div id="main-attr" style="position: relative;" @mousedown.stop @mouseup.stop>
+  <el-card id="textAttr" class="el-card-main" :style="mainStyle">
+    <div id="main-attr" class="box_class" style="position: relative;" @mousedown.stop @mouseup.stop>
       <div v-if="attrShow('textAlign')" style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
           <el-radio-button
@@ -185,6 +185,7 @@ export default {
   data() {
     return {
       predefineColors: COLOR_PANEL,
+      selfWidth: 0,
       showMain: true,
       innerOpacity: 0,
       mainWidthOffset: 600,
@@ -332,6 +333,9 @@ export default {
         // top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
         top: (this.curComponent.style.top - 40) + 'px'
       }
+      if ((this.selfWidth + this.curComponent.style.left >= this.canvasStyleData.width)) {
+        style.left = (this.canvasStyleData.width - this.selfWidth) + 'px'
+      }
       console.log('this.curComponent=====', this.curComponent)
       console.log('this.scrollLeft', this.scrollLeft)
       console.log('this.this.curComponent.style.left', this.curComponent.style.left)
@@ -403,6 +407,9 @@ export default {
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
+      console.log('t----------------', document.getElementById('textAttr').offsetWidth)
+      this.selfWidth = document.getElementById('textAttr').offsetWidth
+
       // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
     attrShow(attr) {
@@ -464,6 +471,9 @@ export default {
     z-index: 10;
     position: absolute;
 
+  }
+  .box_class{
+    display:flex;
   }
   .el-card-main ::v-deep .el-card__body {
     padding: 0px!important;
