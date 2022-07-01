@@ -12,9 +12,10 @@
           />
           <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="mapChart || chart" />
           <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-          <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+          <chart-component-s2 v-else-if="chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
           <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
           <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+          <table-normal v-else-if="chart.type.includes('table') && renderComponent() === 'echarts'" :chart="chart" class="table-class" />
         </div>
       </div>
     </de-main-container>
