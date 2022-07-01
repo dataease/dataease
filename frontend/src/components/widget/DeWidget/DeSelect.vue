@@ -240,6 +240,12 @@ export default {
     },
     visualChange(value) {
       this.value = value
+      this.$nextTick(() => {
+        if (!this.element.options.attrs.multiple) {
+          return
+        }
+        this.handleElTagStyle()
+      })
     },
     changeValue(value) {
       if (!this.inDraw) {
