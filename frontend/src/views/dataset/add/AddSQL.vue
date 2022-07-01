@@ -49,10 +49,11 @@
           </el-form>
         </el-col>
         <el-col :span="8">
-            <el-button   type="text" size="mini" style="float: right;" @click="variableMgm">
+          <el-row style="float: right">
+            <el-button   type="text" size="mini" @click="variableMgm">
               {{ $t('sql_variable.variable_mgm') }}
             </el-button>
-          </el-tooltip>
+          </el-row>
         </el-col>
       </el-row>
       <el-row>
