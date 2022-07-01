@@ -372,7 +372,6 @@ export default {
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
-      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       this.$store.commit('recordSnapshot', 'clearCanvas')
       this.$store.commit('setInEditorStatus', false)
     },
