@@ -132,6 +132,7 @@ export default {
   },
   commons: {
     default_value: '默認值',
+    params_value: '参数值',
     publish: '發布',
     unpublished: '取消發布',
     default_pwd: '初始密碼',
@@ -1123,6 +1124,7 @@ export default {
     max_more_than_mix: '最大值必須大於最小值'
   },
   dataset: {
+    params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
     sql_variable_limit_2: '2、示例：select * from table_name where column_name=‘${parm_name}',
     select_year: '選擇年',

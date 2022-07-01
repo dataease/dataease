@@ -55,12 +55,6 @@
             </el-button>
           </el-row>
         </el-col>
-        <el-col :span="8">
-            <el-button   type="text" size="mini" style="float: right;" @click="variableMgm">
-              {{ $t('sql_variable.variable_mgm') }}
-            </el-button>
-          </el-tooltip>
-        </el-col>
       </el-row>
       <el-row>
         <el-col style="min-width: 200px;">
@@ -134,7 +128,7 @@
                       </el-cascader>
                     </template>
                 </el-table-column>
-                <el-table-column prop="defaultValue" :label="$t('commons.default_value')">
+                <el-table-column prop="defaultValue" :label="$t('commons.params_value')" :render-header="renderPrice">
                   <template slot-scope="scope">
                     <el-input size="mini" v-if="scope.row.type[0] === 'TEXT'" type="text" v-model="scope.row.defaultValue" />
                     <el-input  size="mini" v-if="scope.row.type[0] === 'LONG' || scope.row.type[0] === 'DOUBLE'" type="number" v-model="scope.row.defaultValue" />
@@ -501,7 +495,22 @@ export default {
     },
     variableTypeChange(row){
       row.defaultValue = ''
-    }
+    },
+    renderPrice(h, { column, $index }) {
+      return [
+        column.label,
+        h(
+          'el-tooltip',
+          {
+            props: {
+              content: this.$t('dataset.params_work'),
+              placement: 'top'
+            }
+          },
+          [h('span', { class: { 'el-icon-info': true }})]
+        )
+      ]
+    },
   }
 }
 </script>
