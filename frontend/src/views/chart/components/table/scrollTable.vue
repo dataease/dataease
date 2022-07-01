@@ -8,45 +8,41 @@
       <div class="table_new_header" :style="table_header_class">
         <div v-for="(item,index) in fields" :key="index" class="header_title">{{ item.name }}</div>
       </div>
-      <div class="content" style="height:70%;overflow: hidden;">
-        <div class="purchaseActive" :style="setStyle" />
-        <vue-seamless-scroll
+      <div class="content">
+        <ul id="infinite" ref="ulLis" class="item bgHeightLight" :style="table_item_class">
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2? scrollId:newHeight" class="table_bode_li">
+            <div v-for="(item,index) in fields" :key="index" class="body_info">
+              {{ items[item.datainsName] }}
+            </div>
+          </li>
+        </ul>
+        <!-- <el-table
+          id="tableInfo"
+          ref="tablesss"
+          :data="dataInfo"
+          height="200"
+          class="custom-table-2 hidden-thead"
+        >
+          <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name">
+            <template slot-scope="scope">
+              {{ scope.row[item.datainsName] }}
+            </template>
+          </el-table-column>
+        </el-table> -->
+        <!-- <div class="purchaseActive" :style="setStyle" /> -->
+        <!-- <vue-seamless-scroll
           :class-option="classOption"
           :data="dataInfo"
           :style="table_item_class"
-          class="infinite-list"
         >
-          <!-- <div class="table_body_class">
-            <div v-for="(item,index) in dataInfo" :key="index" class="header_title">
-              <div v-for="(items,index) in dataInfo"></div>
-            </div>
-          </div> -->
-          <!-- <el-table :data="dataInfo" class="custom-table-2 hidden-thead">
-            <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name">
-              <template slot-scope="scope">
-                {{ scope.row[item.datainsName] }}
-              </template>
-            </el-table-column>
-          </el-table> -->
-          <ul class="item bgHeightLight">
+          <ul class="item bgHeightLight infinite-list">
             <li v-for="(items,inde) in dataInfo" :key="inde" class="table_bode_li" :style="newHeight">
               <div v-for="(item,index) in fields" :key="index" class="body_info">
                 {{ items[item.datainsName] }}
               </div>
             </li>
           </ul>
-
-          <!--包ul和li-->
-          <!-- <ul class="item-box">
-            <li
-              v-for="item in fields"
-              :key="item"
-              class="item"
-            >
-              相关内容
-            </li>
-          </ul> -->
-        </vue-seamless-scroll>
+        </vue-seamless-scroll> -->
       </div>
 
       <!-- <ux-grid
@@ -126,6 +122,7 @@ export default {
   data() {
     return {
       fields: [],
+      timer: null,
       info: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       dataInfo: [],
       height: 'auto',
@@ -175,8 +172,17 @@ export default {
         top: '40px',
         height: '40px'
       },
+      scrollId: {
+        color: '#333',
+        backgroundColor: '#fff',
+        opacity: 1,
+        height: '30px',
+        fontSize: '12px'
+      },
       bodyHeight: 30,
-      rollingRate: 30
+      rollingRate: 30,
+      scrolleTime: 1000,
+      heightLightLine: 3
     }
   },
   computed: {
@@ -209,49 +215,80 @@ export default {
     chart: function() {
       console.log('this.chart.data----------！！！！！！', this.chart.data)
       console.log('this.chart.data----------2222', this.chart)
-      this.prossData()
-      // this.resetPage()
-      // this.init()
+
+      if (this.chart.data) {
+        clearInterval(this.timer)
+        this.prossData()
+      } else {
+        this.fields = []
+        this.dataInfo = []
+        clearInterval(this.timer)
+      }
     }
   },
   mounted() {
     console.log('this.fields', this.fields)
     console.log('获取边框数据', this.element)
-    console.log('this.chart---', this.chart.data)
-    this.prossData()
-    // this.init()
-    // 监听元素变动事件
-    // eventBus.$on('resizing', (componentId) => {
-    //   this.chartResize()
-    // })
+    console.log('this.chart---', this.chart)
+    if (this.chart.data) {
+      this.prossData()
+      // this.tableScroll()
+    }
+  },
+  destroyed() {
+    clearInterval(this.timer)
   },
   methods: {
+    scorllEvent() {
+      var isScroll = true // 也可以定义到data里
+      this.$nextTick(() => {
+        const div = document.getElementsByClassName('el-table__body-wrapper')[0]
+        div.style.height = '110px'
+        div.addEventListener('mouseenter', () => {
+          isScroll = false
+        })
+        div.addEventListener('mouseleave', () => {
+          isScroll = true
+        })
+        const t = document.getElementByClassName('el-table__body')[0]
+        setInterval(() => {
+          if (isScroll) {
+            const data = this.dataInfo[0]
+            setTimeout(() => {
+              this.dataInfo.push(data)
+              t.style.transition = 'all .5s'
+              t.style.marginTop = '-41px'
+            }, 500)
+            setTimeout(() => {
+              this.dataInfo.splice(0, 1)
+              t.style.transition = 'all 0s ease 0s'
+              t.style.marginTop = '0'
+            }, 1000)
+          }
+        }, 2500)
+      })
+    },
+    tableScroll() {
+      this.timer = setInterval(() => {
+        console.log('2222')
+        const data = this.dataInfo[0]
+        setTimeout(() => {
+          this.dataInfo.splice(0, 1)
+        }, 500)
+        setTimeout(() => {
+          this.dataInfo.push(data)
+        }, 500)
+      }, this.scrolleTime) // 滚动速度
+    },
     prossData() {
+      console.log('有数据才会去执行操作---------')
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
       this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.initStyle()
+
       // this.$nextTick(() => {
 
       // })
-    },
-    scroll() {
-      const self = this
-      const parentNode = document.getElementsByClassName('infinite-list')[0]
-        .parentNode.parentNode
-      const translates = parentNode.style.transform
-      const result = translates.match(/\(([^)]*)\)/) // 正则()内容
-      const matrix = result ? result[1].split(',') : translates.split(',')
-      const y = parseFloat(matrix[1]) // 拿到transyform的y的值
-      const height = Math.floor(Math.abs(y) / 36) + 1
-      const child = document.getElementsByClassName('infinite-list')[1]
-        .childNodes
-      if (height >= self.data.length) {
-        child[0].classList.add('item-active')
-        self.clickSelectedUnit(0)
-      } else {
-        child[0].classList.remove('item-active')
-        self.clickSelectedUnit(height)
-      }
     },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)
@@ -345,23 +382,33 @@ export default {
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
           this.table_item_class.color = customAttr.color.tableInfoFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
-          this.setStyle.backgroundColor = customAttr.color.tableHeightColor
+          this.scrollId.backgroundColor = customAttr.color.tableHeightColor
+          this.scrollId.color = customAttr.color.tableHeightFontColor
         }
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
-          this.setStyle.opacity = customAttr.size.tableHeightLight / 100
+          this.scrollId.fontSize = customAttr.size.heightLightFontSize + 'px'
+          // this.scrollId.opacity = customAttr.size.tableHeightLight / 100
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
           // this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
           console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableItemHeight
+          this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
+          this.scrolleTime = customAttr.size.automaticTime
+          // this.heightLightLine = customAttr.size.heightLightLine
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
+        // if (this.dataInfo.length >= this.heightLightLine) {
+        //   this.tableScroll()
+        // }
+        this.tableScroll()
+
         // 暂不支持斑马纹
         // if (customAttr.color.tableStripe) {
         //   // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
@@ -484,6 +531,11 @@ export default {
     flex:1
   }
 }
+#scrollId{
+  // background:#f99;
+  font-weight: 600;
+  color:#f99;
+}
 .content{
   position:relative;
 }
@@ -576,9 +628,12 @@ export default {
       overflow: hidden;
     }
   }
-  .hidden-thead .el-table__header-wrapper{
-    display:none
+ ::v-deep .hidden-thead{
+     .el-table__header-wrapper{
+        display:none
+      }
   }
+
   //   .hidden-thead.el-table {
   //   border-top: none; //防止边框重叠
   //   thead { //隐藏下面表格的thead
