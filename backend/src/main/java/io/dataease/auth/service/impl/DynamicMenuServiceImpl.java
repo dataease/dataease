@@ -12,6 +12,7 @@ import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -118,12 +119,9 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         return null == pid || pid == 0L;
     }
 
-    @Transactional
-    public void syncPluginMenu() {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void syncPluginMenu(List<PluginSysMenu> pluginSysMenuList) {
         extPluginSysMenuMapper.deletePluginMenu();
-        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
-        Set<PluginSysMenu> pluginSysMenuSet = new HashSet<>(pluginSysMenuList);
-        pluginSysMenuList = new ArrayList<>(pluginSysMenuSet);
         if (CollectionUtils.isNotEmpty(pluginSysMenuList)) {
             extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
         }

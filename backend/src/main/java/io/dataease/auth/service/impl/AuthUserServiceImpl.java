@@ -13,6 +13,7 @@ import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
@@ -95,7 +96,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     public List<String> permissions(Long userId) {
         try {
             // 用户登录获取菜单权限时同时更新插件菜单表
-            dynamicMenuService.syncPluginMenu();
+            dynamicMenuService.syncPluginMenu(PluginUtils.pluginMenus());
         } catch (Exception e) {
             LogUtil.error(e);
             //ignore

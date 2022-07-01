@@ -30,7 +30,7 @@ public class PluginUtils {
         if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid)
             return new ArrayList<>();
         Map<String, PluginMenuService> pluginMenuServiceMap = SpringContextUtil.getApplicationContext().getBeansOfType(PluginMenuService.class);
-        List<PluginSysMenu> menus = pluginMenuServiceMap.values().stream().flatMap(item -> item.menus().stream()).collect(Collectors.toList());
+        List<PluginSysMenu> menus = pluginMenuServiceMap.values().stream().flatMap(item -> item.menus().stream()).distinct().collect(Collectors.toList());
         return menus;
     }
 
