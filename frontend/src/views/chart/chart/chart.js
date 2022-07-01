@@ -130,7 +130,8 @@ export const DEFAULT_TITLE_STYLE = {
   hPosition: 'center',
   vPosition: 'top',
   isItalic: false,
-  isBolder: false
+  isBolder: false,
+  fontFamily: '',
 }
 export const DEFAULT_LEGEND_STYLE = {
   show: true,
