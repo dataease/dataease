@@ -185,8 +185,9 @@ export default {
       return this.$store.state.panel.mainActiveName
     },
     showUnpublishedArea() {
-      // return this.panelInfo.status === 'unpublished'
-      if (this.panelInfo && this.panelInfo.showType === 'view') {
+      if (this.showPosition === 'edit') {
+        return false
+      } else if (this.panelInfo && this.panelInfo.showType === 'view') {
         return false
       } else if ((this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') || this.showPosition.includes('multiplexing')) {
         return this.panelInfo.status === 'unpublished' && !hasDataPermission('manage', this.panelInfo.privileges)

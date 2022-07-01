@@ -269,6 +269,7 @@
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
         :canvas-style-data="canvasStyleData"
         :component-data="componentData"
+        show-position="edit"
       />
     </fullscreen>
     <input
