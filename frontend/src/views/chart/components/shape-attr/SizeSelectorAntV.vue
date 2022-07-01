@@ -111,6 +111,11 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
+          <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_header_align')" class="form-item">
           <el-select v-model="sizeForm.tableHeaderAlign" :placeholder="$t('chart.table_header_align')" @change="changeBarSizeCase">
             <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
@@ -127,14 +132,19 @@
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播间隔时间'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播速率'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
-        </el-form-item> -->
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'滚动速率'" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableRollingRate" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮行'" class="form-item">
+          <el-select v-model="sizeForm.heightLightLine" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in heightLightLineOps" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item> -->
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'滚动速率'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableRollingRate" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item> -->
         <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮透明度'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableHeightLight" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -357,6 +367,17 @@ export default {
         { name: '7秒', value: 7000 },
         { name: '8秒', value: 8000 },
         { name: '9秒', value: 9000 }
+      ],
+      heightLightLineOps: [
+        { name: '第一行', value: 0 },
+        { name: '第二行', value: 1 },
+        { name: '第三行', value: 2 },
+        { name: '第四行', value: 3 },
+        { name: '第五行', value: 4 },
+        { name: '第六行', value: 5 },
+        { name: '第七行', value: 6 },
+        { name: '第八行', value: 7 },
+        { name: '第九行', value: 8 }
       ]
     }
   },
