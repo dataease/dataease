@@ -46,7 +46,7 @@
                 <el-input v-model="axisForm.axisValue.min" @blur="changeXAxisStyle('axisValue')" />
               </el-form-item>
               <el-form-item :label="$t('chart.axis_value_max')" class="form-item">
-                <el-input @blur="changeXAxisStyle('axisValue')" />
+                <el-input v-model="axisForm.axisValue.max" @blur="changeXAxisStyle('axisValue')" />
               </el-form-item>
               <el-form-item :label="$t('chart.axis_value_split_count')" class="form-item">
                 <el-input v-model="axisForm.axisValue.splitCount" @blur="changeXAxisStyle('axisValue')" />
