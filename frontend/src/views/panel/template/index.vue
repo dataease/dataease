@@ -31,7 +31,7 @@
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
-    <de-main-container>
+    <de-main-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
       <template-item
         v-for="item in currentTemplateShowList"
         :key="item.id"
