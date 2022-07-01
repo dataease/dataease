@@ -132,6 +132,7 @@ export default {
   },
   commons: {
     default_value: 'Default Value',
+    params_value: 'Param Value',
     publish: 'publish',
     unpublished: 'unpublished',
     default_pwd: 'Default Pwd',
@@ -1123,6 +1124,7 @@ export default {
     max_more_than_mix: 'Max must more than Min'
   },
   dataset: {
+    params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
     sql_variable_limit_2: '2、Example：select * from table_name where column_name=‘${parm_name}',
     select_year: 'Select Year',
