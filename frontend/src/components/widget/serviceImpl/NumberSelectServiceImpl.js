@@ -14,6 +14,7 @@ const dialogPanel = {
       placeholder: 'denumberselect.placeholder',
       datas: [],
       viewIds: [],
+      parameters: [],
       key: 'id',
       label: 'text',
       value: 'id',
