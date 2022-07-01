@@ -3,7 +3,7 @@
     ref="visualSelect"
     v-model="selectValue"
     :class="classId"
-    popper-class="VisualSelects"
+    popper-class="VisualSelects coustom-de-select"
     no-match-text=" "
     v-bind="$attrs"
     v-on="$listeners"
