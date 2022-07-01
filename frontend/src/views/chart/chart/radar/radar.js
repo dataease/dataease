@@ -55,11 +55,11 @@ export function baseRadarOption(chart_option, chart) {
             name: y.name,
             label: y.label
           }
-        ]
+        ],
+        selectedMode: true,
+        select: BASE_ECHARTS_SELECT
       }
       y.value = JSON.parse(JSON.stringify(y.data))
-      chart_option.series[0].selectedMode = true
-      chart_option.series[0].select = BASE_ECHARTS_SELECT
       chart_option.series.push(d)
 
       maxValues.push(Math.max.apply(null, y.value))

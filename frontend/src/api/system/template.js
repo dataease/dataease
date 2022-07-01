@@ -34,6 +34,7 @@ export function find(data) {
   return request({
     url: '/template/find',
     data: data,
+    loading: true,
     method: 'post'
   })
 }

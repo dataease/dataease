@@ -26,7 +26,7 @@
     <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
+      <el-button type="primary" size="mini" :disabled="!saveStatus" @click="save()">{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -57,10 +57,14 @@ export default {
       importTemplateInfo: {
         snapshot: ''
       },
-      editPanel: null
+      editPanel: null,
+      templateSelected: false
     }
   },
   computed: {
+    saveStatus() {
+      return this.editPanel.panelInfo.name && (this.inputType === 'new' || this.templateSelected)
+    },
     classBackground() {
       if (this.importTemplateInfo.snapshot) {
         return {
@@ -76,6 +80,7 @@ export default {
       if (newVal === 'new') {
         this.editPanel = deepCopy(this.editPanelOut)
       } else {
+        this.templateSelected = false
         this.editPanel.panelInfo.name = null
         this.editPanel.panelInfo.panelStyle = null
         this.editPanel.panelInfo.panelData = null
@@ -109,10 +114,15 @@ export default {
     },
     showCurrentTemplateInfo(data) {
       this.editPanel.panelInfo.templateId = data.id
-      this.editPanel.panelInfo.name = data.name
-      // this.editPanel.panelInfo.panelStyle = data.templateStyle
-      // this.editPanel.panelInfo.panelData = data.templateData
-      this.importTemplateInfo.snapshot = data.snapshot
+      if (data.nodeType === 'folder') {
+        this.editPanel.panelInfo.name = null
+        this.importTemplateInfo.snapshot = null
+        this.templateSelected = false
+      } else {
+        this.editPanel.panelInfo.name = data.name
+        this.importTemplateInfo.snapshot = data.snapshot
+        this.templateSelected = true
+      }
     },
     getTree() {
       const request = {
@@ -177,6 +187,7 @@ export default {
       const file = e.target.files[0]
       const reader = new FileReader()
       reader.onload = (res) => {
+        this.templateSelected = true
         const result = res.target.result
         this.importTemplateInfo = JSON.parse(result)
         this.editPanel.panelInfo.name = this.importTemplateInfo.name

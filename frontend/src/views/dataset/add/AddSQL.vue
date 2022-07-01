@@ -48,6 +48,12 @@
             </el-form-item>
           </el-form>
         </el-col>
+        <el-col :span="8">
+            <el-button   type="text" size="mini" style="float: right;" @click="variableMgm">
+              {{ $t('sql_variable.variable_mgm') }}
+            </el-button>
+          </el-tooltip>
+        </el-col>
       </el-row>
       <el-row>
         <el-col style="min-width: 200px;">
