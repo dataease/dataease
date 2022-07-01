@@ -277,7 +277,7 @@ export default {
         }, 500)
         setTimeout(() => {
           this.dataInfo.push(data)
-        }, 1000)
+        }, 500)
       }, this.scrolleTime) // 滚动速度
     },
     prossData() {
