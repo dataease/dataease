@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.dataease.commons.constants.StaticResourceConstants.UPLOAD_URL_PREFIX;
+
 /**
  * Author: wangjiahao
  * Date: 2021-03-05
@@ -80,6 +82,9 @@ public class PanelTemplateService {
             }
             //Store static resource into the server
             staticResourceService.saveFilesToServe(request.getStaticResource());
+            String snapshotName = "template-" + request.getId() + ".jpeg";
+            staticResourceService.saveSingleFileToServe(snapshotName,request.getSnapshot().replace("data:image/jpeg;base64,","") );
+            request.setSnapshot("/"+UPLOAD_URL_PREFIX+'/'+snapshotName);
             panelTemplateMapper.insert(request);
         } else {
             String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getPid(), request.getId());

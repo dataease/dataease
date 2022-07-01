@@ -56,21 +56,25 @@ public class StaticResourceService {
             Map<String,String> resource = gson.fromJson(staticResource,Map.class);
             for(Map.Entry<String,String> entry:resource.entrySet()){
                 String path = entry.getKey();
-                Path uploadPath = Paths.get(staticDir.toString(), path.substring(path.lastIndexOf("/")+1,path.length()));
-                try{
-                    if (uploadPath.toFile().exists()) {
-                        LogUtil.info("file exists");
-                    }else{
-                        String content = entry.getValue();
-                        if(StringUtils.isNotEmpty(content)){
-                            Files.createFile(uploadPath);
-                            FileCopyUtils.copy(Base64Decoder.decode(content),Files.newOutputStream(uploadPath));
-                        }
-                    }
-                }catch (Exception e){
-                    LogUtil.error("template static resource save error"+e.getMessage());
+                String fileName = path.substring(path.lastIndexOf("/")+1,path.length());
+                saveSingleFileToServe(fileName,entry.getValue());
+            }
+        }
+    }
+
+    public void saveSingleFileToServe(String fileName,String content){
+        Path uploadPath = Paths.get(staticDir.toString(), fileName);
+        try{
+            if (uploadPath.toFile().exists()) {
+                LogUtil.info("file exists");
+            }else{
+                if(StringUtils.isNotEmpty(content)){
+                    Files.createFile(uploadPath);
+                    FileCopyUtils.copy(Base64Decoder.decode(content),Files.newOutputStream(uploadPath));
                 }
             }
+        }catch (Exception e){
+            LogUtil.error("template static resource save error"+e.getMessage());
         }
     }
 
