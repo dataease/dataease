@@ -172,29 +172,36 @@ export default {
 
   },
   created() {
+    if (this.element && this.element.options && this.element.options.attrs) {
+      this.element.options.attrs.visual = true
+    }
+
     if (!this.element.options.attrs.sort) {
       this.element.options.attrs.sort = {}
     }
     this.initLoad()
   },
+
   mounted() {
-    bus.$on('onScroll', () => {
+    bus.$on('onScroll', this.onScroll)
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('onScroll', this.onScroll)
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    onScroll() {
       if (this.onFocus) {
         this.$refs.deSelect.blur()
       }
-    })
-    bus.$on('reset-default-value', id => {
+    },
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-
-  methods: {
+    },
     onBlur() {
       this.onFocus = false
     },

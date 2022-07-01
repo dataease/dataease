@@ -287,6 +287,7 @@ export default {
     erd.uninstall(this.$refs.canvasInfoTemp)
     erd.uninstall(this.$refs.canvasInfoMain)
     clearInterval(this.timer)
+    eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
   },
   methods: {
     _isMobile() {
@@ -411,7 +412,6 @@ export default {
           })
         }
       }, 1500)
-
       eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     }
   }

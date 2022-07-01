@@ -6,7 +6,6 @@ import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.PluginStatus;
 import io.dataease.service.sys.PluginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -9,9 +9,6 @@
           @change="multipleChange"
         />
 
-        <span v-if="widget.showVisual" style="padding-left: 16px;">
-          <el-checkbox v-model="attrs.visual" @change="showVisualChange">{{ $t('panel.visual') }}</el-checkbox>
-        </span>
       </div>
     </el-col>
 

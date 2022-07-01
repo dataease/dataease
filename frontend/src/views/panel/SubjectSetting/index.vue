@@ -8,7 +8,7 @@
       <slider v-if="sliderShow" @reload="sliderReload" />
     </div>
     <!--折叠面板-->
-    <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
+    <div v-if="collapseShow" style="margin: 12px;overflow-y: auto">
       <div>
         <el-collapse v-model="activeNames" @change="handleChange">
           <el-collapse-item :title="'整体配置'" name="panel">
@@ -75,20 +75,24 @@ export default {
   watch: {},
 
   mounted() {
-    bus.$on('onSubjectChange', () => {
-      this.collapseShow = false
-      this.$nextTick(() => {
-        this.init()
-        this.dataMerge()
-        this.collapseShow = true
-      })
-    })
+    bus.$on('onSubjectChange', this.onSubjectChange)
+  },
+  beforeDestroy() {
+    bus.$off('onSubjectChange', this.onSubjectChange)
   },
   created() {
     this.init()
   },
 
   methods: {
+    onSubjectChange() {
+      this.collapseShow = false
+      this.$nextTick(() => {
+        this.init()
+        this.dataMerge()
+        this.collapseShow = true
+      })
+    },
     sliderReload() {
       this.sliderShow = false
       this.$nextTick(() => {
@@ -155,7 +159,6 @@ export default {
 
 .selector-div {
   background-color: var(--MainBG);
-  margin: 5px
 }
 
 .padding-lr {
@@ -182,6 +185,13 @@ export default {
   top: 40px;
   box-sizing:border-box;
   border-bottom: 1px solid #e8eaed
+}
+
+::v-deep .el-collapse-item__header{
+  font-weight: 500!important;
+  font-size: 14px!important;
+  color: var(--TextPrimary, #1F2329);
+  padding: 0!important;
 }
 
 </style>

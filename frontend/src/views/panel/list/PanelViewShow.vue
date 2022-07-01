@@ -232,15 +232,21 @@ export default {
     }
   },
   mounted() {
-    bus.$on('set-panel-show-type', type => {
-      this.showType = type || 0
-    })
-    bus.$on('set-panel-share-user', userId => {
-      this.shareUserId = userId
-    })
+    bus.$on('set-panel-show-type', this.setPanelShowType)
+    bus.$on('set-panel-share-user', this.setPanelShareUser)
     this.initPdfTemplate()
   },
+  beforeDestroy() {
+    bus.$off('set-panel-show-type', this.setPanelShowType)
+    bus.$off('set-panel-share-user', this.setPanelShareUser)
+  },
   methods: {
+    setPanelShowType(type) {
+      this.showType = type || 0
+    },
+    setPanelShareUser(userId) {
+      this.shareUserId = userId
+    },
     initPdfTemplate() {
       queryAll().then(res => {
         this.pdfTemplateAll = res.data

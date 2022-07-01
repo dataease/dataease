@@ -67,14 +67,18 @@ export default {
   created() {
   },
   mounted() {
-    bus.$on('frameLinksChange-' + this.element.id, () => {
+    bus.$on('frameLinksChange-' + this.element.id, this.frameLinksChange)
+  },
+  beforeDestroy() {
+    bus.$off('frameLinksChange-' + this.element.id, this.frameLinksChange)
+  },
+  methods: {
+    frameLinksChange() {
       this.frameShow = false
       this.$nextTick(() => {
         this.frameShow = true
       })
-    })
-  },
-  methods: {
+    },
     loaded(e) {
     },
     onError(e) {
@@ -91,7 +95,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #FFFFFF;
+    background-color: rgba(255,255,255,0.3);
     font-size: 12px;
     color: #9ea6b2;
   }

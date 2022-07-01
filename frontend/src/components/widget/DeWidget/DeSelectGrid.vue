@@ -200,7 +200,13 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('reset-default-value', id => {
+    bus.$on('reset-default-value', this.resetDefaultValue)
+  },
+  beforeDestroy() {
+    bus.$off('reset-default-value', this.resetDefaultValue)
+  },
+  methods: {
+    resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
@@ -210,13 +216,7 @@ export default {
           this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
         }
       }
-    })
-  },
-  beforeDestroy() {
-    bus.$off('reset-default-value')
-  },
-
-  methods: {
+    },
     changeInputStyle() {
       if (!this.$parent.handlerInputStyle) return
       this.$nextTick(() => {

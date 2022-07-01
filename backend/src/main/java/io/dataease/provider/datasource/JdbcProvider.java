@@ -20,9 +20,7 @@ import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.provider.ProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.beans.PropertyVetoException;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.*;

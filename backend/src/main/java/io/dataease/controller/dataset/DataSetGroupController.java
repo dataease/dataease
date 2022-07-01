@@ -1,14 +1,12 @@
 package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.DeLogUtils;
-import io.dataease.controller.dataset.request.DeleteGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
@@ -20,7 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.annotation.Resource;
 import java.util.List;
 

@@ -145,11 +145,10 @@ export default {
   mounted() {
     this.init()
     // 监听元素变动事件
-    eventBus.$on('resizing', (componentId) => {
-      this.chartResize()
-    })
+    eventBus.$on('resizing', this.chartResize)
   },
   beforeDestroy() {
+    eventBus.$off('resizing',this.chartResize)
     clearInterval(this.scrollTimer)
   },
   methods: {

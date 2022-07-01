@@ -115,7 +115,6 @@ export function export_table_to_excel(id) {
 }
 
 function formatJson(jsonData) {
-  console.log(jsonData)
 }
 
 export function export_json_to_excel(th, jsonData, defaultTitle) {

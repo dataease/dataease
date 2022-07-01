@@ -3,8 +3,6 @@ package io.dataease.dto.dataset;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.List;
 import java.util.Map;
 
