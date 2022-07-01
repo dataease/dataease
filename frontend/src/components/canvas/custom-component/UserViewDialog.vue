@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     isAbsoluteContainer() {
-      return this.chart.type === 'symbol-map'
+      return this.showChartCanvas && this.chart.type === 'symbol-map'
     },
     showChartCanvas() {
       return this.openType === 'enlarge'
