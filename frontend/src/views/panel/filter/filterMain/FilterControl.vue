@@ -75,7 +75,6 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <svg-icon :icon-class="item.type" class="chart-icon" />
                     <span v-if="item.variableName && item.variableName.length <= 7" style="margin-left: 6px">{{ item.variableName }}</span>
                     <el-tooltip v-else class="item" effect="dark" :content="item.variableName" placement="left">
                       <span style="margin-left: 6px">{{ item.variableName }}</span>
