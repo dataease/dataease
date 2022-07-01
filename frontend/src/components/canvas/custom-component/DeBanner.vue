@@ -9,6 +9,7 @@
             </div>
             <div class="img_box" :style="{
               'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
+              'fontFamily': canvasStyleData.fontFamily ? canvasStyleData.fontFamily : '',
             }">
               <div :style="{
                 'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
@@ -69,7 +70,8 @@ export default {
   computed: {
     ...mapState([
       'curComponent',
-      'componentData'
+      'componentData',
+      'canvasStyleData',
     ]),
     swiperOptionNew() {
       const options = {
@@ -99,7 +101,8 @@ export default {
       return style
     },
     bannerImgList() {
-      console.log('this.curComponent---------------', this.curComponent)
+      console.log('this.curComponent---------------', this.curComponent,this.canvasStyleData)
+      
       return this.element.options.bannerImgList
     },
     rotationTime() {
@@ -144,7 +147,7 @@ export default {
     }
   },
   created() {
-    console.log('轮播图片组件', this.element)
+    // console.log('轮播图片组件', this.element)
   },
   mounted() {
     this.changeSlidesPerView()
