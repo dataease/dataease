@@ -96,9 +96,7 @@ export function baseTableInfo(s2, container, chart, action, tableData,fontFamily
   s2.on(S2Event.DATA_CELL_CLICK, action)
 
   // theme
-  console.log('theme,,,,',fontFamily)
   const customTheme = getCustomTheme(chart,fontFamily)
-  console.log('表格样式',customTheme)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
@@ -197,7 +195,6 @@ export function baseTableNormal(s2, container, chart, action, tableData,fontFami
 
   // theme
   const customTheme = getCustomTheme(chart,fontFamily)
-  // console.log('customTheme', customTheme)
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
