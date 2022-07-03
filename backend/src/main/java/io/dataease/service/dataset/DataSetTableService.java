@@ -1006,9 +1006,11 @@ public class DataSetTableService {
             return sql;
         }
         StringBuilder stringBuilder = new StringBuilder();
-        BinaryExpression binaryExpression = (BinaryExpression) expr;
-
-        if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVarible(binaryExpression.toString())) {
+        BinaryExpression binaryExpression = null;
+        try{
+            binaryExpression = (BinaryExpression)expr;
+        }catch (Exception e){ }
+        if (binaryExpression != null && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVarible(binaryExpression.toString())) {
             stringBuilder.append(SubstitutedSql);
         } else {
             expr.accept(getExpressionDeParser(stringBuilder));
@@ -2563,22 +2565,27 @@ public class DataSetTableService {
 
             @Override
             public void visit(InExpression inExpression) {
-                inExpression.getLeftExpression().accept(this);
-                if (inExpression.isNot()) {
-                    getBuffer().append(" " + "NOT IN" + " ");
-                } else {
-                    getBuffer().append(" " + "IN" + " ");
+                if (inExpression.getRightItemsList() != null && hasVarible(inExpression.getRightItemsList().toString())) {
+                    stringBuilder.append(SubstitutedSql);
+                    return;
                 }
-
-                getBuffer().append("(");
+                if (inExpression.getRightExpression() != null && inExpression.getRightExpression().toString().equals(SubstitutedParams)) {
+                    stringBuilder.append(SubstitutedSql);
+                    return;
+                }
+                if (inExpression.isNot()) {
+                    getBuffer().append(" " + " NOT IN " + " ");
+                } else {
+                    getBuffer().append(" IN "  );
+                }
                 if (inExpression.getRightItemsList() != null) {
-                    inExpression.getRightItemsList().accept(this);
+                    getBuffer().append(inExpression.getRightItemsList());
                 }
                 if (inExpression.getRightExpression() != null) {
+                    getBuffer().append(" ( ");
                     inExpression.getRightExpression().accept(this);
+                    getBuffer().append(" )");
                 }
-
-                getBuffer().append(")");
             }
 
 
