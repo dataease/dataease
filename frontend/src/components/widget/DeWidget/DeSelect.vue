@@ -128,6 +128,8 @@ export default {
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
+      }).catch(e => {
+        bus.$emit('valid-values-change', false)
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
@@ -167,6 +169,8 @@ export default {
           this.show = true
           this.handleCoustomStyle()
         })
+      }).catch(e => {
+        bus.$emit('valid-values-change', false)
       }) || (this.element.options.value = '')
     }
 
@@ -222,6 +226,8 @@ export default {
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
           this.datas = this.optionDatas(res.data)
+        }).catch(e => {
+          bus.$emit('valid-values-change', false)
         })
       }
       if (this.element.options.value) {
