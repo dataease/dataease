@@ -319,9 +319,6 @@ export default {
 
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
-        if(this.form.configuration.queryTimeout === undefined){
-          this.form.configuration.queryTimeout = 30
-        }
       }
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     },

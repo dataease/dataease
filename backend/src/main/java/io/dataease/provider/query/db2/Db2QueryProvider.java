@@ -906,7 +906,9 @@ public class Db2QueryProvider extends QueryProvider {
                     } else {
                         if (field.getDeType().equals(DeTypeConstants.DE_TIME)) {
                             whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + value + "'", Db2Constants.DEFAULT_DATE_FORMAT);
-                        } else {
+                        } else if(field.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                            whereValue = value;
+                        }else {
                             whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value);
                         }
                     }
@@ -941,10 +943,13 @@ public class Db2QueryProvider extends QueryProvider {
             } else {
                 fieldList.add(request.getDatasetTableField());
             }
-
+            boolean isFloat = false;
             for (DatasetTableField field : fieldList) {
                 if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
                     continue;
+                }
+                if(field.getDeType().equals(DeTypeConstants.DE_FLOAT)){
+                    isFloat = true;
                 }
                 String whereName = "";
 
@@ -1002,7 +1007,11 @@ public class Db2QueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                whereValue = "('" + StringUtils.join(value, "','") + "')";
+                if(isFloat){
+                    whereValue = "(" + StringUtils.join(value, ",") + ")";
+                }else {
+                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
@@ -1015,7 +1024,12 @@ public class Db2QueryProvider extends QueryProvider {
                     whereValue = String.format(Db2Constants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value.get(0));
+                if(isFloat){
+                    whereValue = value.get(0);
+                }else {
+                    whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value.get(0));
+                }
+
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -1163,8 +1177,9 @@ public class Db2QueryProvider extends QueryProvider {
                 } else {
                     if (y.getDeType().equals(DeTypeConstants.DE_TIME)) {
                         whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + f.getValue() + "'", Db2Constants.DEFAULT_DATE_FORMAT);
-                        ;
-                    } else {
+                    } else if(y.getDeType().equals(DeTypeConstants.DE_FLOAT)){
+                        whereValue = f.getValue();
+                    }else {
                         whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, f.getValue());
                     }
                 }

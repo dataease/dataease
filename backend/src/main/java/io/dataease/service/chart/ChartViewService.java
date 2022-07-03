@@ -453,7 +453,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList);
+                sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -829,7 +829,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList);
+                sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -1500,23 +1500,19 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList) throws Exception {
+    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp) throws Exception {
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }
-                if(CollectionUtils.isEmpty(chartExtFilterRequest.getParameters())){
+                if (CollectionUtils.isEmpty(chartExtFilterRequest.getParameters())) {
                     continue;
                 }
-                if (chartExtFilterRequest.getValue().size() > 1) {
-                    for (String parameter : chartExtFilterRequest.getParameters()) {
-                        sql = sql.replace("${" + parameter + "}", String.join(",", chartExtFilterRequest.getValue()));
-                    }
-                } else {
-                    for (String parameter : chartExtFilterRequest.getParameters()) {
-                        sql = sql.replace("${" + parameter + "}", chartExtFilterRequest.getValue().get(0));
-                    }
+
+                String filter = qp.transFilter(chartExtFilterRequest);
+                for (String parameter : chartExtFilterRequest.getParameters()) {
+                    sql = sql.replace("${" + parameter + "}", filter);
                 }
             }
         }
