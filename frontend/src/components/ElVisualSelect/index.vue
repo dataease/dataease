@@ -1,5 +1,6 @@
 <template>
   <el-select
+    v-if="show"
     ref="visualSelect"
     v-model="selectValue"
     :class="classId"
@@ -52,7 +53,8 @@ export default {
       maxLength: 9, // 弹出框最大支持9个条目
       itemHeight: 34, // select组件选项高度
       maxHeightDom: null,
-      defaultFirst: false
+      defaultFirst: false,
+      show: true
     }
   },
   watch: {
@@ -69,8 +71,12 @@ export default {
     },
     list() {
       this.resetList()
+      this.show = false
       this.$nextTick(() => {
-        this.init()
+        this.show = true
+        this.$nextTick(() => {
+          this.init()
+        })
       })
     }
   },
