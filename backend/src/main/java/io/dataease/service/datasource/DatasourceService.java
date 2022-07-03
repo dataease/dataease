@@ -1,5 +1,7 @@
 package io.dataease.service.datasource;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -139,6 +141,11 @@ public class DatasourceService {
                 JdbcConfiguration configuration = new Gson().fromJson(datasourceDTO.getConfiguration(), JdbcConfiguration.class);
                 if (StringUtils.isNotEmpty(configuration.getCustomDriver()) && !configuration.getCustomDriver().equalsIgnoreCase("default")) {
                     datasourceDTO.setCalculationMode(DatasourceCalculationMode.DIRECT);
+                }
+                JSONObject jsonObject = JSONObject.parseObject(datasourceDTO.getConfiguration());
+                if(jsonObject.getString("queryTimeout") == null){
+                    jsonObject.put("queryTimeout", 30);
+                    datasourceDTO.setConfiguration(jsonObject.toString());
                 }
             }
 
