@@ -1121,9 +1121,9 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
                 if (x.getDeType() == DeTypeConstants.DE_INT) {
-                    fieldName = String.format(SqlServerSQLConstants.CONVERT, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
+                    fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_INT_FORMAT, originField);
                 } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
-                    fieldName = String.format(SqlServerSQLConstants.CONVERT, originField, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
                 } else {
                     fieldName = originField;
                 }

@@ -1,6 +1,5 @@
 import { sin, cos } from '@/components/canvas/utils/translate'
 import store from '@/store'
-import { colorReverse } from '@/components/canvas/utils/utils'
 import Vue from 'vue'
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
@@ -218,9 +217,6 @@ export const THEME_STYLE_TRANS_MAIN = {
   },
   'split': {
     'name': ['color'],
-    'axisLine': {
-      'lineStyle': ['color']
-    },
     'axisTick': {
       'lineStyle': ['color']
     },
@@ -246,6 +242,9 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
   },
   'split': {
     'splitLine': {
+      'lineStyle': ['color']
+    },
+    'axisLine': {
       'lineStyle': ['color']
     }
   }

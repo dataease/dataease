@@ -155,7 +155,11 @@
 
         <if test="type == 11">
             menu_id as id ,title as name
-            from sys_menu
+            from (
+                select menu_id, title from sys_menu
+                  union all
+                select menu_id, title from plugin_sys_menu
+            ) plugin_union
             <where>
                 menu_id in
                 <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">

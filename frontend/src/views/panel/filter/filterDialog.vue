@@ -298,7 +298,8 @@ export default {
       },
       currentElement: null,
       allFields: [],
-      tempTreeDatas: null
+      tempTreeDatas: null,
+      showTips: false
     }
   },
   computed: {
@@ -672,8 +673,14 @@ export default {
       this.comLoadField(row.tableId)
     },
     onMove(e, originalEvent) {
+      this.showTips = false
       this.moveId = e.draggedContext.element.id
-      return true
+      const tabelId = e.draggedContext.element.tableId
+      const prohibit = this.currentElement.options.attrs.dragItems.some(item => item.tableId === tabelId)
+      if (prohibit) {
+        this.showTips = true
+      }
+      return !prohibit
     },
 
     endDs(e) {
@@ -717,12 +724,14 @@ export default {
       const result = this.currentElement.options.attrs.dragItems.filter(item => !res.has(item.tableId) && res.set(item.tableId), 1)
       this.currentElement.options.attrs.dragItems = result
       const newLen = result.length
-      if (sourceLen > newLen) this.$warning(this.$t('panel.prohibit_multiple'))
+      if (sourceLen > newLen || this.showTips) this.$warning(this.$t('panel.prohibit_multiple'))
     },
 
     enableSureButton() {
       let valid = true
-      const enable = this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
+
+      const enable =
+      this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
         .length > 0
       if (this.widget.validDynamicValue) {
         valid = this.widget.validDynamicValue(this.currentElement)
