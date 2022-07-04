@@ -5,6 +5,7 @@
                type="io.dataease.dto.authModel.VAuthModelDTO">
         <result column="privileges" jdbcType="VARCHAR" property="privileges"/>
         <result column="inner_id" jdbcType="VARCHAR" property="innerId"/>
+        <result column="is_plugin" jdbcType="VARCHAR" property="isPlugin"/>
     </resultMap>
 
     <select id="queryAuthModel" resultMap="ExtResultMap">
@@ -117,7 +118,8 @@
         panel_view.panel_id AS pid,
         chart_view.type as 'model_inner_type',
         'leaf' AS node_type,
-        'view' AS model_type
+        'view' AS model_type,
+        chart_view.is_plugin as 'is_plugin'
         FROM
         chart_view
         LEFT JOIN panel_view ON panel_view.chart_view_id = chart_view.id

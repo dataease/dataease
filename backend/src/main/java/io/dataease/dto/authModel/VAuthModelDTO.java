@@ -22,6 +22,8 @@ public class VAuthModelDTO extends VAuthModelWithBLOBs implements ITreeBase<VAut
 
     private String innerId;
 
+    private Boolean isPlugin = false;
+
     public String toString(){
         return this.getName();
     }
