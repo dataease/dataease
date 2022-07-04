@@ -311,6 +311,8 @@ export default {
       this.$emit('onColorChange', this.colorForm)
       this.colorForm['modifyName'] = 'colors'
       this.$emit('onColorChange', this.colorForm)
+      this.colorForm['modifyName'] = 'seriesColors'
+      this.$emit('onColorChange', this.colorForm)
     },
     resetCustomColor() {
       this.changeColorOption()
