@@ -73,6 +73,7 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
     if (customAttr.size) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
       options.radius = parseFloat(parseInt(s.radarSize) / 100)
+      options.radius = options.radius > 1 ? 1 : options.radius
       if (s.radarShape === 'polygon') {
         yAxis.grid = {
           line: {
