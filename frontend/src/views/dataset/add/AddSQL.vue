@@ -50,7 +50,7 @@
         </el-col>
         <el-col :span="8">
           <el-row style="float: right">
-            <el-button   type="text" size="mini" @click="variableMgm">
+            <el-button  v-if="mode === '0'"  type="text" size="mini" @click="variableMgm">
               {{ $t('sql_variable.variable_mgm') }}
             </el-button>
           </el-row>

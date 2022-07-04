@@ -91,6 +91,10 @@ public class DatasourceService {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
         }
+
+        Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+        datasourceProvider.checkConfiguration(datasource);
+
         checkName(datasource.getName(), datasource.getType(), datasource.getId());
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
