@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
-import {BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP} from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseTreemapOption(chart_option, chart) {
   // 处理shape attr
@@ -54,7 +54,6 @@ export function baseTreemapOption(chart_option, chart) {
         }
         chart_option.series[0].selectedMode = true
         chart_option.series[0].select = BASE_ECHARTS_SELECT
-        // y.type = 'treemap'
         chart_option.series[0].data.push(y)
       }
       chart_option.series[0].name = chart.data.series[0].name

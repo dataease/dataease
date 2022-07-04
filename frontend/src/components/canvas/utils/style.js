@@ -114,8 +114,6 @@ export const customAttrTrans = {
     'quotaFontSize',
     'spaceSplit', // 间隔
     'scatterSymbolSize', // 气泡大小，散点图
-    'treemapWidth', // 矩形树图
-    'treemapHeight',
     'radarSize'// 雷达占比
   ],
   'label': [
