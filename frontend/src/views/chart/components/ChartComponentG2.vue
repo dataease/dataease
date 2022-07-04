@@ -220,7 +220,7 @@ export default {
         }
       }
 
-      if (this.myChart && this.searchCount > 0) {
+      if (this.myChart && chart.type !== 'liquid' && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
 
