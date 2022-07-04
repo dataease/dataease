@@ -1393,6 +1393,7 @@ export const TYPE_CONFIGS = [
       'size-selector': [
         'lineWidth',
         'lineSymbol',
+        'lineType',
         'lineSymbolSize',
         'lineSmooth'
       ],
@@ -1472,6 +1473,7 @@ export const TYPE_CONFIGS = [
       'size-selector': [
         'lineWidth',
         'lineSymbol',
+        'lineType',
         'lineSymbolSize',
         'lineSmooth'
       ],

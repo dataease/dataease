@@ -34,6 +34,9 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('chart.line_symbol_size')" v-show="showProperty('lineSymbolSize')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
         <el-form-item v-show="showProperty('lineSmooth')" :label="$t('chart.line_smooth')" class="form-item">
           <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase('lineSmooth')">{{ $t('chart.line_smooth') }}</el-checkbox>
         </el-form-item>
@@ -187,7 +190,7 @@
           <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
             <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase('lineWidth')" />
           </el-form-item>
-          <el-form-item v-show="false" :label="$t('chart.line_type')" class="form-item">
+          <el-form-item :label="$t('chart.line_type')" class="form-item">
             <el-radio-group v-model="sizeForm.lineType" @change="changeBarSizeCase('lineType')">
               <el-radio-button label="solid">{{ $t('chart.line_type_solid') }}</el-radio-button>
               <el-radio-button label="dashed">{{ $t('chart.line_type_dashed') }}</el-radio-button>
@@ -202,6 +205,9 @@
                 :value="item.value"
               />
             </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
+            <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
           </el-form-item>
           <el-form-item :label="$t('chart.line_smooth')" class="form-item">
             <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase('lineSmooth')">{{ $t('chart.line_smooth') }}</el-checkbox>
