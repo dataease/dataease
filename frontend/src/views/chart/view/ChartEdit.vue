@@ -1663,47 +1663,6 @@ export default {
       delete view.data
       return view
     },
-    // calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
-    // this.hasEdit = true
-    // const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
-    // if (!view) return
-    // post('/chart/view/calcData/' + this.panelInfo.id, {
-    //   view: view,
-    //   requestList: {
-    //     filter: [],
-    //     drill: this.drillClickDimensionList
-    //   }
-    // }).then(response => {
-    //   const view = JSON.parse(JSON.stringify(response.data))
-    //   this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
-    //   this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
-    //   this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
-    //   this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
-    //   this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
-    //   this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
-    //   this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
-    //   this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
-    //   this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
-    //   this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
-    // this.view.senior = view.senior ? JSON.parse(view.senior) : {}
-    // 将视图传入echart组件
-    //   this.chart = response.data
-    //   this.data = response.data.data
-    //   this.httpRequest.status = true
-    //   if (this.chart.privileges) {
-    //     this.param.privileges = this.chart.privileges
-    //   }
-    //   if (!response.data.drill) {
-    //     this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-    //
-    //     this.resetDrill()
-    //   }
-    //   this.drill = response.data.drill
-    //   this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-    //
-    //   this.closeChangeChart()
-    // })
-    // },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
@@ -1713,7 +1672,7 @@ export default {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
-    calcStyle() {
+    calcStyle(modifyName) {
       this.changeEditStatus(true)
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
@@ -1739,7 +1698,11 @@ export default {
       if (!viewSave) return
       viewEditSave(this.panelInfo.id, viewSave)
 
-      bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
+      if (modifyName === 'color') {
+        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view, refreshProp: 'customAttr' })
+      } else {
+        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
+      }
     },
 
     closeEdit() {
@@ -1900,7 +1863,7 @@ export default {
 
     onColorChange(val) {
       this.view.customAttr.color = val
-      this.calcStyle()
+      this.calcStyle('color')
     },
 
     onSizeChange(val) {

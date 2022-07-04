@@ -858,6 +858,9 @@ export default {
         this.sourceCustomStyleStr = this.chart.customStyle
         if (this.componentViewsData[this.chart.id]) {
           this.componentViewsData[this.chart.id]['title'] = this.chart.title
+          if (param.refreshProp) {
+            this.componentViewsData[this.chart.id][param.refreshProp] = this.chart[param.refreshProp]
+          }
         }
         this.mergeScale()
       }
