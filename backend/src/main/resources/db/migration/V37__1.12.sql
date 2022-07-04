@@ -65,3 +65,33 @@ CREATE TABLE `sys_user_assist` (
    `need_first_noti` bit(1) DEFAULT NULL COMMENT '是否需要首登提示',
    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE
+OR REPLACE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_history_chart_view` AS SELECT
+                                                                                         `chart_group`.`id` AS `id`,
+                                                                                         `chart_group`.`id` AS `inner_id`,
+                                                                                         `chart_group`.`name` AS `NAME`,
+                                                                                         `chart_group`.`name` AS `label`,
+                                                                                         `chart_group`.`pid` AS `pid`,
+                                                                                         `chart_group`.`type` AS `model_inner_type`,
+                                                                                         'spine' AS `node_type`,
+                                                                                         'view' AS `model_type`,
+                                                                                         1 AS `mode`,
+                                                                                         0 AS `is_plugin`
+                                                                                     FROM
+                                                                                         `chart_group` UNION ALL
+                                                                                     SELECT DISTINCT
+                                                                                         `chart_view`.`id` AS `id`,
+                                                                                         `chart_view`.`id` AS `inner_id`,
+                                                                                         `chart_view`.`name` AS `NAME`,
+                                                                                         `chart_view`.`name` AS `label`,
+                                                                                         `chart_view`.`scene_id` AS `pid`,
+                                                                                         `chart_view`.`type` AS `model_inner_type`,
+                                                                                         'leaf' AS `node_type`,
+                                                                                         'view' AS `model_type`,
+                                                                                         1 AS `mode`,
+                                                                                         `chart_view`.`is_plugin` AS `is_plugin`
+                                                                                     FROM
+                                                                                         `chart_view`
+                                                                                     WHERE
+                                                                                         ( `chart_view`.`chart_type` = 'public' );
