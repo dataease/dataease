@@ -372,6 +372,7 @@ public class PanelGroupService {
         String templateData = null;
         String dynamicData = null;
         String staticResource = null;
+        Boolean mobileLayout = false;
         if (PanelConstants.NEW_PANEL_FROM.NEW.equals(newFrom)) {
             // do nothing
         } else {
@@ -381,11 +382,13 @@ public class PanelGroupService {
                 templateStyle = panelTemplate.getTemplateStyle();
                 templateData = panelTemplate.getTemplateData();
                 dynamicData = panelTemplate.getDynamicData();
+                mobileLayout = panelViewService.havaMobileLayout(templateData);
             } else if (PanelConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
                 templateStyle = request.getPanelStyle();
                 templateData = request.getPanelData();
                 dynamicData = request.getDynamicData();
                 staticResource = request.getStaticResource();
+                mobileLayout = panelViewService.havaMobileLayout(templateData);
             }
             Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
@@ -418,6 +421,7 @@ public class PanelGroupService {
         request.setId(newPanelId);
         request.setCreateTime(System.currentTimeMillis());
         request.setCreateBy(AuthUtils.getUser().getUsername());
+        request.setMobileLayout(mobileLayout);
         return newPanelId;
     }
 

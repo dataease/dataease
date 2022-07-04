@@ -133,6 +133,21 @@ public class PanelViewService {
         return viewIds;
     }
 
+    public Boolean havaMobileLayout(String panelData){
+        Boolean mobileLayout = false;
+        if (StringUtils.isNotEmpty(panelData)) {
+            JsonArray dataArray = JsonParser.parseString(panelData).getAsJsonArray();
+            for (int i = 0; i < dataArray.size(); i++) {
+                JsonObject jsonObject = dataArray.get(i).getAsJsonObject();
+                if (jsonObject.get("mobileSelected") != null && jsonObject.get("mobileSelected").getAsBoolean()) {
+                    mobileLayout = true;
+                }
+            }
+        }
+
+        return mobileLayout;
+    }
+
     public List<PanelViewTableDTO> detailList(String panelId) {
         return extPanelViewMapper.getPanelViewDetails(panelId);
     }
