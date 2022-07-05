@@ -208,6 +208,14 @@ export const pictureList = [
     label: '流媒体',
     icon: 'iconfont icon-a-liumeitimeitiliebiao',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '20004',
+    component: 'de-icons',
+    type: 'de-icons',
+    label: '字体图标',
+    icon: 'iconfont icon-text',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -250,7 +258,7 @@ const list = [
       textAlign: 'center',
       color: '#000000',
       verticalAlign: 'middle',
-      fontFamily: '',
+      fontFamily: ''
     },
     hyperlinks: HYPERLINKS,
     x: 1,
@@ -571,6 +579,32 @@ const list = [
     style: {
       width: 400,
       height: 200
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20004',
+    component: 'de-icons',
+    type: 'de-icons',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    iconData: {
+      color: '#333',
+      fontSize: 12,
+      type: 'system',
+      icon: ''
+    },
+    style: {
+      width: 100,
+      height: 100
     },
     streamMediaLinks: STREAMMEDIALINKS,
     x: 1,

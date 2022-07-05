@@ -38,6 +38,9 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-nav'" class="icon iconfont icon-genghuan" @click.stop="setNavInfo" />
       </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-icons'" class="icon iconfont icon-genghuan" @click.stop="setFontIcon" />
+      </span>
     </div>
     <!-- 轮播图的数据修改 -->
     <el-dialog
@@ -279,6 +282,9 @@ export default {
     },
     setNavInfo() {
       this.$emit('setNavInfo')
+    },
+    setFontIcon() {
+      this.$emit('setFontIcon')
     },
     handleFileChange(e) {
       const file = e.target.files[0]

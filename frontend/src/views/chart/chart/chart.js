@@ -68,7 +68,8 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -79,7 +80,10 @@ export const DEFAULT_LABEL = {
   gaugeFormatter: '{value}',
   labelLine: {
     show: true
-  }
+  },
+  progressFontSize: '14',
+  progressFontColor: '#000000',
+  progressColor: '#409EFF',
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

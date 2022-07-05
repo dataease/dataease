@@ -263,7 +263,7 @@
 </template>
 
 <script>
-import { DEFAULT_SIZE } from '../../chart/chart'
+import {COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
 export default {
   name: 'SizeSelector',
   props: {
@@ -303,7 +303,8 @@ export default {
         { name: '50' + this.$t('chart.table_page_size_unit'), value: '50' },
         { name: '100' + this.$t('chart.table_page_size_unit'), value: '100' }
       ],
-      fontSize: []
+      fontSize: [],
+      predefineColors: COLOR_PANEL,
     }
   },
   watch: {

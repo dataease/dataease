@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;">
     <el-col>
-      <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && !chart.type.includes('gauge') && !chart.type.includes('progress')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -37,6 +37,18 @@
             <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
           </el-form-item>
         </div>
+      </el-form>
+
+      <!-- 进度条设置 -->
+      <el-form v-show="chart.type && chart.type.includes('progress')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+        <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
+          <el-select v-model="labelForm.progressFontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('chart.text_color')" class="form-item">
+          <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
