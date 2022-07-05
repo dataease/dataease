@@ -84,27 +84,27 @@
 
             <span v-show="chart.type && !chart.type.includes('horizontal')">
               <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
-                <el-select v-model="axisForm.axisLabelFormatter.type" @change="changeYAxisStyle">
+                <el-select v-model="axisForm.axisLabelFormatter.type" @change="changeYAxisStyle('axisLabelFormatter')">
                   <el-option v-for="type in typeList" :key="type.value" :label="$t('chart.' + type.name)" :value="type.value" />
                 </el-select>
               </el-form-item>
 
               <el-form-item v-show="axisForm.axisLabelFormatter.type !== 'auto'" :label="$t('chart.value_formatter_decimal_count')" class="form-item">
-                <el-input-number v-model="axisForm.axisLabelFormatter.decimalCount" :precision="0" :min="0" :max="10" size="mini" @change="changeYAxisStyle" />
+                <el-input-number v-model="axisForm.axisLabelFormatter.decimalCount" :precision="0" :min="0" :max="10" size="mini" @change="changeYAxisStyle('axisLabelFormatter')" />
               </el-form-item>
 
               <el-form-item v-show="axisForm.axisLabelFormatter.type !== 'percent'" :label="$t('chart.value_formatter_unit')" class="form-item">
-                <el-select v-model="axisForm.axisLabelFormatter.unit" :placeholder="$t('chart.pls_select_field')" size="mini" @change="changeYAxisStyle">
+                <el-select v-model="axisForm.axisLabelFormatter.unit" :placeholder="$t('chart.pls_select_field')" size="mini" @change="changeYAxisStyle('axisLabelFormatter')">
                   <el-option v-for="item in unitList" :key="item.value" :label="$t('chart.' + item.name)" :value="item.value" />
                 </el-select>
               </el-form-item>
 
               <el-form-item :label="$t('chart.value_formatter_suffix')" class="form-item">
-                <el-input v-model="axisForm.axisLabelFormatter.suffix" size="mini" clearable :placeholder="$t('commons.input_content')" @change="changeYAxisStyle" />
+                <el-input v-model="axisForm.axisLabelFormatter.suffix" size="mini" clearable :placeholder="$t('commons.input_content')" @change="changeYAxisStyle('axisLabelFormatter')" />
               </el-form-item>
 
               <el-form-item :label="$t('chart.value_formatter_thousand_separator')" class="form-item">
-                <el-checkbox v-model="axisForm.axisLabelFormatter.thousandSeparator" @change="changeYAxisStyle" />
+                <el-checkbox v-model="axisForm.axisLabelFormatter.thousandSeparator" @change="changeYAxisStyle('axisLabelFormatter')" />
               </el-form-item>
             </span>
           </span>
