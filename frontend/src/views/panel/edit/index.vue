@@ -450,7 +450,8 @@ export default {
       enableSureButton: false,
       filterFromDrag: false,
       activeToolsName: 'view',
-      rightDrawOpen: false
+      rightDrawOpen: false,
+      editType: null
     }
   },
 
@@ -891,7 +892,9 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
-      adaptCurThemeCommonStyle(this.currentFilterCom)
+      if (this.editType !== 'update') {
+        adaptCurThemeCommonStyle(this.currentFilterCom)
+      }
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
@@ -902,7 +905,8 @@ export default {
       this.currentFilterCom = component
       this.$forceUpdate()
     },
-    editDialog() {
+    editDialog(editType) {
+      this.editType = editType
       if (this.curComponent && this.curComponent.serviceName) {
         const serviceName = this.curComponent.serviceName
         this.currentWidget = ApplicationContext.getService(serviceName)
