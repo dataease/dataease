@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMapDTO" type="io.dataease.dto.dataset.DataSetTableDTO"
                extends="io.dataease.plugins.common.base.mapper.DatasetTableMapper.BaseResultMap">
         <result column="privileges" property="privileges"/>
+        <result column="sql_variable_details" property="sqlVariableDetails"/>
     </resultMap>
 
 
@@ -16,7 +17,7 @@
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
         id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as `privileges`, scene_id as pid
+        get_auths(id,'dataset',#{userId}) as `privileges`, scene_id as pid, sql_variable_details
         from dataset_table
         <where>
             <if test="id != null">
