@@ -12,7 +12,7 @@
           <span class="params-title">{{ $t('panel.inner_padding') }}</span>
         </el-col>
         <el-col :span="15">
-          <el-slider v-model="curComponent.commonBackground.innerPadding" show-input :show-input-controls="false" input-size="mini" :max="15" />
+          <el-slider v-model="curComponent.commonBackground.innerPadding" show-input :show-input-controls="false" input-size="mini" :max="50" />
         </el-col>
       </el-row>
       <el-row style="height: 50px;overflow: hidden">
