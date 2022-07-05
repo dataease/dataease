@@ -145,9 +145,9 @@
         <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'滚动速率'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableRollingRate" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item> -->
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮透明度'" class="form-item form-item-slider">
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮透明度'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableHeightLight" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
