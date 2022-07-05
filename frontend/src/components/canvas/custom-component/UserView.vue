@@ -39,6 +39,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
+    <progressBar
+      v-else-if="progressBarFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <chart-component-g2
       v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
@@ -119,6 +130,7 @@ import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import scrollTable from '@/views/chart/components/table/scrollTable'
+import progressBar from '@/views/chart/components/progress/progressBar'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -157,7 +169,8 @@ export default {
     ChartComponentG2,
     ChartComponentH3,
     ChartComponentHc,
-    scrollTable
+    scrollTable,
+    progressBar
   },
   props: {
     element: {
@@ -255,6 +268,7 @@ export default {
         this.chart.type &&
         !this.chart.type.includes('table') &&
         !this.chart.type.includes('text') &&
+        !this.chart.type.includes('progress') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'echarts'
       )
@@ -316,6 +330,14 @@ export default {
         this.chart.type &&
         this.chart.type.includes('roll') &&
         this.renderComponent() === 'antv'
+      )
+    },
+    progressBarFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type.includes('progress') && 
+        this.renderComponent() === 'echarts'
       )
     },
     labelShowFlag() {
@@ -535,6 +557,7 @@ export default {
   },
   methods: {
     resizeChart() {
+      console.log('resizeChart',this.element)
       if (this.chart.type === 'map') {
         this.destroyTimeMachine()
         this.changeIndex++
