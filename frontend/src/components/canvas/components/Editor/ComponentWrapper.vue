@@ -24,6 +24,7 @@
         :is="config.component"
         v-else
         ref="wrapperChild"
+        class="component"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
@@ -267,5 +268,8 @@ export default {
   }
   .main_view{
     background-size: 100% 100%!important;
+  }
+  .component{
+    position: relative;
   }
 </style>
