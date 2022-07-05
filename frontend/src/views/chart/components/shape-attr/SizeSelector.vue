@@ -34,8 +34,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.line_symbol_size')" v-show="showProperty('lineSymbolSize')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        <el-form-item v-show="showProperty('lineSymbolSize')" :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase('lineSymbolSize')" />
         </el-form-item>
         <el-form-item v-show="showProperty('lineSmooth')" :label="$t('chart.line_smooth')" class="form-item">
           <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase('lineSmooth')">{{ $t('chart.line_smooth') }}</el-checkbox>
