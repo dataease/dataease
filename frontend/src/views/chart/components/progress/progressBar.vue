@@ -14,13 +14,13 @@
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;height: calc(100% - 30px);overflow: hidden;" :style="{ borderRadius: borderRadius}">
       <el-row class="prog_box"><!-- :style="{'padding-top': mgHeight}" -->
         <el-col :span="5" :ref="`circle${chartId}`" style="height: 100%;padding-top: 5%;">
-          <el-progress :width="cleWidth" type="circle" :percentage="progressData.totality.value"></el-progress>
-          <p style="text-align: center;">{{progressData.totality.name}}</p>
+          <el-progress :width="cleWidth" type="circle" :color="customColor" :percentage="progressData.totality.value"></el-progress>
+          <p style="text-align: center;" :style="progStyle">{{progressData.totality.name}}</p>
         </el-col>
         <el-col :span="18" :offset="1">
           <el-col :span="8" style="margin-bottom: 10px;" v-for="(item,index) in progressData.otherInfo" :key="index">
-            <p style="text-align: center;">{{item.name}}</p>
-            <el-progress :text-inside="true" :stroke-width="20" :percentage="item.value"></el-progress>
+            <p style="text-align: center;" :style="progStyle">{{item.name}}</p>
+            <el-progress :text-inside="true" :color="customColor" :stroke-width="20" :percentage="item.value"></el-progress>
           </el-col>
         </el-col>
       </el-row>
@@ -101,6 +101,11 @@ export default {
           value: 0,
         },
         otherInfo: []
+      },
+      customColor: '#409eff',
+      progStyle: {
+        fontSize: '14px',
+        color: '#000000',
       }
     }
   },
@@ -208,7 +213,7 @@ export default {
     initTitle() {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log('customStyle....',customStyle)
+        // console.log('customStyle....',customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           // this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -228,6 +233,14 @@ export default {
 
           this.container_bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
+      }
+
+      if (this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        // console.log('customAttr,progress',customAttr)
+
+        this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
+        this.progStyle.color = customAttr.label.progressFontColor
       }
     },
 

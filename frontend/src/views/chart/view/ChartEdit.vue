@@ -784,7 +784,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && chart.type !== 'progress' && view.type !== 'label'"
+                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
