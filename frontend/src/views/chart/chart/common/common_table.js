@@ -1,7 +1,8 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
-export function getCustomTheme(chart) {
+export function getCustomTheme(chart,fontFamily) {
+  console.log('common_table,antv',chart,fontFamily)
   const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
   const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
   const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
@@ -20,69 +21,81 @@ export function getCustomTheme(chart) {
       cell: {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
-        verticalBorderColor: borderColor
+        verticalBorderColor: borderColor,
+        fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     rowCell: {
       cell: {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
-        verticalBorderColor: borderColor
+        verticalBorderColor: borderColor,
+        fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     colCell: {
       cell: {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
-        verticalBorderColor: borderColor
+        verticalBorderColor: borderColor,
+        fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     dataCell: {
       cell: {
         backgroundColor: itemColor,
         horizontalBorderColor: borderColor,
-        verticalBorderColor: borderColor
+        verticalBorderColor: borderColor,
+        fontFamily: fontFamily
       },
       text: {
         // fill: DEFAULT_COLOR_CASE.tableFontColor,
         fill: DEFAULT_COLOR_CASE.tableInfoFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
-        textAlign: itemAlign
+        textAlign: itemAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
-        textAlign: itemAlign
+        textAlign: itemAlign,
+        fontFamily: fontFamily
       }
     }
   }

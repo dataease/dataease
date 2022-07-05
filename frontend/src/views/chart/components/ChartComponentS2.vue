@@ -2,7 +2,7 @@
   <div ref="chartContainer" style="padding: 0;width: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
-      <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
+      {{ chart.title }}
     </span>
     <div ref="tableContainer" style="width: 100%;overflow: hidden;" :style="{background:container_bg_class.background}">
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
@@ -89,7 +90,8 @@ export default {
         textAlign: 'left',
         fontStyle: 'normal',
         fontWeight: 'normal',
-        background: hexColorToRGBA('#ffffff', 0)
+        background: hexColorToRGBA('#ffffff', 0),
+        fontFamily:  ''
       },
       container_bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
@@ -113,7 +115,10 @@ export default {
       return {
         borderRadius: this.borderRadius
       }
-    }
+    },
+    ...mapState([
+      'canvasStyleData',
+    ])
   },
   watch: {
     chart: {
@@ -133,7 +138,7 @@ export default {
     }
   },
   mounted() {
-    // console.log('11111')
+    console.log('11111',this.canvasStyleData)
     this.preDraw()
   },
   beforeDestroy() {
@@ -197,13 +202,13 @@ export default {
       // console.log('是否触发drawView事件----------------？？？？？？？？？？？？？？？？？？？', this.chart)
       if (chart.type === 'table-info') {
         // console.log('触发点-------1111111111')
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-normal') {
         // console.log('触发点-------22222222222')
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-pivot') {
         // console.log('触发点-------33333333333')
-        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -387,6 +392,7 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
 
           if (this.$refs.title) {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'

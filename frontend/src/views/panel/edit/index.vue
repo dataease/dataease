@@ -786,6 +786,7 @@ export default {
     changeScale(e) {
       console.log('缩放值------', e)
       this.scaleRule = e / 100
+
       this.$nextTick(() => {
         this.handleScroll()
       })
@@ -814,6 +815,8 @@ export default {
     },
     handleScroll() {
       // console.log('21312321321')
+      console.log('this. console.log()----------', this.curCanvasScale)
+      this.curCanvasScale.scaleRule = this.scaleRule
       const screensRect = document
         .querySelector('#ruleBox')
         .getBoundingClientRect()

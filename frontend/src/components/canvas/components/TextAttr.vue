@@ -53,6 +53,17 @@
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-input v-model="initFontSize" type="number" size="mini" :max="maxFontSize" @change="styleChange" />
       </div>
+      
+      <div v-if="attrShow('fontFamily')" :title="$t('chart.text_style')" style="width: 80px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-select v-model="styleInfo.fontFamily" placeholder="请选择" size="mini" @change="styleChange">
+          <el-option
+            v-for="item in fontOptions"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
+      </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-font-weight-bold" />
@@ -192,6 +203,7 @@ export default {
       initFontSize: 12,
       miniFontSize: 1,
       maxFontSize: 128,
+      fontOptions: ['宋体', '楷体', '黑体', '仿宋', '新宋体'],
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -200,7 +212,7 @@ export default {
         },
         {
           icon: 'iconfont icon-align-center',
-          tooltip: this.$t('panel.text_align_center') + '123',
+          tooltip: this.$t('panel.text_align_center'),
           label: 'center'
         },
         {
@@ -286,7 +298,8 @@ export default {
         'fontWeight',
         'letterSpacing',
         'color',
-        'hyperlinks'
+        'hyperlinks',
+        'fontFamily'
       ],
       'de-video': [
         'opacity',
@@ -342,6 +355,7 @@ export default {
       return style
     },
     styleInfo() {
+      console.log('文本样式',this.curComponent)
       return this.$store.state.curComponent.style
     },
     canvasWidth() {

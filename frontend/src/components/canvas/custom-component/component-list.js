@@ -249,7 +249,8 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: '#000000',
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      fontFamily: '',
     },
     hyperlinks: HYPERLINKS,
     x: 1,

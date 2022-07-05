@@ -1132,12 +1132,15 @@ export default {
     },
     // 移动
     move(e) {
-      // console.log('鼠标移动事件-----------------------------------', e)
+      console.log('鼠标移动事件-----------------------------------', e)
       if (this.resizing) {
+        console.log('resizing')
         this.handleResize(e)
       } else if (this.dragging) {
+        console.log('dragging')
         this.handleDrag(e)
       } else if (this.rotating) {
+        console.log('rotating')
         this.handleRotate(e)
       }
     },
@@ -1170,15 +1173,26 @@ export default {
 
     // 元素移动
     async handleDrag(e) {
+      // 需要获取缩放值计算比例
+      console.log('this. console.log()----------', this.curCanvasScale)
+      let scaleRule = 1
+      if (this.curCanvasScale.scaleRule) {
+        scaleRule = this.curCanvasScale.scaleRule
+      }
+
       const axis = this.axis
       const grid = this.grid
       const bounds = this.bounds
       const mouseClickPosition = this.mouseClickPosition
+      console.log('this.mouseClickPosition', this.mouseClickPosition)
       // 水平移动
-      const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0
+      const tmpDeltaX = axis && axis !== 'y' ? Math.round((mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX)) / scaleRule) : 0
+
       // 垂直移动
       const mY = e.touches ? e.touches[0].pageY : e.pageY
-      const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
+      const tmpDeltaY = axis && axis !== 'x' ? Math.round((mouseClickPosition.mouseY - mY) / scaleRule) : 0
+
+      console.log('各种移动值：：：', tmpDeltaX, mY, tmpDeltaY)
       // mY 鼠标指针移动的点 mY - this.latestMoveY 是计算向下移动还是向上移动
       const offsetY = mY - this.latestMoveY
       // console.log('mY:' + mY + ';latestMoveY=' + this.latestMoveY + ';offsetY=' + offsetY)
@@ -1196,6 +1210,7 @@ export default {
       this.top = top + this.scrollAutoMove
       this.right = right
       this.bottom = bottom
+      // console.log()
       await this.snapCheck()
       this.$emit('dragging', this.left, this.top)
       // 如果当前视图遵循矩阵设计则 进行位置挤压检查
