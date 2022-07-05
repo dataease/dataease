@@ -6,6 +6,90 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "30335147",
+      "name": "icon_clear_outlined",
+      "font_class": "icon_clear_outlined",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "30335253",
+      "name": "icon_dialpad_outlined",
+      "font_class": "icon_dialpad_outlined",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "30335256",
+      "name": "icon_effects_outlined",
+      "font_class": "icon_effects_outlined",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "30335257",
+      "name": "icon_magnify_outlined",
+      "font_class": "icon_magnify_outlined",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "30335264",
+      "name": "icon_moments-categories_outlined",
+      "font_class": "icon_moments-categories_outlined",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "30335293",
+      "name": "icon_pc_outlined",
+      "font_class": "icon_pc_outlined",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "30335296",
+      "name": "icon_phone_outlined",
+      "font_class": "icon_phone_outlined",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "30335326",
+      "name": "icon_redo_outlined",
+      "font_class": "icon_redo_outlined",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "30335389",
+      "name": "icon_undo_outlined",
+      "font_class": "icon_undo_outlined",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "30335393",
+      "name": "icon-more",
+      "font_class": "icon-more",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "30335394",
+      "name": "icon-quicksetting",
+      "font_class": "icon-quicksetting",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "19959130",
+      "name": "square-selected",
+      "font_class": "square-selected",
+      "unicode": "e73e",
+      "unicode_decimal": 59198
+    },
+    {
       "icon_id": "2958392",
       "name": "italic",
       "font_class": "italic",

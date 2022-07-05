@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2459092 */
-  src: url('iconfont.woff2?t=1655779264671') format('woff2'),
-       url('iconfont.woff?t=1655779264671') format('woff'),
-       url('iconfont.ttf?t=1655779264671') format('truetype');
+  src: url('iconfont.woff2?t=1657014969539') format('woff2'),
+       url('iconfont.woff?t=1657014969539') format('woff'),
+       url('iconfont.ttf?t=1657014969539') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,54 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-icon_clear_outlined:before {
+  content: "\e61d";
+}
+
+.icon-icon_dialpad_outlined:before {
+  content: "\e61e";
+}
+
+.icon-icon_effects_outlined:before {
+  content: "\e620";
+}
+
+.icon-icon_magnify_outlined:before {
+  content: "\e621";
+}
+
+.icon-icon_moments-categories_outlined:before {
+  content: "\e623";
+}
+
+.icon-icon_pc_outlined:before {
+  content: "\e626";
+}
+
+.icon-icon_phone_outlined:before {
+  content: "\e627";
+}
+
+.icon-icon_redo_outlined:before {
+  content: "\e629";
+}
+
+.icon-icon_undo_outlined:before {
+  content: "\e62b";
+}
+
+.icon-icon-more:before {
+  content: "\e62e";
+}
+
+.icon-icon-quicksetting:before {
+  content: "\e62f";
+}
+
+.icon-square-selected:before {
+  content: "\e73e";
 }
 
 .icon-italic:before {
