@@ -217,13 +217,13 @@
       </de-main-container>
 
       <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
-        <div v-show="showViewToolsAside">
+        <div v-if="showViewToolsAside">
           <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
-        <div v-show="showBatchViewToolsAside">
+        <div v-if="showBatchViewToolsAside">
           <chart-style-batch-set />
         </div>
-        <div v-show="!showViewToolsAside&&!showBatchViewToolsAside">
+        <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
               <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
