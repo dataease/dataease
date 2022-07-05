@@ -420,9 +420,10 @@ export default {
         pre[next[from]] = next[to]
         return pre
       }, {})
-      const on = originName.match(/(?<=\[).+?(?=\])/g)
+      const on = originName.match(/\[(.+?)\]/g)
       if (on) {
-        on.forEach(ele => {
+        on.forEach(itm => {
+          const ele = itm.slice(1, -1)
           if (name2Auto) {
             name2Auto.push(nameIdMap[ele])
           }
