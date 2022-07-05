@@ -759,7 +759,7 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
+                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'progress' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -811,7 +811,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="!view.type.includes('table') && chart.type !== 'progress' && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -991,7 +991,7 @@
                       && !view.type.includes('text') && view.type !== 'label'
                       && (chart.type !== 'treemap' || chart.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
+                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && chart.type !== 'progress'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >

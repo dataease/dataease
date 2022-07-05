@@ -68,7 +68,8 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -79,7 +80,10 @@ export const DEFAULT_LABEL = {
   gaugeFormatter: '{value}',
   labelLine: {
     show: true
-  }
+  },
+  progressFontSize: '14',
+  progressFontColor: '#000000',
+  progressColor: '#409EFF',
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -586,6 +590,79 @@ export const BASE_LINE = {
   },
   yAxis: {
     type: 'value'
+  },
+  series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
+}
+
+export const BASE_PICTORIAL_BAR = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    splitLine: { show: false },
+    axisLabel: { show: false },
+    axisTick: { show: false },
+    axisLine: { show: false }
+  },
+  yAxis: {
+    data: [],
+    inverse: true,
+    axisLine: { show: false },
+    axisTick: { show: false },
+    axisLabel: {
+      margin: 30,
+      fontSize: 14
+    },
+    axisPointer: {
+      label: {
+        show: true,
+        margin: 30
+      }
+    }
   },
   series: [],
   dataZoom: [
