@@ -49,6 +49,17 @@
                 <el-input v-model="axisForm.axisValue.max" @blur="changeYAxisStyle('axisValue')" />
               </el-form-item>
               <el-form-item :label="$t('chart.axis_value_split_count')" class="form-item">
+                <span slot="label">
+                  <span class="span-box">
+                    <span>{{ $t('chart.axis_value_split_count') }}</span>
+                    <el-tooltip class="item" effect="dark" placement="bottom">
+                      <div slot="content">
+                        期望的坐标轴刻度数量，非最终结果。
+                      </div>
+                      <i class="el-icon-info" style="cursor: pointer;" />
+                    </el-tooltip>
+                  </span>
+                </span>
                 <el-input v-model="axisForm.axisValue.splitCount" @blur="changeYAxisStyle('axisValue')" />
               </el-form-item>
             </span>
