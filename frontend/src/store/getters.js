@@ -30,6 +30,7 @@ const getters = {
   uiInfo: state => state.user.uiInfo,
   conditions: state => state.conditions.conditions,
   msgTypes: state => state.msg.msgTypes,
-  geoMap: state => state.map.geoMap
+  geoMap: state => state.map.geoMap,
+  panelViews: state => state.task.panelViews
 }
 export default getters

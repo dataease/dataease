@@ -21,6 +21,7 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
+import task from './modules/task'
 import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import { Condition } from '@/components/widget/bean/Condition'
 
@@ -44,6 +45,7 @@ const data = {
     ...layer.state,
     ...snapshot.state,
     ...lock.state,
+    ...task.state,
     // 编辑器模式 edit preview
     editMode: 'edit',
     // 当前页面全局数据 包括扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
@@ -696,7 +698,8 @@ const data = {
     application,
     lic,
     msg,
-    map
+    map,
+    task
   },
   getters
 }
