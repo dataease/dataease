@@ -30,6 +30,7 @@ import {
   BASE_BAR,
   BASE_LINE,
   HORIZONTAL_BAR,
+  BASE_PICTORIAL_BAR,
   BASE_PIE,
   BASE_FUNNEL,
   THERMODYNAMIC_DIAGRAM,
@@ -45,7 +46,8 @@ import {
   baseBarOption,
   stackBarOption,
   horizontalBarOption,
-  horizontalStackBarOption
+  horizontalStackBarOption,
+  basePictorialBarOption
 } from '../chart/bar/bar'
 import {
   baseLineOption,
@@ -233,7 +235,10 @@ export default {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'graph') {
         chart_option = baseGraphOption(JSON.parse(JSON.stringify(BASE_GRAPH)), chart, this.$store.state.canvasStyleData)
-      }
+      } 
+      // else if (chart.type === 'pictorial-bar') {
+      //   chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
+      // } 
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false

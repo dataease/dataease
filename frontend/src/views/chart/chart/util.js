@@ -275,6 +275,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bar_stack_horizontal',
     icon: 'bar-stack-horizontal'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'progress',
+    title: 'chart.chart_bar_progress',
+    icon: 'progress'
+  },
 
   {
     render: 'echarts',
