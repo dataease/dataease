@@ -216,7 +216,11 @@ export default {
           height: '100%'
         }
       } else {
-        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+        return {
+          ...
+          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+          position: 'relative'
+        }
       }
     },
 
@@ -270,6 +274,6 @@ export default {
     background-size: 100% 100%!important;
   }
   .component{
-    position: relative;
+    //position: relative;
   }
 </style>
