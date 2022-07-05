@@ -44,6 +44,7 @@
         @linkJumpSet="linkJumpSet"
         @bannerImg="bannerImg"
         @setNavInfo="setNavInfo"
+        @setFontIcon="setFontIcon"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
       />
@@ -1960,6 +1961,10 @@ export default {
     // 导航条状设置
     setNavInfo() {
       this.$emit('setNavInfo')
+    },
+    // 字体图标的设置
+    setFontIcon() {
+      this.$emit('setFontIcon')
     }
   }
 

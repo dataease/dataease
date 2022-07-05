@@ -8,6 +8,7 @@ import Group from '@/components/canvas/custom-component/Group'
 import RectShape from '@/components/canvas/custom-component/RectShape'
 import DeBanner from '@/components/canvas/custom-component/DeBanner'
 import DeNav from '@/components/canvas/custom-component/DeNav'
+import DeIcons from '@/components/canvas/custom-component/DeIcons'
 import UserView from '@/components/canvas/custom-component/UserView'
 import DeVideo from '@/components/canvas/custom-component/DeVideo'
 import DeFrame from '@/components/canvas/custom-component/DeFrame'
@@ -21,6 +22,7 @@ Vue.component('VButton', VButton)
 Vue.component('Group', Group)
 Vue.component('RectShape', RectShape)
 Vue.component('DeBanner', DeBanner)
+Vue.component('DeIcons', DeIcons)
 Vue.component('DeNav', DeNav)
 Vue.component('UserView', UserView)
 Vue.component('DeVideo', DeVideo)
