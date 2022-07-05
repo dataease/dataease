@@ -332,8 +332,6 @@ export default {
     },
 
     save(withClose) {
-      // 清理联动信息
-      this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
       const requestInfo = {
         id: this.panelInfo.id,
@@ -342,6 +340,10 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
+        // 清理联动信息
+        if (view.linkageFilters && view.linkageFilters.length > 0) {
+          view.linkageFilters.splice(0, view.linkageFilters.length)
+        }
         if (view.DetailAreaCode) {
           view.DetailAreaCode = null
         }
