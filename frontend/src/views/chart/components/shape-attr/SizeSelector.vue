@@ -66,13 +66,23 @@
         </span>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <!-- 词云组件字体大小设置 -->
+      <el-form v-show="chart.type && chart.type === 'word-cloud'" ref="sizeFormWord" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.wordMin')" class="form-item">
+          <el-slider v-model="sizeForm.wordMin" show-input :show-input-controls="false" input-size="mini" :min="10" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.wordMax')" class="form-item">
+          <el-slider v-model="sizeForm.wordMax" show-input :show-input-controls="false" input-size="mini" :min="sizeForm.wordMin" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
+      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormFunnel" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormRadar" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.shape')" class="form-item">
           <el-radio-group v-model="sizeForm.radarShape" size="mini" @change="changeBarSizeCase">
             <el-radio-button label="polygon">{{ $t('chart.polygon') }}</el-radio-button>
@@ -84,7 +94,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormTable" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -128,7 +138,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormText" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />

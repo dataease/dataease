@@ -1,13 +1,14 @@
 <template>
   <div>
 
-    <div v-if="iconData.type==='system'" class="icon_class" :style="boxStyle">
-      <i :class="iconData.icon" :style="navStyleSet" />
+    <div class="icon_class" :style="boxStyle">
+      <i v-if="iconData.type==='system'" :class="iconData.icon" :style="navStyleSet" />
+      <svg-icon v-else :icon-class="iconData.icon" :style="navStyleSet" />
       <!-- 字体图标 -->
     </div>
-    <div v-else>
-      自定义图标
-    </div>
+    <!-- <div >
+
+    </div> -->
     <!-- <div class="nav_calss" :style="navStyleSet">
       <div v-for="(item,index) in navList" :key="index" class="nav_info">
         <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
