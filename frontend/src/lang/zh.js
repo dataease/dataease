@@ -755,6 +755,7 @@ export default {
     title_style: '标题样式',
     text_fontsize: '字体大小',
     text_color: '字体颜色',
+    graphic_color: '图形颜色',
     box_background: '背景颜色',
     box_background_opacity: '背景透明度',
     text_h_position: '水平位置',

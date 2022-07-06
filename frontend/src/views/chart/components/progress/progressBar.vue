@@ -241,6 +241,7 @@ export default {
 
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
+        this.customColor = customAttr.label.progressColor
       }
     },
 

@@ -49,6 +49,9 @@
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
+        <el-form-item :label="$t('chart.graphic_color')" class="form-item">
+          <el-color-picker v-model="labelForm.progressColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
