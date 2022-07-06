@@ -23,6 +23,7 @@
     "core-js": "^2.6.5",
     "css-color-function": "^1.3.3",
     "echarts": "^5.0.1",
+    "echarts-wordcloud": "^2.0.0",
     "element-resize-detector": "^1.2.3",
     "element-ui": "2.15.7",
     "esri-loader": "^3.5.0",

@@ -311,6 +311,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_treemap',
     icon: 'treemap'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'word-cloud',
+    title: 'chart.chart_word_cloud',
+    icon: 'word-cloud'
+  },
 
   {
     render: 'echarts',
