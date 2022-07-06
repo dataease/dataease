@@ -340,54 +340,85 @@ export default {
       }
       let repeat = false
       const repeatDsName = []
-      this.tData.forEach(item => {
-        if (item.id === this.form.type) {
-          item.children.forEach(child => {
-            if (this.formType === 'modify' && child.id === this.form.id) {
-              return
-            }
-            const configuration = JSON.parse(child.configuration)
-            if (!configuration) {
-              return
-            }
-            switch (this.form.type) {
-              case 'mysql':
-              case 'TiDB':
-              case 'StarRocks':
-              case 'hive':
-              case 'mariadb':
-              case 'ds_doris':
-              case 'ck':
-              case 'mongo':
-              case 'mariadb':
-              case 'impala':
-                if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
-                  repeat = true
-                  repeatDsName.push(child.name)
-                }
-                break
-              case 'pg':
-              case 'sqlServer':
-              case 'redshift':
-              case 'oracle':
-              case 'db2':
-                if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema) {
-                  repeatDsName.push(child.name)
-                  repeat = true
-                }
-                break
-              case 'es':
-                if (configuration.url == this.form.configuration.url) {
-                  repeatDsName.push(child.name)
-                  repeat = true
-                }
-                break
-              default:
-                break
-            }
-          })
-        }
-      })
+      if(!this.datasourceType.isPlugin){
+        this.tData.forEach(item => {
+          if (item.id === this.form.type) {
+            item.children.forEach(child => {
+              if (this.formType === 'modify' && child.id === this.form.id) {
+                return
+              }
+              const configuration = JSON.parse(child.configuration)
+              if (!configuration) {
+                return
+              }
+              switch (this.form.type) {
+                case 'mysql':
+                case 'TiDB':
+                case 'StarRocks':
+                case 'hive':
+                case 'mariadb':
+                case 'ds_doris':
+                case 'ck':
+                case 'mongo':
+                case 'mariadb':
+                case 'impala':
+                  if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
+                    repeat = true
+                    repeatDsName.push(child.name)
+                  }
+                  break
+                case 'pg':
+                case 'sqlServer':
+                case 'redshift':
+                case 'oracle':
+                case 'db2':
+                  if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema) {
+                    repeatDsName.push(child.name)
+                    repeat = true
+                  }
+                  break
+                case 'es':
+                  if (configuration.url == this.form.configuration.url) {
+                    repeatDsName.push(child.name)
+                    repeat = true
+                  }
+                  break
+                default:
+                  break
+              }
+            })
+          }
+        })
+      }else {
+       if( this.datasourceType.isJdbc){
+         this.tData.forEach(item => {
+           if (item.id === this.form.type) {
+             item.children.forEach(child => {
+               if (this.formType === 'modify' && child.id === this.form.id) {
+                 return
+               }
+               const configuration = JSON.parse(child.configuration)
+               if (!configuration) {
+                 return
+               }
+               if(configuration.schema != null){
+                 if (configuration.schema == this.form.configuration.schema  && configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
+                   repeat = true
+                   repeatDsName.push(child.name)
+                 }
+               }else {
+                 if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
+                   repeat = true
+                   repeatDsName.push(child.name)
+                 }
+               }
+
+             })
+           }
+         })
+       }
+      }
+
 
       let status = null
       if (this.datasourceType.isPlugin) {
