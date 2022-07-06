@@ -22,6 +22,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
+import DeViewSelect from '@/components/DeViewSelect'
 import '@/components/canvas/custom-component' // 注册自定义组件
 
 import '@/utils/DateUtil'
@@ -88,6 +89,7 @@ Vue.use(message)
 Vue.component('Treeselect', Treeselect)
 Vue.component('DeComplexInput', DeComplexInput)
 Vue.component('DeComplexSelect', DeComplexSelect)
+Vue.component('DeViewSelect', DeViewSelect)
 Vue.config.productionTip = false
 
 import vueToPdf from 'vue-to-pdf'
