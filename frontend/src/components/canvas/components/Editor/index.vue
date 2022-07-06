@@ -65,6 +65,7 @@
       @onResizing="onResizing"
       @bannerImg="bannerImg(item)"
       @setNavInfo="setNavInfo(item)"
+      @setFontIcon="setFontIcon(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -256,6 +257,17 @@
     >
       <tabSet v-if="tabVisible" :element="tabElement" @backgroundSetClose="tabSetClose" />
     </el-dialog>
+    <el-dialog
+      :visible.sync="iconVisible"
+      width="600px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <iconSet v-if="iconVisible" :element="iconElement" @backgroundSetClose="iconSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -289,6 +301,8 @@ import Background from '@/views/background/index'
 import BannerSet from '@/views/background/bannerSet'
 import navgationSet from '@/views/background/navgationSet'
 import tabSet from '@/views/background/tabSet'
+import iconSet from '@/views/background/iconSet'
+
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
 const eventsForBus = events.mouse
@@ -858,7 +872,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, BannerSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -932,10 +946,12 @@ export default {
       baseLineShow: false,
       navElement: {},
       tabElement: {},
+      iconElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
       navVisible: false,
       tabVisible: false,
+      iconVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1217,6 +1233,9 @@ export default {
     tabSetClose() {
       this.tabVisible = false
     },
+    iconSetClose() {
+      this.iconVisible = false
+    },
     boardSet(item) {
       // console.log('itsm00001', item)
       this.$emit('boardSet', item)
@@ -1238,6 +1257,12 @@ export default {
       //
       this.navElement = item
       this.navVisible = true
+    },
+    setFontIcon(item) {
+      this.iconVisible = true
+      this.iconElement = item
+
+      console.log('触发字体图标修改')
     },
     changeStyleWithScale,
     setLine(e) {
