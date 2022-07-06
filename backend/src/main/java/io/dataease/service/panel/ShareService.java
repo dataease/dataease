@@ -26,6 +26,7 @@ import io.dataease.plugins.common.base.mapper.PanelShareMapper;
 import io.dataease.service.message.DeMsgutil;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -386,6 +387,54 @@ public class ShareService {
                 .collect(Collectors.toList());
     }
 
+    public void removeSharesyPanel(String panelId) {
+        PanelGroup panelGroup = panelGroupMapper.selectByPrimaryKey(panelId);
+        PanelShareRemoveRequest request = new PanelShareRemoveRequest();
+        request.setPanelId(panelId);
+        List<PanelShareOutDTO> panelShareOutDTOS = queryTargets(panelId);
+        extPanelShareMapper.removeShares(request);
+        if (CollectionUtils.isEmpty(panelShareOutDTOS) || ObjectUtils.isEmpty(panelGroup) || StringUtils.isBlank(panelGroup.getName())) {
+            return;
+        }
+        panelShareOutDTOS.forEach(shareOut -> {
+            SysLogConstants.SOURCE_TYPE buiType = buiType(shareOut.getType());
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), shareOut.getTargetId(), buiType);
+        });
+
+        Map<Integer, List<PanelShareOutDTO>> listMap = panelShareOutDTOS.stream().collect(Collectors.groupingBy(dto -> dto.getType()));
+        AuthURD urd = new AuthURD();
+        for (Map.Entry<Integer, List<PanelShareOutDTO>> entry : listMap.entrySet()) {
+            List<PanelShareOutDTO> dtoList = entry.getValue();
+            if(CollectionUtils.isNotEmpty(dtoList)) {
+                List<Long> curTargetIds = dtoList.stream().map(dto -> Long.parseLong(dto.getTargetId())).collect(Collectors.toList());
+                buildRedAuthURD(entry.getKey(), curTargetIds, urd);
+            }
+        }
+        Set<Long> userIds = AuthUtils.userIdsByURD(urd);
+        if (CollectionUtils.isNotEmpty(userIds)) {
+            CurrentUserDto user = AuthUtils.getUser();
+            Gson gson = new Gson();
+            userIds.forEach(userId -> {
+                if (!user.getUserId().equals(userId)) {
+                    String msg = panelGroup.getName();
+                    List<String> msgParam = new ArrayList<>();
+                    msgParam.add(panelId);
+                    DeMsgutil.sendMsg(userId, 3L, user.getNickName() + " 取消分享了仪表板【" + msg + "】，请查收!", gson.toJson(msgParam));
+                }
+            });
+        }
+    }
+
+    private SysLogConstants.SOURCE_TYPE buiType(Integer type) {
+        SysLogConstants.SOURCE_TYPE targetType = SysLogConstants.SOURCE_TYPE.USER;
+        if (type == 1) {
+            targetType = SysLogConstants.SOURCE_TYPE.ROLE;
+        }else if (type == 2) {
+            targetType = SysLogConstants.SOURCE_TYPE.DEPT;
+        }
+        return targetType;
+    }
+
     @Transactional
     public void removeShares(PanelShareRemoveRequest removeRequest) {
         String panelId = removeRequest.getPanelId();
@@ -393,12 +442,7 @@ public class ShareService {
 
         extPanelShareMapper.removeShares(removeRequest);
 
-        SysLogConstants.SOURCE_TYPE targetType = SysLogConstants.SOURCE_TYPE.USER;
-        if (removeRequest.getType() == 1) {
-            targetType = SysLogConstants.SOURCE_TYPE.ROLE;
-        }else if (removeRequest.getType() == 2) {
-            targetType = SysLogConstants.SOURCE_TYPE.DEPT;
-        }
+        SysLogConstants.SOURCE_TYPE targetType = buiType(removeRequest.getType());
 
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), removeRequest.getTargetId(), targetType);
 
@@ -407,9 +451,8 @@ public class ShareService {
         buildRedAuthURD(removeRequest.getType(), removeIds, sharedAuthURD);
         CurrentUserDto user = AuthUtils.getUser();
         Gson gson = new Gson();
-        PanelGroup panel = panelGroupMapper.selectByPrimaryKey(panelId);
 
-        String msg = panel.getName();
+        String msg = panelGroup.getName();
 
         List<String> msgParam = new ArrayList<>();
         msgParam.add(panelId);
