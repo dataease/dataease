@@ -733,7 +733,7 @@ export default {
       const parent = evt.target.closest('.button-div-class')
       const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
-      const stick = evt.target.closest('.icon-magic-line')
+      const stick = evt.target.closest('.icon-icon_effects_outlined')
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
