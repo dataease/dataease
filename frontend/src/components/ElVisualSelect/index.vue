@@ -114,11 +114,13 @@ export default {
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), {wordColor: this.$parent.element.style.wordColor})
     },
     init() {
-      this.customInputStyle()
       if (this.defaultFirst && this.list.length > 0) {
         this.selectValue = this.list[0].value
       }
-      if (!this.list || !this.list.length) return
+      if (!this.list || !this.list.length) {
+        this.customInputStyle()
+        return
+      }
 
       const selectDom = document.querySelector(
         `.${this.classId} .el-select-dropdown .el-select-dropdown__wrap`
@@ -133,6 +135,7 @@ export default {
       this.addScrollDiv(this.slectBoxDom)
 
       this.scrollFn()
+      this.customInputStyle()
     },
 
     scrollFn() {
