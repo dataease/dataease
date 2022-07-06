@@ -675,6 +675,7 @@ export default {
     onMove(e, originalEvent) {
       this.showTips = false
       this.moveId = e.draggedContext.element.id
+      if (this.isTree) return true
       const tabelId = e.draggedContext.element.tableId
       const prohibit = this.currentElement.options.attrs.dragItems.some(item => item.tableId === tabelId)
       if (prohibit) {
