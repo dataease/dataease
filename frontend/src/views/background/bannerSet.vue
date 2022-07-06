@@ -65,10 +65,10 @@
           </el-col>
         </el-row>
         <el-collapse v-model="activeName">
-          <el-collapse-item v-for="(item,index) in curComponent.options.bannerImgList" :title="`图${index+1}`" :key="index" :name="index">
+          <el-collapse-item v-for="(item,index) in curComponent.options.bannerImgList" :key="index" :title="`图${index+1}`" :name="index">
             <el-row style="padding:5px;">
               <el-col :span="2">
-                <span class="params-title">{{$t('commons.title')}}</span>
+                <span class="params-title">{{ $t('commons.title') }}</span>
               </el-col>
               <el-col :span="8">
                 <el-input v-model="item.imgTitle" placeholder="请输入内容" />
@@ -76,7 +76,7 @@
             </el-row>
             <el-row style="padding:5px;">
               <el-col :span="2">
-                <span class="params-title">{{$t('panel.content')}}</span>
+                <span class="params-title">{{ $t('panel.content') }}</span>
               </el-col>
               <el-col :span="20">
                 <el-input
@@ -100,10 +100,11 @@
                 <span class="params-title">{{ $t('chart.text_color') }}</span>
               </el-col>
               <el-col :span="8">
-                <el-color-picker 
-                  v-model="item.imgFontColor" 
-                  class="color-picker-style" 
-                  :predefine="predefineColors"/>
+                <el-color-picker
+                  v-model="item.imgFontColor"
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                />
               </el-col>
             </el-row>
             <el-row style="padding:5px;">
@@ -111,10 +112,11 @@
                 <span class="params-title">{{ $t('chart.box_background') }}</span>
               </el-col>
               <el-col :span="8">
-                <el-color-picker 
-                  v-model="item.imgBackgroundColor" 
-                  class="color-picker-style" 
-                  :predefine="predefineColors"/>
+                <el-color-picker
+                  v-model="item.imgBackgroundColor"
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                />
               </el-col>
             </el-row>
             <el-row style="padding:5px;">
@@ -215,7 +217,7 @@ export default {
       //     this.fileList.push({ url: res })
       //   })
       // }
-      console.log('init,filelist.....',this.fileList)
+      console.log('init,filelist.....', this.fileList)
       // this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
       this.backgroundOrigin = deepCopy(this.curComponent.options)
       console.log(this.backgroundOrigin)
@@ -228,7 +230,7 @@ export default {
     },
     cancel() {
       this.curComponent.options = this.backgroundOrigin
-      
+
       console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
@@ -250,7 +252,7 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log('remove',file, fileList)
+      console.log('remove', file, fileList)
       var _this = this
       _this.fileList = fileList
       _this.curComponent.options.bannerImgList = []
@@ -260,9 +262,9 @@ export default {
           reader.onload = function() {
             console.log('reader.result7777777', reader.result)
             _this.curComponent.options.bannerImgList.push({
-              url:reader.result,
+              url: reader.result,
               imgTitle: '',
-              imgContent: '',  // 有点问题这里
+              imgContent: '', // 有点问题这里
               imgFontSize: 10,
               imgFontColor: '#000000',
               imgBackgroundColor: '#ffffff',
