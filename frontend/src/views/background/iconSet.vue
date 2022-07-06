@@ -27,6 +27,24 @@
           <span class="params-title">{{ '系统默认图标' }}</span>
         </el-col>
       </el-row>
+      <!-- <el-row style="padding:10px">
+        <el-upload
+          action=""
+          accept=".jpeg,.jpg,.png,.gif,.svg"
+          class="avatar-uploader"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :http-request="upload"
+          :file-list="fileList"
+          :on-change="onChange"
+        >
+          <i class="el-icon-plus" />
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+      </el-row> -->
       <el-row>
         <!-- 具体图标 -->
         <el-col v-for="(item,index) in systemIcon" :key="index" :span="3">
@@ -40,8 +58,27 @@
           <span class="params-title">{{ '自定义图标' }}</span>
         </el-col>
       </el-row>
+      <el-row>
+        <!-- 具体图标 -->
+        <el-col v-for="(item,index) in customIcon" :key="index" :span="3">
+          <div class="icon_class" :class="selectObj.icon===item.icon?'changeColor':''">
+            <svg-icon :icon-class="item.icon" style="fontSize:28px;cursor: pointer;" @click="changeIcon(item)" />
+          </div>
+        </el-col>
+      </el-row>
+      <!-- <el-row>
+        <el-col>
+          <svg-icon icon-class="from-people" style="fontSize:28px;cursor: pointer;" />
+          <svg-icon icon-class="humidity-worter" style="fontSize:28px;cursor: pointer;color:#f99" />
+        </el-col>
+      </el-row> -->
       <!-- <div class="sys_class">232</div> -->
-      <el-row v-show="selectObj.type==='system'">
+      <!-- <el-row>
+        <el-col :span="6">
+          <span class="params-title">{{ '设置' }}</span>
+        </el-col>
+      </el-row> -->
+      <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '颜色' }}</span>
         </el-col>
@@ -52,7 +89,7 @@
           <span class="params-title">{{ '图标大小' }}</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="iconSize" :min="12" :max="120" label="图标大小" />
+          <el-input-number v-model="iconSize" :min="12" :max="400" label="图标大小" />
         </el-col>
       </el-row>
 
@@ -73,6 +110,7 @@ import { mapState } from 'vuex'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { CUSTOM_DATA } from './custom.js'
 
 export default {
   name: 'Background',
@@ -415,7 +453,9 @@ export default {
           type: 'system',
           icon: 'el-icon-moon-night'
         }
-      ]
+
+      ],
+      customIcon: CUSTOM_DATA
     }
   },
   computed: {
@@ -539,7 +579,7 @@ export default {
       // }
       // reader.readAsDataURL(file.raw)
       _this.fileList = fileList
-      _this.curComponent.options.bannerImgList = []
+      // _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
         console.log('itemssss', item)
         if (item.raw) {
@@ -547,11 +587,11 @@ export default {
           reader.onload = function() {
             console.log('reader.result6666666', reader.result)
             // _this.imgUrlList.push(reader.result)
-            _this.curComponent.options.bannerImgList.push(reader.result)
+            // _this.curComponent.options.bannerImgList.push(reader.result)
           }
           reader.readAsDataURL(item.raw)
         } else {
-          _this.curComponent.options.bannerImgList.push(item.url)
+          // _this.curComponent.options.bannerImgList.push(item.url)
         }
       })
       console.log('222222', file, fileList)
