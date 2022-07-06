@@ -26,6 +26,14 @@ export function removeShares(data) {
   })
 }
 
+export function removePanelShares(panelId) {
+  return request({
+    url: '/api/share/removePanelShares/' + panelId,
+    method: 'post',
+    loading: true
+  })
+}
+
 export function loadShares(data) {
   return request({
     url: '/api/share/queryWithResourceId',
