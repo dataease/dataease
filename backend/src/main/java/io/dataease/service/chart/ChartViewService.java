@@ -649,7 +649,7 @@ public class ChartViewService {
                 boolean hasParameters = false;
                 if (StringUtils.isNotEmpty(table.getSqlVariableDetails())) {
                     List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
-                    for (String parameter : request.getParameters()) {
+                    for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>()) ) {
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
                         }
