@@ -52,4 +52,9 @@ public class ShareServer implements ShareApi {
     public void removeShares(@RequestBody PanelShareRemoveRequest request) {
         shareService.removeShares(request);
     }
+
+    @Override
+    public void removePanelShares(String panelId) {
+        shareService.removeSharesyPanel(panelId);
+    }
 }
