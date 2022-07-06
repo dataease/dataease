@@ -2577,6 +2577,7 @@ public class DataSetTableService {
                     stringBuilder.append(SubstitutedSql);
                     return;
                 }
+                inExpression.getLeftExpression().accept(this);
                 if (inExpression.isNot()) {
                     getBuffer().append(" " + " NOT IN " + " ");
                 } else {
