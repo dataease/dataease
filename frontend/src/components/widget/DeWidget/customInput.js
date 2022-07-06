@@ -1,5 +1,5 @@
 // 通过控制css变量控制过滤组件弹框样式 de-select-grid除外
-import {  attrsMap, styleAttrs } from '@/components/widget/DeWidget/serviceNameFn.js'
+import { attrsMap, styleAttrs } from '@/components/widget/DeWidget/serviceNameFn.js'
 
 export default {
     data() {
@@ -14,6 +14,25 @@ export default {
                 "de-input-search": ['--BgSearchColor', '--SearchColor', '--BrSearchColor'],
                 "de-number-range": ['--BgRangeColor', '--RangeColor', '--BrRangeColor']
             }
+        }
+    },
+    watch: {
+        cssArr: {
+            handler() {
+                if (['de-select', 'de-select-tree'].includes(this.element.component)) {
+                    if (!this.element.options.attrs.multiple) {
+                        return
+                    }
+                    this.handleElTagStyle()
+                };
+            },
+            deep: true
+        },
+    },
+    computed: {
+        cssArr() {
+            const { brColor, wordColor, innerBgColor } = this.element.style;
+            return { brColor, wordColor, innerBgColor }
         }
     },
     mounted() {
@@ -32,7 +51,7 @@ export default {
             const newValue = { brColor, wordColor, innerBgColor };
             const cssVar = this.typeTransform();
             this.styleAttrs.forEach((ele, index) => {
-                document.documentElement.style.setProperty(cssVar[index],  !isPanelDe ? '' : newValue[ele])
+                document.documentElement.style.setProperty(cssVar[index], !isPanelDe ? '' : newValue[ele])
             })
         },
     }

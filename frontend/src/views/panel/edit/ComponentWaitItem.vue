@@ -1,5 +1,5 @@
 <template>
-  <div class="component-item" >
+  <div class="component-item">
     <div :style="commonStyle">
       <mobile-check-bar v-if="mobileCheckBarShow" :element="config" />
       <de-out-widget
@@ -113,7 +113,11 @@ export default {
   },
   methods: {
     getComponentStyleDefault(style) {
-      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      return {
+        ...
+        getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+        position: 'relative'
+      }
     }
   }
 }

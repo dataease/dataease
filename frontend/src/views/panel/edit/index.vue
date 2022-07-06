@@ -217,13 +217,13 @@
       </de-main-container>
 
       <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
-        <div v-show="showViewToolsAside">
+        <div v-if="showViewToolsAside">
           <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
-        <div v-show="showBatchViewToolsAside">
+        <div v-if="showBatchViewToolsAside">
           <chart-style-batch-set />
         </div>
-        <div v-show="!showViewToolsAside&&!showBatchViewToolsAside">
+        <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
               <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
@@ -450,7 +450,8 @@ export default {
       enableSureButton: false,
       filterFromDrag: false,
       activeToolsName: 'view',
-      rightDrawOpen: false
+      rightDrawOpen: false,
+      editType: null
     }
   },
 
@@ -732,7 +733,7 @@ export default {
       const parent = evt.target.closest('.button-div-class')
       const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
-      const stick = evt.target.closest('.icon-magic-line')
+      const stick = evt.target.closest('.icon-icon_effects_outlined')
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
@@ -891,7 +892,9 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
-      adaptCurThemeCommonStyle(this.currentFilterCom)
+      if (this.editType !== 'update') {
+        adaptCurThemeCommonStyle(this.currentFilterCom)
+      }
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
@@ -902,7 +905,8 @@ export default {
       this.currentFilterCom = component
       this.$forceUpdate()
     },
-    editDialog() {
+    editDialog(editType) {
+      this.editType = editType
       if (this.curComponent && this.curComponent.serviceName) {
         const serviceName = this.curComponent.serviceName
         this.currentWidget = ApplicationContext.getService(serviceName)

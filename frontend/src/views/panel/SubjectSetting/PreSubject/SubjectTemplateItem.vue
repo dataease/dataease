@@ -108,8 +108,7 @@
       </div>
 
     </div>
-    <div style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px; float: left" @dblclick="setEdit">
-
+    <div class="title-main" @dblclick="setEdit">
       <div class="title-area">
         <el-input
           v-if="canEdit"
@@ -120,12 +119,12 @@
         />
         <span
           v-if="!canEdit"
-          style="margin-top: 8px;margin-left: 8px"
+          style="margin-top: 8px;margin-left: 8px;"
           :title="subjectItem.name"
         >{{ subjectItem.name }}</span>
-        <i v-if="subjectItem.type==='self' && !canEdit" class="el-icon-delete delete-icon" @click.stop="subjectDelete" />
       </div>
     </div>
+    <i v-if="subjectItem.type==='self' && !canEdit" class="el-icon-delete delete-icon" @click.stop="subjectDelete" />
   </div>
 </template>
 
@@ -408,10 +407,29 @@ export default {
 
 .delete-icon{
   position: absolute;
+  bottom: 8px;
   right: 8px;
-  top: 8px;
 }
 .delete-icon:hover{
   color: red;
+}
+.title-main{
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  height: 30px;
+  float: left
+}
+.subject-template:hover > .title-main {
+  width: 115px;
+}
+.subject-template:hover > .el-icon-delete {
+  z-index: 10;
+  display:block;
+}
+
+.subject-template ::v-deep .el-icon-delete {
+  display:none
 }
 </style>

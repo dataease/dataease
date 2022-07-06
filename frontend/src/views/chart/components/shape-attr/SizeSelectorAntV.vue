@@ -270,7 +270,7 @@
             show-input
             :show-input-controls="false"
             input-size="mini"
-            @change="changeBarSizeCase('tableColumnMode')"
+            @change="changeBarSizeCase('tableColumnWidth')"
           />
         </el-form-item>
       </el-form>

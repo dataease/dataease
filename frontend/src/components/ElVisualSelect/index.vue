@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { handlerInputStyle } from '@/components/widget/DeWidget/serviceNameFn.js'
+
 import { uuid } from 'vue-uuid'
 export default {
   name: 'ElVisualSelect',
@@ -106,12 +108,19 @@ export default {
       }
       this.options = this.newList.slice(0, this.maxLength)
     },
-
+    customInputStyle() {
+      if (!this.$parent.$parent.handlerInputStyle) return;
+      handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-input__inner'), this.$parent.element.style)
+      handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), {wordColor: this.$parent.element.style.wordColor})
+    },
     init() {
       if (this.defaultFirst && this.list.length > 0) {
         this.selectValue = this.list[0].value
       }
-      if (!this.list || !this.list.length) return
+      if (!this.list || !this.list.length) {
+        this.customInputStyle()
+        return
+      }
 
       const selectDom = document.querySelector(
         `.${this.classId} .el-select-dropdown .el-select-dropdown__wrap`
@@ -126,6 +135,7 @@ export default {
       this.addScrollDiv(this.slectBoxDom)
 
       this.scrollFn()
+      this.customInputStyle()
     },
 
     scrollFn() {

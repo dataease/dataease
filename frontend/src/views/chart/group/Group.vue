@@ -434,13 +434,6 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     }
-    /* pluginRenderOptions() {
-      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
-      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
-        return { name: plugin.render, value: plugin.render }
-      })
-      return [...this.renderOptions, ...pluginOptions]
-    } */
   },
   watch: {
     saveStatus() {
@@ -692,6 +685,9 @@ export default {
         if (!userCache) {
           this.tData = res.data
           this.initCurrentNode()
+        }
+        if (this.filterText) {
+          this.$refs.chartTreeRef.filter(this.filterText)
         }
       })
     },

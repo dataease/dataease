@@ -1,7 +1,6 @@
 import { sin, cos } from '@/components/canvas/utils/translate'
 import store from '@/store'
-import { colorReverse } from '@/components/canvas/utils/utils'
-
+import Vue from 'vue'
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
 export const LIGHT_THEME_PANEL_BACKGROUND = '#F1F3F5'
@@ -115,8 +114,6 @@ export const customAttrTrans = {
     'quotaFontSize',
     'spaceSplit', // 间隔
     'scatterSymbolSize', // 气泡大小，散点图
-    'treemapWidth', // 矩形树图
-    'treemapHeight',
     'radarSize'// 雷达占比
   ],
   'label': [
@@ -218,9 +215,6 @@ export const THEME_STYLE_TRANS_MAIN = {
   },
   'split': {
     'name': ['color'],
-    'axisLine': {
-      'lineStyle': ['color']
-    },
     'axisTick': {
       'lineStyle': ['color']
     },
@@ -246,6 +240,9 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
   },
   'split': {
     'splitLine': {
+      'lineStyle': ['color']
+    },
+    'axisLine': {
       'lineStyle': ['color']
     }
   }
@@ -352,7 +349,7 @@ export function adaptCurThemeCommonStyle(component) {
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
-      component.style[styleKey] = filterStyle[styleKey]
+      Vue.set(component.style, styleKey, filterStyle[styleKey])
     }
   } else {
     if (component.style.color) {

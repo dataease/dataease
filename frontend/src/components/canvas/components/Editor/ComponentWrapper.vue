@@ -24,6 +24,7 @@
         :is="config.component"
         v-else
         ref="wrapperChild"
+        class="component"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
@@ -149,7 +150,7 @@ export default {
       return style
     },
     componentActiveFlag() {
-      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible && !this.showPosition.includes('multiplexing')
+      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible && !this.showPosition.includes('multiplexing') && !this.showPosition.includes('email-task')
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
@@ -215,7 +216,11 @@ export default {
           height: '100%'
         }
       } else {
-        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+        return {
+          ...
+          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+          position: 'relative'
+        }
       }
     },
 
@@ -267,5 +272,8 @@ export default {
   }
   .main_view{
     background-size: 100% 100%!important;
+  }
+  .component{
+    //position: relative;
   }
 </style>

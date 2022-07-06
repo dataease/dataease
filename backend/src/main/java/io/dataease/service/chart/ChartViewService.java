@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.model.PluginViewSetImpl;
+import io.dataease.dto.dataset.SqlVariableDetails;
 import io.dataease.ext.*;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
@@ -644,6 +645,19 @@ public class ChartViewService {
                 String fieldId = request.getFieldId();
                 if (request.getIsTree() == null) {
                     request.setIsTree(false);
+                }
+                boolean hasParameters = false;
+                if (StringUtils.isNotEmpty(table.getSqlVariableDetails())) {
+                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                    for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>()) ) {
+                        if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
+                            hasParameters = true;
+                        }
+                    }
+                }
+
+                if(hasParameters){
+                    continue;
                 }
                 if (StringUtils.isNotEmpty(fieldId)) {
                     String[] fieldIds = fieldId.split(",");

@@ -17,15 +17,21 @@ export default {
         left: 0
       },
       x: 1,
-      y: 108,
+      y: 216,
       sizex: 48,
       sizey: 24
     }
   },
   mutations: {
     copyMultiplexingComponents(state) {
+      let pYMax = 0
       const _this = this
       state.isCut = false
+      state.componentData.forEach(item => {
+        if (item.y > pYMax) {
+          pYMax = item.y
+        }
+      })
       const canvasStyleData = state.canvasStyleData
       const curCanvasScale = state.curCanvasScale
       const componentGap = state.componentGap
@@ -33,7 +39,7 @@ export default {
         const component =
           {
             ...deepCopy(state.curMultiplexingComponents[viewId]),
-            ...deepCopy(state.viewBase),
+            ...deepCopy(deepCopy(state.viewBase)),
             'auxiliaryMatrix': canvasStyleData.auxiliaryMatrix
           }
 
@@ -43,6 +49,8 @@ export default {
           const width = component.sizex * curCanvasScale.matrixStyleOriginWidth
           // 取余 平铺4个 此处x 位置偏移
           component.x = component.x + component.sizex * tilePosition
+          // Y 方向根据当前应该放置的最大值 加上50矩阵余量
+          component.y = pYMax + 50 + state.viewBase.sizex * divisiblePosition
           component.style.left = (component.x - 1) * curCanvasScale.matrixStyleOriginWidth
           component.style.top = (component.y - 1) * curCanvasScale.matrixStyleOriginHeight
           component.style.width = width
@@ -85,17 +93,7 @@ export default {
         data.style.top += 20
         data.style.left += 20
       }
-
-      // if (isMouse) {
-      //   data.style.top = state.menuTop
-      //   data.style.left = state.menuLeft
-      // } else {
-      //   data.style.top += 10
-      //   data.style.left += 10
-      // }
-
       data.id = generateID()
-
       // 如果是用户视图 测先进行底层复制
       if (data.type === 'view') {
         chartCopy(data.propValue.viewId, state.panel.panelInfo.id).then(res => {

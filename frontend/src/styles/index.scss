@@ -152,7 +152,7 @@ div:focus {
   }
 
   .el-tabs__content {
-    height: calc(100% - 55px) !important;
+    height: calc(100%) !important;
     margin-top: 5px;
 
     .el-tab-pane {
@@ -832,4 +832,7 @@ div:focus {
 }
 .fu-operator-component__label {
   width: 100px !important;
+}
+.view-select-option {
+    display: none !important;
 }

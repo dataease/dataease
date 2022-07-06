@@ -3,10 +3,10 @@
     <div class="switch-position">
       <el-radio-group v-model="mobileLayoutInitStatus" size="mini" @change="openMobileLayout">
         <el-radio-button :label="false">
-          <svg-icon icon-class="icon_pc_outlined" class="toolbar-icon-active text16" />
+          <span class="icon iconfont icon-icon_pc_outlined icon16_only" />
         </el-radio-button>
         <el-radio-button :label="true">
-          <svg-icon icon-class="icon_phone_outlined" class="toolbar-icon-active text16" />
+          <span class="icon iconfont icon-icon_phone_outlined icon16_only" />
         </el-radio-button>
       </el-radio-group>
     </div>
@@ -47,14 +47,14 @@
       <el-divider style="margin-left: 20px" direction="vertical" />
       <span class="button_self">
         <el-dropdown :hide-on-click="false" trigger="click" placement="bottom-start">
-          <span class="icon iconfont icon-gengduo insert margin-right20">
+          <span class="icon iconfont icon-icon-more insert margin-right20">
             <span class="icon-font-margin">{{ $t('panel.more') }}</span>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-dropdown placement="right-start">
                 <span>
-                  <svg-icon icon-class="icon_moments-categories_outlined" class="toolbar-icon-active text16" @click="clickPreview" />
+                  <span class="icon iconfont icon-icon_moments-categories_outlined icon16" />
                   <span class="text14 margin-left8">{{ $t('panel.new_element_distribution') }}</span>
                   <svg-icon icon-class="icon_right_outlined" class="icon16 margin-left8" />
                 </span>
@@ -71,25 +71,25 @@
               </el-dropdown>
             </el-dropdown-item>
             <el-dropdown-item>
-              <svg-icon icon-class="icon_dialpad_outlined" class="icon16" />
+              <span class="icon iconfont icon-icon_dialpad_outlined icon16" />
               <span class="text14 margin-left8">{{ $t('panel.aided_grid') }}</span>
               <el-switch v-model="showGridSwitch" class="margin-left8" size="mini" @change="showGridChange" />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
-              <svg-icon icon-class="icon-quicksetting" class="icon16" />
+              <span class="icon iconfont icon-icon-quicksetting icon16" />
               <span class="text14 margin-left8">{{ $t('panel.params_setting') }}</span>
             </el-dropdown-item>
             <el-dropdown-item @click.native="clearCanvas">
-              <svg-icon icon-class="icon_clear_outlined" class="icon16" />
+              <span class="icon iconfont icon-icon_clear_outlined icon16" />
               <span class="text14 margin-left8">{{ $t('panel.clean_canvas') }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
-      <span class="icon iconfont icon-magic-line insert margin-right20" @click="showPanel">
+      <span class="icon iconfont icon-icon_effects_outlined insert margin-right20" @click="showPanel">
         <span class="icon-font-margin">{{ $t('panel.panel_style') }}</span>
       </span>
-      <span class="icon iconfont icon-piliang-copy insert margin-right20" @click="batchOption"><span
+      <span class="icon iconfont icon-icon_Batch_outlined insert margin-right20" @click="batchOption"><span
         class="icon-font-margin"
       >{{ $t('panel.batch_opt') }}</span></span>
       <span style="float: right;margin-right: 24px">
@@ -137,9 +137,6 @@ import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
 import { panelUpdate } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
-import {
-  DEFAULT_COMMON_CANVAS_STYLE_STRING
-} from '@/views/panel/panel'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
@@ -332,8 +329,6 @@ export default {
     },
 
     save(withClose) {
-      // 清理联动信息
-      this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
       const requestInfo = {
         id: this.panelInfo.id,
@@ -342,6 +337,10 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
+        // 清理联动信息
+        if (view.linkageFilters && view.linkageFilters.length > 0) {
+          view.linkageFilters.splice(0, view.linkageFilters.length)
+        }
         if (view.DetailAreaCode) {
           view.DetailAreaCode = null
         }
@@ -372,7 +371,6 @@ export default {
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
-      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       this.$store.commit('recordSnapshot', 'clearCanvas')
       this.$store.commit('setInEditorStatus', false)
     },
@@ -594,7 +592,7 @@ export default {
 .switch-position {
   position: absolute;
   top: 13px;
-  right: 50%;
+  left: 48%;
   width: 100px;
 }
 
@@ -708,8 +706,12 @@ export default {
   color: var(--TextPrimary, #1F2329);
 }
 
+.icon16_only {
+  font-size: 16px!important;
+}
+
 .icon16 {
-  font-size: 16px;
+  font-size: 16px!important;
   color: var(--TextPrimary, #1F2329);
 }
 

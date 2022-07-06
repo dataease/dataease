@@ -1,6 +1,6 @@
 <template>
   <div class="bar-main">
-    <div v-if="!positionCheck('multiplexing')">
+    <div v-if="!positionCheck('multiplexing') && !positionCheck('email-task')">
       <span v-if="isEdit" :title="$t('panel.edit')">
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
@@ -13,6 +13,9 @@
     </div>
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
       <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
+    </div>
+    <div v-if="positionCheck('email-task')" style="margin-right: -1px;width: 18px;z-index: 5">
+      <el-checkbox v-model="isTaskChecked" size="medium" @change="emailTaskCheck" />
     </div>
   </div>
 </template>
@@ -40,6 +43,14 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    panelId: {
+      type: String,
+      default: null
+    },
+    chartTitle: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -51,7 +62,8 @@ export default {
         'view',
         'custom'
       ],
-      timer: null
+      timer: null,
+      isTaskChecked: false
     }
   },
   computed: {
@@ -67,13 +79,28 @@ export default {
       'linkageSettingStatus',
       'componentData',
       'canvasStyleData',
-      'componentGap'
-    ])
+      'componentGap',
+      'panelViews'
+    ]),
+
+    taskChecked() {
+      const panelId = this.panelId
+      return !!this.panelViews && !!this.panelViews[panelId] && !!this.panelViews[panelId].some(view => view.viewId === this.viewId)
+    }
+  },
+  watch: {
+    taskChecked(val) {
+      this.isTaskChecked = val
+    }
   },
   mounted() {
     if (this.showPosition === 'multiplexing-view') {
       this.multiplexingCheckModel = true
       this.multiplexingCheck(this.multiplexingCheckModel)
+    }
+    if (this.showPosition === 'email-task') {
+      this.isTaskChecked = !!this.taskChecked
+      // this.emailTaskCheck(this.isTaskChecked)
     }
   },
   beforeDestroy() {
@@ -103,6 +130,13 @@ export default {
       } else {
         // remove
         this.$store.commit('removeCurMultiplexingComponentWithId', this.viewId)
+      }
+    },
+    emailTaskCheck(val) {
+      if (val) {
+        this.$store.dispatch('task/addView', { 'panelId': this.panelId, 'viewId': this.viewId, 'title': this.chartTitle })
+      } else {
+        this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': this.viewId })
       }
     }
 

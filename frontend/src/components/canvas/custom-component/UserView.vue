@@ -12,6 +12,8 @@
       v-if="editBarViewShowFlag"
       :element="element"
       :show-position="showPosition"
+      :panel-id="panelInfo.id"
+      :chart-title="chart.title || chart.name"
       :is-edit="isEdit"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
@@ -234,7 +236,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
-      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition.includes('multiplexing')
+      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition.includes('multiplexing') || this.showPosition.includes('email-task')
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
@@ -858,6 +860,9 @@ export default {
         this.sourceCustomStyleStr = this.chart.customStyle
         if (this.componentViewsData[this.chart.id]) {
           this.componentViewsData[this.chart.id]['title'] = this.chart.title
+          if (param.refreshProp) {
+            this.componentViewsData[this.chart.id][param.refreshProp] = this.chart[param.refreshProp]
+          }
         }
         this.mergeScale()
       }

@@ -106,7 +106,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                     tableName = dataTableInfoDTO.getTable();
                     break;
                 case SQL:
-                    tableName = dataSetTableService.handleVariableDefaultValue(dataTableInfoDTO.getSql(), pluginViewSet.getSqlVariableDetails());
+                    tableName = dataSetTableService.handleVariableDefaultValue(dataTableInfoDTO.getSql(), null);
                     tableName = "(" + tableName + ")";
                     break;
                 case CUSTOM:

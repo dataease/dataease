@@ -73,6 +73,13 @@ function textSelectWidget(nodeCache, style) {
     }
 }
 
+function handlerInputStyle (node, style) {
+    if (!node) return;
+    styleAttrs.forEach(ele => {
+        node.style[attrsMap[ele]] = style[ele];
+    })
+}
+
 export {
     attrsMap,
     styleAttrs,
@@ -80,5 +87,6 @@ export {
     textInputWidget,
     textSelectGridWidget,
     textSelectTreeWidget,
-    textSelectWidget
+    textSelectWidget,
+    handlerInputStyle,
 }
