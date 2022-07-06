@@ -230,7 +230,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>8.3.0.18-1084</version>
+            <version>8.3.0.18-1112</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -241,7 +241,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>8.3.0.18-1084</version>
+            <version>8.3.0.18-1112</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -256,7 +256,7 @@
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>metastore</artifactId>
-            <version>8.3.0.18-1084</version>
+            <version>8.3.0.18-1112</version>
         </dependency>
         <dependency>
             <groupId>org.pentaho.di.plugins</groupId>
