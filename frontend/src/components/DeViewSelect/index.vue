@@ -22,17 +22,18 @@
     </el-select>
 
     <el-popover ref="popover" v-model="visible" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click">
-      <el-scrollbar tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
+      <el-scrollbar v-if="viewLoaded" tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
         <div :style="{'height': panelHeight + 'px'}">
           <Preview
-            v-if="viewLoaded"
             :component-data="componentData"
             :canvas-style-data="canvasStyleData"
             :panel-info="panelInfo"
             :show-position="showPosition"
           />
         </div>
+
       </el-scrollbar>
+      <el-empty v-else style="height: 150px;" :image-size="120" description="" />
 
     </el-popover>
   </div>
@@ -41,6 +42,8 @@
 <script>
 import { on, off } from './dom'
 import Preview from '@/components/canvas/components/Editor/Preview'
+import { findOne } from '@/api/panel/panel'
+import { panelDataPrepare } from '@/components/canvas/utils/utils'
 export default {
   name: 'DeViewSelect',
   components: { Preview },
@@ -49,14 +52,11 @@ export default {
       type: Array,
       default: () => []
     },
-    viewLoaded: {
-      type: Boolean,
-      default: false
-    },
-    viewPropData: {
-      type: Object,
+    panelId: {
+      type: String,
       default: null
     }
+
   },
   data() {
     return {
@@ -68,7 +68,8 @@ export default {
       selectClass: 'my-top-class',
       innerValues: [],
       panelHeight: 450,
-      showPosition: 'email-task'
+      showPosition: 'email-task',
+      viewLoaded: false
     }
   },
   computed: {
@@ -76,19 +77,6 @@ export default {
       const _c = 'el-view-select-popper ' + this.popoverClass
       return this.disabled ? _c + ' disabled ' : _c
     },
-    componentData() {
-      return this.viewLoaded && this.viewPropData && this.viewPropData.componentData || null
-    },
-    canvasStyleData() {
-      return this.viewLoaded && this.viewPropData && this.viewPropData.canvasStyleData || null
-    },
-    panelInfo() {
-      return this.viewLoaded && this.viewPropData && this.viewPropData.panelInfo || null
-    },
-    panelId() {
-      return this.viewLoaded && this.panelInfo && this.panelInfo.id
-    },
-
     selectedViews() {
       return this.$store.getters.panelViews[this.panelId]
     }
@@ -103,11 +91,12 @@ export default {
       }
     },
     panelId(val, old) {
-      if (val !== old) { this.$store.dispatch('panel/setPanelInfo', this.panelInfo) }
+      if (val !== old) {
+        this.loadView()
+      }
     },
     selectedViews: {
       handler(val) {
-        if (!this.viewLoaded) return
         if (!val || !JSON.stringify(val)) {
           this.labels = []
           this.innerValues = []
@@ -135,32 +124,47 @@ export default {
   beforeDestroy() {
     off(document, 'mouseup', this._popoverHideFun)
   },
+  created() {
+    this.loadView()
+  },
   methods: {
-
-    // 更新宽度
+    loadView() {
+      this.viewLoaded = false
+      this.panelId && findOne(this.panelId).then(response => {
+        this.panelInfo = {
+          id: response.data.id,
+          name: response.data.name,
+          privileges: response.data.privileges,
+          sourcePanelName: response.data.sourcePanelName,
+          status: response.data.status
+        }
+        this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
+        panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), rsp => {
+          this.viewLoaded = true
+          this.componentData = rsp.componentData
+          this.canvasStyleData = rsp.componentStyle
+        })
+      })
+    },
     _updateH() {
       this.$nextTick(() => {
         this.width = this.$refs.select.$el.getBoundingClientRect().width
         this.panelHeight = this.width * 9 / 16
       })
     },
-    // 显示弹出框的时候容错，查看是否和el宽度一致
     _popoverShowFun(val) {
       this._updateH()
       this.$emit('onFoucs')
     },
-    // 判断是否隐藏弹出框
     _popoverHideFun(e) {
       const path = this._getEventPath(e)
       const isInside = path.some(list => {
-        // 鼠标在弹出框内部，阻止隐藏弹出框
         return list.className && typeof list.className === 'string' && list.className.indexOf('el-view-select') !== -1
       })
       if (!isInside) {
         this.visible = false
       }
     },
-    // 获取MouseEvent.path 针对浏览器兼容性兼容ie11,edge,chrome,firefox,safari
     _getEventPath(evt) {
       const path = (evt.composedPath && evt.composedPath()) || evt.path
       const target = evt.target
@@ -201,26 +205,26 @@ export default {
 
 <style lang="scss" scoped>
 .el-view-select .view-select-option {
-    display: none !important;
+  display: none !important;
 }
 
 .el-view-select-popper {
-    max-height: 800px;
-    overflow: auto;
+  max-height: 800px;
+  overflow: auto;
 }
 .el-view-select-popper.disabled {
-    display: none !important;
+  display: none !important;
 }
 .el-view-select-popper .el-button--small {
-    width: 25px !important;
-    min-width: 25px !important;
+  width: 25px !important;
+  min-width: 25px !important;
 }
 
 .el-view-select-popper[x-placement^='bottom'] {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .my-top-class {
-    width: 100%;
+  width: 100%;
 }
 </style>
