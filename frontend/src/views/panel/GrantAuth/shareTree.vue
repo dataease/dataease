@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
+import { loadTree, loadShareOutTree, removePanelShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
@@ -172,16 +172,12 @@ export default {
       })
     },
     removeCurrent(node) {
-      const param = {
-        panelId: node.id
-      }
-
       this.$confirm(this.$t('panel.remove_share_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        removeShares(param).then(res => {
+        removePanelShares(node.id).then(res => {
           this.panelInfo && this.panelInfo.id && node.id === this.panelInfo.id && this.setMainNull()
           this.initOutData().then(res => {
             this.outDatas = res.data
