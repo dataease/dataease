@@ -114,6 +114,9 @@ export default {
     }
   },
   mounted() {
+    if (this.showProperty('position-pie')) {
+      this.labelForm.position = 'outside'
+    }
     this.init()
     this.initOptions()
     this.initData()
