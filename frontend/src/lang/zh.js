@@ -2064,7 +2064,8 @@ export default {
     once_a_week: '每周一次',
     once_a_month: '每月一次',
     complex_repeat: '复杂重复',
-    pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择'
+    pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
+    task_type: '任务类型'
 
   },
   dynamic_time: {

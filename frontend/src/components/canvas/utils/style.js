@@ -10,6 +10,7 @@ export const DARK_THEME_COLOR_MAIN = '#FFFFFF'
 export const DARK_THEME_COLOR_SLAVE1 = '#CCCCCC'
 export const DARK_THEME_PANEL_BACKGROUND = '#030B2E'
 export const DARK_THEME_COMPONENT_BACKGROUND = '#131E42'
+export const DARK_THEME_COMPONENT_BACKGROUND_BACK = '#5a5c62'
 
 export function getStyle(style, filter = []) {
   const needUnit = [
@@ -298,8 +299,8 @@ export function recursionThemTransObj(template, infoObj, color) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {
       template[templateKey].forEach(templateProp => {
-        if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
-          infoObj[templateKey][templateProp] = color
+        if (infoObj[templateKey]) {
+          Vue.set(infoObj[templateKey], templateProp, color)
         }
       })
     } else {
@@ -332,7 +333,7 @@ export function adaptCurTheme(customStyle, customAttr) {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
     recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
-    recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND)
+    recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND_BACK)
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
   customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'] }
@@ -375,7 +376,7 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
   const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
   componentData.forEach((item) => {
     if (isFilterComponent(item.component)) {
-      item.style[styleKey] = filterStyle[styleKey]
+      Vue.set(item.style, styleKey, filterStyle[styleKey])
     }
   })
 }

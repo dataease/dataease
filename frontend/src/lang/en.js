@@ -2042,7 +2042,8 @@ export default {
     once_a_week: 'Once a week',
     once_a_month: 'Once a month',
     complex_repeat: 'Complex repeat',
-    pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select'
+    pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select',
+    task_type: 'Task type'
 
   },
   dynamic_time: {
