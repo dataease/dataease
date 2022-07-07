@@ -50,6 +50,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
+    <progressLoop 
+      v-else-if="progressLoopFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <chart-component-g2
       v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
@@ -131,6 +142,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import scrollTable from '@/views/chart/components/table/scrollTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
+import progressLoop from '@/views/chart/components/progress/progressLoop'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -170,7 +182,8 @@ export default {
     ChartComponentH3,
     ChartComponentHc,
     scrollTable,
-    progressBar
+    progressBar,
+    progressLoop
   },
   props: {
     element: {
@@ -336,7 +349,15 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.chart.type.includes('progress') && 
+        this.chart.type === 'progress' && 
+        this.renderComponent() === 'echarts'
+      )
+    },
+    progressLoopFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type === 'progress-loop' && 
         this.renderComponent() === 'echarts'
       )
     },

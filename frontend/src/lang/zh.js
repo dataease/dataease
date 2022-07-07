@@ -859,6 +859,7 @@ export default {
     chart_bar_horizontal: '横向柱状图',
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_bar_progress: '进度条图',
+    chart_loop_progress: '进度环图',
     chart_line: '基础折线图',
     chart_line_stack: '堆叠折线图',
     chart_pie: '饼图',
