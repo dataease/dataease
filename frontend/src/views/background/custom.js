@@ -1,8 +1,8 @@
 /**
- *  字体图标可前往改网址下载(https://www.iconfont.cn/collections/index)，下载的svg图标放入iconLibrary文件夹
- *  然后在次出添加svg图标名称，即可在图标库使用
+ *  字体图标可前往该网址下载(https://www.iconfont.cn/collections/index)，下载的svg图标放入iconLibrary文件夹
+ *  然后在此处出添加svg图标名称，即可在图标库使用
  *
- *  注： 添加的svg图标无法改变颜色，需要找到svg图标文件，删除里面字段  fill 所对应的颜色设置，删除整个fill
+ *  注： 添加的svg图标如无法改变颜色，需要找到svg图标文件，删除里面字段  fill 所对应的颜色设置，删除整个fill
  *
  */
 export const CUSTOM_DATA = [

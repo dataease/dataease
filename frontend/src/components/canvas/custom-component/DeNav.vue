@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="nav_calss" :style="navStyleSet">
-      <div v-for="(item,index) in navList" :key="index" class="nav_info">
+      <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="setStyle(item)">
         <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
       </div>
     </div>
@@ -51,6 +51,26 @@ export default {
         }
       }
     },
+    setStyle() {
+      return function(value) {
+        const style = {}
+        console.log('this.element.options', this.element.options)
+        if (this.canvasStyleData.navShowKey === value.name) {
+          // return this.element.options.highlight
+          // return this.element.options.color
+          style.backgroundColor = this.element.options.highlightBg
+          style.backgroundImage = `url(${this.element.options.heightBgImg})`
+        } else {
+          // return this.element.options.color
+          style.backgroundColor = ''
+          style.backgroundImage = null
+        }
+        style.lineHeight = this.element.style.height + 'px'
+        style.backgroundRepeat = 'no-repeat'
+        style.backgroundSize = '100% 100%'
+        return style
+      }
+    },
     navList() {
       return this.element.options.navTabList
     }
@@ -97,9 +117,11 @@ export default {
 }
 .nav_info{
   flex:1;
+  height:100%;
 }
 .title_class{
   cursor: pointer;
+  height:100%;
 }
   /* .el-carousel__item h3 {
     color: #475669;

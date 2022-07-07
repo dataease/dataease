@@ -211,11 +211,12 @@
           :ver-line-arr="lines.v"
           :shadow="shadow"
           :corner-active="true"
+
           @handleLine="handleLine"
           @onCornerClick="handleCornerClick"
         />
         <!-- 创建盒子 -->
-        <div id="ruleBox" ref="screensRef" class="rule_box" @scroll="handleScroll" @wheel="handleWheel">
+        <div id="ruleBox" ref="screensRef" :style="setRuleStyle" class="rule_box" @scroll="handleScroll" @wheel="handleWheel">
 
           <div
             v-if="!previewVisible&&!mobileLayoutStatus"
@@ -632,6 +633,11 @@ export default {
       }
 
       return linesData
+    },
+    setRuleStyle() {
+      const style = {}
+      style.backgroundColor = this.canvasStyleData.ruleBgColor
+      return style
     },
     customCanvasStyle() {
       let style = {
