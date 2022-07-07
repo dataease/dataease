@@ -18,6 +18,7 @@
           <el-row class="selector-div">
             <SetDrawSize class="attr-selector" />
             <SetDrawFont class="attr-selector" />
+            <SetRuleColor class="attr-selector" />
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
@@ -64,6 +65,7 @@
 import slider from './PreSubject/Slider'
 import BackgroundSelector from './PanelStyle/BackgroundSelector'
 import SetDrawSize from './PanelStyle/setDrawSize'
+import SetRuleColor from './PanelStyle/setRuleColor'
 import SetDrawFont from './PanelStyle/setDrawFont'
 import PanelBackgroundColorSelector from './PanelStyle/PanelBackgroundColorSelector'
 import PanelColorSelector from './PanelStyle/PanelColorSelector'
@@ -79,6 +81,7 @@ export default {
   components: {
     PanelViewResult,
     SetDrawSize,
+    SetRuleColor,
     slider,
     BackgroundSelector,
     ComponentGap,
@@ -136,7 +139,7 @@ export default {
       chart.customStyle = JSON.parse(chart.customStyle)
       chart.customFilter = JSON.parse(chart.customFilter)
       this.chart = chart
-      console.log('subject-setting,,init:::::',this.chart)
+      console.log('subject-setting,,init:::::', this.chart)
 
       // 因为 table 的color 设置和view的共用 所以单独设置一个对象
       this.tableChart = deepCopy(this.chart)

@@ -461,7 +461,9 @@ const list = [
       color: '#333',
       vertical: 'center',
       horizontal: 'center',
-      highlight: '#333'
+      highlight: '#333',
+      highlightBg: '',
+      heightBgImg: ''
     },
     x: 1,
     y: 1,

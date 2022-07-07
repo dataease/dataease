@@ -25,18 +25,19 @@
           <el-row>
             <el-col :span="24">
               <!-- {{ $t('chart.canvasWith') }} -->
-              <!-- 字体类型 -->
+              背景颜色
             </el-col>
             <el-col :span="24">
               <!-- <el-input-number v-model="width" :min="1" :max="10000" label="描述文字" @change="handleChange" /> -->
-              <el-select v-model="fontValue" placeholder="请选择" @change="handleChange">
+              <el-color-picker v-model="ruleBgColor" @change="handleChange" />
+              <!-- <el-select v-model="fontValue" placeholder="请选择" @change="handleChange">
                 <el-option
                   v-for="item in fontOptions"
                   :key="item"
                   :label="item"
                   :value="item"
                 />
-              </el-select>
+              </el-select> -->
             </el-col>
             <!-- <el-col :span="24">
               {{ $t('chart.canvasHeight') }}
@@ -79,7 +80,7 @@
             </el-col>
           </el-row> -->
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ '字体样式01' }} <i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ '刻度尺背景' }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -99,6 +100,7 @@ export default {
       fontValue: '',
       width: '1080',
       height: '800',
+      ruleBgColor: '',
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
@@ -117,17 +119,17 @@ export default {
   created() {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
-    this.fontValue = this.canvasStyleData.fontFamily
-    console.log(this.canvasStyleData.fontFamily)
+    this.ruleBgColor = this.canvasStyleData.ruleBgColor
+    console.log(this.canvasStyleData.ruleBgColor)
     // this.height = this.canvasStyleData.height
-    if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
-      this.fileList.push({ url: this.panel.imageUrl })
-    }
+    // if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
+    //   this.fileList.push({ url: this.panel.imageUrl })
+    // }
   },
   methods: {
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      canvasStyleData.fontFamily = this.fontValue
+      canvasStyleData.ruleBgColor = this.ruleBgColor
       // canvasStyleData.height = this.height
       console.log('canvasStyleData', canvasStyleData)
       this.$store.commit('setCanvasStyle', canvasStyleData)

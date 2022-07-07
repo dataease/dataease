@@ -20,6 +20,7 @@ export const CANVAS_STYLE = {
   selfAdaption: true,
   navShowKey: '',
   auxiliaryMatrix: false,
+  ruleBgColor: '',
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
   refreshViewLoading: true, // 仪表板视图loading提示
