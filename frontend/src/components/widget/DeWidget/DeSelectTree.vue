@@ -203,7 +203,9 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('reset-default-value', this.resetDefaultValue)
+    if (this.inDraw) {
+      bus.$on('reset-default-value', this.resetDefaultValue)
+    }
   },
   beforeDestroy() {
     bus.$off('reset-default-value', this.resetDefaultValue)
@@ -395,8 +397,6 @@ export default {
       background-color: rgb(245, 247, 250, .5) !important;
     }
   }
-
-  
 
   .el-input-group--append {
     .el-input__inner {
