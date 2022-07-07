@@ -709,6 +709,7 @@ export default {
               console.log('查出的数据', response.data)
               let arr = []
               let arr2 = []
+              // 月份排序
               if (response.data.type.includes('line') && response.data.data) {
                 if (response.data.render === 'antv') {
                   if (response.data.xaxis) {
@@ -834,8 +835,10 @@ export default {
               }
               this.chart = response.data
 
+              // 主题切换
               if (this.templateStatus) {
                 this.chart.customAttr = this.canvasStyleData.chart.customAttr
+                // this.chart.customStyle = this.canvasStyleData.chart.customstyle
                 let deepCacheInfo = deepCopy(this.chart)
 
                 deepCacheInfo.xaxis = JSON.parse(this.chart.xaxis)
