@@ -200,7 +200,9 @@ export default {
     this.initLoad()
   },
   mounted() {
-    bus.$on('reset-default-value', this.resetDefaultValue)
+    if (this.inDraw) {
+      bus.$on('reset-default-value', this.resetDefaultValue)
+    }
   },
   beforeDestroy() {
     bus.$off('reset-default-value', this.resetDefaultValue)
