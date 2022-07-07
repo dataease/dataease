@@ -190,7 +190,9 @@ export default {
 
   mounted() {
     bus.$on('onScroll', this.onScroll)
-    bus.$on('reset-default-value', this.resetDefaultValue)
+    if (this.inDraw) {
+      bus.$on('reset-default-value', this.resetDefaultValue)
+    }
   },
   beforeDestroy() {
     bus.$off('onScroll', this.onScroll)
