@@ -1228,6 +1228,56 @@ export const BASE_GRAPH = {
   ]
 }
 
+export const BASE_WORD_CLOUD = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  series: [{
+    // maskImage: '', // 词云轮廓图，白色区域将被排除在绘图文本之外,形状选项将继续应用为云的形状
+    type: 'wordCloud',
+    sizeRange: [8, 32],  // 词云的文字字号范围
+    rotationRange: [0, 0], // 词云中文字的角度,词云中的文字会随机的在 rotationRange 范围内旋转角度
+    rotationStep: 45, // 渲染的梯度就是 rotationStep ，这个值越小，词云里出现的角度种类就越多。以上面参数为例，可能旋转的角度就是 -90 -45 0 45 90 。
+    gridSize: 8, // 词云中每个词的间距
+    drawOutOfBound: true, // 是否允许词云在边界外渲染，直接使用默认参数 false 就可以，否则容易造成词重叠
+    shape: 'pentagon',  //词云的形状，默认是 circle(圆形)，可选的参数有cardioid（心形） 、 diamond（菱形 正方形） 、 triangle-forward 、 triangle（三角形）、 star（星形）、pentagon （五边形）；
+    width: '100%',  //词云的宽高，默认是 75% 80%
+    height: '80%',
+    textStyle: {  // 词云中文字的样式， normal 是初始的样式， emphasis 是鼠标移到文字上的样式。
+      normal: {
+        color: function () {
+            return 'rgb(' + [
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160)
+            ].join(',') + ')';
+        },
+        fontFamily: 'sans-serif',
+        fontWeight: 'normal'
+      },
+      emphasis: {
+        shadowBlur: 10,
+        shadowColor: '#333333'
+      }
+    },
+    itemStyle: {
+      shadowBlur: 10,
+      shadowColor: '#333333'
+    },
+    data: []
+  }],
+  textStyle: {
+    fontFamily: 'sans-serif',
+  }
+}
+
 export const COLOR_PANEL = [
   '#ff4500',
   '#ff8c00',

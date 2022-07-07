@@ -43,6 +43,8 @@ import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
 
+import 'echarts-wordcloud'
+
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
 

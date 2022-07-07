@@ -40,7 +40,8 @@ import {
   BASE_SCATTER,
   BASE_TREEMAP,
   BASE_MIX,
-  BASE_GRAPH
+  BASE_GRAPH,
+  BASE_WORD_CLOUD
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -75,6 +76,9 @@ import {
 import {
   baseGraphOption
 } from '../chart/graph/graph'
+import {
+  baseWordCloudOption
+} from '@/views/chart/chart/wordCloud/word_cloud_es'
 import {
   baseScatterOption
 } from '../chart/scatter/scatter'
@@ -235,7 +239,9 @@ export default {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'graph') {
         chart_option = baseGraphOption(JSON.parse(JSON.stringify(BASE_GRAPH)), chart, this.$store.state.canvasStyleData)
-      } 
+      } else if (chart.type === 'word-cloud') {
+        chart_option = baseWordCloudOption(JSON.parse(JSON.stringify(BASE_WORD_CLOUD)), chart, this.$store.state.canvasStyleData)
+      }
       // else if (chart.type === 'pictorial-bar') {
       //   chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
       // } 
