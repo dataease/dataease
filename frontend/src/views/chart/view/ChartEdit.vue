@@ -991,7 +991,7 @@
                       && !view.type.includes('text') && view.type !== 'label'
                       && (chart.type !== 'treemap' || chart.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && chart.type !== 'progress'"
+                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && !chart.type.includes('progress')"
                     name="legend"
                     :title="$t('chart.legend')"
                   >

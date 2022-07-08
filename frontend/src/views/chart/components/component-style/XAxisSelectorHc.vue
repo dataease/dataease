@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini">
+      <el-form ref="axisForm" :model="axisForm" label-width="90px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="axisForm.show" @change="changeXAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -18,8 +18,8 @@
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
             <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeXAxisStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item">
-            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeXAxisStyle">
+          <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
+            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeXAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
