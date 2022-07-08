@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-@Service
+@Service("emailTaskHandler")
 public class EmailTaskHandler extends TaskHandler implements Job {
 
     private static final Integer RUNING = 0;
@@ -50,8 +50,8 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         return jobDataMap;
     }
 
-    public EmailTaskHandler proxy() {
-        return CommonBeanFactory.getBean(EmailTaskHandler.class);
+    public EmailTaskHandler proxy(String handlerName) {
+        return (EmailTaskHandler) CommonBeanFactory.getBean(handlerName);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
         LogUtil.info("start execute send panel report task...");
-        proxy().sendReport(taskInstance, emailTemplate, creator);
+        proxy(taskEntity.getTaskType()).sendReport(taskInstance, emailTemplate, creator);
 
     }
 
@@ -109,14 +109,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         return taskInstance;
     }
 
-    private void success(GlobalTaskInstance taskInstance) {
+    protected void success(GlobalTaskInstance taskInstance) {
         taskInstance.setStatus(SUCCESS);
         taskInstance.setFinishTime(System.currentTimeMillis());
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         emailXpackService.saveInstance(taskInstance);
     }
 
-    private void error(GlobalTaskInstance taskInstance, Throwable t) {
+    protected void error(GlobalTaskInstance taskInstance, Throwable t) {
         taskInstance.setStatus(ERROR);
         taskInstance.setInfo(t.getMessage());
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
