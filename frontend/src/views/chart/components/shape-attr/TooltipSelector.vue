@@ -21,7 +21,7 @@
             <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
           </el-form-item>
           <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.background')" class="form-item">
-            <el-color-picker v-model="tooltipForm.backgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
+            <el-color-picker v-model="tooltipForm.backgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('backgroundColor')" />
           </el-form-item>
           <el-form-item v-show="showProperty('formatter')" class="form-item">
             <span slot="label">
