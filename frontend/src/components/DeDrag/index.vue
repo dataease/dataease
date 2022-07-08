@@ -873,7 +873,7 @@ export default {
       // 此处阻止冒泡 但是外层需要获取pageX pageY
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
 
-      const newData = JSON.parse(JSON.stringify(this.element))
+      // const newData = JSON.parse(JSON.stringify(this.element))
       // console.log('传输', newData)
 
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
@@ -2074,5 +2074,6 @@ export default {
     width: 100%;
     height: 100%;
     background-size: 100% 100% !important;
+    /* padding:0 6px 6px 6px; */
   }
 </style>

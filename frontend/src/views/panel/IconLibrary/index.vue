@@ -4,19 +4,19 @@
       <div class="filter-header-text"> 图标 </div>
     </div>
     <div class="filter-widget-content">
-        <div
-          v-for="(item,index) in imgData"
-          :key="index"
-          :data-id="item.id"
-          :data-index="index"
-          draggable
-          :class="'filter-widget-icon '+ (item.defaultClass || '')"
-        >
-          <div class="content-Img">
-            <img :src="require('@/assets/icon_lib'+item.url)" :alt="item.url" style="width: 120px;"/>
-          </div>
-          <div class="content-text">{{ item.url.substring(1) }}</div>
+      <div
+        v-for="(item,index) in imgData"
+        :key="index"
+        :data-id="item.id"
+        :data-index="index"
+        draggable
+        :class="'filter-widget-icon '+ (item.defaultClass || '')"
+      >
+        <div class="content-Img">
+          <img :src="require('@/assets/icon_lib'+item.url)" :alt="item.url" style="width: 120px;">
         </div>
+        <div class="content-text">{{ item.url.substring(1) }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -27,11 +27,11 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import { resolve } from 'fit2cloud-ui'
 export default {
-  name: "IconLibrary",
-  data(){
+  name: 'IconLibrary',
+  data() {
     return {
       iconImgLibrary,
-      imgData: [],
+      imgData: []
     }
   },
   computed: {
@@ -40,10 +40,10 @@ export default {
     ])
   },
   mounted() {
-    let arr = []
-    const files = require.context("@/assets/icon_lib",true,/\.+jpg|jpeg|png$/).keys();
+    const arr = []
+    const files = require.context('@/assets/icon_lib', true, /\.+jpg|jpeg|png$/).keys()
     console.log(files)
-    files.forEach((item,index) => {
+    files.forEach((item, index) => {
       arr.push({
         id: '40001',
         url: item.substring(1),
@@ -57,9 +57,9 @@ export default {
   },
   methods: {
     handleDragStart(ev) {
-      console.log('======拖拽触发事件', ev,ev.target.dataset.id)
-      if(ev.target.dataset.id === undefined) return;
-      sessionStorage.setItem('iconUrl',ev.target.innerText)
+      console.log('======拖拽触发事件', ev, ev.target.dataset.id)
+      if (ev.target.dataset.id === undefined) return
+      sessionStorage.setItem('iconUrl', ev.target.innerText)
       this.getImgWH(ev.target.innerText)
       this.$store.commit('setDragComponentInfo', this.componentInfo(ev.target.dataset.id))
       ev.dataTransfer.effectAllowed = 'copy'
@@ -73,17 +73,17 @@ export default {
     handleDragEnd(ev) {
       this.$store.commit('clearDragComponentInfo')
     },
-    async getImgWH(name){
+    async getImgWH(name) {
       console.log(name)
-      let obj = await this.getImgSize(name)
+      const obj = await this.getImgSize(name)
       console.log(obj)
-      sessionStorage.setItem('imgWidth',obj.width)
-      sessionStorage.setItem('imgHeight',obj.height)
+      sessionStorage.setItem('imgWidth', obj.width)
+      sessionStorage.setItem('imgHeight', obj.height)
     },
     getImgSize(name) {
-      return new Promise((resolve,reject) => {
-        let imgObj = new Image()
-        imgObj.src = require('@/assets/icon_lib/'+name)
+      return new Promise((resolve, reject) => {
+        const imgObj = new Image()
+        imgObj.src = require('@/assets/icon_lib/' + name)
         imgObj.onload = () => {
           console.log(imgObj)
           resolve({
@@ -110,9 +110,9 @@ export default {
         component.auxiliaryMatrix = false
       }
       component.moveStatus = 'start'
-      console.log('图标组件数据::::::',component)
+      console.log('图标组件数据::::::', component)
       return component
-    },
+    }
   }
 }
 </script>
@@ -176,5 +176,4 @@ export default {
     }
   }
 
-  
 </style>
