@@ -16,14 +16,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
 import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.annotation.Resource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -58,6 +63,7 @@ public class EmailService {
         if (StringUtils.isBlank(to))
             return;
         MailInfo mailInfo = proxy().mailInfo();
+        checkMailInfo(mailInfo);
         JavaMailSenderImpl driver = driver(mailInfo);
 
         MimeMessage mimeMessage = driver.createMimeMessage();
@@ -75,10 +81,45 @@ public class EmailService {
         }
     }
 
+    public void sendWithFiles(String to, String title, String content, List<File> files) {
+        if (StringUtils.isBlank(to))
+            return;
+        MailInfo mailInfo = proxy().mailInfo();
+        checkMailInfo(mailInfo);
+        JavaMailSenderImpl driver = driver(mailInfo);
+        MimeMessage mimeMessage = driver.createMimeMessage();
+        String uuid = UUID.randomUUID().toString();
+        MimeBodyPart text = new MimeBodyPart();
+        try {
+            text.setContent(content + "<br/><img style='width: 60%;' src='cid:" + uuid + "' />",
+                    "text/html; charset=gb2312");
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.addBodyPart(text);
+            multipart.setSubType("related");
+            for (int i = 0; i < files.size(); i++) {
+                File file = files.get(i);
+                MimeBodyPart attach = new MimeBodyPart();
+                FileDataSource fileDataSource = new FileDataSource(file);
+                attach.setDataHandler(new DataHandler(fileDataSource));
+                attach.setFileName(MimeUtility.encodeText(file.getName()));
+                multipart.addBodyPart(attach);
+            }
+            mimeMessage.setFrom(driver.getUsername());
+            mimeMessage.setSubject(title);
+            mimeMessage.setRecipients(Message.RecipientType.TO, to);
+            mimeMessage.setContent(multipart);
+            driver.send(mimeMessage);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+    }
+
     public void sendWithImage(String to, String title, String content, byte[] bytes) {
         if (StringUtils.isBlank(to))
             return;
         MailInfo mailInfo = proxy().mailInfo();
+        checkMailInfo(mailInfo);
         JavaMailSenderImpl driver = driver(mailInfo);
         MimeMessage mimeMessage = driver.createMimeMessage();
 
@@ -156,7 +197,16 @@ public class EmailService {
                 }
             }
         }
+
         return mailInfo;
+    }
+
+    public void checkMailInfo(MailInfo info) {
+
+        Assert.notNull(info, Translator.get("I18N_EMAIL_CONFIG_ERROR"));
+        Assert.notNull(info.getHost(), Translator.get("I18N_EMAIL_HOST_ERROR"));
+        Assert.notNull(info.getPort(), Translator.get("I18N_EMAIL_PORT_ERROR"));
+        Assert.notNull(info.getAccount(), Translator.get("I18N_EMAIL_ACCOUNT_ERROR"));
     }
 
     public List<SystemParameter> getParamList(String type) {
