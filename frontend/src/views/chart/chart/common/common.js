@@ -27,7 +27,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       const style = chart_option.title.textStyle ? chart_option.title.textStyle : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
-      style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle.fontFamily? cstyle.fontFamily : ''
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style

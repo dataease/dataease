@@ -51,6 +51,38 @@
           <el-color-picker v-model="curComponent.options.highlight" />
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="4">
+          <span class="params-title">{{ '高亮背景颜色' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.highlightBg" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+        <el-col :span="4">
+          <span class="params-title">{{ '高亮背景图片' }}</span>
+        </el-col>
+        <el-col style="width: 130px!important;">
+          <el-upload
+            action=""
+            accept=".jpeg,.jpg,.png,.gif,.svg"
+            class="avatar-uploader"
+            list-type="picture-card"
+            :class="{disabled:uploadDisabled}"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :http-request="upload"
+            :file-list="fileList"
+            :on-change="onChange"
+          >
+            <i class="el-icon-plus" />
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </el-col>
+      </el-row>
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
       <!-- 轮播的图片 -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
@@ -192,7 +224,8 @@ export default {
   computed: {
     ...mapState([
       'curComponent',
-      'componentData'
+      'componentData',
+      'canvasStyleData'
     ]),
     optionsData() {
       let data = []
@@ -245,10 +278,6 @@ export default {
         console.log('满足条件的ele', ele)
         ele.disabled = false
       }
-
-      // if (ele.showName === '') {
-
-      // }
       console.log('ele----', ele)
     })
     this.navInfoLis.forEach(res => {
@@ -261,6 +290,9 @@ export default {
       })
     })
     this.options = deepCopy(newArrr)
+    if (this.element.options.heightBgImg) {
+      this.fileList.push({ url: this.element.options.heightBgImg })
+    }
   },
 
   methods: {
@@ -343,15 +375,16 @@ export default {
         })
       })
       console.log('this.fileList', this.fileList)
-
-      console.log('this.imgUrlList', this.imgUrlList)
+      // this.canvasStyleData.navShowKey = ''
+      // console.log('this.imgUrlList', this.imgUrlList)
       this.$store.commit('recordSnapshot')
+
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       console.log('const canvasStyleData', canvasStyleData)
-      canvasStyleData.panel = this.panel
+      // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
@@ -360,25 +393,10 @@ export default {
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
-      var _this = this
-      _this.fileList = fileList
-      _this.curComponent.options.bannerImgList = []
-      _this.fileList.forEach(item => {
-        console.log('itemssss', item)
-        if (item.raw) {
-          const reader = new FileReader()
-          reader.onload = function() {
-            console.log('reader.result7777777', reader.result)
-            _this.curComponent.options.bannerImgList.push(reader.result)
-          }
-          reader.readAsDataURL(item.raw)
-        } else {
-          _this.curComponent.options.bannerImgList.push(item.url)
-        }
-      })
-      // this.uploadDisabled = false
+      this.uploadDisabled = false
       // this.panel.imageUrl = null
-      // this.fileList = []
+      this.curComponent.options.heightBgImg = null
+      this.fileList = []
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
@@ -390,29 +408,13 @@ export default {
       console.log('file, fileList', file, fileList)
       var _this = this
       _this.uploadDisabled = true
-      // const reader = new FileReader()
-      // reader.onload = function() {
-      // console.log('reader.result', reader.result)
-      // _this.imgUrlList.push(reader.result)
-      // _this.curComponent.commonBackground.outerImage = reader.result
-      // }
-      // reader.readAsDataURL(file.raw)
-      _this.fileList = fileList
-      _this.curComponent.options.bannerImgList = []
-      _this.fileList.forEach(item => {
-        console.log('itemssss', item)
-        if (item.raw) {
-          const reader = new FileReader()
-          reader.onload = function() {
-            console.log('reader.result6666666', reader.result)
-            // _this.imgUrlList.push(reader.result)
-            _this.curComponent.options.bannerImgList.push(reader.result)
-          }
-          reader.readAsDataURL(item.raw)
-        } else {
-          _this.curComponent.options.bannerImgList.push(item.url)
-        }
-      })
+      const reader = new FileReader()
+      reader.onload = function() {
+        _this.curComponent.options.heightBgImg = reader.result
+        _this.commitStyle()
+        console.log('reader.result6666666', reader.result)
+      }
+      reader.readAsDataURL(file.raw)
       console.log('222222', file, fileList)
     },
     upload(file) {

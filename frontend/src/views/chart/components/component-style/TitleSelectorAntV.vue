@@ -21,6 +21,16 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <el-form-item  :label="$t('chart.text_style')" class="form-item">
+            <el-select v-model="titleForm.fontFamily" placeholder="请选择" size="mini" @change="changeTitleStyle">
+              <el-option
+                v-for="item in fontOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+          </el-form-item>
           <el-form-item  :label="$t('chart.text_style')" class="form-item" v-show="chart.type && chart.type.includes('table')">
             <el-select v-model="titleForm.fontFamily" placeholder="请选择" size="mini" @change="changeTitleStyle">
               <el-option
