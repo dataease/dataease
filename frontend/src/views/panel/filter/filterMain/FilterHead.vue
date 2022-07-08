@@ -18,8 +18,7 @@
               >
 
                 <v-flex v-for="(item,index) in element.options.attrs.dragItems" :key="item.id">
-
-                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : allFields" @closeItem="closeItem" @sort-change="sortChange" />
+                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : fieldsMap[item.tableId]" @closeItem="closeItem" @sort-change="sortChange" />
                 </v-flex>
 
                 <span solt="footer">{{ $t('panel.drag_here') }}</span>
@@ -46,9 +45,9 @@ export default {
       type: Object,
       default: () => {}
     },
-    allFields: {
-      type: Array,
-      default: () => []
+    tableFieldsMap: {
+      type: Object,
+      default: () => {}
     },
     widget: {
       type: Object,
@@ -63,6 +62,9 @@ export default {
   computed: {
     isSortWidget() {
       return this.widget && this.widget.isSortWidget && this.widget.isSortWidget()
+    },
+    fieldsMap() {
+      return JSON.parse(JSON.stringify(this.tableFieldsMap))
     }
   },
 
@@ -74,7 +76,6 @@ export default {
   },
   methods: {
     onMove(e, originalEvent) {
-      // this.moveId = e.draggedContext.element.id
       return true
     },
     end2(e) {},
@@ -88,7 +89,6 @@ export default {
     },
     sortChange(param) {
       this.element.options.attrs.sort = param
-      // this.$emit('sort-change', param)
     }
   }
 }

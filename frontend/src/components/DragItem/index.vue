@@ -132,6 +132,13 @@ export default {
       return this.index > 0
     }
   },
+  watch: {
+    index(val, old) {
+      if (val !== old) {
+        this.sortChange('none')
+      }
+    }
+  },
   mounted() {
   },
   created() {
