@@ -10,12 +10,13 @@
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       {{ chart.title }}
     </span>
+    <!-- :ref="chartId" -->
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
-      <el-row class="prog_box">
-          <el-col>
-            <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
-            <el-progress :text-inside="true" :color="customColor" :stroke-width="20" :percentage="progressData.value"></el-progress>
-          </el-col>
+      <el-row class="prog_box"><!-- :style="{'padding-top': mgHeight}" -->
+        <el-col :ref="`circle${chartId}`" style="height: 100%;padding-top: 5%;text-align:center;">
+          <el-progress :width="cleWidth" type="circle" :color="customColor" :percentage="progressData.value"></el-progress>
+          <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
+        </el-col>
       </el-row>
     </div>
   </div>
@@ -90,7 +91,7 @@ export default {
       show_Prog: false,
       progressData: {
         name: '',
-        value: '',
+        value: 0,
       },
       customColor: '#409eff',
       progStyle: {
@@ -182,7 +183,18 @@ export default {
           this.progressData.name = data[0].dimensionList[0].value
           this.progressData.value = data[0].value
           console.log(this.progressData)
+        //   for(let i=0;i<data.length;i++) {
+        //     if(data[i].dimensionList[0].value.includes('满意度')) {
+        //       this.progressData.name = data[i].dimensionList[0].value
+        //       this.progressData.value = data[i].value
+        //     } else {
+        //       this.progressData.name = data[0].dimensionList[0].value
+        //       this.progressData.value = data[0].value
+        //     }
+        //   }
         }
+        
+
       }
     },
 
@@ -236,7 +248,7 @@ export default {
         if(this.$refs[`circle${this.chartId}`]){
           // console.log(this.$refs[`circle${this.chartId}`].$el.offsetWidth)
           if((this.$refs[`circle${this.chartId}`].$el.offsetWidth - 15) > 0) {
-            const cleWidth = this.$refs[`circle${this.chartId}`].$el.offsetWidth - 15
+            const cleWidth = this.$refs[`circle${this.chartId}`].$el.offsetWidth
             this.cleWidth = cleWidth
           }else {
             this.cleWidth = 0

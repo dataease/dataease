@@ -278,11 +278,17 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'progress-loop',
+    title: 'chart.chart_loop_progress',
+    icon: 'progress-loop'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'progress',
     title: 'chart.chart_bar_progress',
     icon: 'progress'
   },
-
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',

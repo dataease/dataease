@@ -759,7 +759,7 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'progress' && chart.type !== 'waterfall'"
+                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && !chart.type.includes('progress') && chart.type !== 'waterfall'"
                     name="size"
                     :title="$t('chart.size')"
                   >
