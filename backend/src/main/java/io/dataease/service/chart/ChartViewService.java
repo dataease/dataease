@@ -776,6 +776,8 @@ public class ChartViewService {
                         if (i == drillRequest.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!checkDrillExist(xAxis, extStack, nextDrillField, view)) {
+                                // get drill list first element's sort,then assign to nextDrillField
+                                nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
                             }
                         }
@@ -1532,5 +1534,18 @@ public class ChartViewService {
         }
         sql = dataSetTableService.removeVariables(sql);
         return sql;
+    }
+
+    private String getDrillSort(List<ChartViewFieldDTO> xAxis, ChartViewFieldDTO field) {
+        String res = "";
+        for (ChartViewFieldDTO f : xAxis) {
+            if (StringUtils.equalsIgnoreCase(f.getId(), field.getId())) {
+                if (StringUtils.equalsIgnoreCase(f.getSort(), "asc") || StringUtils.equalsIgnoreCase(f.getSort(), "desc")) {
+                    res = f.getSort();
+                    break;
+                }
+            }
+        }
+        return res;
     }
 }
