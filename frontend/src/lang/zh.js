@@ -729,6 +729,7 @@ export default {
     size: '大小',
     wordMin: '字体最小值',
     wordMax: '字体最大值',
+    wordShape: '词云形状',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',

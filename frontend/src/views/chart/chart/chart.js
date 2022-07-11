@@ -48,6 +48,7 @@ export const DEFAULT_SIZE = {
 
   wordMin: 10,
   wordMax: 32,
+  wordShape: 'pentagon',
 
   gaugeMin: 0,
   gaugeMax: 100,
@@ -1253,7 +1254,7 @@ export const BASE_WORD_CLOUD = {
     drawOutOfBound: true, // 是否允许词云在边界外渲染，直接使用默认参数 false 就可以，否则容易造成词重叠
     shape: 'pentagon',  //词云的形状，默认是 circle(圆形)，可选的参数有cardioid（心形） 、 diamond（菱形 正方形） 、 triangle-forward 、 triangle（三角形）、 star（星形）、pentagon （五边形）；
     width: '100%',  //词云的宽高，默认是 75% 80%
-    height: '80%',
+    height: '90%',
     textStyle: {  // 词云中文字的样式， normal 是初始的样式， emphasis 是鼠标移到文字上的样式。
       normal: {
         color: function () {
