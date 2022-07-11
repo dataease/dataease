@@ -216,6 +216,14 @@ export const pictureList = [
     label: '字体图标',
     icon: 'iconfont icon-text',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '20005',
+    component: 'de-picture',
+    type: 'de-picture',
+    label: '图片库',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -594,6 +602,32 @@ const list = [
     id: '20004',
     component: 'de-icons',
     type: 'de-icons',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    iconData: {
+      color: '#333',
+      fontSize: 12,
+      type: 'system',
+      icon: ''
+    },
+    style: {
+      width: 100,
+      height: 100
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20005',
+    component: 'de-picture',
+    type: 'de-picture',
     label: '',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
