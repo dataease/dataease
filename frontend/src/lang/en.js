@@ -1803,6 +1803,8 @@ export default {
 
   },
   auth: {
+    separate_auth: 'Separate Authorization',
+    auth_extent_tips: 'Permissions Inherited From The Following Organizations Or Roles:',
     authConfig: 'Configure Permissions By User',
     sourceConfig: 'Configure Permissions By Source',
     authQuickConfig: 'Auth Quick Config',

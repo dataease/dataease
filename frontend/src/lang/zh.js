@@ -1822,6 +1822,8 @@ export default {
 
   },
   auth: {
+    separate_auth: '单独授权',
+    auth_extent_tips: '继承自以下组织或角色的权限:',
     authConfig: '按用户配置权限',
     sourceConfig: '按资源配置权限',
     authQuickConfig: '权限快捷配置',
