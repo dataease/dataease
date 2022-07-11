@@ -12,6 +12,9 @@
         <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
           <el-slider v-model="focusForm.gravity" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
         </el-form-item>
+        <el-form-item :label="$t('chart.reductionRate')" class="form-item">
+          <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

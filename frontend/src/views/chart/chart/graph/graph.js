@@ -48,7 +48,11 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           }
           y.type = 'graph'
           // 气泡大小
-          y.symbolSize = parseInt(valueArr[i].value) + 10
+          if(customAttr.label && customAttr.label.reductionRate) {
+            y.symbolSize = parseInt(valueArr[i].value * (customAttr.label.reductionRate/100))
+          } else {
+            y.symbolSize = parseInt(valueArr[i].value)
+          }
           y.draggable = true
 
           chart_option.series[0].data.push(y)

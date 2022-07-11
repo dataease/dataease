@@ -733,6 +733,7 @@ export default {
     nodalRepulsion: '节点斥力',
     nodeSpacing: '节点间距',
     centripetalGravitation: '向心引力',
+    reductionRate: '图形大小(%)',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',

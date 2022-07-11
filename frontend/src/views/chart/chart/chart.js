@@ -88,7 +88,8 @@ export const DEFAULT_LABEL = {
   
   repulsion: 100,
   edgeLength: 10,
-  gravity: 0.1
+  gravity: 0.1,
+  reductionRate: 50,
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
