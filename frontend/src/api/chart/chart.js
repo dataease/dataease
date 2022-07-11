@@ -1,6 +1,4 @@
 import request from '@/utils/request'
-import store from '@/store'
-import { queryPanelComponents } from '@/api/panel/panel'
 
 export function post(url, data, loading = false) {
   return request({
@@ -132,5 +130,12 @@ export function viewPropsSave(panelId, data) {
     method: 'post',
     loading: false,
     data
+  })
+}
+
+export const viewOptions = panelId => {
+  return request({
+    url: '/chart/view/viewOptions/' + panelId,
+    method: 'post'
   })
 }

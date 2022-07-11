@@ -5,16 +5,16 @@ const state = {
 
 const mutations = {
 
-  ADD_VIEW: (state, { panelId, viewId, title }) => {
+  ADD_VIEW: (state, { panelId, viewId }) => {
     if (!state.panelViews[panelId]) {
       Vue.set(state.panelViews, panelId, [])
     }
-    const views = state.panelViews[panelId]
-    if (views.some(item => item.viewId === viewId)) {
+    const viewIds = state.panelViews[panelId]
+    if (viewIds.some(item => item === viewId)) {
       return
     }
-    views.push({ viewId, title })
-    state.panelViews[panelId] = views
+    viewIds.push(viewId)
+    state.panelViews[panelId] = viewIds
   },
 
   DEL_VIEW: (state, { panelId, viewId }) => {
@@ -23,20 +23,36 @@ const mutations = {
     let len = views.length
     while (len--) {
       const item = views[len]
-      if (viewId === item.viewId) {
+      if (viewId === item) {
         views.splice(len, 1)
       }
     }
     state.panelViews[panelId] = views
+  },
+
+  DEL_PANEL_VIEW: (state, panelId) => {
+    const views = state.panelViews[panelId]
+    if (!views || !views.length) return
+    Vue.set(state.panelViews, panelId, [])
+  },
+
+  INIT_PANEL_VIEWS: (state, { panelId, viewIds }) => {
+    state.panelViews[panelId] = viewIds || []
   }
 }
 
 const actions = {
+  initPanelView({ commit }, data) {
+    commit('INIT_PANEL_VIEWS', data)
+  },
   addView({ commit }, data) {
     commit('ADD_VIEW', data)
   },
   delView({ commit }, data) {
     commit('DEL_VIEW', data)
+  },
+  delPanelViews({ commit }, data) {
+    commit('DEL_PANEL_VIEW', data)
   }
 }
 

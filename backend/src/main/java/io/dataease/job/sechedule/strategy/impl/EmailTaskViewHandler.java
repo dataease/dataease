@@ -11,6 +11,7 @@ import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
 import io.dataease.service.chart.ViewExportExcel;
 import io.dataease.service.system.EmailService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,11 @@ public class EmailTaskViewHandler extends EmailTaskHandler {
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO,
             SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        List<File> files = null;
         try {
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
             if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
+                removeInstance(taskInstance);
                 return;
             }
             String panelId = emailTemplateDTO.getPanelId();
@@ -51,13 +54,21 @@ public class EmailTaskViewHandler extends EmailTaskHandler {
                     .collect(Collectors.toList());
             PermissionProxy proxy = new PermissionProxy();
             proxy.setUserId(user.getUserId());
-            List<File> files = viewExportExcel.export(panelId, viewIdList, proxy);
-            emailService.sendWithFiles(emailTemplateDTO.getRecipients(), emailTemplateDTO.getTitle(), contentStr,
-                    files);
+            files = viewExportExcel.export(panelId, viewIdList, proxy);
+            emailService.sendWithFiles(emailTemplateDTO.getRecipients(), emailTemplateDTO.getTitle(), contentStr, files);
             success(taskInstance);
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
+        } finally {
+            if (CollectionUtils.isNotEmpty(files)) {
+                for (int i = 0; i < files.size(); i++) {
+                    File file = files.get(i);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
         }
     }
 }

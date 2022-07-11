@@ -2,6 +2,7 @@ package io.dataease.ext;
 
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.chart.ViewOption;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -50,4 +51,6 @@ public interface ExtChartViewMapper {
     void deleteNoUseView(@Param("viewIds") List<String> viewIds,@Param("panelId") String panelId );
 
     void initPanelChartViewCache(@Param("panelId") String panelId);
+
+    List<ViewOption> chartOptions(@Param("panelId") String panelId);
 }

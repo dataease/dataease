@@ -1,10 +1,14 @@
 package io.dataease.commons.utils;
 
 import java.io.File;
+
 import io.dataease.commons.model.excel.ExcelSheetModel;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -14,18 +18,25 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import cn.hutool.core.util.IdUtil;
 
 public class ExcelUtils {
+    private static final String suffix = ".xls";
 
-    public static File exportExcel(List<ExcelSheetModel> sheets) throws Exception {
-        String fastUUID = IdUtil.fastUUID();
-        File result = new File("/opt/dataease/data/" + fastUUID + ".xls");
+    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName) throws Exception {
+        AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         HSSFWorkbook wb = new HSSFWorkbook();
+
         sheets.forEach(sheet -> {
+
             List<List<String>> details = sheet.getDatas();
             details.add(0, sheet.getHeads());
-            HSSFSheet curSheet = wb.createSheet(sheet.getSheetName());
+            String sheetName = sheet.getSheetName();
+            HSSFSheet curSheet = wb.createSheet(sheetName);
+            if (StringUtils.isBlank(fileName)) {
+                String cName = sheetName + suffix;
+                realFileName.set(cName);
+            }
+
             CellStyle cellStyle = wb.createCellStyle();
             Font font = wb.createFont();
             font.setFontHeightInPoints((short) 12);
@@ -52,6 +63,10 @@ public class ExcelUtils {
                 }
             }
         });
+        if (!StringUtils.endsWith(fileName, suffix)) {
+            realFileName.set(realFileName.get() + suffix);
+        }
+        File result = new File("/opt/dataease/data/" + realFileName.get());
         wb.write(result);
         return result;
     }

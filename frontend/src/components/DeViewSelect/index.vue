@@ -4,7 +4,6 @@
       ref="select"
       v-model="innerValues"
       v-popover:popover
-      :title="labels"
       popper-class="view-select-option"
       style="width: 100%;"
       multiple
@@ -14,10 +13,10 @@
       @focus="_popoverShowFun"
     >
       <el-option
-        v-for="item in selectedViews"
-        :key="item.viewId"
-        :label="item.title"
-        :value="item.viewId"
+        v-for="item in selectOptions"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id"
       />
     </el-select>
 
@@ -43,6 +42,7 @@
 import { on, off } from './dom'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { findOne } from '@/api/panel/panel'
+import { viewOptions } from '@/api/chart/chart'
 import { panelDataPrepare } from '@/components/canvas/utils/utils'
 export default {
   name: 'DeViewSelect',
@@ -60,7 +60,6 @@ export default {
   },
   data() {
     return {
-      labels: [],
       visible: false,
       placement: 'bottom',
       transition: 'el-zoom-in-top',
@@ -69,7 +68,8 @@ export default {
       innerValues: [],
       panelHeight: 450,
       showPosition: 'email-task',
-      viewLoaded: false
+      viewLoaded: false,
+      selectOptions: []
     }
   },
   computed: {
@@ -92,25 +92,19 @@ export default {
     },
     panelId(val, old) {
       if (val !== old) {
+        this.innerValues = []
         this.loadView()
       }
     },
     selectedViews: {
       handler(val) {
         if (!val || !JSON.stringify(val)) {
-          this.labels = []
           this.innerValues = []
           return
         }
-        const views = JSON.parse(JSON.stringify(val))
-        const viewIds = []
-        const names = []
-        views.forEach(item => {
-          viewIds.push(item.viewId)
-          names.push(item.title)
-        })
+        const viewIds = JSON.parse(JSON.stringify(val))
+
         this.innerValues = JSON.parse(JSON.stringify(viewIds))
-        this.labels = JSON.parse(JSON.stringify(names))
       },
       deep: true
     }
@@ -122,6 +116,7 @@ export default {
     })
   },
   beforeDestroy() {
+    this._selectClearFun()
     off(document, 'mouseup', this._popoverHideFun)
   },
   created() {
@@ -129,6 +124,8 @@ export default {
   },
   methods: {
     loadView() {
+      this._selectClearFun()
+      this.innerValues = this.value
       this.viewLoaded = false
       this.panelId && findOne(this.panelId).then(response => {
         this.panelInfo = {
@@ -143,7 +140,15 @@ export default {
           this.viewLoaded = true
           this.componentData = rsp.componentData
           this.canvasStyleData = rsp.componentStyle
+          this.loadOptions()
         })
+      })
+    },
+
+    loadOptions() {
+      this.panelId && viewOptions(this.panelId).then(res => {
+        this.selectOptions = res.data
+        this.init()
       })
     },
     _updateH() {
@@ -193,10 +198,13 @@ export default {
       })
     },
     _selectClearFun() {
-      const views = JSON.parse(JSON.stringify(this.selectedViews))
-      views.forEach(item => {
-        this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': item.viewId })
-      })
+      this.$store.dispatch('task/delPanelViews', this.panelId)
+    },
+    init() {
+      if (this.value && this.value.length) {
+        const viewIds = JSON.parse(JSON.stringify(this.value))
+        this.$store.dispatch('task/initPanelView', { 'panelId': this.panelId, 'viewIds': viewIds })
+      }
     }
   }
 
