@@ -183,7 +183,7 @@ export default {
         [
           'esri/Map',
           'esri/views/MapView',
-          "esri/layers/MapImageLayer",
+          "esri/layers/TileLayer",
           "esri/widgets/Home",
           "esri/widgets/ScaleBar",
           "esri/geometry/SpatialReference",
@@ -192,13 +192,14 @@ export default {
           "esri/layers/GraphicsLayer",
           "esri/layers/FeatureLayer",
           "esri/geometry/Point",
+          "esri/identity/IdentityManager"
         ],
         config.loadConfig
       ).then(
         ([
           Map,
           MapView,
-          MapImageLayer,
+          TileLayer,
           Home,
           ScaleBar,
           SpatialReference,
@@ -207,31 +208,47 @@ export default {
           GraphicsLayer,
           FeatureLayer,
           Point,
+          IdentityManager
         ]) => {
+          IdentityManager.registerToken({
+            server: "http://2.40.7.227:8080/OneMapServer/rest/services",
+            token: "QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A.."
+          })
           let that = this
-          var ygyx = new MapImageLayer({
-            url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
-            // url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer?token=QbGyxIz4ZomJ7QeG5aZ515OALV9RVsvf2M2zOALRvciUvf3ir3YDw5zNt_zy9XAd_bKHHm0UojqXeqfFlp_Dz5PiT6wuiuQhJazQCinTPozNKjGNo7SG5-mZs4yj6kmbocoiXBK8jLIvv6qj8hF_5A..",
+          var ygyx = new TileLayer({
+            // url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
+            url: "http://2.40.7.227:8080/OneMapServer/rest/services/DZDTGuSuMapDark/MapServer",
             id:'ygyx'
           });
           // 创建地图
           var map=new Map({
-            // layers:[ygyx]
-            basemap: 'osm',
+            layers:[ygyx]
+            // basemap: 'osm',
           });
           // 地图实例化
+          // 中心点
+          var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
+          var point = new Point({
+              x: 331780.7808473259,
+              y: 667386.2572571054,
+              spatialReference: {wkt: wktString}
+            }
+          );
+
           let view = new MapView({
             container: container,
             map: map,
-            center: [120.585294, 31.299758],
-            zoom: 14,
+            center: point,
+            zoom: 4,
             popup: {
-              // collapseEnabled : false, // 是否需title点击折叠功能
+              collapseEnabled : false, // 是否需title点击折叠功能
               dockEnabled: true,  // 指示弹出窗口的位置是否停靠在视图的一侧
               dockOptions: {
-                buttonEnabled: true, // 开启固定标签页
-                breakpoint: true  // 开启 点击停靠气泡窗
-              }
+                position: 'top-center',
+                buttonEnabled: false, // 开启固定标签页
+                // breakpoint: true,  // 开启 点击停靠气泡窗
+              },
+              actions: [] // 清空事件按钮 （缩放至、...）
             },
             // rotation: 45
           });
@@ -264,8 +281,8 @@ export default {
           }
 
           //给“地图视图”绑定点击事件
-
           view.popup.autoOpenEnabled = false
+          var tmpGraphic = null
           let mouseOn = view.on('click', function (event) {//在MapView中添加鼠标监控事件
             console.log(event)
             view.hitTest(event).then((res) => {
@@ -273,42 +290,68 @@ export default {
               if (res.results.length) {
                 let results = res.results
                 if (results.length > 0) {
-                  view.graphics.remove(results[0].graphic)
-                  let g = results[0].graphic
+                  var ori = results[0].graphic
+                  // 画新点
+                  let g = ori.clone()
                   g.symbol.url = require('@/assets/point.png')
-                  that.graphicData = g
+                  // that.graphicData = g
                   console.log(g)
-                  graphicView1(g.attributes)
-                  // view.graphics.addMany([g])
+                  // graphicView1(g.attributes)
+                  view.graphics.add(g)
                   // let geo = g.geometry
                   let attr = g.attributes
                   // let point = new Point(geo.x, geo.y, view.spatialReference)
-                  view.popup.open({ 
+                  view.popup.open({
                     location: event.mapPoint,
                     title: attr.name,
                     content: `<p style="width:350px;overflow: auto;white-space:break-spaces;">${attr.desc}</p>`
                   })
+                  // 删除原来的点
+                  view.graphics.remove(ori)
+                  tmpGraphic = g
+                  console.log('tmpGraphic: ', tmpGraphic)
                 }
               } else {
-                console.log(that.graphicData)
-                if(that.graphicData !== '') {
-                  view.graphics.remove(that.graphicData)
-                  let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
-                  graphicView(g)
-                }
+                // console.log(that.graphicData)
+                // if(that.graphicData !== '') {
+                //   view.graphics.remove(that.graphicData)
+                //   let g = JSON.parse(JSON.stringify(that.graphicData)).attributes
+                //   graphicView(g)
+                // }
                 view.popup.close()
               }
             })
           })
+
+          // view popup关闭事件监听
+          view.popup.watch('visible', evt => {
+            console.log('popup event', evt)
+            console.log('ori tmpGraphic: ', tmpGraphic)
+            var var3 = tmpGraphic.clone()
+            if(!evt) {
+              var3.symbol.url = require("@/assets/point2.png")
+            } else {
+              var3.symbol.url = require("@/assets/point.png")
+            }
+            view.graphics.add(var3)
+            view.graphics.remove(tmpGraphic)
+            tmpGraphic = var3
+            console.log('new tmpGraphic: ', tmpGraphic)
+          })
+
           this.myChart = view
           console.log('view',view,this.myChart)
 
           function graphicView(data) {
+            var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
             let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
               geometry: {  //点位信息
                 type: 'point',
                 longitude: data.lng,
-                latitude: data.lat
+                latitude: data.lat,
+                spatialReference: {
+                  wkt: wktString
+                }
               },
               symbol: {  //图像
                 //类型有 图片标记 和 点
@@ -316,8 +359,8 @@ export default {
                 //图片地址，可以使用网络路径或本地路径 (base64也可以)
                 url: require("@/assets/point2.png"),
                 // 图片大小
-                width: '49px',
-                height: '39px'
+                width: '130px',
+                height: '71px'
               },
               // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
               attributes: {
@@ -327,38 +370,45 @@ export default {
               },
             });
             // 将图形添加到视图的图形层
+            console.log('graphic:' , graphic)
             view.graphics.addMany([graphic])
             if(that.graphicData !== ''){
               console.log('graphicData',that.graphicData)
               that.graphicData = ''
             }
           }
-          function graphicView1(data) {
-            let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
-              geometry: {  //点位信息
-                type: 'point',
-                longitude: data.lng,
-                latitude: data.lat
-              },
-              symbol: {  //图像
-                //类型有 图片标记 和 点
-                type: 'picture-marker',
-                //图片地址，可以使用网络路径或本地路径 (base64也可以)
-                url: require("@/assets/point.png"),
-                // 图片大小
-                width: '49px',
-                height: '39px'
-              },
-              // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
-              attributes: {
-                // name: data.name,
-                // desc: data.desc,
-                ...data
-              },
-            });
-            // 将图形添加到视图的图形层
-            view.graphics.addMany([graphic])
-          }
+          // function graphicView1(data) {
+          //   var wktString = "PROJCS[\"2000SZ\",GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\",DATUM[\"D_China_2000\",SPHEROID[\"CGCS2000\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",350000.0],PARAMETER[\"False_Northing\",-2800000.0],PARAMETER[\"Central_Meridian\",120.7833333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0]]"
+          //
+          //   let graphic = new Graphic({  // 图形是现实世界地理现象的矢量表示，它可以包含几何图形，符号和属性
+          //     geometry: {  //点位信息
+          //       type: 'point',
+          //       longitude: data.lng,
+          //       latitude: data.lat,
+          //       spatialReference: {
+          //         wkt: wktString
+          //       }
+          //     },
+          //     symbol: {  //图像
+          //       //类型有 图片标记 和 点
+          //       type: 'picture-marker',
+          //       //图片地址，可以使用网络路径或本地路径 (base64也可以)
+          //       url: require("@/assets/point.png"),
+          //       // 图片大小
+          //       width: '130px',
+          //       height: '71px'
+          //     },
+          //     // 实际的应用过程中会有地图上要显示不同种类、不同颜色的图形点位需求，可以在这里配置不同的点位参数及类别，然后在点击点位的事件方法里进行类别逻辑判断。
+          //     attributes: {
+          //       // name: data.name,
+          //       // desc: data.desc,
+          //       ...data
+          //     },
+          //   });
+          //   // 将图形添加到视图的图形层
+          //   console.log('graphic:' , graphic)
+          //   view.graphics.addMany([graphic])
+          // }
         }
       ).catch(err => {
         console.log(err)
@@ -513,5 +563,62 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+  ::v-deep .esri-popup__header-title {
+    border-radius: 2px;
+    font-size: 14px;
+    padding: 6px 7px;
+    margin: 6px auto 6px 7px;
+    display: block;
+    transition: background-color 125ms ease-in-out;
+    white-space: pre-wrap;
+    word-break: break-all;
+    word-wrap: break-word;
+    word-break: break-word;
+    margin-top: 36px;
+    margin-left: 50px;
+    color: #fadc43;
+  }
+
+  ::v-deep .esri-view-width-xlarge .esri-popup__main-container {
+    width: 400px;
+  }
+
+  ::v-deep .esri-popup__main-container {
+   pointer-events: auto;
+   position: relative;
+   z-index: 1;
+   width: 340px;
+   max-height: 340px;
+   background-color: rgba(0,0,0,0);
+   display: flex;
+   flex-flow: column nowrap;
+   width: 400px;
+   height: 271px;
+   background-image: url('../../../assets/popup-background.png');
+   color: white;
+ }
+
+  ::v-deep .esri-popup__pointer {
+    position: absolute;
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  ::v-deep .esri-popup__content {
+   display: flex;
+   flex-flow: column nowrap;
+   flex: 1 1 auto;
+   font-size: 12px;
+   font-weight: 400;
+   margin: 0 15px 12px;
+   overflow: auto;
+   line-height: normal;
+   margin-left: 28px;
+   margin-top: 10px;
+   white-space: break-spaces;
+ }
+
 
 </style>

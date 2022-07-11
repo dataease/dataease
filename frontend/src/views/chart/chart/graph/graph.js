@@ -6,7 +6,7 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
     let customAttr = {}
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
-      // console.log('样式：：',customAttr)
+      console.log('样式：：',customAttr)
       if (customAttr.color) {
         chart_option.color = customAttr.color.colors
       }
@@ -32,6 +32,10 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           chart_option.series[0].label = customAttr.label
           chart_option.series[0].labelLine = {show: false}
           chart_option.series[0].label.labelLine = {show: false}
+
+          chart_option.series[0].force.repulsion = customAttr.label.repulsion? customAttr.label.repulsion : 100
+          chart_option.series[0].force.edgeLength = customAttr.label.edgeLength? customAttr.label.edgeLength : 30
+          chart_option.series[0].force.gravity = customAttr.label.gravity? customAttr.label.gravity : 0.1
         }
         const valueArr = chart.data.series[0].data
         for (let i = 0; i < valueArr.length; i++) {
@@ -44,15 +48,19 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           }
           y.type = 'graph'
           // 气泡大小
-          y.symbolSize = parseInt(valueArr[i].value) + 10
+          if(customAttr.label && customAttr.label.reductionRate) {
+            y.symbolSize = parseInt(valueArr[i].value * (customAttr.label.reductionRate/100))
+          } else {
+            y.symbolSize = parseInt(valueArr[i].value)
+          }
           y.draggable = true
 
           chart_option.series[0].data.push(y)
         }
-        console.log('chart_option.series[0]: ', chart_option.series[0])
+        // console.log('chart_option.series[0]: ', chart_option.series[0])
       }
     }
-    // console.log('气泡图的：：',chart_option);
+    console.log('气泡图的：：',chart_option);
     componentStyle(chart_option, chart,cstyle) //图表样式
     seniorCfg(chart_option, chart) //值样式
     return chart_option

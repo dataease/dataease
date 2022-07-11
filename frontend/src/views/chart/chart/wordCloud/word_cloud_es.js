@@ -47,18 +47,22 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}) {
 
       if(chart.customAttr) {
         const customAttr = JSON.parse(chart.customAttr)
-        // console.log('/??????',customAttr)
+        console.log('/??????',customAttr)
         if(customAttr.size) {
           // console.log(customAttr.size)
           chart_option.series[0].sizeRange[0] = customAttr.size.wordMin
           chart_option.series[0].sizeRange[1] = customAttr.size.wordMax
+          chart_option.series[0].shape = customAttr.size.wordShape
+        }
+
+        if(customAttr.color) {
+          chart_option.series[0].textStyle.normal.color = customAttr.color.colors
         }
       }
       if(cstyle && cstyle.fontFamily){
         chart_option.series[0].textStyle.normal.fontFamily = cstyle.fontFamily
         chart_option.textStyle.fontFamily = cstyle.fontFamily
       }
-
       console.log('series,数据',chart_option)
     }
   }

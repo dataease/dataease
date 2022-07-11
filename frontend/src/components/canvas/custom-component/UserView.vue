@@ -837,8 +837,9 @@ export default {
 
               // 主题切换
               if (this.templateStatus) {
+                console.log('主题值：',this.canvasStyleData.chart,this.chart)
                 this.chart.customAttr = this.canvasStyleData.chart.customAttr
-                // this.chart.customStyle = this.canvasStyleData.chart.customstyle
+                this.chart.customStyle = this.canvasStyleData.chart.customStyle
                 let deepCacheInfo = deepCopy(this.chart)
 
                 deepCacheInfo.xaxis = JSON.parse(this.chart.xaxis)
@@ -853,9 +854,10 @@ export default {
                 deepCacheInfo.extBubble = JSON.parse(this.chart.extBubble)
                 deepCacheInfo.senior = JSON.parse(this.chart.senior)
 
+                // console.log('dddddddddddd',deepCacheInfo)
                 this.saveThemeInfo(deepCacheInfo,'chart', false, false)
               }
-              console.log('userView,,,,this.chart: ', this.chart)
+              // console.log('userView,,,,this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)

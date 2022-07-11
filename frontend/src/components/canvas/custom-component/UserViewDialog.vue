@@ -9,7 +9,8 @@
         class="chart-class"
       />
       <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
-      <progressBar v-else-if="chart.type.includes('progress') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <progressBar v-else-if="chart.type === 'progress' && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <progressLoop v-else-if="chart.type === 'progress-loop' && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
       <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <chart-component-H3 v-else-if="renderComponent() === 'other'" class="chart-class" :chart="chart"/>
@@ -27,6 +28,7 @@
 
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import progressBar from '@/views/chart/components/progress/progressBar'
+import progressLoop from '@/views/chart/components/progress/progressLoop'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '@/views/chart/components/normal/LabelNormal'
 import DeMainContainer from '@/components/datains/DeMainContainer'
@@ -55,7 +57,8 @@ export default {
     PluginCom,
     ChartComponentH3,
     ChartComponentHc,
-    progressBar
+    progressBar,
+    progressLoop
   },
   props: {
     chart: {
