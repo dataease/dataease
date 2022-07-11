@@ -49,10 +49,10 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
 
           chart_option.series[0].data.push(y)
         }
-        console.log('chart_option.series[0]: ', chart_option.series[0])
+        // console.log('chart_option.series[0]: ', chart_option.series[0])
       }
     }
-    // console.log('气泡图的：：',chart_option);
+    console.log('气泡图的：：',chart_option);
     componentStyle(chart_option, chart,cstyle) //图表样式
     seniorCfg(chart_option, chart) //值样式
     return chart_option

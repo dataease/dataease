@@ -1188,9 +1188,11 @@ export const BASE_GRAPH = {
     {
       type: 'graph',
       layout: 'force',
+      // center: [110],
       force: {
-        repulsion: 500,
-        edgeLength: 10
+        repulsion: 100,
+        edgeLength: 10,
+        gravity: 0.1
       },
       roam: true,
       label: {
