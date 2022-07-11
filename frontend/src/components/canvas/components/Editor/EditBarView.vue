@@ -47,10 +47,6 @@ export default {
     panelId: {
       type: String,
       default: null
-    },
-    chartTitle: {
-      type: String,
-      default: null
     }
   },
   data() {
@@ -85,7 +81,7 @@ export default {
 
     taskChecked() {
       const panelId = this.panelId
-      return !!this.panelViews && !!this.panelViews[panelId] && !!this.panelViews[panelId].some(view => view.viewId === this.viewId)
+      return !!this.panelViews && !!this.panelViews[panelId] && !!this.panelViews[panelId].some(viewId => viewId === this.viewId)
     }
   },
   watch: {
@@ -100,7 +96,6 @@ export default {
     }
     if (this.showPosition === 'email-task') {
       this.isTaskChecked = !!this.taskChecked
-      // this.emailTaskCheck(this.isTaskChecked)
     }
   },
   beforeDestroy() {
@@ -134,7 +129,7 @@ export default {
     },
     emailTaskCheck(val) {
       if (val) {
-        this.$store.dispatch('task/addView', { 'panelId': this.panelId, 'viewId': this.viewId, 'title': this.chartTitle })
+        this.$store.dispatch('task/addView', { 'panelId': this.panelId, 'viewId': this.viewId })
       } else {
         this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': this.viewId })
       }

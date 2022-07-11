@@ -84,16 +84,18 @@ public class EmailService {
     public void sendWithFiles(String to, String title, String content, List<File> files) {
         if (StringUtils.isBlank(to))
             return;
+        if (CollectionUtils.isEmpty(files)) {
+            send(to, title, content);
+            return;
+        }
         MailInfo mailInfo = proxy().mailInfo();
         checkMailInfo(mailInfo);
         JavaMailSenderImpl driver = driver(mailInfo);
         MimeMessage mimeMessage = driver.createMimeMessage();
-        String uuid = UUID.randomUUID().toString();
         MimeBodyPart text = new MimeBodyPart();
         try {
-            text.setContent(content + "<br/><img style='width: 60%;' src='cid:" + uuid + "' />",
-                    "text/html; charset=gb2312");
             MimeMultipart multipart = new MimeMultipart();
+            text.setText(content, "gb2312");
             multipart.addBodyPart(text);
             multipart.setSubType("related");
             for (int i = 0; i < files.size(); i++) {

@@ -588,4 +588,8 @@
             </foreach>
         </if>
     </delete>
+
+    <select id="chartOptions" resultType="io.dataease.dto.chart.ViewOption">
+        select id, title as  name  from chart_view where scene_id = #{panelId}
+    </select>
 </mapper>

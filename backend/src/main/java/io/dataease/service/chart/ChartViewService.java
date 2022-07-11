@@ -1548,4 +1548,8 @@ public class ChartViewService {
         }
         return res;
     }
+
+    public List<ViewOption> viewOptions(String panelId) {
+        return extChartViewMapper.chartOptions(panelId);
+    }
 }
