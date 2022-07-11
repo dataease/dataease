@@ -245,8 +245,7 @@ export function getXAxis(chart,cstyle = {}) {
     // legend
     if (customStyle.xAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
-      console.log(cstyle)
-      if (a.show) {
+      if (a && a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
           style: {
@@ -256,7 +255,7 @@ export function getXAxis(chart,cstyle = {}) {
           },
           spacing: 8
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -264,7 +263,7 @@ export function getXAxis(chart,cstyle = {}) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
@@ -319,7 +318,7 @@ export function getYAxis(chart,cstyle = {}) {
           },
           spacing: 8
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -327,7 +326,7 @@ export function getYAxis(chart,cstyle = {}) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
@@ -381,7 +380,7 @@ export function getYAxisExt(chart) {
           },
           spacing: 8
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -389,7 +388,7 @@ export function getYAxisExt(chart) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,

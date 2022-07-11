@@ -23,7 +23,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
     wordStyle: {
       fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : 'Verdana',
       fontSize: [8, 32],
-      rotation: [0, 0],
+      rotation: [-20, 20],
       padding: 2
     },
     random: () => 0.5,
@@ -52,6 +52,9 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
   //     }
   //   }
   // }
+  
+  //绘制图形
+
   if(chart.customAttr) {
     const customAttr = JSON.parse(chart.customAttr)
     // console.log('/??????',customAttr)

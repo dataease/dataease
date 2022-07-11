@@ -9,6 +9,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
   props: {
     element: {
@@ -88,12 +89,20 @@ export default {
     baseMoseDownEven(e) {
       e.stopPropagation()
     },
+    commitStyle() {
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      console.log('const canvasStyleData', canvasStyleData)
+      // canvasStyleData.panel = this.panel
+      this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot', 'commitStyle')
+    },
     toggleNav(key) {
       // 切换导航
       console.log('previewCanvasScale', this.previewCanvasScale)
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       this.canvasStyleData.navShowKey = key.name
+      this.commitStyle()
       this.componentData.forEach((ele, index) => {
         if (ele.type === 'de-frame') {
           iframeArr.push(ele)
@@ -102,10 +111,12 @@ export default {
       this.heightKey = key.name
 
       console.log('key---')
-      iframeArr.forEach(ele => {
-        document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
-        console.log('网页插件', ele)
-      })
+      if (JSON.stringify(iframeArr) !== '[]') {
+        iframeArr.forEach(ele => {
+          document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
+          console.log('网页插件', ele)
+        })
+      }
     }
   }
 }

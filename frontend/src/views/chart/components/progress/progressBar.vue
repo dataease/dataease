@@ -159,7 +159,6 @@ export default {
       }
     },
     preDraw() {
-      console.log('progress,chart',this.chart)
       this.initTitle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
@@ -169,7 +168,6 @@ export default {
 
     drawView() {
       const chart = this.chart
-      console.log('这个chart',chart)
       if(chart.data) {
         if(chart.data.fields.length && chart.data.series.length) {
           this.show_Prog = true
@@ -190,7 +188,7 @@ export default {
     initTitle() {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        // console.log('customStyle....',customStyle)
+        // console.log('customStyle,progress',customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           // this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -198,7 +196,8 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily 
+            : this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
 
           if (this.$refs.title) {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'
@@ -207,8 +206,6 @@ export default {
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
-
-          this.container_bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
 
@@ -219,7 +216,7 @@ export default {
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
-        this.customColor = customAttr.label.progressColor
+        this.customColor = customAttr.color.colors[0]
       }
     },
 
@@ -232,22 +229,6 @@ export default {
             this.chartHeight = (currentHeight - titleHeight) + 'px'
           }
         }
-
-        if(this.$refs[`circle${this.chartId}`]){
-          // console.log(this.$refs[`circle${this.chartId}`].$el.offsetWidth)
-          if((this.$refs[`circle${this.chartId}`].$el.offsetWidth - 15) > 0) {
-            const cleWidth = this.$refs[`circle${this.chartId}`].$el.offsetWidth - 15
-            this.cleWidth = cleWidth
-          }else {
-            this.cleWidth = 0
-          }
-        }
-        // if(this.$refs[this.chartId]) {
-        //   console.log(this.$refs[this.chartId].offsetHeight)
-        //   const heg = parseInt(this.$refs[this.chartId].offsetHeight * 0.5 * 0.5)
-        //   console.log(heg)
-        //   this.mgHeight = heg + 'px'
-        // }
       })
     },
     calcHeightDelay() {

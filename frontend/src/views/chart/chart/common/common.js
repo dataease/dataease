@@ -5,7 +5,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
-    // console.log('customStyle.....',customStyle)
+    // console.log('customStyle.....',customStyle,chart_option)
     if (customStyle.text) {
       chart_option.title.show = customStyle.text.show
       // 水平方向

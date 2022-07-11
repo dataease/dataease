@@ -215,14 +215,16 @@ export const DEFAULT_YAXIS_STYLE = {
   name: '',
   nameTextStyle: {
     color: '#333333',
-    fontSize: 12
+    fontSize: 12,
+    fontFamily: ''
   },
   axisLabel: {
     show: true,
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    fontFamily: ''
   },
   splitLine: {
     show: true,
@@ -277,14 +279,16 @@ export const DEFAULT_YAXIS_STYLE_HC = {
   name: '',
   nameTextStyle: {
     color: '#333333',
-    fontSize: 12
+    fontSize: 12,
+    fontFamily: ''
   },
   axisLabel: {
     show: true,
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    fontFamily: ''
   },
   splitLine: {
     show: true,

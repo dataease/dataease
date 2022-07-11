@@ -1,6 +1,6 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
-    <el-row style="height: 100%;">
+  <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
+    <el-row style="height: 100%;padding-bottom:10px">
       <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
       <!-- <el-table class="hidden-tbody" style="width: 100%;margina-top: 15px;">
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
