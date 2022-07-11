@@ -770,6 +770,18 @@
                       @onSizeChange="onSizeChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'echarts' && chart.type === 'word-cloud'"
+                    name="shape"
+                    :title="$t('chart.shape')"
+                  >
+                    <shape-selector 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
                   <!-- && chart.type !== 'word-cloud' -->
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
@@ -1313,6 +1325,7 @@ import {
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
+import ShapeSelector from '../components/shape-attr/ShapeSelector'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
@@ -1404,6 +1417,7 @@ export default {
     LegendSelector,
     TitleSelector,
     SizeSelector,
+    ShapeSelector,
     ColorSelector,
     ChartComponent,
     QuotaItem,
