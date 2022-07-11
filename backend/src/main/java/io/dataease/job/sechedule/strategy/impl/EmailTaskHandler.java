@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 @Service("emailTaskHandler")
 public class EmailTaskHandler extends TaskHandler implements Job {
@@ -116,6 +117,13 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         emailXpackService.saveInstance(taskInstance);
     }
 
+    protected void removeInstance(GlobalTaskInstance taskInstance) {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        Optional.ofNullable(taskInstance).ifPresent(instance ->
+                Optional.ofNullable(taskInstance.getInstanceId()).ifPresent(instanceId ->
+                        emailXpackService.delInstance(instanceId)));
+    }
+
     protected void error(GlobalTaskInstance taskInstance, Throwable t) {
         taskInstance.setStatus(ERROR);
         taskInstance.setInfo(t.getMessage());
@@ -125,11 +133,12 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     @Async("priorityExecutor")
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO,
-            SysUserEntity user) {
+                           SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
             if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
+                removeInstance(taskInstance);
                 return;
             }
             String panelId = emailTemplateDTO.getPanelId();

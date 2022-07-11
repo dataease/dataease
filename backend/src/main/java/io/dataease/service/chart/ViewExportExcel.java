@@ -46,10 +46,8 @@ public class ViewExportExcel {
         List<Map<String, Object>> components = gson.fromJson(componentsJson, tokenType);
         ChartExtRequest chartExtRequest = buildViewRequest(componentsFilter(components, "custom", null, null));
         List<File> results = new ArrayList<>();
-        List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, chartExtRequest))
-                .collect(Collectors.toList());
-
-        File excelFile = ExcelUtils.exportExcel(sheets);
+        List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, chartExtRequest)).collect(Collectors.toList());
+        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName());
         results.add(excelFile);
         return results;
     }
@@ -57,8 +55,8 @@ public class ViewExportExcel {
     private List<Map<String, Object>> componentsFilter(List<Map<String, Object>> components, String type,
             String componentType, String serviceName) {
         return components.stream().filter(component -> {
-            String ctype = component.get("type").toString();
-            String cComponentType = component.get("component").toString();
+            String ctype =  Optional.ofNullable(component.get("type")).orElse("").toString();
+            String cComponentType = Optional.ofNullable(component.get("component")).orElse("").toString();
             String cServiceName = Optional.ofNullable(component.get("serviceName")).orElse("").toString();
 
             boolean typeMatch = true;

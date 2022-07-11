@@ -8,6 +8,7 @@ import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.chart.ViewOption;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.service.chart.ChartViewCacheService;
 import io.dataease.service.chart.ChartViewService;
@@ -176,6 +177,12 @@ public class ChartViewController {
     @PostMapping("/viewPropsSave/{panelId}")
     public void  viewPropsSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
          chartViewService.viewPropsSave(chartViewWithBLOBs);
+    }
+
+    @ApiOperation("查询仪表板下视图选项")
+    @PostMapping("/viewOptions/{panelId}")
+    public List<ViewOption> viewOptions(@PathVariable("panelId") String panelId) {
+        return chartViewService.viewOptions(panelId);
     }
 
 }
