@@ -85,6 +85,10 @@ export const DEFAULT_LABEL = {
   progressFontSize: '14',
   progressFontColor: '#000000',
   progressColor: '#409EFF',
+  
+  repulsion: 100,
+  edgeLength: 10,
+  gravity: 0.1
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
