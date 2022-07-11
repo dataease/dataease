@@ -759,7 +759,7 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && !chart.type.includes('progress') && chart.type !== 'waterfall'"
+                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && !chart.type.includes('progress') && chart.type !== 'waterfall' && chart.type !== 'graph'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -1003,7 +1003,8 @@
                       && !view.type.includes('text') && view.type !== 'label'
                       && (chart.type !== 'treemap' || chart.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && !chart.type.includes('progress')"
+                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && !chart.type.includes('progress')
+                      && chart.type !== 'graph'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
