@@ -1562,7 +1562,8 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
-      'panelViewEditInfo'
+      'panelViewEditInfo',
+      'canvasStyleData'
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1950,11 +1951,13 @@ export default {
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
       view.title = this.view.title
+      if(this.canvasStyleData.chart.stylePriority === 'panel') {
+        this.view.stylePriority = this.canvasStyleData.chart.stylePriority
+      }
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
       console.log('calcStyle,,,,', this.panelInfo, view)
-      // console.log('calcStyle,,,,',this.panelInfo,view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return

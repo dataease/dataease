@@ -69,6 +69,8 @@ const data = {
     canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
     // 主题模板是否为改变
     templateStatus: false,
+    // 是否启用仪表板样式,不启时，需要刷新页面查询组件数据，启用时为false
+    isStylePriority: false,
     // 多选选择状态
     checkboxStatus: false,
     // 多选选中组件数据
@@ -140,9 +142,13 @@ const data = {
       state.canvasStyleData = style
     },
     setTemplateStatus(state,status) {
-      console.log('设置status',status)
+      console.log('设置temp样式',status)
       state.templateStatus = status
-    }, 
+    },
+    setPriorityStatus(state,status) {
+      console.log('设置priority',status)
+      state.isStylePriority = status
+    },
 
     setCurComponent(state, { component, index }) {
       // 当前视图操作状态置空
