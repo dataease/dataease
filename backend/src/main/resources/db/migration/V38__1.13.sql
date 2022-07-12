@@ -32,3 +32,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 ALTER TABLE `sys_user`
 ADD COLUMN `phone_prefix` varchar(255) NULL COMMENT '手机号前缀' AFTER `sub`;
+
+INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`,
+                         `install_time`, `module_name`, `ds_type`)
+VALUES ('Mongo 数据源插件', 'default', '0', '0', 'datasource', 'Mongo 数据源插件', '1.0-SNAPSHOT', 'DATAEASE', '0',
+        '1650765903630', 'mongo-backend', 'mongobi');
