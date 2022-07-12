@@ -6,3 +6,10 @@ export function queryBackground() {
     method: 'get'
   })
 }
+export function uploadImgUrl(data) {
+  return request({
+    url: '/api/filePicture/uploadFile',
+    method: 'post',
+    data
+  })
+}

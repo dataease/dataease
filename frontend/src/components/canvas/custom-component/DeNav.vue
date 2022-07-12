@@ -60,7 +60,9 @@ export default {
           // return this.element.options.highlight
           // return this.element.options.color
           style.backgroundColor = this.element.options.highlightBg
-          style.backgroundImage = `url(${this.element.options.heightBgImg})`
+          if (this.element.options.heightBgImg) {
+            style.backgroundImage = `url(${this.element.options.heightBgImg})`
+          }
         } else {
           // return this.element.options.color
           style.backgroundColor = ''

@@ -78,9 +78,9 @@
           >
             <i class="el-icon-plus" />
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
+          <!-- <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
+          </el-dialog> -->
         </el-col>
       </el-row>
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
@@ -290,7 +290,7 @@ export default {
       })
     })
     this.options = deepCopy(newArrr)
-    if (this.element.options.heightBgImg) {
+    if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
       this.fileList.push({ url: this.element.options.heightBgImg })
     }
   },
@@ -395,7 +395,7 @@ export default {
       console.log(file, fileList)
       this.uploadDisabled = false
       // this.panel.imageUrl = null
-      this.curComponent.options.heightBgImg = null
+      this.curComponent.options.heightBgImg = ''
       this.fileList = []
       this.commitStyle()
     },

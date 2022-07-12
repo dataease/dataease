@@ -45,6 +45,7 @@
         @bannerImg="bannerImg"
         @setNavInfo="setNavInfo"
         @setFontIcon="setFontIcon"
+        @setPicture="setPicture"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
       />
@@ -1965,6 +1966,10 @@ export default {
     // 字体图标的设置
     setFontIcon() {
       this.$emit('setFontIcon')
+    },
+    // 图片库
+    setPicture() {
+      this.$emit('setPicture')
     }
   }
 

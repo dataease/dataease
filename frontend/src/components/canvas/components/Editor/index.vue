@@ -66,6 +66,7 @@
       @bannerImg="bannerImg(item)"
       @setNavInfo="setNavInfo(item)"
       @setFontIcon="setFontIcon(item)"
+      @setPicture="setPicture(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -268,6 +269,17 @@
     >
       <iconSet v-if="iconVisible" :element="iconElement" @backgroundSetClose="iconSetClose" />
     </el-dialog>
+    <el-dialog
+      :visible.sync="pictureVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <pictureSet v-if="pictureVisible" :element="pictureElement" @backgroundSetClose="pictureSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -302,6 +314,7 @@ import BannerSet from '@/views/background/bannerSet'
 import navgationSet from '@/views/background/navgationSet'
 import tabSet from '@/views/background/tabSet'
 import iconSet from '@/views/background/iconSet'
+import pictureSet from '@/views/background/pictureSet'
 
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
@@ -872,7 +885,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -947,11 +960,13 @@ export default {
       navElement: {},
       tabElement: {},
       iconElement: {},
+      pictureElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
       navVisible: false,
       tabVisible: false,
       iconVisible: false,
+      pictureVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1236,6 +1251,9 @@ export default {
     iconSetClose() {
       this.iconVisible = false
     },
+    pictureSetClose() {
+      this.pictureVisible = false
+    },
     boardSet(item) {
       // console.log('itsm00001', item)
       this.$emit('boardSet', item)
@@ -1263,6 +1281,11 @@ export default {
       this.iconElement = item
 
       console.log('触发字体图标修改')
+    },
+    setPicture(item) {
+      this.pictureVisible = true
+      this.pictureElement = item
+      console.log('触发图片库')
     },
     changeStyleWithScale,
     setLine(e) {

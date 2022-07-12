@@ -41,6 +41,9 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-icons'" class="icon iconfont icon-genghuan" @click.stop="setFontIcon" />
       </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
+      </span>
     </div>
     <!-- 轮播图的数据修改 -->
     <el-dialog
@@ -286,6 +289,9 @@ export default {
     setFontIcon() {
       this.$emit('setFontIcon')
     },
+    setPicture() {
+      this.$emit('setPicture')
+    },
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
@@ -317,7 +323,7 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    right: 0px;
+    right: -25px;
     float:right;
     z-index: 2;
     border-radius:2px;
@@ -325,6 +331,7 @@ export default {
     padding-right: 2px;
     cursor:pointer!important;
     background-color: #0a7be0;
+    // bottom:-25px;
   }
   .bar-main i{
     color: white;
