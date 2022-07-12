@@ -79,7 +79,7 @@
             </el-col>
           </el-row> -->
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ '字体样式01' }} <i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ '字体样式' }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>

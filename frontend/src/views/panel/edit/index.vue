@@ -725,6 +725,7 @@ export default {
         addClass(document.body, 'showRightPanel')
       } else {
         removeClass(document.body, 'showRightPanel')
+        this.$store.commit('setPriorityStatus', false)
       }
     },
     '$store.state.styleChangeTimes'() {

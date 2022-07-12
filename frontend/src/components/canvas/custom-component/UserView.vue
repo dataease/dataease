@@ -297,7 +297,7 @@ export default {
       )
     },
     charViewG2ShowFlag() {
-      console.log('----------3333', this.chart)
+      // console.log('----------3333', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -309,7 +309,7 @@ export default {
       )
     },
     charViewS2ShowFlag() {
-      console.log('----------4444', this.chart)
+      // console.log('----------4444', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -328,7 +328,7 @@ export default {
       )
     },
     tableShowFlag() {
-      console.log('----------22222222', this.chart)
+      // console.log('----------22222222', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -337,7 +337,7 @@ export default {
       )
     },
     tableRollFlag() {
-      console.log('----------111111', this.chart)
+      // console.log('----------111111', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -457,6 +457,7 @@ export default {
     ...mapState([
       'canvasStyleData',
       'templateStatus',
+      'isStylePriority',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
@@ -515,8 +516,10 @@ export default {
         if (
           !this.preCanvasPanel ||
           this.preCanvasPanel.resultCount !== newVal.panel.resultCount ||
-          this.preCanvasPanel.resultMode !== newVal.panel.resultMode
+          this.preCanvasPanel.resultMode !== newVal.panel.resultMode ||
+          this.templateStatus || this.isStylePriority
         ) {
+          // console.log('这地方进了吗？t,p',this.templateStatus,this.isStylePriority)
           this.getData(this.element.propValue.viewId, false)
         }
         // 如果gap有变化刷新
@@ -578,7 +581,7 @@ export default {
   },
   methods: {
     resizeChart() {
-      console.log('resizeChart',this.element)
+      // console.log('resizeChart',this.element)
       if (this.chart.type === 'map') {
         this.destroyTimeMachine()
         this.changeIndex++
@@ -653,10 +656,10 @@ export default {
       this.mergeStyle()
     },
     mergeStyle() {
-      console.log(this.canvasStyleData)
+      // console.log('mergeStyle....',this.requestStatus,this.canvasStyleData,this.chart)
       if (
         (this.requestStatus === 'success' || this.requestStatus === 'merging') &&
-        this.chart.stylePriority === 'panel' &&
+        (this.chart.stylePriority === 'panel' || this.canvasStyleData.chart.stylePriority === 'panel') &&
         this.canvasStyleData.chart
       ) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
@@ -671,7 +674,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        console.log('customAttrChart=====6666', customAttrChart)
+        // console.log('customAttrChart=====6666', customAttrChart)
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -680,7 +683,7 @@ export default {
       }
     },
     getData(id, cache = true) {
-      console.log('templateStatus', this.templateStatus, this.canvasStyleData)
+      console.log('getData...', this.templateStatus,this.isStylePriority, this.canvasStyleData)
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -701,7 +704,7 @@ export default {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
-        console.log('data--------')
+        // console.log('data--------',requestInfo)
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             // 将视图传入echart组件
@@ -857,7 +860,7 @@ export default {
                 // console.log('dddddddddddd',deepCacheInfo)
                 this.saveThemeInfo(deepCacheInfo,'chart', false, false)
               }
-              // console.log('userView,,,,this.chart: ', this.chart)
+              console.log('userView,,,,this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
               // 记录当前数据
               this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -909,10 +912,11 @@ export default {
             this.isFirstLoad = false
             return true
           })
+        
       }
     },
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
-      // console.log('111',data)
+      console.log('saveTheme...',data)
       if (!data.resultCount ||
         data.resultCount === '' ||
         isNaN(Number(data.resultCount)) ||

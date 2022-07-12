@@ -65,9 +65,10 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
       chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
-      chart_option.xAxis.nameTextStyle = customStyle.xAxis.nameTextStyle
-      chart_option.xAxis.nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
-
+      chart_option.xAxis.nameTextStyle = {
+        ...customStyle.xAxis.nameTextStyle,
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      }
       chart_option.xAxis.axisLabel.showMaxLabel = true
       chart_option.xAxis.axisLabel.showMinLabel = true
 
@@ -94,8 +95,10 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
       chart_option.yAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
-      chart_option.yAxis.nameTextStyle = customStyle.yAxis.nameTextStyle
-      chart_option.yAxis.nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis.nameTextStyle = {
+        ...customStyle.yAxis.nameTextStyle,
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      }
 
       chart_option.yAxis.axisLabel.showMaxLabel = true
       chart_option.yAxis.axisLabel.showMinLabel = true

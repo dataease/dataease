@@ -420,6 +420,7 @@ export function getYAxisExt(chart) {
       }
     }
   }
+  console.log('yExt')
   return axis
 }
 
