@@ -28,3 +28,7 @@ INSERT INTO `sys_startup_job` VALUES ('rowPermissionsMerge', 'rowPermissionsMerg
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+ALTER TABLE `sys_user`
+ADD COLUMN `phone_prefix` varchar(255) NULL COMMENT '手机号前缀' AFTER `sub`;
