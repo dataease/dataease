@@ -117,7 +117,7 @@ export default {
   login: {
     title: '系统登录',
     welcome: '欢迎使用',
-    logIn: '登录002',
+    logIn: '登录',
     username: '账号',
     password: '密码',
     any: '随便填',
@@ -192,7 +192,7 @@ export default {
     prompt: '提示',
     operating: '操作',
     input_limit: '长度在 {0} 到 {1} 个字符',
-    login: '登录ceshi',
+    login: '登录',
     welcome: '一站式开源数据分析平台',
     username: '姓名',
     password: '密码',

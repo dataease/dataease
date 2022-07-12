@@ -6,6 +6,13 @@ export function queryBackground() {
     method: 'get'
   })
 }
+
+export function getAllImgList() {
+  return request({
+    url: '/api/filePicture/getList',
+    method: 'get'
+  })
+}
 export function uploadImgUrl(data) {
   return request({
     url: '/api/filePicture/uploadFile',
