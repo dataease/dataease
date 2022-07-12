@@ -782,6 +782,18 @@
                       @onSizeChange="onSizeChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'echarts' && chart.type === 'graph'"
+                    name="focus"
+                    :title="$t('chart.focus')"
+                  >
+                    <focus-selector 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
+                  </el-collapse-item>
                   <!-- && chart.type !== 'word-cloud' -->
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
@@ -1327,6 +1339,7 @@ import {
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
 import ShapeSelector from '../components/shape-attr/ShapeSelector'
+import FocusSelector from '../components/shape-attr/FocusSelector'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
@@ -1419,6 +1432,7 @@ export default {
     TitleSelector,
     SizeSelector,
     ShapeSelector,
+    FocusSelector,
     ColorSelector,
     ChartComponent,
     QuotaItem,

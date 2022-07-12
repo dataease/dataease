@@ -34,6 +34,9 @@
               @onChangeBackgroundForm="onChangeBackgroundForm"
             />
           </el-row>
+          <!-- <el-row class="selector-div">
+
+          </el-row> -->
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row class="selector-div">

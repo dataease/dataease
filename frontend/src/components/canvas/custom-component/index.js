@@ -13,6 +13,7 @@ import UserView from '@/components/canvas/custom-component/UserView'
 import DeVideo from '@/components/canvas/custom-component/DeVideo'
 import DeFrame from '@/components/canvas/custom-component/DeFrame'
 import DeStreamMedia from '@/components/canvas/custom-component/DeStreamMedia'
+import DePicture from '@/components/canvas/custom-component/DePicture'
 
 Vue.component('DeStreamMedia', DeStreamMedia)
 Vue.component('Picture', Picture)
@@ -24,6 +25,7 @@ Vue.component('RectShape', RectShape)
 Vue.component('DeBanner', DeBanner)
 Vue.component('DeIcons', DeIcons)
 Vue.component('DeNav', DeNav)
+Vue.component('DePicture', DePicture)
 Vue.component('UserView', UserView)
 Vue.component('DeVideo', DeVideo)
 Vue.component('DeFrame', DeFrame)

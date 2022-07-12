@@ -2,20 +2,27 @@
   <div style="width: 100%">
     <el-col>
       <!-- 词云组件字体大小设置 -->
-      <el-form v-show="chart.type && chart.type === 'word-cloud'" ref="shapeFormWord" :model="shapeForm" label-width="100px" size="mini">
-        <el-form-item :label="$t('chart.wordShape')" class="form-item">
-          <el-select v-model="shapeForm.wordShape" placeholder="请选择" @change="changeShapeCase">
-            <el-option v-for="option in shapeData" :key="option.value" :label="option.name" :value="option.value" />
-          </el-select>
+      <el-form v-show="chart.type && chart.type === 'graph'" ref="focusFormGraph" :model="focusForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
+          <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
+          <el-slider v-model="focusForm.edgeLength" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
+          <el-slider v-model="focusForm.gravity" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.reductionRate')" class="form-item">
+          <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
         </el-form-item>
       </el-form>
     </el-col>
   </div>
 </template>
 <script>
-import {COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
+import {COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
 export default {
-  name: 'ShapeSelector',
+  name: 'FocusSelector',
   props: {
     param: {
       type: Object,
@@ -28,16 +35,8 @@ export default {
   },
   data() {
     return {
-      shapeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
+      focusForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       predefineColors: COLOR_PANEL,
-      shapeData: [
-        {name: '圆形',value: 'circle'},
-        {name: '心形',value: 'cardioid'},
-        {name: '菱形',value: 'diamond'},
-        {name: '三角形',value: 'triangle'},
-        {name: '星形',value: 'star'},
-        {name: '五边形',value: 'pentagon'},
-      ]
     }
   },
   watch: {
@@ -60,14 +59,14 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
-        if (customAttr.size) {
-          this.shapeForm = customAttr.size
+        if (customAttr.label) {
+          this.focusForm = customAttr.label
         }
       }
     },
     
-    changeShapeCase() {
-      this.$emit('onSizeChange', this.shapeForm)
+    changeFocusCase() {
+      this.$emit('onLabelChange', this.focusForm)
     }
 
   }
