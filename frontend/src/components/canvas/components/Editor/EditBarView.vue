@@ -14,7 +14,7 @@
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
       <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
     </div>
-    <div v-if="positionCheck('email-task')" style="margin-right: -1px;width: 18px;z-index: 5">
+    <div v-if="positionCheck('email-task') && element.component === 'user-view'" style="margin-right: -1px;width: 18px;z-index: 5">
       <el-checkbox v-model="isTaskChecked" size="medium" @change="emailTaskCheck" />
     </div>
   </div>

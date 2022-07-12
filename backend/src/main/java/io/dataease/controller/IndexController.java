@@ -47,8 +47,7 @@ public class IndexController {
             case valid:
                 return "doc.html";
             default:
-//                return "nolic.html";
-                return "doc.html";
+                return "nolic.html";
         }
     }
 
