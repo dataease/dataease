@@ -1713,6 +1713,20 @@ export default {
         })
         this.view.xaxis = []
       }
+
+      if(switchType && this.view.type === '3dcolumn_stack' && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.highchart_view_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+        this.view.yaxis = []
+      }
+      if(switchType && this.view.type.includes('3d') && this.view.extStack.length > 0) {
+        this.view.extStack = []
+      }
+
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId

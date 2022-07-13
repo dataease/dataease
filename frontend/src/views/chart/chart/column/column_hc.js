@@ -263,26 +263,46 @@ export const DEFAULT_COLOR_CASE = {
       // chart_option.title.text = chart.title
       // 基础柱状数据处理
       if (isBase) {
+        console.log(chart)
         if (chart.data.series.length > 0) {
-          chart_option.series[0].name = chart.data.series[0].name
-          if (customAttr.color) {
-            chart_option.series[0].opacity = customAttr.color.alpha / 100
+          // chart_option.series[0].name = chart.data.series[0].name
+          // if (customAttr.color) {
+          //   chart_option.series[0].opacity = customAttr.color.alpha / 100
+          // }
+          // const valueArr = chart.data.series[0].data
+          // let arr = []
+          // for (let i = 0; i < valueArr.length; i++) {
+          //   const y = valueArr[i]
+          //   y.name = chart.data.x[i]
+          //   y.y = y.value
+          //   arr.push(chart.data.x[i])
+          //   chart_option.series[0].data.push(y)
+          // }
+          // chart_option.xAxis.categories = arr;
+          
+          const series = chart.data.series
+          let arr = []
+          for (let i = 0; i < series.length; i++) {
+            let obj = {
+              name: series[i].name,
+              data: series[i].data.map(ele => {return ele.value}),
+              opacity: series[i].opacity,
+            }
+            if (customAttr.color) {
+              obj.opacity = customAttr.color.alpha / 100
+            }
+            arr.push(obj)
           }
+          chart_option.series = arr
+    
+          chart_option.xAxis.categories = chart.data.x
+
           // size
           /* if (customAttr.size) {
               chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
             }*/
-          const valueArr = chart.data.series[0].data
-          let arr = []
-          for (let i = 0; i < valueArr.length; i++) {
-            const y = valueArr[i]
-            y.name = chart.data.x[i]
-            y.y = y.value
-            arr.push(chart.data.x[i])
-            chart_option.series[0].data.push(y)
-          }
-          chart_option.xAxis.categories = arr;
-          // console.log('isBase,chart_option:::::',chart_option)
+          
+          console.log('isBase,chart_option:::::',chart_option)
         }
       }
       

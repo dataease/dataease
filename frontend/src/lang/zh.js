@@ -983,6 +983,7 @@ export default {
     axis_value_split: '间隔',
     axis_auto: '自动',
     table_info_switch: '明细表切换将清空维度',
+    highchart_view_switch: '3D堆叠柱状图切换将清空维度与指标',
     drag_block_value_axis_main: '主轴值',
     drag_block_value_axis_ext: '副轴值',
     yAxis_main: '主纵轴',

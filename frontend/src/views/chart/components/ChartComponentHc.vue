@@ -226,14 +226,14 @@ export default {
       const chart = this.myChart
       this.setBackGroundBorder()
       setTimeout(() => {
-        if(type === '3dcolumn_stack') {
+        // if(type === '3dcolumn_stack') {
           if(this.myChart) {
             this.myChart.destroy()
           }
           this.myChart = this.$highcharts.chart(this.chartId, option)
-        } else {
-          chart.update(option, true)
-        }
+        // } else {
+        //   chart.update(option, true)
+        // }
         
       }, 500)
       window.onresize = function() {

@@ -49,7 +49,7 @@
       <el-tooltip :content="$t('panel.params_setting')">
         <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
       </el-tooltip>
-      <!--<el-tooltip :content="$t('panel.params_checkbox')">
+      <!-- <el-tooltip :content="$t('panel.params_checkbox')">
         <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
       </el-tooltip> -->
       <span style="float: right;margin-left: 10px">
