@@ -50,6 +50,10 @@ export const DEFAULT_SIZE = {
   wordMax: 32,
   wordShape: 'pentagon',
 
+  alpha: 10,
+  beta: 0,
+  depth: 40,
+
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
