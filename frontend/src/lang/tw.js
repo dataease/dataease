@@ -1632,6 +1632,7 @@ export default {
     component_list: '組件列錶',
     custom_scope: '控製範圍',
     multiple_choice: '多選',
+    show_time: '顯示時間',
     single_choice: '單選',
     field: '字段',
     unshared_people: '未分享人員',

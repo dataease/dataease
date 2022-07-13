@@ -4,13 +4,14 @@
     ref="dateRef"
     v-model="values"
     popper-class="coustom-date-picker"
-    :type="element.options.attrs.type"
+    :type="componentType"
     :range-separator="$t(element.options.attrs.rangeSeparator)"
     :start-placeholder="$t(element.options.attrs.startPlaceholder)"
     :end-placeholder="$t(element.options.attrs.endPlaceholder)"
     :placeholder="$t(element.options.attrs.placeholder)"
     :append-to-body="inScreen"
     value-format="timestamp"
+    :format="labelFormat"
     :size="size"
     :editable="false"
     @change="dateChange"
@@ -52,7 +53,6 @@ export default {
       operator: 'between',
       values: null,
       onFocus: false
-
     }
   },
   computed: {
@@ -70,7 +70,26 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    isTimeWidget() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      return widget.isTimeWidget && widget.isTimeWidget()
+    },
+    componentType() {
+      let result = 'date'
+      if (this.isTimeWidget && this.element.options.attrs.showTime) {
+        result = 'datetime'
+      }
+      return result
+    },
+    labelFormat() {
+      const result = 'yyyy-MM-dd'
+      if (this.isTimeWidget && this.element.options.attrs.showTime && this.element.options.attrs.accuracy) {
+        return result + ' ' + this.element.options.attrs.accuracy
+      }
+      return result
     }
+
   },
   watch: {
     'viewIds': function(value, old) {
@@ -194,7 +213,7 @@ export default {
         return results
       } else {
         const value = values[0]
-        return timeSection(parseFloat(value), this.element.options.attrs.type)
+        return timeSection(parseFloat(value), this.componentType || this.element.options.attrs.type, this.labelFormat)
       }
     },
     fillValueDerfault() {

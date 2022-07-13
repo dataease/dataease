@@ -9,6 +9,37 @@
           @change="multipleChange"
         />
 
+        <span v-if="widget.isTimeWidget && widget.isTimeWidget()" style="padding-left: 10px;">
+          <el-checkbox v-model="attrs.showTime" @change="showTimeChange">
+            <span>{{ $t('panel.show_time') }} </span>
+          </el-checkbox>
+
+          <el-popover v-model="timePopovervisible" placement="bottom-end" :disabled="!attrs.showTime" width="140">
+            <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
+              <ul class="de-ul">
+                <li
+                  v-for="(node, i) in accuracyOptions"
+                  :key="node.id"
+                  :index="i"
+                  class="de-sort-field-span"
+                  :class="attrs.accuracy === node.id ? 'de-active-li': ''"
+                  @click="attrs.accuracy = node.id"
+                >
+
+                  <span>{{ node.name }}</span>
+                </li>
+              </ul>
+
+            </div>
+
+            <i
+              slot="reference"
+              :class="{'i-filter-active': attrs.showTime, 'i-filter-inactive': !attrs.showTime}"
+              class="el-icon-setting i-filter"
+            />
+          </el-popover>
+        </span>
+
       </div>
     </el-col>
 
@@ -126,7 +157,14 @@ export default {
       attrs: null,
       titlePopovervisible: false,
       popovervisible: false,
-      parametersVisible: false
+      parametersVisible: false,
+      timePopovervisible: false,
+      accuracyOptions: [
+        { id: 'HH', name: 'HH' },
+        { id: 'HH:mm', name: 'HH:mm' },
+        { id: 'HH:mm:ss', name: 'HH:mm:ss' }
+
+      ]
 
     }
   },
@@ -139,6 +177,11 @@ export default {
   },
   methods: {
     multipleChange(value) {
+      this.fillAttrs2Filter()
+    },
+    showTimeChange(value) {
+      this.attrs.accuracy = this.accuracyOptions[1].id
+      this.attrs.default.isDynamic = false
       this.fillAttrs2Filter()
     },
     checkedViewsChange(values) {
@@ -225,5 +268,39 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
   }
+
+.de-ul li {
+  margin: 5px 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: #409EFF;
+    border-color: rgb(198, 226, 255);
+    background-color: rgb(236, 245, 255);
+  }
+
+  &:before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+}
+
+.de-active-li {
+  &:before {
+    background: #409EFF;
+  }
+}
+
+.de-sort-field-span {
+  display: inline-flexbox;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 </style>
