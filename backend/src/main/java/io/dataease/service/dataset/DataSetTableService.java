@@ -32,6 +32,7 @@ import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.provider.Provider;
@@ -40,6 +41,7 @@ import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.DDLProvider;
+import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.sys.SysAuthService;
 import net.sf.jsqlparser.expression.BinaryExpression;
@@ -134,6 +136,8 @@ public class DataSetTableService {
     private ChartViewMapper chartViewMapper;
     @Resource
     private DataSetTableTaskLogService dataSetTableTaskLogService;
+    @Resource
+    private DatasourceService datasourceService;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -1259,10 +1263,9 @@ public class DataSetTableService {
         }
     }
 
-    public String getCustomSQLDatasource(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list,
-                                         Datasource ds) {
-        DatasourceTypes datasourceTypes = DatasourceTypes.valueOf(ds.getType());
-        String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
+    public String getCustomSQLDatasource(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list, Datasource ds) {
+        DataSourceType dataSourceType = datasourceService.types().stream().filter(obj -> Objects.equals(obj.getType(), ds.getType())).collect(Collectors.toList()).get(0);
+        String keyword = dataSourceType.getKeywordPrefix() + "%s" + dataSourceType.getKeywordSuffix();
         Map<String, String[]> customInfo = new TreeMap<>();
         for (DataTableInfoCustomUnion ele : dataTableInfoDTO.getList()) {
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(ele.getTableId());
@@ -1483,8 +1486,8 @@ public class DataSetTableService {
 
     // 关联数据集 直连模式
     public Map<String, Object> getUnionSQLDatasource(DataTableInfoDTO dataTableInfoDTO, Datasource ds) {
-        DatasourceTypes datasourceTypes = DatasourceTypes.valueOf(ds.getType());
-        String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
+        DataSourceType dataSourceType = datasourceService.types().stream().filter(obj -> Objects.equals(obj.getType(), ds.getType())).collect(Collectors.toList()).get(0);
+        String keyword = dataSourceType.getKeywordPrefix() + "%s" + dataSourceType.getKeywordSuffix();
 
         String configuration = ds.getConfiguration();
         JsonObject jsonObject = JsonParser.parseString(configuration).getAsJsonObject();
