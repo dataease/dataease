@@ -319,12 +319,14 @@ export default {
         }
       })
       this.$store.commit('setTemplateStatus',false)
+      this.$store.commit('setPriorityStatus', false)
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       this.$store.commit('recordSnapshot', 'clearCanvas')
       this.$store.commit('setTemplateStatus',false)
+      this.$store.commit('setPriorityStatus', false)
     },
 
     handlePreviewChange() {

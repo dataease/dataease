@@ -1695,6 +1695,16 @@ export default {
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
+      // console.log('这是个啥？',this.canvasStyleData)
+      // if(this.canvasStyleData.chart.stylePriority === 'panel') {
+      //   if(this.canvasStyleData.panel.resultMode === 'custom') {
+      //     data.resultCount = this.canvasStyleData.panel.resultCount
+      //   } else {
+      //     data.resultCount = '1000'
+      //   }
+      // } else {
+      //     console.log('aaaaaa')
+      // }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
           showClose: true,
@@ -3138,7 +3148,7 @@ span {
 }
 
 .result-count {
-  width: 50px;
+  width: 80px;
 }
 
 .result-count > > > input {

@@ -35,15 +35,17 @@
             Tips: {{ $t('panel.panel_view_result_tips') }}
           </span>
         </el-row>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.panel_view_result_show') }}<i
-          class="el-icon-setting el-icon--right"
-        /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">
+          {{ $t('panel.panel_view_result_show') }}
+          <i class="el-icon-setting el-icon--right"/>
+        </el-button>
       </el-popover>
     </div>
   </div>
 </template>
 
 <script>
+import bus from '@/utils/bus'
 export default {
   name: 'PanelViewResult',
   props: {},
@@ -64,6 +66,8 @@ export default {
   },
   methods: {
     onChangePanelStyle() {
+      console.log('变化',this.panel,this.canvasStyleData)
+      // bus.$emit('calc-data')
       this.$store.state.styleChangeTimes++
     }
   }

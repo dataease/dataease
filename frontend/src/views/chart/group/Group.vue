@@ -291,6 +291,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { post, chartGroupTree } from '@/api/chart/chart'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import TableSelector from '../view/TableSelector'
@@ -433,7 +434,10 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    }
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
@@ -818,7 +822,11 @@ export default {
         assistLine: [],
         threshold: DEFAULT_THRESHOLD
       })
-      view.stylePriority = 'view' // 默认样式优先级视图
+      if(this.canvasStyleData.chart.stylePriority === 'panel') {
+        view.stylePriority= 'panel'
+      } else {
+        view.stylePriority = 'view' // 默认样式优先级视图
+      }
       view.xaxis = JSON.stringify([])
       view.xaxisExt = JSON.stringify([])
       view.yaxis = JSON.stringify([])
