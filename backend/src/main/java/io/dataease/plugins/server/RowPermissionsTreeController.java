@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 //@ApiIgnore
-@Api(tags = "行权限")
+@Api(tags = "xpack：行权限")
 @RestController
 @RequestMapping("plugin/dataset/rowPermissionsTree")
 public class RowPermissionsTreeController {

@@ -6,7 +6,10 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
+import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import org.springframework.stereotype.Service;
 
@@ -38,82 +41,82 @@ public class ApiProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String createQueryTableWithPage(String s, List<DatasetTableField> list, Integer integer, Integer integer1, Integer integer2, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQueryTableWithPage(String s, List<DatasetTableField> list, Integer integer, Integer integer1, Integer integer2, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String createQuerySQLWithPage(String s, List<DatasetTableField> list, Integer integer, Integer integer1, Integer integer2, boolean b, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQuerySQLWithPage(String s, List<DatasetTableField> list, Integer integer, Integer integer1, Integer integer2, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String createQueryTableWithLimit(String s, List<DatasetTableField> list, Integer integer, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQueryTableWithLimit(String s, List<DatasetTableField> list, Integer integer, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String createQuerySqlWithLimit(String s, List<DatasetTableField> list, Integer integer, boolean b, List<ChartFieldCustomFilterDTO> list1) {
+    public String createQuerySqlWithLimit(String s, List<DatasetTableField> list, Integer integer, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         return null;
     }
 
     @Override
-    public String getSQL(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQL(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DeSortField> list2) {
+    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2) {
         return null;
     }
 
     @Override
-    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DeSortField> list2) {
+    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2) {
         return null;
     }
 
     @Override
-    public String getSQLAsTmp(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLAsTmp(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLTableInfo(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<ChartExtFilterRequest> list2, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLTableInfo(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list2, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLAsTmpTableInfo(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<ChartExtFilterRequest> list2, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLAsTmpTableInfo(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list2, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLStack(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLStack(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLAsTmpStack(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLAsTmpStack(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLAsTmpScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLAsTmpScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
@@ -123,12 +126,12 @@ public class ApiProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLSummary(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<ChartExtFilterRequest> list2, ChartViewWithBLOBs chartViewWithBLOBs, Datasource datasource) {
+    public String getSQLSummary(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list2, ChartViewWithBLOBs chartViewWithBLOBs, Datasource datasource) {
         return null;
     }
 
     @Override
-    public String getSQLSummaryAsTmp(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<ChartExtFilterRequest> list2, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLSummaryAsTmp(String s, List<ChartViewFieldDTO> list, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list2, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
@@ -144,6 +147,11 @@ public class ApiProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String s, List<DatasetTableField> list) {
+        return null;
+    }
+
+    @Override
+    public String transTreeItem(SQLObj sqlObj, DatasetRowPermissionsTreeItem datasetRowPermissionsTreeItem) {
         return null;
     }
 }
