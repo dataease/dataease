@@ -91,7 +91,7 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal',
         background: hexColorToRGBA('#ffffff', 0),
-        fontFamily:  ''
+        fontFamily: ''
       },
       container_bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
@@ -117,7 +117,7 @@ export default {
       }
     },
     ...mapState([
-      'canvasStyleData',
+      'canvasStyleData'
     ])
   },
   watch: {
@@ -138,7 +138,7 @@ export default {
     }
   },
   mounted() {
-    console.log('11111',this.canvasStyleData)
+    console.log('11111', this.canvasStyleData)
     this.preDraw()
   },
   beforeDestroy() {
@@ -202,13 +202,13 @@ export default {
       // console.log('是否触发drawView事件----------------？？？？？？？？？？？？？？？？？？？', this.chart)
       if (chart.type === 'table-info') {
         // console.log('触发点-------1111111111')
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-normal') {
         // console.log('触发点-------22222222222')
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-pivot') {
         // console.log('触发点-------33333333333')
-        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData,this.canvasStyleData.fontFamily)
+        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -392,7 +392,7 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
 
           if (this.$refs.title) {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'

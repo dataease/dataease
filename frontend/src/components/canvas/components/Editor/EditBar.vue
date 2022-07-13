@@ -44,6 +44,12 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
       </span>
+      <span :title="'锁定'">
+        <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
+      </span>
+      <span :title="'解锁'">
+        <svg-icon v-if="activeModel==='edit'&&curComponent&&!lockValue" :icon-class="'Unlock'" class="icon" style="color:#fff" @click.stop="setLockout(true)" />
+      </span>
     </div>
     <!-- 轮播图的数据修改 -->
     <el-dialog
@@ -148,6 +154,10 @@ export default {
     },
     miniWidth() {
       return this.curComponent.miniSizex || 1
+    },
+    lockValue() {
+      console.log('213123', this.curComponent)
+      return this.curComponent.isLock
     },
     ...mapState([
       'menuTop',
@@ -291,6 +301,11 @@ export default {
     },
     setPicture() {
       this.$emit('setPicture')
+    },
+    setLockout(key) {
+      // this.$emit('setLockout')
+      this.curComponent.isLock = key
+      console.log('this.curComponent', key)
     },
     handleFileChange(e) {
       const file = e.target.files[0]

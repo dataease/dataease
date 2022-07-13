@@ -260,7 +260,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="iconVisible"
-      width="600px"
+      width="900px"
       class="dialog-css"
       :close-on-click-modal="false"
       :show-close="false"
