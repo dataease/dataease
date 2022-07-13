@@ -216,7 +216,7 @@ export const DEFAULT_COLOR_CASE = {
   export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack,cstyle = {}) {
     terminalType = terminal
     let customAttr = {}
-    // console.log('column,chart: ', chart)
+    console.log('column,chart: ', chart)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -254,6 +254,13 @@ export const DEFAULT_COLOR_CASE = {
         
         // 系列数据标签的选项，显示在每个数据点旁边
         chart_option.plotOptions.column.dataLabels = dataLabels
+      }
+
+      // size
+      if (customAttr.size) {
+        chart_option.chart.options3d.alpha = customAttr.size.alpha? customAttr.size.alpha : 10
+        chart_option.chart.options3d.beta = customAttr.size.beta? customAttr.size.beta : 0
+        chart_option.chart.options3d.depth = customAttr.size.depth? customAttr.size.depth : 40
       }
     }
   

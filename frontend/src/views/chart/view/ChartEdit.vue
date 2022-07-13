@@ -127,7 +127,7 @@
                   <transition-group>
                     <span
                       v-for="item in quotaData"
-                      v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
+                      v-show="view.type && (view.type !== 'table-info' || (view.type === 'table-info' && item.id !=='count'))"
                       :key="item.id"
                       class="item-quota"
                       :title="item.name"
@@ -758,8 +758,20 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
+                  <el-collapse-item 
+                    v-show="view.render && view.render === 'highcharts' && view.type && view.type.includes('3dcolumn')"
+                    name="rotate"
+                    :title="$t('chart.rotate')"
+                  >
+                    <rotate-selector
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && !chart.type.includes('progress') && chart.type !== 'waterfall' && chart.type !== 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -771,7 +783,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type === 'word-cloud'"
+                    v-show="view.render && view.render === 'echarts' && view.type === 'word-cloud'"
                     name="shape"
                     :title="$t('chart.shape')"
                   >
@@ -783,7 +795,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type === 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type === 'graph'"
                     name="focus"
                     :title="$t('chart.focus')"
                   >
@@ -796,9 +808,9 @@
                   </el-collapse-item>
                   <!-- && chart.type !== 'word-cloud' -->
                   <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
+                    v-show="view.render && view.render === 'antv' && view.type !== 'map' && view.type !== 'waterfall' && view.type !== 'treemap' && view.type !== 'funnel' && view.type !== 'bar-stack'"
                     name="size"
-                    :title="(chart.type && chart.type.includes('table')|| chart.type.includes('roll') ) ? $t('chart.table_config') : $t('chart.size')"
+                    :title="(view.type && (view.type.includes('table')|| view.type.includes('roll'))) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -835,7 +847,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && chart.type !== 'progress' && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type && !view.type.includes('table') && view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1013,10 +1025,10 @@
                       && view.type !== 'arc_map' && !view.type.includes('table')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
                       && !view.type.includes('text') && view.type !== 'label'
-                      && (chart.type !== 'treemap' || chart.render === 'antv')
+                      && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && chart.type !== 'gauge' && chart.type !== 'word-cloud' && !chart.type.includes('progress')
-                      && chart.type !== 'graph'"
+                      && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
+                      && view.type !== 'graph'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -1121,14 +1133,14 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
-              v-if="httpRequest.status && chart.type && view.isPlugin"
+              v-if="httpRequest.status && view.type && view.isPlugin"
               ref="dynamicChart"
-              :component-name="chart.type + '-view'"
+              :component-name="view.type + '-view'"
               :obj="{chart}"
               class="chart-class"
             />
             <chart-component
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
+              v-else-if="httpRequest.status && view.type && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'echarts'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -1136,7 +1148,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-g2
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && view.type && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -1144,7 +1156,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-s2
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && view.type && view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -1152,18 +1164,18 @@
               @onChartClick="chartClick"
             />
             <table-normal
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts' && chart.type !== 'table-pivot'"
-              :show-summary="chart.type === 'table-normal'"
+              v-else-if="httpRequest.status && view.type && view.type.includes('table') && renderComponent() === 'echarts' && view.type !== 'table-pivot'"
+              :show-summary="view.type === 'table-normal'"
               :chart="chart"
               class="table-class"
             />
             <label-normal
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('text')"
+              v-else-if="httpRequest.status && view.type && view.type.includes('text')"
               :chart="chart"
               class="table-class"
             />
             <label-normal-text
-              v-else-if="httpRequest.status && chart.type && chart.type === 'label'"
+              v-else-if="httpRequest.status && view.type && view.type === 'label'"
               :chart="chart"
               class="table-class"
             />
@@ -1340,6 +1352,7 @@ import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
 import ShapeSelector from '../components/shape-attr/ShapeSelector'
 import FocusSelector from '../components/shape-attr/FocusSelector'
+import RotateSelector from '../components/shape-attr/RotateSelector'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
@@ -1433,6 +1446,7 @@ export default {
     SizeSelector,
     ShapeSelector,
     FocusSelector,
+    RotateSelector,
     ColorSelector,
     ChartComponent,
     QuotaItem,
@@ -1714,7 +1728,7 @@ export default {
         this.view.xaxis = []
       }
 
-      if(switchType && this.view.type === '3dcolumn_stack' && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
+      if(switchType && (this.view.type === '3dcolumn_stack' || this.chart.type === '3dcolumn_stack') && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
         this.$message({
           showClose: true,
           message: this.$t('chart.highchart_view_switch'),
@@ -1723,7 +1737,7 @@ export default {
         this.view.xaxis = []
         this.view.yaxis = []
       }
-      if(switchType && this.view.type.includes('3d') && this.view.extStack.length > 0) {
+      if(switchType && (this.view.type.includes('3d') || this.chart.type.includes('3d')) && this.view.extStack.length > 0) {
         this.view.extStack = []
       }
 
