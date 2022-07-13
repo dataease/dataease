@@ -125,30 +125,41 @@ export const loadMenus = (next, to) => {
     // Add Router start: hard code - add portal
     const portalRouter = {
       children: [{
-        component: () => import("@/views/portal/list"),
+        component: () => import('@/views/portal/list'),
         isPlugin: false,
-        name: "portal-list",
+        name: 'portal-list',
         noLayout: null,
-        path: "list",
+        path: 'list',
         type: 1,
-        permission: null,
-      }],
-      component: () => import("@/layout/index.vue"),
+        permission: null
+      }
+      // {
+      //   // tipsPage
+      //   component: () => import('@/views/portal/tipsPage'),
+      //   isPlugin: false,
+      //   name: 'portal-tips',
+      //   noLayout: true,
+      //   path: 'tips',
+      //   type: 0,
+      //   permission: null
+      // }
+      ],
+      component: () => import('@/layout/index.vue'),
       hidden: false,
       isPlugin: false,
       meta: {
-        icon: "portal",
-        title: "数据门户"
+        icon: 'portal',
+        title: '数据门户'
       },
-      name: "protal",
+      name: 'protal',
       noLayout: null,
       pid: 0,
-      path: "/portal",
+      path: '/portal',
       permission: null,
-      redirect: "/portal/list"
+      redirect: '/portal/list'
     }
     asyncRouter.splice(4, 0, portalRouter)
-    console.log("asyncRouter", asyncRouter)
+    console.log('asyncRouter', asyncRouter)
     // Add Router end
 
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由

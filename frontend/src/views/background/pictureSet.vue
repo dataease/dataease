@@ -8,7 +8,7 @@
     <el-row class="main-content">
       <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
         <el-col :span="3">
-          <span class="params-title">{{ '选择图片' }}</span>
+          <span class="params-title">{{ '上传图片' }}</span>
         </el-col>
         <el-col style="width: 130px!important;">
           <el-upload
@@ -30,10 +30,32 @@
           </el-dialog>
         </el-col>
         <el-col :span="3">
-          <span class="params-title" @click="upadtaEven()">{{ '上传' }}</span>
+          <el-button type="primary" @click="upadtaEven()">上传</el-button>
+          <!-- <span class="params-title" >{{ '上传' }}</span> -->
+        </el-col>
+
+        <el-col :span="3">
+          <span class="params-title">{{ '选中图片：' }}</span>
+        </el-col>
+        <el-col v-show="changImg!==''" :span="5" style="height:80px;margin-bottom:20px;">
+          <img :src="changImg" class="img_class">
+        </el-col>
+      </el-row>
+      <el-row v-show="loadingKey">
+        <el-col :span="12">
+          <span class="params-title">{{ '图片库使劲加载中，请稍后。。。' }}</span>
+          <!-- <i class="el-icon-loading" /> -->
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="marginTop:20px;">
+        <el-col v-for="(item,index) in allImgData" :key="index" style="height:108px;margin-bottom:20px;" :span="6">
+          <div class="img_Box" @click="clickImg(item)">
+            <img :src="item.url" class="img_class">
+          </div>
         </el-col>
       </el-row>
     </el-row>
+
     <el-row class="root-class">
       <el-col :span="24">
         <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
@@ -44,7 +66,7 @@
 </template>
 
 <script>
-import { queryBackground, uploadImgUrl } from '@/api/background/background'
+import { queryBackground, uploadImgUrl, getAllImgList } from '@/api/background/background'
 // import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
 // import eventBus from '@/components/canvas/utils/eventBus'
@@ -84,7 +106,11 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       textData: [],
-      imgUrlInfo: ''
+      imgUrlInfo: '',
+      allImgData: [],
+      changImg: '',
+      imgInfo: {},
+      loadingKey: true
     }
   },
   computed: {
@@ -112,13 +138,24 @@ export default {
   },
   created() {
     // this.init()
-
+    this.getAllImg()
   },
   mounted() {
-
+    console.log('componentData--------', this.curComponent)
   },
 
   methods: {
+    clickImg(res) {
+      this.changImg = res.url
+      this.imgInfo = res
+    },
+    getAllImg() {
+      getAllImgList().then(res => {
+        console.log('获取所有图片数据', res)
+        this.allImgData = res.data
+        this.loadingKey = false
+      })
+    },
     addNavInfo() {
       console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
@@ -148,20 +185,23 @@ export default {
       })
     },
     cancel() {
-      // this.curComponent.commonBackground.enable = this.backgroundOrigin.enable
-      // this.curComponent.commonBackground.backgroundType = this.backgroundOrigin.backgroundType
-      // this.curComponent.commonBackground.color = this.backgroundOrigin.color
-      // this.curComponent.commonBackground.innerImage = this.backgroundOrigin.innerImage
-      // this.curComponent.commonBackground.outerImage = this.backgroundOrigin.outerImage
-      // this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
-      // this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
-      // this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
-      // this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
-      // this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
       console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
+      const image = new Image()
+      image.src = this.imgInfo.url
+
+      image.onload = _ => {
+        const width = image.width
+        const height = image.height
+        console.log('width', width, height)
+        // 然后就可以做需要的操作了
+        this.curComponent.picData = this.imgInfo.url
+        this.curComponent.style.width = image.width
+        this.curComponent.style.height = image.height
+      }
+
       console.log('this.fileList', this.fileList)
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
@@ -179,8 +219,6 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList)
       this.uploadDisabled = false
-      // this.panel.imageUrl = null
-      this.curComponent.options.heightBgImg = null
       this.fileList = []
       this.commitStyle()
     },
@@ -238,6 +276,13 @@ export default {
       }
       uploadImgUrl(params).then(res => {
         console.log('请求结果', res)
+        if (res.success) {
+          this.$message.success('上传成功')
+          this.uploadDisabled = false
+          this.fileList = []
+          this.imgUrlInfo = ''
+          this.getAllImg()
+        }
       })
     },
 
@@ -255,6 +300,14 @@ export default {
     min-width: 460px;
     width: 100%;
     height: 100%;
+  }
+  .img_class{
+    width:100%;
+    height:100%;
+  }
+  .img_Box{
+    height:108px;
+    cursor: pointer;
   }
 
   .main-row{

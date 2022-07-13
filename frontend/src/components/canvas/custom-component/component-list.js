@@ -632,6 +632,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    picData: '',
     iconData: {
       color: '#333',
       fontSize: 12,

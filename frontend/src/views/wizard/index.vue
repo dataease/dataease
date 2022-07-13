@@ -10,7 +10,8 @@
           <div class="outer_circle">
             <div class="circle">
               <div class="inner_circle">
-                <span class="info" @click="jumpPage('/datasource/index')">
+                <!-- <span class="info" @click="jumpPage('/datasource/index')"> -->
+                <span class="info" @click="openNavOne()">
                   <i class="el-icon-connection" />
                   <div>{{ $t('wizard.data_connection') }}</div>
                 </span>
@@ -24,8 +25,8 @@
           <div class="outer_circle">
             <div class="circle" style="border-color:#cee;">
               <div class="inner_circle">
-
-                <span class="info" @click="jumpPage('/dataset/index')">
+                <!-- <span class="info" @click="jumpPage('/dataset/index')"> -->
+                <span class="info" @click="openNavTwo()">
                   <i class="el-icon-coin" />
                   <div>
                     {{ $t('wizard.data_preparation') }}
@@ -42,7 +43,8 @@
             <div class="circle" style="border-color:#ece;">
               <div class="inner_circle">
 
-                <span class="info" @click="jumpPage('/panel/index')">
+                <!-- <span class="info" @click="jumpPage('/panel/index')"> -->
+                <span class="info" @click="openNav()">
                   <i class="el-icon-finished" />
                   <div>
                     {{ $t('wizard.analysis_display') }}
@@ -58,8 +60,8 @@
           <div class="outer_circle">
             <div class="circle" style="border-color:#cfc;">
               <div class="inner_circle">
-
-                <span class="info" @click="jumpPage('/dataset/index')">
+                <span class="info" @click="openNavFore()">
+                  <!-- <span class="info" @click="jumpPage('/dataset/index')"> -->
                   <i class="el-icon-s-promotion" />
                   <div>
                     {{ $t('wizard.resource_publishing') }}
@@ -76,7 +78,56 @@
         <component :is="cardDetail.component" :img-index="index" :details="cardDetail" />
       </info-card>
     </el-row> -->
+    <el-dialog
+      :visible.sync="oneVisible"
+      width="850px"
+      title="数据连接入门指示"
+      class="new_class"
+      :close-on-click-modal="true"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <oneDialog />
+    </el-dialog>
+    <el-dialog
+      :visible.sync="twoVisible"
+      width="850px"
+      title="数据准备入门指示"
+      class="new_class"
+      :close-on-click-modal="true"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <twoDialog />
+    </el-dialog>
+    <el-dialog
+      :visible.sync="threeVisible"
+      width="850px"
+      title="分析展示入门指示"
+      class="new_class"
+      :close-on-click-modal="true"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <threeDialog />
+    </el-dialog>
+    <el-dialog
+      :visible.sync="foreVisible"
+      width="850px"
+      title="资源发布入门指示"
+      class="new_class"
+      :close-on-click-modal="true"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <foreDialog />
+    </el-dialog>
   </el-row>
+
 </template>
 
 <script>
@@ -91,10 +142,14 @@ import ContactUs from '@/views/wizard/details/ContactUs'
 import InfoCard from '@/views/wizard/infoCard'
 import CardDetail from '@/views/wizard/details/CardDetail'
 import { blogLastActive } from '@/api/wizard/wizard'
+import threeDialog from './threeDialog'
+import oneDialog from './oneDialog'
+import twoDialog from './twoDialog'
+import foreDialog from './foreDialog'
 
 export default {
   name: 'Wizard',
-  components: { InfoCard, Card, DemoVideo, OnlineDocument, LatestDevelopments, TeachingVideo, EnterpriseEdition, ContactUs, CardDetail },
+  components: { foreDialog, oneDialog, twoDialog, threeDialog, InfoCard, Card, DemoVideo, OnlineDocument, LatestDevelopments, TeachingVideo, EnterpriseEdition, ContactUs, CardDetail },
   data() {
     return {
       cardList: [
@@ -105,7 +160,11 @@ export default {
           href: '/datasource/index',
           component: 'CardDetail'
         }
-      ]
+      ],
+      threeVisible: false,
+      oneVisible: false,
+      twoVisible: false,
+      foreVisible: false
     }
   },
   created() {
@@ -114,6 +173,18 @@ export default {
   methods: {
     jumpPage(key) {
       this.$router.push({ path: key })
+    },
+    openNav() {
+      this.threeVisible = true
+    },
+    openNavOne() {
+      this.oneVisible = true
+    },
+    openNavTwo() {
+      this.twoVisible = true
+    },
+    openNavFore() {
+      this.foreVisible = true
     },
     init() {
       blogLastActive().then(res => {
@@ -126,8 +197,30 @@ export default {
 }
 
 </script>
+<style lang="scss" >
+.new_class{
+  .el-dialog__body {
+      padding: 10px 20px 20px;
+    }
+}
+
+</style>
 
 <style lang="scss" scoped>
+    .dialog-css>>>.el-dialog__title {
+      font-size: 14px;
+    }
+    .dialog-css >>> .el-dialog__header {
+      padding: 20px 20px 0;
+    }
+    .dialog-css >>> .el-dialog__body {
+      padding: 10px 20px 20px;
+    }
+    // /deep/.dialog-css{
+    //   .el-dialog__body {
+    //     padding: 10px 20px 20px;
+    //   }
+    // }
   .main_container {
     background-image: url('../../assets/newBg.jpg');
     height: 100%;
