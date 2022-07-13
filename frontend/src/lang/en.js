@@ -1631,6 +1631,7 @@ export default {
     component_list: 'Component list',
     custom_scope: 'Target',
     multiple_choice: 'Multiple choice',
+    show_time: 'Show time',
     single_choice: 'Single choice',
     field: 'Field',
     unshared_people: 'Unshared people',
