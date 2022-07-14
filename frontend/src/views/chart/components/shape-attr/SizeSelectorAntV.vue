@@ -90,7 +90,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')||chart.type.includes('roll')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('roll'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
@@ -112,7 +112,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
-          <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+          <el-select v-model="sizeForm.tableLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
@@ -426,6 +426,7 @@ export default {
           this.sizeForm.tableHeaderAlign = this.sizeForm.tableHeaderAlign ? this.sizeForm.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
         }
+        // debugger
       }
     },
     init() {

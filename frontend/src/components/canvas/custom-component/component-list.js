@@ -640,8 +640,8 @@ const list = [
       icon: ''
     },
     style: {
-      width: 100,
-      height: 100
+      width: 300,
+      height: 200
     },
     streamMediaLinks: STREAMMEDIALINKS,
     x: 1,

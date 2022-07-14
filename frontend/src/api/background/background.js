@@ -13,6 +13,13 @@ export function getAllImgList() {
     method: 'get'
   })
 }
+
+export function deletImg(id) {
+  return request({
+    url: `/api/filePicture/del?id=${id}`,
+    method: 'get'
+  })
+}
 export function uploadImgUrl(data) {
   return request({
     url: '/api/filePicture/uploadFile',

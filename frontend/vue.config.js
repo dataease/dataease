@@ -28,7 +28,7 @@ module.exports = {
         // target: 'http://192.168.3.223/',
         // target: 'http://192.168.3.223/',
         // target: 'http://192.168.3.223/',
-        // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top/',
+        // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top',
         ws: false
       }
     },

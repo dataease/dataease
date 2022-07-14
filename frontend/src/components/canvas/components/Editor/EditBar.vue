@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-main">
+  <div class="bar-main" :style="setNewValue">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
     <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
@@ -158,6 +158,14 @@ export default {
     lockValue() {
       console.log('213123', this.curComponent)
       return this.curComponent.isLock
+    },
+    setNewValue() {
+      const style = {}
+      console.log('标题数据1', this.curComponent)
+      if (this.curComponent.type === 'v-text') {
+        style.right = '-40px'
+      }
+      return style
     },
     ...mapState([
       'menuTop',
@@ -338,7 +346,7 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    right: -25px;
+    right: 0px;
     float:right;
     z-index: 2;
     border-radius:2px;
