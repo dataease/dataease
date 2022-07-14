@@ -32,14 +32,22 @@ public class FilePictureController {
 
     @ApiOperation("上传图片")
     @PostMapping("/uploadFile")
-    public void uploadFile(@RequestBody FilePicture filePicture) {
+    public boolean uploadFile(@RequestBody FilePicture filePicture) {
         filePictureService.save(filePicture);
+        return true;
     }
 
     @ApiOperation("获取图片")
     @GetMapping("/getList")
     public List<FilePicture> getList() {
         return filePictureService.getList(null);
+    }
+
+    @ApiOperation("删除图片")
+    @GetMapping("/del")
+    public boolean del(@RequestParam Integer id) {
+         filePictureService.del(id);
+         return true;
     }
 
 }

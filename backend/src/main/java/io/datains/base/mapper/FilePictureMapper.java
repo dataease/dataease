@@ -1,6 +1,7 @@
 package io.datains.base.mapper;
 
 import io.datains.base.domain.FilePicture;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,5 +17,9 @@ public interface FilePictureMapper{
 
     boolean insert(FilePicture filePicture);
 
-    List<FilePicture> getList(Integer type);
+    List<FilePicture> getList(@Param("type") Integer type,@Param("name") String name);
+
+    List<FilePicture> getListByName();
+
+    boolean del(Integer id);
 }
