@@ -930,8 +930,11 @@ export default {
         var width = deepCopy(this.element.commonBackground)
         this.element.style.width = width.boxWidth
         this.element.style.height = width.boxHeight
-        addEvent(document.documentElement, eventsFor.move, this.move)
-        addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+        // return
+        if (!this.element.isLock) {
+          addEvent(document.documentElement, eventsFor.move, this.move)
+          addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+        }
       }
     },
     // 计算移动范围
