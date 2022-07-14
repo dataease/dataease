@@ -1641,6 +1641,7 @@ export default {
     custom_scope: '控制范围',
     binding_parameters: '参数',
     multiple_choice: '多选',
+    show_time: '显示时间',
     single_choice: '单选',
     field: '字段',
     unshared_people: '未分享人员',

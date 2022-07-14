@@ -86,12 +86,16 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
+      const widget = ApplicationContext.getService(item.serviceName)
       if (item.options.attrs &&
         (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
-        const widget = ApplicationContext.getService(item.serviceName)
         if (widget && widget.defaultSetting) {
           item.options.attrs.default = widget.defaultSetting()
         }
+      }
+      if (item.options.attrs && widget.isTimeWidget && widget.isTimeWidget() && !item.options.attrs.hasOwnProperty('showTime')) {
+        item.options.attrs.showTime = false
+        item.options.attrs.accuracy = 'HH:mm'
       }
     }
     if (item.type === 'custom') {

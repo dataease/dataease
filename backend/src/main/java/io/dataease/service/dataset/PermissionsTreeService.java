@@ -143,9 +143,9 @@ public class PermissionsTreeService {
             if (ObjectUtils.isNotEmpty(tree.getItems())) {
                 for (DatasetRowPermissionsTreeItem item : tree.getItems()) {
                     if (ObjectUtils.isNotEmpty(item)) {
-                        if (StringUtils.equalsIgnoreCase(item.getType(), "item")) {
+                        if (StringUtils.equalsIgnoreCase(item.getType(), "item") || ObjectUtils.isEmpty(item.getSubTree())) {
                             item.setField(dataSetTableFieldsService.selectByPrimaryKey(item.getFieldId()));
-                        } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree")) {
+                        } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree") || (ObjectUtils.isNotEmpty(item.getSubTree()) && StringUtils.isNotEmpty(item.getSubTree().getLogic()))) {
                             getField(item.getSubTree());
                         }
                     }

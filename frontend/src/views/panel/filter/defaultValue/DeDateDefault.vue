@@ -8,6 +8,7 @@
           <el-radio
             v-for="(item, index) in defaultSetting.radioOptions"
             :key="index"
+            :disabled="isTimeWidget && element.options.attrs.showTime && item.value"
             :label="item.value"
           >
             {{ $t(item.text) }}
@@ -94,7 +95,8 @@
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
         <el-date-picker
           v-model="dval"
-          :type="element.options.attrs.type"
+          :type="componentType"
+          :format="labelFormat"
           disabled
           placeholder=""
           class="relative-time"
@@ -139,6 +141,24 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       const setting = widget.defaultSetting()
       return setting
+    },
+    isTimeWidget() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      return widget.isTimeWidget && widget.isTimeWidget()
+    },
+    componentType() {
+      let result = 'date'
+      if (this.isTimeWidget && this.element.options.attrs.showTime) {
+        result = 'datetime'
+      }
+      return result
+    },
+    labelFormat() {
+      const result = 'yyyy-MM-dd'
+      if (this.isTimeWidget && this.element.options.attrs.showTime && this.element.options.attrs.accuracy) {
+        return result + ' ' + this.element.options.attrs.accuracy
+      }
+      return result
     }
   },
   created() {
