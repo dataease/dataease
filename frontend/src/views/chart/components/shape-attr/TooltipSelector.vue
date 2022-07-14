@@ -14,7 +14,7 @@
           </el-form-item>
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="tooltipForm.textStyle.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTooltipAttr">
-              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              <el-option v-for="option in fontSize" :key="(option.value+1)" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('chart.text_color')" class="form-item">
@@ -85,6 +85,7 @@ export default {
   mounted() {
     this.init()
     this.initData()
+    console.log('TooltipSelector--------',this.tooltipForm,this.chart)
   },
   methods: {
     initData() {

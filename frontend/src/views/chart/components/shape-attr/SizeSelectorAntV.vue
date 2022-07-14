@@ -72,11 +72,11 @@
         <!--        </span>-->
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
-        <!--        <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">-->
-        <!--          <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />-->
-        <!--        </el-form-item>-->
-      </el-form>
+      <!-- <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+               <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
+                 <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+               </el-form-item>
+      </el-form> -->
 
       <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.shape')" class="form-item">
@@ -90,7 +90,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')||chart.type.includes('roll')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('roll'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
