@@ -185,12 +185,6 @@ export default {
     onTableColorChange(val) {
       console.log('table',val)
       this.chart.customAttr.tableColor = val
-      this.chart.customAttr.tableHeaderBgColor = val.tableHeaderBgColor
-      this.chart.customAttr.tableItemBgColor = val.tableItemBgColor
-      this.chart.customAttr.tableFontColor = val.tableFontColor
-      this.chart.customAttr.tableInfoFontColor = val.tableInfoFontColor
-      this.chart.customAttr.tableBorderColor = val.tableBorderColor
-      this.chart.customAttr.alpha = val.alpha
       this.save()
     },
     onTextChange(val) {
