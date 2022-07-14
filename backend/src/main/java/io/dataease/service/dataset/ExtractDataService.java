@@ -1196,7 +1196,8 @@ public class ExtractDataService {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
             if (StringUtils.isNotEmpty(charset)) {
-                tmp_code = tmp_code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset));
+                String varcharFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getDeExtractType() == 0).map(DatasetTableField::getOriginName).collect(Collectors.joining(","));
+                tmp_code = tmp_code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset).replace("varcharFields", varcharFields));
             }else {
                 tmp_code = tmp_code.replace("handleCharset", "");
             }
@@ -1313,7 +1314,7 @@ public class ExtractDataService {
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
             "        } \n";
 
-    private final static String handleCharset = "\tif(tmp != null){\n" +
+    private final static String handleCharset = "\tif(tmp != null && Arrays.asList(\"varcharFields\".split(\",\")).contains(filed)){\n" +
             "  \t\t\ttry {\n" +
             "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
             "       \t\t}catch (Exception e){}\n" +
