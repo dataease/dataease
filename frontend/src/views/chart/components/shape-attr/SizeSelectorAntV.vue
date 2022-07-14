@@ -72,11 +72,11 @@
         <!--        </span>-->
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
-        <!--        <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">-->
-        <!--          <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />-->
-        <!--        </el-form-item>-->
-      </el-form>
+      <!-- <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+               <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
+                 <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+               </el-form-item>
+      </el-form> -->
 
       <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.shape')" class="form-item">

@@ -185,10 +185,10 @@ export const DEFAULT_COLOR_CASE = {
         const style = chart_option.title.style ? chart_option.title.style : {}
         style.fontSize = customStyle.text.fontSize
         style.color = customStyle.text.color
-        style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+        style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
         customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
         customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
-        chart_option.title.textStyle = style
+        chart_option.title.style = style
         chart_option.title.align = customStyle.text.hPosition
         chart_option.title.verticalAlign = customStyle.text.vPosition
       }

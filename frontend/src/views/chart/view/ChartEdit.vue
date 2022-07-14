@@ -847,12 +847,12 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && !view.type.includes('table') && view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
                     <tooltip-selector
-                      v-if="view.render && view.render === 'echarts'"
+                      v-if="view.render && (view.render === 'echarts' || view.render === 'highcharts')"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -860,13 +860,6 @@
                     />
                     <tooltip-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTooltipChange="onTooltipChange"
-                    />
-                    <tooltip-selector
-                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
