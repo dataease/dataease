@@ -48,18 +48,18 @@
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
             <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('text') || chart.type === 'label') || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
             <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
         </div>
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
-          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮背景颜色'" class="form-item">
@@ -71,10 +71,10 @@
           <!-- <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮字体颜色'" class="form-item">
             <el-color-picker v-model="colorForm.tableHeightFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item> -->
-          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="'表格'+$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="'表格'+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableInfoFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')||chart.type.includes('roll')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!--              暂时不支持该功能-->

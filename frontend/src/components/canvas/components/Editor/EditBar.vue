@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-main">
+  <div class="bar-main" :style="setNewValue">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
     <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
@@ -43,6 +43,12 @@
       </span>
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
+      </span>
+      <span :title="'锁定'">
+        <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
+      </span>
+      <span :title="'解锁'">
+        <svg-icon v-if="activeModel==='edit'&&curComponent&&!lockValue" :icon-class="'Unlock'" class="icon" style="color:#fff" @click.stop="setLockout(true)" />
       </span>
     </div>
     <!-- 轮播图的数据修改 -->
@@ -148,6 +154,18 @@ export default {
     },
     miniWidth() {
       return this.curComponent.miniSizex || 1
+    },
+    lockValue() {
+      console.log('213123', this.curComponent)
+      return this.curComponent.isLock
+    },
+    setNewValue() {
+      const style = {}
+      console.log('标题数据1', this.curComponent)
+      if (this.curComponent.type === 'v-text') {
+        style.right = '-40px'
+      }
+      return style
     },
     ...mapState([
       'menuTop',
@@ -292,6 +310,11 @@ export default {
     setPicture() {
       this.$emit('setPicture')
     },
+    setLockout(key) {
+      // this.$emit('setLockout')
+      this.curComponent.isLock = key
+      console.log('this.curComponent', key)
+    },
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
@@ -323,7 +346,7 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    right: -25px;
+    right: 0px;
     float:right;
     z-index: 2;
     border-radius:2px;

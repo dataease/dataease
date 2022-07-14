@@ -47,7 +47,7 @@
       </el-row> -->
       <el-row>
         <!-- 具体图标 -->
-        <el-col v-for="(item,index) in systemIcon" :key="index" :span="3">
+        <el-col v-for="(item,index) in systemIcon" :key="index" :span="2">
           <div class="icon_class" :class="selectObj.icon===item.icon?'changeColor':''">
             <i :class="item.icon" style="fontSize:28px;cursor: pointer;" @click="changeIcon(item)" />
           </div>
@@ -60,7 +60,7 @@
       </el-row>
       <el-row>
         <!-- 具体图标 -->
-        <el-col v-for="(item,index) in customIcon" :key="index" :span="3">
+        <el-col v-for="(item,index) in customIcon" :key="index" :span="2">
           <div class="icon_class" :class="selectObj.icon===item.icon?'changeColor':''">
             <svg-icon :icon-class="item.icon" style="fontSize:28px;cursor: pointer;" @click="changeIcon(item)" />
           </div>

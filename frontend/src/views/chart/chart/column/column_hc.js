@@ -216,7 +216,7 @@ export const DEFAULT_COLOR_CASE = {
   export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack,cstyle = {}) {
     terminalType = terminal
     let customAttr = {}
-    // console.log('column,chart: ', chart)
+    console.log('column,chart: ', chart)
     if (chart.customAttr) {
       customAttr = JSON.parse(chart.customAttr)
       if (customAttr.color) {
@@ -255,6 +255,13 @@ export const DEFAULT_COLOR_CASE = {
         // 系列数据标签的选项，显示在每个数据点旁边
         chart_option.plotOptions.column.dataLabels = dataLabels
       }
+
+      // size
+      if (customAttr.size) {
+        chart_option.chart.options3d.alpha = customAttr.size.alpha? customAttr.size.alpha : 10
+        chart_option.chart.options3d.beta = customAttr.size.beta? customAttr.size.beta : 0
+        chart_option.chart.options3d.depth = customAttr.size.depth? customAttr.size.depth : 40
+      }
     }
   
     // 处理data
@@ -263,26 +270,46 @@ export const DEFAULT_COLOR_CASE = {
       // chart_option.title.text = chart.title
       // 基础柱状数据处理
       if (isBase) {
+        console.log(chart)
         if (chart.data.series.length > 0) {
-          chart_option.series[0].name = chart.data.series[0].name
-          if (customAttr.color) {
-            chart_option.series[0].opacity = customAttr.color.alpha / 100
+          // chart_option.series[0].name = chart.data.series[0].name
+          // if (customAttr.color) {
+          //   chart_option.series[0].opacity = customAttr.color.alpha / 100
+          // }
+          // const valueArr = chart.data.series[0].data
+          // let arr = []
+          // for (let i = 0; i < valueArr.length; i++) {
+          //   const y = valueArr[i]
+          //   y.name = chart.data.x[i]
+          //   y.y = y.value
+          //   arr.push(chart.data.x[i])
+          //   chart_option.series[0].data.push(y)
+          // }
+          // chart_option.xAxis.categories = arr;
+          
+          const series = chart.data.series
+          let arr = []
+          for (let i = 0; i < series.length; i++) {
+            let obj = {
+              name: series[i].name,
+              data: series[i].data.map(ele => {return ele.value}),
+              opacity: series[i].opacity,
+            }
+            if (customAttr.color) {
+              obj.opacity = customAttr.color.alpha / 100
+            }
+            arr.push(obj)
           }
+          chart_option.series = arr
+    
+          chart_option.xAxis.categories = chart.data.x
+
           // size
           /* if (customAttr.size) {
               chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
             }*/
-          const valueArr = chart.data.series[0].data
-          let arr = []
-          for (let i = 0; i < valueArr.length; i++) {
-            const y = valueArr[i]
-            y.name = chart.data.x[i]
-            y.y = y.value
-            arr.push(chart.data.x[i])
-            chart_option.series[0].data.push(y)
-          }
-          chart_option.xAxis.categories = arr;
-          // console.log('isBase,chart_option:::::',chart_option)
+          
+          console.log('isBase,chart_option:::::',chart_option)
         }
       }
       
@@ -327,10 +354,10 @@ export const DEFAULT_COLOR_CASE = {
         const style = chart_option.title.style ? chart_option.title.style : {}
         style.fontSize = customStyle.text.fontSize
         style.color = customStyle.text.color
-        style.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+        style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
         customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
         customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
-        chart_option.title.textStyle = style
+        chart_option.title.style = style
         chart_option.title.align = customStyle.text.hPosition
         chart_option.title.verticalAlign = customStyle.text.vPosition
       }

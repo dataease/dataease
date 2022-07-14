@@ -133,7 +133,7 @@
             <!-- 视图复用 end -->
 
             <!-- 图标库start -->
-            <div
+            <!-- <div
               class="button-div-class"
               style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
             >
@@ -144,19 +144,19 @@
                 size="mini"
                 @click="showPanel(4)"
               />
-            </div>
-            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+            </div> -->
+            <!-- <div class="button-text" style="position: relative; margin: 18px auto 16px;">
               <div
                 style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
                 {{ $t('panel.icon_module') }}
               </div>
-            </div>
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+            </div> -->
+            <!-- <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div
                 style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               />
-            </div>
+            </div> -->
             <!-- 图标库end -->
           </div>
         </div>
@@ -725,6 +725,7 @@ export default {
         addClass(document.body, 'showRightPanel')
       } else {
         removeClass(document.body, 'showRightPanel')
+        this.$store.commit('setPriorityStatus', false)
       }
     },
     '$store.state.styleChangeTimes'() {

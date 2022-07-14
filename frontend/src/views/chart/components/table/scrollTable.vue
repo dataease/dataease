@@ -10,7 +10,7 @@
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="item bgHeightLight" :style="table_item_class">
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2? scrollId:newHeight" class="table_bode_li">
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
             </div>
@@ -29,7 +29,6 @@
             </template>
           </el-table-column>
         </el-table> -->
-        <!-- <div class="purchaseActive" :style="setStyle" /> -->
         <!-- <vue-seamless-scroll
           :class-option="classOption"
           :data="dataInfo"
@@ -45,50 +44,13 @@
         </vue-seamless-scroll> -->
       </div>
 
-      <!-- <ux-grid
-        ref="plxTable"
-        size="mini"
-        style="width: 100%;"
-        :height="height"
-        :checkbox-config="{highlight: true}"
-        :width-resize="true"
-        :header-row-style="table_header_class"
-        :row-style="getRowStyle"
-        class="table-class"
-        :class="chart.id"
-        :show-summary="showSummary"
-        :summary-method="summaryMethod"
-      >
-        <ux-table-column
-          v-for="field in fields"
-          :key="Math.random()"
-          :field="field.datainsName"
-          :resizable="true"
-          sortable
-          :title="field.name"
-        />
-      </ux-grid> -->
-
-      <!-- <el-row v-show="chart.type === 'table-info'" class="table-page">
-        <el-pagination
-          small
-          :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
-          :page-size="currentPage.pageSize"
-          :pager-count="5"
-          layout="prev, pager, next"
-          :total="currentPage.show"
-          class="page-style"
-          @current-change="pageClick"
-          @size-change="pageChange"
-        />
-      </el-row> -->
     </el-row>
   </div>
 </template>
 
 <script>
 import { hexColorToRGBA } from '../../chart/util'
+import { mapState } from 'vuex'
 import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
 
@@ -177,7 +139,7 @@ export default {
         backgroundColor: '#fff',
         opacity: 1,
         height: '30px',
-        fontSize: '12px'
+        fontSize: 12
       },
       bodyHeight: 30,
       rollingRate: 30,
@@ -186,6 +148,12 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'curComponent',
+      'componentData',
+      'canvasStyleData',
+      'previewCanvasScale'
+    ]),
     newHeight() {
       const style = {}
       style.height = this.bodyHeight + 'px'
@@ -281,14 +249,14 @@ export default {
       }, this.scrolleTime) // 滚动速度
     },
     prossData() {
-      console.log('有数据才会去执行操作---------')
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
       this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-      this.initStyle()
+      console.log('有数据才会去执行操作---------', this.dataInfo)
+      // this.initStyle()
 
-      // this.$nextTick(() => {
-
-      // })
+      this.$nextTick(() => {
+        this.initStyle()
+      })
     },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)
@@ -376,7 +344,7 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        console.log('是否触发此处修改------------', customAttr)
+        console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
@@ -387,38 +355,23 @@ export default {
         }
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
+          // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
+          // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
-          this.scrollId.fontSize = customAttr.size.heightLightFontSize + 'px'
-          // this.scrollId.opacity = customAttr.size.tableHeightLight / 100
+          this.scrollId.fontSize = (Math.ceil(+customAttr.size.tableLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
-          // this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
           console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableItemHeight
           this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
           this.scrolleTime = customAttr.size.automaticTime
-          // this.heightLightLine = customAttr.size.heightLightLine
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        // if (this.dataInfo.length >= this.heightLightLine) {
-        //   this.tableScroll()
-        // }
         this.tableScroll()
-
-        // 暂不支持斑马纹
-        // if (customAttr.color.tableStripe) {
-        //   // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
-        //   if (this.chart.customStyle) {
-        //     const customStyle = JSON.parse(this.chart.customStyle)
-        //     if (customStyle.background) {
-        //       this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
-        //     }
-        //   }
-        // }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
@@ -434,20 +387,21 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+      console.log('this.scrollId', this.scrollId, this.table_item_class)
       // 修改footer合计样式
-      const table = document.getElementsByClassName(this.chart.id)
-      for (let i = 0; i < table.length; i++) {
-        const s_table = table[i].getElementsByClassName('elx-table--footer')
-        // console.log(s_table)
-        let s = ''
-        for (const i in this.table_header_class) {
-          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
-        }
-        // console.log(s_table)
-        for (let i = 0; i < s_table.length; i++) {
-          s_table[i].setAttribute('style', s)
-        }
-      }
+      // const table = document.getElementsByClassName(this.chart.id)
+      // for (let i = 0; i < table.length; i++) {
+      //   const s_table = table[i].getElementsByClassName('elx-table--footer')
+      //   // console.log(s_table)
+      //   let s = ''
+      //   for (const i in this.table_header_class) {
+      //     s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+      //   }
+      //   // console.log(s_table)
+      //   for (let i = 0; i < s_table.length; i++) {
+      //     s_table[i].setAttribute('style', s)
+      //   }
+      // }
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {

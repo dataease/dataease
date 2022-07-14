@@ -149,6 +149,7 @@ export default {
         'sourceViewId': this.curComponent.propValue.viewId,
         'targetViewIds': targetViewIds
       }
+      console.log('联动设置',requestInfo)
       getViewLinkageGather(requestInfo).then(rsp => {
         console.log('查询的数据', rsp)
         this.$store.commit('setLinkageInfo', rsp.data)

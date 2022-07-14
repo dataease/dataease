@@ -1,27 +1,24 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form v-show="chart.type && chart.type === 'graph'" ref="focusFormGraph" :model="focusForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type " ref="rotateFormGraph" :model="rotateForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
-          <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
+          <el-slider v-model="rotateForm.alpha" show-input :show-input-controls="false" input-size="mini" :min="0" :max="45" @change="changeFocusCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
-          <el-slider v-model="focusForm.edgeLength" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
+          <el-slider v-model="rotateForm.beta" show-input :show-input-controls="false" input-size="mini" :min="-45" :max="45" @change="changeFocusCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
-          <el-slider v-model="focusForm.gravity" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
-        </el-form-item>
-        <el-form-item :label="$t('chart.reductionRate')" class="form-item">
-          <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
+          <el-slider v-model="rotateForm.depth" show-input :show-input-controls="false" input-size="mini" :min="20" :max="100" @change="changeFocusCase" />
         </el-form-item>
       </el-form>
     </el-col>
   </div>
 </template>
 <script>
-import {COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
+import {COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
 export default {
-  name: 'FocusSelector',
+  name: 'RotateSelector',
   props: {
     param: {
       type: Object,
@@ -34,7 +31,7 @@ export default {
   },
   data() {
     return {
-      focusForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
+      rotateForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
       predefineColors: COLOR_PANEL,
     }
   },
@@ -58,14 +55,14 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
-        if (customAttr.label) {
-          this.focusForm = customAttr.label
+        if (customAttr.size) {
+          this.rotateForm = customAttr.size
         }
       }
     },
     
     changeFocusCase() {
-      this.$emit('onLabelChange', this.focusForm)
+      this.$emit('onSizeChange', this.rotateForm)
     }
 
   }
