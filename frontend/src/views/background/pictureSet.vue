@@ -52,7 +52,7 @@
         <el-col :span="3">
           <span class="params-title">{{ '选中图片：' }}</span>
         </el-col>
-        <el-col v-show="changImg!==''" :span="6" style="height:108px;margin-bottom:20px;">
+        <el-col v-show="changImg!==''" :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
           <img :src="changImg" class="img_class">
         </el-col>
       </el-row>
@@ -84,12 +84,22 @@
         <el-col>
           <el-collapse v-model="activeNames" @change="handleChange">
             <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
+              <template slot="title">
+                <!-- <i class="header-icon el-icon-info" /> -->
+                <span style="width:600px">{{ ited.name }}</span>
+                <!-- <el-input v-show="ited.editKey" v-model="ited.name" style="width:180px" placeholder="请输入内容" /> -->
+                <i style="margin-left:0px" class="el-icon-edit editClass" @click.stop="editBtn(ited)" />
+                <!-- <el-button v-show="!ited.editKey" style="margin-left:20px" type="primary" size="mini" @click.native.stop="editBtn(ited)">修改</el-button> -->
+                <!-- <el-button v-show="ited.editKey" type="primary" size="mini" @click.native="submiBtn(ited)">确定</el-button> -->
+                <i style="margin-left:20px;color:red" class="el-icon-delete editClass" @click.stop="deletGrop(ited)" />
+                <!-- <el-button type="danger" size="mini" @click.native.stop="deletGrop(ited)">删除</el-button> -->
+              </template>
               <el-row :gutter="10" style="padding:10px;">
-                <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px;" :span="6">
+                <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
                   <div class="img_Box" @click="clickImg(item)">
                     <img :src="item.url" class="img_class">
-                    <!-- <i class="el-icon-circle-close dele_btn" @click.stop="delectBtn(item)" /> -->
                   </div>
+                  <i class="el-icon-circle-close dele_btn" @click.stop="delectBtn(item)" />
                 </el-col>
               </el-row>
             </el-collapse-item>
@@ -108,7 +118,7 @@
 </template>
 
 <script>
-import { queryBackground, uploadImgUrl, getAllImgList, deletImg } from '@/api/background/background'
+import { updateName, queryBackground, uploadImgUrl, delName, getAllImgList, deletImg } from '@/api/background/background'
 // import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
 // import eventBus from '@/components/canvas/utils/eventBus'
@@ -168,7 +178,8 @@ export default {
       allImgData: [],
       changImg: '',
       imgInfo: {},
-      loadingKey: true
+      loadingKey: true,
+      oldName: ''
     }
   },
   computed: {
@@ -214,14 +225,20 @@ export default {
       console.log('删除按钮----', item)
       deletImg(item.id).then(res => {
         console.log('删除数据', res)
-        this.$message.success('删除成功')
-        this.getAllImg()
+        // this.$message.success('删除成功')
+        this.getAllImg('删除成功')
       })
     },
-    getAllImg() {
+    getAllImg(key) {
       getAllImgList().then(res => {
         console.log('获取所有图片数据', res)
         this.allImgData = res.data
+        this.allImgData.forEach(ele => {
+          ele.editKey = false
+        })
+        if (key) {
+          this.$message.success(key)
+        }
         this.loadingKey = false
       })
     },
@@ -361,6 +378,52 @@ export default {
       this.addGrop = true
       // })
     },
+    deletGrop(ele) {
+      this.$confirm('此操作将永久删除当前分组下的所有图片, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delName({ name: ele.name }).then(res => {
+          this.getAllImg('删除成功')
+        })
+        // this.$message({
+        //   type: 'success',
+        //   message: '删除成功!'
+        // })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    submiBtn(ele) {
+      ele.editKey = false
+    },
+    editBtn(ele) {
+      console.log('----', ele)
+      this.oldName = ele.name
+      // ele.editKey = true
+      this.$prompt('请输入新的分组名称', '编辑', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        updateName({ oldName: ele.name, newName: value }).then(res => {
+          console.log('更新名字', res)
+          this.getAllImg('更新成功')
+        })
+        // this.$message({
+        //   type: 'success',
+        //   message: '你的邮箱是: ' + value
+        // })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消修改'
+        })
+      })
+    },
     addSubmit() {
       if (this.addInput === '') {
         return
@@ -382,12 +445,12 @@ export default {
       uploadImgUrl(params).then(res => {
         console.log('请求结果', res)
         if (res.success) {
-          this.$message.success('上传成功')
+          // this.$message.success('上传成功')
           this.uploadDisabled = false
           this.fileList = []
           this.imgUrlInfo = ''
           this.groupName = ''
-          this.getAllImg()
+          this.getAllImg('上传成功')
         }
       })
     },
@@ -409,19 +472,24 @@ export default {
   }
   .img_class{
     width:100%;
-    height:100%;
+    /* height:100%; */
   }
   .img_Box{
     height:108px;
     cursor: pointer;
-    position:relative;
+
+    overflow-y: scroll;
+  }
+  .editClass{
+    cursor: pointer;
   }
   .dele_btn{
     position:absolute;
-    right:-10px;
+    right:-5px;
     font-size:20px;
     color:red;
     top:-10px;
+    cursor: pointer;
   }
 
   .main-row{

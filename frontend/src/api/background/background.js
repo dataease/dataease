@@ -27,3 +27,19 @@ export function uploadImgUrl(data) {
     data
   })
 }
+// /api/filePicture/updateName
+export function updateName(data) {
+  return request({
+    url: `/api/filePicture/updateName`,
+    method: 'get',
+    params: data
+  })
+}
+// /api/filePicture/delName
+export function delName(data) {
+  return request({
+    url: `/api/filePicture/delName`,
+    method: 'get',
+    params: data
+  })
+}
