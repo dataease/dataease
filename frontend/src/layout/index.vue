@@ -13,7 +13,7 @@
       </de-main-container>
     </de-container>
     <div v-if="showTips&&oneShow" class="pwd-tips">
-      <span>{{ $t('commons.first_login_tips') }}</span>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ $t('commons.first_login_tips') }}。</span>
       <div style="text-align: right; margin-bottom: 10px;">
         <!-- <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button> -->
         <span style="margin-right:94px">(1/5)</span>
@@ -24,8 +24,8 @@
     <div v-if="showTips&&twoShow" class="two_nav">
       <div class="arrowTwo" />
       <div class="titel_class">数据连接</div>
-      <span>制作看板第一步需要添加数据源，您可以通过数据源对接各种类型数据</span>
-      <div>新建数据源、数据源校验处理、保存数据源</div>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;制作看板第一步需要添加数据源，您可以通过数据源对接各种类型数据。</span>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;新建数据源、数据源校验处理、保存数据源。</div>
 
       <div style="text-align: right; margin-bottom: 10px;">
         <span style="margin-right:94px">(2/5)</span><el-button type="primary" size="mini" @click="nextTwo()">{{ '下一步' }}</el-button>
@@ -34,8 +34,8 @@
     <div v-if="showTips&&threeShow" class="three_nav two_nav">
       <div class="arrowTwo" />
       <div class="titel_class">数据准备</div>
-      <div>创建数据库数据集，对数据进行连接，为下一步仪表板制作进行数据准备</div>
-      <span>目前支持创建的数据集类型有数据库数据集、SQL 数据集、Excel 数据集、自定 义数据集、关联数据集、API 数据集六种</span>
+      <div> &nbsp;&nbsp;&nbsp;&nbsp;创建数据库数据集，对数据进行连接，为下一步仪表板制作进行数据准备。</div>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;目前支持创建的数据集类型有数据库数据集、SQL 数据集、Excel 数据集、自定 义数据集、关联数据集、API 数据集等。</span>
       <div style="text-align: right; margin-bottom: 10px;">
         <span style="margin-right:94px">(3/5)</span>
         <el-button type="primary" size="mini" @click="nextThree()">{{ '下一步' }}</el-button>
@@ -45,7 +45,7 @@
       <div class="arrowTwo" />
       <div class="titel_class">分析展现</div>
       <!-- <div>数据准备完成，可制作仪表板</div> -->
-      <span>数据准备完成，可制作仪表板,仪表板制作，可新建修改删除查看仪表板，点击编辑按钮对仪表板内容进行编辑操作，可拖动不同的组件来丰富你的仪表板</span>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;数据准备完成，可制作仪表板,仪表板制作，可新建修改删除查看仪表板，点击编辑按钮对仪表板内容进行编辑操作，可拖动不同的组件来丰富你的仪表板。</span>
       <div style="text-align: right; margin-bottom: 10px;">
         <span style="margin-right:94px">(4/5)</span>
         <el-button type="primary" size="mini" @click="nextFore()">{{ '下一步' }}</el-button>
@@ -55,7 +55,7 @@
       <div class="arrowTwo" />
       <div class="titel_class">资源发布</div>
       <!-- <div>数据准备完成，可制作仪表板</div> -->
-      <span>数据看板制作完成以后可以通过数据门户进行组装发布</span>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;数据看板制作完成以后可以通过数据门户进行组装发布。</span>
       <div style="text-align: right; margin-bottom: 10px;">
         <span style="margin-right:94px">(5/5)</span>
         <el-button type="primary" size="mini" @click="nextFive()">{{ '知道了' }}</el-button>
