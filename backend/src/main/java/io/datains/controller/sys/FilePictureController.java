@@ -50,5 +50,26 @@ public class FilePictureController {
          return true;
     }
 
+    @ApiOperation("删除图片")
+    @GetMapping("/delName")
+    public boolean delName(@RequestParam String name) {
+        filePictureService.delName(name);
+        return true;
+    }
+
+    @ApiOperation("修改图片")
+    @PostMapping("/update")
+    public boolean update(@RequestBody FilePicture filePicture) {
+        filePictureService.update(filePicture);
+        return true;
+    }
+
+    @ApiOperation("修改分组")
+    @GetMapping("/updateName")
+    public boolean updateName(@RequestParam String oldName,@RequestParam String newName) {
+        filePictureService.updateName(oldName,newName);
+        return true;
+    }
+
 }
 

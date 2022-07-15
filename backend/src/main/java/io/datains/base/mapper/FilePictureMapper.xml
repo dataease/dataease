@@ -43,4 +43,33 @@
       DELETE FROM file_picture WHERE id = #{id}
     </delete>
 
+    <delete id="delName">
+      DELETE FROM file_picture WHERE name = #{name}
+    </delete>
+
+    <select id="getNull" resultType="io.datains.base.domain.FilePicture">
+        SELECT * FROM `file_picture` WHERE NAME IS NULL
+    </select>
+
+    <update id="update" parameterType="io.datains.base.domain.FilePicture">
+        update file_picture
+        <set>
+            <if test="name != null and name != ''">
+                 name = #{name},
+            </if>
+            <if test="url != null and url != ''">
+                 url = #{url},
+            </if>
+            <if test="imgDetailed != null and imgDetailed != ''">
+                 img_detailed = #{imgDetailed},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateName">
+         update file_picture set name = #{newName} where name =#{oldName}
+    </update>
+
+
 </mapper>

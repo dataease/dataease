@@ -6,6 +6,7 @@ import io.datains.base.domain.FilePicture;
 import io.datains.base.mapper.FilePictureMapper;
 import io.datains.commons.exception.DEException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -33,6 +34,12 @@ public class FilePictureService {
     }
 
     public List<FilePicture> getList(Integer type){
+
+        List<FilePicture> aNull = filePictureMapper.getNull();
+        aNull.stream().forEach(str ->{
+            str.setName("其他");
+            filePictureMapper.update(str);
+        });
         List<FilePicture> listByName = filePictureMapper.getListByName();
         List<FilePicture> list = new ArrayList<>();
         listByName.stream().forEach(str ->{
@@ -49,5 +56,20 @@ public class FilePictureService {
     public void del(Integer id) {
         filePictureMapper.del(id);
     }
+    public void delName(String name) {
+        filePictureMapper.delName(name);
+    }
+
+
+    public void update(FilePicture filePicture) {
+        filePictureMapper.update(filePicture);
+    }
+
+    public void updateName(String oldName,String newName) {
+        filePictureMapper.updateName(oldName,newName);
+    }
+
+
+
 
 }

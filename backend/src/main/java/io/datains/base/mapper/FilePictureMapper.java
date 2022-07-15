@@ -22,4 +22,12 @@ public interface FilePictureMapper{
     List<FilePicture> getListByName();
 
     boolean del(Integer id);
+
+    boolean delName(String name);
+
+    List<FilePicture> getNull();
+
+    boolean update(FilePicture filePicture);
+
+    boolean updateName(@Param("oldName")String oldName,@Param("newName")String newName);
 }
