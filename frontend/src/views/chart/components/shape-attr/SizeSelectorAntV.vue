@@ -112,7 +112,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
-          <el-select v-model="sizeForm.tableLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+          <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>

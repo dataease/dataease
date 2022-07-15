@@ -360,7 +360,7 @@ export default {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
-          this.scrollId.fontSize = (Math.ceil(+customAttr.size.tableLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
+          this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate

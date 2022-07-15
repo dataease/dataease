@@ -275,17 +275,19 @@ export default {
       this.$emit('backgroundSetClose')
     },
     save() {
-      const image = new Image()
-      image.src = this.imgInfo.url
+      if (this.imgInfo.url) {
+        const image = new Image()
+        image.src = this.imgInfo.url
 
-      image.onload = _ => {
-        const width = image.width
-        const height = image.height
-        console.log('width', width, height)
-        // 然后就可以做需要的操作了
-        this.curComponent.picData = this.imgInfo.url
-        this.curComponent.style.width = image.width
-        this.curComponent.style.height = image.height
+        image.onload = _ => {
+          const width = image.width
+          const height = image.height
+          console.log('width', width, height)
+          // 然后就可以做需要的操作了
+          this.curComponent.picData = this.imgInfo.url
+          this.curComponent.style.width = image.width
+          this.curComponent.style.height = image.height
+        }
       }
 
       console.log('this.fileList', this.fileList)
