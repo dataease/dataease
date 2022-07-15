@@ -161,7 +161,7 @@ export default {
     setNewValue() {
       const style = {}
       console.log('标题数据1', this.curComponent)
-      if (this.curComponent.type === 'v-text') {
+      if (this.curComponent.type === 'v-text' && !this.checkboxStatus) {
         style.right = '-40px'
       }
       return style

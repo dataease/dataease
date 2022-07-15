@@ -342,28 +342,43 @@ export default {
     },
     clickCheckbox() {
       console.log('checkbox')
+      if(this.componentData.length)  {
+        this.$store.commit('setCurComponent',{ component: this.componentData[0], index: 0 })
+      }
       this.$store.commit('setCheckBoxStatus', true)
     },
     checkDel() {
       console.log('deleteCheck')
-      console.log(this.componentData)
-      const componentData = deepCopy(this.componentData)
-      let  arr = []
-      componentData.map((item,index) => {
-        if(!item.isCheck) {
-          arr.push(item)
-          // if (item.type === 'custom') {
-          //   this.$store.commit('removeViewFilter', item.id)
-          //   bus.$emit('delete-condition', { componentId: item.id })
-          // }
-          // this.$store.commit('deleteComponent',index)
-          // this.$store.commit('recordSnapshot', 'deleteComponent')
-        }
-      })
-      // console.log('arrrrrrr',arr)
-      this.$store.commit('setComponentData',arr)
-      this.$store.commit('recordSnapshot')
-      console.log('删除 后的',this.componentData)
+      if(!this.componentData.length) {
+        return
+      }
+      this.$confirm('此操作将删除勾选组件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const componentData = deepCopy(this.componentData)
+        let  arr = []
+        componentData.map((item,index) => {
+          if(!item.isCheck) {
+            arr.push(item)
+          }
+        })
+        this.$store.commit('setComponentData',arr)
+        this.$store.commit('recordSnapshot')
+        this.$store.commit('setCurComponent', { component: null, index: null })
+        // console.log('删除 后的',this.componentData)
+
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
     checkCancel() {
       const componentData = deepCopy(this.componentData)
