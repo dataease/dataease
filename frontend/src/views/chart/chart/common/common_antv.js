@@ -237,7 +237,7 @@ export function getLegend(chart) {
   return legend
 }
 // xAxis
-export function getXAxis(chart,cstyle = {}) {
+export function getXAxis(chart, cstyle = {}) {
   let axis = {}
   let customStyle
   if (chart.customStyle) {
@@ -251,7 +251,7 @@ export function getXAxis(chart,cstyle = {}) {
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
           },
           spacing: 8
         } : null
@@ -263,12 +263,14 @@ export function getXAxis(chart,cstyle = {}) {
             }
           }
         } : null
+        var fontFamess = cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
         const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+            fontFamily: fontFamess
+            // fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
           }
         } : null
 
@@ -296,11 +298,11 @@ export function getXAxis(chart,cstyle = {}) {
       }
     }
   }
-  console.log('x轴：：：',axis)
+  console.log('x轴：：：', axis)
   return axis
 }
 // yAxis
-export function getYAxis(chart,cstyle = {}) {
+export function getYAxis(chart, cstyle = {}) {
   let axis = {}
   let customStyle
   if (chart.customStyle) {
@@ -314,7 +316,7 @@ export function getYAxis(chart,cstyle = {}) {
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
           },
           spacing: 8
         } : null
@@ -331,7 +333,7 @@ export function getYAxis(chart,cstyle = {}) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           }
         } : null
 
@@ -359,7 +361,7 @@ export function getYAxis(chart,cstyle = {}) {
       }
     }
   }
-  console.log('Y轴：',axis)
+  console.log('Y轴：', axis)
   return axis
 }
 // yAxisExt
