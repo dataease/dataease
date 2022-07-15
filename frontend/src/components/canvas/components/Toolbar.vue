@@ -49,9 +49,9 @@
       <el-tooltip :content="$t('panel.params_setting')">
         <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
       </el-tooltip>
-      <!-- <el-tooltip :content="$t('panel.params_checkbox')">
+      <el-tooltip :content="$t('panel.params_checkbox')">
         <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
-      </el-tooltip> -->
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -342,13 +342,60 @@ export default {
     },
     clickCheckbox() {
       console.log('checkbox')
-      this.$store.commit('setCheckBoxStatus', [])
+      if(this.componentData.length)  {
+        this.$store.commit('setCurComponent',{ component: this.componentData[0], index: 0 })
+      }
+      this.$store.commit('setCheckBoxStatus', true)
     },
     checkDel() {
+      console.log('deleteCheck')
+      if(!this.componentData.length) {
+        return
+      }
 
+      const componentData = deepCopy(this.componentData)
+      let arr = []
+      let arr2 = []
+      componentData.map((item,index) => {
+        if(!item.isCheck) {
+          arr.push(item)
+        } else {
+          arr2.push(item)
+        }
+      })
+      if(!arr2.length) { //未选择要删除的组件
+        return
+      }
+      this.$confirm('此操作将删除勾选组件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log('arrrr',arr)
+        this.$store.commit('setComponentData',arr)
+        this.$store.commit('recordSnapshot')
+        this.$store.commit('setCurComponent', { component: null, index: null })
+        this.$store.commit('setCheckBoxStatus',false)
+        // console.log('删除 后的',this.componentData)
+
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
     checkCancel() {
-      this.$store.commit('clearCheckBoxInfo')
+      const componentData = deepCopy(this.componentData)
+      componentData.map(item => {
+        item.isCheck  = false
+      })
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('setCheckBoxStatus',false)
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

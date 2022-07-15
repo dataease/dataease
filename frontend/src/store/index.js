@@ -73,8 +73,6 @@ const data = {
     isStylePriority: false,
     // 多选选择状态
     checkboxStatus: false,
-    // 多选选中组件数据
-    checkboxInfo: [],
     // 联动设置状态
     linkageSettingStatus: false,
     // 当前设置联动的组件
@@ -433,13 +431,8 @@ const data = {
       state.curLinkageView = null
       state.targetLinkageInfo = []
     },
-    setCheckBoxStatus(state, checkboxInfo) {
-      state.checkboxStatus = true
-      state.checkboxInfo = checkboxInfo
-    },
-    clearCheckBoxInfo(state) {
-      state.checkboxStatus = false
-      state.checkboxInfo = []
+    setCheckBoxStatus(state, status) {
+      state.checkboxStatus = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo

@@ -8,7 +8,8 @@ export const commonAttr = {
   animations: [],
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
-  isLock: false // 是否锁定组件
+  isLock: false, // 是否锁定组件
+  isCheck: false, // 多选删除使用 
 }
 export class WidgetService {
   constructor(options) {

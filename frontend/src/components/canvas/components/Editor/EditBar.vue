@@ -1,12 +1,12 @@
 <template>
   <div class="bar-main" :style="setNewValue">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
+    <div v-if="linkageAreaShow" style="margin-right: -1px;">
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
     <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px">
-      <el-checkbox v-model="check" />
+      <el-checkbox v-model="element.isCheck" @change="checkChange"/>
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @tabRelation="tabRelation" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
@@ -72,6 +72,7 @@ import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
+import { deepCopy } from '../../utils/utils'
 
 export default {
   components: { SettingMenu, LinkageField },
@@ -120,10 +121,7 @@ export default {
     // 多选框 显示
     checkboxShow() {
       console.log('checkShow::::::', this.element)
-      return this.checkboxStatus && this.element.type === 'view'
-    },
-    checkInfo() {
-      return this.checkboxInfo[this.element.propValue.viewId]
+      return this.checkboxStatus
     },
     // 编辑或预览区域显示
     normalAreaShow() {
@@ -143,6 +141,7 @@ export default {
       return linkageFiltersCount
     },
     linkageInfo() {
+      console.log('link11111111111',this.targetLinkageInfo,this.element)
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
@@ -162,7 +161,7 @@ export default {
     setNewValue() {
       const style = {}
       console.log('标题数据1', this.curComponent)
-      if (this.curComponent.type === 'v-text') {
+      if (this.curComponent.type === 'v-text' && !this.checkboxStatus) {
         style.right = '-40px'
       }
       return style
@@ -184,6 +183,17 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    checkChange(boo)  {
+      console.log('isCheck',boo)
+      const componentData = deepCopy(this.componentData)
+      componentData.map(item => {
+        if(this.element.id === item.id) {
+          item.isCheck = boo
+        }
+      })
+      this.$store.commit('setComponentData',componentData)
+      console.log('这个 值？',this.componentData)
+    },
     closePreview() {
       this.$emit('closePreview')
     },
