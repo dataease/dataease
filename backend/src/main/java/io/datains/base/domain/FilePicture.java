@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -38,5 +39,15 @@ public class FilePicture implements Serializable {
      */
     private String imgDetailed;
 
+    /**
+     * 图片详细信息
+     */
+    private String name;
+
+
+    /**
+     *图片地址
+     */
+    private List<FilePicture> str;
 
 }
