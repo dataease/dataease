@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-show="editControlButton" class="toolbar">
-      <span v-show="linkageSettingStatus" style="float: right;">
+      <span v-show="mobileLayoutStatus" style="float: right;">
         <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
           {{ $t('commons.reset') }}
         </el-button>
@@ -125,6 +125,7 @@ export default {
       return this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex
     },
     editControlButton() {
+      console.log('panduan1shisd=================', this.linkageSettingStatus, this.mobileLayoutStatus, this.checkboxStatus)
       return this.linkageSettingStatus || this.mobileLayoutStatus || this.checkboxStatus
     },
     ...mapState([
@@ -318,14 +319,14 @@ export default {
           this.close()
         }
       })
-      this.$store.commit('setTemplateStatus',false)
+      this.$store.commit('setTemplateStatus', false)
       this.$store.commit('setPriorityStatus', false)
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       this.$store.commit('recordSnapshot', 'clearCanvas')
-      this.$store.commit('setTemplateStatus',false)
+      this.$store.commit('setTemplateStatus', false)
       this.$store.commit('setPriorityStatus', false)
     },
 

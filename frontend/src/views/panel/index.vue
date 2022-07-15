@@ -5,6 +5,7 @@
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
     </de-main-container>
+    <!-- <div class="nav_log">213213</div> -->
   </de-container>
 </template>
 

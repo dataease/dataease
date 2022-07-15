@@ -758,7 +758,7 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item 
+                  <el-collapse-item
                     v-show="view.render && view.render === 'highcharts' && view.type && view.type.includes('3dcolumn')"
                     name="rotate"
                     :title="$t('chart.rotate')"
@@ -787,7 +787,7 @@
                     name="shape"
                     :title="$t('chart.shape')"
                   >
-                    <shape-selector 
+                    <shape-selector
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -799,7 +799,7 @@
                     name="focus"
                     :title="$t('chart.focus')"
                   >
-                    <focus-selector 
+                    <focus-selector
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -1721,7 +1721,7 @@ export default {
         this.view.xaxis = []
       }
 
-      if(switchType && (this.view.type === '3dcolumn_stack' || this.chart.type === '3dcolumn_stack') && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
+      if (switchType && (this.view.type === '3dcolumn_stack' || this.chart.type === '3dcolumn_stack') && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
         this.$message({
           showClose: true,
           message: this.$t('chart.highchart_view_switch'),
@@ -1730,7 +1730,7 @@ export default {
         this.view.xaxis = []
         this.view.yaxis = []
       }
-      if(switchType && (this.view.type.includes('3d') || this.chart.type.includes('3d')) && this.view.extStack.length > 0) {
+      if (switchType && (this.view.type.includes('3d') || this.chart.type.includes('3d')) && this.view.extStack.length > 0) {
         this.view.extStack = []
       }
 
@@ -1982,7 +1982,7 @@ export default {
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
       view.title = this.view.title
-      if(this.canvasStyleData.chart.stylePriority === 'panel') {
+      if (this.canvasStyleData.chart.stylePriority === 'panel') {
         this.view.stylePriority = this.canvasStyleData.chart.stylePriority
       }
       view.stylePriority = this.view.stylePriority
@@ -2178,6 +2178,7 @@ export default {
     },
 
     onSizeChange(val) {
+      console.log('12121212----------------', val)
       this.view.customAttr.size = val
       this.calcStyle()
     },

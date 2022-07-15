@@ -10,7 +10,7 @@
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="item bgHeightLight" :style="table_item_class">
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2? scrollId:newHeight" class="table_bode_li">
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
             </div>
@@ -139,7 +139,7 @@ export default {
         backgroundColor: '#fff',
         opacity: 1,
         height: '30px',
-        fontSize: '12px'
+        fontSize: 12
       },
       bodyHeight: 30,
       rollingRate: 30,
@@ -252,11 +252,11 @@ export default {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
       this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       console.log('有数据才会去执行操作---------', this.dataInfo)
-      this.initStyle()
+      // this.initStyle()
 
-      // this.$nextTick(() => {
-
-      // })
+      this.$nextTick(() => {
+        this.initStyle()
+      })
     },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)
@@ -344,7 +344,7 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        console.log('是否触发此处修改------------', customAttr)
+        console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
@@ -355,10 +355,12 @@ export default {
         }
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
-          this.table_header_class.fontSize = (customAttr.size.tableTitleFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
-          this.table_item_class.fontSize = (customAttr.size.tableItemFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+          // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
+          // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
+          this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
+          this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
-          this.scrollId.fontSize = (customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+          this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
@@ -385,20 +387,21 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+      console.log('this.scrollId', this.scrollId, this.table_item_class)
       // 修改footer合计样式
-      const table = document.getElementsByClassName(this.chart.id)
-      for (let i = 0; i < table.length; i++) {
-        const s_table = table[i].getElementsByClassName('elx-table--footer')
-        // console.log(s_table)
-        let s = ''
-        for (const i in this.table_header_class) {
-          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
-        }
-        // console.log(s_table)
-        for (let i = 0; i < s_table.length; i++) {
-          s_table[i].setAttribute('style', s)
-        }
-      }
+      // const table = document.getElementsByClassName(this.chart.id)
+      // for (let i = 0; i < table.length; i++) {
+      //   const s_table = table[i].getElementsByClassName('elx-table--footer')
+      //   // console.log(s_table)
+      //   let s = ''
+      //   for (const i in this.table_header_class) {
+      //     s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+      //   }
+      //   // console.log(s_table)
+      //   for (let i = 0; i < s_table.length; i++) {
+      //     s_table[i].setAttribute('style', s)
+      //   }
+      // }
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
