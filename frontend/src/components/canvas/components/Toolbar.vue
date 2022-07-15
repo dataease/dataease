@@ -352,21 +352,30 @@ export default {
       if(!this.componentData.length) {
         return
       }
+
+      const componentData = deepCopy(this.componentData)
+      let arr = []
+      let arr2 = []
+      componentData.map((item,index) => {
+        if(!item.isCheck) {
+          arr.push(item)
+        } else {
+          arr2.push(item)
+        }
+      })
+      if(!arr2.length) { //未选择要删除的组件
+        return
+      }
       this.$confirm('此操作将删除勾选组件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const componentData = deepCopy(this.componentData)
-        let  arr = []
-        componentData.map((item,index) => {
-          if(!item.isCheck) {
-            arr.push(item)
-          }
-        })
+        console.log('arrrr',arr)
         this.$store.commit('setComponentData',arr)
         this.$store.commit('recordSnapshot')
         this.$store.commit('setCurComponent', { component: null, index: null })
+        this.$store.commit('setCheckBoxStatus',false)
         // console.log('删除 后的',this.componentData)
 
         this.$message({
