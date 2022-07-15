@@ -49,9 +49,9 @@
       <el-tooltip :content="$t('panel.params_setting')">
         <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
       </el-tooltip>
-      <!-- <el-tooltip :content="$t('panel.params_checkbox')">
+      <el-tooltip :content="$t('panel.params_checkbox')">
         <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
-      </el-tooltip> -->
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -341,13 +341,36 @@ export default {
     },
     clickCheckbox() {
       console.log('checkbox')
-      this.$store.commit('setCheckBoxStatus', [])
+      this.$store.commit('setCheckBoxStatus', true)
     },
     checkDel() {
-
+      console.log('deleteCheck')
+      console.log(this.componentData)
+      const componentData = deepCopy(this.componentData)
+      let  arr = []
+      componentData.map((item,index) => {
+        if(!item.isCheck) {
+          arr.push(item)
+          // if (item.type === 'custom') {
+          //   this.$store.commit('removeViewFilter', item.id)
+          //   bus.$emit('delete-condition', { componentId: item.id })
+          // }
+          // this.$store.commit('deleteComponent',index)
+          // this.$store.commit('recordSnapshot', 'deleteComponent')
+        }
+      })
+      // console.log('arrrrrrr',arr)
+      this.$store.commit('setComponentData',arr)
+      this.$store.commit('recordSnapshot')
+      console.log('删除 后的',this.componentData)
     },
     checkCancel() {
-      this.$store.commit('clearCheckBoxInfo')
+      const componentData = deepCopy(this.componentData)
+      componentData.map(item => {
+        item.isCheck  = false
+      })
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('setCheckBoxStatus',false)
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

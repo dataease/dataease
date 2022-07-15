@@ -411,7 +411,7 @@ export default {
     // 编辑组件显示
     editBarShow() {
       // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
-      return this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus
+      return ((this.curComponent && (this.active || this.linkageSettingStatus)) || this.checkboxStatus) && !this.mobileLayoutStatus
     },
     // 移动端编辑组件选择按钮显示
     mobileCheckBarShow() {
@@ -620,6 +620,7 @@ export default {
       'curCanvasScale',
       'canvasStyleData',
       'linkageSettingStatus',
+      'checkboxStatus',
       'mobileLayoutStatus',
       'componentGap',
       'scrollAutoMove'
