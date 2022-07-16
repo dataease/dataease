@@ -12,7 +12,6 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.role.dto.request.RoleUserMappingDelRequest;
 import io.dataease.plugins.xpack.role.dto.request.RoleUserMappingRequest;
 import io.dataease.plugins.xpack.role.dto.request.RoleUserRequest;
 import io.dataease.plugins.xpack.role.dto.response.RoleUserItem;
@@ -120,17 +119,21 @@ public class XRoleServer {
 
     @RequiresPermissions({"role:edit", "user:edit"})
     @ApiOperation("绑定用户")
-    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @PostMapping("/bindUser")
     public void bindUser(@RequestBody RoleUserMappingRequest request) {
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+        if (CollectionUtils.isNotEmpty(request.getUserIds())) {
+            request.getUserIds().forEach(userId -> {
+                CacheUtils.remove( AuthConstants.USER_CACHE_NAME, "user" + userId);
+            });
+        }
         roleXpackService.addUser(request);
     }
 
     @RequiresPermissions({"role:edit", "user:edit"})
     @ApiOperation("解绑用户")
     @PostMapping("/unBindUsers")
-    public void unBindUsers(@RequestBody RoleUserMappingDelRequest request) {
+    public void unBindUsers(@RequestBody RoleUserMappingRequest request) {
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         if (CollectionUtils.isNotEmpty(request.getUserIds())) {
             request.getUserIds().forEach(userId -> {

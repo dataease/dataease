@@ -2,6 +2,8 @@ package io.dataease.service.sys;
 
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.controller.sys.base.ConditionEntity;
+import io.dataease.controller.sys.request.*;
 import io.dataease.ext.ExtSysUserAssistMapper;
 import io.dataease.ext.ExtSysUserMapper;
 import io.dataease.ext.query.GridExample;
@@ -10,10 +12,6 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.LdapAddRequest;
-import io.dataease.controller.sys.request.SysUserCreateRequest;
-import io.dataease.controller.sys.request.SysUserPwdRequest;
-import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.i18n.Translator;
@@ -60,12 +58,12 @@ public class SysUserService {
     private ExtSysUserAssistMapper extSysUserAssistMapper;
 
 
-    public List<SysUserGridResponse> query(BaseGridRequest request) {
-
+    public List<SysUserGridResponse> query(UserGridRequest request) {
+        String keyWord = request.getKeyWord();
         GridExample gridExample = request.convertExample();
+        gridExample.setExtendCondition(keyWord);
         List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
-
             List<SysUserRole> roles = item.getRoles();
             List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
             item.setRoleIds(roleIds);
