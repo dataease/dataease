@@ -190,6 +190,15 @@ export default {
         if(this.element.id === item.id) {
           item.isCheck = boo
         }
+        if(item.commonBackground.boxWidth && item.commonBackground.boxHeight) {
+          item.commonBackground.boxWidth = Math.floor(item.commonBackground.boxWidth)
+          item.commonBackground.boxHeight = Math.floor(item.commonBackground.boxHeight)
+        } else {
+          var info = document.getElementById('eleId' + item.id)
+          item.commonBackground.boxWidth = Math.floor(info.offsetWidth)
+          item.commonBackground.boxHeight = Math.floor(info.offsetHeight)
+        }
+        // console.log('eleId',item)
       })
       this.$store.commit('setComponentData',componentData)
       console.log('这个 值？',this.componentData)

@@ -13,6 +13,18 @@
         </el-button>
       </span>
       <span v-show="checkboxStatus" style="float: right;">
+        <el-tooltip :content="$t('commons.position.left')">
+          <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
+        </el-tooltip>
+        <el-tooltip :content="$t('commons.position.right')">
+          <el-button class="el-icon-caret-right" size="mini" circle @click="positionChange('right')" />
+        </el-tooltip>
+        <el-tooltip :content="$t('commons.position.top')">
+          <el-button class="el-icon-caret-top" size="mini" circle @click="positionChange('top')" />
+        </el-tooltip>
+        <el-tooltip :content="$t('commons.position.bottom')">
+          <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
+        </el-tooltip>
         <el-button size="mini" @click="checkDel">
           {{ $t('commons.delete') }}
         </el-button>
@@ -117,7 +129,7 @@ export default {
       scale: '100%',
       timer: null,
       changes: 0,
-      closePanelVisible: false
+      closePanelVisible: false,
     }
   },
   computed: {
@@ -396,6 +408,63 @@ export default {
       })
       this.$store.commit('setComponentData',componentData)
       this.$store.commit('setCheckBoxStatus',false)
+    },
+    positionChange(value) {
+      console.log('position:::',value)
+      if(!value) {
+        return
+      }
+      const componentData = deepCopy(this.componentData)
+      const arr = componentData.filter(item => item.isCheck&&!item.isLock) // 勾选中锁定状态的组件不支持对齐
+      if (!arr.length) {
+        return
+      }
+      console.log(arr)
+      if(value === 'left') {
+        let lefts = arr.map(item => {return item.style.left}) // 组件left值
+        let left = Math.min(...lefts)
+
+        componentData.map(item => {
+          if (item.isCheck) {
+            item.style.left = left
+          }
+        })
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      } else if (value === 'right') {
+        let rights = arr.map(item => {return (item.style.left + item.style.width)}) // 
+        let right = Math.max(...rights)
+        // console.log(right)
+
+        componentData.map(item => {
+          if (item.isCheck) {
+            item.style.left = (right - item.style.width)
+          }
+        })
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      } else if (value === 'top') {
+        let tops = arr.map(item => {return item.style.top})
+        let top = Math.min(...tops)
+        componentData.map(item => {
+          if (item.isCheck) {
+            item.style.top = top
+          }
+        })
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      } else if (value === 'bottom') {
+        let bottoms = arr.map(item => {return (item.style.top + item.style.height)})
+        let bottom = Math.max(...bottoms)
+        // console.log(bottom)
+        componentData.map(item => {
+          if (item.isCheck) {
+            item.style.top = (bottom - item.style.height)
+          }
+        })
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      }
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

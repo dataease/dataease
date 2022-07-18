@@ -131,6 +131,12 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    position: {
+      'left': '居左对齐',
+      'right': '居右对齐',
+      'top': '顶部对齐',
+      'bottom': '底部对齐',
+    },
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
     roger_that: '知道了',

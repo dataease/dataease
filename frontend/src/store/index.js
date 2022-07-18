@@ -461,6 +461,7 @@ const data = {
         height: 0,
         width: 0
       }
+      console.log('setDragComp',dragComponentInfo)
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
