@@ -62,7 +62,7 @@ export const commonAttr = {
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
-  isCheck: false, // 多选删除使用 
+  isCheck: false // 多选删除使用
 }
 
 // 超链接配置
@@ -603,7 +603,7 @@ const list = [
     id: '20004',
     component: 'de-icons',
     type: 'de-icons',
-    label: '',
+    label: '字体图标',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
@@ -629,7 +629,7 @@ const list = [
     id: '20005',
     component: 'de-picture',
     type: 'de-picture',
-    label: '',
+    label: '图片库',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,

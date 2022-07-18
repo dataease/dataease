@@ -99,6 +99,11 @@ export default {
       this.dialogVisible = true
     },
     onChange(file, fileList) {
+      console.log('file-----', file, file.size / 1024 / 1024)
+      if (file.size / 1024 / 1024 > 1) {
+        this.$message.warning('图片大小不能超过1M')
+        return
+      }
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()
