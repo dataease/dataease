@@ -143,6 +143,7 @@ export default {
       })
     },
     handleDragStart(node, ev) {
+      console.log('handleDragStart...')
       this.$store.commit('setDragComponentInfo', this.viewComponentInfo())
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {

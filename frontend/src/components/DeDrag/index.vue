@@ -401,7 +401,7 @@ export default {
   },
   computed: {
     boxWidth() {
-      console.log('修改触发=====0001boxWidth2222222222222222')
+      console.log('修改触发=====0001boxWidth2222222222222222',this.element)
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
@@ -855,7 +855,7 @@ export default {
       } else {
         // console.log('22222222222222222222====')
         var info = document.getElementById('eleId' + this.element.id)
-        // console.log('设置参数003', info.offsetWidth, info.offsetHeight)
+        console.log('设置参数003',info, info.offsetWidth, info.offsetHeight)
         this.element.commonBackground.boxWidth = Math.floor(info.offsetWidth)
         this.element.commonBackground.boxHeight = Math.floor(info.offsetHeight)
       }
@@ -1069,7 +1069,7 @@ export default {
       const right = this.right
       const bottom = this.bottom
       console.log('矩形信息：')
-      console.log('widht:', width)
+      console.log('width:', width)
       console.log('height:', height)
       console.log('left:', left)
       console.log('top:', top)
