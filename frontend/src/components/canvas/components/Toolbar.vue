@@ -415,7 +415,7 @@ export default {
         return
       }
       const componentData = deepCopy(this.componentData)
-      const arr = componentData.filter(item => item.isCheck)
+      const arr = componentData.filter(item => item.isCheck&&!item.isLock) // 勾选中锁定状态的组件不支持对齐
       if (!arr.length) {
         return
       }
@@ -425,7 +425,7 @@ export default {
         let left = Math.min(...lefts)
 
         componentData.map(item => {
-          if (item.isCheck && !item.isLock) {
+          if (item.isCheck) {
             item.style.left = left
           }
         })
@@ -437,7 +437,7 @@ export default {
         // console.log(right)
 
         componentData.map(item => {
-          if (item.isCheck && !item.isLock) {
+          if (item.isCheck) {
             item.style.left = (right - item.style.width)
           }
         })
@@ -447,7 +447,7 @@ export default {
         let tops = arr.map(item => {return item.style.top})
         let top = Math.min(...tops)
         componentData.map(item => {
-          if (item.isCheck && !item.isLock) {
+          if (item.isCheck) {
             item.style.top = top
           }
         })
@@ -458,7 +458,7 @@ export default {
         let bottom = Math.max(...bottoms)
         // console.log(bottom)
         componentData.map(item => {
-          if (item.isCheck && !item.isLock) {
+          if (item.isCheck) {
             item.style.top = (bottom - item.style.height)
           }
         })
