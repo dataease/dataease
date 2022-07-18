@@ -414,7 +414,6 @@ export default {
       if(!value) {
         return
       }
-
       const componentData = deepCopy(this.componentData)
       const arr = componentData.filter(item => item.isCheck)
       if (!arr.length) {
@@ -435,7 +434,7 @@ export default {
       } else if (value === 'right') {
         let rights = arr.map(item => {return (item.style.left + item.style.width)}) // 
         let right = Math.max(...rights)
-        console.log(right)
+        // console.log(right)
 
         componentData.map(item => {
           if (item.isCheck) {
@@ -457,7 +456,7 @@ export default {
       } else if (value === 'bottom') {
         let bottoms = arr.map(item => {return (item.style.top + item.style.height)})
         let bottom = Math.max(...bottoms)
-        console.log(bottom)
+        // console.log(bottom)
         componentData.map(item => {
           if (item.isCheck) {
             item.style.top = (bottom - item.style.height)
