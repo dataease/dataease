@@ -2,6 +2,9 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export function getCustomTheme(chart, fontFamily) {
+  if (fontFamily === '') {
+    fontFamily = 'sans-serif'
+  }
   console.log('common_table,antv', chart, fontFamily)
   const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
   const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)

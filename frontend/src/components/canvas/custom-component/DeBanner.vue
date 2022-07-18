@@ -7,18 +7,25 @@
             <div style="width: 100%;height: 70%;">
               <img :src="item.url" style="width:100%;height:100%;">
             </div>
-            <div class="img_box" :style="{
-              'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
-              'fontFamily': canvasStyleData.fontFamily ? canvasStyleData.fontFamily : '',
-            }">
-              <div :style="{
-                'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
-                'color': item.imgFontColor
-              }">{{item.imgTitle}}</div>
-              <div :style="{
-                'fontSize': item.imgFontSize? item.imgFontSize+'px' : null,
-                'color': item.imgFontColor
-              }">{{item.imgContent}}</div>
+            <div
+              class="img_box"
+              :style="{
+                'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
+                'fontFamily': canvasStyleData.fontFamily ? canvasStyleData.fontFamily : '',
+              }"
+            >
+              <div
+                :style="{
+                  'fontSize': itemFontSize(item.imgFontSize),
+                  'color': item.imgFontColor
+                }"
+              >{{ item.imgTitle }}</div>
+              <div
+                :style="{
+                  'fontSize': itemFontSize(item.imgFontSize),
+                  'color': item.imgFontColor
+                }"
+              >{{ item.imgContent }}</div>
             </div>
           </div>
         </swiper-slide>
@@ -72,6 +79,7 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData',
+      'previewCanvasScale'
     ]),
     swiperOptionNew() {
       const options = {
@@ -101,8 +109,8 @@ export default {
       return style
     },
     bannerImgList() {
-      console.log('this.curComponent---------------', this.curComponent,this.canvasStyleData)
-      
+      console.log('this.curComponent---------------', this.curComponent, this.canvasStyleData)
+
       return this.element.options.bannerImgList
     },
     rotationTime() {
@@ -153,6 +161,9 @@ export default {
     this.changeSlidesPerView()
   },
   methods: {
+    itemFontSize(size) {
+      return Math.ceil(size * this.previewCanvasScale.scalePointWidth) + 'px'
+    },
     changeSlidesPerView() {
       if (this.element.options.bannerImgList.length <= 1) {
         this.swiperOption.slidesPerView = 1
@@ -171,14 +182,14 @@ export default {
         this.isShow = true
       })
     },
-    //hex -> rgba
+    // hex -> rgba
     hexToRgba(hex, opacity) {
       // console.log('转化',hex,opacity,typeof hex)
-      if(typeof(hex) !== 'string') {
+      if (typeof (hex) !== 'string') {
         return 'none'
       }
-      return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ','
-            + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')';
+      return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ',' +
+            parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')'
     }
   }
 }
