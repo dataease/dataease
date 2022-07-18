@@ -198,7 +198,7 @@ export default {
           item.commonBackground.boxWidth = Math.floor(info.offsetWidth)
           item.commonBackground.boxHeight = Math.floor(info.offsetHeight)
         }
-        console.log('eleId',item)
+        // console.log('eleId',item)
       })
       this.$store.commit('setComponentData',componentData)
       console.log('这个 值？',this.componentData)
