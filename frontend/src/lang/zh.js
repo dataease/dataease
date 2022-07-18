@@ -1123,7 +1123,15 @@ export default {
     open: '开启',
     row: '行数',
     interval: '间隔',
-    max_more_than_mix: '最大值必须大于最小值'
+    max_more_than_mix: '最大值必须大于最小值',
+    field: '字段',
+    textColor: '文字颜色',
+    backgroundColor: '背景颜色',
+    field_can_not_empty: '字段不能为空',
+    conditions_can_not_empty: '字段的条件不能为空，若无条件，请直接删除该字段',
+    remark: '备注',
+    remark_edit: '编辑备注',
+    remark_bg_color: '背景填充'
   },
   dataset: {
     params_work: '仅在编辑sql时生效',

@@ -144,7 +144,10 @@ export const DEFAULT_TITLE_STYLE = {
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
-  isBolder: true
+  isBolder: true,
+  remarkShow: false,
+  remark: '',
+  remarkBackgroundColor: '#ffffffff'
 }
 
 export const DEFAULT_TITLE_STYLE_DARK = {
@@ -337,7 +340,8 @@ export const DEFAULT_FUNCTION_CFG = {
 }
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',
-  labelThreshold: []
+  labelThreshold: [],
+  tableThreshold: []
 }
 export const DEFAULT_SCROLL = {
   open: false,
