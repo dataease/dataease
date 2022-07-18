@@ -405,6 +405,11 @@ export default {
       this.dialogVisible = true
     },
     onChange(file, fileList) {
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileList = []
+        return
+      }
       console.log('file, fileList', file, fileList)
       var _this = this
       _this.uploadDisabled = true

@@ -28,6 +28,7 @@
                 :class="{disabled:uploadDisabled}"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
+                :before-upload="beforeAvatarUpload"
                 :http-request="upload"
                 :file-list="fileList"
                 :on-change="onChange"
@@ -98,12 +99,23 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
+    beforeAvatarUpload(file) {
+      console.log('file.size', file.size)
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (!isLt10M) {
+        // this.$message.error('上传的文件大小不能超过 1MB!')
+        return false
+      }
+      return isLt10M
+    },
     onChange(file, fileList) {
       console.log('file-----', file, file.size / 1024 / 1024)
-      if (file.size / 1024 / 1024 > 1) {
-        this.$message.warning('图片大小不能超过1M')
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileList = []
         return
       }
+
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()

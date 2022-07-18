@@ -251,7 +251,7 @@ export function getXAxis(chart, cstyle = {}) {
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           },
           spacing: 8
         } : null
@@ -316,7 +316,7 @@ export function getYAxis(chart, cstyle = {}) {
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           },
           spacing: 8
         } : null
