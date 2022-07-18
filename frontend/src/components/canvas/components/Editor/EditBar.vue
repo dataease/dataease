@@ -5,7 +5,7 @@
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
-    <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px">
+    <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px" :title="element.isLock? '此组件已锁定': ''">
       <el-checkbox v-model="element.isCheck" @change="checkChange"/>
     </div>
     <div v-if="normalAreaShow">

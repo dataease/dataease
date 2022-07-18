@@ -13,6 +13,12 @@
         </el-button>
       </span>
       <span v-show="checkboxStatus" style="float: right;">
+        <!-- <el-tooltip :content="$t('commons.position.transverse')">
+          <el-button class="el-icon-c-scale-to-original" size="mini" circle @click="positionChange('transverse')" />
+        </el-tooltip>
+        <el-tooltip :content="$t('commons.position.longitudinal')">
+          <el-button class="el-icon-set-up" size="mini" circle @click="positionChange('longitudinal')" />
+        </el-tooltip> -->
         <el-tooltip :content="$t('commons.position.left')">
           <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
         </el-tooltip>
@@ -421,47 +427,78 @@ export default {
       }
       console.log(arr)
       if(value === 'left') {
-        let lefts = arr.map(item => {return item.style.left}) // 组件left值
-        let left = Math.min(...lefts)
-
-        componentData.map(item => {
-          if (item.isCheck) {
-            item.style.left = left
-          }
-        })
+        if (arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.left = 1
+            }
+          })
+        } else {
+          let lefts = arr.map(item => {return item.style.left}) // 组件left值
+          let left = Math.min(...lefts)
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.left = left
+            }
+          })
+        }
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')
       } else if (value === 'right') {
-        let rights = arr.map(item => {return (item.style.left + item.style.width)}) // 
-        let right = Math.max(...rights)
-        // console.log(right)
-
-        componentData.map(item => {
-          if (item.isCheck) {
-            item.style.left = (right - item.style.width)
-          }
-        })
+        if (arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.left = (this.canvasStyleData.width - item.style.width)
+            }
+          })
+        } else {
+          let rights = arr.map(item => {return (item.style.left + item.style.width)}) // 
+          let right = Math.max(...rights)
+          // console.log(right)
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.left = (right - item.style.width)
+            }
+          })
+        }
+        
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')
       } else if (value === 'top') {
-        let tops = arr.map(item => {return item.style.top})
-        let top = Math.min(...tops)
-        componentData.map(item => {
-          if (item.isCheck) {
-            item.style.top = top
-          }
-        })
+        if (arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.top = 1
+            }
+          })
+        } else {
+          let tops = arr.map(item => {return item.style.top})
+          let top = Math.min(...tops)
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.top = top
+            }
+          })
+        }
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')
       } else if (value === 'bottom') {
-        let bottoms = arr.map(item => {return (item.style.top + item.style.height)})
-        let bottom = Math.max(...bottoms)
-        // console.log(bottom)
-        componentData.map(item => {
-          if (item.isCheck) {
-            item.style.top = (bottom - item.style.height)
-          }
-        })
+        if (arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.top = (this.canvasStyleData.height - item.style.height)
+            }
+          })
+        } else {
+          let bottoms = arr.map(item => {return (item.style.top + item.style.height)})
+          let bottom = Math.max(...bottoms)
+          // console.log(bottom)
+          componentData.map(item => {
+            if (item.isCheck &&!item.isLock) {
+              item.style.top = (bottom - item.style.height)
+            }
+          })
+        }
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')
       }

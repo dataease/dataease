@@ -132,10 +132,12 @@ export default {
   },
   commons: {
     position: {
-      'left': '居左对齐',
-      'right': '居右对齐',
-      'top': '顶部对齐',
-      'bottom': '底部对齐',
+      left: '居左对齐',
+      right: '居右对齐',
+      top: '顶部对齐',
+      bottom: '底部对齐',
+      transverse: '横向分布',
+      longitudinal: '纵向分布'
     },
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
