@@ -12,12 +12,54 @@
         <app-main />
       </de-main-container>
     </de-container>
-    <div v-if="showTips" class="pwd-tips">
-      <span>{{ $t('commons.first_login_tips') }}</span>
+    <div v-if="showTips&&oneShow" class="pwd-tips">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ $t('commons.first_login_tips') }}。</span>
       <div style="text-align: right; margin-bottom: 10px;">
-        <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button>
+        <!-- <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button> -->
+        <span style="margin-right:94px">(1/5)</span>
+        <el-button type="primary" size="mini" @click="nextOne()">{{ '下一步' }}</el-button>
       </div>
       <div class="arrow" />
+    </div>
+    <div v-if="showTips&&twoShow" class="two_nav">
+      <div class="arrowTwo" />
+      <div class="titel_class">数据连接</div>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;制作看板第一步需要添加数据源，您可以通过数据源对接各种类型数据。</span>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;新建数据源、数据源校验处理、保存数据源。</div>
+
+      <div style="text-align: right; margin-bottom: 10px;">
+        <span style="margin-right:94px">(2/5)</span><el-button type="primary" size="mini" @click="nextTwo()">{{ '下一步' }}</el-button>
+      </div>
+    </div>
+    <div v-if="showTips&&threeShow" class="three_nav two_nav">
+      <div class="arrowTwo" />
+      <div class="titel_class">数据准备</div>
+      <div> &nbsp;&nbsp;&nbsp;&nbsp;创建数据库数据集，对数据进行连接，为下一步仪表板制作进行数据准备。</div>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;目前支持创建的数据集类型有数据库数据集、SQL 数据集、Excel 数据集、自定 义数据集、关联数据集、API 数据集等。</span>
+      <div style="text-align: right; margin-bottom: 10px;">
+        <span style="margin-right:94px">(3/5)</span>
+        <el-button type="primary" size="mini" @click="nextThree()">{{ '下一步' }}</el-button>
+      </div>
+    </div>
+    <div v-if="showTips&&foreShow" class="fore_nav two_nav">
+      <div class="arrowTwo" />
+      <div class="titel_class">分析展现</div>
+      <!-- <div>数据准备完成，可制作仪表板</div> -->
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;数据准备完成，可制作仪表板,仪表板制作，可新建修改删除查看仪表板，点击编辑按钮对仪表板内容进行编辑操作，可拖动不同的组件来丰富你的仪表板。</span>
+      <div style="text-align: right; margin-bottom: 10px;">
+        <span style="margin-right:94px">(4/5)</span>
+        <el-button type="primary" size="mini" @click="nextFore()">{{ '下一步' }}</el-button>
+      </div>
+    </div>
+    <div v-if="showTips&&fiveShow" class="five_nav two_nav">
+      <div class="arrowTwo" />
+      <div class="titel_class">资源发布</div>
+      <!-- <div>数据准备完成，可制作仪表板</div> -->
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;数据看板制作完成以后可以通过数据门户进行组装发布。</span>
+      <div style="text-align: right; margin-bottom: 10px;">
+        <span style="margin-right:94px">(5/5)</span>
+        <el-button type="primary" size="mini" @click="nextFive()">{{ '知道了' }}</el-button>
+      </div>
     </div>
 
   </div>
@@ -49,7 +91,12 @@ export default {
     return {
       componentName: 'PanelMain',
       showTips: false,
-      finishLoad: false
+      finishLoad: false,
+      oneShow: true,
+      twoShow: false,
+      threeShow: false,
+      foreShow: false,
+      fiveShow: false
     }
   },
   computed: {
@@ -104,6 +151,26 @@ export default {
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    nextOne() {
+      this.oneShow = false
+      this.twoShow = true
+    },
+    nextTwo() {
+      this.twoShow = false
+      this.threeShow = true
+    },
+    nextThree() {
+      this.foreShow = true
+      this.threeShow = false
+    },
+    nextFore() {
+      this.foreShow = false
+      this.fiveShow = true
+    },
+    nextFive() {
+      this.fiveShow = true
+      this.showTips = false
     }
   }
 }
@@ -187,6 +254,30 @@ export default {
     padding: 15px;
     background: #fff;
   }
+  .titel_class{
+    font-weight: 600;
+  }
+  .two_nav{
+    position: absolute;
+    box-shadow: 0 0 0 1000em rgb(0, 0, 0, 0.3);
+    // height: 100px;
+    width: 225px;
+    top: 66px;
+    left: 380px;
+    z-index: 9999;
+    border-radius: 4px;
+    padding: 15px;
+    background: #fff;
+  }
+  .three_nav{
+    left: 299px;
+  }
+  .fore_nav{
+   left: 215px;
+  }
+  .five_nav{
+    left: 466px;
+  }
   .arrow{
     border-bottom: 7px solid #fff;
     border-right: 7px solid #b5b5b7;
@@ -198,6 +289,18 @@ export default {
     top:-60px;
     left:210px;
     transform: rotate(90deg);
-}
+  }
+  .arrowTwo{
+    width: 11px;
+    height: 12px;
+    position: relative;
+    top: -21px;
+    left: 130px;
+    background: #fff;
+    transform: rotate(45deg);
+  }
+  // .arrowThree{
+
+  // }
 
 </style>

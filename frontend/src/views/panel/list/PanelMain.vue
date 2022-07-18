@@ -1,5 +1,5 @@
 <template>
-  <de-container>
+  <de-container class="nav_box">
     <de-aside-container type="panel">
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
@@ -19,6 +19,7 @@
     <de-main-container>
       <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" @editPanel="editPanel" />
     </de-main-container>
+    <!-- <div class="nav_class">2132132132131232132132132</div> -->
   </de-container>
 </template>
 
@@ -111,6 +112,12 @@ export default {
 </script>
 
 <style scoped>
+.nav_box{
+  /* position:relative */
+}
+  .nav_class{
+    /* position:absolute */
+  }
   .ms-aside-container {
     height: calc(100vh - 56px);
     padding: 0px;
