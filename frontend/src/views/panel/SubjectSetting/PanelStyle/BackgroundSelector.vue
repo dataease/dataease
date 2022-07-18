@@ -99,6 +99,7 @@ export default {
       this.dialogVisible = true
     },
     onChange(file, fileList) {
+      console.log('file-----', file, file.size / 1024 / 1024)
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()

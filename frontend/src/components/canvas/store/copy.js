@@ -17,8 +17,13 @@ export default {
         data: deepCopy(state.curComponent),
         index: state.curComponentIndex
       }
-      console.log('触发复制---------')
-      // http://localhost:9528/#/panel/indexhttp://localhost:9528/#/panel/index
+      if (state.copyData.data.type === 'de-nav') {
+        state.copyData.data.options.navTabList.forEach(ele => {
+          ele.name = ele.name + '-copy'
+          ele.relation = []
+        })
+      }
+      console.log('触发复制---------', state.copyData)
       state.isCut = false
     },
 
