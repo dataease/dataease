@@ -65,6 +65,12 @@ public class HttpClientUtil {
         }
     }
 
+    public static void main(String[] args) {
+        String url = "http://123.56.8.132:8090/upload/2022/04/%E9%99%88%E7%BA%AA%E5%85%89-%E6%B5%B7%E9%80%9A%E8%AF%81%E5%8A%B5%E6%A1%8C%E9%9D%A2%E4%BA%91%E5%A4%A7%E5%B1%8F-TEMPLATE.DET";
+
+        String info = get(url,null);
+        System.out.println("=="+info);
+    }
     /**
      * Get http请求
      *

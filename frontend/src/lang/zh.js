@@ -1504,6 +1504,11 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    market_network_tips: '查看模板市场模板需要服务器与模板市场(https://dataease.io/templates)联通，请检查网络...',
+    enter_name_tips: '请输入仪表板名称',
+    name: '名称',
+    apply_template: '应用模板',
+    enter_template_name_tips: '请输入模板名称...',
     pic_adaptation: '适应组件',
     pic_equiratio: '等比适应',
     pic_original: '原始尺寸',
