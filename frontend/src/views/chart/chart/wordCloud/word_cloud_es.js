@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle,seniorCfg } from '../common/common'
 //echarts
-export function baseWordCloudOption(chart_option, chart, cstyle = {}) {
+export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePointWidth) {
   console.log('这地方？',chart_option,chart,cstyle)
   // 处理shape attr
   let customAttr = {}
@@ -50,8 +50,8 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}) {
         console.log('/??????',customAttr)
         if(customAttr.size) {
           // console.log(customAttr.size)
-          chart_option.series[0].sizeRange[0] = customAttr.size.wordMin
-          chart_option.series[0].sizeRange[1] = customAttr.size.wordMax
+          chart_option.series[0].sizeRange[0] = customAttr.size.wordMin * scalePointWidth
+          chart_option.series[0].sizeRange[1] = customAttr.size.wordMax * scalePointWidth
           chart_option.series[0].shape = customAttr.size.wordShape
         }
 

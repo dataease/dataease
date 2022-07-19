@@ -501,6 +501,19 @@ export default {
         }
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')
+      } else if (value === 'transverse') {
+        if(arr.length === 2) {
+          return
+        }
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck && !item.isLock) {
+              item.style.left = Math.floor((this.canvasStyleData.width - item.style.height)/2)
+            }
+          })
+        } else {
+
+        }
       }
     },
     changeAidedDesign() {
