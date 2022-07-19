@@ -360,7 +360,6 @@ span {
 .value-item {
   position: relative;
   display: inline-block;
-  width: 200px !important;
 }
 
 .select-item {

@@ -207,7 +207,7 @@
                                 class="render-select"
                                 style="width: 100px"
                                 size="mini"
-                                @change="changeChartType()"
+                                @change="changeChartRender()"
                               >
                                 <el-option
                                   v-for="item in pluginRenderOptions"
@@ -1469,13 +1469,16 @@ export default {
         })
       })
     },
-    buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
+    buildParam(getData, trigger, needRefreshGroup = false, switchType = false, switchRender = false) {
       if (!this.view.resultCount ||
         this.view.resultCount === '' ||
         isNaN(Number(this.view.resultCount)) ||
         String(this.view.resultCount).includes('.') ||
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
+      }
+      if (switchType) {
+        this.view.senior.threshold.tableThreshold = []
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
@@ -1663,9 +1666,9 @@ export default {
       delete view.data
       return view
     },
-    calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
+    calcData(getData, trigger, needRefreshGroup = false, switchType = false, switchRender = false) {
       this.changeEditStatus(true)
-      const view = this.buildParam(true, 'chart', false, switchType)
+      const view = this.buildParam(true, 'chart', false, switchType, switchRender)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
@@ -2489,6 +2492,10 @@ export default {
     changeEditStatus(status) {
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
+    },
+    changeChartRender() {
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
       this.setChartDefaultOptions()
