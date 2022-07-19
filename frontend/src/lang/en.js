@@ -1495,6 +1495,11 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    market_network_tips: 'View template Market template requires server and template Market（ https://dataease.io/templates ）, please check the network... ',
+    enter_name_tips: 'Please enter the name of the panel',
+    name: 'Name',
+    apply_template: 'Apply Template',
+    enter_template_name_tips: 'Please enter the template name...',
     pic_adaptation: 'Adaptation',
     pic_equiratio: 'Equiratio',
     pic_original: 'Original',

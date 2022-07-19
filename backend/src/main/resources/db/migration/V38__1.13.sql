@@ -37,3 +37,7 @@ INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`
                          `install_time`, `module_name`, `ds_type`)
 VALUES ('Mongo 数据源插件', 'default', '0', '0', 'datasource', 'Mongo 数据源插件', '1.0-SNAPSHOT', 'DATAEASE', '0',
         '1650765903630', 'mongo-backend', 'mongobi');
+
+
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
