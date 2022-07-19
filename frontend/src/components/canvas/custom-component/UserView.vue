@@ -718,7 +718,7 @@ export default {
                   if (response.data.xaxis) {
                     const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('antv::::xaxis',axisobj)
-                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                    if (axisobj && (axisobj.originName.includes('月') || axisobj.originName.includes('month'))) {
                       if (axisobj.sort !== 'none') {
                         const data = response.data.data.datas
                         // console.log(axisobj.sort,data)
@@ -749,7 +749,7 @@ export default {
                   if (response.data.xaxis) {
                     const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('echarts:::xaxis',axisobj)
-                    if (axisobj && (axisobj.originName.includes('月份') || axisobj.originName.includes('month'))) {
+                    if (axisobj && (axisobj.originName.includes('月') || axisobj.originName.includes('month'))) {
                       if (axisobj.sort !== 'none') {
                         const data = response.data.data.x
                         const data1 = response.data.data.series
