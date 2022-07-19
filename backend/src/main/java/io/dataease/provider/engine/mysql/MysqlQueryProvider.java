@@ -1212,7 +1212,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 String cast = String.format(MysqlConstants.CAST, originField, y.getDeType() == 2 ? MysqlConstants.DEFAULT_INT_FORMAT : MysqlConstants.DEFAULT_FLOAT_FORMAT);
                 String agg = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), cast);
                 String cast1 = String.format(MysqlConstants.CAST, agg, MysqlConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(MysqlConstants.ROUND, cast1, "2");
+                fieldName = String.format(MysqlConstants.ROUND, cast1, "8");
             } else {
                 String cast = String.format(MysqlConstants.CAST, originField, y.getDeType() == 2 ? MysqlConstants.DEFAULT_INT_FORMAT : MysqlConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {

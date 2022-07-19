@@ -1206,7 +1206,7 @@ public class DorisQueryProvider extends QueryProvider {
                 String cast = String.format(DorisConstants.CAST, originField, y.getDeType() == 2 ? DorisConstants.DEFAULT_INT_FORMAT : DorisConstants.DEFAULT_FLOAT_FORMAT);
                 String agg = String.format(DorisConstants.AGG_FIELD, y.getSummary(), cast);
                 String cast1 = String.format(DorisConstants.CAST, agg, DorisConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(DorisConstants.ROUND, cast1, "2");
+                fieldName = String.format(DorisConstants.ROUND, cast1, "8");
             } else {
                 String cast = String.format(DorisConstants.CAST, originField, y.getDeType() == 2 ? DorisConstants.DEFAULT_INT_FORMAT : DorisConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {

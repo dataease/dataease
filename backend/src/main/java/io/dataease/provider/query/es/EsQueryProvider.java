@@ -1213,7 +1213,7 @@ public class EsQueryProvider extends QueryProvider {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 String agg = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(EsSqlLConstants.ROUND, agg, "2");
+                fieldName = String.format(EsSqlLConstants.ROUND, agg, "8");
             } else {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
