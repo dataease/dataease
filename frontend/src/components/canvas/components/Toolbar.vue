@@ -443,8 +443,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'right') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -463,8 +462,6 @@ export default {
           })
         }
         
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
       } else if (value === 'top') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -481,8 +478,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'bottom') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -500,8 +496,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'transverse') { // 横向
         if(arr.length === 1) {
           componentData.map(item => {
@@ -535,7 +530,6 @@ export default {
             }
           }
           // console.log('赋值后：；',arr,leftList)
-          
           componentData.sort((a,b) => {return a.style.left - b.style.left}) // 排序
           let n = 0;
           componentData.map(item => {
@@ -546,8 +540,7 @@ export default {
           });
           console.log('横向分布',componentData)
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'longitudinal') { // 纵向
         if(arr.length === 1) {
           componentData.map(item => {
@@ -580,7 +573,7 @@ export default {
               topList.push(arr[i].style.top)
             }
           }
-          console.log('赋值后：；',arr,topList)
+          // console.log('赋值后：；',arr,topList)
           componentData.sort((a,b) => {return a.style.top - b.style.top}) // 排序
           let n = 0;
           componentData.map(item => {
@@ -591,9 +584,10 @@ export default {
           });
           console.log('纵向分布',componentData)
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       }
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('recordSnapshot')
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')
