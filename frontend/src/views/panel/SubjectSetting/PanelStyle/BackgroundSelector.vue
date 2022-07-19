@@ -40,6 +40,11 @@
               </el-dialog>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :offset="4" :span="20">
+              <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+            </el-col>
+          </el-row>
         </el-col>
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.background') }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>

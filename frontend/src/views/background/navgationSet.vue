@@ -63,7 +63,21 @@
         <el-col :span="4">
           <span class="params-title">{{ '高亮背景图片' }}</span>
         </el-col>
-        <el-col style="width: 130px!important;">
+        <el-col :span="6">
+          <el-radio-group v-model="updataType">
+            <el-radio :label="true">上传</el-radio>
+            <el-radio :label="false">图库</el-radio>
+          </el-radio-group>
+        </el-col>
+        <el-col v-show="!updataType" :span="3">
+          <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
+        </el-col>
+        <el-col v-show="changImg!==''&&!updataType" :span="7">
+          <div style="height:80px;width:120px;overflow-y:scroll;">
+            <img :src="changImg" class="img_class">
+          </div>
+        </el-col>
+        <el-col v-show="updataType" style="width: 130px!important;">
           <el-upload
             action=""
             accept=".jpeg,.jpg,.png,.gif,.svg"
@@ -82,7 +96,50 @@
             <img width="100%" :src="dialogImageUrl" alt="">
           </el-dialog> -->
         </el-col>
+        <el-col v-show="updataType" :span="7">
+          <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+        </el-col>
       </el-row>
+      <el-dialog
+        width="750px"
+        title="图片库"
+        :visible.sync="innerVisible"
+        append-to-body
+      >
+        <el-row class="bif_box">
+          <el-col>
+            <el-collapse v-model="activeNames">
+              <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
+                <template slot="title">
+                  <span style="width:600px">{{ ited.name }}</span>
+                </template>
+                <el-row :gutter="10" style="padding:10px;">
+                  <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
+                    <div class="img_Box" @click="clickImg(item)">
+                      <img :src="item.url" class="img_class">
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+        </el-row>
+        <el-row style="margin-top:20px;">
+          <el-col :span="3">
+            <span class="params-title">{{ '选中图片：' }}</span>
+          </el-col>
+          <el-col v-show="changImg!==''" :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
+            <img :src="changImg" class="img_class">
+          </el-col>
+        </el-row>
+        <el-row class="root-class">
+          <el-col :span="24">
+            <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
+            <el-button type="primary" size="mini" @click="savePicture()">{{ $t('commons.confirm') }}</el-button>
+          </el-col>
+        </el-row>
+
+      </el-dialog>
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
       <!-- 轮播的图片 -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
@@ -163,7 +220,7 @@
 </template>
 
 <script>
-import { queryBackground } from '@/api/background/background'
+import { getAllImgList, queryBackground } from '@/api/background/background'
 // import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
 // import eventBus from '@/components/canvas/utils/eventBus'
@@ -183,8 +240,12 @@ export default {
   data() {
     return {
       value1: [],
+      allImgData: [],
+      activeNames: [],
+      updataUrl: '',
       input: '',
       // options: [],
+      updataType: true,
       navInfoLis: [
         {
           name: '',
@@ -192,6 +253,7 @@ export default {
           // options: []
         }
       ],
+      innerVisible: false,
       BackgroundShowMap: {},
       imgUrlList: [],
       checked: false,
@@ -203,6 +265,7 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       textData: [],
+      changImg: '',
       options: [{
         value: 1000,
         label: '1秒'
@@ -246,7 +309,7 @@ export default {
   },
   created() {
     // this.init()
-
+    this.getAllImg()
   },
   mounted() {
     // this.componentData.forEach(res => {
@@ -296,6 +359,26 @@ export default {
   },
 
   methods: {
+    clickImg(item) {
+      console.log('图片数据', item)
+      this.changImg = item.url
+    },
+    cancelPicture() {
+      this.innerVisible = false
+      this.changImg = ''
+    },
+    savePicture() {
+      this.innerVisible = false
+    },
+    getAllImg() {
+      getAllImgList().then(res => {
+        console.log('获取所有图片数据', res)
+        this.allImgData = res.data
+      })
+    },
+    openNewImg() {
+      this.innerVisible = true
+    },
     addNavInfo() {
       console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
@@ -377,6 +460,14 @@ export default {
       console.log('this.fileList', this.fileList)
       // this.canvasStyleData.navShowKey = ''
       // console.log('this.imgUrlList', this.imgUrlList)
+      //  _this.updataUrl = reader.result
+      if (this.updataType) {
+        this.curComponent.options.heightBgImg = this.updataUrl
+      } else {
+        this.curComponent.options.heightBgImg = this.changImg
+      }
+      this.commitStyle()
+
       this.$store.commit('recordSnapshot')
 
       this.$emit('backgroundSetClose')
@@ -415,8 +506,9 @@ export default {
       _this.uploadDisabled = true
       const reader = new FileReader()
       reader.onload = function() {
-        _this.curComponent.options.heightBgImg = reader.result
-        _this.commitStyle()
+        _this.updataUrl = reader.result
+        // _this.curComponent.options.heightBgImg = reader.result
+        // _this.commitStyle()
         console.log('reader.result6666666', reader.result)
       }
       reader.readAsDataURL(file.raw)
@@ -441,6 +533,19 @@ export default {
   .main-row{
     height: 140px;
     overflow-y: auto;
+  }
+  .img_class{
+    width:100%;
+    /* height:100%; */
+  }
+  .img_Box{
+    height:108px;
+    cursor: pointer;
+    overflow-y: scroll;
+  }
+  .bif_box{
+    border-left:1px solid #E6E6E6;
+    border-right:1px solid #E6E6E6;
   }
 
   .root-class {

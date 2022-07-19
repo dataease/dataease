@@ -6,7 +6,7 @@
       </el-col>
     </el-row>
     <el-row class="main-content">
-      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+      <el-row style="height: 80px;margin-top:10px;margin-bottom:5px;overflow: hidden">
         <el-col :span="3">
           <span class="params-title">{{ '选择分组' }}</span>
         </el-col>
@@ -49,6 +49,11 @@
 
       </el-row>
       <el-row>
+        <el-col :offset="11" :span="8">
+          <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+        </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="3">
           <span class="params-title">{{ '选中图片：' }}</span>
         </el-col>
@@ -67,6 +72,7 @@
           <el-button type="primary" size="mini" @click="addSubmit()">确定</el-button>
         </el-col>
       </el-row>
+
       <el-row v-show="loadingKey">
         <el-col :span="12">
           <span class="params-title">{{ '图片库使劲加载中，请稍后。。。' }}</span>
