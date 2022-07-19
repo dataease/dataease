@@ -455,10 +455,10 @@ function getConditions(chart) {
   let conditions
   try {
     const senior = JSON.parse(chart.senior)
-    conditions = senior.threshold.tableThreshold
+    conditions = senior.threshold ? senior.threshold.tableThreshold : null
   } catch (err) {
     const senior = JSON.parse(JSON.stringify(chart.senior))
-    conditions = senior.threshold.tableThreshold
+    conditions = senior.threshold ? senior.threshold.tableThreshold : null
   }
 
   if (conditions && conditions.length > 0) {
