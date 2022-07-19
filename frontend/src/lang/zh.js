@@ -197,6 +197,7 @@ export default {
     delete_cancel: '已取消删除',
     confirm: '确定',
     cancel: '取消',
+    back: '返回',
     prompt: '提示',
     operating: '操作',
     input_limit: '长度在 {0} 到 {1} 个字符',
