@@ -713,8 +713,8 @@ export default {
               let arr = []
               let arr2 = []
               // 月份排序
-              if (response.data.type.includes('line') && response.data.data) {
-                if (response.data.render === 'antv') {
+              if (response.data.render === 'antv') {
+                if (response.data.type.includes('line') && response.data.data) {
                   if (response.data.xaxis) {
                     const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('antv::::xaxis',axisobj)
@@ -745,7 +745,10 @@ export default {
                       }
                     }
                   }
-                } else if (response.data.render === 'echarts') {
+                }
+              } else if (response.data.render === 'echarts') {
+                console.log('进？',response.data)
+                if ((response.data.type.includes('line') || response.data.type === 'bar') && response.data.data) {
                   if (response.data.xaxis) {
                     const axisobj = JSON.parse(response.data.xaxis)[0]
                     // console.log('echarts:::xaxis',axisobj)
