@@ -5,8 +5,8 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { WordCloud } from '@antv/g2plot'
 
-export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = {}) {
-  console.log('词云',chart)
+export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = {},scalePointWidth) {
+  console.log('词云',chart,scalePointWidth)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -60,8 +60,8 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
     // console.log('/??????',customAttr)
     if(customAttr.size) {
       // console.log(customAttr.size)
-      options.wordStyle.fontSize[0] = customAttr.size.wordMin
-      options.wordStyle.fontSize[1] = customAttr.size.wordMax
+      options.wordStyle.fontSize[0] = customAttr.size.wordMin * scalePointWidth
+      options.wordStyle.fontSize[1] = customAttr.size.wordMax * scalePointWidth
     }
   }
 

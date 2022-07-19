@@ -13,12 +13,12 @@
         </el-button>
       </span>
       <span v-show="checkboxStatus" style="float: right;">
-        <!-- <el-tooltip :content="$t('commons.position.transverse')">
-          <el-button class="el-icon-c-scale-to-original" size="mini" circle @click="positionChange('transverse')" />
+        <el-tooltip :content="$t('commons.position.transverse')">
+          <el-button class="el-icon-c-scale-to-original" :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')" />
         </el-tooltip>
         <el-tooltip :content="$t('commons.position.longitudinal')">
-          <el-button class="el-icon-set-up" size="mini" circle @click="positionChange('longitudinal')" />
-        </el-tooltip> -->
+          <el-button class="el-icon-set-up" size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')" />
+        </el-tooltip>
         <el-tooltip :content="$t('commons.position.left')">
           <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
         </el-tooltip>
@@ -34,8 +34,8 @@
         <el-button size="mini" @click="checkDel">
           {{ $t('commons.delete') }}
         </el-button>
-        <el-button size="mini" @click="checkCancel">
-          {{ $t('commons.cancel') }}
+        <el-button size="mini" @click="checkBack">
+          {{ $t('commons.back') }}
         </el-button>
       </span>
     </div>
@@ -156,6 +156,7 @@ export default {
       'lastSaveSnapshotIndex',
       'linkageSettingStatus',
       'checkboxStatus',
+      'isUniformity',
       'curLinkageView',
       'targetLinkageInfo',
       'mobileLayoutStatus',
@@ -407,7 +408,7 @@ export default {
         });          
       });
     },
-    checkCancel() {
+    checkBack() {
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
         item.isCheck  = false
@@ -498,6 +499,97 @@ export default {
               item.style.top = (bottom - item.style.height)
             }
           })
+        }
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      } else if (value === 'transverse') { // 横向
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck && !item.isLock) {
+              item.style.left = Math.floor((this.canvasStyleData.width - item.style.width)/2)
+            }
+          })
+        } else {
+          let list = []
+          arr.map(item => {
+            list.push(item.style.left)
+            list.push((item.style.left + item.style.width))
+          });
+          let min = Math.floor(Math.min(...list))
+          let max = Math.floor(Math.max(...list))
+          let pip = max -min
+          arr.map(item => {
+            pip = pip-item.style.width
+          })
+          let avg = Math.floor(pip/(arr.length - 1))
+          console.log('数值：',min,max,pip,avg)
+          arr.sort((a,b) => {return a.style.left - b.style.left})
+          let leftList = [] // 横向分布组件的left
+          for(let i=0;i<arr.length;i++) {
+            if(i === 0) {
+              arr[i].style.left = min
+              leftList.push(arr[i].style.left)
+            } else {
+              arr[i].style.left = (arr[i-1].style.left + arr[i-1].style.width + avg)
+              leftList.push(arr[i].style.left)
+            }
+          }
+          // console.log('赋值后：；',arr,leftList)
+          
+          componentData.sort((a,b) => {return a.style.left - b.style.left}) // 排序
+          let n = 0;
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.left = leftList[n]
+              n++
+            }
+          });
+          console.log('横向分布',componentData)
+        }
+        this.$store.commit('setComponentData',componentData)
+        this.$store.commit('recordSnapshot')
+      } else if (value === 'longitudinal') { // 纵向
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if (item.isCheck && !item.isLock) {
+              item.style.top = Math.floor((this.canvasStyleData.height - item.style.height)/2)
+            }
+          })
+        } else {
+          let list = []
+          arr.map(item => {
+            list.push(item.style.top)
+            list.push((item.style.top + item.style.height))
+          });
+          let min = Math.floor(Math.min(...list))
+          let max = Math.floor(Math.max(...list))
+          let pip = max -min
+          arr.map(item => {
+            pip = pip-item.style.height
+          })
+          let avg = Math.floor(pip/(arr.length - 1))
+          console.log('数值：',min,max,pip,avg)
+          arr.sort((a,b) => {return a.style.top - b.style.top})
+          let topList = [] // 横向分布组件的top
+          for(let i=0;i<arr.length;i++) {
+            if(i === 0) {
+              arr[i].style.top = min
+              topList.push(arr[i].style.top)
+            } else {
+              arr[i].style.top = (arr[i-1].style.top + arr[i-1].style.height + avg)
+              topList.push(arr[i].style.top)
+            }
+          }
+          console.log('赋值后：；',arr,topList)
+          componentData.sort((a,b) => {return a.style.top - b.style.top}) // 排序
+          let n = 0;
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.top = topList[n]
+              n++
+            }
+          });
+          console.log('纵向分布',componentData)
         }
         this.$store.commit('setComponentData',componentData)
         this.$store.commit('recordSnapshot')

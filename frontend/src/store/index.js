@@ -73,6 +73,8 @@ const data = {
     isStylePriority: false,
     // 多选选择状态
     checkboxStatus: false,
+    // 是否可均匀分布
+    isUniformity: false,
     // 联动设置状态
     linkageSettingStatus: false,
     // 当前设置联动的组件
@@ -433,6 +435,9 @@ const data = {
     },
     setCheckBoxStatus(state, status) {
       state.checkboxStatus = status
+    },
+    setUniformityStatus(state, status) {
+      state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo

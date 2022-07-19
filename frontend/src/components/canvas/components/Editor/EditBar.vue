@@ -202,6 +202,13 @@ export default {
       })
       this.$store.commit('setComponentData',componentData)
       console.log('这个 值？',this.componentData)
+      
+      let arr = this.componentData.filter(item => item.isCheck&&!item.isLock)
+      if(arr.length === 2) {
+        this.$store.commit('setUniformityStatus', true)
+      }else {
+        this.$store.commit('setUniformityStatus', false)
+      }
     },
     closePreview() {
       this.$emit('closePreview')

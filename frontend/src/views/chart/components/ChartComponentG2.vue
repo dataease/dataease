@@ -94,6 +94,7 @@ export default {
     },
     ...mapState([
       'canvasStyleData',
+      'previewCanvasScale'
     ])
   },
   watch: {
@@ -173,7 +174,7 @@ export default {
       } else if (chart.type === 'waterfall') {
         this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'word-cloud') {
-        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
+        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData,this.previewCanvasScale.scalePointWidth)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
