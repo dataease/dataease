@@ -314,7 +314,7 @@ export default {
             })
             return
           }
-          if (!ele.value) {
+          if (!ele.term.includes('null') && !ele.term.includes('empty') && !ele.value) {
             this.$message({
               message: this.$t('chart.value_can_not_empty'),
               type: 'error',
