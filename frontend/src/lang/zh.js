@@ -1126,6 +1126,7 @@ export default {
     max_more_than_mix: '最大值必须大于最小值'
   },
   dataset: {
+    field_rename: '字段重命名',
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
@@ -1464,6 +1465,7 @@ export default {
     add_api_table: '添加API数据表',
     edit_api_table: '编辑API数据表',
     base_info: '基础信息',
+    column_info: '数据结构',
     request: '请求',
     path_all_info: '请填入完整地址',
     req_param: '请求参数',
@@ -1486,7 +1488,9 @@ export default {
     api_table_not_empty: 'API 数据表不能为空',
     has_repeat_name: 'API 数据表名称重复',
     valid: '有效',
-    invalid: '无效'
+    invalid: '无效',
+    api_step_1: '连接API',
+    api_step_2: '提取数据'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

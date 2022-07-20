@@ -1124,6 +1124,7 @@ export default {
     max_more_than_mix: 'Max must more than Min'
   },
   dataset: {
+    field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
     sql_variable_limit_2: '2、Example：select * from table_name where column_name1=${parm_name1} and column_name2 in ${parm_name2}',
@@ -1455,6 +1456,7 @@ export default {
     add_api_table: 'Add API table',
     edit_api_table: 'Edit API table',
     base_info: 'Basic information',
+    column_info: 'Data structure',
     request: 'Request',
     path_all_info: 'Please fill in the full address',
     req_param: 'Request parameters',
@@ -1477,7 +1479,9 @@ export default {
     api_table_not_empty: 'API data table cannot be empty',
     has_repeat_name: 'Duplicate API data table name',
     valid: 'Valid',
-    invalid: 'Invalid'
+    invalid: 'Invalid',
+    api_step_1: 'Connection API',
+    api_step_2: 'Extract data'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

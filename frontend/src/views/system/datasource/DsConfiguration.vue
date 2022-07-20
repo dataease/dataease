@@ -3,13 +3,13 @@
     <el-row>
       <el-col>
         <el-form
-            ref="DsConfig"
-            :model="form"
-            :rules="rule"
-            size="small"
-            :disabled="disabled"
-            label-width="180px"
-            label-position="right"
+          ref="DsConfig"
+          :model="form"
+          :rules="rule"
+          size="small"
+          :disabled="disabled"
+          label-width="180px"
+          label-position="right"
         >
           <el-form-item v-if="form.type == 'api'" :label="$t('datasource.data_table')">
             <el-col>
@@ -46,12 +46,13 @@
           <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%"
                      class="dialog-css" append-to-body>
             <el-steps :active="active" align-center>
-              <el-step title="步骤 1"></el-step>
-              <el-step title="步骤 2"></el-step>
+              <el-step :title="$t('datasource.api_step_1')"></el-step>
+              <el-step :title="$t('datasource.api_step_2')"></el-step>
             </el-steps>
 
             <el-row v-show="active === 1">
-              <el-form ref="apiItem" size="small" :model="apiItem" label-width="100px" :rules="rule">
+              <el-form ref="apiItem" size="small" :model="apiItem" label-position="top" label-width="100px"
+                       :rules="rule">
                 <p class="tip">{{ $t('datasource.base_info') }} </p>
 
                 <el-form-item :label="$t('commons.name')" prop="name">
@@ -76,34 +77,74 @@
                   </el-form-item>
                 </div>
 
-                <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
-                  <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath"
-                            autocomplete="off"/>
-                </el-form-item>
               </el-form>
             </el-row>
             <el-row v-show="active === 2">
-              <el-tabs v-model="api_step2_active_name">
-                <el-tab-pane :label="$t('dataset.data_preview')" name="first">
-                  <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height"
-                           :checkbox-config="{highlight: true}" :width-resize="true">
-                    <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px"
-                                     :field="field.originName" :resizable="true">
-                      <template slot="header">
-                        <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text"/>
-                        <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time"/>
-                        <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value"
-                                  class="field-icon-value"/>
-                        <svg-icon v-if="field.deExtractType === 5" icon-class="field_location"
-                                  class="field-icon-location"/>
-                        <span>{{ field.name }}</span>
-                      </template>
-                    </ux-table-column>
-                  </ux-grid>
-                </el-tab-pane>
-              </el-tabs>
+              <el-form ref="apiItem" size="small" :model="apiItem" label-position="top" label-width="100px"
+                       :rules="rule">
+                <p class="tip">{{ $t('datasource.column_info') }} </p>
+
+                <el-table :data="apiItem.jsonFields" style="width: 100%;" row-key="id">
+                  <el-table-column prop="date" label="" width="255">
+                    <template slot-scope="scope">
+                      <el-checkbox v-model="scope.row.checked" :key="scope.row.id"
+                                   @change="handleCheckAllChange(scope.row)">
+                        {{ scope.row.originName }}
+                      </el-checkbox>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="name" :label="$t('dataset.field_rename')">
+                    <template slot-scope="scope">
+                      <el-input size="mini" type="text" v-model="scope.row.name" @change="fieldNameChange(scope.row)"/>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column prop="deExtractType" :label="$t('dataset.field_type')">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.deExtractType" size="mini"
+                                 style="display: inline-block;width: 120px;" @change="fieldTypeChange(scope.row)">
+                        <el-option
+                          v-for="item in fieldOptions"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+
+                            <span style="float: left">
+                                  <svg-icon v-if="item.value === '0'" icon-class="field_text" class="field-icon-text"/>
+                                  <svg-icon v-if="item.value === '2' || item.value === '3'" icon-class="field_value"
+                                            class="field-icon-value"/>
+                            </span>
+                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
+
+                        </el-option>
+                      </el-select>
+                    </template>
+
+                  </el-table-column>
+                </el-table>
+
+                <p class="tip">{{ $t('dataset.data_preview') }} </p>
+
+                <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height"
+                         :checkbox-config="{highlight: true}" :width-resize="true">
+                  <ux-table-column v-for="field in apiItem.fields" :key="field.name + field.deExtractType"
+                                   min-width="200px"
+                                   :field="field.name" :resizable="true">
+                    <template slot="header">
+                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text"/>
+                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time"/>
+                      <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value"
+                                class="field-icon-value"/>
+                      <svg-icon v-if="field.deExtractType === 5" icon-class="field_location"
+                                class="field-icon-location"/>
+                      <span>{{ field.name }}</span>
+                    </template>
+                  </ux-table-column>
+                </ux-grid>
+              </el-form>
             </el-row>
             <div slot="footer" class="dialog-footer">
+              <el-button @click="closeEditItem">{{ $t('commons.cancel') }}</el-button>
               <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{
                   $t('fu.steps.next')
                 }}
@@ -143,14 +184,14 @@
 
           <el-form-item v-if="form.type=='hive' " :label="$t('datasource.auth_method')">
             <el-select
-                v-model="form.configuration.authMethod"
-                class="select-width"
+              v-model="form.configuration.authMethod"
+              class="select-width"
             >
               <el-option
-                  v-for="item in authMethodList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item.id"
+                v-for="item in authMethodList"
+                :key="item.id"
+                :label="item.label"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -164,7 +205,7 @@
                         :label="$t('datasource.keytab_Key_path')">
             <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
             <p>
-              {{$t('datasource.kerbers_info')}}
+              {{ $t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
 
@@ -172,13 +213,15 @@
 
           </span>
 
-          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
-                        :label="$t('datasource.user_name')">
+          <el-form-item
+            v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
+            :label="$t('datasource.user_name')">
             <el-input v-model="form.configuration.username" autocomplete="off"/>
           </el-form-item>
 
-          <el-form-item v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
-                        :label="$t('datasource.password')">
+          <el-form-item
+            v-if="form.type !== 'es'  && form.type !== 'api' && form.configuration.authMethod !== 'kerberos'"
+            :label="$t('datasource.password')">
             <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
           </el-form-item>
 
@@ -203,7 +246,7 @@
           </el-form-item>
 
           <el-form-item
-              v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
+            v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
             <el-button icon="el-icon-plus" size="mini" @click="getSchema()">{{
                 $t('datasource.get_schema')
               }}
@@ -211,8 +254,8 @@
           </el-form-item>
 
           <el-form-item
-              v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
-              :label="$t('datasource.schema')">
+            v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
+            :label="$t('datasource.schema')">
             <el-select v-model="form.configuration.schema" filterable
                        :placeholder="$t('datasource.please_choose_schema')"
                        class="select-width">
@@ -248,7 +291,8 @@
               <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
                 <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
               </el-form-item>
-              <el-form-item v-if="datasourceType.isJdbc" :label="$t('datasource.query_timeout')" prop="configuration.queryTimeout">
+              <el-form-item v-if="datasourceType.isJdbc" :label="$t('datasource.query_timeout')"
+                            prop="configuration.queryTimeout">
                 <el-input v-model="form.configuration.queryTimeout" autocomplete="off" type="number" min="0"/>
               </el-form-item>
             </el-collapse-item>
@@ -413,7 +457,9 @@ export default {
           },
           authManager: {}
         },
-        fields: []
+        fields: [],
+        jsonFields: [],
+        maxPreviewNum: ''
       },
       reqOptions: [{id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST'}],
       loading: false,
@@ -435,7 +481,12 @@ export default {
         }, {
           id: 'kerberos',
           label: 'Kerberos'
-        }]
+        }],
+      fieldOptions: [
+        {label: this.$t('dataset.text'), value: 0},
+        {label: this.$t('dataset.value'), value: 2},
+        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
+      ],
     }
   },
   created() {
@@ -488,8 +539,10 @@ export default {
               this.apiItem.status = 'Success'
               this.$success(i18n.t('commons.success'))
               this.active++
-              this.apiItem.fields = res.data.fields
-              this.$refs.plxTable.reloadData(res.data.datas)
+              this.apiItem.jsonFields = res.data.jsonFields
+              this.apiItem.maxPreviewNum = res.data.maxPreviewNum
+              this.handleFiledChange();
+              this.previewData()
             }).catch(res => {
               this.loading = false
               this.disabledNext = false
@@ -534,30 +587,50 @@ export default {
     deleteItem(item) {
       this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
     },
-    validateApi(item) {
-      if (undefined) {
-
-      } else {
-        this.$refs.apiItem.validate(valid => {
-          if (valid) {
-            const data = JSON.parse(JSON.stringify(this.apiItem))
-            data.request = JSON.stringify(data.request)
-            this.loading = true
-            checkApiDatasource(data).then(res => {
-              this.loading = false
-              this.$success(i18n.t('commons.success'))
-              this.apiItem.fields = res.data.fields
-              this.$refs.plxTable.reloadData(res.data.datas)
-            }).catch(res => {
-              this.loading = false
-            })
-          } else {
-            return false
-          }
-        })
+    handleCheckAllChange(row) {
+      this.handleCheckChange(row)
+      this.handleFiledChange()
+      this.previewData()
+    },
+    handleFiledChange(data) {
+      this.apiItem.fields = []
+      let jsonField = data === undefined ? this.apiItem.jsonFields : data;
+      jsonField.forEach((item) => {
+        if (item.checked && item.children === null) {
+          this.apiItem.fields.push(item)
+        }
+        if (item.children !== null) {
+          this.handleFiledChange(item.children)
+        }
+      })
+    },
+    previewData() {
+      let datas = [];
+      for (let i = 0; i < this.apiItem.maxPreviewNum; i++) {
+        datas.push({})
       }
-    }
 
+      for (let i = 0; i < this.apiItem.fields.length; i++) {
+        for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
+          this.$set(datas[j], this.apiItem.fields[i].name , this.apiItem.fields[i].value[j]);
+        }
+      }
+      this.$refs.plxTable.reloadData(datas)
+    },
+    handleCheckChange(node) {
+      if (node.children !== null) {
+        node.children.forEach((item) => {
+          item.checked = node.checked;
+          this.handleCheckChange(item)
+        });
+      }
+
+    },
+    fieldNameChange(row) {
+      this.previewData()
+    },
+    fieldTypeChange(row) {
+    }
   }
 }
 </script>
@@ -585,5 +658,13 @@ export default {
 .ms-el-link {
   float: right;
   margin-right: 45px;
+}
+
+.tip {
+  padding: 3px 5px;
+  font-size: 16px;
+  border-radius: 0;
+  border-left: 4px solid #409EFF;
+  margin: 5px 5px 10px 5px;
 }
 </style>
