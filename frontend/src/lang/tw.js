@@ -1132,6 +1132,7 @@ export default {
     remark_bg_color: '背景填充'
   },
   dataset: {
+    field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
     sql_variable_limit_2: '2、示例：select * from table_name where column_name1=${parm_name1} and column_name2 in ${parm_name2}',
@@ -1464,6 +1465,7 @@ export default {
     add_api_table: '添加 API 數據表',
     edit_api_table: '編輯 API 數據表',
     base_info: '基礎信息',
+    column_info: '資料結構',
     request: '請求',
     path_all_info: '請輸入完整地址',
     req_param: '請求參數',
@@ -1486,7 +1488,9 @@ export default {
     api_table_not_empty: 'API 數據表不能為空',
     has_repeat_name: 'API 數據表名稱重複',
     valid: '有效',
-    invalid: '無效'
+    invalid: '無效',
+    api_step_1: '連接API',
+    api_step_2: '選取數據'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
