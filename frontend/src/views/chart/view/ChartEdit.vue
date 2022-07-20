@@ -299,7 +299,7 @@
                       </span>
                     </el-row> -->
 
-                    <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                    <!-- <el-row v-if="view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.arc_map_url') }}</span>
                       </span>
@@ -311,7 +311,7 @@
                           @change="calcData"
                         />
                       </span>
-                    </el-row>
+                    </el-row> -->
 
                     <!--xAxisExt-->
                     <el-row
