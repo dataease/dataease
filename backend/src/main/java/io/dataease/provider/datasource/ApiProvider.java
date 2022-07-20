@@ -263,7 +263,7 @@ public class ApiProvider extends Provider {
         o.put("extField", 0);
         o.put("checked", false);
         for (DatasetTableFieldDTO fieldDTO : apiDefinition.getFields()) {
-            if (fieldDTO.getJsonPath().equals(o.getString("jsonPath"))) {
+            if (StringUtils.isNotEmpty(o.getString("jsonPath")) && StringUtils.isNotEmpty(fieldDTO.getJsonPath()) && fieldDTO.getJsonPath().equals(o.getString("jsonPath"))) {
                 o.put("checked", true);
                 o.put("deExtractType", fieldDTO.getDeExtractType());
                 o.put("name", fieldDTO.getName());
