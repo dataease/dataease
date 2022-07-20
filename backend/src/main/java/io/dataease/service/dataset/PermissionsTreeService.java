@@ -11,6 +11,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,7 +19,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +64,7 @@ public class PermissionsTreeService {
         List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(userId);
         roleIds = currentRoleDtos.stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
 
-        DataSetRowPermissionsTreeDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsTreeDTO();
+        DatasetRowPermissionsTreeRequest dataSetRowPermissionsDTO = new DatasetRowPermissionsTreeRequest();
         dataSetRowPermissionsDTO.setDatasetId(datasetId);
         dataSetRowPermissionsDTO.setEnable(true);
 

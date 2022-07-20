@@ -207,7 +207,7 @@
                                 class="render-select"
                                 style="width: 100px"
                                 size="mini"
-                                @change="changeChartType()"
+                                @change="changeChartRender()"
                               >
                                 <el-option
                                   v-for="item in pluginRenderOptions"
@@ -697,12 +697,12 @@
         <el-tab-pane name="senior" :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text' || view.type === 'table-normal' || view.type === 'table-info'"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || view.type.includes('table'))"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('table'))"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type === 'table-normal' || view.type === 'table-info')"
               >
                 <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
@@ -714,7 +714,7 @@
                       @onFunctionCfgChange="onFunctionCfgChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="view.type && (view.type.includes('table'))" name="scroll" :title="$t('chart.scroll_cfg')">
+                  <el-collapse-item v-if="view.type && (view.type === 'table-normal' || view.type === 'table-info')" name="scroll" :title="$t('chart.scroll_cfg')">
                     <scroll-cfg
                       :param="param"
                       class="attr-selector"
@@ -725,7 +725,7 @@
                 </el-collapse>
               </el-row>
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text')"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || (view.render === 'antv' && view.type.includes('table')))"
               >
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
@@ -742,7 +742,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-if="view.type && (view.type.includes('gauge') || view.type === 'text')"
+                    v-if="view.type && (view.type.includes('gauge') || view.type === 'text' || (view.render === 'antv' && view.type.includes('table')))"
                     name="threshold"
                     :title="$t('chart.threshold')"
                   >
@@ -1469,13 +1469,16 @@ export default {
         })
       })
     },
-    buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
+    buildParam(getData, trigger, needRefreshGroup = false, switchType = false, switchRender = false) {
       if (!this.view.resultCount ||
         this.view.resultCount === '' ||
         isNaN(Number(this.view.resultCount)) ||
         String(this.view.resultCount).includes('.') ||
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
+      }
+      if (switchType) {
+        this.view.senior.threshold.tableThreshold = []
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
@@ -1663,9 +1666,9 @@ export default {
       delete view.data
       return view
     },
-    calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
+    calcData(getData, trigger, needRefreshGroup = false, switchType = false, switchRender = false) {
       this.changeEditStatus(true)
-      const view = this.buildParam(true, 'chart', false, switchType)
+      const view = this.buildParam(true, 'chart', false, switchType, switchRender)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
@@ -2489,6 +2492,10 @@ export default {
     changeEditStatus(status) {
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
+    },
+    changeChartRender() {
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
       this.setChartDefaultOptions()

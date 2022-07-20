@@ -10,21 +10,13 @@ import java.util.List;
 @RequestMapping("/api/map")
 public interface MapApi {
 
-    @GetMapping("/resourceFull/{areaCode}")
-    String resourceFull(@PathVariable String areaCode);
 
-    @GetMapping("/asyncGeometry")
-    String asyncGeometry();
 
     @GetMapping("/areaEntitys/{pcode}")
     List<AreaEntity>  areaEntitys(@PathVariable String pcode);
 
 
-    /**
-     * 由于api有限流机制
-     * 请求失败后 调用重试方法
-     * @param areaCode
-     */
-    @GetMapping("/retry/{areaCode}")
-    void retry(@PathVariable String areaCode);
+    @GetMapping("/globalEntitys/{pcode}")
+    List<AreaEntity>  globalEntitys(@PathVariable String pcode);
+
 }

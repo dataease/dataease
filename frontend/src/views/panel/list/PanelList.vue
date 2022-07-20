@@ -354,7 +354,7 @@ export default {
   watch: {
     // 切换展示页面后 重新点击一下当前节点
     '$store.state.panel.mainActiveName': function(newVal, oldVal) {
-      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+      if (newVal === 'PanelMain'  && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
     },
@@ -369,14 +369,25 @@ export default {
       this.$refs.panel_list_tree.filter(this.filterText)
     }
   },
+  beforeDestroy() {
+    bus.$off('newPanelFromMarket', this.newPanelFromMarket)
+  },
   mounted() {
     this.$store.commit('setComponentData', [])
     this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
     this.defaultTree(true)
     this.tree(true)
     this.initCache()
+    bus.$on('newPanelFromMarket', this.newPanelFromMarket)
   },
   methods: {
+    newPanelFromMarket(panelInfo) {
+      if (panelInfo) {
+        this.defaultTree()
+        this.tree()
+        this.edit(panelInfo, null)
+      }
+    },
     initCache() {
       // 初始化时提前加载视图和数据集的缓存
       this.initLocalStorage.forEach(item => {

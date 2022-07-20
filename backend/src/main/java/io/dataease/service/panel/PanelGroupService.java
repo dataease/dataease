@@ -3,14 +3,12 @@ package io.dataease.service.panel;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
-import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.DeLogUtils;
-import io.dataease.commons.utils.LogUtil;
-import io.dataease.commons.utils.TreeUtils;
+import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.controller.request.panel.PanelTemplateRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.SysLogDTO;
@@ -18,6 +16,7 @@ import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.dto.panel.PanelTemplateFileDTO;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.ext.*;
@@ -389,6 +388,16 @@ public class PanelGroupService {
                 dynamicData = request.getDynamicData();
                 staticResource = request.getStaticResource();
                 mobileLayout = panelViewService.havaMobileLayout(templateData);
+            } else if (PanelConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)){
+                PanelTemplateFileDTO templateFileInfo =  getTemplateFromMarket(request.getTemplateUrl());
+                if(templateFileInfo == null){
+                    DataEaseException.throwException("Can't find the template's info from market,please check");
+                }
+                templateStyle = templateFileInfo.getPanelStyle();
+                templateData = templateFileInfo.getPanelData();
+                dynamicData = templateFileInfo.getDynamicData();
+                staticResource = templateFileInfo.getStaticResource();
+                mobileLayout = panelViewService.havaMobileLayout(templateData);
             }
             Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
@@ -582,5 +591,16 @@ public class PanelGroupService {
         panelGroup.setId(panelId);
         panelGroup.setStatus(request.getStatus());
         panelGroupMapper.updateByPrimaryKeySelective(panelGroup);
+    }
+
+
+    public PanelTemplateFileDTO getTemplateFromMarket(String templateUrl){
+        if(StringUtils.isNotEmpty(templateUrl)){
+            Gson gson = new Gson();
+            String templateInfo =  HttpClientUtil.get(templateUrl,null);
+            return gson.fromJson(templateInfo, PanelTemplateFileDTO.class);
+        }else{
+            return null;
+        }
     }
 }

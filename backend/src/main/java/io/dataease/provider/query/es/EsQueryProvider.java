@@ -183,8 +183,11 @@ public class EsQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
 
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
 
@@ -353,6 +356,8 @@ public class EsQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
@@ -360,6 +365,7 @@ public class EsQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -435,12 +441,15 @@ public class EsQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -550,6 +559,8 @@ public class EsQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
@@ -557,6 +568,7 @@ public class EsQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -669,6 +681,8 @@ public class EsQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
@@ -676,6 +690,7 @@ public class EsQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -759,12 +774,15 @@ public class EsQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(yFields);
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
         List<SQLObj> groups = new ArrayList<>();
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
@@ -1213,7 +1231,7 @@ public class EsQueryProvider extends QueryProvider {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 String agg = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(EsSqlLConstants.ROUND, agg, "2");
+                fieldName = String.format(EsSqlLConstants.ROUND, agg, "8");
             } else {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
