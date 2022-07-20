@@ -40,7 +40,15 @@
         d.pid,
         d.NAME AS dept_name
         FROM
-        sys_user u
+        (
+            select * from sys_user
+            <if test="extendCondition != null">
+                where
+                    nick_name like concat('%', #{extendCondition} , '%')
+                    or
+                    email like concat('%', #{extendCondition} , '%')
+            </if>
+        ) u
         LEFT JOIN sys_dept d ON d.dept_id = u.dept_id
         LEFT JOIN sys_users_roles sur ON sur.user_id = u.user_id
         LEFT JOIN sys_role r ON r.role_id = sur.role_id

@@ -1121,7 +1121,15 @@ export default {
     open: 'Open',
     row: 'Row',
     interval: 'Interval',
-    max_more_than_mix: 'Max must more than Min'
+    max_more_than_mix: 'Max must more than Min',
+    field: 'Field',
+    textColor: 'Text Color',
+    backgroundColor: 'Background Color',
+    field_can_not_empty: 'Field can not empty',
+    conditions_can_not_empty: 'Conditions can not be empty，if unnecessary，please delete the field',
+    remark: 'Remark',
+    remark_edit: 'Edit Remark',
+    remark_bg_color: 'Background Fill'
   },
   dataset: {
     params_work: 'Effective only when editing SQL',
@@ -1487,6 +1495,11 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    market_network_tips: 'View template Market template requires server and template Market（ https://dataease.io/templates ）, please check the network... ',
+    enter_name_tips: 'Please enter the name of the panel',
+    name: 'Name',
+    apply_template: 'Apply Template',
+    enter_template_name_tips: 'Please enter the template name...',
     pic_adaptation: 'Adaptation',
     pic_equiratio: 'Equiratio',
     pic_original: 'Original',

@@ -6,6 +6,7 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.SystemParameterDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.plugins.common.base.domain.FileMetadata;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
@@ -69,6 +70,13 @@ public class SystemParameterService {
                     boolean open = StringUtils.equals("true", param.getParamValue());
                     result.setOpenHomePage(open ? "true" : "false");
                 }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_MARKET_ULR.getValue())) {
+                    result.setTemplateMarketUlr(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_ACCESS_KEY.getValue())) {
+                    result.setTemplateAccessKey(param.getParamValue());
+                }
+
             }
         }
         return result;
@@ -269,6 +277,24 @@ public class SystemParameterService {
             systemParameterMapper.insert(systemParameter);
         }
 
+    }
+    public BasicInfo templateMarketInfo(){
+        BasicInfo basicInfo = new BasicInfo();
+        List<SystemParameter> result = this.getParamList("basic.template");
+        if(CollectionUtils.isNotEmpty(result)){
+            result.stream().forEach(param -> {
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_MARKET_ULR.getValue())) {
+                    basicInfo.setTemplateMarketUlr(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_ACCESS_KEY.getValue())) {
+                    basicInfo.setTemplateAccessKey(param.getParamValue());
+                }
+            });
+        }
+        if(StringUtils.isEmpty(basicInfo.getTemplateMarketUlr())|| StringUtils.isEmpty(basicInfo.getTemplateAccessKey())){
+            DataEaseException.throwException("Please check market setting info");
+        }
+        return basicInfo;
     }
 
 }

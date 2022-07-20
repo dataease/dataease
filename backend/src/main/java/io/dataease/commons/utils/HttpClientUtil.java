@@ -64,7 +64,6 @@ public class HttpClientUtil {
             throw new RuntimeException("HttpClient构建失败", e);
         }
     }
-
     /**
      * Get http请求
      *

@@ -1,6 +1,5 @@
 package io.dataease.map.service;
 
-
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.file.FileReader;
 import io.dataease.map.dto.entity.AreaEntity;
@@ -14,19 +13,17 @@ import java.util.List;
 @Service
 public class MapService {
 
-
     private static final String dirPath = "/opt/dataease/data/feature/";
-
-    // 要不要加缓存呢？
-    public String geometry(String areaCode) {
-        String path = dirPath + "full/" + areaCode + "_full.json";
-        FileReader fileReader = new FileReader(path);
-        return fileReader.readString();
-    }
 
     @Cacheable("sys_map_areas")
     public List<AreaEntity> areaEntities() {
         List<AreaEntity> areaEntities = MapUtils.readAreaEntity();
+        return areaEntities;
+    }
+
+    @Cacheable("sys_map_areas")
+    public List<AreaEntity> globalEntities() {
+        List<AreaEntity> areaEntities = MapUtils.readGlobalAreaEntity();
         return areaEntities;
     }
 
@@ -39,7 +36,7 @@ public class MapService {
 
             if (CollectionUtil.isNotEmpty(areaEntity.getChildren())) {
                 List<AreaEntity> areaEntities = entitysByPid(areaEntity.getChildren(), pid);
-                if (null != areaEntities){
+                if (null != areaEntities) {
                     return areaEntities;
                 }
             }
@@ -47,7 +44,5 @@ public class MapService {
         return null;
 
     }
-
-
 
 }

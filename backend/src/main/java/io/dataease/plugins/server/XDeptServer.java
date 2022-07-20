@@ -153,22 +153,24 @@ public class XDeptServer {
     public Pager<List<DeptUserItemDTO>> userGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackDeptUserRequest request) {
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        List<DeptUserItemDTO> userItems = deptService.queryBinded(request);
+        List<DeptUserItemDTO> userItems = deptService.queryBinded(request, true);
         Pager<List<DeptUserItemDTO>> setPageInfo = PageUtils.setPageInfo(page, userItems);
         return setPageInfo;
     }
 
     @RequiresPermissions({"dept:edit", "user:edit"})
-    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @PostMapping("/bindUser")
     public void bindUser(@RequestBody XpackDeptBindRequest request) {
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+        request.getUserIds().forEach(userId -> {
+            CacheUtils.remove( AuthConstants.USER_CACHE_NAME, "user" + userId);
+        });
         deptService.bindUser(request);
     }
 
     @RequiresPermissions({"dept:edit", "user:edit"})
     @PostMapping("/unBindUser")
-    public void unBindUser(@RequestBody XpackDeptUnBindRequest request) {
+    public void unBindUser(@RequestBody XpackDeptBindRequest request) {
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         if (CollectionUtil.isEmpty(request.getUserIds())) {
             DEException.throwException("userIds can not be empty");
