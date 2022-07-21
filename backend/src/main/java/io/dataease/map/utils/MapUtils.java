@@ -46,6 +46,15 @@ public class MapUtils {
         return mappingGlobals;
     }
 
+    public static List<AreaMappingGlobal> selectByExample(AreaMappingGlobalExample example) {
+        List<AreaMappingGlobal> mappingGlobals = areaMappingGlobalMapper.selectByExample(Optional.ofNullable(example).orElse(new AreaMappingGlobalExample()));
+        return mappingGlobals;
+    }
+
+    public static Boolean exampleExist(AreaMappingGlobalExample example) {
+        return areaMappingGlobalMapper.countByExample(example) > 0;
+    }
+
     public static List<Map<String, Object>> readCodeList() {
         AreaMappingExample example = new AreaMappingExample();
         List<AreaMapping> areaMappings = areaMappingMapper.selectByExample(example);
@@ -75,30 +84,25 @@ public class MapUtils {
             String city_code = map.getCityCode();
             String county_code = map.getCountyCode();
             // 是否是跨级直辖
-            Boolean isCrossLevel = StrUtil.equals(province_code, city_code)
-                    && !StrUtil.equals(province_code, "156710000");
+            Boolean isCrossLevel = StrUtil.equals(province_code, city_code) && !StrUtil.equals(province_code, "156710000");
 
             if (!countryMap.containsKey(country_code)) {
                 String country_name = map.getCountryName();
-                AreaEntity child = AreaEntity.builder().code(country_code).name(country_name)
-                        .pcode(globalRoot.getCode()).build();
-
+                AreaEntity child = AreaEntity.builder().code(country_code).name(country_name).pcode(globalRoot.getCode()).build();
                 countryMap.put(country_code, child);
                 globalRoot.addChild(child);
             }
 
-            AreaEntity currentCountry = countryMap.get(country_code);
 
-            String province_name = map.getProvinceName();
-            if (!provinceMap.containsKey(province_code)) {
-                AreaEntity child = AreaEntity.builder().code(province_code).name(province_name)
-                        .pcode(currentCountry.getCode()).build();
+            if (StringUtils.isNotBlank(province_code) && !provinceMap.containsKey(province_code)) {
+                AreaEntity currentCountry = countryMap.get(country_code);
+                String province_name = map.getProvinceName();
+                AreaEntity child = AreaEntity.builder().code(province_code).name(province_name).pcode(currentCountry.getCode()).build();
                 provinceMap.put(province_code, child);
                 currentCountry.addChild(child);
             }
 
-            // 当前省
-            AreaEntity currentProvince = provinceMap.get(province_code);
+
 
             String city_name = map.getCityName();
             if (isCrossLevel) {
@@ -106,8 +110,9 @@ public class MapUtils {
                 city_name = map.getCountyName();
             }
             if (StringUtils.isNotBlank(city_code) && !cityMap.containsKey(city_code)) {
-                AreaEntity child = AreaEntity.builder().code(city_code).name(city_name).pcode(currentProvince.getCode())
-                        .build();
+                // 当前省
+                AreaEntity currentProvince = provinceMap.get(province_code);
+                AreaEntity child = AreaEntity.builder().code(city_code).name(city_name).pcode(currentProvince.getCode()).build();
                 cityMap.put(city_code, child);
                 currentProvince.addChild(child);
             }
@@ -197,6 +202,18 @@ public class MapUtils {
 
     private static AreaEntity globalRoot() {
         return AreaEntity.builder().code("000000000").name("地球村").build();
+    }
+
+    public static void addNode(AreaMappingGlobal node) {
+        areaMappingGlobalMapper.insert(node);
+    }
+
+    public static void update(AreaMappingGlobal node) {
+        areaMappingGlobalMapper.updateByPrimaryKey(node);
+    }
+
+    public static void deleteByExample(AreaMappingGlobalExample example) {
+        areaMappingGlobalMapper.deleteByExample(Optional.ofNullable(example).orElse(new AreaMappingGlobalExample()));
     }
 
 }

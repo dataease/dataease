@@ -42,11 +42,16 @@
         <plugin-com v-if="isPluginLoaded" ref="CasSetting" component-name="CasSetting" />
       </el-tab-pane>
 
+      <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten">
+        <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
+      </el-tab-pane>
+
     </el-tabs>
   </layout-content>
 </template>
 <script>
 import BasicSetting from './BasicSetting'
+import MapSetting from './MapSetting'
 import EmailSetting from './EmailSetting'
 import SimpleMode from './SimpleModeSetting'
 import ClusterMode from './ClusterModeSetting'
@@ -57,7 +62,7 @@ import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting },
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting, MapSetting },
   data() {
     return {
       activeName: 'zero',

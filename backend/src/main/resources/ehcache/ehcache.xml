@@ -138,6 +138,15 @@
             diskPersistent="false"
     />
 
+    <cache
+            name="sys_map_areas_global"
+            eternal="true"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="3000"
+            overflowToDisk="true"
+            diskPersistent="false"
+    />
+
 
     <!--用户授权数据源缓存-->
     <cache

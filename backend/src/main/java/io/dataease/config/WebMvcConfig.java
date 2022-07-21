@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${geo.rootpath:file:/opt/dataease/data/feature/full/}")
+    @Value("${geo.rootpath:file:/opt/dataease/data/feature/}")
     private String geoPath;
 
     @Override

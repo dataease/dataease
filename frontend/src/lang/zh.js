@@ -476,7 +476,8 @@ export default {
     ldap: 'LDAP设置',
     oidc: 'OIDC设置',
     theme: '主题设置',
-    cas: 'CAS设置'
+    cas: 'CAS设置',
+    map: '地图设置'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
@@ -2174,5 +2175,18 @@ export default {
   },
   sql_variable: {
     variable_mgm: '参数设置'
+  },
+  map_setting: {
+    area_level: '区域等级',
+    area_code: '区域代码',
+    please_input: '请填写',
+    parent_area: '上级区域',
+    area_code_tip: '区域代码格式为9位数字',
+    area_name: '区域名称',
+    parent_name: '上级区域',
+    geo_json: '坐标文件',
+    fileplaceholder: '请上传json格式坐标文件',
+    delete_confirm: '及子节点都会被删除，确认执行？',
+    cur_node: '当前节点'
   }
 }

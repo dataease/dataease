@@ -475,7 +475,8 @@ export default {
     ldap: 'LDAP設置',
     oidc: 'OIDC設置',
     theme: '主題設置',
-    cas: 'CAS設置'
+    cas: 'CAS設置',
+    map: '地圖設置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -2162,5 +2163,18 @@ export default {
   },
   plugin_style: {
     border: '邊框'
+  },
+  map_setting: {
+    area_level: '區域等級',
+    area_code: '區域代碼',
+    please_input: '請填寫',
+    parent_area: '上級區域',
+    area_code_tip: '區域代碼格式為9位數字',
+    area_name: '區域名稱',
+    parent_name: '上級區域',
+    geo_json: '坐標文件',
+    fileplaceholder: '請上傳json格式坐標文件',
+    delete_confirm: '及子節點都會被刪除，確認執行？',
+    cur_node: '當前節點'
   }
 }

@@ -1,9 +1,9 @@
 package io.dataease.map.api;
 
 import io.dataease.map.dto.entity.AreaEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import io.dataease.map.dto.request.MapNodeRequest;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,4 +19,9 @@ public interface MapApi {
     @GetMapping("/globalEntitys/{pcode}")
     List<AreaEntity>  globalEntitys(@PathVariable String pcode);
 
+    @PostMapping(value = "/saveMapNode", consumes = {"multipart/form-data"})
+    void saveMapNode(MapNodeRequest request, MultipartFile file) throws Exception;
+
+    @PostMapping("/delMapNode")
+    void delMapNode(MapNodeRequest request);
 }

@@ -54,6 +54,7 @@ public class ShiroServiceImpl implements ShiroService {
         // 验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
         filterChainDefinitionMap.put("/api/map/areaEntitys/**", ANON);
+        filterChainDefinitionMap.put("/api/map/globalEntitys/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryTargetPanelJumpInfo", ANON);
 

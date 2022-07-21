@@ -475,7 +475,8 @@ export default {
     ldap: 'LDAP Setting',
     oidc: 'OIDC Setting',
     theme: 'Theme Setting',
-    cas: 'CAS Setting'
+    cas: 'CAS Setting',
+    map: 'MAP Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -2151,5 +2152,19 @@ export default {
   },
   plugin_style: {
     border: 'Border'
+  },
+
+  map_setting: {
+    area_level: 'Area Level',
+    area_code: 'Area Code',
+    please_input: 'please key',
+    parent_area: 'Parent Area',
+    area_code_tip: 'The format of area code is 9 digits',
+    area_name: 'Area Name',
+    parent_name: 'Parent Area',
+    geo_json: 'Geo Json',
+    fileplaceholder: 'Please upload the JSON format coordinate file',
+    delete_confirm: 'And child nodes will be deleted. Confirm to execute ?',
+    cur_node: 'Current node'
   }
 }
