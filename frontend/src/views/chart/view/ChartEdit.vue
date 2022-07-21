@@ -299,7 +299,7 @@
                       </span>
                     </el-row> -->
 
-                    <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                    <!-- <el-row v-if="view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.arc_map_url') }}</span>
                       </span>
@@ -311,7 +311,7 @@
                           @change="calcData"
                         />
                       </span>
-                    </el-row>
+                    </el-row> -->
 
                     <!--xAxisExt-->
                     <el-row
@@ -838,7 +838,7 @@
                       :chart="chart"
                       @onLabelChange="onLabelChange"
                     />
-                    <label-selector
+                    <label-selector-Hc
                       v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
@@ -1358,6 +1358,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
+import LabelSelectorHc from '../components/shape-attr/LabelSelectorHc'
 // import html2canvas from 'html2canvasde'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
@@ -1415,6 +1416,7 @@ export default {
     TooltipSelectorAntV,
     LabelSelectorAntV,
     TitleSelectorAntV,
+    LabelSelectorHc,
     ChartType,
     ChartComponentG2,
     YAxisExtSelector,

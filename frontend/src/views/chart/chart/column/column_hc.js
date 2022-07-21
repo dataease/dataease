@@ -244,6 +244,7 @@ export const DEFAULT_COLOR_CASE = {
         dataLabels.enabled = customAttr.label.show
         dataLabels.color = customAttr.label.color
         dataLabels.style = { color: customAttr.label.color, fontSize: customAttr.label.fontSize }
+        dataLabels.verticalAlign = customAttr.label.position
         const reg = new RegExp('\n', 'g')
         let formatter = customAttr.label.formatter.replace(reg, '<br/>')
         formatter = formatter.replace('{a}', '{series.name}')

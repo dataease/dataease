@@ -92,6 +92,7 @@ export function baseLineOptionAntV(plot, container, chart, action,cstyle = {}) {
     }
   }
 
+  console.log('antv,line',options)
   // 开始渲染
   if (plot) {
     plot.destroy()

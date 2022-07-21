@@ -42,6 +42,12 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
         }
         y.type = 'wordCloud'
 
+        // y.textStyle = {
+        //   normal: {
+        //     color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+        //   }
+        // }
+
         chart_option.series[0].data.push(y)
       }
 

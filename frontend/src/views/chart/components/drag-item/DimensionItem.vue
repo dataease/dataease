@@ -53,6 +53,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('M')">{{ $t('chart.M') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('H_m_s')" divided>{{ $t('chart.H_m_s') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
@@ -169,7 +170,7 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
+      console.log('修改',param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

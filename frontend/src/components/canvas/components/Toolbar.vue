@@ -13,23 +13,46 @@
         </el-button>
       </span>
       <span v-show="checkboxStatus" style="float: right;">
-        <el-tooltip :content="$t('commons.position.transverse')">
-          <el-button class="el-icon-c-scale-to-original" :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')" />
+        <el-tooltip :content="isMove? $t('commons.position.move') : $t('commons.back')">
+          <el-button :class="isMove? 'el-icon-rank' : 'el-icon-d-arrow-left'" size="mini" circle    @click="moveClick" />
         </el-tooltip>
-        <el-tooltip :content="$t('commons.position.longitudinal')">
-          <el-button class="el-icon-set-up" size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')" />
-        </el-tooltip>
-        <el-tooltip :content="$t('commons.position.left')">
-          <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
-        </el-tooltip>
-        <el-tooltip :content="$t('commons.position.right')">
-          <el-button class="el-icon-caret-right" size="mini" circle @click="positionChange('right')" />
-        </el-tooltip>
-        <el-tooltip :content="$t('commons.position.top')">
-          <el-button class="el-icon-caret-top" size="mini" circle @click="positionChange('top')" />
-        </el-tooltip>
-        <el-tooltip :content="$t('commons.position.bottom')">
-          <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
+        <span v-if="isMove" style="padding: 0px 10px;">
+          <el-tooltip :content="$t('commons.position.transverse')">
+            <el-button class="el-icon-c-scale-to-original" :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.longitudinal')">
+            <el-button class="el-icon-set-up" size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.left')">
+            <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.right')">
+            <el-button class="el-icon-caret-right" size="mini" circle @click="positionChange('right')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.top')">
+            <el-button class="el-icon-caret-top" size="mini" circle @click="positionChange('top')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.bottom')">
+            <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
+          </el-tooltip>
+        </span>
+        <span v-else style="padding: 0px 10px;">
+          <el-input-number v-model="moveSize" :min="10" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
+          <el-tooltip :content="$t('commons.move.left')">
+            <el-button class="el-icon-back" size="mini" circle @click="moveChange('left')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.move.right')">
+            <el-button class="el-icon-right" size="mini" circle @click="moveChange('right')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.move.top')">
+            <el-button class="el-icon-top" size="mini" circle @click="moveChange('top')" />
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.move.bottom')">
+            <el-button class="el-icon-bottom" size="mini" circle @click="moveChange('bottom')" />
+          </el-tooltip>
+        </span>
+        <el-tooltip :content="$t('panel.undo') ">
+          <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
         </el-tooltip>
         <el-button size="mini" @click="checkDel">
           {{ $t('commons.delete') }}
@@ -136,6 +159,8 @@ export default {
       timer: null,
       changes: 0,
       closePanelVisible: false,
+      isMove: true,
+      moveSize: 50,
     }
   },
   computed: {
@@ -412,15 +437,15 @@ export default {
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
         item.isCheck  = false
-      })
+      });
+      this.isMove = true
       this.$store.commit('setComponentData',componentData)
       this.$store.commit('setCheckBoxStatus',false)
     },
+    // 组件对齐
     positionChange(value) {
       console.log('position:::',value)
-      if(!value) {
-        return
-      }
+      
       const componentData = deepCopy(this.componentData)
       const arr = componentData.filter(item => item.isCheck&&!item.isLock) // 勾选中锁定状态的组件不支持对齐
       if (!arr.length) {
@@ -443,8 +468,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'right') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -463,8 +487,6 @@ export default {
           })
         }
         
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
       } else if (value === 'top') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -481,8 +503,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'bottom') {
         if (arr.length === 1) {
           componentData.map(item => {
@@ -500,8 +521,7 @@ export default {
             }
           })
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'transverse') { // 横向
         if(arr.length === 1) {
           componentData.map(item => {
@@ -535,7 +555,6 @@ export default {
             }
           }
           // console.log('赋值后：；',arr,leftList)
-          
           componentData.sort((a,b) => {return a.style.left - b.style.left}) // 排序
           let n = 0;
           componentData.map(item => {
@@ -546,8 +565,7 @@ export default {
           });
           console.log('横向分布',componentData)
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       } else if (value === 'longitudinal') { // 纵向
         if(arr.length === 1) {
           componentData.map(item => {
@@ -580,7 +598,7 @@ export default {
               topList.push(arr[i].style.top)
             }
           }
-          console.log('赋值后：；',arr,topList)
+          // console.log('赋值后：；',arr,topList)
           componentData.sort((a,b) => {return a.style.top - b.style.top}) // 排序
           let n = 0;
           componentData.map(item => {
@@ -591,9 +609,22 @@ export default {
           });
           console.log('纵向分布',componentData)
         }
-        this.$store.commit('setComponentData',componentData)
-        this.$store.commit('recordSnapshot')
+
       }
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('recordSnapshot')
+    },
+    // 组件移动
+    moveClick() {
+      this.isMove = !this.isMove
+      console.log(this.isMove)
+      const componentData = deepCopy(this.componentData)
+
+    },
+    // 移动改变
+    moveChange(value) {
+      console.log(value,this.moveSize)
+      
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

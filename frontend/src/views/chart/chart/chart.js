@@ -1271,7 +1271,8 @@ export const BASE_WORD_CLOUD = {
     height: '90%',
     textStyle: { // 词云中文字的样式， normal 是初始的样式， emphasis 是鼠标移到文字上的样式。
       normal: {
-        color: function() {
+        color: function () {
+          // Random color
           return 'rgb(' + [
             Math.round(Math.random() * 160),
             Math.round(Math.random() * 160),
