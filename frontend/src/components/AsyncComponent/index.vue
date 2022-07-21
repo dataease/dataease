@@ -42,60 +42,15 @@ export default {
           window.SyncComponentCache = {}
         }
         let res
-        console.log(1, this.$route);
-        const urlMap = {
-            'system-role': 'SystemRole',
-            'system-dept': 'SystemDept',
-            'system-auth': 'SystemAuth',
-            'email-task': 'TaskEmail',
-            'system-dept-form': 'SystemDeptFormn',
-            'system-role-form': 'SystemRoleForm',
-            'email-task-form': 'TaskEmailForm',
-            'system-ukey': 'SystemUkey'
-        }
-
-        // if (this.$route.name === 'system-role') {
-        //   this.mode = () => import('de-plugins/src/views/xpack/role/index.vue');
-        //   return
-        // }
-
-        // if (this.$route.name === 'system-role-form') {
-        //   this.mode = () => import('de-plugins/src/views/xpack/role/form.vue');
-        //   return
-        // }
-
-        // if (this.$route.name === 'dataset') {
-        //   this.mode = () => import('de-plugins/src/views/xpack/dataset/rowpermissions/rowPermissions.vue');
-        //   return
-        // }
-
-        // if (this.$route.name === 'system-dept') {
-        //   this.mode = () => import('de-plugins/src/views/xpack/dept/index.vue');
-        //   return
-        // }
-
-        // if (this.$route.name === 'system-auth') {
-        //   this.mode = () => import('de-plugins/src/views/xpack/auth/index.vue');
-        //   return
-        // }
-
         if (!window.SyncComponentCache[this.url]) {
-          if (urlMap[this.$route.name]) {
-            window.SyncComponentCache[this.url] = get(`/static/${urlMap[this.$route.name]}.js`)
-          }
-
-          // window.SyncComponentCache[this.url] = get(this.url)
-
+          window.SyncComponentCache[this.url] = get(this.url)
           // window.SyncComponentCache[this.url] = Axios.get(this.url)
           res = await window.SyncComponentCache[this.url]
         } else {
           res = await window.SyncComponentCache[this.url]
         }
-
-        console.log(1, res)
-
         const Fn = Function
-        this.mode = new Fn(`return ${res}`)()
+        this.mode = new Fn(`return ${res.data || res}`)()
         /* if (res && res.data) {
           const Fn = Function
           this.mode = new Fn(`return ${res.data || res}`)()
