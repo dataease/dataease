@@ -820,7 +820,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="!view.type.includes('table')&&!view.type.includes('vertical') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -847,7 +847,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1015,7 +1015,7 @@
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map'
-                      && view.type !== 'arc_map' && !view.type.includes('table')
+                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')
@@ -2036,6 +2036,7 @@ export default {
           drill: this.drillClickDimensionList,
           queryFrom: 'panelEdit'
         }).then(response => {
+          console.log('接口数据获取----------', response)
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
