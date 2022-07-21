@@ -34,7 +34,7 @@
 
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ node.data.name }}</span>
               </span>
-              <span v-if="!data.code.startWith('156')" class="child">
+              <span v-if="!isChina(data.code)" class="child">
                 <span @click.stop>
                   <span class="el-dropdown-link">
                     <el-button
@@ -45,7 +45,7 @@
                     />
                   </span>
                 </span>
-                <span v-if="!data.code.startWith('000')" style="margin-left: 12px;" @click.stop>
+                <span v-if="!isGlobal(data.code)" style="margin-left: 12px;" @click.stop>
                   <span class="el-dropdown-link">
                     <el-button
                       icon="el-icon-delete"
@@ -164,6 +164,12 @@ export default {
     },
     showNewNode(code) {
       this.$refs.tree.setCurrentKey(code)
+    },
+    isChina(code) {
+      return code && code.startsWith('156')
+    },
+    isGlobal(code) {
+      return code && code.startsWith('000')
     }
   }
 }
