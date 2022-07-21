@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { formatterType, unitList, valueFormatter } from '@/views/chart/chart/formatter'
+import { formatterItem, formatterType, unitList, valueFormatter } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'ValueFormatterEdit',
@@ -54,10 +54,18 @@ export default {
       exampleResult: '20000000'
     }
   },
+  created() {
+    this.init()
+  },
   mounted() {
     this.getExampleValue()
   },
   methods: {
+    init() {
+      if (!this.formatterItem.formatterCfg) {
+        this.formatterItem.formatterCfg = formatterItem
+      }
+    },
     getExampleValue() {
       this.exampleResult = valueFormatter(20000000, this.formatterItem.formatterCfg)
     }

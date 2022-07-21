@@ -39,5 +39,35 @@ VALUES ('Mongo 数据源插件', 'default', '0', '0', 'datasource', 'Mongo 数�
         '1650765903630', 'mongo-backend', 'mongobi');
 
 
+
+DROP TABLE IF EXISTS `area_mapping_global`;
+CREATE TABLE `area_mapping_global` (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+   `country_code` varchar(255) DEFAULT NULL COMMENT '国家代码',
+   `country_name` varchar(255) DEFAULT NULL COMMENT '国家名称',
+   `province_name` varchar(255) DEFAULT NULL COMMENT '省名称',
+   `province_code` varchar(255) DEFAULT NULL COMMENT '省代码',
+   `city_name` varchar(255) DEFAULT NULL COMMENT '市名称',
+   `city_code` varchar(255) DEFAULT NULL COMMENT '市代码',
+   `county_name` varchar(255) DEFAULT NULL COMMENT '县名称',
+   `county_code` varchar(255) DEFAULT NULL COMMENT '县代码',
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+BEGIN;
+insert into area_mapping_global (province_code, province_name, city_code, city_name, county_code, county_name)
+    select province_code, province_name, city_code, city_name, county_code, county_name  from area_mapping;
+
+update area_mapping_global set
+   country_code = '156100000',
+   country_name = '中华人民共和国',
+   province_code = concat('156', province_code),
+   city_code = concat('156', city_code),
+   county_code = concat('156', county_code);
+COMMIT;
+
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (202, 0, 0, 1, '模板市场', 'template-market', 'panel/templateMarket/index', 7, 'dashboard', '/templateMarket', 0, 0, 0, null, NULL, NULL, NULL, 1620444227389);
+
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
+

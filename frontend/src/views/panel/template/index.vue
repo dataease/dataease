@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-aside-container>
+    <de-aside-container isTemplate>
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="self">
           <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.user_template') }}</span>

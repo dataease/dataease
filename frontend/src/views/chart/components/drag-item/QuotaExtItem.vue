@@ -100,7 +100,7 @@
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item v-if="chart.render === 'antv' && (chart.type.includes('table') || chart.type === 'text')" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+          <el-dropdown-item v-if="chart.render === 'antv'" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
             <span>{{ $t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">

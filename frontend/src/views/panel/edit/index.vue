@@ -609,7 +609,6 @@ export default {
   created() {
     // Global listening for key events
     listenGlobalKeyDown()
-    this.init(this.$store.state.panel.panelInfo.id)
   },
   mounted() {
     this.initEvents()
@@ -622,6 +621,7 @@ export default {
       })
     })
     this.loadMultiplexingViewTree()
+    this.init(this.$store.state.panel.panelInfo.id)
   },
   beforeDestroy() {
     bus.$off('component-on-drag', this.componentOnDrag)

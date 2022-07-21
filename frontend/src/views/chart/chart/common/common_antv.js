@@ -132,6 +132,31 @@ export function getLabel(chart) {
           fill: l.color,
           fontSize: parseInt(l.fontSize)
         }
+        // label value formatter
+        if (chart.type && chart.type !== 'waterfall') {
+          label.formatter = function(param) {
+            let yAxis
+            let res = param.value
+            try {
+              yAxis = JSON.parse(chart.yaxis)
+            } catch (e) {
+              yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+            }
+
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.name === param.category) {
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+                break
+              }
+            }
+            return res
+          }
+        }
       } else {
         label = false
       }
@@ -150,6 +175,68 @@ export function getTooltip(chart) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       if (t.show) {
         tooltip = {}
+        // tooltip value formatter
+        if (chart.type && chart.type !== 'waterfall') {
+          tooltip.formatter = function(param) {
+            let yAxis
+            let res
+            try {
+              yAxis = JSON.parse(chart.yaxis)
+            } catch (e) {
+              yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+            }
+
+            let obj
+            if (chart.type === 'word-cloud') {
+              obj = { name: param.text, value: param.value }
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+              }
+            } else if (chart.type.includes('treemap')) {
+              obj = { name: param.name, value: param.value }
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+              }
+            } else if (chart.type.includes('pie') || chart.type.includes('funnel')) {
+              obj = { name: param.field, value: param.value }
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+              }
+            } else if (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar')) {
+              obj = { name: param.category, value: param.value }
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.name === param.category) {
+                  if (f.formatterCfg) {
+                    res = valueFormatter(param.value, f.formatterCfg)
+                  } else {
+                    res = valueFormatter(param.value, formatterItem)
+                  }
+                  break
+                }
+              }
+            } else {
+              res = param.value
+            }
+            obj.value = res
+            return obj
+          }
+        }
       } else {
         tooltip = false
       }

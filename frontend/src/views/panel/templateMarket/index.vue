@@ -1,82 +1,71 @@
 <template>
-  <el-row>
-    <el-row>
-      <el-col span="4" style="text-align: left">
-        <svg-icon
-          icon-class="icon_left_outlined"
-          class="topbar-icon-active"
-          @click="closeDialog"
-        />
-      </el-col>
-      <el-col v-if="networkStatus" span="18">
-        <el-row>
-          <el-col span="20">
-            <el-input v-model="searchText" :placeholder="$t('panel.enter_template_name_tips')" clearable="true" />
-          </el-col>
+  <el-row class="outer-body">
+    <!--预览模式-->
+    <MarketPreview v-show="previewModel" :preview-id="templatePreviewId" @closePreview="previewModel=false" @templateApply="templateApply" />
+    <!--列表模式-->
+    <el-row v-show="!previewModel" class="market-main">
+      <el-row>
+        <el-col span="12">
+          <span class="title-left">{{ $t('panel.template_market') }}</span>
+        </el-col>
+        <el-col span="12">
+          <el-input v-model="searchText" size="small" class="title-right" :placeholder="$t('panel.enter_template_name_tips')" clearable="true" />
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-tabs v-model="marketActiveTab" @tab-click="handleClick">
+          <el-tab-pane v-for="tabItem in marketTabs" :key="tabItem" :label="tabItem" :name="tabItem" />
+        </el-tabs>
+      </el-row>
+      <el-row v-if="networkStatus" class="template-main">
+        <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+          <template-market-item
+            v-for="(templateItem) in currentMarketTemplateShowList"
+            v-show="templateItem.showFlag"
+            :key="templateItem.id"
+            :template="templateItem"
+            :base-url="baseUrl"
+            @templateApply="templateApply"
+            @templatePreview="templatePreview"
+          />
         </el-row>
-        <el-row>
-          <el-col span="20" style="margin-top: 15px">
-            <el-tabs v-model="marketActiveTab" @tab-click="handleClick">
-              <el-tab-pane v-for="tabItem in marketTabs" :key="tabItem" :label="tabItem" :name="tabItem" />
-            </el-tabs>
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
-    <el-row v-if="networkStatus">
-      <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="text-align: center;">
-        <template-market-item
-          v-for="(templateItem) in currentMarketTemplateShowList"
-          v-show="templateItem.showFlag"
-          :key="templateItem.id"
-          :template="templateItem"
-          :base-url="baseUrl"
-          @templateApply="templateApply"
-          @templatePreview="templatePreview"
-        />
-        <el-dialog
-          v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-          :title="$t('panel.apply_template')"
-          :visible.sync="folderSelectShow"
-          width="500px"
-          class="dialog-css"
-          append-to-body="true"
-          :destroy-on-close="true"
-        >
-          <el-form ref="panelForm" :model="panelForm" label-width="80px">
-            <el-form-item :label="$t('panel.name')">
-              <el-input v-model="panelForm.name" :placeholder="$t('panel.enter_name_tips')" />
-            </el-form-item>
-            <el-form-item :label="$t('commons.folder')">
-              <treeselect
-                v-model="panelForm.pid"
-                :clearable="false"
-                :options="panelGroupList"
-                :normalizer="normalizer"
-                :placeholder="$t('chart.select_group')"
-                :no-children-text="$t('commons.treeselect.no_children_text')"
-                :no-options-text="$t('commons.treeselect.no_options_text')"
-                :no-results-text="$t('commons.treeselect.no_results_text')"
-              />
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer dialog-footer-self">
-            <el-button size="mini" @click="folderSelectShow=false">{{ $t('commons.cancel') }}</el-button>
-            <el-button size="mini" type="primary" :disabled="!panelForm.name || !panelForm.pid" @click="apply">{{ $t('commons.confirm') }}</el-button>
-          </div>
-        </el-dialog>
-        <!--预览-->
-        <el-dialog top="5vh" width="80%" append-to-body="true" :visible.sync="previewVisible">
-          <img width="100%" :src="templatePreviewUrl" alt="">
-        </el-dialog>
+      </el-row>
+      <el-row v-else class="custom-position">
+        {{ $t('panel.market_network_tips') }}
       </el-row>
     </el-row>
-    <el-row v-else class="custom-position">
-      {{ $t('panel.market_network_tips') }}
-    </el-row>
-
+    <el-dialog
+      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+      :title="$t('panel.apply_template')"
+      :visible.sync="folderSelectShow"
+      width="500px"
+      class="dialog-css"
+      append-to-body="true"
+      :destroy-on-close="true"
+    >
+      <el-form ref="panelForm" :model="panelForm" label-width="80px">
+        <el-form-item :label="$t('panel.name')">
+          <el-input v-model="panelForm.name" :placeholder="$t('panel.enter_name_tips')" />
+        </el-form-item>
+        <el-form-item :label="$t('commons.folder')">
+          <treeselect
+            v-model="panelForm.pid"
+            :clearable="false"
+            :options="panelGroupList"
+            :normalizer="normalizer"
+            :placeholder="$t('chart.select_group')"
+            :no-children-text="$t('commons.treeselect.no_children_text')"
+            :no-options-text="$t('commons.treeselect.no_options_text')"
+            :no-results-text="$t('commons.treeselect.no_results_text')"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer dialog-footer-self">
+        <el-button size="mini" @click="folderSelectShow=false">{{ $t('commons.cancel') }}</el-button>
+        <el-button size="mini" type="primary" :disabled="!panelForm.name || !panelForm.pid" @click="apply">{{ $t('commons.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
-
 </template>
 
 <script>
@@ -85,14 +74,16 @@ import TemplateMarketItem from '@/views/panel/templateMarket/component/TemplateM
 import { groupTree, panelSave } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
+import MarketPreview from '@/views/panel/templateMarket/component/MarketPreview'
 
 export default {
   name: 'TemplateMarket',
-  components: { TemplateMarketItem },
+  components: { MarketPreview, TemplateMarketItem },
   data() {
     return {
+      previewModel: false,
       previewVisible: false,
-      templatePreviewUrl: null,
+      templatePreviewId: '',
       marketTabs: null,
       marketActiveTab: null,
       searchText: null,
@@ -178,7 +169,7 @@ export default {
           showClose: true
         })
         this.folderSelectShow = false
-        bus.$emit('newPanelFromMarket', response.data)
+        this.$router.push({ name: 'panel', params: response.data })
       }).catch(() => {
         this.loading = false
       })
@@ -207,9 +198,9 @@ export default {
       }
       return categoryMarch && searchMarch
     },
-    templatePreview(url) {
-      this.templatePreviewUrl = url
-      this.previewVisible = true
+    templatePreview(previewId) {
+      this.templatePreviewId = previewId
+      this.previewModel = true
     },
     newPanel() {
 
@@ -219,6 +210,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .template-main{
+    border-radius: 4px;
+    box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
+    border: solid 2px #fff;
+    padding-bottom: 24px;
+    min-height: calc(100vh - 190px);
+  }
+  .market-main{
+    padding:24px
+  }
+  .title-left{
+    float: left;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+  .title-right{
+    float: right;
+    width: 320px;
+  }
   .dialog-footer-self{
     text-align: center;
   }
@@ -255,6 +266,10 @@ export default {
     font-size: 14px;
     flex-flow: row nowrap;
     color: #9ea6b2;
+  }
+  .outer-body{
+    width: 100%;
+    height: calc(100vh - 56px);
   }
 
 </style>

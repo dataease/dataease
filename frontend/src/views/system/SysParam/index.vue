@@ -10,6 +10,10 @@
         <email-setting />
       </el-tab-pane>
 
+      <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten">
+        <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
+      </el-tab-pane>
+
       <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.display')" name="second">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="DisplaySetting" />
       </el-tab-pane>
@@ -47,6 +51,7 @@
 </template>
 <script>
 import BasicSetting from './BasicSetting'
+import MapSetting from './MapSetting'
 import EmailSetting from './EmailSetting'
 import SimpleMode from './SimpleModeSetting'
 import ClusterMode from './ClusterModeSetting'
@@ -57,7 +62,7 @@ import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting },
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting, MapSetting },
   data() {
     return {
       activeName: 'zero',
