@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.0-0",
+    "@babel/plugin-proposal-optional-chaining": "^7.18.6",
     "@babel/register": "7.0.0",
     "@vue/cli-plugin-babel": "3.6.0",
     "@vue/cli-plugin-eslint": "^3.9.1",
