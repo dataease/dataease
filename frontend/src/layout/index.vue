@@ -4,8 +4,8 @@
     <topbar v-if="!fullHeightFlag && finishLoad" :show-tips="showTips" />
 
     <de-container :style="mainStyle">
-      <de-aside-container v-if="!sidebar.hide" type="system" class="le-aside-container">
-        <sidebar class="sidebar-container" />
+      <de-aside-container v-if="!sidebar.hide" :isCollapseWidth="sideWidth" type="system" class="le-aside-container">
+        <sidebar @changeSideWidth="(side) => sideWidth = side"  class="sidebar-container" />
       </de-aside-container>
 
       <de-main-container class="la-main-container" :class="{'full-height':fullHeightFlag}">
@@ -51,7 +51,8 @@ export default {
       componentName: 'PanelMain',
       showTips: false,
       finishLoad: false,
-      buttonDisable: false
+      buttonDisable: false,
+      sideWidth: "",
     }
   },
   computed: {
