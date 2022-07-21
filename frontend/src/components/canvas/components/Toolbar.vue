@@ -31,6 +31,9 @@
         <el-tooltip :content="$t('commons.position.bottom')">
           <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
         </el-tooltip>
+        <el-tooltip :content="$t('panel.undo') ">
+          <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
+        </el-tooltip>
         <el-button size="mini" @click="checkDel">
           {{ $t('commons.delete') }}
         </el-button>

@@ -769,7 +769,7 @@ export default {
                 if(response.data.data) {
                   if(response.data.xaxis) {
                     const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-                    console.log('echarts,xaxis',axisList)
+                    // console.log('echarts,xaxis',axisList)
                     if(axisList.length > 0) {
                       let arr = []
                       const list = response.data.data.x
