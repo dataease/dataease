@@ -33,5 +33,8 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
     private List<PanelGroupDTO> children;
     @ApiModelProperty("视图信息")
     private List<Map<String, ChartViewDTO>> viewsInfo;
-
+    @ApiModelProperty("父级ID")
+    private List<String> parents;
+    @ApiModelProperty("请求ID")
+    private String requestId;
 }

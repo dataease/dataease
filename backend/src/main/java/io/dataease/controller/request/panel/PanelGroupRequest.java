@@ -27,6 +27,8 @@ public class PanelGroupRequest extends PanelGroupDTO {
     private String templateId;
     @ApiModelProperty("静态文件")
     private String staticResource;
+    @ApiModelProperty("模板链接")
+    private String templateUrl;
 
     public PanelGroupRequest() {
     }

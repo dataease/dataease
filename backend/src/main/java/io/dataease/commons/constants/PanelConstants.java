@@ -41,6 +41,9 @@ public class PanelConstants {
         // 外部模板新建
         public static final String NEW_OUTER_TEMPLATE = "new_outer_template";
 
+        // 模板市场新建
+        public static final String NEW_MARKET_TEMPLATE = "new_market_template";
+
     }
 
     //仪表板类型

@@ -111,7 +111,9 @@ public interface ParamConstants {
         FRONT_TIME_OUT("basic.frontTimeOut"),
         MSG_TIME_OUT("basic.msgTimeOut"),
         DEFAULT_LOGIN_TYPE("basic.loginType"),
-        OPEN_HOME_PAGE("ui.openHomePage");
+        OPEN_HOME_PAGE("ui.openHomePage"),
+        TEMPLATE_MARKET_ULR("basic.templateMarketUlr"),
+        TEMPLATE_ACCESS_KEY("basic.templateAccessKey");
 
         private String value;
 

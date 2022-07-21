@@ -1,7 +1,7 @@
 package io.dataease.controller.request.datasource;
 
-import com.google.gson.JsonObject;
-import io.dataease.plugins.common.base.domain.DatasetTableField;
+import com.alibaba.fastjson.JSONObject;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,9 +14,13 @@ public class ApiDefinition {
     private String desc;
     private String url;
     private String method = "GET";
-    private List<DatasetTableField> fields;
+    private List<DatasetTableFieldDTO> fields;
     private ApiDefinitionRequest request;
     private String dataPath;
     private String status;
     private List<Map<String,String>> datas = new ArrayList<>();
+    private List<JSONObject> jsonFields = new ArrayList<>();
+    private int previewNum = 10;
+    private int maxPreviewNum = 10;
+
 }

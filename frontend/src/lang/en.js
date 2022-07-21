@@ -1122,9 +1122,18 @@ export default {
     open: 'Open',
     row: 'Row',
     interval: 'Interval',
-    max_more_than_mix: 'Max must more than Min'
+    max_more_than_mix: 'Max must more than Min',
+    field: 'Field',
+    textColor: 'Text Color',
+    backgroundColor: 'Background Color',
+    field_can_not_empty: 'Field can not empty',
+    conditions_can_not_empty: 'Conditions can not be empty，if unnecessary，please delete the field',
+    remark: 'Remark',
+    remark_edit: 'Edit Remark',
+    remark_bg_color: 'Background Fill'
   },
   dataset: {
+    field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
     sql_variable_limit_2: '2、Example：select * from table_name where column_name1=${parm_name1} and column_name2 in ${parm_name2}',
@@ -1456,6 +1465,7 @@ export default {
     add_api_table: 'Add API table',
     edit_api_table: 'Edit API table',
     base_info: 'Basic information',
+    column_info: 'Data structure',
     request: 'Request',
     path_all_info: 'Please fill in the full address',
     req_param: 'Request parameters',
@@ -1478,7 +1488,9 @@ export default {
     api_table_not_empty: 'API data table cannot be empty',
     has_repeat_name: 'Duplicate API data table name',
     valid: 'Valid',
-    invalid: 'Invalid'
+    invalid: 'Invalid',
+    api_step_1: 'Connection API',
+    api_step_2: 'Extract data'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -1488,6 +1500,15 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    template_market: 'Template Market',
+    template_preview: 'Template Preview',
+    apply: 'Apply',
+    apply_this_template: 'Apply This Template',
+    market_network_tips: 'View template Market template requires server and template Market（ https://dataease.io/templates ）, please check the network... ',
+    enter_name_tips: 'Please enter the name of the panel',
+    name: 'Name',
+    apply_template: 'Apply Template',
+    enter_template_name_tips: 'Please enter the template name...',
     pic_adaptation: 'Adaptation',
     pic_equiratio: 'Equiratio',
     pic_original: 'Original',

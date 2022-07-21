@@ -39,6 +39,7 @@ VALUES ('Mongo 数据源插件', 'default', '0', '0', 'datasource', 'Mongo 数�
         '1650765903630', 'mongo-backend', 'mongobi');
 
 
+
 DROP TABLE IF EXISTS `area_mapping_global`;
 CREATE TABLE `area_mapping_global` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -64,3 +65,9 @@ update area_mapping_global set
    city_code = concat('156', city_code),
    county_code = concat('156', county_code);
 COMMIT;
+
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (202, 0, 0, 1, '模板市场', 'template-market', 'panel/templateMarket/index', 7, 'dashboard', '/templateMarket', 0, 0, 0, null, NULL, NULL, NULL, 1620444227389);
+
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
+

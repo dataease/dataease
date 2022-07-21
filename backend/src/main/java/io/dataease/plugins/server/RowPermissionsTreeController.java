@@ -1,17 +1,19 @@
 package io.dataease.plugins.server;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.utils.PageUtils;
+import io.dataease.commons.utils.Pager;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,8 +58,19 @@ public class RowPermissionsTreeController {
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("根据数据集查找行权限")
     @PostMapping("getByDs")
-    public List<DataSetRowPermissionsTreeDTO> getByDs(@RequestBody DataSetRowPermissionsTreeDTO request) {
+    public List<DataSetRowPermissionsTreeDTO> getByDs(@RequestBody DatasetRowPermissionsTreeRequest request) {
         RowPermissionTreeService rowPermissionTreeService = SpringContextUtil.getBean(RowPermissionTreeService.class);
         return rowPermissionTreeService.list(request);
+    }
+
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("根据数据集分页查找行权限")
+    @PostMapping("getByDsPage/{goPage}/{pageSize}")
+    public Pager<List<DataSetRowPermissionsTreeDTO>> getByDs(@RequestBody DatasetRowPermissionsTreeRequest request, @PathVariable int goPage, @PathVariable int pageSize) {
+        RowPermissionTreeService rowPermissionTreeService = SpringContextUtil.getBean(RowPermissionTreeService.class);
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        List<DataSetRowPermissionsTreeDTO> list = rowPermissionTreeService.list(request);
+        Pager<List<DataSetRowPermissionsTreeDTO>> setPageInfo = PageUtils.setPageInfo(page, list);
+        return setPageInfo;
     }
 }

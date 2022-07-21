@@ -22,7 +22,6 @@
 
     <div class="right-menu" style="color: var(--TopTextColor)">
       <template>
-
         <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
@@ -43,7 +42,6 @@
         trigger="click"
       >
         <div class="el-dropdown-link" style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;">
-
           <span style="max-width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ name }}</span>
           <span><i class="el-icon-arrow-down el-icon--right" /></span>
         </div>
@@ -70,6 +68,16 @@
       </el-dropdown>
     </div>
 
+    <!--模板市场全屏显示框-->
+    <el-dialog
+      :visible="templateMarketShow"
+      :show-close="false"
+      class="dialog-css"
+      :fullscreen="true"
+      append-to-body="true"
+    >
+      <template-market v-if="templateMarketShow" style="text-align: center" @closeDialog="changeTemplateMarketShow(false)" />
+    </el-dialog>
   </div>
 
 </template>
@@ -95,9 +103,11 @@ import {
 import {
   initTheme
 } from '@/utils/ThemeUtil'
+import TemplateMarket from '@/views/panel/templateMarket'
 export default {
   name: 'Topbar',
   components: {
+    TemplateMarket,
     AppLink,
     Notification,
     LangSelect
@@ -114,7 +124,8 @@ export default {
       uiInfo: null,
       logoUrl: null,
       axiosFinished: false,
-      isPluginLoaded: false
+      isPluginLoaded: false,
+      templateMarketShow: false
     }
   },
 
@@ -357,6 +368,9 @@ export default {
     },
     setTopTextActiveInfo(val) {
       this.loadUiInfo()
+    },
+    changeTemplateMarketShow(isShow) {
+      this.templateMarketShow = isShow
     }
 
   }
@@ -386,6 +400,16 @@ export default {
   .de-top-menu {
     background-color: var(--MainBG);
 
+  }
+  .template-market-item{
+    display: flex;
+    color: var(--MenuActiveBG, #409EFF);
+    font-size: 14px!important;
+    line-height: 38px!important;
+  }
+
+  .dialog-css ::v-deep .el-dialog__header{
+    display: none;
   }
 
 </style>

@@ -241,6 +241,7 @@ export default {
   components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
+      historyRequestId: null,
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
       lastActiveNodeData: null,
       activeTree: 'self', // 识别当前操作的树类型self 是仪表板列表树 system 是默认仪表板树
@@ -354,7 +355,7 @@ export default {
   watch: {
     // 切换展示页面后 重新点击一下当前节点
     '$store.state.panel.mainActiveName': function(newVal, oldVal) {
-      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+      if (newVal === 'PanelMain' && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
     },
@@ -369,14 +370,30 @@ export default {
       this.$refs.panel_list_tree.filter(this.filterText)
     }
   },
+  beforeDestroy() {
+    bus.$off('newPanelFromMarket', this.newPanelFromMarket)
+  },
   mounted() {
     this.$store.commit('setComponentData', [])
     this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
     this.defaultTree(true)
-    this.tree(true)
     this.initCache()
+    const routerParam = this.$router.currentRoute.params
+    if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
+      this.historyRequestId = routerParam.requestId
+      this.tree()
+      this.edit(routerParam, null)
+    } else {
+      this.tree(true)
+    }
   },
   methods: {
+    newPanelFromMarket(panelInfo) {
+      if (panelInfo) {
+        this.tree()
+        this.edit(panelInfo, null)
+      }
+    },
     initCache() {
       // 初始化时提前加载视图和数据集的缓存
       this.initLocalStorage.forEach(item => {
@@ -730,16 +747,17 @@ export default {
     // 激活并点击当前节点
     activeNodeAndClick(panelInfo) {
       if (panelInfo) {
-        this.$nextTick(() => {
+        const _this = this
+        _this.$nextTick(() => {
           // 延迟设置CurrentKey
-          this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          _this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
           // 去除default_tree 的影响
-          this.$refs.default_panel_tree.setCurrentKey(null)
-          this.$nextTick(() => {
+          _this.$refs.default_panel_tree.setCurrentKey(null)
+          _this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
             // 如果是仪表板列表的仪表板 直接进入编辑界面
             if (panelInfo.nodeType === 'panel') {
-              this.edit(this.lastActiveNodeData, this.lastActiveNode)
+              _this.edit(this.lastActiveNodeData, this.lastActiveNode)
             }
           })
         })
@@ -748,12 +766,16 @@ export default {
     // 激活当前节点
     activeNodeAndClickOnly(panelInfo) {
       if (panelInfo) {
-        this.$nextTick(() => {
+        const _this = this
+        _this.$nextTick(() => {
           // 延迟设置CurrentKey
-          this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          _this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
           // 去除default_tree 的影响
-          this.$refs.default_panel_tree.setCurrentKey(null)
-          this.$nextTick(() => {
+          _this.$refs.default_panel_tree.setCurrentKey(null)
+          if (panelInfo.parents) {
+            _this.expandedArray = panelInfo.parents
+          }
+          _this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
           })
         })

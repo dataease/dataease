@@ -26,6 +26,7 @@
 
     <div v-show="!editControlButton" class="toolbar">
       <div class="panel-info-area">
+        <!--back to panelList-->
         <svg-icon
           icon-class="icon_left_outlined"
           class="toolbar-icon-active icon20 margin-left20"

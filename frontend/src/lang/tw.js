@@ -1122,9 +1122,18 @@ export default {
     open: '開啟',
     row: '行數',
     interval: '間隔',
-    max_more_than_mix: '最大值必須大於最小值'
+    max_more_than_mix: '最大值必須大於最小值',
+    field: '字段',
+    textColor: '文字顏色',
+    backgroundColor: '背景顏色',
+    field_can_not_empty: '字段不能為空',
+    conditions_can_not_empty: '字段的條件不能為空，若無條件，請直接刪除該字段',
+    remark: '備註',
+    remark_edit: '編輯備註',
+    remark_bg_color: '背景填充'
   },
   dataset: {
+    field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
     sql_variable_limit_2: '2、示例：select * from table_name where column_name1=${parm_name1} and column_name2 in ${parm_name2}',
@@ -1457,6 +1466,7 @@ export default {
     add_api_table: '添加 API 數據表',
     edit_api_table: '編輯 API 數據表',
     base_info: '基礎信息',
+    column_info: '資料結構',
     request: '請求',
     path_all_info: '請輸入完整地址',
     req_param: '請求參數',
@@ -1479,7 +1489,9 @@ export default {
     api_table_not_empty: 'API 數據表不能為空',
     has_repeat_name: 'API 數據表名稱重複',
     valid: '有效',
-    invalid: '無效'
+    invalid: '無效',
+    api_step_1: '連接API',
+    api_step_2: '選取數據'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1489,6 +1501,15 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    template_market: '模板市场',
+    template_preview: '预览模板',
+    apply: '应用',
+    apply_this_template: '应用此模板',
+    market_network_tips: '查看模板市场模板需要服务器与模板市场(https://dataease.io/templates)联通，请检查网络...',
+    enter_name_tips: '请输入仪表板名称',
+    name: '名称',
+    apply_template: '应用模板',
+    enter_template_name_tips: '搜索模板名称',
     pic_adaptation: '适应组件',
     pic_equiratio: '等比适应',
     pic_original: '原始尺寸',
