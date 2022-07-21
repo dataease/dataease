@@ -7,6 +7,7 @@ import {
   getYAxis
 } from '@/views/chart/chart/common/common_antv'
 import { Waterfall } from '@antv/g2plot'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export function baseWaterfallOptionAntV(plot, container, chart, action) {
   // theme
@@ -42,6 +43,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     yField: 'value',
     seriesField: 'category',
     appendPadding: getPadding(chart),
+    meta: getMeta(chart),
     label: label,
     tooltip: tooltip,
     legend: {
@@ -101,4 +103,25 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   plot.on('interval:click', action)
 
   return plot
+}
+
+function getMeta(chart) {
+  const meta = {}
+  const yaxis = JSON.parse(chart.yaxis)
+  if (yaxis && yaxis.length > 0) {
+    const f = yaxis[0]
+    meta.value = {
+      alias: f.name,
+      formatter: (value) => {
+        let res
+        if (f.formatterCfg) {
+          res = valueFormatter(value, f.formatterCfg)
+        } else {
+          res = valueFormatter(value, formatterItem)
+        }
+        return res
+      }
+    }
+  }
+  return meta
 }
