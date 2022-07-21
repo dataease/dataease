@@ -4,9 +4,7 @@ ARG IMAGE_TAG
 
 RUN mkdir -p /opt/apps /opt/dataease/data/feature/full /opt/dataease/drivers
 
-RUN cp -r -f mapFiles/* /opt/dataease/data/feature/full/
-
-# ADD mapFiles/* /opt/dataease/data/feature/full/
+ADD mapFiles/* /opt/dataease/data/feature/full/
 
 ADD drivers/* /opt/dataease/drivers/
 
