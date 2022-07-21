@@ -13,14 +13,14 @@
         >
           <el-form-item v-if="form.type == 'api'" :label="$t('datasource.data_table')">
             <el-col>
-              <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)"/>
+              <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)" />
               <el-table :data="form.apiConfiguration" class="my_table" max-height="300" height="300">
                 <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150"
-                                 show-overflow-tooltip></el-table-column>
+                                 show-overflow-tooltip />
                 <el-table-column prop="method" :label="$t('datasource.method')" width="150"
-                                 show-overflow-tooltip></el-table-column>
+                                 show-overflow-tooltip />
                 <el-table-column prop="url" :label="$t('datasource.url')" width="150"
-                                 show-overflow-tooltip></el-table-column>
+                                 show-overflow-tooltip />
                 <el-table-column prop="status" :label="$t('commons.status')" width="150">
                   <template slot-scope="scope">
                   <span v-if="scope.row.status === 'Success'" style="color: green">
@@ -84,10 +84,10 @@
                        :rules="rule">
                 <p class="tip">{{ $t('datasource.column_info') }} </p>
 
-                <el-table :data="apiItem.jsonFields" style="width: 100%;" row-key="id">
-                  <el-table-column prop="date" label="" width="255">
+                <el-table :data="apiItem.jsonFields" style="width: 100%;" row-key="jsonPath">
+                  <el-table-column prop="originName" label="" width="255">
                     <template slot-scope="scope">
-                      <el-checkbox v-model="scope.row.checked" :key="scope.row.id"
+                      <el-checkbox v-model="scope.row.checked" :key="scope.row.jsonPath"
                                    @change="handleCheckAllChange(scope.row)">
                         {{ scope.row.originName }}
                       </el-checkbox>
@@ -458,19 +458,31 @@ export default {
           authManager: {}
         },
         fields: [],
-        jsonFields: [],
-        maxPreviewNum: ''
+        jsonFields: [
+          {
+            "deType":0,
+            "size":65535,
+            "children":null,
+            "name":"comments",
+            "checked":false,
+            "extField":0,
+            "jsonPath":"$[*].comments",
+            "type":"STRING",
+            "originName":"comments",
+            "deExtractType":0
+          }
+        ]
       },
-      reqOptions: [{id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST'}],
+      reqOptions: [{ id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST' }],
       loading: false,
-      responseData: {type: 'HTTP', responseResult: {}, subRequestResults: []},
+      responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
       api_step2_active_name: 'first',
       fieldTypes: [
-        {label: this.$t('dataset.text'), value: 0},
-        {label: this.$t('dataset.time'), value: 1},
-        {label: this.$t('dataset.value'), value: 2},
-        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
-        {label: this.$t('dataset.location'), value: 5}
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+        { label: this.$t('dataset.location'), value: 5 }
       ],
       height: 500,
       disabledNext: false,
@@ -483,10 +495,10 @@ export default {
           label: 'Kerberos'
         }],
       fieldOptions: [
-        {label: this.$t('dataset.text'), value: 0},
-        {label: this.$t('dataset.value'), value: 2},
-        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
-      ],
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.value'), value: 2 },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 }
+      ]
     }
   },
   created() {
@@ -517,7 +529,7 @@ export default {
             }
           })
         } else {
-          let index = this.form.apiConfiguration.indexOf(this.apiItem)
+          const index = this.form.apiConfiguration.indexOf(this.apiItem)
           for (let i = 0; i < this.form.apiConfiguration.length; i++) {
             if (i !== index && this.form.apiConfiguration[i].name === this.apiItem.name) {
               hasRepeatName = true
@@ -540,8 +552,8 @@ export default {
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.jsonFields = res.data.jsonFields
-              this.apiItem.maxPreviewNum = res.data.maxPreviewNum
-              this.handleFiledChange();
+              this.apiItem.fields = []
+              this.handleFiledChange()
               this.previewData()
             }).catch(res => {
               this.loading = false
@@ -588,43 +600,48 @@ export default {
       this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
     },
     handleCheckAllChange(row) {
+      console.log(row)
       this.handleCheckChange(row)
+      this.apiItem.fields = []
       this.handleFiledChange()
       this.previewData()
     },
     handleFiledChange(data) {
-      this.apiItem.fields = []
-      let jsonField = data === undefined ? this.apiItem.jsonFields : data;
-      jsonField.forEach((item) => {
-        if (item.checked && item.children === null) {
-          this.apiItem.fields.push(item)
+      let jsonField = data === undefined ? this.apiItem.jsonFields : data
+      for(var i=0;i< jsonField.length;i++) {
+        if (jsonField[i].checked && jsonField[i].children === null) {
+          this.apiItem.fields.push(jsonField[i])
         }
-        if (item.children !== null) {
-          this.handleFiledChange(item.children)
+        if (jsonField[i].children !== null) {
+          this.handleFiledChange(jsonField[i].children)
         }
-      })
+      }
     },
     previewData() {
-      let datas = [];
-      for (let i = 0; i < this.apiItem.maxPreviewNum; i++) {
-        datas.push({})
-      }
-
-      for (let i = 0; i < this.apiItem.fields.length; i++) {
-        for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
-          this.$set(datas[j], this.apiItem.fields[i].name , this.apiItem.fields[i].value[j]);
+      let datas = []
+      let maxPreviewNum = 0
+      for (let j = 0; j < this.apiItem.fields.length; j++) {
+        if (this.apiItem.fields[j].value && this.apiItem.fields[j].value.length > maxPreviewNum) {
+          maxPreviewNum = this.apiItem.fields[j].value.length
         }
       }
-      this.$refs.plxTable.reloadData(datas)
+      for (let i = 0; i < maxPreviewNum; i++) {
+        datas.push({})
+      }
+      for (let i = 0; i < this.apiItem.fields.length; i++) {
+        for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
+          this.$set(datas[j], this.apiItem.fields[i].name, this.apiItem.fields[i].value[j]);
+        }
+        this.$refs.plxTable.reloadData(datas)
+      }
     },
     handleCheckChange(node) {
       if (node.children !== null) {
         node.children.forEach((item) => {
-          item.checked = node.checked;
+          item.checked = node.checked
           this.handleCheckChange(item)
-        });
+        })
       }
-
     },
     fieldNameChange(row) {
       this.previewData()

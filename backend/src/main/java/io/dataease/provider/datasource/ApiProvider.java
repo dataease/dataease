@@ -209,30 +209,28 @@ public class ApiProvider extends Provider {
             for (String s : jsonObject.keySet()) {
                 String value = jsonObject.getString(s);
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
-                    rootPath = rootPath + "." + s;
                     JSONArray jsonArray = JSONObject.parseArray(jsonObject.getString(s));
                     List<JSONObject> children = new ArrayList<>();
                     for (Object o : jsonArray) {
-                        handleStr(apiDefinition, o.toString(), children, rootPath + "[*]");
+                        handleStr(apiDefinition, o.toString(), children, rootPath + "." + s + "[*]");
                     }
                     JSONObject o = new JSONObject();
                     o.put("children", children);
                     o.put("childrenDataType", "LIST");
-                    o.put("jsonPath", rootPath);
+                    o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(objects, o, null)) {
+                    if (!hasItem(apiDefinition, objects, o, null)) {
                         objects.add(o);
                     }
                 } else if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
                     List<JSONObject> children = new ArrayList<>();
-                    rootPath = rootPath + "." + s;
-                    handleStr(apiDefinition, jsonObject.getString(s), children, rootPath);
+                    handleStr(apiDefinition, jsonObject.getString(s), children, rootPath + "." + s);
                     JSONObject o = new JSONObject();
                     o.put("children", children);
                     o.put("childrenDataType", "OBJECT");
-                    o.put("jsonPath", rootPath);
+                    o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(objects, o, null)) {
+                    if (!hasItem(apiDefinition, objects, o, null)) {
                         objects.add(o);
                     }
                 } else {
@@ -240,7 +238,7 @@ public class ApiProvider extends Provider {
                     o.put("children", null);
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(objects, o, StringUtils.isNotEmpty(jsonObject.getString(s))? jsonObject.getString(s) : "")) {
+                    if (!hasItem(apiDefinition, objects, o, StringUtils.isNotEmpty(jsonObject.getString(s))? jsonObject.getString(s) : "")) {
                         JSONArray array = new JSONArray();
                         array.add(StringUtils.isNotEmpty(jsonObject.getString(s))? jsonObject.getString(s) : "");
                         o.put("value", array);
@@ -272,17 +270,19 @@ public class ApiProvider extends Provider {
 
     }
 
-    static private boolean hasItem(List<JSONObject> objects, JSONObject o, String value) {
+    static private boolean hasItem(ApiDefinition apiDefinition, List<JSONObject> objects, JSONObject item, String value) {
         boolean has = false;
         for (JSONObject object : objects) {
-
             JSONObject jsonObject = JSONObject.parseObject(object.toJSONString());
             jsonObject.remove("value");
             jsonObject.remove("id");
-            if (Md5Utils.md5(jsonObject.toString()).equals(Md5Utils.md5(o.toString()))) {
+            jsonObject.remove("children");
+            JSONObject  o = JSONObject.parseObject(item.toJSONString());
+            o.remove("children");
+            if (object.getString("jsonPath").equals(item.getString("jsonPath")) ) {
                 has = true;
-                if(value != null){
-                    JSONArray array = object.getJSONArray("value");
+                JSONArray array = object.getJSONArray("value");
+                if(value != null && array.size() < apiDefinition.getPreviewNum()){
                     array.add(value);
                     object.put("value", array);
                 }
