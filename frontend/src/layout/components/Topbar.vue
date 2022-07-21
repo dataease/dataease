@@ -22,7 +22,6 @@
 
     <div class="right-menu" style="color: var(--TopTextColor)">
       <template>
-        <span class="hover-effect right-menu-item template-market-item" @click="changeTemplateMarketShow(true)">模板市场</span>
         <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
