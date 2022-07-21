@@ -53,6 +53,7 @@ export function checkSameDataSet(viewIdSource, viewIdTarget) {
 }
 
 export function ajaxGetDataOnly(id, panelId, data) {
+  console.log('view/getData/111111111111------')
   return request({
     url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',

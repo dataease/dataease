@@ -50,7 +50,7 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
-    <progressLoop 
+    <progressLoop
       v-else-if="progressLoopFlag"
       :ref="element.propValue.id"
       class="chart-class"
@@ -105,7 +105,16 @@
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
+      :element="element"
       :show-summary="chart.type === 'table-normal'"
+      :chart="chart"
+      class="table-class"
+    />
+    <TableRoll
+      v-else-if="rollShowFlag"
+      :ref="element.propValue.id"
+      :element="element"
+      :show-summary="chart.type === 'vertical-ele'"
       :chart="chart"
       class="table-class"
     />
@@ -140,6 +149,7 @@ import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
+import TableRoll from '@/views/chart/components/table/TableRoll'
 import scrollTable from '@/views/chart/components/table/scrollTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
 import progressLoop from '@/views/chart/components/progress/progressLoop'
@@ -176,6 +186,7 @@ export default {
     EditBarView,
     ChartComponent,
     TableNormal,
+    TableRoll,
     LabelNormal,
     DrillPath,
     ChartComponentG2,
@@ -281,6 +292,7 @@ export default {
         this.chart.type &&
         !this.chart.type.includes('table') &&
         !this.chart.type.includes('text') &&
+        !this.chart.type.includes('vertical') &&
         !this.chart.type.includes('progress') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'echarts'
@@ -336,6 +348,15 @@ export default {
         this.renderComponent() === 'echarts'
       )
     },
+    rollShowFlag() {
+      console.log('触发此处问题-----------', this.chart.type)
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type.includes('vertical') &&
+        this.renderComponent() === 'echarts'
+      )
+    },
     tableRollFlag() {
       // console.log('----------111111', this.chart)
       return (
@@ -349,7 +370,7 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.chart.type === 'progress' && 
+        this.chart.type === 'progress' &&
         this.renderComponent() === 'echarts'
       )
     },
@@ -357,7 +378,7 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.chart.type === 'progress-loop' && 
+        this.chart.type === 'progress-loop' &&
         this.renderComponent() === 'echarts'
       )
     },
@@ -683,7 +704,7 @@ export default {
       }
     },
     getData(id, cache = true) {
-      console.log('getData...', this.templateStatus,this.isStylePriority, this.canvasStyleData)
+      console.log('getData...', this.templateStatus, this.isStylePriority, this.canvasStyleData)
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -704,7 +725,7 @@ export default {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
-        console.log('data--------',requestInfo)
+        console.log('data--------', requestInfo)
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             // 将视图传入echart组件
@@ -839,10 +860,10 @@ export default {
 
               // 主题切换
               if (this.templateStatus) {
-                console.log('主题值：',this.canvasStyleData.chart,this.chart)
+                console.log('主题值：', this.canvasStyleData.chart, this.chart)
                 this.chart.customAttr = this.canvasStyleData.chart.customAttr
                 this.chart.customStyle = this.canvasStyleData.chart.customStyle
-                let deepCacheInfo = deepCopy(this.chart)
+                const deepCacheInfo = deepCopy(this.chart)
 
                 deepCacheInfo.xaxis = JSON.parse(this.chart.xaxis)
                 deepCacheInfo.xaxisExt = JSON.parse(this.chart.xaxisExt)
@@ -857,7 +878,7 @@ export default {
                 deepCacheInfo.senior = JSON.parse(this.chart.senior)
 
                 // console.log('dddddddddddd',deepCacheInfo)
-                this.saveThemeInfo(deepCacheInfo,'chart', false, false)
+                this.saveThemeInfo(deepCacheInfo, 'chart', false, false)
               }
               console.log('userView,,,,this.chart: ', this.chart)
               this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -911,11 +932,10 @@ export default {
             this.isFirstLoad = false
             return true
           })
-        
       }
     },
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
-      console.log('saveTheme...',data)
+      console.log('saveTheme...', data)
       if (!data.resultCount ||
         data.resultCount === '' ||
         isNaN(Number(data.resultCount)) ||
@@ -1082,7 +1102,7 @@ export default {
         }
       })
 
-      if(!view.drillFilters.length) {
+      if (!view.drillFilters.length) {
         view.drillFilters = null
       }
       // view.isLeaf = null
@@ -1091,13 +1111,12 @@ export default {
       // view.privileges = null
       view.snapshot = null
       // view.sql = null
-      
 
       if (view.type === 'arc_map') {
         view.urlMap = view.urlMap
       }
 
-      if(view.type === '3dscatter') {
+      if (view.type === '3dscatter') {
         // view.zaxis
       }
       // stringify json param
@@ -1113,10 +1132,10 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
-      
+
       delete view.data
       console.log('处理后：', view)
-      save2Cache(view.sceneId,view)
+      save2Cache(view.sceneId, view)
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)

@@ -39,6 +39,8 @@ export const DEFAULT_SIZE = {
   radarSize: 80,
   tableTitleFontSize: 12,
   tableItemFontSize: 12,
+  tableSpacing: 10,
+  tableHeightWidth: 80,
   tableTitleHeight: 36,
   tableItemHeight: 36,
   tablePageSize: '20',

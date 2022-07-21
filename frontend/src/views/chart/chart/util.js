@@ -198,6 +198,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_table',
+    value: 'vertical-ele',
+    title: '滚动表格',
+    icon: 'table-normal'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
     icon: 'table-info'
@@ -368,7 +375,7 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
-  
+
   /* 下面是highcharts图表类型 */
   // highcharts
   {

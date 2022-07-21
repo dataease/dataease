@@ -3,7 +3,7 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item v-show="chart.type && !chart.type.includes('table')&& !chart.type.includes('roll') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
+          <el-form-item v-show="chart.type && !chart.type.includes('table')&&!chart.type.includes('vertical')&& !chart.type.includes('roll') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -56,16 +56,19 @@
           <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('vertical'))) || sourceType==='panelTable'" :label="'表格背景'" class="form-item">
+            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
           <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll'))) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('vertical'))) || sourceType==='panelTable'" :label="chart.render === 'antv'?'表头':''+$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮背景颜色'" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('roll')||chart.type.includes('vertical')))" :label="'高亮背景颜色'" class="form-item">
             <el-color-picker v-model="colorForm.tableHeightColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮字体颜色'" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('roll')||chart.type.includes('vertical')))" :label="'高亮字体颜色'" class="form-item">
             <el-color-picker v-model="colorForm.tableHeightFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!-- <el-form-item v-show="(chart.type && chart.type.includes('roll'))" :label="'高亮字体颜色'" class="form-item">
