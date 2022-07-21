@@ -789,7 +789,7 @@ export default {
                   }
                 }
                 this.chart = response.data
-               }else if(response.data.render === 'echarts') {
+               }else if(response.data.render === 'echarts' || response.data.render === 'highcharts') {
                 if(response.data.data) {
                   if(response.data.xaxis) {
                     const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')

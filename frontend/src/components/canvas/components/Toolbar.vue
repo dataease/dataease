@@ -36,6 +36,7 @@
             <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
           </el-tooltip>
         </span>
+        <!-- <svg-icon :icon-class="item.icon" class="chart-icon" /> -->
         <span v-else style="padding: 0px 10px;">
           <el-input-number v-model="moveSize" :min="10" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
           <el-tooltip :content="$t('commons.move.left')">
@@ -618,13 +619,167 @@ export default {
     moveClick() {
       this.isMove = !this.isMove
       console.log(this.isMove)
-      const componentData = deepCopy(this.componentData)
-
     },
-    // 移动改变
+    // 组件移动改变
     moveChange(value) {
       console.log(value,this.moveSize)
-      
+
+      const componentData = deepCopy(this.componentData)
+      let arr = componentData.filter(item => item.isCheck && !item.isLock)
+      if (!arr.length) {
+        return
+      }
+      if(value === 'left') {
+        let list = arr.filter(item => item.style.left === 0)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return a.style.left - b.style.left}) // 由小到大排序
+        // 获取到最左边组件的left 左移动 moveSize距离后的值
+        let left = Math.floor(arr[0].style.left - this.moveSize) < 0 ? 0 : Math.floor(arr[0].style.left - this.moveSize)
+        console.log(left)
+        let spaceList = [] // 向左移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            let c = Math.floor((arr[i].style.left) - (arr[i-1].style.left + arr[i-1].style.width))
+            spaceList.push(c)
+          }
+        }
+        // console.log('组件间隔差：',spaceList)
+        let leftList = [] // 组件移动后left集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            leftList.push((left))
+          } else {
+            leftList.push(Math.floor(leftList[i-1] + arr[i-1].style.width + spaceList[i]))
+          }
+        }
+        console.log('left,list',leftList)
+        componentData.sort((a,b) => {return a.style.left - b.style.left})
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.left = leftList[n]
+            n++
+          }
+        })
+      } else if(value === 'right') {
+        let list = arr.filter(item => (item.style.left + item.style.width) === this.canvasStyleData.width)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小排序
+        // 获取到最右边组件的left 右移动 moveSize距离后的值
+        let right = Math.floor(arr[0].style.left + arr[0].style.width + this.moveSize) > this.canvasStyleData.width ? 
+          (this.canvasStyleData.width - Math.floor(arr[0].style.width)) : Math.floor(arr[0].style.left + this.moveSize)
+        console.log(right)
+        let spaceList = [] // 向右移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            // arr 是有大到小排序
+            let c = Math.floor((arr[i-1].style.left) - (arr[i].style.left + arr[i].style.width))
+            spaceList.push(c)
+          }
+        }
+        // console.log('间隔',spaceList)
+        let rightList = [] // 组件移动后left集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            rightList.push((right))
+          } else {
+            rightList.push(Math.floor(rightList[i-1] - arr[i].style.width - spaceList[i]))
+          }
+        }
+        console.log('right,list',rightList)
+        componentData.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.left = rightList[n]
+            n++
+          }
+        })
+      } else if(value === 'top') {
+        let list = arr.filter(item => item.style.top === 0)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return a.style.top - b.style.top}) // 由小到大
+        // 获取到最上边组件的top 上移动 moveSize距离后的值
+        let top = Math.floor(arr[0].style.top - this.moveSize) < 0 ? 0 : Math.floor(arr[0].style.top - this.moveSize)
+        console.log(top)
+        let spaceList = [] // 向上移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            let c = Math.floor((arr[i].style.top) - (arr[i-1].style.top + arr[i-1].style.height))
+            spaceList.push(c)
+          }
+        }
+        // console.log('组件间隔差：',spaceList)
+        let topList = [] // 组件移动后top集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            topList.push((top))
+          } else {
+            topList.push(Math.floor(topList[i-1] + arr[i-1].style.height + spaceList[i]))
+          }
+        }
+        console.log('top,list',topList)
+        componentData.sort((a,b) => {return a.style.top - b.style.top})
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.top = topList[n]
+            n++
+          }
+        })
+      } else if(value === 'bottom') {
+        let list = arr.filter(item => (item.style.top + item.style.height) === this.canvasStyleData.height)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return b.style.top - a.style.top}) // 由大到小排序
+        // 获取到最下面边组件的top 下移动 moveSize距离后的值
+        let bottom = Math.floor(arr[0].style.top + arr[0].style.height + this.moveSize) > this.canvasStyleData.height ? 
+          (this.canvasStyleData.height - Math.floor(arr[0].style.height)) : Math.floor(arr[0].style.top + this.moveSize)
+        console.log(bottom)
+        let spaceList = [] // 向下移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            // arr 是有大到小排序
+            let c = Math.floor((arr[i-1].style.top) - (arr[i].style.top + arr[i].style.height))
+            spaceList.push(c)
+          }
+        }
+        // console.log('间隔',spaceList)
+        let bottomtList = [] // 组件移动后top集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            bottomtList.push((bottom))
+          } else {
+            bottomtList.push(Math.floor(bottomtList[i-1] - arr[i].style.height - spaceList[i]))
+          }
+        }
+        console.log('bottom,list',bottomtList)
+        componentData.sort((a,b) => {return b.style.top - a.style.top}) // 由大到小
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.top = bottomtList[n]
+            n++
+          }
+        })
+      }
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('recordSnapshot')
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')
