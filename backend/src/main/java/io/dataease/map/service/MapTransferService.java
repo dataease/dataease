@@ -85,7 +85,10 @@ public class MapTransferService {
             files.forEach(file -> {
                 String fileName = file.getName();
                 String newFilePath = dirPath + GLOBAL_CHINA_PREFIX + FILE_SEPARATOR + GLOBAL_CHINA_PREFIX + fileName;
-                FileUtil.move(file, new File(newFilePath), false);
+                File target = new File(newFilePath);
+                if(!target.exists()) {
+                    FileUtil.move(file, target, true);
+                }
             });
         });
     }
@@ -104,8 +107,10 @@ public class MapTransferService {
         String targetPath = targetDirPath + fileName;
 
         File targetFile = new File(targetPath);
+        if (!targetFile.exists()) {
+            FileUtil.move(sourceFile, targetFile, true);
+        }
 
-        FileUtil.move(sourceFile, targetFile, false);
 
     }
 
