@@ -7,8 +7,8 @@
       </el-row>
     </el-row>
     <el-row class="template-button">
-      <el-button size="mini" type="primary" icon="el-icon-view" @click="templatePreview">预览</el-button>
-      <el-button size="mini" type="success" icon="el-icon-files" @click="apply">应用</el-button>
+      <el-button size="mini" style="width: 141px" @click="templatePreview">{{ $t('panel.preview') }}</el-button>
+      <el-button size="mini" style="width: 141px" type="primary" @click="apply">{{ $t('panel.apply') }}</el-button>
     </el-row>
   </div>
 </template>
@@ -55,7 +55,7 @@ export default {
       this.$emit('templateApply', this.template)
     },
     templatePreview() {
-      this.$emit('templatePreview', this.thumbnailUrl)
+      this.$emit('templatePreview', this.template.id)
     }
   }
 }
@@ -66,20 +66,20 @@ export default {
   .testcase-template {
     position: relative;
     display: inline-block;
-    margin: 10px 30px;
+    margin: 24px 0 0 24px;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
     border: solid 2px #fff;
     box-sizing: border-box;
-    border-radius: 3px;
-    height: 250px;
+    border-radius: 4px;
+    height: 256px;
   }
 
   .demonstration {
     display: block;
-    font-size: 14px;
-    color: gray;
-    text-align: center;
-    margin: 10px auto;
+    font-size: 16px;
+    text-align: left;
+    margin-left: 12px;
+    margin-top: 12px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -87,8 +87,8 @@ export default {
 
   .template-img {
     background-size: 100% 100%;
-    height: 170px;
-    width: 300px;
+    height: 180px;
+    width: 318px;
     margin: 0 auto;
     border: solid 2px #fff;
     box-sizing: border-box;
@@ -96,7 +96,7 @@ export default {
 
   .template-img:hover {
     border: solid 1px #4b8fdf;
-    border-radius: 3px;
+    border-radius: 4px;
     color: deepskyblue;
     cursor: pointer;
   }
@@ -110,7 +110,7 @@ export default {
     position:absolute;
     bottom: 5px;
     left: 0px;
-    width: 300px;
+    width: 318px;
   }
 
 </style>

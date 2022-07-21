@@ -4,6 +4,8 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
+import io.dataease.auth.service.impl.ExtAuthServiceImpl;
+import io.dataease.commons.constants.PanelConstants;
 import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.plugins.common.base.domain.PanelGroup;
 import io.dataease.commons.constants.DePermissionType;
@@ -17,6 +19,7 @@ import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.pentaho.di.core.util.UUIDUtil;
 import springfox.documentation.annotations.ApiIgnore;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +42,8 @@ public class PanelGroupController {
 
     @Resource
     private PanelGroupService panelGroupService;
+    @Resource
+    private ExtAuthServiceImpl authService;
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
@@ -59,9 +64,15 @@ public class PanelGroupController {
             @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
-    public PanelGroup save(@RequestBody PanelGroupRequest request) throws Exception{
+    public PanelGroupDTO save(@RequestBody PanelGroupRequest request) throws Exception{
         String panelId = panelGroupService.save(request);
-        return findOne(panelId);
+        PanelGroupDTO result = findOne(panelId);
+        // 如果新建来源来自模板市场，在返回数据中加入父级ID便于跳转展开仪表板树
+        if(PanelConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(request.getNewFrom())){
+            result.setParents(authService.parentResource(panelId,"panel"));
+            result.setRequestId(UUIDUtil.getUUIDAsString());
+        }
+        return result;
     }
 
     @ApiOperation("更新")

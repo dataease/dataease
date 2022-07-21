@@ -4,7 +4,7 @@
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>
-          <panel-list v-if="activeName==='PanelList'" ref="panelList" />
+          <panel-list v-show="activeName==='PanelList'" ref="panelList" />
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.store') }}</span>
@@ -51,7 +51,7 @@ export default {
   watch: {
     // 切换展示页面后 重新点击一下当前节点
     '$store.state.panel.mainActiveName': function(newVal, oldVal) {
-      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+      if (newVal === 'PanelMain' && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
     },
@@ -70,7 +70,7 @@ export default {
       localStorage.setItem('plugin-views', null)
       this.$store.commit('initViewRender', [])
     })
-    this.clear()
+    // this.clear()
   },
   methods: {
     handleClick(tab, event) {

@@ -41,19 +41,16 @@ export default {
     }
   },
   watch: {
-    // $route(to, from) {
-    // }
   },
   mounted() {
     bus.$on('to-msg-share', this.toMsgShare)
-    bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
   },
   beforeDestroy() {
     bus.$off('to-msg-share', this.toMsgShare)
     bus.$off('PanelSwitchComponent', this.panelSwitchComponent)
   },
   created() {
-    bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+    bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
     this.$store.dispatch('app/toggleSideBarHide', true)
     const routerParam = this.$router.currentRoute.params
     this.toMsgShare(routerParam)
