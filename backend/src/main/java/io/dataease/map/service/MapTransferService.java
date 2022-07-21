@@ -1,6 +1,7 @@
 package io.dataease.map.service;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.google.gson.Gson;
 
 import io.dataease.plugins.common.base.domain.ChartView;
@@ -23,6 +24,10 @@ public class MapTransferService {
 
     @Value("${geo.rootpath:/opt/dataease/data/feature/}")
     private String geoPath;
+
+
+    @Value("${geo.custom.rootpath:/opt/dataease/data/custom/}")
+    private String customGeoPath;
 
     private static final List<String> MATCH_TYPES = new ArrayList<>();
     private static final Gson gson = new Gson();
@@ -65,21 +70,43 @@ public class MapTransferService {
         String chinaRootPath = geoPath + FULL_KEY + FILE_SEPARATOR;
         File chinaRootDir = new File(chinaRootPath);
         File[] files = chinaRootDir.listFiles();
+        if(ArrayUtil.isEmpty(files)) return;
         Map<String, List<File>> listMap = Arrays.stream(files).filter(FileUtil::isFile).collect(Collectors.groupingBy(this::fileType));
         if (ObjectUtils.isEmpty(listMap)) return;
         moveFiles(listMap, BORDER_KEY);
         moveFiles(listMap, FULL_KEY);
+        moveGlobalFile();
+
     }
 
     private void moveFiles(Map<String, List<File>> listMap, String fileType) {
-        String dirPath = geoPath + fileType + FILE_SEPARATOR;
+        String dirPath = customGeoPath + fileType + FILE_SEPARATOR;
         Optional.ofNullable(listMap.get(fileType)).ifPresent(files -> {
             files.forEach(file -> {
                 String fileName = file.getName();
                 String newFilePath = dirPath + GLOBAL_CHINA_PREFIX + FILE_SEPARATOR + GLOBAL_CHINA_PREFIX + fileName;
-                FileUtil.move(file, new File(newFilePath), true);
+                FileUtil.move(file, new File(newFilePath), false);
             });
         });
+    }
+
+    private void moveGlobalFile() {
+        String fileName = "000000000" + FULL_FILE_SUFFIX;
+        String sourcePath = geoPath + FULL_KEY + FILE_SEPARATOR + "000" + FILE_SEPARATOR + fileName;
+        File sourceFile = new File(sourcePath);
+        if (!sourceFile.exists()) return;
+
+        String targetDirPath = customGeoPath + FULL_KEY + FILE_SEPARATOR + "000" + FILE_SEPARATOR;
+        File targetDir = new File(targetDirPath);
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+        String targetPath = targetDirPath + fileName;
+
+        File targetFile = new File(targetPath);
+
+        FileUtil.move(sourceFile, targetFile, false);
+
     }
 
     private String fileType(File file) {

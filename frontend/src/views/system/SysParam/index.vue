@@ -10,6 +10,10 @@
         <email-setting />
       </el-tab-pane>
 
+      <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten">
+        <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
+      </el-tab-pane>
+
       <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.display')" name="second">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="DisplaySetting" />
       </el-tab-pane>
@@ -40,10 +44,6 @@
 
       <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.cas')" name="nine">
         <plugin-com v-if="isPluginLoaded" ref="CasSetting" component-name="CasSetting" />
-      </el-tab-pane>
-
-      <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten">
-        <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
       </el-tab-pane>
 
     </el-tabs>

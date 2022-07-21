@@ -11,6 +11,7 @@ import io.dataease.map.utils.MapUtils;
 import io.dataease.plugins.common.base.domain.AreaMappingGlobal;
 import io.dataease.plugins.common.base.domain.AreaMappingGlobalExample;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,9 @@ import java.util.stream.Collectors;
 @Service
 public class MapService {
 
-    private static final String dirPath = "/opt/dataease/data/feature/";
+    @Value("${geo.custom.rootpath:/opt/dataease/data/custom/}")
+    private String rootGeoPath;
+
 
     @Cacheable("sys_map_areas")
     public List<AreaEntity> areaEntities() {
@@ -93,7 +96,7 @@ public class MapService {
         Set<String> sets = nodes.stream().flatMap(node -> codesByNode(node, pLevel).stream()).collect(Collectors.toSet());
         sets.forEach(code -> {
             String countryCode = code.substring(0, 3);
-            String path = dirPath + "/full/" + countryCode + "/" + code +"_full.json";
+            String path = rootGeoPath + "/full/" + countryCode + "/" + code +"_full.json";
             if (FileUtil.exist(path)) {
                 FileUtil.del(path);
             }
@@ -194,7 +197,7 @@ public class MapService {
 
     private void validateFile(MultipartFile file) {
         long size = file.getSize();
-        String name = file.getName();
+        String name = file.getOriginalFilename();
         if (size / 1024 / 1024 > 30) {
             DEException.throwException("large file that exceed 30M is not supported");
         }
@@ -318,13 +321,15 @@ public class MapService {
     }
 
     public void uploadMapFile(MultipartFile file, String areaCode) throws Exception{
-        String dir = dirPath + "full/";
+
+        String countryCode = areaCode.substring(0, 3);
+        String dir = rootGeoPath + "full/" + countryCode + "/";
         File fileDir = new File(dir);
         if (!fileDir.exists()) {
             fileDir.mkdirs();
         }
-        String countryCode = areaCode.substring(0, 3);
-        String targetPath = dir + countryCode + "/" + areaCode+"_full.json";
+
+        String targetPath = dir + areaCode+"_full.json";
         File target = new File(targetPath);
         file.transferTo(target);
     }

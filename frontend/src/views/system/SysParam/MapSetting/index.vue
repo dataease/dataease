@@ -1,11 +1,11 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: calc(100vh - 150px);">
 
-    <de-aside-container type="mapset">
+    <de-aside-container type="mapset" style="height: 100%;">
       <map-setting-left ref="map_setting_tree" :tree-datas="treeDatas" @emit-add="emitAdd" @refresh-tree="refreshTree" @show-node-info="loadForm" />
     </de-aside-container>
 
-    <de-main-container>
+    <de-main-container style="height: 100%;">
       <map-setting-right ref="map_setting_form" :tree-datas="treeDatas" :status="formStatus" @refresh-tree="refreshTree" />
     </de-main-container>
   </de-container>
