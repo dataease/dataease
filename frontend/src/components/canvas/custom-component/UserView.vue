@@ -717,44 +717,68 @@ export default {
                     // console.log('antv,xaxis',axisList)
                     if(axisList.length > 0) {
                       let arr = []
-                      const list = response.data.data.datas
+                      const list = deepCopy(response.data.data.datas)
                       list.forEach(item => {
                         let obj = item
-                        if((new Date(item.name).getMonth() + 1) === 1) {
-                          obj.name = '一月'
+                        if((new Date(item.field).getMonth() + 1) === 1) {
+                          if(obj.name) {
+                            obj.name = '一月'
+                          }
                           obj.field = '一月'
-                        } else if((new Date(item.name).getMonth() + 1) === 2) {
-                          obj.name = '二月'
+                        } else if((new Date(item.field).getMonth() + 1) === 2) {
+                          if(obj.name) {
+                            obj.name = '二月'
+                          }
                           obj.field = '二月'
-                        } else if((new Date(item.name).getMonth() + 1) === 3) {
-                          obj.name = '三月'
+                        } else if((new Date(item.field).getMonth() + 1) === 3) {
+                          if(obj.name) {
+                            obj.name = '三月'
+                          }
                           obj.field = '三月'
-                        } else if((new Date(item.name).getMonth() + 1) === 4) {
-                          obj.name = '四月'
+                        } else if((new Date(item.field).getMonth() + 1) === 4) {
+                          if(obj.name) {
+                            obj.name = '四月'
+                          }
                           obj.field = '四月'
-                        } else if((new Date(item.name).getMonth() + 1) === 5) {
-                          obj.name = '五月'
+                        } else if((new Date(item.field).getMonth() + 1) === 5) {
+                          if(obj.name) {
+                            obj.name = '五月'
+                          }
                           obj.field = '五月'
-                        } else if((new Date(item.name).getMonth() + 1) === 6) {
-                          obj.name = '六月'
+                        } else if((new Date(item.field).getMonth() + 1) === 6) {
+                          if(obj.name) {
+                            obj.name = '六月'
+                          }
                           obj.field = '六月'
-                        } else if((new Date(item.name).getMonth() + 1) === 7) {
-                          obj.name = '七月'
+                        } else if((new Date(item.field).getMonth() + 1) === 7) {
+                          if(obj.name) {
+                            obj.name = '七月'
+                          }
                           obj.field = '七月'
-                        } else if((new Date(item.name).getMonth() + 1) === 8) {
-                          obj.name = '八月'
+                        } else if((new Date(item.field).getMonth() + 1) === 8) {
+                          if(obj.name) {
+                            obj.name = '八月'
+                          }
                           obj.field = '八月'
-                        } else if((new Date(item.name).getMonth() + 1) === 9) {
-                          obj.name = '九月'
+                        } else if((new Date(item.field).getMonth() + 1) === 9) {
+                          if(obj.name) {
+                            obj.name = '九月'
+                          }
                           obj.field = '九月'
-                        } else if((new Date(item.name).getMonth() + 1) === 10) {
-                          obj.name = '十月'
+                        } else if((new Date(item.field).getMonth() + 1) === 10) {
+                          if(obj.name) {
+                            obj.name = '十月'
+                          }
                           obj.field = '十月'
-                        } else if((new Date(item.name).getMonth() + 1) === 11) {
-                          obj.name = '十一月'
+                        } else if((new Date(item.field).getMonth() + 1) === 11) {
+                          if(obj.name) {
+                            obj.name = '十一月'
+                          }
                           obj.field = '十一月'
-                        } else if((new Date(item.name).getMonth() + 1) === 12) {
-                          obj.name = '十二月'
+                        } else if((new Date(item.field).getMonth() + 1) === 12) {
+                          if(obj.name) {
+                            obj.name = '十二月'
+                          }
                           obj.field = '十二月'
                         }
                         arr.push(obj)
@@ -772,7 +796,7 @@ export default {
                     // console.log('echarts,xaxis',axisList)
                     if(axisList.length > 0) {
                       let arr = []
-                      const list = response.data.data.x
+                      const list = deepCopy(response.data.data.x)
                       list.forEach(item => {
                         let obj = item
                         if((new Date(item).getMonth() + 1) === 1) {
@@ -788,17 +812,17 @@ export default {
                         } else if((new Date(item).getMonth() + 1) === 6) {
                           obj = '六月'
                         } else if((new Date(item).getMonth() + 1) === 7) {
-                          obj.name = '七月'
+                          obj = '七月'
                         } else if((new Date(item).getMonth() + 1) === 8) {
-                          obj.name = '八月'
+                          obj = '八月'
                         } else if((new Date(item).getMonth() + 1) === 9) {
-                          obj.name = '九月'
+                          obj = '九月'
                         } else if((new Date(item).getMonth() + 1) === 10) {
-                          obj.name = '十月'
+                          obj = '十月'
                         } else if((new Date(item).getMonth() + 1) === 11) {
-                          obj.name = '十一月'
+                          obj = '十一月'
                         } else if((new Date(item).getMonth() + 1) === 12) {
-                          obj.name = '十二月'
+                          obj = '十二月'
                         }
                         arr.push(obj)
                       })

@@ -137,7 +137,14 @@ export default {
       top: '顶部对齐',
       bottom: '底部对齐',
       transverse: '横向分布',
-      longitudinal: '纵向分布'
+      longitudinal: '纵向分布',
+      move: '移动',
+    },
+    move: {
+      left: '向左移动',
+      right: '向右移动',
+      top: '向上移动',
+      bottom: '向下移动',
     },
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
