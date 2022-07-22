@@ -57,6 +57,8 @@ public class PanelGroupService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
+    private final Gson gson = new Gson();
+
     private final SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.PANEL;
 
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
@@ -364,7 +366,7 @@ public class PanelGroupService {
     }
 
     public String newPanel(PanelGroupRequest request) {
-        Gson gson = new Gson();
+
         String newPanelId = UUIDUtil.getUUIDAsString();
         String newFrom = request.getNewFrom();
         String templateStyle = null;
@@ -400,12 +402,14 @@ public class PanelGroupService {
                 mobileLayout = panelViewService.havaMobileLayout(templateData);
             }
             Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
+
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
             for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
                 ChartViewDTO chartView = gson.fromJson(originViewData, ChartViewDTO.class);
+                chartView = transferTemplateMapAreaCode(chartView);
                 String position = chartView.getPosition();
                 String newViewId = UUIDUtil.getUUIDAsString();
                 chartView.setId(newViewId);
@@ -432,6 +436,20 @@ public class PanelGroupService {
         request.setCreateBy(AuthUtils.getUser().getUsername());
         request.setMobileLayout(mobileLayout);
         return newPanelId;
+    }
+
+    private ChartViewDTO transferTemplateMapAreaCode(ChartViewDTO chartViewDTO) {
+        Object areaCodeObj = null;
+        String areaCodeKey = "areaCode";
+        if (StringUtils.equals(chartViewDTO.getType(), "map") || StringUtils.equals(chartViewDTO.getType(), "buddle-map")) {
+            String customAttrJson = chartViewDTO.getCustomAttr();
+            Map map = gson.fromJson(customAttrJson, Map.class);
+            if (map.containsKey(areaCodeKey) && ObjectUtils.isNotEmpty((areaCodeObj = map.get(areaCodeKey))) && areaCodeObj.toString().length() == 6) {
+                map.put(areaCodeKey, "156" + areaCodeObj.toString());
+                chartViewDTO.setCustomAttr(gson.toJson(map));
+            }
+        }
+        return chartViewDTO;
     }
 
     public void sysInit1HistoryPanel() {
