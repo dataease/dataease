@@ -3,6 +3,7 @@
     <el-select
       ref="select"
       v-model="innerValues"
+      v-popover:popover
       popper-class="view-select-option"
       style="width: 100%;"
       multiple
@@ -19,38 +20,26 @@
       />
     </el-select>
 
-    
+    <el-popover ref="popover" v-model="visible" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click">
+      <el-scrollbar v-if="viewLoaded" tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
+        <div :style="{'height': panelHeight + 'px'}">
+          <Preview
+            :component-data="componentData"
+            :canvas-style-data="canvasStyleData"
+            :panel-info="panelInfo"
+            :show-position="showPosition"
+          />
+        </div>
 
-    
-    <el-dialog
-      :visible="dialogShow"
-      :show-close="false"
-      class="dialog-css"
-      :fullscreen="true"
-    >
-      <div ref="contaninerDiv" :style="{'height': panelHeight + 'px'}" v-if="dialogShow && viewLoaded">
-        <Preview
-          :component-data="componentData"
-          :canvas-style-data="canvasStyleData"
-          :panel-info="panelInfo"
-          :show-position="showPosition"
-        />
-      </div>
-      
-      <div slot="title" class="dialog-footer title-text">
-        <span style="font-size: 14px;">
-          选择视图
-        </span>
-        <span style="float: right;">
-          <el-button type="primary" size="mini" @click="closeDialog()">{{ $t('commons.confirm') }}</el-button>
-          <el-button size="mini" @click="cancelDialog()">{{ $t('commons.cancel') }}</el-button>
-        </span>
-      </div>
-    </el-dialog>
+      </el-scrollbar>
+      <el-empty v-else style="height: 150px;" :image-size="120" description="" />
+
+    </el-popover>
   </div>
 </template>
 
 <script>
+import { on, off } from './dom'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { findOne } from '@/api/panel/panel'
 import { viewOptions } from '@/api/chart/chart'
@@ -80,9 +69,7 @@ export default {
       panelHeight: 450,
       showPosition: 'email-task',
       viewLoaded: false,
-      selectOptions: [],
-      dialogShow: false,
-      idsBeforeOpen: []
+      selectOptions: []
     }
   },
   computed: {
@@ -124,11 +111,13 @@ export default {
   },
   mounted() {
     this._updateH()
-    
+    this.$nextTick(() => {
+      on(document, 'mouseup', this._popoverHideFun)
+    })
   },
   beforeDestroy() {
     this._selectClearFun()
-    
+    off(document, 'mouseup', this._popoverHideFun)
   },
   created() {
     this.loadView()
@@ -144,11 +133,7 @@ export default {
           name: response.data.name,
           privileges: response.data.privileges,
           sourcePanelName: response.data.sourcePanelName,
-          status: response.data.status,
-          createBy: response.data.createBy,
-          createTime: response.data.createTime,
-          updateBy: response.data.updateBy,
-          updateTime: response.data.updateTime
+          status: response.data.status
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
         panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), rsp => {
@@ -168,24 +153,47 @@ export default {
     },
     _updateH() {
       this.$nextTick(() => {
-        if(this.$refs.contaninerDiv) {
-          this.width = this.$refs.contaninerDiv.clientWidth
-          this.panelHeight = this.width * 9 / 16
-        }
-        
+        this.width = this.$refs.select.$el.getBoundingClientRect().width
+        this.panelHeight = this.width * 9 / 16
       })
     },
     _popoverShowFun(val) {
-      this.openDialog()
       this._updateH()
       this.$emit('onFoucs')
     },
-    
-    
+    _popoverHideFun(e) {
+      const path = this._getEventPath(e)
+      const isInside = path.some(list => {
+        return list.className && typeof list.className === 'string' && list.className.indexOf('el-view-select') !== -1
+      })
+      if (!isInside) {
+        this.visible = false
+      }
+    },
+    _getEventPath(evt) {
+      const path = (evt.composedPath && evt.composedPath()) || evt.path
+      const target = evt.target
+      if (path != null) {
+        return path.indexOf(window) < 0 ? path.concat(window) : path
+      }
+      if (target === window) {
+        return [window]
+      }
+      function getParents(node, memo) {
+        memo = memo || []
+        const parentNode = node.parentNode
+        if (!parentNode) {
+          return memo
+        } else {
+          return getParents(parentNode, memo.concat(parentNode))
+        }
+      }
+      return [target].concat(getParents(target), window)
+    },
     _selectRemoveTag(viewId) {
       this.selectedViews.forEach(item => {
-        if (item === viewId) {
-          this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': item })
+        if (item.viewId === viewId) {
+          this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': item.viewId })
         }
       })
     },
@@ -197,21 +205,6 @@ export default {
         const viewIds = JSON.parse(JSON.stringify(this.value))
         this.$store.dispatch('task/initPanelView', { 'panelId': this.panelId, 'viewIds': viewIds })
       }
-    },
-    openDialog() {
-      if (this.value && this.value.length) {
-        this.idsBeforeOpen =  JSON.parse(JSON.stringify(this.value))
-      }
-      this.dialogShow = true
-    },
-    closeDialog() {
-      this.dialogShow = false
-    },
-    cancelDialog() {
-      this.innerValues = JSON.parse(JSON.stringify(this.idsBeforeOpen))
-      const viewIds = JSON.parse(JSON.stringify(this.innerValues))
-      this.$store.dispatch('task/initPanelView', { 'panelId': this.panelId, 'viewIds': viewIds })
-      this.closeDialog()
     }
   }
 
@@ -223,18 +216,23 @@ export default {
   display: none !important;
 }
 
+.el-view-select-popper {
+  max-height: 800px;
+  overflow: auto;
+}
+.el-view-select-popper.disabled {
+  display: none !important;
+}
+.el-view-select-popper .el-button--small {
+  width: 25px !important;
+  min-width: 25px !important;
+}
+
+.el-view-select-popper[x-placement^='bottom'] {
+  margin-top: 5px;
+}
+
 .my-top-class {
   width: 100%;
-}
-.dialog-css ::v-deep .el-dialog__title {
-  font-size: 14px;
-}
-
-.dialog-css ::v-deep .el-dialog__header {
-  padding: 20px 20px 0;
-}
-
-.dialog-css ::v-deep .el-dialog__body {
-  padding: 10px 20px 20px;
 }
 </style>
