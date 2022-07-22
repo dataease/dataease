@@ -7,7 +7,7 @@
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="newHeight" class="table_bode_li">
             <div :style="table_header_class">
               <div v-for="(item,index) in fields" :key="index" :style="inde == 2?scrollId:''" class="header_title">
-                <div :style="haderStyle">{{ item.name }}</div>:{{ items[item.datainsName] }}
+                <div :style="haderStyle" class="tite_left">{{ item.name }} :</div>{{ items[item.datainsName] }}
                 <!-- <el-row>
                   <el-col :span="2"><el-col>
                     <el-col :span="2"><el-col>
@@ -475,6 +475,9 @@ export default {
   }
   .heade_clsass{
     min-width:120px;
+  }
+  .tite_left{
+    padding-left:5px;
   }
 #scrollId{
   // background:#f99;
