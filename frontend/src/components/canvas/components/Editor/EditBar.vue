@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-main">
+  <div class="bar-main" :class="showEditPosition">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
     <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
       <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
@@ -77,6 +77,7 @@ export default {
   },
   data() {
     return {
+      barWidth: 24,
       componentType: null,
       linkageActiveStatus: false,
       editFilter: [
@@ -89,6 +90,22 @@ export default {
   mounted() {
   },
   computed: {
+    showEditPosition() {
+      if (this.activeModel === 'edit') {
+        const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
+        const toLeft = this.element.style.left * this.curCanvasScale.scalePointWidth
+        if (this.barWidth < toRight) {
+          return 'bar-main-right'
+        } else if (this.barWidth > toRight && this.barWidth > toLeft) {
+          return 'bar-main-left-inner'
+        } else {
+          return 'bar-main-left-outer'
+        }
+      } else {
+        return 'bar-main-preview'
+      }
+    },
+
     showJumpFlag() {
       return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
     },
@@ -265,7 +282,6 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    right: 0px;
     float:right;
     z-index: 2;
     border-radius:2px;
@@ -287,6 +303,23 @@ export default {
 
   .bar-main ::v-deep .el-checkbox__inner::after{
     width: 4.5px;
+  }
+  .bar-main-right{
+    width: 22px;
+    right: -25px;
+  }
+  .bar-main-left-inner{
+    width: 22px;
+    left: 0px;
+  }
+
+  .bar-main-left-outer{
+    width: 22px;
+    left: -25px;
+  }
+
+  .bar-main-preview{
+    right: 0px;
   }
 
 </style>
