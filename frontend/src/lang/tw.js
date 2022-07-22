@@ -1500,6 +1500,9 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    target_url: '目标URL',
+    target_url_tips: '可以点击字段用来拼接URL或者参数',
+    select_world: '点击选择字段',
     template_market: '模板市场',
     template_preview: '预览模板',
     apply: '应用',

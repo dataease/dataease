@@ -221,38 +221,20 @@ export default {
     antVAction(param) {
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
-
-      let xAxis = []
-      if (this.chart.xaxis) {
-        xAxis = JSON.parse(this.chart.xaxis)
-      }
-      let drillFields = []
-      if (this.chart.drillFields) {
-        try {
-          drillFields = JSON.parse(this.chart.drillFields)
-        } catch (err) {
-          drillFields = JSON.parse(JSON.stringify(this.chart.drillFields))
-        }
-      }
-
-      let field = {}
-      if (this.chart.drill) {
-        field = drillFields[this.chart.drillFilters.length]
-        // check click field is drill?
-        if (field.dataeaseName !== meta.valueField) {
-          return
-        }
-      } else {
-        if (meta.colIndex < xAxis.length) {
-          field = xAxis[meta.colIndex]
-        }
-      }
-
+      const nameIdMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
+      const rowData = this.chart.data.tableRow[meta.rowIndex]
       const dimensionList = []
-      dimensionList.push({ id: field.id, value: meta.fieldValue })
+      for (const key in rowData) {
+        dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+      }
       this.pointParam = {
         data: {
-          dimensionList: dimensionList
+          dimensionList: dimensionList,
+          quotaList: [],
+          name: meta.fieldValue
         }
       }
 
@@ -291,12 +273,14 @@ export default {
       }
       const linkageParam = {
         option: 'linkage',
+        name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
         quotaList: this.pointParam.data.quotaList
       }
       const jumpParam = {
         option: 'jump',
+        name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
         quotaList: this.pointParam.data.quotaList
