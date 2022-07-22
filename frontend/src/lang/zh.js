@@ -1180,6 +1180,7 @@ export default {
     remark_bg_color: '背景填充'
   },
   dataset: {
+    parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',

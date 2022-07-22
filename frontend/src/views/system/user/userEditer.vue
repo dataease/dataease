@@ -502,11 +502,11 @@ export default {
       font-weight: 400;
       line-height: 22px;
       text-align: left;
-      color: #1f2329;
     }
 
     .pwd {
       margin: 0 8px;
+      color: #1f2329;
     }
 
     .btn-text {
