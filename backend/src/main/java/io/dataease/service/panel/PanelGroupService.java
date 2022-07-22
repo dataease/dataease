@@ -136,6 +136,8 @@ public class PanelGroupService {
 
     public String update(PanelGroupRequest request) {
         String panelId = request.getId();
+        request.setUpdateTime(System.currentTimeMillis());
+        request.setUpdateBy(AuthUtils.getUser().getUsername());
         panelViewService.syncPanelViews(request);
         if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
@@ -148,6 +150,7 @@ public class PanelGroupService {
             newDefaultPanel.setLevel(0);
             newDefaultPanel.setSource(request.getId());
             newDefaultPanel.setCreateBy(AuthUtils.getUser().getUsername());
+            newDefaultPanel.setCreateTime(System.currentTimeMillis());
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId(), newDefaultPanel.getNodeType());
             panelGroupMapper.insertSelective(newDefaultPanel);
             // 清理权限缓存
@@ -179,6 +182,8 @@ public class PanelGroupService {
             record.setName(request.getName());
             record.setId(request.getId());
             record.setPid(request.getPid());
+            record.setUpdateTime(request.getUpdateTime());
+            record.setUpdateBy(request.getUpdateBy());
             panelGroupMapper.updateByPrimaryKeySelective(record);
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), panelInfo.getPid(), request.getPid(), sourceType);
 
@@ -338,6 +343,7 @@ public class PanelGroupService {
         newPanel.setName(request.getName());
         newPanel.setId(newPanelId);
         newPanel.setCreateBy(AuthUtils.getUser().getUsername());
+        newPanel.setCreateTime(System.currentTimeMillis());
         //TODO copy panelView
         extPanelViewMapper.copyFromPanel(newPanelId, sourcePanelId, copyId);
         //TODO 复制视图 chart_view

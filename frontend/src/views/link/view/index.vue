@@ -57,7 +57,11 @@ export default {
           id: res.data.id,
           name: res.data.name,
           privileges: res.data.privileges,
-          status: res.data.status
+          status: res.data.status,
+          createBy: res.data.createBy,
+          createTime: res.data.createTime,
+          updateBy: res.data.updateBy,
+          updateTime: res.data.updateTime
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 

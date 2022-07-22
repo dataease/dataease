@@ -18,9 +18,20 @@
         <div style="height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
-            &nbsp;
             <span v-if="panelInfo.isDefault" style="color: green;font-size: 12px">({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
-            <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
+            <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
+            <el-popover
+              placement="right-start"
+              width="400"
+              trigger="click"
+            >
+              <panel-detail-info></panel-detail-info>
+              <i
+                slot="reference"
+                class="el-icon-warning icon-class"
+                style="margin-left: 4px;cursor: pointer;font-size: 14px;"
+              />
+            </el-popover>
           </el-col>
           <el-col :span="12">
 
@@ -157,10 +168,11 @@ import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
+import PanelDetailInfo from "@/views/panel/list/common/PanelDetailInfo";
 
 export default {
   name: 'PanelViewShow',
-  components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
+  components: {PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
     activeTab: {
       type: String,
