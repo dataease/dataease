@@ -141,15 +141,16 @@
                 <el-col :span="18" style="height: 100%">
                   <el-row>
                     <span>
-                      {{$t(panel.target_url)}}
+                      {{ $t('panel.target_url') }}
                       <el-tooltip class="item" effect="dark" placement="bottom">
                         <div slot="content">
-                          {{$t(panel.target_url_tips)}}
+                          {{ $t('panel.target_url_tips') }}
                         </div>
                         <i class="el-icon-info" style="cursor: pointer;" />
                       </el-tooltip>
                     </span>
                     <codemirror
+                      v-show="codemirrorShow"
                       ref="myCm"
                       v-model="linkJumpInfo.content"
                       class="codemirror"
@@ -163,7 +164,7 @@
                 <el-col :span="6" style="height: 100%;border-left: 1px solid #E6E6E6;">
                   <el-col :span="24" style="height: 100%" class="padding-lr">
                     <span>
-                       {{$t(panel.select_world)}}
+                      {{ $t('panel.select_world') }}
                       <el-tooltip class="item" effect="dark" placement="bottom">
                         <div slot="content">
                           引用字段以 "[" 开始， "]" 结束
@@ -272,6 +273,7 @@ export default {
   },
   data() {
     return {
+      codemirrorShow: true,
       name2Auto: [],
       searchField: '',
       searchFunction: '',
@@ -313,7 +315,7 @@ export default {
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
-        mode: 'text/x-sql',
+        mode: 'text/x-textile',
         theme: 'solarized',
         hintOptions: { // 自定义提示选项
           completeSingle: false // 当匹配只有一项的时候是否自动补全
@@ -387,6 +389,7 @@ export default {
       this.$emit('closeJumpSetDialog')
     },
     save() {
+      this.codemirrorShow = false
       this.linkJumpInfo.content = checkAddHttp(this.linkJumpInfo.content)
       this.linkJumpInfoArray.forEach(jumpInfo => {
         jumpInfo.content = this.setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
@@ -401,7 +404,12 @@ export default {
         queryPanelJumpInfo(this.panelInfo.id).then(rsp => {
           this.$store.commit('setNowPanelJumpInfo', rsp.data)
           this.cancel()
+          this.codemirrorShow = true
+        }).catch(() => {
+          this.codemirrorShow = true
         })
+      }).catch(() => {
+        this.codemirrorShow = true
       })
     },
     nodeClick(data, node) {
