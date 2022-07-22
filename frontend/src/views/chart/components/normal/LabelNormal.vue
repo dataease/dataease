@@ -227,6 +227,7 @@ export default {
     },
 
     resultFormat() {
+      if(!this.chart.data)return
       const value = this.chart.data.series[0].data[0]
       let yAxis = []
       try {
