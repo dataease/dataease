@@ -1351,7 +1351,6 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-v',
         'gaugeFormatter'
       ],
       'title-selector': [
