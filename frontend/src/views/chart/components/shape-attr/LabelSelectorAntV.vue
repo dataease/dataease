@@ -32,7 +32,7 @@
         </div>
       </el-form>
 
-      <el-form v-show="showProperty('labelGauge') && chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+      <el-form v-show="showProperty('labelGauge') && chart.type && (chart.type.includes('gauge') || chart.type.includes('liquid'))" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>

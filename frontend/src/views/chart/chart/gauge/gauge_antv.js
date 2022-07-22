@@ -29,6 +29,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
   // label
   if (customAttr.label) {
     const label = JSON.parse(JSON.stringify(customAttr.label))
+    labelFormatter = label.gaugeLabelFormatter ? label.gaugeLabelFormatter : DEFAULT_LABEL.gaugeLabelFormatter
     if (label.show) {
       labelContent = {
         style: ({ percent }) => ({
@@ -48,7 +49,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     } else {
       labelContent = false
     }
-    labelFormatter = label.gaugeLabelFormatter ? label.gaugeLabelFormatter : DEFAULT_LABEL.gaugeLabelFormatter
   }
 
   const range = [0]
