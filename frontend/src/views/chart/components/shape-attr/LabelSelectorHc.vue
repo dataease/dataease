@@ -74,14 +74,14 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        this.initOptions()
+        // this.initOptions()
         this.initData()
       }
     }
   },
   mounted() {
     this.init()
-    this.initOptions()
+    // this.initOptions()
     this.initData()
   },
   methods: {

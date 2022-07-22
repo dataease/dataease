@@ -12,28 +12,58 @@
           {{ $t('commons.cancel') }}
         </el-button>
       </span>
+      <span v-show="linkageSettingStatus" style="float: right;">
+        <el-button size="mini" @click="editSave">
+          {{ $t('commons.confirm') }}
+        </el-button>
+        <el-button size="mini" @click="editCancel">
+          {{ $t('commons.cancel') }}
+        </el-button>
+      </span>
       <span v-show="checkboxStatus" style="float: right;">
         <el-tooltip :content="isMove? $t('commons.position.move') : $t('commons.back')">
           <el-button :class="isMove? 'el-icon-rank' : 'el-icon-d-arrow-left'" size="mini" circle    @click="moveClick" />
         </el-tooltip>
         <span v-if="isMove" style="padding: 0px 10px;">
+          <el-tooltip :content="$t('commons.position.horizontally')">
+            <el-button size="mini" circle @click="positionChange('horizontally')">
+              <svg-icon icon-class="spjz" class="chart-icon" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.vertically')">
+            <el-button size="mini" circle @click="positionChange('vertically')">
+              <svg-icon icon-class="czjz" class="chart-icon" />
+            </el-button>
+          </el-tooltip>
           <el-tooltip :content="$t('commons.position.transverse')">
-            <el-button class="el-icon-c-scale-to-original" :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')" />
+            <el-button :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')">
+              <svg-icon icon-class="hxfb" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.longitudinal')">
-            <el-button class="el-icon-set-up" size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')" />
+            <el-button size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')">
+              <svg-icon icon-class="zxfb" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.left')">
-            <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
+            <el-button size="mini" circle @click="positionChange('left')">
+              <svg-icon icon-class="jzdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.right')">
-            <el-button class="el-icon-caret-right" size="mini" circle @click="positionChange('right')" />
+            <el-button size="mini" circle @click="positionChange('right')">
+              <svg-icon icon-class="jydq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.top')">
-            <el-button class="el-icon-caret-top" size="mini" circle @click="positionChange('top')" />
+            <el-button size="mini" circle @click="positionChange('top')">
+              <svg-icon icon-class="dbdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.bottom')">
-            <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
+            <el-button size="mini" circle @click="positionChange('bottom')">
+              <svg-icon icon-class="dibdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
         </span>
         <span v-else style="padding: 0px 10px;">
@@ -610,6 +640,44 @@ export default {
           console.log('纵向分布',componentData)
         }
 
+      } else if (value === 'horizontally') { // 水平居中
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.left = Math.floor((this.canvasStyleData.width - item.style.width)/2)
+            }
+          })
+        }else {
+          let obj = arr[arr.length -1] // 获取最后一个组件对象
+          let levelCentral = obj.style.left + (obj.style.width/2)  // 获取组件水平的中轴线值
+          console.log(levelCentral)
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              if(item.style.left !== obj.style.left) {
+                item.style.left = levelCentral - (item.style.width/2)
+              }
+            }
+          })
+        }
+      } else if (value === 'vertically') { // 垂直居中
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.top = Math.floor((this.canvasStyleData.height - item.style.height)/2)
+            }
+          })
+        } else {
+          let obj = arr[arr.length -1] // 获取最后一个组件对象
+          let verticalCentral = obj.style.top + (obj.style.height/2) // 获取组件垂直的中轴线值
+          console.log(verticalCentral)
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              if(item.style.top != obj.style.top) {
+                item.style.top = verticalCentral - (item.style.height/2)
+              }
+            }
+          })
+        }
       }
       this.$store.commit('setComponentData',componentData)
       this.$store.commit('recordSnapshot')
@@ -618,13 +686,167 @@ export default {
     moveClick() {
       this.isMove = !this.isMove
       console.log(this.isMove)
-      const componentData = deepCopy(this.componentData)
-
     },
-    // 移动改变
+    // 组件移动改变
     moveChange(value) {
       console.log(value,this.moveSize)
-      
+
+      const componentData = deepCopy(this.componentData)
+      let arr = componentData.filter(item => item.isCheck && !item.isLock)
+      if (!arr.length) {
+        return
+      }
+      if(value === 'left') {
+        let list = arr.filter(item => item.style.left === 0)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return a.style.left - b.style.left}) // 由小到大排序
+        // 获取到最左边组件的left 左移动 moveSize距离后的值
+        let left = Math.floor(arr[0].style.left - this.moveSize) < 0 ? 0 : Math.floor(arr[0].style.left - this.moveSize)
+        console.log(left)
+        let spaceList = [] // 向左移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            let c = Math.floor((arr[i].style.left) - (arr[i-1].style.left + arr[i-1].style.width))
+            spaceList.push(c)
+          }
+        }
+        // console.log('组件间隔差：',spaceList)
+        let leftList = [] // 组件移动后left集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            leftList.push((left))
+          } else {
+            leftList.push(Math.floor(leftList[i-1] + arr[i-1].style.width + spaceList[i]))
+          }
+        }
+        console.log('left,list',leftList)
+        componentData.sort((a,b) => {return a.style.left - b.style.left})
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.left = leftList[n]
+            n++
+          }
+        })
+      } else if(value === 'right') {
+        let list = arr.filter(item => (item.style.left + item.style.width) === this.canvasStyleData.width)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小排序
+        // 获取到最右边组件的left 右移动 moveSize距离后的值
+        let right = Math.floor(arr[0].style.left + arr[0].style.width + this.moveSize) > this.canvasStyleData.width ? 
+          (this.canvasStyleData.width - Math.floor(arr[0].style.width)) : Math.floor(arr[0].style.left + this.moveSize)
+        console.log(right)
+        let spaceList = [] // 向右移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            // arr 是有大到小排序
+            let c = Math.floor((arr[i-1].style.left) - (arr[i].style.left + arr[i].style.width))
+            spaceList.push(c)
+          }
+        }
+        // console.log('间隔',spaceList)
+        let rightList = [] // 组件移动后left集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            rightList.push((right))
+          } else {
+            rightList.push(Math.floor(rightList[i-1] - arr[i].style.width - spaceList[i]))
+          }
+        }
+        console.log('right,list',rightList)
+        componentData.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.left = rightList[n]
+            n++
+          }
+        })
+      } else if(value === 'top') {
+        let list = arr.filter(item => item.style.top === 0)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return a.style.top - b.style.top}) // 由小到大
+        // 获取到最上边组件的top 上移动 moveSize距离后的值
+        let top = Math.floor(arr[0].style.top - this.moveSize) < 0 ? 0 : Math.floor(arr[0].style.top - this.moveSize)
+        console.log(top)
+        let spaceList = [] // 向上移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            let c = Math.floor((arr[i].style.top) - (arr[i-1].style.top + arr[i-1].style.height))
+            spaceList.push(c)
+          }
+        }
+        // console.log('组件间隔差：',spaceList)
+        let topList = [] // 组件移动后top集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            topList.push((top))
+          } else {
+            topList.push(Math.floor(topList[i-1] + arr[i-1].style.height + spaceList[i]))
+          }
+        }
+        console.log('top,list',topList)
+        componentData.sort((a,b) => {return a.style.top - b.style.top})
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.top = topList[n]
+            n++
+          }
+        })
+      } else if(value === 'bottom') {
+        let list = arr.filter(item => (item.style.top + item.style.height) === this.canvasStyleData.height)
+        if(list.length) {
+          return
+        }
+        arr.sort((a,b) => {return b.style.top - a.style.top}) // 由大到小排序
+        // 获取到最下面边组件的top 下移动 moveSize距离后的值
+        let bottom = Math.floor(arr[0].style.top + arr[0].style.height + this.moveSize) > this.canvasStyleData.height ? 
+          (this.canvasStyleData.height - Math.floor(arr[0].style.height)) : Math.floor(arr[0].style.top + this.moveSize)
+        console.log(bottom)
+        let spaceList = [] // 向下移动的组件间的间隔差
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            spaceList.push(0)
+          } else {
+            // arr 是有大到小排序
+            let c = Math.floor((arr[i-1].style.top) - (arr[i].style.top + arr[i].style.height))
+            spaceList.push(c)
+          }
+        }
+        // console.log('间隔',spaceList)
+        let bottomtList = [] // 组件移动后top集合
+        for(let i=0;i<arr.length;i++) {
+          if(i === 0) {
+            bottomtList.push((bottom))
+          } else {
+            bottomtList.push(Math.floor(bottomtList[i-1] - arr[i].style.height - spaceList[i]))
+          }
+        }
+        console.log('bottom,list',bottomtList)
+        componentData.sort((a,b) => {return b.style.top - a.style.top}) // 由大到小
+        let n = 0;
+        componentData.map(item => {
+          if(item.isCheck && !item.isLock) {
+            item.style.top = bottomtList[n]
+            n++
+          }
+        })
+      }
+      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('recordSnapshot')
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')
