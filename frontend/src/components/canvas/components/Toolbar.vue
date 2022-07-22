@@ -12,31 +12,60 @@
           {{ $t('commons.cancel') }}
         </el-button>
       </span>
+      <span v-show="linkageSettingStatus" style="float: right;">
+        <el-button size="mini" @click="editSave">
+          {{ $t('commons.confirm') }}
+        </el-button>
+        <el-button size="mini" @click="editCancel">
+          {{ $t('commons.cancel') }}
+        </el-button>
+      </span>
       <span v-show="checkboxStatus" style="float: right;">
         <el-tooltip :content="isMove? $t('commons.position.move') : $t('commons.back')">
           <el-button :class="isMove? 'el-icon-rank' : 'el-icon-d-arrow-left'" size="mini" circle    @click="moveClick" />
         </el-tooltip>
         <span v-if="isMove" style="padding: 0px 10px;">
+          <el-tooltip :content="$t('commons.position.horizontally')">
+            <el-button size="mini" circle @click="positionChange('horizontally')">
+              <svg-icon icon-class="spjz" class="chart-icon" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('commons.position.vertically')">
+            <el-button size="mini" circle @click="positionChange('vertically')">
+              <svg-icon icon-class="czjz" class="chart-icon" />
+            </el-button>
+          </el-tooltip>
           <el-tooltip :content="$t('commons.position.transverse')">
-            <el-button class="el-icon-c-scale-to-original" :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')" />
+            <el-button :disabled="isUniformity" size="mini" circle @click="positionChange('transverse')">
+              <svg-icon icon-class="hxfb" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.longitudinal')">
-            <el-button class="el-icon-set-up" size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')" />
+            <el-button size="mini" :disabled="isUniformity" circle @click="positionChange('longitudinal')">
+              <svg-icon icon-class="zxfb" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.left')">
-            <el-button class="el-icon-caret-left" size="mini" circle @click="positionChange('left')" />
+            <el-button size="mini" circle @click="positionChange('left')">
+              <svg-icon icon-class="jzdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.right')">
-            <el-button class="el-icon-caret-right" size="mini" circle @click="positionChange('right')" />
+            <el-button size="mini" circle @click="positionChange('right')">
+              <svg-icon icon-class="jydq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.top')">
-            <el-button class="el-icon-caret-top" size="mini" circle @click="positionChange('top')" />
+            <el-button size="mini" circle @click="positionChange('top')">
+              <svg-icon icon-class="dbdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('commons.position.bottom')">
-            <el-button class="el-icon-caret-bottom" size="mini" circle @click="positionChange('bottom')" />
+            <el-button size="mini" circle @click="positionChange('bottom')">
+              <svg-icon icon-class="dibdq" class="chart-icon" />
+            </el-button>
           </el-tooltip>
         </span>
-        <!-- <svg-icon :icon-class="item.icon" class="chart-icon" /> -->
         <span v-else style="padding: 0px 10px;">
           <el-input-number v-model="moveSize" :min="10" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
           <el-tooltip :content="$t('commons.move.left')">
@@ -611,6 +640,44 @@ export default {
           console.log('纵向分布',componentData)
         }
 
+      } else if (value === 'horizontally') { // 水平居中
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.left = Math.floor((this.canvasStyleData.width - item.style.width)/2)
+            }
+          })
+        }else {
+          let obj = arr[arr.length -1] // 获取最后一个组件对象
+          let levelCentral = obj.style.left + (obj.style.width/2)  // 获取组件水平的中轴线值
+          console.log(levelCentral)
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              if(item.style.left !== obj.style.left) {
+                item.style.left = levelCentral - (item.style.width/2)
+              }
+            }
+          })
+        }
+      } else if (value === 'vertically') { // 垂直居中
+        if(arr.length === 1) {
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              item.style.top = Math.floor((this.canvasStyleData.height - item.style.height)/2)
+            }
+          })
+        } else {
+          let obj = arr[arr.length -1] // 获取最后一个组件对象
+          let verticalCentral = obj.style.top + (obj.style.height/2) // 获取组件垂直的中轴线值
+          console.log(verticalCentral)
+          componentData.map(item => {
+            if(item.isCheck && !item.isLock) {
+              if(item.style.top != obj.style.top) {
+                item.style.top = verticalCentral - (item.style.height/2)
+              }
+            }
+          })
+        }
       }
       this.$store.commit('setComponentData',componentData)
       this.$store.commit('recordSnapshot')

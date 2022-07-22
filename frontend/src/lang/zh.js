@@ -138,6 +138,8 @@ export default {
       bottom: '底部对齐',
       transverse: '横向分布',
       longitudinal: '纵向分布',
+      horizontally: '水平居中',
+      vertically: '垂直居中',
       move: '移动',
     },
     move: {
