@@ -624,12 +624,11 @@ export default {
     can_not_move: '不可移除，至少保留一位管理員',
     manage_can_not_move: '管理員是系統預置角色，默認擁有系統管理全部權限，無法刪除',
     manage_can_not_update: '管理員是系統預置角色，默認擁有系統管理全部權限，無法編輯',
-    role_name: '角色名稱',
     role_description: '角色描述',
     editer_role: '編輯角色',
     add_role: '添加角色',
     role_name_exist: '該角色名稱已存在',
-    search_by_role: '通過角色名稱搜索',
+    search_by_role: '通過角色名稱搜索'
   },
   menu: {
     parent_category: '上級目錄',
@@ -658,7 +657,6 @@ export default {
     create_time: '創建日期',
     create: '新建組織',
     modify: '修改組織',
-    delete: '刪除組織',
     delete_confirm: '確定要刪除該組織嗎?',
     input_name: '請輸入組織名稱',
     select_organization: '請選擇組織',
@@ -668,7 +666,6 @@ export default {
     member: '成員',
     organization: '組織',
     add_user: '添加用戶',
-    search_by_name: '通過組織名稱搜索',
     sure_move_user: '確定將該用戶從組織中移除嗎？',
     move_success: '移除成功',
     user: '用戶',
@@ -683,7 +680,7 @@ export default {
     sure_delete_organization: '確定刪除該組織嗎？',
     delete: '刪除',
     add_child_org: '添加子組織',
-    edite_organization: '編輯組織',
+    edite_organization: '編輯組織'
   },
   system_parameter_setting: {
     mailbox_service_settings: '郵件設置',
@@ -1546,6 +1543,10 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    create_by: '创建人',
+    create_time: '创建时间',
+    update_by: '最近修改人',
+    update_time: '最近修改时间',
     target_url: '目标URL',
     target_url_tips: '可以点击字段用来拼接URL或者参数',
     select_world: '点击选择字段',
@@ -1930,8 +1931,6 @@ export default {
     column_permission: '列權限規則',
     enable_column: '啟用列權限',
     search_by_field: '通過字段名稱搜索',
-    add_condition: '添加條件',
-    add_relationship: '添加關系',
     filter_fields: '篩選字段',
     selct_filter_fields: '請選擇篩選字段',
     enter_keywords: '請輸關鍵字',
@@ -1945,7 +1944,7 @@ export default {
     please_fill: '請一行填一個，最多添加500個,識別錄入時會自動過濾重復的選項和已經添加過的選項',
     close: '關 閉',
     add: '添 加',
-    sure: '確 定',
+    sure: '確 定'
   },
   about: {
     auth_to: '授權給',

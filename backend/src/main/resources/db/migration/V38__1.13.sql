@@ -71,3 +71,7 @@ INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, 
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
 
+
+ALTER TABLE `panel_group`
+    ADD COLUMN `update_by` varchar(255) NULL COMMENT '更新人' AFTER `status`,
+ADD COLUMN `update_time` bigint(13) NULL COMMENT '更新时间' AFTER `update_by`;

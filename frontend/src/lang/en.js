@@ -132,7 +132,7 @@ export default {
   },
   commons: {
     manage_member: 'Managing members',
-    user_confirm_remove_cancel:'Are you sure you want to remove the user from the role?',
+    user_confirm_remove_cancel: 'Are you sure you want to remove the user from the role?',
     confirm_remove_cancel: 'Are you sure to delete the role?',
     default_value: 'Default Value',
     params_value: 'Param Value',
@@ -623,12 +623,11 @@ export default {
     can_not_move: `Can't be removed, keep at least one administrator`,
     manage_can_not_move: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be deleted',
     manage_can_not_update: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be edit',
-    role_name: 'Role name',
     role_description: 'Role description',
     editer_role: 'Edit role',
     add_role: 'Add role',
     role_name_exist: 'The role name already exists',
-    search_by_role: 'Search by role name',
+    search_by_role: 'Search by role name'
   },
   menu: {
     parent_category: 'Parent Category',
@@ -667,7 +666,6 @@ export default {
     member: 'member',
     organization: 'organization',
     add_user: 'Add user',
-    search_by_name: 'Search by organization name',
     sure_move_user: 'Are you sure to remove this user from the organization?',
     move_success: 'Removed successfully',
     user: 'user',
@@ -680,9 +678,8 @@ export default {
     canot_delete: 'Cannot delete',
     remove_user_first: 'Please remove all users in the organization before deleting the organization',
     sure_delete_organization: 'Are you sure to delete this organization?',
-    delete: 'delete',
     add_child_org: 'Add sub organization',
-    edite_organization: 'Edit organization',
+    edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
     mailbox_service_settings: 'Mail Settings',
@@ -1546,6 +1543,10 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    create_by: '创建人',
+    create_time: '创建时间',
+    update_by: '最近修改人',
+    update_time: '最近修改时间',
     target_url: 'Target Url',
     target_url_tips: 'You can click fields to splice URLs or parameters',
     select_world: 'Select World',
@@ -1919,8 +1920,6 @@ export default {
     column_permission: 'Column permission rule',
     enable_column: 'Enable column permissions',
     search_by_field: 'Search by field name',
-    add_condition: 'Add condition',
-    add_relationship: 'Add relationship',
     filter_fields: 'Filter fields',
     selct_filter_fields: 'Please select a filter field',
     enter_keywords: 'Please enter keywords',
@@ -1934,7 +1933,7 @@ export default {
     please_fill: 'Please fill in one line and add 500 at most. Duplicate options and added options will be automatically filtered when identifying and entering',
     close: 'close',
     add: 'add to',
-    sure: 'determine',
+    sure: 'determine'
   },
   about: {
     auth_to: 'Authorized to',
