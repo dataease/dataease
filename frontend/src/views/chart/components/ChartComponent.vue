@@ -332,18 +332,23 @@ export default {
         }
         return
       }
+      const quotaList = this.pointParam.data.quotaList
+      quotaList[0]['value'] = this.pointParam.data.value
       const linkageParam = {
         option: 'linkage',
+        name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: this.pointParam.data.quotaList
+        quotaList: quotaList
       }
       const jumpParam = {
         option: 'jump',
+        name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: this.pointParam.data.quotaList
+        quotaList: quotaList
       }
+      jumpParam.quotaList[0]['value'] = this.pointParam.data.value
       switch (trackAction) {
         case 'drill':
           this.$emit('onChartClick', this.pointParam)

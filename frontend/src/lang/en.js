@@ -1546,6 +1546,9 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    target_url: 'Target Url',
+    target_url_tips: 'You can click fields to splice URLs or parameters',
+    select_world: 'Select World',
     template_market: 'Template Market',
     template_preview: 'Template Preview',
     apply: 'Apply',

@@ -625,14 +625,24 @@ export default {
     },
 
     jumpClick(param) {
-      let dimension, jumpInfo, sourceInfo, jumpFieldName
-      // 倒序取最后一个能匹配的
-      for (let i = param.dimensionList.length - 1; i >= 0; i--) {
-        dimension = param.dimensionList[i]
-        sourceInfo = param.viewId + '#' + dimension.id
-        jumpInfo = this.nowPanelJumpInfo[sourceInfo]
-        if (jumpInfo) {
-          break
+      let dimension, jumpInfo, sourceInfo
+      // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
+      if (param.name) {
+        param.dimensionList.forEach(dimensionItem => {
+          if (dimensionItem.value === param.name) {
+            dimension = dimensionItem
+            sourceInfo = param.viewId + '#' + dimension.id
+            jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+          }
+        })
+      } else {
+        for (let i = param.dimensionList.length - 1; i >= 0; i--) {
+          dimension = param.dimensionList[i]
+          sourceInfo = param.viewId + '#' + dimension.id
+          jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+          if (jumpInfo) {
+            break
+          }
         }
       }
       if (jumpInfo) {
@@ -667,21 +677,8 @@ export default {
             })
           }
         } else {
-          let url = jumpInfo.content
-          // 是否追加点击参数
-          if (jumpInfo.attachParams && this.chart.data && this.chart.data.sourceFields) {
-            this.chart.data.sourceFields.forEach(item => {
-              if (item.id === dimension.id) {
-                jumpFieldName = item.name
-              }
-            })
-            const urlAttachParams = jumpFieldName + '=' + dimension.value
-            if (url.indexOf('?') > -1) {
-              url = url + '&' + urlAttachParams
-            } else {
-              url = url + '?' + urlAttachParams
-            }
-          }
+          const colList = [...param.dimensionList, ...param.quotaList]
+          const url = this.setIdValueTrans('id', 'value', jumpInfo.content, colList)
           window.open(url, jumpInfo.jumpType)
         }
       } else {
@@ -691,6 +688,24 @@ export default {
           showClose: true
         })
       }
+    },
+    setIdValueTrans(from, to, content, colList) {
+      if (!content) {
+        return content
+      }
+      let name2Id = content
+      const nameIdMap = colList.reduce((pre, next) => {
+        pre[next[from]] = next[to]
+        return pre
+      }, {})
+      const on = content.match(/\[(.+?)\]/g)
+      if (on) {
+        on.forEach(itm => {
+          const ele = itm.slice(1, -1)
+          name2Id = name2Id.replace(itm, nameIdMap[ele])
+        })
+      }
+      return name2Id
     },
 
     resetDrill() {

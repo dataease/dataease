@@ -71,9 +71,6 @@
                   <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
                 </el-radio-group>
               </el-col>
-              <el-col v-if="linkJumpInfo.linkType==='outer'" :span="9">
-                <el-checkbox v-model="linkJumpInfo.attachParams">附加点击参数</el-checkbox>
-              </el-col>
             </el-row>
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
               <el-row style="margin-top: 10px">
@@ -137,17 +134,87 @@
               <el-row class="bottom">
                 <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">{{ $t('panel.add_jump_field') }}</el-button>
               </el-row>
-
-              <!--    <el-button slot="reference">T</el-button>-->
               <i slot="reference" class="icon iconfont icon-edit slot-class" />
             </el-row>
-            <el-row v-if="linkJumpInfo.linkType==='outer'" style="height: 300px">
-              <el-input
-                v-model="linkJumpInfo.content"
-                :autosize="{ minRows: 14}"
-                type="textarea"
-                :placeholder="$t('panel.input_jump_link')"
-              />
+            <el-row v-if="linkJumpInfo.linkType==='outer'" style="border-top: 1px solid #E6E6E6;padding:14px">
+              <el-row style="height: 230px;border: 1px solid #E6E6E6">
+                <el-col :span="18" style="height: 100%">
+                  <el-row>
+                    <span>
+                      {{$t(panel.target_url)}}
+                      <el-tooltip class="item" effect="dark" placement="bottom">
+                        <div slot="content">
+                          {{$t(panel.target_url_tips)}}
+                        </div>
+                        <i class="el-icon-info" style="cursor: pointer;" />
+                      </el-tooltip>
+                    </span>
+                    <codemirror
+                      ref="myCm"
+                      v-model="linkJumpInfo.content"
+                      class="codemirror"
+                      :options="cmOption"
+                      @ready="onCmReady"
+                      @focus="onCmFocus"
+                      @input="onCmCodeChange"
+                    />
+                  </el-row>
+                </el-col>
+                <el-col :span="6" style="height: 100%;border-left: 1px solid #E6E6E6;">
+                  <el-col :span="24" style="height: 100%" class="padding-lr">
+                    <span>
+                       {{$t(panel.select_world)}}
+                      <el-tooltip class="item" effect="dark" placement="bottom">
+                        <div slot="content">
+                          引用字段以 "[" 开始， "]" 结束
+                          <br>
+                          请勿修改引用内容，否则将引用失败
+                          <br>
+                          若输入与引用字段相同格式的内容，将被当作引用字段处理
+                        </div>
+                        <i class="el-icon-info" style="cursor: pointer;" />
+                      </el-tooltip>
+                    </span>
+                    <el-input
+                      v-model="searchField"
+                      size="mini"
+                      :placeholder="$t('dataset.search')"
+                      prefix-icon="el-icon-search"
+                      clearable
+                    />
+                    <div class="field-height">
+                      <el-divider />
+                      <draggable
+                        v-model="linkJumpInfoArray"
+                        :options="{group:{name: 'drag',pull:'clone'},sort: true}"
+                        animation="300"
+                        class="drag-list"
+                        :disabled="true"
+                      >
+                        <transition-group>
+                          <span
+                            v-for="item in linkJumpInfoArray"
+                            :key="item.sourceFieldId"
+                            class="item-dimension"
+                            :title="item.sourceFieldName"
+                            @click="insertFieldToCodeMirror('['+item.sourceFieldName+']')"
+                          >
+                            <svg-icon v-if="item.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                            <svg-icon v-if="item.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                            <svg-icon
+                              v-if="item.deExtractType === 2 || item.deExtractType === 3"
+                              icon-class="field_value"
+                              class="field-icon-value"
+                            />
+                            <svg-icon v-if="item.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+                            {{ item.sourceFieldName }}
+                          </span>
+                        </transition-group>
+                      </draggable>
+                    </div>
+                  </el-col>
+                </el-col>
+              </el-row>
             </el-row>
           </el-row>
           <el-row v-else style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
@@ -168,11 +235,35 @@ import { queryPanelJumpInfo, queryWithViewId, updateJumpSet } from '@/api/panel/
 import { groupTree } from '@/api/panel/panel'
 import { detailList } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
-import { deepCopy } from '@/components/canvas/utils/utils'
 import { checkAddHttp } from '@/utils/urlUtils'
 
+import draggable from 'vuedraggable'
+import { codemirror } from 'vue-codemirror'
+// 核心样式
+import 'codemirror/lib/codemirror.css'
+// 引入主题后还需要在 options 中指定主题才会生效
+import 'codemirror/theme/solarized.css'
+import 'codemirror/mode/sql/sql.js'
+// require active-line.js
+import 'codemirror/addon/selection/active-line.js'
+// closebrackets
+import 'codemirror/addon/edit/closebrackets.js'
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
+// 引入代码自动提示插件
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
+
 export default {
-  components: { },
+  components: { codemirror, draggable },
   props: {
     viewId: {
       type: String,
@@ -181,6 +272,9 @@ export default {
   },
   data() {
     return {
+      name2Auto: [],
+      searchField: '',
+      searchFunction: '',
       loading: false,
       inputType: 'self',
       fieldName: 'name',
@@ -198,7 +292,7 @@ export default {
         children: 'children'
       },
       linkJump: null,
-      linkJumpInfoArray: null,
+      linkJumpInfoArray: [],
       mapJumpInfoArray: {},
       panelList: [],
       linkJumpInfo: null,
@@ -213,8 +307,18 @@ export default {
         targetFieldId: null
       },
       currentLinkPanelViewArray: [],
-      viewIdFieldArrayMap: {}
-
+      viewIdFieldArrayMap: {},
+      cmOption: {
+        tabSize: 2,
+        styleActiveLine: true,
+        lineNumbers: true,
+        line: true,
+        mode: 'text/x-sql',
+        theme: 'solarized',
+        hintOptions: { // 自定义提示选项
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
+      }
     }
   },
   computed: {
@@ -230,9 +334,13 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    codemirror() {
+      return this.$refs.myCm.codemirror
+    },
     ...mapState([
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'panelViewDetailsInfo'
     ])
   },
   watch: {
@@ -247,6 +355,8 @@ export default {
   },
   methods: {
     init() {
+      const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.viewId])
+      const checkStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
       // 获取可关联的仪表板
       groupTree({}).then(rsp => {
         this.panelList = rsp.data
@@ -254,9 +364,15 @@ export default {
       // 获取当前视图的关联信息
       queryWithViewId(this.panelInfo.id, this.viewId).then(rsp => {
         this.linkJump = rsp.data
-        this.linkJumpInfoArray = this.linkJump.linkJumpInfoArray
+        this.linkJumpInfoArray = []
+        this.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
+          if (checkStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
+            this.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
+            this.linkJumpInfoArray.push(linkJumpInfo)
+          }
+        })
         this.linkJumpInfoArray.forEach(linkJumpInfo => {
-          this.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
+          linkJumpInfo.content = this.setNameIdTrans('sourceFieldId', 'sourceFieldName', linkJumpInfo.content, this.name2Auto)
         })
         const firstNode = this.linkJumpInfoArray[0]
         this.$nextTick(() => {
@@ -264,10 +380,6 @@ export default {
           this.nodeClick(firstNode)
         })
       })
-      // 获取当前视图的字段信息
-      // getTableFieldWithViewId(this.viewId).then(rsp => {
-      //   this.sourceViewFields = rsp.data
-      // })
     },
     handleExceed(file) {
     },
@@ -276,6 +388,9 @@ export default {
     },
     save() {
       this.linkJumpInfo.content = checkAddHttp(this.linkJumpInfo.content)
+      this.linkJumpInfoArray.forEach(jumpInfo => {
+        jumpInfo.content = this.setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
+      })
       updateJumpSet(this.linkJump).then(rsp => {
         this.$message({
           message: '保存成功',
@@ -306,6 +421,9 @@ export default {
       if (this.linkJumpInfo.targetPanelId) {
         this.getPanelViewList(this.linkJumpInfo.targetPanelId)
       }
+      setTimeout(() => {
+        this.matchToAuto()
+      }, 500)
     },
     // 获取当前视图字段 关联仪表板的视图信息列表
     getPanelViewList(panelId) {
@@ -356,6 +474,53 @@ export default {
         this.$refs.linkJumpInfoTree.setCurrentKey(data.sourceFieldId)
         this.nodeClick(data)
       })
+    },
+    onCmReady(cm) {
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
+    },
+    onCmFocus(cm) {
+    },
+    onCmCodeChange(newCode) {
+      // this.fieldForm.originName = newCode
+    },
+    insertFieldToCodeMirror(param) {
+      const pos1 = this.$refs.myCm.codemirror.getCursor()
+      const pos2 = {}
+      pos2.line = pos1.line
+      pos2.ch = pos1.ch
+      this.$refs.myCm.codemirror.replaceRange(param, pos2)
+      this.$refs.myCm.codemirror.markText(pos2, { line: pos2.line, ch: param.length + pos2.ch }, { atomic: true, selectRight: true })
+    },
+    matchToAuto() {
+      if (!this.name2Auto.length) return
+      this.name2Auto.forEach(ele => {
+        const search = this.$refs.myCm.codemirror.getSearchCursor(ele, { line: 0, ch: 0 })
+        if (search.find()) {
+          const { from, to } = search.pos
+          this.$refs.myCm.codemirror.markText({ line: from.line, ch: from.ch - 1 }, { line: to.line, ch: to.ch + 1 }, { atomic: true, selectRight: true })
+        }
+      })
+    },
+    setNameIdTrans(from, to, originName, name2Auto) {
+      if (!originName) {
+        return originName
+      }
+      let name2Id = originName
+      const nameIdMap = this.linkJumpInfoArray.reduce((pre, next) => {
+        pre[next[from]] = next[to]
+        return pre
+      }, {})
+      const on = originName.match(/\[(.+?)\]/g)
+      if (on) {
+        on.forEach(itm => {
+          const ele = itm.slice(1, -1)
+          if (name2Auto) {
+            name2Auto.push(nameIdMap[ele])
+          }
+          name2Id = name2Id.replace(ele, nameIdMap[ele])
+        })
+      }
+      return name2Id
     }
   }
 }
@@ -488,4 +653,120 @@ export default {
 /deep/ .el-tree--highlight-current .el-tree-node.is-current >.el-tree-node__content {
   background-color: #8dbbef !important;
 }
+.codemirror {
+  height: 190px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.codemirror >>> .CodeMirror-scroll {
+  height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.padding-lr {
+  padding: 0 4px;
+}
+
+.field-height {
+  height: calc(100% - 25px);
+  margin-top: 4px;
+}
+
+.drag-list {
+  height: calc(100% - 26px);
+  overflow: auto;
+}
+
+.item-dimension {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  /*background-color: rgba(35,46,64,.05);*/
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-dimension {
+  border: solid 1px;
+  border-color: #495865;
+  color: #F2F6FC;
+  background-color: var(--MainBG);
+}
+
+.item-dimension + .item-dimension {
+  margin-top: 2px;
+}
+
+.item-dimension:hover {
+  color: #1890ff;
+  background: #e8f4ff;
+  border-color: #a3d3ff;
+  cursor: pointer;
+}
+
+.blackTheme .item-dimension:hover {
+  /* color: var(--Main); */
+  background: var(--ContentBG);
+  /* cursor: pointer; */
+}
+
+.item-quota {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  /*background-color: rgba(35,46,64,.05);*/
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-quota {
+
+  border: solid 1px;
+  border-color: #495865;
+  color: #F2F6FC;
+  background-color: var(--MainBG);
+
+}
+
+.item-quota + .item-quota {
+  margin-top: 2px;
+}
+
+.item-quota:hover {
+  color: #67c23a;
+  background: #f0f9eb;
+  border-color: #b2d3a3;
+  cursor: pointer;
+}
+
+.blackTheme .item-quota:hover {
+  background: var(--ContentBG);
+}
+
+span {
+  font-size: 12px;
+}
+
+.field-height ::v-deep .el-divider--horizontal{
+  margin: 2px 0!important;
+}
+
+::v-deep .CodeMirror {
+  height: 190px!important;
+}
+
 </style>
