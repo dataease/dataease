@@ -138,14 +138,14 @@ export default {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
-      let miniHeight = this.curComponent.miniSizey || 1
+      let miniHeight = 4
       if (this.element.component === 'de-number-range') {
-        miniHeight = this.curComponent.miniSizey || 2
+        miniHeight = 4
       }
       return miniHeight
     },
     miniWidth() {
-      return this.curComponent.miniSizex || 1
+      return 4
     },
     ...mapState([
       'menuTop',
