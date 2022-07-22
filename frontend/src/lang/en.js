@@ -1176,6 +1176,7 @@ export default {
     remark_bg_color: 'Background Fill'
   },
   dataset: {
+    parse_filed: 'Parse Field',
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',

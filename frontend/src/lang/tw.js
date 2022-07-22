@@ -1175,6 +1175,7 @@ export default {
     remark_bg_color: '背景填充'
   },
   dataset: {
+    parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
