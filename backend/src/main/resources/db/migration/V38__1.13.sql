@@ -75,3 +75,6 @@ INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALU
 ALTER TABLE `panel_group`
     ADD COLUMN `update_by` varchar(255) NULL COMMENT '更新人' AFTER `status`,
 ADD COLUMN `update_time` bigint(13) NULL COMMENT '更新时间' AFTER `update_by`;
+
+ALTER TABLE `sys_task_email`
+ADD COLUMN `view_ids` varchar(255) NULL COMMENT '视图ID结婚' AFTER `task_id`;

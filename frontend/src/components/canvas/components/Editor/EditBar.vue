@@ -82,7 +82,8 @@ export default {
       linkageActiveStatus: false,
       editFilter: [
         'view',
-        'custom'
+        'custom',
+        'custom-button'
       ],
       timer: null
     }
@@ -216,6 +217,9 @@ export default {
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit', 'update')
+      }
+      else if (this.curComponent.type === 'custom-button') {
+        bus.$emit('button-dialog-edit')
       } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       } else { bus.$emit('change_panel_right_draw', true) }
