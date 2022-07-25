@@ -35,10 +35,10 @@ export default {
       const canvasStyleData = state.canvasStyleData
       const curCanvasScale = state.curCanvasScale
       const componentGap = state.componentGap
-      Object.keys(state.curMultiplexingComponents).forEach(function(viewId, index) {
+      Object.keys(state.curMultiplexingComponents).forEach(function(componentId, index) {
         const component =
           {
-            ...deepCopy(state.curMultiplexingComponents[viewId]),
+            ...deepCopy(state.curMultiplexingComponents[componentId]),
             ...deepCopy(deepCopy(state.viewBase)),
             'auxiliaryMatrix': canvasStyleData.auxiliaryMatrix
           }
@@ -105,6 +105,7 @@ export default {
       } else if (data.type === 'de-tabs') {
         const sourceAndTargetIds = {}
         const newCop = deepCopy(data)
+        newCop.id = uuid.v1()
         newCop.options.tabList.forEach((item) => {
           if (item.content && item.content.type === 'view') {
             const newViewId = uuid.v1()

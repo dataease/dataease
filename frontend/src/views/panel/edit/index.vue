@@ -239,6 +239,25 @@
     </de-container>
 
     <el-dialog
+     v-if="buttonVisible && panelInfo.id"
+     :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
+     :visible.sync="buttonVisible"
+     custom-class="de-button-dialog"
+     @close="cancelButton"
+    >
+      <button-dialog
+        v-if="buttonVisible && currentWidget"
+        :ref="'filter-setting-' + currentFilterCom.id"
+        :widget-info="currentWidget"
+        :element="currentFilterCom"
+        @sure-handler="sureHandler"
+        @cancel-handler="cancelHandler"
+       />
+      
+
+    </el-dialog>
+
+    <el-dialog
       v-if="filterVisible && panelInfo.id"
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
@@ -357,6 +376,7 @@ import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import FilterDialog from '../filter/filterDialog'
+import ButtonDialog from '../filter/ButtonDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
@@ -383,6 +403,7 @@ export default {
     Editor,
     Toolbar,
     FilterDialog,
+    ButtonDialog,
     SubjectSetting,
     Preview,
     AssistComponent,
@@ -449,9 +470,11 @@ export default {
       ],
       enableSureButton: false,
       filterFromDrag: false,
+      buttonFromDrag: false,
       activeToolsName: 'view',
       rightDrawOpen: false,
-      editType: null
+      editType: null,
+      buttonVisible: false
     }
   },
 
@@ -626,6 +649,7 @@ export default {
   beforeDestroy() {
     bus.$off('component-on-drag', this.componentOnDrag)
     bus.$off('component-dialog-edit', this.editDialog)
+    bus.$off('button-dialog-edit', this.editButtonDialog)
     bus.$off('component-dialog-style', this.componentDialogStyle)
     bus.$off('previewFullScreenClose', this.previewFullScreenClose)
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
@@ -645,6 +669,7 @@ export default {
     initEvents() {
       bus.$on('component-on-drag', this.componentOnDrag)
       bus.$on('component-dialog-edit', this.editDialog)
+      bus.$on('button-dialog-edit', this.editButtonDialog)
       bus.$on('component-dialog-style', this.componentDialogStyle)
       bus.$on('previewFullScreenClose', this.previewFullScreenClose)
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
@@ -817,6 +842,11 @@ export default {
           this.openFilterDialog(true)
           return
         }
+        if (this.currentWidget.buttonDialog) {
+          this.show = false
+          this.openButtonDialog(true)
+          return
+        }
         component = deepCopy(this.currentFilterCom)
       }
       if (this.canvasStyleData.auxiliaryMatrix) {
@@ -875,6 +905,24 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
+    openButtonDialog(fromDrag = false) {
+      this.buttonFromDrag = fromDrag
+      this.buttonVisible = true
+    },
+    closeButton() {
+      this.buttonVisible = false
+      this.currentWidget = null
+      this.clearCurrentInfo()
+    },
+    cancelButton() {
+      this.closeButton()
+      if (this.buttonFromDrag) {
+        bus.$emit('onRemoveLastItem')
+      }
+    },
+    sureButton() {
+
+    },
     openFilterDialog(fromDrag = false) {
       this.filterFromDrag = fromDrag
       this.filterVisible = true
@@ -912,6 +960,15 @@ export default {
         this.currentWidget = ApplicationContext.getService(serviceName)
         this.currentFilterCom = this.curComponent
         this.openFilterDialog()
+      }
+    },
+    editButtonDialog(editType) {
+      this.editType = editType
+      if (this.curComponent && this.curComponent.serviceName) {
+        const serviceName = this.curComponent.serviceName
+        this.currentWidget = ApplicationContext.getService(serviceName)
+        this.currentFilterCom = this.curComponent
+        this.openButtonDialog()
       }
     },
     closeLeftPanel() {
@@ -1092,6 +1149,19 @@ export default {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
       this.$refs.canvasEditor.handleDragOver(e)
+    },
+    sureHandler() {
+      this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
+      if (this.editType !== 'update') {
+        adaptCurThemeCommonStyle(this.currentFilterCom)
+      }
+      this.$store.commit('setComponentWithId', this.currentFilterCom)
+      this.$store.commit('recordSnapshot', 'sureFilter')
+      this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      this.closeButton()
+    },
+    cancelHandler() {
+      this.cancelButton()
     },
     sureStatusChange(status) {
       this.enableSureButton = status

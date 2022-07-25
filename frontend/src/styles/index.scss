@@ -110,6 +110,23 @@ div:focus {
   }
 }
 
+.de-button-dialog {
+  min-width: 250px !important;
+  width: 30% !important;
+
+  .el-dialog__header {
+    padding: 10px 20px !important;
+
+    .el-dialog__headerbtn {
+      top: 15px !important;
+    }
+  }
+
+  .el-dialog__body {
+    padding: 1px 15px !important;
+  }
+}
+
 .de-style-dialog {
   width: 600px !important;
 

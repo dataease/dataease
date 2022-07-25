@@ -80,6 +80,7 @@
             :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
             :out-style="outStyle"
             :canvas-style-data="canvasStyleData"
+            :show-position="showPosition"
           />
         </div>
 
@@ -193,6 +194,11 @@ export default {
     h: {
       type: Number,
       default: 200
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {

@@ -59,10 +59,10 @@ export default {
           'numberSelectWidget',
           'numberSelectGridWidget',
           'numberRangeWidget'
+        ],
+        '按钮': [
+          'buttonSureWidget'
         ]
-        // '按钮': [
-        //   'buttonSureWidget'
-        // ]
       }
     }
   },

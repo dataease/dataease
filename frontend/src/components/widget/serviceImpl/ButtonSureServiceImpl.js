@@ -2,15 +2,15 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-chaxunsousuo',
-  label: '确定',
+  label: '查询按钮',
   defaultClass: 'time-filter'
 }
 
 const drawPanel = {
-  type: 'custom',
+  type: 'custom-button',
   style: {
-    width: 300,
-    height: 47,
+    width: 150,
+    height: 60,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -21,9 +21,12 @@ const drawPanel = {
   options: {
     attrs: {
       type: 'primary',
-      round: true
+      round: false,
+      plain: true,
+      customRange: false,
+      filterIds: []
     },
-    value: '测试按钮'
+    value: '查询'
   },
   component: 'de-button',
   miniSizex: 1,
@@ -35,6 +38,7 @@ class ButtonSureServiceImpl extends WidgetService {
     Object.assign(options, { name: 'buttonSureWidget' })
     super(options)
     this.filterDialog = false
+    this.buttonDialog = true
     this.showSwitch = false
   }
 

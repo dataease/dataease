@@ -1,6 +1,9 @@
 import { Liquid } from '@antv/g2plot'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { DEFAULT_LABEL, DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { valueFormatter } from '@/views/chart/chart/formatter'
+
+let labelFormatter = null
 
 export function baseLiquid(plot, container, chart) {
   let value = 0
@@ -31,12 +34,17 @@ export function baseLiquid(plot, container, chart) {
     // label
     if (customAttr.label) {
       const label = JSON.parse(JSON.stringify(customAttr.label))
+      labelFormatter = label.gaugeLabelFormatter ? label.gaugeLabelFormatter : DEFAULT_LABEL.gaugeLabelFormatter
       if (label.show) {
         labelContent = {
           style: ({ percent }) => ({
             fontSize: parseInt(label.fontSize),
             color: label.color
-          })
+          }),
+          formatter: function(v) {
+            const value = v.percent
+            return valueFormatter(value, labelFormatter)
+          }
         }
       } else {
         labelContent = false

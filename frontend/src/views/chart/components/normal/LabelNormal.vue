@@ -1,6 +1,11 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
-    <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
+  <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
+    <span v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+      <div>
+        <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
+        <title-remark v-if="chart.render && chart.render === 'antv' && remarkCfg.show" :remark-cfg="remarkCfg" />
+      </div>
+    </span>
     <div
       v-if="chart.data && chart.data.x && chart.data.x.length > 0 && chart.data.series && chart.data.series.length > 0 && chart.data.series[0].data && chart.data.series[0].data.length > 0"
       id="label-content"
@@ -21,12 +26,14 @@
 </template>
 
 <script>
-import { hexColorToRGBA } from '../../chart/util'
+import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
+import TitleRemark from '@/views/chart/view/TitleRemark'
 
 export default {
   name: 'LabelNormal',
+  components: { TitleRemark },
   props: {
     chart: {
       type: Object,
@@ -78,7 +85,11 @@ export default {
       },
       title_show: true,
       borderRadius: '0px',
-      result: ''
+      result: '',
+      remarkCfg: {
+        show: false,
+        content: ''
+      }
     }
   },
   computed: {
@@ -113,6 +124,7 @@ export default {
         that.calcHeight()
       }
       this.setBackGroundBorder()
+      this.initRemark()
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {
@@ -227,6 +239,7 @@ export default {
     },
 
     resultFormat() {
+      if(!this.chart.data)return
       const value = this.chart.data.series[0].data[0]
       let yAxis = []
       try {
@@ -242,13 +255,16 @@ export default {
         const v = valueFormatter(value, formatterItem)
         this.result = v.includes('NaN') ? value : v
       }
+    },
+    initRemark() {
+      this.remarkCfg = getRemark(this.chart)
     }
   }
 }
 </script>
 
 <style scoped>
-  .table-class>>>.body--wrapper{
-    background: rgba(1,1,1,0);
-  }
+.table-class>>>.body--wrapper{
+  background: rgba(1,1,1,0);
+}
 </style>

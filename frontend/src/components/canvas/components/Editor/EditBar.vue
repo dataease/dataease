@@ -1,9 +1,12 @@
 <template>
-  <div class="bar-main">
+  <div class="bar-main" :class="showEditPosition">
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
     <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
       <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+    </div>
+    <div v-if="positionCheck('multiplexing')" style="margin-right: 1px;width: 18px;z-index: 5">
+      <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
     </div>
     <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
       <el-checkbox size="medium" @change="batchOptChange" />
@@ -73,15 +76,23 @@ export default {
     previewVisible: {
       type: Boolean,
       default: false
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
     return {
+      multiplexingCheckModel: false,
+      barWidth: 24,
       componentType: null,
       linkageActiveStatus: false,
       editFilter: [
         'view',
-        'custom'
+        'custom',
+        'custom-button'
       ],
       timer: null
     }
@@ -89,6 +100,21 @@ export default {
   mounted() {
   },
   computed: {
+    showEditPosition() {
+      if (this.activeModel === 'edit') {
+        const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
+        const toLeft = this.element.style.left * this.curCanvasScale.scalePointWidth
+        if (this.barWidth < toRight) {
+          return 'bar-main-right'
+        } else if (this.barWidth > toRight && this.barWidth > toLeft) {
+          return 'bar-main-left-inner'
+        } else {
+          return 'bar-main-left-outer'
+        }
+      } else {
+        return 'bar-main-preview'
+      }
+    },
     showJumpFlag() {
       return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
     },
@@ -102,7 +128,7 @@ export default {
     },
     // 编辑或预览区域显示
     normalAreaShow() {
-      return !this.linkageSettingStatus && !this.batchOptStatus
+      return !this.linkageSettingStatus && !this.batchOptStatus && !this.positionCheck('multiplexing')
     },
     existLinkage() {
       let linkageFiltersCount = 0
@@ -121,14 +147,14 @@ export default {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
-      let miniHeight = this.curComponent.miniSizey || 1
+      let miniHeight = 4
       if (this.element.component === 'de-number-range') {
-        miniHeight = this.curComponent.miniSizey || 2
+        miniHeight = 4
       }
       return miniHeight
     },
     miniWidth() {
-      return this.curComponent.miniSizex || 1
+      return 4
     },
     ...mapState([
       'menuTop',
@@ -148,6 +174,18 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    positionCheck(position) {
+      return this.showPosition.includes(position)
+    },
+    multiplexingCheck(val) {
+      if (val) {
+        // push
+        this.$store.commit('addCurMultiplexingComponent', { 'component': this.element, 'componentId': this.element.id })
+      } else {
+        // remove
+        this.$store.commit('removeCurMultiplexingComponentWithId', this.element.id )
+      }
+    },
     closePreview() {
       this.$emit('closePreview')
     },
@@ -199,6 +237,8 @@ export default {
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit', 'update')
+      } else if (this.curComponent.type === 'custom-button') {
+        bus.$emit('button-dialog-edit')
       } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       } else { bus.$emit('change_panel_right_draw', true) }
@@ -265,7 +305,6 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    right: 0px;
     float:right;
     z-index: 2;
     border-radius:2px;
@@ -287,6 +326,23 @@ export default {
 
   .bar-main ::v-deep .el-checkbox__inner::after{
     width: 4.5px;
+  }
+  .bar-main-right{
+    width: 22px;
+    right: -25px;
+  }
+  .bar-main-left-inner{
+    width: 22px;
+    left: 0px;
+  }
+
+  .bar-main-left-outer{
+    width: 22px;
+    left: -25px;
+  }
+
+  .bar-main-preview{
+    right: 0px;
   }
 
 </style>

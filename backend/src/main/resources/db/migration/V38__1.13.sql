@@ -72,4 +72,13 @@ INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALU
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
 
 
+
 ALTER TABLE  `dataset_column_permissions` ADD COLUMN `white_list_user` longtext DEFAULT NULL COMMENT '白名单' AFTER `permissions` ;
+
+ALTER TABLE `panel_group`
+    ADD COLUMN `update_by` varchar(255) NULL COMMENT '更新人' AFTER `status`,
+ADD COLUMN `update_time` bigint(13) NULL COMMENT '更新时间' AFTER `update_by`;
+
+ALTER TABLE `sys_task_email`
+ADD COLUMN `view_ids` varchar(255) NULL COMMENT '视图ID集合' AFTER `task_id`;
+

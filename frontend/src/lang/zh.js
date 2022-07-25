@@ -133,7 +133,7 @@ export default {
   commons: {
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
-    user_confirm_remove_cancel:'确定将该用户从角色中移除吗?',
+    user_confirm_remove_cancel: '确定将该用户从角色中移除吗?',
     default_value: '默认值',
     params_value: '参数值',
     input_role_name: '请输入角色名称',
@@ -615,7 +615,6 @@ export default {
     modify: '修改角色',
     tips: '提示',
     confirm_delete: '确认删除角色 ',
-    role_name: '角色名称',
     search_by_name: '按名称搜索',
     pls_input_name: '请输入名称',
     search_by_name_email: '通过姓名或邮箱搜索',
@@ -630,7 +629,7 @@ export default {
     editer_role: '编辑角色',
     add_role: '添加角色',
     role_name_exist: '该角色名称已存在',
-    search_by_role: '通过角色名称搜索',
+    search_by_role: '通过角色名称搜索'
   },
   menu: {
     parent_category: '上级目录',
@@ -659,7 +658,6 @@ export default {
     create_time: '创建日期',
     create: '新建组织',
     modify: '修改组织',
-    delete: '删除组织',
     delete_confirm: '确定要删除该组织吗?',
     input_name: '请输入组织名称',
     select_organization: '请选择组织',
@@ -669,7 +667,6 @@ export default {
     member: '成员',
     organization: '组织',
     add_user: '添加用户',
-    search_by_name: '通过组织名称搜索',
     sure_move_user: '确定将该用户从组织中移除吗？',
     move_success: '移除成功',
     user: '用户',
@@ -684,7 +681,7 @@ export default {
     sure_delete_organization: '确定删除该组织吗？',
     delete: '删除',
     add_child_org: '添加子组织',
-    edite_organization: '编辑组织',
+    edite_organization: '编辑组织'
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
@@ -1180,6 +1177,7 @@ export default {
     remark_bg_color: '背景填充'
   },
   dataset: {
+    parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
@@ -1554,6 +1552,13 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    panel_background_item: '自定义仪表板背景',
+    panel_background_image_tips: '当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M',
+    reUpload: '重新上传',
+    create_by: '创建人',
+    create_time: '创建时间',
+    update_by: '最近修改人',
+    update_time: '最近修改时间',
     target_url: '目标URL',
     target_url_tips: '可以点击字段用来拼接URL或者参数',
     select_world: '点击选择字段',
@@ -1931,8 +1936,6 @@ export default {
     row_column: '行列权限设置',
     row_permission: '行权限规则',
     enable_row: '启用行权限',
-    add_condition: '添加条件',
-    add_relationship: '添加关系',
     white_list: '白名单',
     white_user_not: '以上权限规则对白名单用户不生效',
     organization_or_role: '请选择组织或角色',
@@ -1954,7 +1957,7 @@ export default {
     please_fill: '请一行填一个，最多添加500个,识别录入时会自动过滤重复的选项和已经添加过的选项',
     close: '关 闭',
     add: '添 加',
-    sure: '确 定',
+    sure: '确 定'
   },
   about: {
     auth_to: '授权给',

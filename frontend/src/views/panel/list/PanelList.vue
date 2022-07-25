@@ -721,7 +721,11 @@ export default {
         name: data.name,
         privileges: data.privileges,
         sourcePanelName: data.sourcePanelName,
-        status: data.status
+        status: data.status,
+        createBy: data.createBy,
+        createTime: data.createTime,
+        updateBy: data.updateBy,
+        updateTime: data.updateTime
       })
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
