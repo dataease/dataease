@@ -2,9 +2,7 @@ import request from '@/utils/request'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
 
-export function uploadFile(fileId, file) {
-  const param = new FormData()
-  param.append('file', file.file)
+export function uploadFile(fileId, param) {
   return request({
     url: '/static/resource/upload/' + fileId,
     method: 'post',
@@ -16,10 +14,12 @@ export function uploadFile(fileId, file) {
 
 export function uploadFileResult(file, callback) {
   const fileId = uuid.v1()
-  const fileName = file.file.name
+  const fileName = file.name
   const newFileName = fileId + fileName.substr(fileName.lastIndexOf('.'), fileName.length)
   const fileUrl = store.state.staticResourcePath + newFileName
-  uploadFile(fileId, file).then(() => {
+  const param = new FormData()
+  param.append('file', file)
+  uploadFile(fileId, param).then(() => {
     callback(fileUrl)
   })
 }

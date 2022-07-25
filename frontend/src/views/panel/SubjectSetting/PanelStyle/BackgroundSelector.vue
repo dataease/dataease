@@ -1,49 +1,47 @@
 <template>
-  <div style="width: 100%;">
+  <div style="width: 100%;margin-top: 12px">
     <el-form ref="overallSettingForm" :model="overallSettingForm" size="mini">
-      <el-col style="padding-bottom: 10px;">
-        <el-row>
-          <el-col class="custom-item">
-            <el-radio v-model="panel.backgroundType" label="color" style="float: right" @change="onChangeType">
-              <span style="font-size: 12px">{{ $t('chart.color') }}</span>
-            </el-radio>
-          </el-col>
-          <el-col :span="10">
-            <el-color-picker
-              v-model="panel.color"
-              :predefine="predefineColors"
-              size="mini"
-              class="color-picker-custom"
-              @change="onChangeType"
-            />
-          </el-col>
-        </el-row>
-        <el-row style="height: 60px;margin-top:10px;overflow: hidden">
-          <el-col class="custom-item">
-            <el-radio v-model="panel.backgroundType" label="image" style="float: right" @change="onChangeType">
-              <span style="font-size: 12px">{{ $t('panel.photo') }}</span>
-            </el-radio>
-          </el-col>
-          <el-col :span="15">
-            <el-upload
-              action=""
-              accept=".jpeg,.jpg,.png,.gif"
-              class="avatar-uploader"
-              list-type="picture-card"
-              :http-request="upload"
-              :class="{disabled:uploadDisabled}"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-              :file-list="fileList"
-            >
-              <i class="el-icon-plus" />
-            </el-upload>
-            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
-          </el-col>
-        </el-row>
+      <el-col>
+        <span class="custom-item-text">{{ $t('panel.panel_background_item') }}</span>
       </el-col>
+      <el-col>
+        <el-radio-group v-model="panel.backgroundType" size="mini" @change="onChangeType()">
+          <el-radio label="color">{{ $t('chart.color') }}</el-radio>
+          <el-radio label="image">{{ $t('panel.photo') }}</el-radio>
+        </el-radio-group>
+      </el-col>
+      <el-col v-show="panel.backgroundType==='color'" :span="10">
+        <el-color-picker
+          v-model="panel.color"
+          :predefine="predefineColors"
+          size="mini"
+          class="color-picker-custom"
+          @change="onChangeType"
+        />
+      </el-col>
+      <el-col v-show="panel.backgroundType==='image'" span="10">
+        <el-upload
+          action=""
+          accept=".jpeg,.jpg,.png,.gif"
+          class="avatar-uploader"
+          list-type="picture-card"
+          :http-request="upload"
+          :class="{disabled:uploadDisabled}"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :file-list="fileList"
+        >
+          <i class="el-icon-plus" />
+        </el-upload>
+        <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+      </el-col>
+      <el-col v-show="panel.backgroundType==='image'">
+        <span v-show="!this.panel.imageUrl" class="image-hint">{{ $t('panel.panel_background_image_tips') }}</span>
+        <span v-show="this.panel.imageUrl" class="re-update-span" @click="goFile">{{ $t('panel.reUpload') }}</span>
+      </el-col>
+      <input id="input" ref="files" type="file" accept=".jpeg,.jpg,.png,.gif" hidden @click="e => {e.target.value = '';}" @change="reUpload">
     </el-form>
   </div>
 </template>
@@ -59,6 +57,7 @@ export default {
   name: 'BackgroundSelector',
   data() {
     return {
+      maxImageSize: 15000000,
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
@@ -82,6 +81,9 @@ export default {
     }
   },
   methods: {
+    goFile() {
+      this.$refs.files.click()
+    },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.panel = this.panel
@@ -103,10 +105,33 @@ export default {
     },
     upload(file) {
       const _this = this
+      if (file.size > this.maxImageSize) {
+        this.sizeMessage()
+      }
+      uploadFileResult(file.file, (fileUrl) => {
+        _this.$store.state.styleChangeTimes++
+        _this.panel.imageUrl = fileUrl
+        _this.fileList = [{ url: this.panel.imageUrl }]
+        _this.commitStyle()
+      })
+    },
+    reUpload(e) {
+      const file = e.target.files[0]
+      const _this = this
+      if (file.size > this.maxImageSize) {
+        this.sizeMessage()
+      }
       uploadFileResult(file, (fileUrl) => {
         _this.$store.state.styleChangeTimes++
         _this.panel.imageUrl = fileUrl
+        _this.fileList = [{ url: this.panel.imageUrl }]
         _this.commitStyle()
+      })
+    },
+    sizeMessage() {
+      this.$notify({
+        message: '背景图片请不要大于15M',
+        position: 'top-left'
       })
     }
   }
@@ -115,18 +140,22 @@ export default {
 
 <style scoped>
 .avatar-uploader {
-  margin-left: 10px;
+  position: relative;
+  margin-left: 0px;
+  margin-top: 8px;
+  height: 80px;
+  overflow: hidden;
 }
 
 .avatar-uploader ::v-deep .el-upload {
-  width: 100px;
-  height: 60px;
-  line-height: 70px;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
 }
 
 .avatar-uploader ::v-deep .el-upload-list li {
-  width: 100px !important;
-  height: 60px !important;
+  width: 80px !important;
+  height: 80px !important;
 }
 
 .disabled ::v-deep .el-upload--picture-card {
@@ -164,12 +193,35 @@ span {
 }
 
 .color-picker-custom {
-  margin-left: 10px;
+  margin-left: 0px;
   cursor: pointer;
+  margin-top: 8px;
   z-index: 1004;
 }
 
 .custom-item{
   width: 70px;
+}
+
+.re-update-span{
+  cursor: pointer;
+  color: #3370FF;
+  size: 14px;
+  line-height:22px;
+  font-weight: 400;
+}
+
+.image-hint {
+  color: #8F959E;
+  size: 14px;
+  line-height:22px;
+  font-weight: 400;
+}
+
+.custom-item-text {
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  color: var(--TextPrimary, #1F2329) !important;
+  line-height: 22px;
 }
 </style>
