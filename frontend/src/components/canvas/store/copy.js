@@ -105,6 +105,7 @@ export default {
       } else if (data.type === 'de-tabs') {
         const sourceAndTargetIds = {}
         const newCop = deepCopy(data)
+        newCop.id = uuid.v1()
         newCop.options.tabList.forEach((item) => {
           if (item.content && item.content.type === 'view') {
             const newViewId = uuid.v1()
