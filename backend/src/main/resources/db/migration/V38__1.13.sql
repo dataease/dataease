@@ -71,3 +71,5 @@ INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, 
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
 
+
+ALTER TABLE  `dataset_column_permissions` ADD COLUMN `white_list_user` longtext DEFAULT NULL COMMENT '白名单' AFTER `permissions` ;
