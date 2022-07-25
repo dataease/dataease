@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
     <div :id="componentCanvasId" :style="commonStyle" class="main_view">
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
@@ -150,7 +150,7 @@ export default {
       return style
     },
     componentActiveFlag() {
-      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible && !this.showPosition.includes('multiplexing') && !this.showPosition.includes('email-task')
+      return (this.curComponent && this.config === this.curComponent && !this.previewVisible && this.showPosition.includes('multiplexing') && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing')
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
