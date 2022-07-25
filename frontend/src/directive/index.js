@@ -64,6 +64,36 @@ export const bottom2TopDrag = {
   }
 }
 
+const closePress =  {
+  inserted: function (el) {
+    el.querySelector('.el-drawer__close-btn').onmousedown = function (e) {
+      e.currentTarget.style.background = '#d2d3d4';
+    }
+    el.querySelector('.el-drawer__close-btn').onmouseup = function (e) {
+      e.currentTarget.style.background = 'none';
+    }
+  }
+}
+
+// const btnPress =  {
+//   inserted: function (el) {
+//     el.onmousedown = function () {
+//       el.style.background = '#EFF0F1';
+//     }
+//     el.onmouseenter = function () {
+//       el.style.background = '#F5F6F7 !important';
+//     }
+//     el.onmouseleave = function () {
+//       el.style.background = 'none';
+//     }
+//     el.onmouseup = function () {
+//       el.style.background = 'none';
+//     }
+//   }
+// }
+
+// #EFF0F1
+
 export default {
   install(Vue) {
     // Vue.directive('data-permission', dataPermission)
@@ -71,6 +101,8 @@ export default {
     Vue.directive('left-to-right-drag', left2RightDrag)
     Vue.directive('right-to-left-drag', right2LeftDrag)
     Vue.directive('bottom-to-top-drag', bottom2TopDrag)
+    Vue.directive('closePress', closePress)
+    // Vue.directive('btnPress', btnPress)
   }
 }
 

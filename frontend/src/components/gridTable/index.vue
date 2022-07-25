@@ -169,6 +169,15 @@ export default {
     }
   }
 
+  .el-table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    border-top: 1px solid rgba(31, 35, 41, 0.15);;
+  }
+
   ::v-deep .el-table__fixed-body-wrapper {
     tr {
         background-color: var(--TableBG, #ffffff) !important;

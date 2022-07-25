@@ -391,4 +391,9 @@ export default {
   float: right;
   margin-right: 45px;
 }
+
+::v-deep .el-tabs__nav-wrap::after,
+::v-deep .el-tabs__active-bar {
+  height: 1px !important;
+}
 </style>
