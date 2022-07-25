@@ -108,6 +108,8 @@ const data = {
       y: 600
     },
     scrollAutoMove: 0,
+     // 系统管理菜单是否收缩
+    isCollapse: false,
     // 视图是否编辑记录
     panelViewEditInfo: {},
     // 仪表板视图明细
@@ -151,7 +153,9 @@ const data = {
     setEditMode(state, mode) {
       state.editMode = mode
     },
-
+    setIsCollapse(state, isCollapse) {
+      state.isCollapse = isCollapse
+    },
     setCanvasStyle(state, style) {
       if (style) {
         style['selfAdaption'] = true

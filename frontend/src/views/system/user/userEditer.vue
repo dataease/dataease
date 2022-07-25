@@ -99,18 +99,39 @@
             :label="$t('commons.organization')"
             prop="deptId"
           >
-            <treeselect
-              ref="deptTreeSelect"
+            <el-popover
+            placement="bottom"
+            popper-class="user-popper dept"
+            width="384"
+            trigger="click"
+          >
+            <el-tree
+              v-if="dialogVisible"
+              :load="loadNode"
+              :lazy="true"
+              :expand-on-click-node="false"
+              :data="depts"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            ></el-tree>
+
+            <el-select
+              ref="roleSelect"
               v-model="form.deptId"
-              :options="depts"
-              :load-options="loadDepts"
-              :auto-load-root-options="false"
-              :placeholder="$t('user.choose_org')"
-              :no-children-text="$t('commons.treeselect.no_children_text')"
-              :no-options-text="$t('commons.treeselect.no_options_text')"
-              :no-results-text="$t('commons.treeselect.no_results_text')"
-              @open="filterData"
+              clearable
+              slot="reference"
+              class="form-gender-select"
+              popper-class="tree-select"
+              :placeholder="$t('commons.please_select')"
+            >
+            <el-option
+              v-for="item in selectDepts"
+              :key="item.label"
+              :label="item.label"
+              :value="item.id"
             />
+            </el-select>
+            </el-popover>
           </el-form-item>
         </el-col>
       </el-row>
@@ -170,16 +191,15 @@ import { PHONE_REGEX } from "@/utils/validate";
 import { getDeptTree, treeByDeptId } from "@/api/system/dept";
 import { addUser, editUser, allRoles } from "@/api/system/user";
 import { pluginLoaded, defaultPwd } from "@/api/user";
-import {
-  LOAD_CHILDREN_OPTIONS,
-  LOAD_ROOT_OPTIONS,
-} from "@riophae/vue-treeselect";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
-  components: { Treeselect },
   data() {
     return {
+      defaultProps: {
+        children: "children",
+        label: "label",
+        isLeaf: "leaf",
+      },
+      selectDepts: [],
       form: {
         roles: [
           {
@@ -302,7 +322,7 @@ export default {
         phonePrefix: "+86",
         roleIds: [2],
       },
-      depts: null,
+      depts: [],
       roles: [],
       roleDatas: [],
       userRoles: [],
@@ -331,7 +351,6 @@ export default {
       }
     },
     create() {
-      this.depts = null;
       this.formType = "add";
       this.form = Object.assign({}, this.defaultForm);
     },
@@ -342,7 +361,8 @@ export default {
         this.create();
         return;
       }
-      this.depts = null;
+      const { deptId:id, deptName:label }  = row.dept;
+      this.selectDepts = [{id, label}]
       this.formType = "modify";
       this.dialogVisible = true;
       this.form = Object.assign({}, row);
@@ -354,59 +374,54 @@ export default {
       if (!this.form.phonePrefix) {
         this.form.phonePrefix = '+86';
       }
-      this.initDeptTree();
     },
     initRoles() {
       allRoles().then((res) => {
         this.roles = res.data;
       });
     },
-    initDeptTree() {
-      treeByDeptId(this.form.deptId || 0).then((res) => {
-        const results = res.data.map((node) => {
-          if (node.hasChildren && !node.children) {
-            node.children = null;
-            // delete node.children
-          }
-          return node;
-        });
-        this.depts = results;
-      });
-    },
-    // 获取弹窗内部门数据
-    loadDepts({ action, parentNode, callback }) {
-      if (action === "LOAD_ROOT_OPTIONS" && !this.form.deptId) {
-        const _self = this;
-        treeByDeptId(0).then((res) => {
-          const results = res.data.map((node) => {
-            if (node.hasChildren && !node.children) {
-              node.children = null;
-            }
-            return node;
-          });
-          _self.depts = results;
-          callback();
-        });
+    handleNodeClick({ id, label }) {
+      const [ dept ] = this.selectDepts;
+      if (!dept || dept.id !== id) {
+        this.selectDepts = [{ id, label }];
+        this.form.deptId = id
+        return
       }
 
-      if (action === "LOAD_CHILDREN_OPTIONS") {
-        const _self = this;
-        getDeptTree(parentNode.id).then((res) => {
-          parentNode.children = res.data.map(function (obj) {
-            return _self.normalizer(obj);
-          });
-          callback();
-        });
+      if (dept.id === id) {
+        this.selectDepts = [];
+        this.form.deptId = null
       }
     },
-    normalizer(node) {
-      if (node.hasChildren) {
-        node.children = null;
+    // 获取弹窗内部门数据
+    treeByDeptId() {
+      treeByDeptId(0).then((res) => {
+        this.depts =  (res.data || []).map(ele =>  {
+        return {
+            ...ele,
+            leaf: !ele.hasChildren,
+          }
+        })
+      });
+    },
+      loadNode(node, resolve) {
+      if (!this.depts.length) {
+        this.treeByDeptId();
+        return;
       }
+      getDeptTree(node.data.id).then((res) => {
+        resolve(
+          res.data.map((dept) => {
+            return this.normalizer(dept);
+          })
+        );
+      });
+    },
+    normalizer(node) {
       return {
         id: node.deptId,
         label: node.name,
-        children: node.children,
+        leaf: !node.hasChildren,
       };
     },
     deleteTag(value) {
@@ -428,6 +443,7 @@ export default {
       );
     },
     reset() {
+      this.depts = [];
       this.$refs.createUserForm.resetFields();
       this.dialogVisible = false;
     },
@@ -445,21 +461,6 @@ export default {
           return false;
         }
       });
-    },
-    filterData(instanceId) {
-      this.$refs.roleSelect &&
-        this.$refs.roleSelect.blur &&
-        this.$refs.roleSelect.blur();
-      if (!this.depts) {
-        return;
-      }
-      const results = this.depts.map((node) => {
-        if (node.hasChildren) {
-          node.children = null;
-        }
-        return node;
-      });
-      this.depts = results;
     },
     onCopy(e) {
       this.$success(this.$t("commons.copy_success"));
@@ -571,8 +572,22 @@ export default {
   .form-gender-select {
     width: 100%;
   }
+}
 
-  .btn {
+</style>
+<style lang="scss">
+.tree-select {
+  display: none !important;
+}
+.user-popper {
+  background: transparent;
+  padding: 0;
+  .popper__arrow {
+    display: none;
   }
+}
+.user-popper.dept {
+  height: 300px;
+  overflow: auto;
 }
 </style>

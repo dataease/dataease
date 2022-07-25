@@ -26,9 +26,12 @@
         </el-input>
         <el-button
           class="normal btn"
-          icon="el-icon-setting"
+          icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >筛选</el-button
+          >筛选<template v-if="filterTexts.length">
+            ({{ filterTexts.length }})
+          </template>
+          </el-button
         >
         <el-dropdown trigger="click" :hide-on-click="false">
           <el-button class="normal btn" icon="el-icon-setting"
@@ -54,7 +57,18 @@
         </el-dropdown>
       </el-col>
     </el-row>
-    <div class="table-container">
+    <div class="filter-texts" v-if="filterTexts.length">
+      <span class="sum">{{ paginationConfig.total }}</span>
+      <span class="title">个结果</span>
+       <el-divider direction="vertical"></el-divider>
+      <p class="text" v-for="ele in filterTexts" :key="ele">{{ ele }} <i class="el-icon-close"></i></p>
+      <el-button
+          type="text"
+          icon="el-icon-delete"
+          @click="clearFilter"
+          >{{ $t("user.create") }}</el-button>
+    </div>
+    <div class="table-container" :class="[filterTexts.length ? 'table-container-filter' : '']">
       <grid-table
         v-if="canLoadDom"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
@@ -160,7 +174,7 @@
               width="321"
               :ref="'initPwd' + scope.row.userId"
               popper-class="reset-pwd"
-              trigger="hover"
+              trigger="click"
             >
               <i class="el-icon-warning"></i>
               <div class="tips">是否恢复为初始密码?</div>
@@ -207,44 +221,6 @@
         </el-table-column>
       </grid-table>
     </div>
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="$t('member.edit_password')"
-      :visible.sync="editPasswordVisible"
-      width="30%"
-      :destroy-on-close="true"
-      left
-      @close="handleClose"
-    >
-      <el-form
-        ref="editPasswordForm"
-        :model="ruleForm"
-        label-position="right"
-        label-width="120px"
-        :rules="rule"
-        class="demo-ruleForm"
-        @keypress.enter.native="editUserPassword('editPasswordForm')"
-      >
-        <el-form-item :label="$t('member.new_password')" prop="newPassword">
-          <el-input
-            v-model="ruleForm.newPassword"
-            type="password"
-            autocomplete="off"
-            show-password
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="editPasswordVisible = false">{{
-          $t("commons.cancel")
-        }}</el-button>
-        <el-button
-          type="primary"
-          @click="editUserPassword('editPasswordForm')"
-          >{{ $t("commons.confirm") }}</el-button
-        >
-      </div>
-    </el-dialog>
     <keep-alive>
       <filterUser ref="filterUser" @search="filterDraw" ></filterUser>
     </keep-alive>
@@ -310,8 +286,8 @@ export default {
         total: 0,
       },
       data: [],
+      filterTexts: [],
       dialogVisible: false,
-      editPasswordVisible: false,
       form: {
         roles: [
           {
@@ -376,6 +352,9 @@ export default {
     document.removeEventListener('keypress', this.entryKey)
   },
   methods: {
+    clearFilter() {
+
+    },
     entryKey (event) {
       const keyCode = event.keyCode
       if (keyCode === 13) {
@@ -438,8 +417,9 @@ export default {
       this.paginationConfig.currentPage = currentPage;
       this.search();
     },
-    filterDraw(condition) {
+    filterDraw(condition, filterTexts = []) {
       this.cacheCondition = condition;
+      this.filterTexts = filterTexts;
       this.initSearch()
     },
     search() {
@@ -467,11 +447,6 @@ export default {
     edit(row) {
       this.$refs.userEditer.init(row);
     },
-    editPassword(row) {
-      this.editPasswordVisible = true;
-      const tempForm = Object.assign({}, row);
-      this.ruleForm = { userId: tempForm.userId };
-    },
     del(row) {
       this.$confirm(this.$t("确定删除该用户吗？"), "", {
         confirmButtonText: this.$t("commons.delete"),
@@ -497,23 +472,6 @@ export default {
         message: h("p", null, [h("span", null, this.$t("commons.delete_success"))]),
         iconClass: "el-icon-success",
         customClass: "de-message-success de-message",
-      });
-    },
-    editUserPassword(editPasswordForm) {
-      this.$refs[editPasswordForm].validate((valid) => {
-        if (valid) {
-          editPassword(this.ruleForm).then((res) => {
-            this.$success(this.$t("commons.modify_success"));
-            this.editPasswordVisible = false;
-            this.initSearch();
-            this.user &&
-              this.user.userId &&
-              this.user.userId === editPasswordForm.userId &&
-              window.location.reload();
-          });
-        } else {
-          return false;
-        }
       });
     },
     handleClose() {
@@ -566,12 +524,57 @@ export default {
     margin: 0 -2px 0 4px;
   }
 }
+
+.table-container-filter {
+  height: calc(100% - 110px);
+}
+.filter-texts {
+  display: flex;
+  align-items: center;
+  margin: 17px 0;
+  font-family: 'PingFang SC';
+  font-weight: 400;
+
+  .sum {
+    color: #1F2329;;
+  }
+
+  .title {
+    color: #999999;
+    margin-left: 8px;
+  }
+
+  .text {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 22px 1px 6px;
+    display: flex;
+    align-items: center;
+    color: #0C296E;
+    font-size: 14px;
+    line-height: 22px;
+    background: rgba(51, 112, 255, 0.1);
+    border-radius: 2px;
+    margin: 0;
+    margin-right: 8px;
+    position: relative;
+    i {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+}
 .top-operate {
   margin-bottom: 16px;
 
   .btn {
     border-radius: 4px;
-    padding: 5px 12px 5px 12px;
+    padding: 5px 12px;
     //styleName: 中文/桌面端/正文 14 22 Regular;
     font-family: PingFang SC;
     font-size: 14px;
@@ -581,6 +584,11 @@ export default {
     text-align: center;
     border: none;
     box-sizing: border-box;
+
+
+    ::v-deep span {
+      margin-left: 5px;
+    }
   }
 
   .normal {
@@ -602,6 +610,9 @@ export default {
 
   .name-email-search {
     width: 240px;
+    ::v-deep input {
+      border-color: #bbbfc4;
+    }
   }
 }
 </style>
