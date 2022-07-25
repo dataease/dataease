@@ -1544,10 +1544,13 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
-    create_by: '创建人',
-    create_time: '创建时间',
-    update_by: '最近修改人',
-    update_time: '最近修改时间',
+    panel_background_item: 'Customize panel background',
+    panel_background_image_tips: 'Currently.Jpeg,.Jpg,.Png,.Gif files are supported, and the size should not exceed 15m',
+    reUpload: 'reUpload',
+    create_by: 'Create By',
+    create_time: 'Create Time',
+    update_by: 'Update By',
+    update_time: 'Update Time',
     target_url: 'Target Url',
     target_url_tips: 'You can click fields to splice URLs or parameters',
     select_world: 'Select World',

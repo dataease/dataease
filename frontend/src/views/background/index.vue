@@ -213,7 +213,7 @@ export default {
     },
     upload(file) {
       const _this = this
-      uploadFileResult(file, (fileUrl) => {
+      uploadFileResult(file.file, (fileUrl) => {
         _this.curComponent.commonBackground.outerImage = fileUrl
       })
     }

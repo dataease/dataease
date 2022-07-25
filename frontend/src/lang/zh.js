@@ -1552,6 +1552,9 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    panel_background_item: '自定义仪表板背景',
+    panel_background_image_tips: '当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M',
+    reUpload: '重新上传',
     create_by: '创建人',
     create_time: '创建时间',
     update_by: '最近修改人',
