@@ -189,10 +189,20 @@ const filterRouter = routers => {
   })
 }
 const hasPermission = (router, user_permissions) => {
-  // 菜单要求权限 但是当前用户权限没有包含菜单权限
-  if (router.permission && !user_permissions.includes(router.permission)) {
+  // 判断是否有符合权限 eg. user:read,user:delete
+  if (router.permission && router.permission.indexOf(',') > -1) {
+    const permissions = router.permission.split(',')
+    const permissionsFilter = permissions.filter(permission => {
+      return user_permissions.includes(permission)
+    })
+    if (!permissionsFilter || permissionsFilter.length === 0) {
+      return false
+    }
+  } else if (router.permission && !user_permissions.includes(router.permission)) {
+    // 菜单要求权限 但是当前用户权限没有包含菜单权限
     return false
   }
+
   if (!filterLic(router)) {
     return false
   }
