@@ -279,7 +279,7 @@ export default {
       this.setCondition()
     },
 
-    setCondition() {
+    getCondition() {
       const val = this.formatFilterValue()
 
       const param = {
@@ -288,6 +288,11 @@ export default {
         operator: this.operator,
         isTree: true
       }
+      return param
+    },
+
+    setCondition() {
+      const param = this.getCondition()
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

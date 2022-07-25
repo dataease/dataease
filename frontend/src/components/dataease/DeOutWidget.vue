@@ -27,7 +27,7 @@
                 :is="element.component"
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
-                ref="deOutWidget"
+                ref="filter-ref"
                 class="component-custom"
                 :out-style="element.style"
                 :element="element"
@@ -152,6 +152,12 @@ export default {
           alignItems: 'center'
         }
       }
+    },
+    getCondition() {
+      if (this.$refs && this.$refs['filter-ref'] && this.$refs['filter-ref'].getCondition) {
+        return this.$refs['filter-ref'].getCondition()
+      }
+      return null
     }
   }
 }

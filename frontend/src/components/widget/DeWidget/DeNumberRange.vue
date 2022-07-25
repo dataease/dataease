@@ -194,13 +194,33 @@ export default {
         })
       })
     },
-    setCondition() {
+    getCondition() {
       const param = {
         component: this.element,
-        // value: !this.values ? [] : Array.isArray(this.values) ? this.values : [this.values],
         value: [this.form.min, this.form.max],
         operator: this.operator
       }
+      if (this.form.min && this.form.max) {
+        return param
+      }
+      if (!this.form.min && !this.form.max) {
+        param.value = []
+        return param
+      }
+      if (this.form.min) {
+        param.value = [this.form.min]
+        param.operator = 'ge'
+        return param
+      }
+      if (this.form.max) {
+        param.value = [this.form.max]
+        param.operator = 'le'
+        return param
+      }
+      return param
+    },
+    setCondition() {
+      const param = this.getCondition()
 
       if (this.form.min && this.form.max) {
         this.inDraw && this.$store.commit('addViewFilter', param)

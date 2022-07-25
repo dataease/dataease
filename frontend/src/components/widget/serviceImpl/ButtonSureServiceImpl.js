@@ -24,7 +24,8 @@ const drawPanel = {
       round: false,
       plain: true,
       customRange: false,
-      filterIds: []
+      filterIds: [],
+      autoTrigger: true
     },
     value: '查询'
   },

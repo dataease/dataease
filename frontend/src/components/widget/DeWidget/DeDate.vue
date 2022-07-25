@@ -170,13 +170,17 @@ export default {
     search() {
       this.setCondition()
     },
-    setCondition() {
+    getCondition() {
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator
       }
       param.value = this.formatValues(param.value)
+      return param
+    },
+    setCondition() {
+      const param = this.getCondition()
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     dateChange(value) {
