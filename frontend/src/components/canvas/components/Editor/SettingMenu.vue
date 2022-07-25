@@ -5,7 +5,7 @@
         <slot name="icon" />
         <el-dropdown-menu v-if="curComponent">
           <el-dropdown-item v-if="editFilter.includes(curComponent.type)" icon="el-icon-edit-outline" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
+          <el-dropdown-item v-if="curComponent.type != 'custom-button'" icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
           <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
@@ -73,7 +73,7 @@ export default {
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit', 'update')
-      }else if (this.curComponent.type === 'custom-button') {
+      } else if (this.curComponent.type === 'custom-button') {
         bus.$emit('button-dialog-edit')
       } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')

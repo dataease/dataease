@@ -6,12 +6,14 @@
     :round="options.attrs.round"
     :plain="options.attrs.plain"
     :size="size"
+    @click="triggerSearch"
   >
     {{ options.value }}
   </el-button>
 </template>
 
 <script>
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -34,6 +36,11 @@ export default {
   },
   created() {
     this.options = this.element.options
+  },
+  methods: {
+    triggerSearch() {
+      bus.$emit('trigger-search-button')
+    }
   }
 }
 </script>

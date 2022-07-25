@@ -61,7 +61,7 @@
       @editComponent="editComponent(index,item)"
     >
       <de-out-widget
-        v-if="renderOk&&item.type==='custom'"
+        v-if="renderOk && item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -74,7 +74,7 @@
       />
       <component
         :is="item.component"
-        v-else-if="renderOk&&item.type==='other'"
+        v-else-if="renderOk && item.type==='other'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -207,7 +207,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
-import { buildFilterMap } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import $ from 'jquery'
@@ -929,7 +929,8 @@ export default {
       yourList: [],
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
-      editShow: false
+      editShow: false,
+      buttonFilterMap: null
     }
   },
   computed: {
@@ -1004,7 +1005,7 @@ export default {
       'batchOptStatus'
     ]),
     filterMap() {
-      return buildFilterMap(this.componentData)
+      return this.buttonFilterMap || buildFilterMap(this.componentData)
     }
   },
   watch: {
@@ -1055,6 +1056,7 @@ export default {
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
+    bus.$on('trigger-search-button', this.triggerSearchButton)
 
     // 矩阵定位调试模式
     if (this.psDebug) {
@@ -1068,10 +1070,74 @@ export default {
     eventBus.$off('startMoveIn', this.startMoveIn)
     eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('onRemoveLastItem', this.removeLastItem)
+    bus.$off('trigger-search-button', this.triggerSearchButton)
   },
   created() {
   },
   methods: {
+    triggerSearchButton() {
+      this.buttonFilterMap = this.buildButtonFilterMap(this.componentData)
+    },
+    buildButtonFilterMap(panelItems) {
+      const result = {
+        buttonExist: false,
+        relationFilterIds: [],
+        filterMap: {
+
+        }
+      }
+      if (!panelItems || !panelItems.length) return result
+      let sureButtonItem = null
+      result.buttonExist = panelItems.some(item => {
+        if (item.type === 'custom-button' && item.serviceName === 'buttonSureWidget') {
+          sureButtonItem = item
+          return true
+        }
+      })
+
+      if (!result.buttonExist) return result
+
+      const customRange = sureButtonItem.options.attrs.customRange
+
+      const allFilters = panelItems.filter(item => item.type === 'custom')
+
+      const matchFilters = customRange && allFilters.filter(item => sureButtonItem.options.attrs.filterIds.includes(item.id)) || allFilters
+
+      result.relationFilterIds = matchFilters.map(item => item.id)
+
+      let viewKeyMap = buildViewKeyMap(panelItems)
+      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap)
+      result.filterMap = viewKeyMap
+      return result
+    },
+    buildViewKeyFilters(panelItems, result) {
+      const refs = this.$refs
+      panelItems.forEach((element, index) => {
+        if (element.type !== 'custom') {
+          return true
+        }
+
+        let param = null
+        const wrapperChild = refs['wrapperChild'][index]
+        param = wrapperChild.getCondition && wrapperChild.getCondition()
+        const condition = formatCondition(param)
+        const vValid = valueValid(condition)
+        const filterComponentId = condition.componentId
+        Object.keys(result).forEach(viewId => {
+          const vidMatch = viewIdMatch(condition.viewIds, viewId)
+          const viewFilters = result[viewId]
+          let j = viewFilters.length
+          while (j--) {
+            const filter = viewFilters[j]
+            if (filter.componentId === filterComponentId) {
+              viewFilters.splice(j, 1)
+            }
+          }
+          vidMatch && vValid && viewFilters.push(condition)
+        })
+      })
+      return result
+    },
     pluginEditHandler({ e, id }) {
       let index = -1
       for (let i = 0; i < this.componentData.length; i++) {
