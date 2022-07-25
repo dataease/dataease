@@ -4,6 +4,7 @@
     v-if="options!== null && options.attrs!==null"
     :type="options.attrs.type"
     :round="options.attrs.round"
+    :plain="options.attrs.plain"
     :size="size"
   >
     {{ options.value }}
