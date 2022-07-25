@@ -175,13 +175,13 @@ export default {
   }
   .le-aside-container {
       .sidebar-container {
-        width: 100% !important;
-        position: initial !important;
-        height: calc(100vh - 80px) !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
+        width: 100%;
+        position: relative !important;
+        height: 100%;
+        top: 0 !important;
         background-color: var(--SiderBG) !important;
       }
+      overflow: hidden;
   }
   .full-height {
     height: 100vh !important;
