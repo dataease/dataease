@@ -169,12 +169,29 @@ public class PermissionService {
         dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
         datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
+
         dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
         dataSetColumnPermissionsDTO.setAuthTargetType("role");
-        datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
+        List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
+        for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
+            columnPermissionsDTO.getWhiteListUser();
+            List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
+            if(!userIdList.contains(userId)){
+                roleColumnPermissionsDTOS.add(columnPermissionsDTO);
+            }
+        }
+        datasetColumnPermissions.addAll(roleColumnPermissionsDTOS);
+
         dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
         dataSetColumnPermissionsDTO.setAuthTargetType("dept");
-        datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
+        List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();
+        for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
+            List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
+            if(!userIdList.contains(userId)){
+                deptColumnPermissionsDTOS.add(columnPermissionsDTO);
+            }
+        }
+        datasetColumnPermissions.addAll(deptColumnPermissionsDTOS);
         return datasetColumnPermissions;
     }
 

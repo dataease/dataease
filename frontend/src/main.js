@@ -23,6 +23,8 @@ import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
 import DeViewSelect from '@/components/DeViewSelect'
+import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
+import TitleRemark from '@/views/chart/view/TitleRemark'
 import '@/components/canvas/custom-component' // 注册自定义组件
 
 import '@/utils/DateUtil'
@@ -90,6 +92,8 @@ Vue.component('Treeselect', Treeselect)
 Vue.component('DeComplexInput', DeComplexInput)
 Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.component('DeViewSelect', DeViewSelect)
+Vue.component('RemarkEditor', RemarkEditor)
+Vue.component('TitleRemark', TitleRemark)
 Vue.config.productionTip = false
 
 import vueToPdf from 'vue-to-pdf'

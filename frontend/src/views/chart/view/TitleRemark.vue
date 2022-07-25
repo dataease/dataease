@@ -33,6 +33,32 @@ export default {
   padding: 10px;
   border-radius: 4px;
 }
+::-webkit-scrollbar {
+  width: 0px!important;
+  height: 0px!important;
+}
+::v-deep ol {
+  display: block!important;
+  list-style-type: decimal;
+  margin-block-start: 1em!important;
+  margin-block-end: 1em!important;
+  margin-inline-start: 0px!important;
+  margin-inline-end: 0px!important;
+  padding-inline-start: 40px!important;
+}
+::v-deep ul {
+  display: block!important;
+  list-style-type: disc;
+  margin-block-start: 1em!important;
+  margin-block-end: 1em!important;
+  margin-inline-start: 0px!important;
+  margin-inline-end: 0px!important;
+  padding-inline-start: 40px!important;
+}
+::v-deep li {
+  display: list-item!important;
+  text-align: -webkit-match-parent!important;
+}
 </style>
 <style>
 .el-popover.remark-pop{
