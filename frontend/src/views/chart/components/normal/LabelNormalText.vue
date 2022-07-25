@@ -1,7 +1,12 @@
 <template>
   <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
+    <span v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+      <div>
+        <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
+        <title-remark v-if="chart.render && chart.render === 'antv' && remarkCfg.show" :remark-cfg="remarkCfg" />
+      </div>
+    </span>
     <div
       v-if="chart.data && chart.data.series && chart.data.series.length > 0"
       id="label-content"
@@ -22,13 +27,14 @@
 </template>
 
 <script>
-import { hexColorToRGBA } from '../../chart/util'
+import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import TitleRemark from '@/views/chart/view/TitleRemark'
 
 export default {
   name: 'LabelNormalText',
-  components: { ViewTrackBar },
+  components: { TitleRemark, ViewTrackBar },
   props: {
     chart: {
       type: Object,
@@ -93,7 +99,11 @@ export default {
         left: '0px',
         top: '0px'
       },
-      pointParam: null
+      pointParam: null,
+      remarkCfg: {
+        show: false,
+        content: ''
+      }
     }
   },
   computed: {
@@ -130,6 +140,7 @@ export default {
         that.calcHeight()
       }
       this.setBackGroundBorder()
+      this.initRemark()
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {
@@ -244,13 +255,16 @@ export default {
         this.trackBarStyle.top = (this.$refs['textData'].offsetTop + this.$refs['textData'].offsetHeight + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
+    },
+    initRemark() {
+      this.remarkCfg = getRemark(this.chart)
     }
   }
 }
 </script>
 
 <style scoped>
-  .table-class>>>.body--wrapper{
-    background: rgba(1,1,1,0);
-  }
+.table-class>>>.body--wrapper{
+  background: rgba(1,1,1,0);
+}
 </style>

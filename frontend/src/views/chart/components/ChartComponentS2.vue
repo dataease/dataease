@@ -2,7 +2,10 @@
   <div ref="chartContainer" style="padding: 0;width: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
-      <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
+      <div>
+        <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
+        <title-remark v-if="remarkCfg.show" :remark-cfg="remarkCfg" />
+      </div>
     </span>
     <div ref="tableContainer" style="width: 100%;overflow: hidden;" :style="{background:container_bg_class.background}">
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
@@ -34,12 +37,13 @@
 <script>
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
-import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
+import TitleRemark from '@/views/chart/view/TitleRemark'
 
 export default {
   name: 'ChartComponentS2',
-  components: { ViewTrackBar },
+  components: { TitleRemark, ViewTrackBar },
   props: {
     chart: {
       type: Object,
@@ -102,7 +106,11 @@ export default {
       tableData: [],
       showPage: false,
       scrollTimer: null,
-      scrollTop: 0
+      scrollTop: 0,
+      remarkCfg: {
+        show: false,
+        content: ''
+      }
     }
   },
 
@@ -322,6 +330,7 @@ export default {
           this.container_bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+      this.initRemark()
     },
 
     calcHeightRightNow() {
@@ -389,6 +398,9 @@ export default {
           this.myChart.render()
         }, senior.scrollCfg.interval)
       }
+    },
+    initRemark() {
+      this.remarkCfg = getRemark(this.chart)
     }
   }
 }

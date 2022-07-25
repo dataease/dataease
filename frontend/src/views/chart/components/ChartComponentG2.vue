@@ -2,7 +2,10 @@
   <div ref="chartContainer" style="padding: 0;width: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
     <span v-if="chart.type && antVRenderStatus" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
-      <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
+      <div>
+        <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
+        <title-remark v-if="remarkCfg.show" :remark-cfg="remarkCfg" />
+      </div>
     </span>
     <div :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}" />
   </div>
@@ -12,7 +15,7 @@
 import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
-import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseBarOptionAntV, hBaseBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
 import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
@@ -23,10 +26,11 @@ import { baseTreemapOptionAntV } from '@/views/chart/chart/treemap/treemap_antv'
 import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
 import { baseWaterfallOptionAntV } from '@/views/chart/chart/waterfall/waterfall'
 import { baseWordCloudOptionAntV } from '@/views/chart/chart/wordCloud/word_cloud'
+import TitleRemark from '@/views/chart/view/TitleRemark'
 
 export default {
   name: 'ChartComponentG2',
-  components: { ViewTrackBar },
+  components: { TitleRemark, ViewTrackBar },
   props: {
     chart: {
       type: Object,
@@ -84,7 +88,11 @@ export default {
       title_show: true,
       antVRenderStatus: false,
       linkageActiveParam: null,
-      linkageActiveHistory: false
+      linkageActiveHistory: false,
+      remarkCfg: {
+        show: false,
+        content: ''
+      }
 
     }
   },
@@ -320,6 +328,7 @@ export default {
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
         }
       }
+      this.initRemark()
     },
 
     calcHeightRightNow() {
@@ -337,6 +346,9 @@ export default {
       setTimeout(() => {
         this.calcHeightRightNow()
       }, 100)
+    },
+    initRemark() {
+      this.remarkCfg = getRemark(this.chart)
     }
   }
 }

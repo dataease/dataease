@@ -36,8 +36,44 @@
             <el-checkbox v-model="titleForm.isBolder" @change="changeTitleStyle('isBolder')">{{ $t('chart.bolder') }}</el-checkbox>
           </el-form-item>
         </div>
+
+        <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark')" class="form-item">
+          <el-checkbox v-model="titleForm.remarkShow" @change="changeTitleStyle('remarkShow')">{{ $t('chart.show') }}</el-checkbox>
+        </el-form-item>
+        <span v-show="titleForm.remarkShow">
+          <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_edit')" class="form-item">
+            <el-button
+              :title="$t('chart.edit')"
+              icon="el-icon-edit"
+              type="text"
+              size="small"
+              @click="editRemark"
+            />
+          </el-form-item>
+          <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_bg_color')" class="form-item">
+            <el-color-picker v-model="titleForm.remarkBackgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('remarkBackgroundColor')" />
+          </el-form-item>
+        </span>
       </el-form>
     </el-col>
+
+    <!--富文本编辑框-->
+    <el-dialog
+      v-if="showEditRemark"
+      v-dialogDrag
+      :title="$t('chart.remark')"
+      :visible="showEditRemark"
+      :show-close="false"
+      width="70%"
+      class="dialog-css"
+      append-to-body
+    >
+      <remark-editor :remark="titleForm.remark" @onRemarkChange="onRemarkChange" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeRemark">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="changeRemark">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -45,9 +81,11 @@
 import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
+import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
 
 export default {
   name: 'TitleSelectorAntV',
+  components: { RemarkEditor },
   props: {
     param: {
       type: Object,
@@ -70,7 +108,9 @@ export default {
       titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
       fontSize: [],
       isSetting: false,
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      showEditRemark: false,
+      tmpRemark: ''
     }
   },
   computed: {
@@ -101,6 +141,9 @@ export default {
         }
         if (customStyle.text) {
           this.titleForm = customStyle.text
+          this.titleForm.remarkShow = this.titleForm.remarkShow ? this.titleForm.remarkShow : DEFAULT_TITLE_STYLE.remarkShow
+          this.titleForm.remark = this.titleForm.remark ? this.titleForm.remark : DEFAULT_TITLE_STYLE.remark
+          this.titleForm.remarkBackgroundColor = this.titleForm.remarkBackgroundColor ? this.titleForm.remarkBackgroundColor : DEFAULT_TITLE_STYLE.remarkBackgroundColor
         }
         if (!this.batchOptStatus) {
           this.titleForm.title = this.chart.title
@@ -138,6 +181,21 @@ export default {
     },
     showProperty(property) {
       return this.propertyInner.includes(property)
+    },
+
+    editRemark() {
+      this.showEditRemark = true
+    },
+    closeRemark() {
+      this.showEditRemark = false
+    },
+    changeRemark() {
+      this.titleForm.remark = this.tmpRemark
+      this.changeTitleStyle('remark')
+      this.closeRemark()
+    },
+    onRemarkChange(val) {
+      this.tmpRemark = val
     }
   }
 }
@@ -162,12 +220,12 @@ export default {
 .el-select-dropdown__item{
   padding: 0 20px;
 }
-  span{
-    font-size: 12px
-  }
-  .el-form-item{
-    margin-bottom: 6px;
-  }
+span{
+  font-size: 12px
+}
+.el-form-item{
+  margin-bottom: 6px;
+}
 
 .switch-style{
   position: absolute;
@@ -177,5 +235,17 @@ export default {
 .color-picker-style{
   cursor: pointer;
   z-index: 1003;
+}
+
+.dialog-css >>> .el-dialog__title {
+  font-size: 14px;
+}
+
+.dialog-css >>> .el-dialog__header {
+  padding: 20px 20px 0;
+}
+
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 20px;
 }
 </style>
