@@ -140,6 +140,7 @@ public class EmailService {
             attach.setFileName(MimeUtility.encodeText(file.getName()));
             multipart.addBodyPart(attach);
         }
+        System.getProperties().setProperty("mail.mime.splitlongparameters", "false");
         multipart.setSubType("related");
         return multipart;
     }
