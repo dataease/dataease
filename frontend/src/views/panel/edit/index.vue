@@ -233,7 +233,7 @@
             <!-- <Editor id="canvasEditor" ref="canvasEditor" :style="editorStyle" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" /> -->
             <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
             <!--矩形样式组件-->
-            <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+            <TextAttr v-if="showAttr && !this.checkboxStatus" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
           </div>
         </div>
         <!-- </vue-ruler-tool> -->
@@ -712,7 +712,8 @@ export default {
       'pcMatrixCount',
       'mobileMatrixCount',
       'mobileLayoutStyle',
-      'scrollAutoMove'
+      'scrollAutoMove',
+      'checkboxStatus'
     ])
   },
 
