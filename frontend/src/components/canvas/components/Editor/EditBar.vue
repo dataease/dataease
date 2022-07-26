@@ -108,7 +108,7 @@ export default {
         'custom'
       ],
       timer: null,
-      check: false
+      check: false,
     }
   },
   mounted() {
@@ -161,7 +161,7 @@ export default {
     setNewValue() {
       const style = {}
       console.log('标题数据1', this.curComponent)
-      if (this.curComponent.type === 'v-text' && !this.checkboxStatus) {
+      if (this.curComponent && this.curComponent.type === 'v-text' && !this.checkboxStatus) {
         style.right = '-40px'
       }
       return style
@@ -184,7 +184,7 @@ export default {
   },
   methods: {
     checkChange(boo)  {
-      console.log('isCheck',boo)
+      console.log('isCheck',boo,this.element.id,)
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
         if(this.element.id === item.id) {
