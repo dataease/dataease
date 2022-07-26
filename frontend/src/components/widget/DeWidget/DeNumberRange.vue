@@ -29,7 +29,11 @@ export default {
       type: Boolean,
       default: true
     },
-    size: String
+    size: String,
+    isRelation: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -223,24 +227,24 @@ export default {
       const param = this.getCondition()
 
       if (this.form.min && this.form.max) {
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
       if (!this.form.min && !this.form.max) {
         param.value = []
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
       if (this.form.min) {
         param.value = [this.form.min]
         param.operator = 'ge'
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
       if (this.form.max) {
         param.value = [this.form.max]
         param.operator = 'le'
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
     },

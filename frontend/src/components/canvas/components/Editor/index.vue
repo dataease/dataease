@@ -68,6 +68,7 @@
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
         :element="item"
+        :is-relation="relationFilterIds.includes(item.id)"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
@@ -1006,6 +1007,17 @@ export default {
     ]),
     filterMap() {
       return this.buttonFilterMap || buildFilterMap(this.componentData)
+    },
+    searchButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      return result
+      
+    },
+    buttonExist() {
+      return this.searchButtonInfo && this.searchButtonInfo.buttonExist
+    },
+    relationFilterIds() {
+      return this.buttonExist && this.searchButtonInfo.relationFilterIds || []
     }
   },
   watch: {
@@ -1075,8 +1087,9 @@ export default {
   created() {
   },
   methods: {
+    
     triggerSearchButton() {
-      this.buttonFilterMap = this.buildButtonFilterMap(this.componentData)
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
     },
     buildButtonFilterMap(panelItems) {
       const result = {
@@ -1112,12 +1125,16 @@ export default {
     },
     buildViewKeyFilters(panelItems, result) {
       const refs = this.$refs
-      panelItems.forEach((element, index) => {
+      panelItems.forEach((element) => {
         if (element.type !== 'custom') {
           return true
         }
 
         let param = null
+        const index = this.getComponentIndex(element.id)
+        if(index < 0) {
+          return true
+        }
         const wrapperChild = refs['wrapperChild'][index]
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
@@ -1137,6 +1154,13 @@ export default {
         })
       })
       return result
+    },
+    getComponentIndex(id) {
+      for (let index = 0; index < this.componentData.length; index++) {
+        const item = this.componentData[index]
+        if(item.id === id) return index
+      }
+      return -1
     },
     pluginEditHandler({ e, id }) {
       let index = -1
