@@ -6,6 +6,7 @@
     :round="element.options.attrs.round"
     :plain="element.options.attrs.plain"
     :size="size"
+    class="de-search-button"
     @click="triggerSearch"
   >
     {{ element.options.value }}
@@ -44,5 +45,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.de-search-button {
+  height: 100%;
+  width: 100%;
+}
 </style>
