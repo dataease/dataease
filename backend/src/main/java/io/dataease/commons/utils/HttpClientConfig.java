@@ -19,13 +19,13 @@ public class HttpClientConfig {
     // 设置从connect Manager获取Connection 超时时间，单位毫秒。这个属性是新加的属性，因为目前版本是可以共享连接池的
     private int connectionRequestTimeout = 5000;
     // 请求获取数据的超时时间，单位毫秒。 如果访问一个接口，多少时间内无法返回数据，就直接放弃此次调用
-    private int cocketTimeout = 60000;
+    private int socketTimeout = 60000;
 
     public RequestConfig buildRequestConfig() {
         Builder builder = RequestConfig.custom();
         builder.setConnectTimeout(connectTimeout);
         builder.setConnectionRequestTimeout(connectionRequestTimeout);
-        builder.setSocketTimeout(cocketTimeout);
+        builder.setSocketTimeout(socketTimeout);
         return builder.build();
     }
 
@@ -61,12 +61,12 @@ public class HttpClientConfig {
         this.connectionRequestTimeout = connectionRequestTimeout;
     }
 
-    public int getCocketTimeout() {
-        return cocketTimeout;
+    public int getSocketTimeout() {
+        return socketTimeout;
     }
 
-    public void setCocketTimeout(int cocketTimeout) {
-        this.cocketTimeout = cocketTimeout;
+    public void setSocketTimeout(int cocketTimeout) {
+        this.socketTimeout = cocketTimeout;
     }
 
 }

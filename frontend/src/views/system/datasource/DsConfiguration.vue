@@ -925,23 +925,11 @@ export default {
     next() {
       if (this.active === 1) {
         let hasRepeatName = false;
-        if (this.add_api_item) {
-          this.form.apiConfiguration.forEach((item) => {
-            if (item.name === this.apiItem.name) {
-              hasRepeatName = true;
-            }
-          });
-        } else {
-          const index = this.form.apiConfiguration.indexOf(this.apiItem);
-          for (let i = 0; i < this.form.apiConfiguration.length; i++) {
-            if (
-              i !== index &&
-              this.form.apiConfiguration[i].name === this.apiItem.name
-            ) {
-              hasRepeatName = true;
-            }
+        this.form.apiConfiguration.forEach((item) => {
+          if (item.name === this.apiItem.name && item.serialNumber !== this.apiItem.serialNumber) {
+            hasRepeatName = true;
           }
-        }
+        });
         if (hasRepeatName) {
           this.$message.error(i18n.t("datasource.has_repeat_name"));
           return;
@@ -986,17 +974,27 @@ export default {
       this.edit_api_item = false;
     },
     saveItem() {
+      if(this.apiItem.fields.length === 0){
+        this.$message.warning(i18n.t('datasource.api_field_not_empty'))
+        return
+      }
       this.active = 0;
       this.edit_api_item = false;
-      if (this.add_api_item) {
-        this.form.apiConfiguration.push(this.apiItem);
+
+      if (!this.add_api_item) {
+        for (var i = 0; i < this.form.apiConfiguration.length; i++) {
+          if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
+            this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(this.form.apiConfiguration[i]), 1);
+          }
+        }
       }
+      this.form.apiConfiguration.push(this.apiItem);
     },
     addApiItem(item) {
       if (item) {
         this.add_api_item = false;
         this.api_table_title = this.$t("datasource.edit_api_table");
-        this.apiItem = item;
+        this.apiItem = JSON.parse(JSON.stringify(item));
       } else {
         this.add_api_item = true;
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem));
@@ -1006,10 +1004,7 @@ export default {
       this.edit_api_item = true;
     },
     deleteItem(item) {
-      this.form.apiConfiguration.splice(
-        this.form.apiConfiguration.indexOf(item),
-        1
-      );
+      this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1);
     },
     handleCheckAllChange(row) {
       this.handleCheckChange(row);

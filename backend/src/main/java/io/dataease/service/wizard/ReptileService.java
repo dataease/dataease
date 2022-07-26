@@ -25,7 +25,7 @@ public class ReptileService {
         List result = new ArrayList();
         try {
             HttpClientConfig config = new HttpClientConfig();
-            config.setCocketTimeout(5000);
+            config.setSocketTimeout(5000);
             //爬取最新数据
             Document doc = Jsoup.parse(HttpClientUtil.get(blogUrl, config));
             Elements elementsContent = doc.getElementsByAttributeValue("rel", "bookmark");

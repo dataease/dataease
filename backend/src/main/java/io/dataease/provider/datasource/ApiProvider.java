@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -16,23 +17,28 @@ import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.ApiDefinitionRequest;
 
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.stereotype.Service;
 
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("apiProvider")
 public class ApiProvider extends Provider {
 
+    @Resource
+    private SystemParameterService systemParameterService;
 
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
+        BasicInfo basicInfo = systemParameterService.basicInfo();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition);
+        String response = execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
         return fetchResult(response, apiDefinition);
     }
 
@@ -56,11 +62,12 @@ public class ApiProvider extends Provider {
     }
 
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
+        BasicInfo basicInfo = systemParameterService.basicInfo();
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition);
+        String response = execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
 
         fieldList = getTableFileds(apiDefinition, response);
         result.put("fieldList", fieldList);
@@ -84,12 +91,13 @@ public class ApiProvider extends Provider {
     }
 
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+        BasicInfo basicInfo = systemParameterService.basicInfo();
         List<ApiDefinition> lists = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
         }.getType());
         List<TableField> tableFields = new ArrayList<>();
         for (ApiDefinition apiDefinition : lists) {
             if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())) {
-                String response = ApiProvider.execHttpRequest(apiDefinition);
+                String response = ApiProvider.execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
                 for (DatasetTableFieldDTO field : checkApiDefinition(apiDefinition, response).getFields()) {
                     TableField tableField = new TableField();
                     tableField.setFieldName(field.getOriginName());
@@ -120,9 +128,11 @@ public class ApiProvider extends Provider {
         return gson.toJson(apiItemStatuses);
     }
 
-    static public String execHttpRequest(ApiDefinition apiDefinition) throws Exception {
+    static public String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
+
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
+        httpClientConfig.setSocketTimeout(socketTimeout * 1000);
         ApiDefinitionRequest apiDefinitionRequest = apiDefinition.getRequest();
         for (Map header : apiDefinitionRequest.getHeaders()) {
             if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").toString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").toString())) {

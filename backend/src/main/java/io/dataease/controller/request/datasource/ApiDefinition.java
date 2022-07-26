@@ -22,5 +22,6 @@ public class ApiDefinition {
     private List<JSONObject> jsonFields = new ArrayList<>();
     private int previewNum = 10;
     private int maxPreviewNum = 10;
+    private int serialNumber;
 
 }
