@@ -980,7 +980,7 @@ export default {
       }
 
       for (var i = 0; i < this.apiItem.fields.length -1; i++) {
-        for (var j = 1; j < this.apiItem.fields.length; j++) {
+        for (var j = i+1; j < this.apiItem.fields.length; j++) {
           if(this.apiItem.fields[i].name === this.apiItem.fields[j].name){
             this.$message.error(this.apiItem.fields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
             return
