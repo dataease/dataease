@@ -73,6 +73,7 @@ public class SysUserService {
 
     @Transactional
     public int save(SysUserCreateRequest request) {
+        request.setUsername(request.getUsername().trim());
         checkUsername(request);
         checkEmail(request);
         checkNickName(request);
