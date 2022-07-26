@@ -9,7 +9,7 @@
         <div v-for="(item,index) in fields" :key="index" class="header_title">{{ item.name }}</div>
       </div>
       <div class="content">
-        <ul id="infinite" ref="ulLis" class="item bgHeightLight" :style="table_item_class">
+        <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class">
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
@@ -551,6 +551,7 @@ export default {
   // display:flex;
 }
 .bgHeightLight{
+  padding:0;
     // background-image: linear-gradient(rgb(6 26 85), rgba(6, 26, 85, 0), rgb(6 26 85));
 }
 .table_bode_li{

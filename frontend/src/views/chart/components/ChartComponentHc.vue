@@ -16,18 +16,18 @@
 import * as highcharts from 'highcharts'
 import Highcharts3D from 'highcharts/highcharts-3d'
 Highcharts3D(highcharts)
-import funnel3d from 'highcharts/modules/funnel3d'; // 漏斗图引入
-funnel3d(highcharts);
-import cylinder from 'highcharts/modules/cylinder';
+import funnel3d from 'highcharts/modules/funnel3d' // 漏斗图引入
+funnel3d(highcharts)
+import cylinder from 'highcharts/modules/cylinder'
 cylinder(highcharts)
-import pyramid3d from 'highcharts/modules/pyramid3d'; //金字塔图引入
+import pyramid3d from 'highcharts/modules/pyramid3d' //金字塔图引入
 pyramid3d(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
 import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
-import { BASE_FUNNEL,baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
-import { BASE_PYRAMID, basePyramidOption } from "@/views/chart/chart/pyramid/pyramid_hc"
-import { BASE_SCATTER, baseScatterOption } from "@/views/chart/chart/scatter/scatter_hc"
+import { BASE_FUNNEL, baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
+import { BASE_PYRAMID, basePyramidOption } from '@/views/chart/chart/pyramid/pyramid_hc'
+import { BASE_SCATTER, baseScatterOption } from '@/views/chart/chart/scatter/scatter_hc'
 
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 export default {
@@ -171,7 +171,6 @@ export default {
           //   // 散点图
           //   this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_SCATTER)))
           // }
-        
         }
         this.drawEcharts()
 
@@ -197,44 +196,43 @@ export default {
         chart_option.animation = false
       }
       console.log(this.$store.state.canvasStyleData)
-      if(chart.type === '3dpie') {
+      if (chart.type === '3dpie') {
         const base_json = JSON.parse(JSON.stringify(BASE_PIE))
-        chart_option = basePieOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
+        chart_option = basePieOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dcolumn') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
-        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false,this.$store.state.canvasStyleData)
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dcolumn_stack') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_STACK))
-        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true,this.$store.state.canvasStyleData)
+        chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dfunnel') {
         const base_json = JSON.parse(JSON.stringify(BASE_FUNNEL))
         chart_option = baseFunnelOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dpyramid') {
         const base_json = JSON.parse(JSON.stringify(BASE_PYRAMID))
-        chart_option = basePyramidOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
+        chart_option = basePyramidOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
       }
       //  else if (chart.type === '3dscatter') {
       //   const base_json = JSON.parse(JSON.stringify(BASE_SCATTER))
       //   chart_option = baseScatterOption(base_json, chart, this.terminalType,this.$store.state.canvasStyleData)
       // }
-      
-      this.myEcharts(chart_option,chart.type)
+
+      this.myEcharts(chart_option, chart.type)
     },
 
-    myEcharts(option,type) {
+    myEcharts(option, type) {
       // 指定图表的配置项和数据
       const chart = this.myChart
       this.setBackGroundBorder()
       setTimeout(() => {
         // if(type === '3dcolumn_stack') {
-          if(this.myChart) {
-            this.myChart.destroy()
-          }
-          this.myChart = this.$highcharts.chart(this.chartId, option)
+        if (this.myChart) {
+          this.myChart.destroy()
+        }
+        this.myChart = this.$highcharts.chart(this.chartId, option)
         // } else {
         //   chart.update(option, true)
         // }
-        
       }, 500)
       window.onresize = function() {
         this.myChart.reflow()

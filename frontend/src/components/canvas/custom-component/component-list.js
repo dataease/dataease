@@ -468,8 +468,9 @@ const list = [
       navTabList: [],
       fontSize: 12,
       color: '#333',
-      vertical: 'center',
+      vertical: 'directory',
       horizontal: 'center',
+      heightTabs: '',
       highlight: '#333',
       highlightBg: '',
       heightBgImg: ''

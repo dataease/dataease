@@ -32,7 +32,7 @@
             <el-radio label="right">右</el-radio>
           </el-radio-group>
         </el-col>
-        <el-col :span="4">
+        <!-- <el-col :span="4">
           <span class="params-title">{{ '垂直对齐方式' }}</span>
         </el-col>
         <el-col :span="8" style="height:40px;line-height:40px;">
@@ -40,6 +40,17 @@
             <el-radio label="flex-start">上</el-radio>
             <el-radio label="center">中</el-radio>
             <el-radio label="flex-end">下</el-radio>
+          </el-radio-group>
+        </el-col> -->
+      </el-row>
+      <el-row>
+        <el-col :span="4">
+          <span class="params-title">{{ '导航启用级别' }}</span>
+        </el-col>
+        <el-col :span="8" style="height:40px;line-height:40px;">
+          <el-radio-group v-model="curComponent.options.vertical">
+            <el-radio label="directory">目录级</el-radio>
+            <el-radio label="element">元素级</el-radio>
           </el-radio-group>
         </el-col>
       </el-row>
