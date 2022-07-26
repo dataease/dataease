@@ -59,7 +59,7 @@ export default {
       paginationEvent: {},
       paginationDefalut: {
         currentPage: 1,
-        pageSizes: [10, 20, 30, 40],
+        pageSizes: [10, 20, 50, 100],
         pageSize: 10,
         layout: "total, prev, pager, next, sizes, jumper",
         total: 0,

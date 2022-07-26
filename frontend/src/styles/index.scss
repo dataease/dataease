@@ -853,3 +853,21 @@ div:focus {
 .view-select-option {
     display: none !important;
 }
+
+.el-checkbox__input.is-checked + .el-checkbox__label {
+  color: #1F2329 !important;
+}
+
+.el-dialog__title {
+  font-weight: 500;
+}
+
+.el-tabs__nav-wrap::after {
+  height: 1px !important;
+  background-color: rgba(31, 35, 41, 0.15) !important;
+}
+
+.el-tabs__item:not(.is-active) {
+  font-weight: 400 !important;
+}
+
