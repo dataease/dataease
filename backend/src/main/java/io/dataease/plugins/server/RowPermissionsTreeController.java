@@ -5,14 +5,18 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +31,14 @@ public class RowPermissionsTreeController {
     @ApiOperation("保存")
     @PostMapping("save")
     public void save(@RequestBody DataSetRowPermissionsTreeDTO request) {
+        if (StringUtils.isEmpty(request.getAuthTargetType())) {
+            DEException.throwException(Translator.get("i18n_row_permission_type_error"));
+        }
+        if (!StringUtils.equalsIgnoreCase(request.getAuthTargetType(), "sysParams")) {
+            if (ObjectUtils.isEmpty(request.getAuthTargetId())) {
+                DEException.throwException(Translator.get("i18n_row_permission_id"));
+            }
+        }
         RowPermissionTreeService rowPermissionTreeService = SpringContextUtil.getBean(RowPermissionTreeService.class);
         rowPermissionTreeService.save(request);
     }
