@@ -13,7 +13,7 @@
           </el-row>
           <el-tree
             ref="linkJumpInfoTree"
-            :data="linkJumpInfoArray"
+            :data="linkJumpInfoXArray"
             node-key="sourceFieldId"
             highlight-current
             :props="treeProp"
@@ -295,6 +295,7 @@ export default {
       },
       linkJump: null,
       linkJumpInfoArray: [],
+      linkJumpInfoXArray: [],
       mapJumpInfoArray: {},
       panelList: [],
       linkJumpInfo: null,
@@ -358,7 +359,9 @@ export default {
   methods: {
     init() {
       const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.viewId])
-      const checkStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+      const checkJumpStr = chartDetails.type.includes('table') ? checkAllAxisStr : chartDetails.xaxis + chartDetails.xaxisExt
+
       // 获取可关联的仪表板
       groupTree({}).then(rsp => {
         this.panelList = rsp.data
@@ -367,9 +370,13 @@ export default {
       queryWithViewId(this.panelInfo.id, this.viewId).then(rsp => {
         this.linkJump = rsp.data
         this.linkJumpInfoArray = []
+        this.linkJumpInfoXArray = []
         this.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
-          if (checkStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
+          if (checkJumpStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
             this.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
+            this.linkJumpInfoArray.push(linkJumpInfo)
+            this.linkJumpInfoXArray.push(linkJumpInfo)
+          } else if (checkAllAxisStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
             this.linkJumpInfoArray.push(linkJumpInfo)
           }
         })
