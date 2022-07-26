@@ -1036,6 +1036,14 @@ export default {
     handleFiledChange2(jsonFields){
       for (var i = 0; i < jsonFields.length; i++) {
         if (jsonFields[i].checked  && jsonFields[i].children === undefined) {
+
+          for (var j = 0; j < this.apiItem.fields.length; j++) {
+            if(this.apiItem.fields[j].name === jsonFields[i].name){
+              this.$refs.apiItemTable.toggleRowSelection(jsonFields[i]);
+              this.$message.error(jsonFields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
+              return
+            }
+          }
           this.apiItem.fields.push(jsonFields[i]);
         }
         if (jsonFields[i].children !== undefined) {
@@ -1047,10 +1055,7 @@ export default {
       let datas = [];
       let maxPreviewNum = 0;
       for (let j = 0; j < this.apiItem.fields.length; j++) {
-        if (
-          this.apiItem.fields[j].value &&
-          this.apiItem.fields[j].value.length > maxPreviewNum
-        ) {
+        if (this.apiItem.fields[j].value && this.apiItem.fields[j].value.length > maxPreviewNum) {
           maxPreviewNum = this.apiItem.fields[j].value.length;
         }
       }
@@ -1059,11 +1064,7 @@ export default {
       }
       for (let i = 0; i < this.apiItem.fields.length; i++) {
         for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
-          this.$set(
-            datas[j],
-            this.apiItem.fields[i].name,
-            this.apiItem.fields[i].value[j]
-          );
+          this.$set(datas[j], this.apiItem.fields[i].name, this.apiItem.fields[i].value[j]);
         }
         this.$refs.plxTable.reloadData(datas);
       }
