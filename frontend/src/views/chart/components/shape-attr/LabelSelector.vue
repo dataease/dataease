@@ -32,6 +32,16 @@
               <el-option v-for="option in labelPositionV" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <el-form-item v-show="showProperty('label-bg') " :label="$t('chart.label_bg')" class="form-item">
+            <el-color-picker v-model="labelForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('bgColor')" />
+          </el-form-item>
+          <el-form-item v-show="showProperty('label-show-shadow')" :label="$t('chart.label_shadow')" class="form-item">
+            <el-checkbox v-model="labelForm.showShadow" @change="changeLabelAttr('showShadow')">{{ $t('chart.show') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item v-show="showProperty('label-shadow-color') && labelForm.showShadow" :label="$t('chart.label_shadow_color')" class="form-item">
+            <el-color-picker v-model="labelForm.shadowColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('shadowColor')" />
+          </el-form-item>
+
           <el-form-item v-show="showProperty('formatter')" class="form-item">
             <span slot="label">
               <span class="span-box">
