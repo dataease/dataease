@@ -321,11 +321,30 @@
       <!--gauge-end-->
 
       <el-form ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+        <!--text&label-start-->
         <el-form-item v-show="showProperty('quotaFontSize')" :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase('quotaFontSize')">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="showProperty('quotaFontFamily')" :label="$t('chart.quota_font_family')" class="form-item">
+          <el-select v-model="sizeForm.quotaFontFamily" :placeholder="$t('chart.quota_font_family')" @change="changeBarSizeCase('quotaFontFamily')">
+            <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="showProperty('quotaFontStyle')" :label="$t('chart.quota_text_style')" class="form-item">
+          <el-checkbox v-model="sizeForm.quotaFontIsItalic" @change="changeBarSizeCase('quotaFontIsItalic')">{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox v-model="sizeForm.quotaFontIsBolder" @change="changeBarSizeCase('quotaFontIsItalic')">{{ $t('chart.bolder') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item v-show="showProperty('quotaLetterSpace')" :label="$t('chart.quota_letter_space')" class="form-item">
+          <el-select v-model="sizeForm.quotaLetterSpace" :placeholder="$t('chart.quota_letter_space')" @change="changeBarSizeCase('quotaLetterSpace')">
+            <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="showProperty('quotaFontShadow')" :label="$t('chart.font_shadow')" class="form-item">
+          <el-checkbox v-model="sizeForm.quotaFontShadow" @change="changeBarSizeCase('quotaFontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+        </el-form-item>
+        <el-divider v-if="showProperty('dimensionShow')" />
         <el-form-item
           v-show="showProperty('dimensionShow')"
           :label="$t('chart.dimension_show')"
@@ -346,6 +365,24 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="showProperty('dimensionFontFamily')" :label="$t('chart.dimension_font_family')" class="form-item">
+          <el-select v-model="sizeForm.dimensionFontFamily" :placeholder="$t('chart.dimension_font_family')" @change="changeBarSizeCase('dimensionFontFamily')">
+            <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="showProperty('dimensionFontStyle')" :label="$t('chart.dimension_text_style')" class="form-item">
+          <el-checkbox v-model="sizeForm.dimensionFontIsItalic" @change="changeBarSizeCase('dimensionFontIsItalic')">{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox v-model="sizeForm.dimensionFontIsBolder" @change="changeBarSizeCase('dimensionFontIsItalic')">{{ $t('chart.bolder') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item v-show="showProperty('dimensionLetterSpace')" :label="$t('chart.dimension_letter_space')" class="form-item">
+          <el-select v-model="sizeForm.dimensionLetterSpace" :placeholder="$t('chart.dimension_letter_space')" @change="changeBarSizeCase('dimensionLetterSpace')">
+            <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="showProperty('dimensionFontShadow')" :label="$t('chart.font_shadow')" class="form-item">
+          <el-checkbox v-model="sizeForm.dimensionFontShadow" @change="changeBarSizeCase('dimensionFontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+        </el-form-item>
+        <el-divider v-if="showProperty('spaceSplit')" />
         <el-form-item
           v-show="showProperty('spaceSplit')"
           :label="$t('chart.space_split')"
@@ -433,7 +470,7 @@
 </template>
 
 <script>
-import { DEFAULT_SIZE } from '../../chart/chart'
+import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../chart/chart'
 
 export default {
   name: 'SizeSelectorAntV',
@@ -482,7 +519,9 @@ export default {
         { name: this.$t('chart.table_align_left'), value: 'left' },
         { name: this.$t('chart.table_align_center'), value: 'center' },
         { name: this.$t('chart.table_align_right'), value: 'right' }
-      ]
+      ],
+      fontFamily: CHART_FONT_FAMILY,
+      fontLetterSpace: CHART_FONT_LETTER_SPACE
     }
   },
   watch: {
@@ -530,6 +569,17 @@ export default {
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
 
           this.sizeForm.gaugeTickCount = this.sizeForm.gaugeTickCount ? this.sizeForm.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
+
+          this.sizeForm.quotaFontFamily = this.sizeForm.quotaFontFamily ? this.sizeForm.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
+          this.sizeForm.quotaFontIsBolder = this.sizeForm.quotaFontIsBolder ? this.sizeForm.quotaFontIsBolder : DEFAULT_SIZE.quotaFontIsBolder
+          this.sizeForm.quotaFontIsItalic = this.sizeForm.quotaFontIsItalic ? this.sizeForm.quotaFontIsItalic : DEFAULT_SIZE.quotaFontIsItalic
+          this.sizeForm.quotaLetterSpace = this.sizeForm.quotaLetterSpace ? this.sizeForm.quotaLetterSpace : DEFAULT_SIZE.quotaLetterSpace
+          this.sizeForm.quotaFontShadow = this.sizeForm.quotaFontShadow ? this.sizeForm.quotaFontShadow : DEFAULT_SIZE.quotaFontShadow
+          this.sizeForm.dimensionFontFamily = this.sizeForm.dimensionFontFamily ? this.sizeForm.dimensionFontFamily : DEFAULT_SIZE.dimensionFontFamily
+          this.sizeForm.dimensionFontIsBolder = this.sizeForm.dimensionFontIsBolder ? this.sizeForm.dimensionFontIsBolder : DEFAULT_SIZE.dimensionFontIsBolder
+          this.sizeForm.dimensionFontIsItalic = this.sizeForm.dimensionFontIsItalic ? this.sizeForm.dimensionFontIsItalic : DEFAULT_SIZE.dimensionFontIsItalic
+          this.sizeForm.dimensionLetterSpace = this.sizeForm.dimensionLetterSpace ? this.sizeForm.dimensionLetterSpace : DEFAULT_SIZE.dimensionLetterSpace
+          this.sizeForm.dimensionFontShadow = this.sizeForm.dimensionFontShadow ? this.sizeForm.dimensionFontShadow : DEFAULT_SIZE.dimensionFontShadow
         }
       }
     },

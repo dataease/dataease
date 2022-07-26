@@ -4,7 +4,7 @@
     <span v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <div>
         <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
-        <title-remark v-if="chart.render && chart.render === 'antv' && remarkCfg.show" :remark-cfg="remarkCfg" />
+        <title-remark v-if="chart.render && chart.render === 'antv' && remarkCfg.show" style="text-shadow: none!important;" :remark-cfg="remarkCfg" />
       </div>
     </span>
     <div
@@ -31,6 +31,7 @@ import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import TitleRemark from '@/views/chart/view/TitleRemark'
+import { DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 
 export default {
   name: 'LabelNormalText',
@@ -172,8 +173,21 @@ export default {
         if (customAttr.size) {
           this.dimensionShow = customAttr.size.dimensionShow
           this.quotaShow = customAttr.size.quotaShow
+
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
+          this.label_class.fontFamily = customAttr.size.dimensionFontFamily ? customAttr.size.dimensionFontFamily : DEFAULT_SIZE.dimensionFontFamily
+          this.label_class.fontWeight = customAttr.size.dimensionFontIsBolder ? 'bold' : 'normal'
+          this.label_class.fontStyle = customAttr.size.dimensionFontIsItalic ? 'italic' : 'normal'
+          this.label_class.letterSpacing = (customAttr.size.dimensionLetterSpace ? customAttr.size.dimensionLetterSpace : DEFAULT_SIZE.dimensionLetterSpace) + 'px'
+          this.label_class.textShadow = customAttr.size.dimensionFontShadow ? '2px 2px 4px' : 'none'
+
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
+          this.label_content_class.fontFamily = customAttr.size.quotaFontFamily ? customAttr.size.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
+          this.label_content_class.fontWeight = customAttr.size.quotaFontIsBolder ? 'bold' : 'normal'
+          this.label_content_class.fontStyle = customAttr.size.quotaFontIsItalic ? 'italic' : 'normal'
+          this.label_content_class.letterSpacing = (customAttr.size.quotaLetterSpace ? customAttr.size.quotaLetterSpace : DEFAULT_SIZE.quotaLetterSpace) + 'px'
+          this.label_content_class.textShadow = customAttr.size.quotaFontShadow ? '2px 2px 4px' : 'none'
+
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
           } else {
@@ -190,6 +204,10 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
+          this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }
         if (customStyle.background) {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

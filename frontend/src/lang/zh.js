@@ -1174,7 +1174,16 @@ export default {
     conditions_can_not_empty: '字段的条件不能为空，若无条件，请直接删除该字段',
     remark: '备注',
     remark_edit: '编辑备注',
-    remark_bg_color: '背景填充'
+    remark_bg_color: '背景填充',
+    quota_font_family: '值字体',
+    quota_text_style: '值样式',
+    quota_letter_space: '值字间距',
+    dimension_font_family: '名称字体',
+    dimension_text_style: '名称样式',
+    dimension_letter_space: '名称字间距',
+    font_family: '字体',
+    letter_space: '字间距',
+    font_shadow: '字体阴影'
   },
   dataset: {
     parse_filed: '解析字段',

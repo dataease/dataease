@@ -1173,7 +1173,16 @@ export default {
     conditions_can_not_empty: 'Conditions can not be empty，if unnecessary，please delete the field',
     remark: 'Remark',
     remark_edit: 'Edit Remark',
-    remark_bg_color: 'Background Fill'
+    remark_bg_color: 'Background Fill',
+    quota_font_family: 'Value Font Family',
+    quota_text_style: 'Value Style',
+    quota_letter_space: 'Value Letter Space',
+    dimension_font_family: 'Name Font Family',
+    dimension_text_style: 'Name Style',
+    dimension_letter_space: 'Name Letter Space',
+    font_family: 'Font Family',
+    letter_space: 'Letter Space',
+    font_shadow: 'Font Shadow'
   },
   dataset: {
     parse_filed: 'Parse Field',
