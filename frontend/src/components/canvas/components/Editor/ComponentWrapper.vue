@@ -15,6 +15,8 @@
         :style="getComponentStyleDefault(config.style)"
         style="overflow: hidden"
         :out-style="config.style"
+        :is-relation="isRelation"
+        ref="deOutWidget"
         :element="config"
         :in-screen="inScreen"
         :edit-mode="'preview'"
@@ -103,6 +105,10 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    isRelation: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -247,6 +253,13 @@ export default {
     },
     closePreview() {
       this.previewVisible = false
+    },
+    getCondition() {
+      if(this.$refs.deOutWidget && this.$refs.deOutWidget.getCondition) {
+        return this.$refs.deOutWidget.getCondition()
+      }else {
+        return null
+      }
     }
   }
 }

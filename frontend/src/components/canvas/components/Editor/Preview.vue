@@ -25,9 +25,11 @@
           v-for="(item, index) in componentDataInfo"
           :key="index"
           :config="item"
+          ref="viewWrapperChild"
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"
+          :is-relation="relationFilterIds.includes(item.id)"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
           :screen-shot="screenShot"
           :canvas-style-data="canvasStyleData"
@@ -259,6 +261,17 @@ export default {
     filterMap() {
       const map = this.buttonFilterMap || buildFilterMap(this.componentData)
       return map
+    },
+    searchButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      return result
+      
+    },
+    buttonExist() {
+      return this.searchButtonInfo && this.searchButtonInfo.buttonExist
+    },
+    relationFilterIds() {
+      return this.buttonExist && this.searchButtonInfo.relationFilterIds || []
     }
   },
   watch: {
@@ -295,7 +308,9 @@ export default {
   },
   methods: {
     triggerSearchButton() {
-      this.buttonFilterMap = this.buildButtonFilterMap(this.componentData)
+      const result = this.buildButtonFilterMap(this.componentData)
+      this.searchButtonInfo.filterMap = result.filterMap
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
     },
     buildButtonFilterMap(panelItems) {
       const result = {
@@ -331,13 +346,18 @@ export default {
     },
     buildViewKeyFilters(panelItems, result) {
       const refs = this.$refs
-      panelItems.forEach((element, index) => {
+      if(!this.$refs['viewWrapperChild'] || !this.$refs['viewWrapperChild'].length) return result
+      panelItems.forEach((element) => {
         if (element.type !== 'custom') {
           return true
         }
 
+        const index = this.getComponentIndex(element.id)
+        if(index < 0) {
+          return true
+        }
         let param = null
-        const wrapperChild = refs['wrapperChild'][index]
+        const wrapperChild = refs['viewWrapperChild'][index]
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
         const vValid = valueValid(condition)
@@ -356,6 +376,13 @@ export default {
         })
       })
       return result
+    },
+    getComponentIndex(id) {
+      for (let index = 0; index < this.componentData.length; index++) {
+        const item = this.componentData[index]
+        if(item.id === id) return index
+      }
+      return -1
     },
     _isMobile() {
       const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)

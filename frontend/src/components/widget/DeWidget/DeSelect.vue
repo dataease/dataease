@@ -58,7 +58,11 @@ export default {
       required: false,
       default: true
     },
-    size: String
+    size: String,
+    isRelation: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -286,7 +290,7 @@ export default {
     },
     setCondition() {
       const param = this.getCondition()
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {
       if (this.value === null) return []
