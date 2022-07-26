@@ -40,6 +40,10 @@ export default {
     value: {
       type: [String, Number, Array],
       default: ''
+    },
+    keyWord: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -80,7 +84,16 @@ export default {
           this.init()
         })
       })
-    }
+    },
+    keyWord(val, old) {
+      if(val === old) return
+      const results = val ? this.list.filter(item => item.text.includes(val)) : null
+      this.resetList(results)
+      this.reCacularHeight()
+      this.$nextTick(() => {
+        this.callback()
+      })
+    },
   },
   mounted() {
     this.resetList()
