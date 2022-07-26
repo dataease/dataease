@@ -1,28 +1,29 @@
 <template>
   <div>
-    <el-form ref="form" size="mini" :model="form" label-width="90px">
-      <el-form-item label="名称">
-        <el-input v-model="currentElement.options.value" />
+    <el-form ref="form" size="mini" :rules="rules" :model="form" label-width="80px">
+      <el-form-item :label="$t('desearchbutton.text')" prop="text">
+        <el-input v-model="currentElement.options.value" maxlength="10" show-word-limit />
       </el-form-item>
 
-      <el-form-item label="自动触发">
+      <el-form-item :label="$t('desearchbutton.auto_trigger')">
         <el-switch v-model="myAttrs.autoTrigger" @change="autoTriggerChange" />
+        <el-link style="margin-left: 10px;" type="info" disabled>{{ $t('desearchbutton.auto_trigger_tip') }}</el-link>
       </el-form-item>
 
-      <el-form-item label="控制范围">
+      <el-form-item :label="$t('desearchbutton.range')">
         <el-switch v-model="myAttrs.customRange" @change="customRangeChange" />
-        <el-link style="margin-left: 10px;" type="warning" disabled>默认关联全部过滤组件</el-link>
+        <el-link style="margin-left: 10px;" type="warning" disabled>{{ $t('desearchbutton.range_tip') }}</el-link>
       </el-form-item>
 
-      <el-form-item v-if="myAttrs.customRange" label="关联组件">
-        <el-select v-model="myAttrs.filterIds" style="width: 300px;" multiple clearable placeholder="请选择活动区域">
+      <el-form-item v-if="myAttrs.customRange" :label="$t('desearchbutton.relative')">
+        <el-select v-model="myAttrs.filterIds" style="width: 280px;" multiple clearable>
           <el-option v-for="(filter, index) in filters" :key="filter.id + index" :label="filter.showName" :value="filter.id" />
         </el-select>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="sure">确定</el-button>
-        <el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="sure">{{ $t('commons.confirm') }}</el-button>
+        <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -51,7 +52,12 @@ export default {
       },
       currentElement: null,
       widget: null,
-      myAttrs: null
+      myAttrs: null,
+      rules: {
+        text: [
+          { min: 0, max: 10, message: '长度在 0 到 10 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
 
@@ -78,6 +84,9 @@ export default {
       })
       return datas
     }
+  },
+  watch: {
+
   },
   created() {
     this.widget = this.widgetInfo

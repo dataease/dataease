@@ -108,7 +108,7 @@ const data = {
       y: 600
     },
     scrollAutoMove: 0,
-     // 系统管理菜单是否收缩
+    // 系统管理菜单是否收缩
     isCollapse: false,
     // 视图是否编辑记录
     panelViewEditInfo: {},
@@ -243,6 +243,7 @@ const data = {
         return newItem
       })
     },
+
     addViewFilter(state, data) {
       const condition = formatCondition(data)
       const vValid = valueValid(condition)

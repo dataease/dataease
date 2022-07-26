@@ -24,8 +24,8 @@
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
           :key="index"
-          :config="item"
           ref="viewWrapperChild"
+          :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"
@@ -258,14 +258,23 @@ export default {
     ...mapState([
       'isClickComponent'
     ]),
-    filterMap() {
-      const map = this.buttonFilterMap || buildFilterMap(this.componentData)
-      return map
-    },
+
     searchButtonInfo() {
       const result = this.buildButtonFilterMap(this.componentData)
       return result
-      
+    },
+    filterMap() {
+      const result = buildFilterMap(this.componentData)
+      if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            result[key] = filters
+          }
+        }
+      }
+      return result
     },
     buttonExist() {
       return this.searchButtonInfo && this.searchButtonInfo.buttonExist
@@ -309,13 +318,21 @@ export default {
   methods: {
     triggerSearchButton() {
       const result = this.buildButtonFilterMap(this.componentData)
+      this.searchButtonInfo.autoTrigger = result.autoTrigger
       this.searchButtonInfo.filterMap = result.filterMap
       this.buttonFilterMap = this.searchButtonInfo.filterMap
+
+      this.componentData.forEach(component => {
+        if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
+          component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+      })
     },
     buildButtonFilterMap(panelItems) {
       const result = {
         buttonExist: false,
         relationFilterIds: [],
+        autoTrigger: true,
         filterMap: {
 
         }
@@ -332,7 +349,7 @@ export default {
       if (!result.buttonExist) return result
 
       const customRange = sureButtonItem.options.attrs.customRange
-
+      result.autoTrigger = sureButtonItem.options.attrs.autoTrigger
       const allFilters = panelItems.filter(item => item.type === 'custom')
 
       const matchFilters = customRange && allFilters.filter(item => sureButtonItem.options.attrs.filterIds.includes(item.id)) || allFilters
@@ -346,14 +363,14 @@ export default {
     },
     buildViewKeyFilters(panelItems, result) {
       const refs = this.$refs
-      if(!this.$refs['viewWrapperChild'] || !this.$refs['viewWrapperChild'].length) return result
+      if (!this.$refs['viewWrapperChild'] || !this.$refs['viewWrapperChild'].length) return result
       panelItems.forEach((element) => {
         if (element.type !== 'custom') {
           return true
         }
 
         const index = this.getComponentIndex(element.id)
-        if(index < 0) {
+        if (index < 0) {
           return true
         }
         let param = null
@@ -380,7 +397,7 @@ export default {
     getComponentIndex(id) {
       for (let index = 0; index < this.componentData.length; index++) {
         const item = this.componentData[index]
-        if(item.id === id) return index
+        if (item.id === id) return index
       }
       return -1
     },

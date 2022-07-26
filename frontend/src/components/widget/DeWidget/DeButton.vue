@@ -1,14 +1,14 @@
 <template>
 
   <el-button
-    v-if="options!== null && options.attrs!==null"
-    :type="options.attrs.type"
-    :round="options.attrs.round"
-    :plain="options.attrs.plain"
+    v-if="element.options!== null && element.options.attrs!==null"
+    :type="element.options.attrs.type"
+    :round="element.options.attrs.round"
+    :plain="element.options.attrs.plain"
     :size="size"
     @click="triggerSearch"
   >
-    {{ options.value }}
+    {{ element.options.value }}
   </el-button>
 </template>
 
@@ -29,13 +29,11 @@ export default {
   },
   data() {
     return {
-      options: null,
       operator: 'eq',
       values: null
     }
   },
   created() {
-    this.options = this.element.options
   },
   methods: {
     triggerSearch() {

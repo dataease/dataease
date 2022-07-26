@@ -68,7 +68,7 @@
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
         :element="item"
-        :is-relation="relationFilterIds.includes(item.id)"
+        :is-relation="searchButtonInfo && searchButtonInfo.buttonExist && searchButtonInfo.relationFilterIds.includes(item.id)"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
@@ -931,7 +931,8 @@ export default {
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
       editShow: false,
-      buttonFilterMap: null
+      buttonFilterMap: null,
+      autoTrigger: true
     }
   },
   computed: {
@@ -1005,20 +1006,25 @@ export default {
       'curCanvasScale',
       'batchOptStatus'
     ]),
-    filterMap() {
-      return this.buttonFilterMap || buildFilterMap(this.componentData)
-    },
+
     searchButtonInfo() {
       const result = this.buildButtonFilterMap(this.componentData)
       return result
-      
     },
-    buttonExist() {
-      return this.searchButtonInfo && this.searchButtonInfo.buttonExist
-    },
-    relationFilterIds() {
-      return this.buttonExist && this.searchButtonInfo.relationFilterIds || []
+    filterMap() {
+      const result = buildFilterMap(this.componentData)
+      if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            result[key] = filters
+          }
+        }
+      }
+      return result
     }
+
   },
   watch: {
     customStyle: {
@@ -1056,6 +1062,29 @@ export default {
         this.initMatrix()
       },
       deep: true
+    },
+    autoTrigger: {
+      handler(val, old) {
+        if (val === old) return
+        const result = buildFilterMap(this.componentData)
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+              filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            }
+
+            this.filterMap[key] = filters
+
+            this.componentData.forEach(item => {
+              if (item.type === 'view' && item.propValue.viewId === key) {
+                item.filters = filters
+              }
+            })
+          }
+        }
+      },
+      deep: true
     }
   },
 
@@ -1069,6 +1098,7 @@ export default {
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
     bus.$on('trigger-search-button', this.triggerSearchButton)
+    bus.$on('refresh-button-info', this.refreshButtonInfo)
 
     // 矩阵定位调试模式
     if (this.psDebug) {
@@ -1083,21 +1113,37 @@ export default {
     eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('onRemoveLastItem', this.removeLastItem)
     bus.$off('trigger-search-button', this.triggerSearchButton)
+    bus.$off('refresh-button-info', this.refreshButtonInfo)
   },
   created() {
   },
   methods: {
-    
-    triggerSearchButton() {
+    refreshButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      this.searchButtonInfo.buttonExist = result.buttonExist
+      this.searchButtonInfo.relationFilterIds = result.relationFilterIds
+      this.searchButtonInfo.filterMap = result.filterMap
+      this.searchButtonInfo.autoTrigger = result.autoTrigger
       this.buttonFilterMap = this.searchButtonInfo.filterMap
+    },
+    triggerSearchButton() {
+      this.refreshButtonInfo()
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
+
+      this.componentData.forEach(component => {
+        if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
+          component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+      })
+
+      // this.$store.commit('addViewFilter', param)
     },
     buildButtonFilterMap(panelItems) {
       const result = {
         buttonExist: false,
         relationFilterIds: [],
-        filterMap: {
-
-        }
+        autoTrigger: true,
+        filterMap: {}
       }
       if (!panelItems || !panelItems.length) return result
       let sureButtonItem = null
@@ -1111,6 +1157,8 @@ export default {
       if (!result.buttonExist) return result
 
       const customRange = sureButtonItem.options.attrs.customRange
+      result.autoTrigger = sureButtonItem.options.attrs.autoTrigger
+      this.autoTrigger = result.autoTrigger
 
       const allFilters = panelItems.filter(item => item.type === 'custom')
 
@@ -1125,6 +1173,8 @@ export default {
     },
     buildViewKeyFilters(panelItems, result) {
       const refs = this.$refs
+      if (!this.$refs['wrapperChild'] || !this.$refs['wrapperChild'].length) return result
+      const len = this.$refs['wrapperChild'].length
       panelItems.forEach((element) => {
         if (element.type !== 'custom') {
           return true
@@ -1132,10 +1182,11 @@ export default {
 
         let param = null
         const index = this.getComponentIndex(element.id)
-        if(index < 0) {
+        if (index < 0 || index >= len) {
           return true
         }
         const wrapperChild = refs['wrapperChild'][index]
+        if (!wrapperChild || !wrapperChild.getCondition) return true
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
         const vValid = valueValid(condition)
@@ -1158,7 +1209,7 @@ export default {
     getComponentIndex(id) {
       for (let index = 0; index < this.componentData.length; index++) {
         const item = this.componentData[index]
-        if(item.id === id) return index
+        if (item.id === id) return index
       }
       return -1
     },
