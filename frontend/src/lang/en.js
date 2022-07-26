@@ -1880,6 +1880,9 @@ export default {
 
   },
   auth: {
+    no_item_selected: 'Please select resources on the left',
+    search_pre: 'Search by ',
+    search_suf: ' name',
     separate_auth: 'Separate Authorization',
     auth_extent_tips: 'Permissions Inherited From The Following Organizations Or Roles:',
     authConfig: 'Configure Permissions By User',

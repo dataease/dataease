@@ -1898,6 +1898,9 @@ export default {
 
   },
   auth: {
+    no_item_selected: '请在左侧选择资源',
+    search_pre: '通过',
+    search_suf: '名称来搜索',
     separate_auth: '单独授权',
     auth_extent_tips: '继承自以下组织或角色的权限:',
     authConfig: '按用户配置权限',

@@ -251,7 +251,6 @@ export default {
   }
   .tree-main{
     height:  calc(100vh - 210px);
-    border: 1px solid #e6e6e6;
     overflow-y: auto;
   }
   /* .tree-head{
