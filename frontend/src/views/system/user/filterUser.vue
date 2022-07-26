@@ -11,6 +11,7 @@
       <span>状态</span>
       <div class="filter-item">
         <span
+          class="item"
           @click="statusChange(ele.id)"
           :class="[activeStatus.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
@@ -22,6 +23,7 @@
       <span>组织</span>
       <div class="filter-item">
         <span
+          class="item"
           @click="activeDeptChange(ele.id)"
           :class="[activeDept.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
@@ -65,7 +67,7 @@
             />
             </el-select>
           </el-popover>
-          <span slot="reference">+ 更多</span>
+          <span class="more" slot="reference">+ 更多</span>
         </el-popover>
       </div>
     </div>
@@ -74,6 +76,7 @@
       <div class="filter-item">
         <span
           @click="activeRoleChange(ele.id)"
+          class="item"
           :class="[activeRole.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
           v-for="ele in rolesValueCopy"
@@ -101,8 +104,7 @@
               :value="item"
             />
           </el-select>
-
-          <span slot="reference">+ 更多</span>
+          <span class="more" slot="reference">+ 更多</span>
         </el-popover>
       </div>
     </div>
@@ -128,6 +130,7 @@ export default {
       roleCahe: [],
       deptCahe: [],
       roles: [],
+      filterTextMap: [],
       status: [{
         id: 1,
         label: '启用'
@@ -165,6 +168,17 @@ export default {
     this.initRoles();
   },
   methods: {
+    clearFilter() {
+     Array(3).fill(1).forEach((_, index) => {
+        this.clearOneFilter(index)
+      })
+      this.$emit('search', [], [])
+    },
+    clearOneFilter(index) {
+      (this.filterTextMap[index] || []).forEach(ele => {
+        this[ele] = []
+      })
+    },
     // 获取弹窗内部门数据
     treeByDeptId() {
       treeByDeptId(0).then((res) => {
@@ -259,16 +273,20 @@ export default {
       this.$emit('search', this.formatCondition(), this.formatText())
     },
     formatText() {
+      this.filterTextMap = [];
       const params = [];
       if (this.activeStatus.length) {
         let str = `状态:${this.activeStatus.reduce((pre,next) => (this.status.find(ele => ele.id === next) || {}).label  + '、' +  pre, '')}`;
         params.push(str.slice(0, str.length - 1 ))
+        this.filterTextMap.push(['activeStatus'])
       }
       if (this.activeDept.length) {
-        params.push(`组织:${this.selectDeptsCahe.reduce((pre,next) =>  pre.label  + '、' + next.label)}`)
+        params.push(`组织:${this.selectDeptsCahe.map(ele => ele.label).join('、')}`)
+        this.filterTextMap.push(['activeDept', 'selectDepts', 'selectDeptsCahe', 'deptCahe'])
       }
       if (this.activeRole.length) {
-        params.push(`角色:${this.rolesValueCopy.reduce((pre,next) => pre.label  + '、' +  next.labele)}`)
+        params.push(`角色:${this.rolesValueCopy.map(ele => ele.name).join('、')}`)
+        this.filterTextMap.push(['rolesValue', 'activeRole', 'roleCahe'])
       }
       return params;
     },
@@ -290,10 +308,8 @@ export default {
       this.userDrawer = true;
     },
     reset() {
-      this.activeStatus = [];
-      this.activeRole = [];
-      this.activeDept = [];
-      this.search()
+      this.userDrawer = false;
+      this.clearFilter()
     },
   },
 };
@@ -349,8 +365,10 @@ export default {
       font-size: 14px;
     }
     .filter-item {
-      span {
+      .item,
+      .more {
         font-family: PingFang SC;
+        white-space: nowrap;
         font-size: 14px;
         font-weight: 400;
         line-height: 24px;
@@ -360,19 +378,15 @@ export default {
         background: #f5f6f7;
         border-radius: 2px;
         cursor: pointer;
-        span {
-          margin-right: 0;
-          padding: 0;
-          span {
-            margin-right: 0;
-            padding: 0;
-          }
-        }
       }
 
-      .active {
+      .active,
+      .more:hover{
         background: rgba(51, 112, 255, 0.1);
         color: #0c296e;
+      }
+      .more {
+        white-space: nowrap;
       }
     }
   }

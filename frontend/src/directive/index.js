@@ -75,24 +75,17 @@ const closePress =  {
   }
 }
 
-// const btnPress =  {
-//   inserted: function (el) {
-//     el.onmousedown = function () {
-//       el.style.background = '#EFF0F1';
-//     }
-//     el.onmouseenter = function () {
-//       el.style.background = '#F5F6F7 !important';
-//     }
-//     el.onmouseleave = function () {
-//       el.style.background = 'none';
-//     }
-//     el.onmouseup = function () {
-//       el.style.background = 'none';
-//     }
-//   }
-// }
+const btnPress =  {
+  update: function (el, binding) {
+    el.onmousedown = function (e) {
+      e.currentTarget.style.setProperty('background', binding.value || '#EFF0F1', 'important');
+    }
+    el.onmouseup = function (e) {
+      e.currentTarget.style.background = 'none';
+    }
+  },
+}
 
-// #EFF0F1
 
 export default {
   install(Vue) {
@@ -102,7 +95,7 @@ export default {
     Vue.directive('right-to-left-drag', right2LeftDrag)
     Vue.directive('bottom-to-top-drag', bottom2TopDrag)
     Vue.directive('closePress', closePress)
-    // Vue.directive('btnPress', btnPress)
+    Vue.directive('btnPress', btnPress)
   }
 }
 
