@@ -12,6 +12,8 @@
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
+    :filter-method="filterMethod"
+    :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="datas"
     @change="changeValue"
@@ -71,7 +73,8 @@ export default {
       show: true,
       value: null,
       datas: [],
-      onFocus: false
+      onFocus: false,
+      keyWord: ''
     }
   },
   computed: {
@@ -203,6 +206,9 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    filterMethod(key) {
+      this.keyWord = key
+    },
     onScroll() {
       if (this.onFocus) {
         this.$refs.deSelect.blur()
@@ -215,7 +221,7 @@ export default {
       }
     },
     onBlur() {
-      this.onFocus = false
+      // this.onFocus = false
     },
     handleElTagStyle() {
       setTimeout(() => {
