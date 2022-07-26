@@ -16,6 +16,11 @@
               @input="inputOnInput($event)"
             />
           </el-form-item>
+          <el-form-item v-show="showProperty('fontFamily')" :label="$t('chart.font_family')" class="form-item">
+            <el-select v-model="titleForm.fontFamily" :placeholder="$t('chart.font_family')" @change="changeTitleStyle('fontFamily')">
+              <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle('fontSize')">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -35,25 +40,33 @@
             <el-checkbox v-model="titleForm.isItalic" @change="changeTitleStyle('isItalic')">{{ $t('chart.italic') }}</el-checkbox>
             <el-checkbox v-model="titleForm.isBolder" @change="changeTitleStyle('isBolder')">{{ $t('chart.bolder') }}</el-checkbox>
           </el-form-item>
-        </div>
+          <el-form-item v-show="showProperty('letterSpace')" :label="$t('chart.letter_space')" class="form-item">
+            <el-select v-model="titleForm.letterSpace" :placeholder="$t('chart.quota_letter_space')" @change="changeTitleStyle('letterSpace')">
+              <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('fontShadow')" :label="$t('chart.font_shadow')" class="form-item">
+            <el-checkbox v-model="titleForm.fontShadow" @change="changeTitleStyle('fontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+          </el-form-item>
 
-        <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark')" class="form-item">
-          <el-checkbox v-model="titleForm.remarkShow" @change="changeTitleStyle('remarkShow')">{{ $t('chart.show') }}</el-checkbox>
-        </el-form-item>
-        <span v-show="titleForm.remarkShow">
-          <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_edit')" class="form-item">
-            <el-button
-              :title="$t('chart.edit')"
-              icon="el-icon-edit"
-              type="text"
-              size="small"
-              @click="editRemark"
-            />
+          <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark')" class="form-item">
+            <el-checkbox v-model="titleForm.remarkShow" @change="changeTitleStyle('remarkShow')">{{ $t('chart.show') }}</el-checkbox>
           </el-form-item>
-          <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_bg_color')" class="form-item">
-            <el-color-picker v-model="titleForm.remarkBackgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('remarkBackgroundColor')" />
-          </el-form-item>
-        </span>
+          <span v-show="titleForm.remarkShow">
+            <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_edit')" class="form-item">
+              <el-button
+                :title="$t('chart.edit')"
+                icon="el-icon-edit"
+                type="text"
+                size="small"
+                @click="editRemark"
+              />
+            </el-form-item>
+            <el-form-item v-show="showProperty('remarkShow')" :label="$t('chart.remark_bg_color')" class="form-item">
+              <el-color-picker v-model="titleForm.remarkBackgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('remarkBackgroundColor')" />
+            </el-form-item>
+          </span>
+        </div>
       </el-form>
     </el-col>
 
@@ -78,14 +91,12 @@
 </template>
 
 <script>
-import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
+import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
-import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
 
 export default {
   name: 'TitleSelectorAntV',
-  components: { RemarkEditor },
   props: {
     param: {
       type: Object,
@@ -110,7 +121,9 @@ export default {
       isSetting: false,
       predefineColors: COLOR_PANEL,
       showEditRemark: false,
-      tmpRemark: ''
+      tmpRemark: '',
+      fontFamily: CHART_FONT_FAMILY,
+      fontLetterSpace: CHART_FONT_LETTER_SPACE
     }
   },
   computed: {
@@ -144,6 +157,10 @@ export default {
           this.titleForm.remarkShow = this.titleForm.remarkShow ? this.titleForm.remarkShow : DEFAULT_TITLE_STYLE.remarkShow
           this.titleForm.remark = this.titleForm.remark ? this.titleForm.remark : DEFAULT_TITLE_STYLE.remark
           this.titleForm.remarkBackgroundColor = this.titleForm.remarkBackgroundColor ? this.titleForm.remarkBackgroundColor : DEFAULT_TITLE_STYLE.remarkBackgroundColor
+
+          this.titleForm.fontFamily = this.titleForm.fontFamily ? this.titleForm.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.titleForm.letterSpace = this.titleForm.letterSpace ? this.titleForm.letterSpace : DEFAULT_TITLE_STYLE.letterSpace
+          this.titleForm.fontShadow = this.titleForm.fontShadow ? this.titleForm.fontShadow : DEFAULT_TITLE_STYLE.fontShadow
         }
         if (!this.batchOptStatus) {
           this.titleForm.title = this.chart.title

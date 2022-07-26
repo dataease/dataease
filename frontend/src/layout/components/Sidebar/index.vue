@@ -1,12 +1,13 @@
 <template>
   <!-- <div :class="{'has-logo':showLogo}" :style="{'--active-bg': activeBg, '--theme':$store.state.settings.theme , '--left-menu-hovor': variables.leftMenuHovor}"> -->
-  <div :class="{ 'has-logo': showLogo }">
+  <div :class="{ 'has-logo': showLogo }" class="de-sidebar-container">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-menu
       :default-active="activeMenu"
       :collapse="isCollapse"
       :unique-opened="false"
       :collapse-transition="false"
+      class="de-el-menu"
       mode="vertical"
     >
       <sidebar-item
@@ -31,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import Logo from "./Logo";
 import SidebarItem from "./SidebarItem";
 import variables from "@/styles/variables.scss";
@@ -39,9 +40,11 @@ import path from "path";
 import { isExternal } from "@/utils/validate";
 export default {
   components: { SidebarItem, Logo },
-
   computed: {
     ...mapGetters(["sidebar"]),
+    ...mapState({
+      isCollapse: state => state.isCollapse,
+    }),
     routes() {
       // return this.$router.options.routes
       if (this.isCollapse) {
@@ -67,14 +70,9 @@ export default {
       return variables;
     },
   },
-  data() {
-    return {
-      isCollapse: false,
-    };
-  },
   methods: {
     changeSideWidth() {
-      this.isCollapse = !this.isCollapse;
+      this.$store.commit('setIsCollapse', !this.isCollapse);
       this.$emit("changeSideWidth", this.isCollapse ? "70px" : "");
     },
     resolvePath(routePath) {
@@ -113,9 +111,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.de-sidebar-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.de-el-menu {
+  overflow-y: auto;
+  padding-bottom: 50px;
+}
 .sidebar-collapse-btn {
   height: 48px;
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   border-top: 1px solid #1f232926;

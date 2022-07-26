@@ -9,7 +9,7 @@
           v-for="(widget, index) in item"
           :key="widget.widgetName+index"
           :data-id="widget.widgetName"
-          draggable
+          :draggable="widget.widgetName !== 'buttonSureWidget' || !searchButtonExist"
           :data-index="index"
           :class="'filter-widget '+ (widget.defaultClass || '')"
         >
@@ -27,7 +27,7 @@
 
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
-import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
+import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 export default {
@@ -35,16 +35,11 @@ export default {
   data() {
     return {
       panelInfo: this.$store.state.panel.panelInfo,
-      //   widgetSubjects: {
-      //     '文本过滤组件': [
-      //       'mySelectWidget'
-      //     ]
-      //   }
+
       widgetSubjects: {
         '时间过滤组件': [
           'timeYearWidget',
           'timeMonthWidget',
-          //   'timeQuarterWidget',
           'timeDateWidget',
           'timeDateRangeWidget'
 
@@ -69,22 +64,44 @@ export default {
   computed: {
     ...mapState([
       'canvasStyleData',
-      'curCanvasScale'
-    ])
+      'curCanvasScale',
+      'componentData'
+    ]),
+    searchButtonExist() {
+      return this.componentData && this.componentData.some(component => component.type === 'custom-button' && component.serviceName === 'buttonSureWidget')
+    }
+  },
+  watch: {
+    searchButtonExist(val, old) {
+      if (val === old) return
+      if (val) {
+        this.widgetSubjects['按钮'][0].widgetName = 'buttonSureWidget'
+        this.widgetSubjects['按钮'][0].defaultClass = 'button-disable-filter'
+      } else {
+        this.widgetSubjects['按钮'][0].widgetName = 'buttonSureWidget'
+        this.widgetSubjects['按钮'][0].defaultClass = 'time-filter'
+      }
+    }
   },
   created() {
-    for (const key in this.widgetSubjects) {
-      const widgetNames = this.widgetSubjects[key]
-      this.widgetSubjects[key] = widgetNames.map(widgetName => {
-        const widget = ApplicationContext.getService(widgetName)
-        const result = { widgetName: widgetName }
-        Object.assign(result, widget.getLeftPanel())
-        return result
-      })
-    }
+    this.init()
   },
 
   methods: {
+    init() {
+      for (const key in this.widgetSubjects) {
+        const widgetNames = this.widgetSubjects[key]
+        this.widgetSubjects[key] = widgetNames.map(widgetName => {
+          const widget = ApplicationContext.getService(widgetName)
+          const result = { widgetName: widgetName }
+          Object.assign(result, widget.getLeftPanel())
+          if (this.searchButtonExist && widgetName === 'buttonSureWidget') {
+            result.defaultClass = 'button-disable-filter'
+          }
+          return result
+        })
+      }
+    },
     handleDragStart(ev) {
       // 记录拖拽信息
       const dragComponentInfo = deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel())
@@ -169,6 +186,16 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     overflow: hidden;
+  }
+
+  .button-disable-filter {
+    background-color: #ecf5ff;
+    .filter-widget-icon {
+        color: #8cc5ff;
+    }
+    .filter-widget-text {
+        color: var(--TextActive, #8cc5ff);
+    }
   }
 
   .time-filter {

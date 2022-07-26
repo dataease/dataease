@@ -82,3 +82,18 @@ ADD COLUMN `update_time` bigint(13) NULL COMMENT '更新时间' AFTER `update_by
 ALTER TABLE `sys_task_email`
 ADD COLUMN `view_ids` varchar(255) NULL COMMENT '视图ID集合' AFTER `task_id`;
 
+UPDATE `sys_menu`
+SET
+    `permission` = 'user:add,user:del,user:edit'
+WHERE
+        `menu_id` = 35;
+UPDATE `sys_menu`
+SET
+    `permission` = 'datasource:read'
+WHERE
+        `menu_id` = 39;
+UPDATE `sys_menu`
+SET
+    `permission` = 'user:editPwd'
+WHERE
+        `menu_id` = 51;

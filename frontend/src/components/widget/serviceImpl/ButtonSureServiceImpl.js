@@ -2,7 +2,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-chaxunsousuo',
-  label: '查询按钮',
+  label: 'desearchbutton.label',
   defaultClass: 'time-filter'
 }
 
@@ -24,7 +24,8 @@ const drawPanel = {
       round: false,
       plain: true,
       customRange: false,
-      filterIds: []
+      filterIds: [],
+      autoTrigger: true
     },
     value: '查询'
   },

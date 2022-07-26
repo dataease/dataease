@@ -4,7 +4,7 @@
     <span v-if="chart.type && antVRenderStatus" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <div>
         <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
-        <title-remark v-if="remarkCfg.show" :remark-cfg="remarkCfg" />
+        <title-remark v-if="remarkCfg.show" style="text-shadow: none!important;" :remark-cfg="remarkCfg" />
       </div>
     </span>
     <div :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}" />
@@ -27,6 +27,7 @@ import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
 import { baseWaterfallOptionAntV } from '@/views/chart/chart/waterfall/waterfall'
 import { baseWordCloudOptionAntV } from '@/views/chart/chart/wordCloud/word_cloud'
 import TitleRemark from '@/views/chart/view/TitleRemark'
+import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 
 export default {
   name: 'ChartComponentG2',
@@ -322,6 +323,10 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
+          this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

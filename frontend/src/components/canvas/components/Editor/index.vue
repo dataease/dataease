@@ -61,20 +61,21 @@
       @editComponent="editComponent(index,item)"
     >
       <de-out-widget
-        v-if="renderOk&&item.type==='custom'"
+        v-if="renderOk && item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
         :element="item"
+        :is-relation="searchButtonInfo && searchButtonInfo.buttonExist && searchButtonInfo.relationFilterIds.includes(item.id)"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
       <component
         :is="item.component"
-        v-else-if="renderOk&&item.type==='other'"
+        v-else-if="renderOk && item.type==='other'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -207,7 +208,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
-import { buildFilterMap } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import $ from 'jquery'
@@ -929,7 +930,9 @@ export default {
       yourList: [],
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
-      editShow: false
+      editShow: false,
+      buttonFilterMap: null,
+      autoTrigger: true
     }
   },
   computed: {
@@ -1003,9 +1006,25 @@ export default {
       'curCanvasScale',
       'batchOptStatus'
     ]),
+
+    searchButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      return result
+    },
     filterMap() {
-      return buildFilterMap(this.componentData)
+      const result = buildFilterMap(this.componentData)
+      if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            result[key] = filters
+          }
+        }
+      }
+      return result
     }
+
   },
   watch: {
     customStyle: {
@@ -1043,6 +1062,29 @@ export default {
         this.initMatrix()
       },
       deep: true
+    },
+    autoTrigger: {
+      handler(val, old) {
+        if (val === old) return
+        const result = buildFilterMap(this.componentData)
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+              filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            }
+
+            this.filterMap[key] = filters
+
+            this.componentData.forEach(item => {
+              if (item.type === 'view' && item.propValue.viewId === key) {
+                item.filters = filters
+              }
+            })
+          }
+        }
+      },
+      deep: true
     }
   },
 
@@ -1055,6 +1097,8 @@ export default {
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
+    bus.$on('trigger-search-button', this.triggerSearchButton)
+    bus.$on('refresh-button-info', this.refreshButtonInfo)
 
     // 矩阵定位调试模式
     if (this.psDebug) {
@@ -1068,10 +1112,107 @@ export default {
     eventBus.$off('startMoveIn', this.startMoveIn)
     eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('onRemoveLastItem', this.removeLastItem)
+    bus.$off('trigger-search-button', this.triggerSearchButton)
+    bus.$off('refresh-button-info', this.refreshButtonInfo)
   },
   created() {
   },
   methods: {
+    refreshButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      this.searchButtonInfo.buttonExist = result.buttonExist
+      this.searchButtonInfo.relationFilterIds = result.relationFilterIds
+      this.searchButtonInfo.filterMap = result.filterMap
+      this.searchButtonInfo.autoTrigger = result.autoTrigger
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
+    },
+    triggerSearchButton() {
+      this.refreshButtonInfo()
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
+
+      this.componentData.forEach(component => {
+        if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
+          component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+      })
+
+      // this.$store.commit('addViewFilter', param)
+    },
+    buildButtonFilterMap(panelItems) {
+      const result = {
+        buttonExist: false,
+        relationFilterIds: [],
+        autoTrigger: true,
+        filterMap: {}
+      }
+      if (!panelItems || !panelItems.length) return result
+      let sureButtonItem = null
+      result.buttonExist = panelItems.some(item => {
+        if (item.type === 'custom-button' && item.serviceName === 'buttonSureWidget') {
+          sureButtonItem = item
+          return true
+        }
+      })
+
+      if (!result.buttonExist) return result
+
+      const customRange = sureButtonItem.options.attrs.customRange
+      result.autoTrigger = sureButtonItem.options.attrs.autoTrigger
+      this.autoTrigger = result.autoTrigger
+
+      const allFilters = panelItems.filter(item => item.type === 'custom')
+
+      const matchFilters = customRange && allFilters.filter(item => sureButtonItem.options.attrs.filterIds.includes(item.id)) || allFilters
+
+      result.relationFilterIds = matchFilters.map(item => item.id)
+
+      let viewKeyMap = buildViewKeyMap(panelItems)
+      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap)
+      result.filterMap = viewKeyMap
+      return result
+    },
+    buildViewKeyFilters(panelItems, result) {
+      const refs = this.$refs
+      if (!this.$refs['wrapperChild'] || !this.$refs['wrapperChild'].length) return result
+      const len = this.$refs['wrapperChild'].length
+      panelItems.forEach((element) => {
+        if (element.type !== 'custom') {
+          return true
+        }
+
+        let param = null
+        const index = this.getComponentIndex(element.id)
+        if (index < 0 || index >= len) {
+          return true
+        }
+        const wrapperChild = refs['wrapperChild'][index]
+        if (!wrapperChild || !wrapperChild.getCondition) return true
+        param = wrapperChild.getCondition && wrapperChild.getCondition()
+        const condition = formatCondition(param)
+        const vValid = valueValid(condition)
+        const filterComponentId = condition.componentId
+        Object.keys(result).forEach(viewId => {
+          const vidMatch = viewIdMatch(condition.viewIds, viewId)
+          const viewFilters = result[viewId]
+          let j = viewFilters.length
+          while (j--) {
+            const filter = viewFilters[j]
+            if (filter.componentId === filterComponentId) {
+              viewFilters.splice(j, 1)
+            }
+          }
+          vidMatch && vValid && viewFilters.push(condition)
+        })
+      })
+      return result
+    },
+    getComponentIndex(id) {
+      for (let index = 0; index < this.componentData.length; index++) {
+        const item = this.componentData[index]
+        if (item.id === id) return index
+      }
+      return -1
+    },
     pluginEditHandler({ e, id }) {
       let index = -1
       for (let i = 0; i < this.componentData.length; i++) {

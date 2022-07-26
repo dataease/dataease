@@ -4,6 +4,7 @@
     :visible.sync="userDrawer"
     custom-class="user-drawer"
     size="680px"
+    v-closePress
     direction="rtl"
   >
     <div class="filter">
@@ -24,7 +25,7 @@
           @click="activeDeptChange(ele.id)"
           :class="[activeDept.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
-          v-for="ele in selectDepts"
+          v-for="ele in selectDeptsCahe"
           >{{ ele.label }}</span>
         <el-popover
           placement="bottom"
@@ -42,7 +43,7 @@
               :load="loadNode"
               :lazy="true"
               :expand-on-click-node="false"
-              :data="depts"
+              :data="deptsComputed"
               :props="defaultProps"
               @node-click="handleNodeClick"
             ></el-tree>
@@ -54,8 +55,6 @@
               popper-class="tree-select"
               multiple
               :placeholder="$t('commons.please_select')"
-              @change="changeRole"
-              @remove-tag="changeRole"
               value-key="id"
             >
             <el-option
@@ -77,7 +76,7 @@
           @click="activeRoleChange(ele.id)"
           :class="[activeRole.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
-          v-for="ele in rolesValue"
+          v-for="ele in rolesValueCopy"
           >{{ ele.name }}</span
         >
         <el-popover
@@ -96,7 +95,7 @@
             value-key="id"
           >
             <el-option
-              v-for="item in roles"
+              v-for="item in rolesComputed"
               :key="item.name"
               :label="item.name"
               :value="item"
@@ -126,7 +125,8 @@ import { getDeptTree, treeByDeptId } from "@/api/system/dept";
 export default {
   data() {
     return {
-      value: [],
+      roleCahe: [],
+      deptCahe: [],
       roles: [],
       status: [{
         id: 1,
@@ -140,6 +140,7 @@ export default {
       activeRole: [],
       depts: [],
       selectDepts: [],
+      selectDeptsCahe: [],
       activeDept: [],
       defaultProps: {
         children: "children",
@@ -149,6 +150,17 @@ export default {
       userDrawer: false
     };
   },
+  computed: {
+    rolesComputed() {
+      return this.roles.filter(ele => !this.activeRole.includes(ele.id))
+    },
+    rolesValueCopy() {
+      return this.roleCahe.filter(ele => this.activeRole.includes(ele.id))
+    },
+    deptsComputed() {
+      return this.depts.filter(ele => !this.activeDept.includes(ele.id))
+    }
+  },
   mounted() {
     this.initRoles();
   },
@@ -156,37 +168,53 @@ export default {
     // 获取弹窗内部门数据
     treeByDeptId() {
       treeByDeptId(0).then((res) => {
-        this.depts = res.data || [];
+        this.depts =  (res.data || []).map(ele =>  {
+        return {
+            ...ele,
+            leaf: !ele.hasChildren,
+          }
+        })
       });
     },
     changeRole() {
-      const roles = this.rolesValue.map((item) => item.id);
-      this.activeRole = this.activeRole.filter((ele) => roles.includes(ele));
+      if (this.roleCahe.length > this.rolesValue.length + this.activeRole.length) {
+        this.roleCahe = this.roleCahe.filter(ele => this.rolesValue.map(ele => ele.id).concat(this.activeRole).includes(ele.id));
+        return;
+      }
+      const roleIdx = this.rolesValue.findIndex(ele => !this.roleCahe.map(ele => ele.id).concat(this.activeRole).includes(ele.id));
+      if (roleIdx === -1) return
+      this.activeRole.push(this.rolesValue[roleIdx].id)
+      this.roleCahe.push(this.rolesValue[roleIdx]);
+      this.rolesValue.splice(roleIdx, 1)
     },
     activeRoleChange(id) {
       const roleIndex = this.activeRole.findIndex((ele) => ele === id);
       if (roleIndex === -1) {
         this.activeRole.push(id);
+        this.rolesValue = this.rolesValue.filter((ele) => ele.id !== id);
       } else {
         this.activeRole.splice(roleIndex, 1);
+        const role = this.roleCahe.find((ele) => ele.id === id);
+        this.rolesValue.push(role);
       }
     },
     handleNodeClick({ id, label }) {
-      const deptIndex = this.selectDepts.findIndex((ele) => ele.id === id);
-      if (deptIndex === -1) {
-        this.selectDepts.push({ id, label });
-      } else {
-        this.selectDepts.splice(deptIndex, 1);
-        this.changeDepts();
+      const deptIdx = this.selectDepts.findIndex((ele) => ele.id === id);
+      if (deptIdx !== -1) {
+        this.selectDepts.splice(deptIdx, 1);
+        this.selectDeptsCahe = this.selectDeptsCahe.filter(ele => ele.id !== id)
+        this.deptCahe = this.deptCahe.filter(ele => ele.id !== id)
+        return;
       }
+      this.activeDept.push(id)
+      this.selectDeptsCahe.push({ id, label });
+      this.deptCahe.push({ id, label });
     },
     activeDeptChange(id) {
-        const deptIndex = this.activeDept.findIndex((ele) => ele === id);
-      if (deptIndex === -1) {
-        this.activeDept.push(id);
-      } else {
-        this.activeDept.splice(deptIndex, 1);
-      }
+      const dept = this.deptCahe.find((ele) => ele.id === id)
+      this.selectDepts.push(dept);
+      this.activeDept = this.activeDept.filter(ele => ele !== id)
+      this.selectDeptsCahe = this.selectDeptsCahe.filter(ele => ele.id !== id)
     },
     statusChange(id) {
         const statusIndex = this.activeStatus.findIndex((ele) => ele === id);
@@ -206,8 +234,9 @@ export default {
         return;
       }
       getDeptTree(node.data.id).then((res) => {
+        const filterDept = (res.data || []).filter(ele => !this.activeDept.includes(ele.deptId))
         resolve(
-          res.data.map((dept) => {
+          filterDept.map((dept) => {
             return this.normalizer(dept);
           })
         );
@@ -227,7 +256,21 @@ export default {
     },
     search() {
       this.userDrawer = false;
-      this.$emit('search', this.formatCondition())
+      this.$emit('search', this.formatCondition(), this.formatText())
+    },
+    formatText() {
+      const params = [];
+      if (this.activeStatus.length) {
+        let str = `状态:${this.activeStatus.reduce((pre,next) => (this.status.find(ele => ele.id === next) || {}).label  + '、' +  pre, '')}`;
+        params.push(str.slice(0, str.length - 1 ))
+      }
+      if (this.activeDept.length) {
+        params.push(`组织:${this.selectDeptsCahe.reduce((pre,next) =>  pre.label  + '、' + next.label)}`)
+      }
+      if (this.activeRole.length) {
+        params.push(`角色:${this.rolesValueCopy.reduce((pre,next) => pre.label  + '、' +  next.labele)}`)
+      }
+      return params;
     },
     formatCondition() {
       const fildMap = {'r.role_id': this.activeRole, 'd.dept_id': this.activeDept, 'u.enabled': this.activeStatus}
@@ -259,16 +302,33 @@ export default {
 <style lang="scss">
 .user-drawer {
   .el-drawer__header {
-    padding: 16px 21px 16px 24px;
+   padding: 16px 24px;
+    margin: 0;
     font-family: PingFang SC;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
-    letter-spacing: 0px;
-    text-align: left;
     color: #1f2329;
+    position: relative;
+    box-sizing: border-box;
+    height: 57px;
+    mix-blend-mode: normal;
     border-bottom: 1px solid rgba(187, 191, 196, 0.5);
-    margin: 0;
+
+    .el-drawer__close-btn {
+      position: absolute;
+      right: 24px;
+      top: 16px;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .el-drawer__close-btn:hover {
+      background: #e9e9ea;
+    }
   }
 
   .el-drawer__body {
@@ -351,8 +411,9 @@ export default {
 }
 .tree-select {
   .el-select-dropdown__empty,
+  .el-scrollbar__wrap,
   .popper__arrow {
-    display: none;
+    display: none !important;
   }
 }
 

@@ -16,6 +16,11 @@
               @input="inputOnInput($event)"
             />
           </el-form-item>
+          <el-form-item v-show="showProperty('fontFamily')" :label="$t('chart.font_family')" class="form-item">
+            <el-select v-model="titleForm.fontFamily" :placeholder="$t('chart.font_family')" @change="changeTitleStyle('fontFamily')">
+              <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle('fontSize')">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -42,6 +47,14 @@
             <el-checkbox v-show="showProperty('isItalic')" v-model="titleForm.isItalic" @change="changeTitleStyle('isItalic')">{{ $t('chart.italic') }}</el-checkbox>
             <el-checkbox v-show="showProperty('isBolder')" v-model="titleForm.isBolder" @change="changeTitleStyle('isBolder')">{{ $t('chart.bolder') }}</el-checkbox>
           </el-form-item>
+          <el-form-item v-show="showProperty('letterSpace')" :label="$t('chart.letter_space')" class="form-item">
+            <el-select v-model="titleForm.letterSpace" :placeholder="$t('chart.quota_letter_space')" @change="changeTitleStyle('letterSpace')">
+              <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="showProperty('fontShadow')" :label="$t('chart.font_shadow')" class="form-item">
+            <el-checkbox v-model="titleForm.fontShadow" @change="changeTitleStyle('fontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
@@ -49,7 +62,7 @@
 </template>
 
 <script>
-import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
+import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
 
@@ -77,7 +90,9 @@ export default {
       titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
       fontSize: [],
       isSetting: false,
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fontFamily: CHART_FONT_FAMILY,
+      fontLetterSpace: CHART_FONT_LETTER_SPACE
     }
   },
   watch: {
@@ -108,6 +123,10 @@ export default {
         }
         if (customStyle.text) {
           this.titleForm = customStyle.text
+
+          this.titleForm.fontFamily = this.titleForm.fontFamily ? this.titleForm.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.titleForm.letterSpace = this.titleForm.letterSpace ? this.titleForm.letterSpace : DEFAULT_TITLE_STYLE.letterSpace
+          this.titleForm.fontShadow = this.titleForm.fontShadow ? this.titleForm.fontShadow : DEFAULT_TITLE_STYLE.fontShadow
         }
         if (!this.batchOptStatus) {
           this.titleForm.title = this.chart.title

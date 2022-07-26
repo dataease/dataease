@@ -239,11 +239,11 @@
     </de-container>
 
     <el-dialog
-     v-if="buttonVisible && panelInfo.id"
-     :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
-     :visible.sync="buttonVisible"
-     custom-class="de-button-dialog"
-     @close="cancelButton"
+      v-if="buttonVisible && panelInfo.id"
+      :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
+      :visible.sync="buttonVisible"
+      custom-class="de-button-dialog"
+      @close="cancelButton"
     >
       <button-dialog
         v-if="buttonVisible && currentWidget"
@@ -252,8 +252,7 @@
         :element="currentFilterCom"
         @sure-handler="sureHandler"
         @cancel-handler="cancelHandler"
-       />
-      
+      />
 
     </el-dialog>
 
@@ -653,6 +652,7 @@ export default {
     bus.$off('component-dialog-style', this.componentDialogStyle)
     bus.$off('previewFullScreenClose', this.previewFullScreenClose)
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
+    bus.$off('delete-condition', this.deleteCustomComponent)
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
@@ -673,6 +673,19 @@ export default {
       bus.$on('component-dialog-style', this.componentDialogStyle)
       bus.$on('previewFullScreenClose', this.previewFullScreenClose)
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
+      bus.$on('delete-condition', this.deleteCustomComponent)
+    },
+    deleteCustomComponent(param) {
+      param && param.componentId && this.componentData.forEach(com => {
+        if (com.type === 'custom-button' && com.options.attrs.filterIds) {
+          const filterIds = com.options.attrs.filterIds
+          let len = filterIds.length
+          while (len--) {
+            if (param.componentId === filterIds[len]) { filterIds.splice(len, 1) }
+          }
+          com.options.attrs.filterIds = filterIds
+        }
+      })
     },
     loadMultiplexingViewTree() {
       queryPanelMultiplexingViewTree().then(res => {
@@ -1158,6 +1171,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      bus.$emit('refresh-button-info')
       this.closeButton()
     },
     cancelHandler() {

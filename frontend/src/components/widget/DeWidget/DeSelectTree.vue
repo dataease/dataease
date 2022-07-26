@@ -47,7 +47,11 @@ export default {
       required: false,
       default: true
     },
-    size: String
+    size: String,
+    isRelation: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -279,7 +283,7 @@ export default {
       this.setCondition()
     },
 
-    setCondition() {
+    getCondition() {
       const val = this.formatFilterValue()
 
       const param = {
@@ -288,7 +292,12 @@ export default {
         operator: this.operator,
         isTree: true
       }
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      return param
+    },
+
+    setCondition() {
+      const param = this.getCondition()
+      !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {
       const SEPARATOR = '-de-'

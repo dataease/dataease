@@ -24,10 +24,12 @@
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
           :key="index"
+          ref="viewWrapperChild"
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"
+          :is-relation="relationFilterIds.includes(item.id)"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
           :screen-shot="screenShot"
           :canvas-style-data="canvasStyleData"
@@ -80,7 +82,7 @@ import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
-import { buildFilterMap } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 const erd = elementResizeDetectorMaker()
 
@@ -171,7 +173,8 @@ export default {
       showChartTableInfo: {},
       showChartInfoType: 'details',
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
-      terminal: 'pc'
+      terminal: 'pc',
+      buttonFilterMap: null
     }
   },
   created() {
@@ -255,9 +258,29 @@ export default {
     ...mapState([
       'isClickComponent'
     ]),
+
+    searchButtonInfo() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      return result
+    },
     filterMap() {
-      const map = buildFilterMap(this.componentData)
-      return map
+      const result = buildFilterMap(this.componentData)
+      if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
+        for (const key in result) {
+          if (Object.hasOwnProperty.call(result, key)) {
+            let filters = result[key]
+            filters = filters.filter(item => !this.searchButtonInfo.relationFilterIds.includes(item.componentId))
+            result[key] = filters
+          }
+        }
+      }
+      return result
+    },
+    buttonExist() {
+      return this.searchButtonInfo && this.searchButtonInfo.buttonExist
+    },
+    relationFilterIds() {
+      return this.buttonExist && this.searchButtonInfo.relationFilterIds || []
     }
   },
   watch: {
@@ -283,14 +306,101 @@ export default {
     if (this.terminal === 'mobile') {
       this.initMobileCanvas()
     }
+    bus.$on('trigger-search-button', this.triggerSearchButton)
   },
   beforeDestroy() {
     erd.uninstall(this.$refs.canvasInfoTemp)
     erd.uninstall(this.$refs.canvasInfoMain)
     clearInterval(this.timer)
     eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
+    bus.$on('trigger-search-button', this.triggerSearchButton)
   },
   methods: {
+    triggerSearchButton() {
+      const result = this.buildButtonFilterMap(this.componentData)
+      this.searchButtonInfo.autoTrigger = result.autoTrigger
+      this.searchButtonInfo.filterMap = result.filterMap
+      this.buttonFilterMap = this.searchButtonInfo.filterMap
+
+      this.componentData.forEach(component => {
+        if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
+          component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+      })
+    },
+    buildButtonFilterMap(panelItems) {
+      const result = {
+        buttonExist: false,
+        relationFilterIds: [],
+        autoTrigger: true,
+        filterMap: {
+
+        }
+      }
+      if (!panelItems || !panelItems.length) return result
+      let sureButtonItem = null
+      result.buttonExist = panelItems.some(item => {
+        if (item.type === 'custom-button' && item.serviceName === 'buttonSureWidget') {
+          sureButtonItem = item
+          return true
+        }
+      })
+
+      if (!result.buttonExist) return result
+
+      const customRange = sureButtonItem.options.attrs.customRange
+      result.autoTrigger = sureButtonItem.options.attrs.autoTrigger
+      const allFilters = panelItems.filter(item => item.type === 'custom')
+
+      const matchFilters = customRange && allFilters.filter(item => sureButtonItem.options.attrs.filterIds.includes(item.id)) || allFilters
+
+      result.relationFilterIds = matchFilters.map(item => item.id)
+
+      let viewKeyMap = buildViewKeyMap(panelItems)
+      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap)
+      result.filterMap = viewKeyMap
+      return result
+    },
+    buildViewKeyFilters(panelItems, result) {
+      const refs = this.$refs
+      if (!this.$refs['viewWrapperChild'] || !this.$refs['viewWrapperChild'].length) return result
+      panelItems.forEach((element) => {
+        if (element.type !== 'custom') {
+          return true
+        }
+
+        const index = this.getComponentIndex(element.id)
+        if (index < 0) {
+          return true
+        }
+        let param = null
+        const wrapperChild = refs['viewWrapperChild'][index]
+        param = wrapperChild.getCondition && wrapperChild.getCondition()
+        const condition = formatCondition(param)
+        const vValid = valueValid(condition)
+        const filterComponentId = condition.componentId
+        Object.keys(result).forEach(viewId => {
+          const vidMatch = viewIdMatch(condition.viewIds, viewId)
+          const viewFilters = result[viewId]
+          let j = viewFilters.length
+          while (j--) {
+            const filter = viewFilters[j]
+            if (filter.componentId === filterComponentId) {
+              viewFilters.splice(j, 1)
+            }
+          }
+          vidMatch && vValid && viewFilters.push(condition)
+        })
+      })
+      return result
+    },
+    getComponentIndex(id) {
+      for (let index = 0; index < this.componentData.length; index++) {
+        const item = this.componentData[index]
+        if (item.id === id) return index
+      }
+      return -1
+    },
     _isMobile() {
       const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
       this.terminal = flag ? 'mobile' : 'pc'

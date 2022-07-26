@@ -46,7 +46,11 @@ export default {
       required: false,
       default: true
     },
-    size: String
+    size: String,
+    isRelation: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -170,14 +174,18 @@ export default {
     search() {
       this.setCondition()
     },
-    setCondition() {
+    getCondition() {
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator
       }
       param.value = this.formatValues(param.value)
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      return param
+    },
+    setCondition() {
+      const param = this.getCondition()
+      !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
     dateChange(value) {
       if (!this.inDraw) {

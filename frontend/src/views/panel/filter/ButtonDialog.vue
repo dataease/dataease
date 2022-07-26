@@ -1,26 +1,29 @@
 <template>
   <div>
-    <el-form size="mini" ref="form" :model="form" label-width="100px">
-      <el-form-item label="名称">
-        <el-input v-model="currentElement.options.value"></el-input>
-      </el-form-item>
-      
-      
-      <el-form-item label="自定义范围">
-        <el-switch v-model="myAttrs.customRange" @change="customRangeChange"></el-switch>
-        <el-link style="margin-left: 10px;" type="warning" disabled>默认关联全部过滤组件</el-link>
+    <el-form ref="form" size="mini" :rules="rules" :model="form" label-width="80px">
+      <el-form-item :label="$t('desearchbutton.text')" prop="text">
+        <el-input v-model="currentElement.options.value" maxlength="10" show-word-limit />
       </el-form-item>
 
-      <el-form-item label="关联组件" v-if="myAttrs.customRange">
-        <el-select style="width: 300px;" multiple clearable v-model="myAttrs.filterIds" placeholder="请选择活动区域">
-          <el-option  v-for="(filter, index) in filters" :key="filter.id" :label="filter.showName" :value="filter.id" />
+      <el-form-item :label="$t('desearchbutton.auto_trigger')">
+        <el-switch v-model="myAttrs.autoTrigger" @change="autoTriggerChange" />
+        <el-link style="margin-left: 10px;" type="info" disabled>{{ $t('desearchbutton.auto_trigger_tip') }}</el-link>
+      </el-form-item>
+
+      <el-form-item :label="$t('desearchbutton.range')">
+        <el-switch v-model="myAttrs.customRange" @change="customRangeChange" />
+        <el-link style="margin-left: 10px;" type="warning" disabled>{{ $t('desearchbutton.range_tip') }}</el-link>
+      </el-form-item>
+
+      <el-form-item v-if="myAttrs.customRange" :label="$t('desearchbutton.relative')">
+        <el-select v-model="myAttrs.filterIds" style="width: 280px;" multiple clearable>
+          <el-option v-for="(filter, index) in filters" :key="filter.id + index" :label="filter.showName" :value="filter.id" />
         </el-select>
       </el-form-item>
 
-      
       <el-form-item>
-        <el-button type="primary" @click="sure">确定</el-button>
-        <el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="sure">{{ $t('commons.confirm') }}</el-button>
+        <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -35,7 +38,7 @@ export default {
   props: {
     widgetInfo: {
       type: Object,
-      default: null,
+      default: null
     },
     element: {
       type: Object,
@@ -45,35 +48,35 @@ export default {
   data() {
     return {
       form: {
-        
+
       },
       currentElement: null,
       widget: null,
-      myAttrs: null
+      myAttrs: null,
+      rules: {
+        text: [
+          { min: 0, max: 10, message: '长度在 0 到 10 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
-  created() {
-    this.widget = this.widgetInfo
-    this.currentElement = JSON.parse(JSON.stringify(this.element))
-    this.myAttrs = this.currentElement.options.attrs
-  },
+
   computed: {
-    
+
     ...mapState([
       'componentData'
     ]),
     filters() {
       const datas = this.componentData.filter(item => item.type === 'custom')
       datas.forEach(item => {
-
         const serviceName = item.serviceName
         const widget = ApplicationContext.getService(serviceName)
         const showName = widget.initLeftPanel().label
         let result = ''
-        if(showName) {
+        if (showName) {
           result = this.$t(showName)
         }
-        if(item.options.attrs.title) {
+        if (item.options.attrs.title) {
           result += '【' + item.options.attrs.title + '】'
         }
 
@@ -81,6 +84,14 @@ export default {
       })
       return datas
     }
+  },
+  watch: {
+
+  },
+  created() {
+    this.widget = this.widgetInfo
+    this.currentElement = JSON.parse(JSON.stringify(this.element))
+    this.myAttrs = this.currentElement.options.attrs
   },
   methods: {
     sure() {
@@ -94,6 +105,9 @@ export default {
     },
     customRangeChange(val) {
       this.myAttrs.filterIds = []
+    },
+    autoTriggerChange(val) {
+
     }
   }
 }

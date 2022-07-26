@@ -4,7 +4,7 @@
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <div>
         <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
-        <title-remark v-if="remarkCfg.show" :remark-cfg="remarkCfg" />
+        <title-remark v-if="remarkCfg.show" style="text-shadow: none!important;" :remark-cfg="remarkCfg" />
       </div>
     </span>
     <div ref="tableContainer" style="width: 100%;overflow: hidden;" :style="{background:container_bg_class.background}">
@@ -40,6 +40,7 @@ import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
 import TitleRemark from '@/views/chart/view/TitleRemark'
+import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 
 export default {
   name: 'ChartComponentS2',
@@ -322,6 +323,10 @@ export default {
           if (this.$refs.title) {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'
           }
+
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
+          this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

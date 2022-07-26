@@ -1,17 +1,20 @@
 <template>
 
   <el-button
-    v-if="options!== null && options.attrs!==null"
-    :type="options.attrs.type"
-    :round="options.attrs.round"
-    :plain="options.attrs.plain"
+    v-if="element.options!== null && element.options.attrs!==null"
+    :type="element.options.attrs.type"
+    :round="element.options.attrs.round"
+    :plain="element.options.attrs.plain"
     :size="size"
+    class="de-search-button"
+    @click="triggerSearch"
   >
-    {{ options.value }}
+    {{ element.options.value }}
   </el-button>
 </template>
 
 <script>
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -27,17 +30,23 @@ export default {
   },
   data() {
     return {
-      options: null,
       operator: 'eq',
       values: null
     }
   },
   created() {
-    this.options = this.element.options
+  },
+  methods: {
+    triggerSearch() {
+      bus.$emit('trigger-search-button')
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.de-search-button {
+  height: 100%;
+  width: 100%;
+}
 </style>

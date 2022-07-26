@@ -51,8 +51,8 @@ export const formatLinkageCondition = obj => {
   return condition
 }
 
-export const buildFilterMap = panelItems => {
-  const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+export const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+export const buildViewKeyMap = panelItems => {
   const result = {}
   panelItems.forEach(element => {
     if (element.type === 'view') {
@@ -66,12 +66,18 @@ export const buildFilterMap = panelItems => {
       })
     }
   })
-  panelItems.forEach(element => {
+  return result
+}
+
+export const buildViewKeyFilters = (panelItems, result) => {
+  panelItems.forEach((element, index) => {
     if (element.type !== 'custom') {
       return true
     }
+
+    let param = null
     const widget = ApplicationContext.getService(element.serviceName)
-    const param = widget.getParam(element)
+    param = widget.getParam(element)
     const condition = formatCondition(param)
     const vValid = valueValid(condition)
     const filterComponentId = condition.componentId
@@ -88,5 +94,11 @@ export const buildFilterMap = panelItems => {
       vidMatch && vValid && viewFilters.push(condition)
     })
   })
+  return result
+}
+export const buildFilterMap = panelItems => {
+  let result = buildViewKeyMap(panelItems)
+
+  result = buildViewKeyFilters(panelItems, result)
   return result
 }

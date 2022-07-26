@@ -407,6 +407,7 @@
       :visible.sync="edit_api_item"
       custom-class="api-datasource-drawer"
       size="840px"
+      v-closePress
       :before-close="closeEditItem"
       direction="rtl"
     >
@@ -463,7 +464,7 @@
           </el-form-item>
 
           <div v-loading="loading">
-            <div class="row-rules">
+            <div class="row-rules mr40">
               <span>{{ $t("datasource.req_param") }}</span>
             </div>
             <!-- HTTP 请求参数 -->
@@ -981,7 +982,6 @@ export default {
     },
     closeEditItem() {
       this.active = 0;
-      console.log(1, this.$refs.apiItem);
       this.$refs.apiItem.clearValidate();
       this.edit_api_item = false;
     },
@@ -1122,14 +1122,30 @@ export default {
 <style lang="scss">
 .api-datasource-drawer {
   .el-drawer__header {
-    padding: 24px;
+    padding: 16px 24px;
     margin: 0;
     font-family: PingFang SC;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
     color: #1f2329;
+    position: relative;
     border-bottom: 1px solid rgba(187, 191, 196, 0.5);
+
+    .el-drawer__close-btn {
+      position: absolute;
+      right: 24px;
+      top: 16px;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .el-drawer__close-btn:hover {
+      background: #e9e9ea;
+    }
   }
   .el-drawer__body {
     padding: 0 24px 81px 24px;
@@ -1144,7 +1160,7 @@ export default {
     font-weight: 500;
     line-height: 22px;
     padding-left: 10px;
-    margin: 24px 0;
+    margin: 24px 0 16px 0;
 
     &::before {
       content: "";
@@ -1161,8 +1177,10 @@ export default {
   .input-with-select {
     .el-input-group__prepend {
       background-color: #fff;
+      border-color: #bbbfc4;
       .el-select {
         width: 84px !important;
+        color: #1f2329;
       }
     }
   }
@@ -1215,6 +1233,7 @@ export default {
       line-height: 22px;
       text-align: center;
       color: #1f2329;
+      margin-top: 4px;
     }
 
     .is-process {
@@ -1242,6 +1261,18 @@ export default {
 
   ::v-deep .el-form-item__content {
     margin-left: 0 !important;
+  }
+
+  .el-form-item {
+    margin-bottom: 28px;
+  }
+
+  .el-form-item__label {
+    padding-bottom: 8px;
+  }
+
+  .mr40 {
+    margin-top: 40px;
   }
 
   .btn {
