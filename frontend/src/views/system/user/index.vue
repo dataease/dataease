@@ -26,15 +26,16 @@
         </el-input>
         <el-button
           class="normal btn"
+          v-btnPress="filterColor"
+          :class="[filterTexts.length ? 'active-btn filter-not-null' : 'filter-zero']"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
           >筛选<template v-if="filterTexts.length">
             ({{ filterTexts.length }})
           </template>
-          </el-button
-        >
+        </el-button>
         <el-dropdown trigger="click" :hide-on-click="false">
-          <el-button class="normal btn" icon="el-icon-setting"
+          <el-button v-btnPress class="normal btn filter-zero" icon="el-icon-setting"
             >列表项</el-button
           >
           <el-dropdown-menu class="list-colums-slect" slot="dropdown">
@@ -49,9 +50,12 @@
               v-model="checkedColumnNames"
               @change="handleCheckedColumnNamesChange"
             >
-              <el-checkbox v-for="column in columnNames" :label="column.props" :key="column.props">{{
-               $t(column.label)
-              }}</el-checkbox>
+              <el-checkbox
+                v-for="column in columnNames"
+                :label="column.props"
+                :key="column.props"
+                >{{ $t(column.label) }}</el-checkbox
+              >
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
@@ -60,15 +64,26 @@
     <div class="filter-texts" v-if="filterTexts.length">
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">个结果</span>
-       <el-divider direction="vertical"></el-divider>
-      <p class="text" v-for="ele in filterTexts" :key="ele">{{ ele }} <i class="el-icon-close"></i></p>
+      <el-divider direction="vertical"></el-divider>
+      <i @click="scrollPre" v-if="showScroll" class="el-icon-arrow-left arrow-filter"></i>
+      <div class="filter-texts-container">
+        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
+          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        </p>
+      </div>
+      <i @click="scrollNext" v-if="showScroll" class="el-icon-arrow-right arrow-filter"></i>
       <el-button
-          type="text"
-          icon="el-icon-delete"
-          @click="clearFilter"
-          >{{ $t("user.create") }}</el-button>
+        type="text"
+        class="clear-btn"
+        icon="el-icon-delete"
+        @click="clearFilter"
+        >清空条件</el-button
+      >
     </div>
-    <div class="table-container" :class="[filterTexts.length ? 'table-container-filter' : '']">
+    <div
+      class="table-container"
+      :class="[filterTexts.length ? 'table-container-filter' : '']"
+    >
       <grid-table
         v-if="canLoadDom"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
@@ -117,7 +132,7 @@
           :label="$t('commons.organization')"
         >
           <template slot-scope="scope">
-            <div>{{ scope.row.dept && scope.row.dept.deptName || "-" }}</div>
+            <div>{{ (scope.row.dept && scope.row.dept.deptName) || "-" }}</div>
           </template>
         </el-table-column>
         <el-table-column
@@ -160,12 +175,17 @@
           </template>
         </el-table-column>
 
-        <el-table-column slot="__operation" label="操作" fixed="right" width="168">
+        <el-table-column
+          slot="__operation"
+          label="操作"
+          fixed="right"
+          width="168"
+        >
           <template slot-scope="scope">
             <el-button
               v-permission="['user:edit']"
               @click="edit(scope.row)"
-              class="text-btn"
+              class="text-btn mr2"
               type="text"
               >{{ $t("commons.edit") }}</el-button
             >
@@ -196,16 +216,18 @@
                 <!-- <el-button class="btn normal">{{
                   $t("fu.search_bar.cancel")
                 }}</el-button> -->
-                <el-button @click="resetPwd(scope.row.userId)" type="primary" class="btn">{{
-                  $t("fu.search_bar.ok")
-                }}</el-button>
+                <el-button
+                  @click="resetPwd(scope.row.userId)"
+                  type="primary"
+                  class="btn"
+                  >{{ $t("fu.search_bar.ok") }}</el-button
+                >
               </div>
 
               <el-button
                 slot="reference"
                 v-permission="['user:editPwd']"
                 class="text-btn mar16"
-                @click="editPassword(scope.row)"
                 type="text"
                 >{{ $t("member.edit_password") }}</el-button
               >
@@ -222,44 +244,50 @@
       </grid-table>
     </div>
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw" ></filterUser>
+      <filterUser ref="filterUser" @search="filterDraw"></filterUser>
     </keep-alive>
-    <user-editer @saved="search" ref="userEditer" ></user-editer>
+    <user-editer @saved="search" ref="userEditer"></user-editer>
   </de-layout-content>
 </template>
 
 <script>
-import userEditer from './userEditer.vue'
-const columnOptions = [{
-  label: 'ID',
-  props: 'username'
-},{
-  label: 'commons.nick_name',
-  props: 'nickName'
-},{
-  label: 'user.source',
-  props: 'from'
-},{
-  label: 'commons.email',
-  props: 'email'
-},{
-  label: 'commons.organization',
-  props: 'dept'
-},{
-  label: 'commons.role',
-  props: 'roles'
-},{
-  label: 'commons.status',
-  props: 'status'
-},{
-  label: 'commons.create_time',
-  props: 'createTime'
-},];
+import userEditer from "./userEditer.vue";
+const columnOptions = [
+  {
+    label: "ID",
+    props: "username",
+  },
+  {
+    label: "commons.nick_name",
+    props: "nickName",
+  },
+  {
+    label: "user.source",
+    props: "from",
+  },
+  {
+    label: "commons.email",
+    props: "email",
+  },
+  {
+    label: "commons.organization",
+    props: "dept",
+  },
+  {
+    label: "commons.role",
+    props: "roles",
+  },
+  {
+    label: "commons.status",
+    props: "status",
+  },
+  {
+    label: "commons.create_time",
+    props: "createTime",
+  },
+];
 import DeLayoutContent from "@/components/business/DeLayoutContent";
-import {
-  addOrder,
-  formatOrders,
-} from "@/utils/index";
+import { addOrder, formatOrders } from "@/utils/index";
 import { pluginLoaded, defaultPwd } from "@/api/user";
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import {
@@ -277,7 +305,7 @@ export default {
   data() {
     return {
       checkAll: true,
-      checkedColumnNames: columnOptions.map(ele => ele.props),
+      checkedColumnNames: columnOptions.map((ele) => ele.props),
       columnNames: columnOptions,
       isIndeterminate: false,
       paginationConfig: {
@@ -320,15 +348,27 @@ export default {
       isPluginLoaded: false,
       defaultPWD: "DataEase123..",
       canLoadDom: false,
+      showScroll: false,
     };
   },
   computed: {
     ...mapGetters(["user"]),
+    filterColor() {
+      return this.filterTexts.length ? 'rgba(51, 112, 255, 0.15)' : '#EFF0F1'
+    }
+  },
+  watch: {
+    filterTexts: {
+      handler() {
+        this.getScrollStatus();
+      },
+      deep: true,
+    },
   },
   mounted() {
     this.allRoles();
     this.search();
-    document.addEventListener('keypress', this.entryKey)
+    document.addEventListener("keypress", this.entryKey);
   },
   beforeCreate() {
     pluginLoaded()
@@ -348,21 +388,40 @@ export default {
       }
     });
   },
-  destroyed () {
-    document.removeEventListener('keypress', this.entryKey)
+  destroyed() {
+    document.removeEventListener("keypress", this.entryKey);
   },
   methods: {
-    clearFilter() {
-
+    scrollPre() {
+      const dom = document.querySelector('.filter-texts-container');
+      dom.scrollLeft -= 10
+      if (dom.scrollLeft <= 0) {
+        dom.scrollLeft = 0
+      }
     },
-    entryKey (event) {
-      const keyCode = event.keyCode
+    scrollNext() {
+      const dom = document.querySelector('.filter-texts-container');
+      dom.scrollLeft += 10
+      const width = dom.scrollWidth - dom.offsetWidth
+      if (dom.scrollLeft > width) {
+        dom.scrollLeft = width
+      }
+    },
+    clearFilter() {
+      this.$refs.filterUser.clearFilter();
+    },
+    clearOneFilter(index) {
+      this.$refs.filterUser.clearOneFilter(index);
+      this.$refs.filterUser.search();
+    },
+    entryKey(event) {
+      const keyCode = event.keyCode;
       if (keyCode === 13) {
-        this.$refs.search.blur()
+        this.$refs.search.blur();
       }
     },
     filterRoles(row, column, cellValue) {
-      const roleNames = cellValue.map(ele => ele.roleName);
+      const roleNames = cellValue.map((ele) => ele.roleName);
       return roleNames.length ? roleNames.join() : "-";
     },
     initSearch() {
@@ -372,7 +431,9 @@ export default {
       this.$refs.filterUser.init();
     },
     handleCheckAllChange(val) {
-      this.checkedColumnNames = val ? columnOptions.map(ele => ele.props) : [];
+      this.checkedColumnNames = val
+        ? columnOptions.map((ele) => ele.props)
+        : [];
       this.isIndeterminate = false;
     },
     handleCheckedColumnNamesChange(value) {
@@ -382,12 +443,14 @@ export default {
         checkedCount > 0 && checkedCount < this.columnNames.length;
     },
     resetPwd(userId) {
-      editPassword({ userId, newPassword: this.defaultPWD }).then((res) => {
-            this.$success(this.$t("commons.modify_success"));
-            this.initSearch();
-          }).finally(() => {
-            this.$refs['initPwd' + userId].doClose();
-          });
+      editPassword({ userId, newPassword: this.defaultPWD })
+        .then((res) => {
+          this.$success(this.$t("commons.modify_success"));
+          this.initSearch();
+        })
+        .finally(() => {
+          this.$refs["initPwd" + userId].doClose();
+        });
     },
     sortChange({ column, prop, order }) {
       this.orderConditions = [];
@@ -420,7 +483,13 @@ export default {
     filterDraw(condition, filterTexts = []) {
       this.cacheCondition = condition;
       this.filterTexts = filterTexts;
-      this.initSearch()
+      this.initSearch();
+    },
+    getScrollStatus() {
+      this.$nextTick(() => {
+        const dom = document.querySelector(".filter-texts-container");
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
+      });
     },
     search() {
       const param = {
@@ -429,10 +498,10 @@ export default {
       };
       if (this.nikeName) {
         param.conditions.push({
-            field: `concat(nick_name, ',' , email)`,
-            operator: 'like',
-            value: this.nikeName
-          })
+          field: `concat(nick_name, ',' , email)`,
+          operator: "like",
+          value: this.nikeName,
+        });
       }
       const { currentPage, pageSize } = this.paginationConfig;
       userLists(currentPage, pageSize, param).then((response) => {
@@ -462,14 +531,16 @@ export default {
             this.initSearch();
           });
         })
-       .catch(() => {
+        .catch(() => {
           this.$info(this.$t("commons.delete_cancel"));
         });
     },
     openMessageSuccess() {
       const h = this.$createElement;
       this.$message({
-        message: h("p", null, [h("span", null, this.$t("commons.delete_success"))]),
+        message: h("p", null, [
+          h("span", null, this.$t("commons.delete_success")),
+        ]),
         iconClass: "el-icon-success",
         customClass: "de-message-success de-message",
       });
@@ -523,6 +594,10 @@ export default {
   .mar16 {
     margin: 0 -2px 0 4px;
   }
+
+  .mr2 {
+    margin-left: -3px;
+  }
 }
 
 .table-container-filter {
@@ -532,11 +607,11 @@ export default {
   display: flex;
   align-items: center;
   margin: 17px 0;
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 400;
 
   .sum {
-    color: #1F2329;;
+    color: #1f2329;
   }
 
   .title {
@@ -550,9 +625,9 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     padding: 1px 22px 1px 6px;
-    display: flex;
+    display: inline-block;
     align-items: center;
-    color: #0C296E;
+    color: #0c296e;
     font-size: 14px;
     line-height: 22px;
     background: rgba(51, 112, 255, 0.1);
@@ -567,6 +642,45 @@ export default {
       transform: translateY(-50%);
       cursor: pointer;
     }
+  }
+
+  .clear-btn {
+    color: #646a73;
+  }
+
+  .clear-btn:hover {
+    color: #3370ff;
+  }
+
+  .filter-texts-container::-webkit-scrollbar { display: none; }
+
+  .arrow-filter {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #646A73;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .arrow-filter:hover {
+    background: rgba(31, 35, 41, 0.1);
+    border-radius: 4px;
+  }
+
+  .el-icon-arrow-right.arrow-filter {
+    margin-left: 5px;
+  }
+
+  .el-icon-arrow-left.arrow-filter {
+    margin-right: 5px;
+  }
+  .filter-texts-container {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 24px;
   }
 }
 .top-operate {
@@ -585,7 +699,6 @@ export default {
     border: none;
     box-sizing: border-box;
 
-
     ::v-deep span {
       margin-left: 5px;
     }
@@ -596,6 +709,24 @@ export default {
     border: 1px solid #bbbfc4;
     margin-left: 12px;
   }
+
+  .filter-not-null:focus {
+    background: rgba(51, 112, 255, 0.1);
+  }
+
+  .filter-not-null:hover {
+    background: rgba(51, 112, 255, 0.1) !important;
+  }
+
+  .filter-zero:focus {
+    background: #F5F6F7;
+  }
+
+  .filter-zero:hover {
+    background: #F5F6F7 !important;
+  }
+
+
 
   .right-user {
     text-align: right;
@@ -613,6 +744,11 @@ export default {
     ::v-deep input {
       border-color: #bbbfc4;
     }
+  }
+
+  .active-btn {
+    border-color: #3370ff;
+    color: #3370ff;
   }
 }
 </style>
@@ -706,7 +842,7 @@ export default {
   min-width: 20px !important;
   padding: 16px 20px !important;
   flex-direction: row;
-  box-shadow: 0px 4px 8px 0px #1F23291A;
+  box-shadow: 0px 4px 8px 0px #1f23291a;
   span {
     font-family: PingFang SC;
     font-size: 14px;
@@ -800,7 +936,6 @@ export default {
     border: none;
     color: #ffffff;
   }
-
 }
 
 .de-confirm-fail {
