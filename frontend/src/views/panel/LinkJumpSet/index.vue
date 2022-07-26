@@ -523,9 +523,9 @@ export default {
         on.forEach(itm => {
           const ele = itm.slice(1, -1)
           if (name2Auto) {
-            name2Auto.push(nameIdMap[ele])
+            name2Auto.push(nameIdMap[itm])
           }
-          name2Id = name2Id.replace(ele, nameIdMap[ele])
+          name2Id = name2Id.replace(itm, '[' + nameIdMap[ele] + ']')
         })
       }
       return name2Id
