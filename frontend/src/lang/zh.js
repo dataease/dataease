@@ -1539,6 +1539,7 @@ export default {
     username: '用户名',
     api_table_not_empty: 'API 数据表不能为空',
     has_repeat_name: 'API 数据表名称重复',
+    has_repeat_field_name: '字段名重复，请修改后再选择',
     valid: '有效',
     invalid: '无效',
     api_step_1: '连接API',

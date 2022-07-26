@@ -494,6 +494,7 @@
             :data="apiItem.jsonFields"
             style="width: 100%"
             row-key="jsonPath"
+            ref="apiItemTable"
           >
             <el-table-column prop="originName" :label="$t('dataset.parse_filed')" width="255">
               <template slot-scope="scope">
@@ -944,6 +945,9 @@ export default {
           this.$message.error(i18n.t("datasource.has_repeat_name"));
           return;
         }
+        if (!this.apiItem.name || !this.apiItem.url) {
+          return;
+        }
         this.$refs.apiItem.validate((valid) => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem));
@@ -1008,20 +1012,36 @@ export default {
       );
     },
     handleCheckAllChange(row) {
-      console.log(row);
       this.handleCheckChange(row);
       this.apiItem.fields = [];
-      this.handleFiledChange();
+      this.handleFiledChange(row);
       this.previewData();
     },
-    handleFiledChange(data) {
-      let jsonField = data === undefined ? this.apiItem.jsonFields : data;
-      for (var i = 0; i < jsonField.length; i++) {
-        if (jsonField[i].checked && jsonField[i].children === null) {
-          this.apiItem.fields.push(jsonField[i]);
+    handleFiledChange() {
+      for (var i = 0; i < this.apiItem.jsonFields.length; i++) {
+        if (this.apiItem.jsonFields[i].checked && this.apiItem.jsonFields[i].children === undefined) {
+          this.apiItem.fields.push(this.apiItem.jsonFields[i]);
         }
-        if (jsonField[i].children !== null) {
-          this.handleFiledChange(jsonField[i].children);
+        if (this.apiItem.jsonFields[i].children !== undefined) {
+          this.handleFiledChange2(this.apiItem.jsonFields[i].children);
+        }
+      }
+    },
+
+    handleFiledChange2(jsonFields){
+      for (var i = 0; i < jsonFields.length; i++) {
+        if (jsonFields[i].checked  && jsonFields[i].children === undefined) {
+          for (var j = 0; j < this.apiItem.fields.length; j++) {
+            if(this.apiItem.fields[j].name === jsonFields[i].name){
+              this.$refs.apiItemTable.toggleRowSelection(jsonFields[i]);
+              this.$message.error(jsonFields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
+              return
+            }
+          }
+          this.apiItem.fields.push(jsonFields[i]);
+        }
+        if (jsonFields[i].children !== undefined) {
+          this.handleFiledChange2(jsonFields[i].children);
         }
       }
     },
@@ -1051,7 +1071,7 @@ export default {
       }
     },
     handleCheckChange(node) {
-      if (node.children !== null) {
+      if (node.children !== undefined) {
         node.children.forEach((item) => {
           item.checked = node.checked;
           this.handleCheckChange(item);

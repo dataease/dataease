@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import io.dataease.commons.utils.Md5Utils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -209,17 +208,26 @@ public class ApiProvider extends Provider {
             for (String s : jsonObject.keySet()) {
                 String value = jsonObject.getString(s);
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
-                    JSONArray jsonArray = JSONObject.parseArray(jsonObject.getString(s));
-                    List<JSONObject> children = new ArrayList<>();
-                    for (Object o : jsonArray) {
-                        handleStr(apiDefinition, o.toString(), children, rootPath + "." + s + "[*]");
-                    }
+
                     JSONObject o = new JSONObject();
-                    o.put("children", children);
-                    o.put("childrenDataType", "LIST");
+                    JSONArray jsonArray = JSONObject.parseArray(jsonObject.getString(s));
+                    try {
+                        List<JSONObject> children = new ArrayList<>();
+                        for (Object object: jsonArray) {
+                            JSONObject.parseObject(object.toString());
+                            handleStr(apiDefinition, object.toString(), children, rootPath + "." + s + "[*]");
+                        }
+                        o.put("children", children);
+                        o.put("childrenDataType", "LIST");
+
+                    }catch (Exception e){
+                        JSONArray array = new JSONArray();
+                        array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
+                        o.put("value", array);
+                    }
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(apiDefinition, objects, o, null)) {
+                    if (!hasItem(apiDefinition, objects, o)) {
                         objects.add(o);
                     }
                 } else if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
@@ -230,18 +238,17 @@ public class ApiProvider extends Provider {
                     o.put("childrenDataType", "OBJECT");
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(apiDefinition, objects, o, null)) {
+                    if (!hasItem(apiDefinition, objects, o)) {
                         objects.add(o);
                     }
                 } else {
                     JSONObject o = new JSONObject();
-                    o.put("children", null);
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(apiDefinition, objects, o, StringUtils.isNotEmpty(jsonObject.getString(s))? jsonObject.getString(s) : "")) {
-                        JSONArray array = new JSONArray();
-                        array.add(StringUtils.isNotEmpty(jsonObject.getString(s))? jsonObject.getString(s) : "");
-                        o.put("value", array);
+                    JSONArray array = new JSONArray();
+                    array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
+                    o.put("value", array);
+                    if (!hasItem(apiDefinition, objects, o)) {
                         objects.add(o);
                     }
                 }
@@ -270,27 +277,43 @@ public class ApiProvider extends Provider {
 
     }
 
-    static private boolean hasItem(ApiDefinition apiDefinition, List<JSONObject> objects, JSONObject item, String value) {
+    static private boolean hasItem(ApiDefinition apiDefinition, List<JSONObject> objects, JSONObject item) {
         boolean has = false;
         for (JSONObject object : objects) {
-            JSONObject jsonObject = JSONObject.parseObject(object.toJSONString());
-            jsonObject.remove("value");
-            jsonObject.remove("id");
-            jsonObject.remove("children");
-            JSONObject  o = JSONObject.parseObject(item.toJSONString());
-            o.remove("children");
-            if (object.getString("jsonPath").equals(item.getString("jsonPath")) ) {
+            if (object.getString("jsonPath").equals(item.getString("jsonPath"))) {
                 has = true;
-                JSONArray array = object.getJSONArray("value");
-                if(value != null && array.size() < apiDefinition.getPreviewNum()){
-                    array.add(value);
-                    object.put("value", array);
-                }
+                mergeValue(object, apiDefinition, item);
                 break;
             }
         }
 
         return has;
+    }
+
+
+    static void mergeValue(JSONObject object, ApiDefinition apiDefinition, JSONObject item) {
+
+        JSONArray array = object.getJSONArray("value");
+        if (array != null && item.getString("value") != null && array.size() < apiDefinition.getPreviewNum()) {
+            array.add(item.getJSONArray("value").get(0).toString());
+            object.put("value", array);
+        }
+        if(object.getJSONArray("children") != null && item.getJSONArray("children") != null){
+            JSONArray objectChildren = object.getJSONArray("children");
+            JSONArray jsonArrayChildren = new JSONArray();
+            JSONArray itemChildren = item.getJSONArray("children");
+            for (Object objectChild : objectChildren) {
+                JSONObject jsonObject = JSONObject.parseObject(objectChild.toString());
+                for (Object itemChild : itemChildren) {
+                    JSONObject itemObject = JSONObject.parseObject(itemChild.toString());
+                    if(jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))){
+                        mergeValue(jsonObject, apiDefinition, itemObject);
+                        jsonArrayChildren.add(jsonObject);
+                    }
+                }
+            }
+            object.put("children", jsonArrayChildren);
+        }
     }
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
@@ -343,7 +366,8 @@ public class ApiProvider extends Provider {
 
     private ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
-        List<ApiDefinition> apiDefinitionListTemp = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {}.getType());
+        List<ApiDefinition> apiDefinitionListTemp = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+        }.getType());
         if (CollectionUtils.isNotEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
                 if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {

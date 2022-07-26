@@ -1531,6 +1531,7 @@ export default {
     username: 'Username',
     api_table_not_empty: 'API data table cannot be empty',
     has_repeat_name: 'Duplicate API data table name',
+    has_repeat_field_name: 'The field name is duplicate, please modify it before selecting',
     valid: 'Valid',
     invalid: 'Invalid',
     api_step_1: 'Connection API',
