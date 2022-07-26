@@ -2438,7 +2438,10 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'formatter'
+        'formatter',
+        'label-bg',
+        'label-show-shadow',
+        'label-shadow-color'
       ],
       'tooltip-selector': [
         'show',

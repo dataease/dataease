@@ -46,6 +46,13 @@ export function baseMapOption(chart_option, chart, themeStyle) {
           return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
         }
         chart_option.series[0].labelLine = customAttr.label.labelLine
+        if (customAttr.label.bgColor) {
+          chart_option.series[0].label.backgroundColor = customAttr.label.bgColor
+        }
+        if (customAttr.label.showShadow) {
+          chart_option.series[0].label.shadowBlur = 2
+          chart_option.series[0].label.showdowColor = customAttr.label.shadowColor
+        }
       }
       // visualMap
       const valueArr = chart.data.series[0].data
