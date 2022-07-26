@@ -978,6 +978,16 @@ export default {
         this.$message.warning(i18n.t('datasource.api_field_not_empty'))
         return
       }
+
+      for (var i = 0; i < this.apiItem.fields.length -1; i++) {
+        for (var j = 1; j < this.apiItem.fields.length; j++) {
+          if(this.apiItem.fields[i].name === this.apiItem.fields[j].name){
+            this.$message.error(this.apiItem.fields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
+            return
+          }
+        }
+
+      }
       this.active = 0;
       this.edit_api_item = false;
 
@@ -1026,13 +1036,6 @@ export default {
     handleFiledChange2(jsonFields){
       for (var i = 0; i < jsonFields.length; i++) {
         if (jsonFields[i].checked  && jsonFields[i].children === undefined) {
-          for (var j = 0; j < this.apiItem.fields.length; j++) {
-            if(this.apiItem.fields[j].name === jsonFields[i].name){
-              this.$refs.apiItemTable.toggleRowSelection(jsonFields[i]);
-              this.$message.error(jsonFields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
-              return
-            }
-          }
           this.apiItem.fields.push(jsonFields[i]);
         }
         if (jsonFields[i].children !== undefined) {
