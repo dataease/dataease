@@ -1478,7 +1478,9 @@ export default {
         this.view.resultCount = '1000'
       }
       if (switchType) {
-        this.view.senior.threshold.tableThreshold = []
+        this.view.senior.threshold = {
+          tableThreshold: []
+        }
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
