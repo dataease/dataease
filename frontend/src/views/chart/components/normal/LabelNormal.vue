@@ -265,7 +265,7 @@ export default {
       } catch (err) {
         yAxis = JSON.parse(JSON.stringify(this.chart.yaxis))
       }
-      const f = yAxis[0]
+      const f = (yAxis && yAxis.length > 0) ? yAxis[0] : null
       if (f && f.formatterCfg) {
         const v = valueFormatter(value, f.formatterCfg)
         this.result = v.includes('NaN') ? value : v
