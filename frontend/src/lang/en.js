@@ -2055,6 +2055,15 @@ export default {
     min_out_max: 'The min value must be less than the max value',
     max_out_min: 'The max value must be more than the min value'
   },
+  desearchbutton: {
+    label: 'Search Button',
+    text: 'Text',
+    auto_trigger: 'Auto Trigger',
+    range: 'Ranger',
+    relative: 'Relation',
+    auto_trigger_tip: 'Automatically trigger once when entering the preview page',
+    range_tip: 'Default association all filter components'
+  },
   denumberselect: {
     label: 'Number selector',
     placeholder: 'Please select'

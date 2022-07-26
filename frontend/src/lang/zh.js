@@ -2076,6 +2076,15 @@ export default {
     min_out_max: '最小值必须小于最大值',
     max_out_min: '最大值必须大于最小值'
   },
+  desearchbutton: {
+    label: '查询按钮',
+    text: '名称',
+    auto_trigger: '自动触发',
+    range: '控制范围',
+    relative: '关联组件',
+    auto_trigger_tip: '进入预览页面自动触发一次',
+    range_tip: '默认关联全部过滤组件'
+  },
   denumberselect: {
     label: '数字下拉',
     placeholder: '请选择'
