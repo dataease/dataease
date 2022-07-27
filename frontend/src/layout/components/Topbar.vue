@@ -74,7 +74,7 @@
       :show-close="false"
       class="dialog-css"
       :fullscreen="true"
-      append-to-body="true"
+      append-to-body
     >
       <template-market v-if="templateMarketShow" style="text-align: center" @closeDialog="changeTemplateMarketShow(false)" />
     </el-dialog>
