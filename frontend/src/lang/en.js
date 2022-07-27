@@ -557,7 +557,11 @@ export default {
     new_passwd: 'New Password',
     confirm_passwd: 'Confirm Password',
     change_password: 'Change Password',
-    search_by_name: 'Search by name'
+    search_by_name: 'Search by name',
+    result_one: 'Results',
+    clear_filter: 'Empty condition',
+    recover_pwd: 'Restore to the original password?',
+    filter_method: 'Filter criteria',
   },
   ldap: {
     url: 'LDAP url',

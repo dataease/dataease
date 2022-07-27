@@ -159,16 +159,6 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 
-  ::v-deep .el-table__header-wrapper {
-    background-color: #f5f6f7;
-    // border-top: 1px solid rgba(31, 35, 41, 0.15);
-  }
-   ::v-deep .el-table__fixed-header-wrapper {
-    th {
-        background-color: var(--TableBG, #f5f6f7) !important;
-    }
-  }
-
   .el-table::before {
     content: '';
     position: absolute;

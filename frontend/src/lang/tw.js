@@ -558,7 +558,11 @@ export default {
     confirm_passwd: '確認密碼',
     change_password: '修改密碼',
     search_by_name: '按姓名搜索',
-    import_ldap: '導入LDAP用戶'
+    import_ldap: '導入LDAP用戶',
+    result_one: '個結果',
+    clear_filter: '清空條件',
+    recover_pwd: '是否恢復為初始密碼?',
+    filter_method: '篩選條件',
   },
   ldap: {
     url: 'LDAP地址',

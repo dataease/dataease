@@ -871,3 +871,20 @@ div:focus {
   font-weight: 400 !important;
 }
 
+.de-confirm-fail-cancel:hover {
+  background: #F5F6F7 !important;
+}
+
+.de-confirm-fail-confirm:hover {
+  background: #F76964 !important;
+}
+
+.el-table__header-wrapper {
+  background-color: var(--TableBG, #f5f6f7) !important;
+}
+.el-table__fixed-header-wrapper {
+  th {
+      background-color: var(--TableBG, #f5f6f7) !important;
+  }
+}
+
