@@ -8,6 +8,7 @@ import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.dto.DatasourceBaseType;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
 import io.dataease.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
@@ -144,5 +145,11 @@ public class XAuthServer {
         }
         return authTargetType + "_" + authSourceType;
 
+    }
+
+    @GetMapping("/getDatasourceTypes")
+    public List<DatasourceBaseType> getDatasourceTypes(){
+        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
+        return sysAuthService.getDatasourceTypes();
     }
 }
