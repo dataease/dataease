@@ -2,13 +2,13 @@
   <div style="width: 100%">
     <el-col>
       <el-form v-show="chart.type " ref="rotateFormGraph" :model="rotateForm" label-width="100px" size="mini">
-        <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
+        <el-form-item :label="$t('chart.innerRotation')" class="form-item">
           <el-slider v-model="rotateForm.alpha" show-input :show-input-controls="false" input-size="mini" :min="0" :max="45" @change="changeFocusCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
+        <el-form-item :label="$t('chart.externalRatation')" class="form-item">
           <el-slider v-model="rotateForm.beta" show-input :show-input-controls="false" input-size="mini" :min="-45" :max="45" @change="changeFocusCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
+        <el-form-item :label="$t('chart.depth')" class="form-item">
           <el-slider v-model="rotateForm.depth" show-input :show-input-controls="false" input-size="mini" :min="20" :max="100" @change="changeFocusCase" />
         </el-form-item>
       </el-form>

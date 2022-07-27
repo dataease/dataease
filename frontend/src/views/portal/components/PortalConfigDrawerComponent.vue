@@ -25,7 +25,7 @@
                 <el-radio-button
                   label="preview"
                   :disabled="!priviewBtnEnable"
-                >预览2</el-radio-button>
+                >预览</el-radio-button>
               </el-radio-group>
             </div>
             <div class="wrapper">

@@ -45,7 +45,7 @@
               </el-tooltip>
             </span>
             <span style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.fullscreen_preview')+'2222'">
+              <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>

@@ -17,6 +17,7 @@ export default {
       if (state.snapshotIndex > 0) {
         state.snapshotIndex--
         state.doSnapshotIndex = state.snapshotIndex
+        // console.log('undo......',state.snapshotData[state.snapshotIndex])
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
         store.commit('setCanvasStyle', deepCopy(state.snapshotStyleData[state.snapshotIndex]))
       }
