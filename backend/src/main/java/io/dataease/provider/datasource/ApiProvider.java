@@ -81,7 +81,7 @@ public class ApiProvider extends Provider {
         List<TableField> tableFields = new ArrayList<>();
         for (DatasetTableFieldDTO field : checkApiDefinition(apiDefinition, response).getFields()) {
             TableField tableField = new TableField();
-            tableField.setFieldName(field.getOriginName());
+            tableField.setFieldName(field.getName());
             tableField.setRemarks(field.getName());
             tableField.setFieldSize(field.getSize());
             tableField.setFieldType(field.getDeExtractType().toString());
