@@ -1,8 +1,8 @@
 package io.dataease.service.sys;
 
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
-import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.controller.sys.request.*;
 import io.dataease.ext.ExtSysUserAssistMapper;
 import io.dataease.ext.ExtSysUserMapper;
@@ -11,7 +11,6 @@ import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.i18n.Translator;
@@ -56,6 +55,9 @@ public class SysUserService {
 
     @Resource
     private ExtSysUserAssistMapper extSysUserAssistMapper;
+
+    @Resource
+    private AuthUserService authUserService;
 
 
     public List<SysUserGridResponse> query(UserGridRequest request) {
@@ -199,7 +201,6 @@ public class SysUserService {
      * @param request
      * @return
      */
-    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
     public int update(SysUserCreateRequest request) {
         checkUsername(request);
@@ -214,6 +215,7 @@ public class SysUserService {
         deleteUserRoles(user.getUserId());//先删除用户角色关联
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
         if (ObjectUtils.isEmpty(user.getDeptId())) user.setDeptId(0L);
+        authUserService.clearCache(user.getUserId());
         return sysUserMapper.updateByPrimaryKeySelective(user);
     }
 
@@ -240,7 +242,7 @@ public class SysUserService {
      * @param request
      * @return
      */
-    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
+
     @Transactional
     public int updatePersonBasicInfo(SysUserCreateRequest request) {
         checkEmail(request);
@@ -252,6 +254,7 @@ public class SysUserService {
         user.setEmail(request.getEmail());
         user.setNickName(request.getNickName());
         user.setPhone(request.getPhone());
+        authUserService.clearCache(request.getUserId());
         return sysUserMapper.updateByPrimaryKeySelective(user);
     }
 
