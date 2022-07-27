@@ -635,6 +635,12 @@
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                        <el-tooltip class="item" effect="dark" placement="bottom">
+                          <div slot="content">
+                            钻取字段仅支持数据集中的字段
+                          </div>
+                          <i class="el-icon-info" style="cursor: pointer;color: #606266;" />
+                        </el-tooltip>
                       </span>
                       <draggable
                         v-model="view.drillFields"
@@ -2226,6 +2232,17 @@ export default {
         }
       }
     },
+    dragRemoveChartField(list, e) {
+      const that = this
+      const dup = list.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (dup && dup.length > 0) {
+        if (dup[0].chartId) {
+          list.splice(e.newDraggableIndex, 1)
+        }
+      }
+    },
     addXaxis(e) {
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
@@ -2333,6 +2350,7 @@ export default {
     addDrill(e) {
       this.dragCheckType(this.view.drillFields, 'd')
       this.dragMoveDuplicate(this.view.drillFields, e)
+      this.dragRemoveChartField(this.view.drillFields, e)
       this.calcData(true)
     },
 
