@@ -43,7 +43,7 @@
           </el-radio-group>
         </el-col> -->
       </el-row>
-      <el-row>
+      <!-- <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '导航启用级别' }}</span>
         </el-col>
@@ -53,7 +53,7 @@
             <el-radio label="element">元素级</el-radio>
           </el-radio-group>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
