@@ -270,5 +270,5 @@ export function seniorCfg(chart_option, chart) {
       }
     }
   }
-  // console.log('seniorCfg.....',chart_option)
+  console.log('seniorCfg.....',chart_option)
 }

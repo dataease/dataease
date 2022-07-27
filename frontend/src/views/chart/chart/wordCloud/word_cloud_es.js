@@ -42,11 +42,9 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
         }
         y.type = 'wordCloud'
 
-        // y.textStyle = {
-        //   normal: {
-        //     color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-        //   }
-        // }
+        y.textStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+        }
 
         chart_option.series[0].data.push(y)
       }
@@ -60,10 +58,6 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
           chart_option.series[0].sizeRange[1] = customAttr.size.wordMax * scalePointWidth
           chart_option.series[0].shape = customAttr.size.wordShape
         }
-
-        if (customAttr.color) {
-          chart_option.series[0].textStyle.normal.color = customAttr.color.colors
-        }
       }
       if (cstyle && cstyle.fontFamily) {
         chart_option.series[0].textStyle.normal.fontFamily = cstyle.fontFamily
@@ -72,8 +66,8 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
       console.log('series,数据', chart_option)
     }
   }
-  console.log('词云,echart,word_cloud', chart_option)
   componentStyle(chart_option, chart, cstyle) // 图表样式
   seniorCfg(chart_option, chart) // 值样式
+  console.log('词云,echart,word_cloud', chart_option)
   return chart_option
 }
