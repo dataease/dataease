@@ -69,7 +69,7 @@ public class ApiProvider extends Provider {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
         String response = execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
 
-        fieldList = getTableFileds(apiDefinition, response);
+        fieldList = getTableFileds(apiDefinition);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
         result.put("dataList", dataList);
@@ -77,9 +77,9 @@ public class ApiProvider extends Provider {
     }
 
 
-    private List<TableField> getTableFileds(ApiDefinition apiDefinition, String response) throws Exception {
+    private List<TableField> getTableFileds(ApiDefinition apiDefinition) throws Exception {
         List<TableField> tableFields = new ArrayList<>();
-        for (DatasetTableFieldDTO field : checkApiDefinition(apiDefinition, response).getFields()) {
+        for (DatasetTableFieldDTO field : apiDefinition.getFields()) {
             TableField tableField = new TableField();
             tableField.setFieldName(field.getName());
             tableField.setRemarks(field.getName());
@@ -91,21 +91,12 @@ public class ApiProvider extends Provider {
     }
 
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        BasicInfo basicInfo = systemParameterService.basicInfo();
         List<ApiDefinition> lists = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), new TypeToken<List<ApiDefinition>>() {
         }.getType());
         List<TableField> tableFields = new ArrayList<>();
         for (ApiDefinition apiDefinition : lists) {
             if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())) {
-                String response = ApiProvider.execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
-                for (DatasetTableFieldDTO field : checkApiDefinition(apiDefinition, response).getFields()) {
-                    TableField tableField = new TableField();
-                    tableField.setFieldName(field.getOriginName());
-                    tableField.setRemarks(field.getName());
-                    tableField.setFieldSize(field.getSize());
-                    tableField.setFieldType(field.getDeExtractType().toString());
-                    tableFields.add(tableField);
-                }
+                tableFields = getTableFileds(apiDefinition);
             }
         }
         return tableFields;
