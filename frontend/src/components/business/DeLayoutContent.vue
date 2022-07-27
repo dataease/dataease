@@ -4,7 +4,7 @@
       <back-button v-if="showBack" :path="backPath" :name="backName" :to="backTo" />
       <span>{{ routeTitle }}</span>
     </p>
-    <div class="container-wrapper" :class="[isDept ? 'dept-padding' : '']">
+    <div class="container-wrapper" :class="[needInnerPadding ? 'layout-inner-padding' : '']">
       <slot />
     </div>
   </div>
@@ -33,8 +33,8 @@ export default {
     showBack({ backPath, backName, backTo }) {
       return backPath || backName || backTo
     },
-    isDept() {
-      return ['system-dept', 'system-dept-form'].includes(this.$route.name)
+    needInnerPadding() {
+      return ['system-dept', 'system-dept-form', 'system-auth'].includes(this.$route.name)
     }
   }
 }
@@ -74,7 +74,7 @@ export default {
     flex: 1;
   }
 
-  .dept-padding {
+  .layout-inner-padding {
     padding: 0;
     margin-top: 16px;
   }

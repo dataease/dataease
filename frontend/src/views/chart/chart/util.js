@@ -2445,7 +2445,6 @@ export const TYPE_CONFIGS = [
       ],
       'tooltip-selector': [
         'show',
-        'trigger',
         'textStyle',
         'formatter'
       ],

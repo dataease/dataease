@@ -47,7 +47,7 @@ export default {
       backName: null,
       baseUrl: '/api/pluginCommon/async/',
       url: null,
-      innerLoadingNames: ['SystemDept', 'SystemRole']
+      innerLoadingNames: ['SystemDept', 'SystemRole', 'SystemAuth']
     }
   },
   created() {

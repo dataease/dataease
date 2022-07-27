@@ -99,7 +99,7 @@ export default {
         ],
         msgTimeOut: [
           {
-            pattern: '^([1-9]|[1-9]\\d|365)$',
+            pattern: '^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$',
             message: this.$t('system_parameter_setting.msg_error'),
             trigger: 'blur'
           }

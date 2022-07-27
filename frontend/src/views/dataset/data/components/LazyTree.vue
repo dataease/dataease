@@ -336,8 +336,6 @@ export default {
     padding-left: 8px;
   }
   .tree-main{
-    height:  calc(100vh - 210px);
-    border: 1px solid #e6e6e6;
     overflow-y: auto;
   }
   .blackTheme .tree-main {
