@@ -2456,13 +2456,29 @@ public class DataSetTableService {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
+        List<DatasetTable> syncDatasetTables = new ArrayList<>();
 
-        datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(example);
+        datasetTables.forEach(datasetTable -> {
             if (StringUtils.isNotEmpty(datasetTable.getQrtzInstance()) && !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
                 jobStoppeddDatasetTables.add(datasetTable);
+            }else {
+                syncDatasetTables.add(datasetTable);
             }
         });
 
+        datasetTables.forEach(datasetTable -> {
+            DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+            DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
+            criteria.andTableIdEqualTo(datasetTable.getId()).andLastExecStatusEqualTo(JobStatus.Underway.name());
+            if(CollectionUtils.isEmpty(dataSetTableTaskService.list(datasetTableTaskExample))){
+                DatasetTable record = new DatasetTable();
+                record.setSyncStatus(JobStatus.Error.name());
+                example.clear();
+                example.createCriteria().andIdEqualTo(datasetTable.getId());
+                datasetTableMapper.updateByExampleSelective(record, example);
+            }
+        });
         if (CollectionUtils.isEmpty(jobStoppeddDatasetTables)) {
             return;
         }

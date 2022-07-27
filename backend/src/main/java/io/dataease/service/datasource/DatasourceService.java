@@ -452,19 +452,22 @@ public class DatasourceService {
     }
 
     private void checkAndUpdateDatasourceStatus(Datasource datasource, Boolean withMsg) {
+        Datasource record = new Datasource();
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andIdEqualTo(datasource.getId());
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             String status = datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus(status);
-            datasourceMapper.updateByPrimaryKeySelective(datasource);
+            record.setStatus(status);
+            datasourceMapper.updateByExampleSelective(datasource, example);
         } catch (Exception e) {
             Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());
-            datasource.setStatus("Error");
+            record.setStatus("Error");
             if (!StringUtils.equals(temp.getStatus(), "Error")) {
                 sendWebMsg(datasource);
-                datasourceMapper.updateByPrimaryKeySelective(datasource);
+                datasourceMapper.updateByExampleSelective(datasource, example);
             }
 
         }

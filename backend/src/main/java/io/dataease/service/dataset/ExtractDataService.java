@@ -333,12 +333,12 @@ public class ExtractDataService {
                         System.out.println(ignore.getMessage());
                     }
                     try {
-                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                         System.out.println(ignore.getMessage());
                     }
                     try {
-                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
+                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
                     } catch (Exception ignore) {
                         System.out.println(ignore.getMessage());
                     }
@@ -392,11 +392,11 @@ public class ExtractDataService {
                     } catch (Exception ignore) {
                     }
                     try {
-                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                     }
                     try {
-                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
+                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
                     } catch (Exception ignore) {
                     }
                 }
