@@ -63,7 +63,7 @@
     </el-row>
     <div class="filter-texts" v-if="filterTexts.length">
       <span class="sum">{{ paginationConfig.total }}</span>
-      <span class="title">个结果</span>
+      <span class="title">{{$t('user.result_one')}}</span>
       <el-divider direction="vertical"></el-divider>
       <i @click="scrollPre" v-if="showScroll" class="el-icon-arrow-left arrow-filter"></i>
       <div class="filter-texts-container">
@@ -77,11 +77,12 @@
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >清空条件</el-button
+        >{{$t('user.clear_filter')}}</el-button
       >
     </div>
     <div
       class="table-container"
+      id="resize-for-filter"
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
@@ -177,7 +178,7 @@
 
         <el-table-column
           slot="__operation"
-          label="操作"
+          :label="$t('commons.operating')"
           fixed="right"
           width="168"
         >
@@ -197,7 +198,7 @@
               trigger="click"
             >
               <i class="el-icon-warning"></i>
-              <div class="tips">是否恢复为初始密码?</div>
+              <div class="tips">{{$t('user.recover_pwd')}}</div>
               <div class="editer-form-title">
                 <span class="pwd" type="text">{{
                   $t("commons.default_pwd") + "：" + defaultPWD
@@ -300,6 +301,7 @@ import {
 import { mapGetters } from "vuex";
 import filterUser from "./filterUser.vue";
 import GridTable from "@/components/gridTable/index.vue";
+import _ from 'lodash';
 export default {
   components: { DeLayoutContent, GridTable, filterUser, userEditer },
   data() {
@@ -349,6 +351,7 @@ export default {
       defaultPWD: "DataEase123..",
       canLoadDom: false,
       showScroll: false,
+      resizeForFilter: null,
     };
   },
   computed: {
@@ -369,6 +372,7 @@ export default {
     this.allRoles();
     this.search();
     document.addEventListener("keypress", this.entryKey);
+    this.resizeObserver();
   },
   beforeCreate() {
     pluginLoaded()
@@ -392,6 +396,16 @@ export default {
     document.removeEventListener("keypress", this.entryKey);
   },
   methods: {
+    resizeObserver() {
+      this.resizeForFilter = new ResizeObserver(entries => {
+        if (!this.filterTexts.length) return;
+        this.layoutResize();
+      });
+      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'));
+    },
+    layoutResize: _.debounce(function () {
+      this.getScrollStatus()
+    }, 200),
     scrollPre() {
       const dom = document.querySelector('.filter-texts-container');
       dom.scrollLeft -= 10
@@ -930,9 +944,8 @@ export default {
     color: #1f2329;
   }
 
-  .de-confirm-fail-confirm,
-  .de-confirm-fail-confirm:hover {
-    background: #f54a45 !important;
+  .de-confirm-fail-confirm {
+    background: #f54a45;
     border: none;
     color: #ffffff;
   }

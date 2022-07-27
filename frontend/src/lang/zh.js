@@ -559,7 +559,11 @@ export default {
     confirm_passwd: '确认密码',
     change_password: '修改密码',
     search_by_name: '按姓名搜索',
-    import_ldap: '导入LDAP用户'
+    import_ldap: '导入LDAP用户',
+    result_one: '个结果',
+    clear_filter: '清空条件',
+    recover_pwd: '是否恢复为初始密码?',
+    filter_method: '筛选条件',
   },
   ldap: {
     url: 'LDAP地址',

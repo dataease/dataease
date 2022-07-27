@@ -1,6 +1,6 @@
 <template>
   <el-drawer
-    title="筛选条件"
+    :title="$t('user.filter_method')"
     :visible.sync="userDrawer"
     custom-class="user-drawer"
     size="680px"
@@ -8,7 +8,7 @@
     direction="rtl"
   >
     <div class="filter">
-      <span>状态</span>
+      <span>{{ $t('commons.status')}}</span>
       <div class="filter-item">
         <span
           class="item"
@@ -16,11 +16,11 @@
           :class="[activeStatus.includes(ele.id) ? 'active' : '']"
           :key="ele.id"
           v-for="ele in status"
-          >{{ ele.label }}</span>
+          >{{ $t(ele.label) }}</span>
       </div>
     </div>
     <div class="filter">
-      <span>组织</span>
+      <span>{{ $t('commons.organization')}}</span>
       <div class="filter-item">
         <span
           class="item"
@@ -67,12 +67,12 @@
             />
             </el-select>
           </el-popover>
-          <span class="more" slot="reference">+ 更多</span>
+          <span class="more" slot="reference">+ {{ $t('panel.more')}}</span>
         </el-popover>
       </div>
     </div>
     <div class="filter">
-      <span>角色</span>
+      <span>{{ $t('panel.role')}}</span>
       <div class="filter-item">
         <span
           @click="activeRoleChange(ele.id)"
@@ -104,7 +104,7 @@
               :value="item"
             />
           </el-select>
-          <span class="more" slot="reference">+ 更多</span>
+          <span class="more" slot="reference">+ {{ $t('panel.more')}}</span>
         </el-popover>
       </div>
     </div>
@@ -133,10 +133,10 @@ export default {
       filterTextMap: [],
       status: [{
         id: 1,
-        label: '启用'
+        label: 'commons.enable'
       },{
         id: 0,
-        label: '禁用'
+        label: 'commons.disable'
       }],
       activeStatus: [],
       rolesValue: [],
@@ -276,16 +276,16 @@ export default {
       this.filterTextMap = [];
       const params = [];
       if (this.activeStatus.length) {
-        let str = `状态:${this.activeStatus.reduce((pre,next) => (this.status.find(ele => ele.id === next) || {}).label  + '、' +  pre, '')}`;
+        let str = `${this.$t('kettle.status')}:${this.activeStatus.reduce((pre,next) => (this.status.find(ele => ele.id === next) || {}).label  + '、' +  pre, '')}`;
         params.push(str.slice(0, str.length - 1 ))
         this.filterTextMap.push(['activeStatus'])
       }
       if (this.activeDept.length) {
-        params.push(`组织:${this.selectDeptsCahe.map(ele => ele.label).join('、')}`)
+        params.push(`${this.$t('panel.org')}:${this.selectDeptsCahe.map(ele => ele.label).join('、')}`)
         this.filterTextMap.push(['activeDept', 'selectDepts', 'selectDeptsCahe', 'deptCahe'])
       }
       if (this.activeRole.length) {
-        params.push(`角色:${this.rolesValueCopy.map(ele => ele.name).join('、')}`)
+        params.push(`${this.$t('panel.role')}:${this.rolesValueCopy.map(ele => ele.name).join('、')}`)
         this.filterTextMap.push(['rolesValue', 'activeRole', 'roleCahe'])
       }
       return params;
