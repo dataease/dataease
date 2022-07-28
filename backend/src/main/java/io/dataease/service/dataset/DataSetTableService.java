@@ -49,9 +49,7 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
-import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
-import net.sf.jsqlparser.expression.operators.relational.InExpression;
-import net.sf.jsqlparser.expression.operators.relational.LikeExpression;
+import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -2582,6 +2580,34 @@ public class DataSetTableService {
                 visitBinaryExpr(andExpression, "AND");
             }
 
+
+            @Override
+            public void visit(MinorThan minorThan) {
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" < ");
+                getBuffer().append( minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(MinorThanEquals minorThan) {
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" <= ");
+                getBuffer().append( minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(GreaterThanEquals minorThan) {
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" >= ");
+                getBuffer().append( minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(GreaterThan minorThan) {
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" > ");
+                getBuffer().append( minorThan.getRightExpression());
+            }
 
             @Override
             public void visit(ExpressionList expressionList) {
