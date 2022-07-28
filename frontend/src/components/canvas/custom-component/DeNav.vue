@@ -44,19 +44,11 @@ export default {
     },
     heightlight() {
       return function(value) {
-        if (this.element.options.vertical === 'directory') {
-          if (this.canvasStyleData.navShowKey === value.name) {
-            return this.element.options.highlight
+        if (this.canvasStyleData.navShowKey === value.name) {
+          return this.element.options.highlight
           // return this.element.options.color
-          } else {
-            return this.element.options.color
-          }
         } else {
-          if (this.element.options.heightTabs === value.name) {
-            return this.element.options.highlight
-          } else {
-            return this.element.options.color
-          }
+          return this.element.options.color
         }
       }
     },
@@ -64,31 +56,18 @@ export default {
       return function(value) {
         const style = {}
         console.log('this.element.options', this.element.options)
-        if (this.element.options.vertical === 'directory') {
-          if (this.canvasStyleData.navShowKey === value.name) {
+        if (this.canvasStyleData.navShowKey === value.name) {
           // return this.element.options.highlight
           // return this.element.options.color
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
-            }
-          } else {
-          // return this.element.options.color
-            style.backgroundColor = ''
-            style.backgroundImage = null
+          style.backgroundColor = this.element.options.highlightBg
+          if (this.element.options.heightBgImg) {
+            style.backgroundImage = `url(${this.element.options.heightBgImg})`
           }
         } else {
-          if (this.element.options.heightTabs === value.name) {
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
-            }
-          } else {
-            style.backgroundColor = ''
-            style.backgroundImage = null
-          }
+          // return this.element.options.color
+          style.backgroundColor = ''
+          style.backgroundImage = null
         }
-
         style.lineHeight = this.element.style.height + 'px'
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
@@ -124,12 +103,7 @@ export default {
       console.log('previewCanvasScale', this.previewCanvasScale)
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
-      if (this.element.options.vertical === 'directory') {
-        this.canvasStyleData.navShowKey = key.name
-      } else {
-        this.element.options.heightTabs = key.name
-      }
-
+      this.canvasStyleData.navShowKey = key.name
       this.commitStyle()
       this.componentData.forEach((ele, index) => {
         if (ele.type === 'de-frame') {
