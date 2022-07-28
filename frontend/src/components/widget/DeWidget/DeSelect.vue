@@ -16,10 +16,12 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="datas"
+    :customStyle="customStyle"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
     @visual-change="visualChange"
+    @handleShowNumber="handleShowNumber"
   >
     <el-option
       v-for="item in templateDatas || datas"
@@ -104,6 +106,10 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    customStyle() {
+      const { brColor, wordColor, innerBgColor } = this.element.style;
+      return { brColor, wordColor, innerBgColor }
     }
   },
 
@@ -211,7 +217,7 @@ export default {
     },
     onScroll() {
       if (this.onFocus) {
-        this.$refs.deSelect.blur()
+        this.$refs.deSelect.$refs.visualSelect.blur()
       }
     },
     resetDefaultValue(id) {
@@ -251,7 +257,7 @@ export default {
       }
     },
     visualChange(value) {
-      this.value = value
+      this.value = value;
       this.$nextTick(() => {
         if (!this.element.options.attrs.multiple) {
           return
@@ -271,18 +277,22 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
+      this.handleShowNumber()
+    },
+    handleShowNumber() {
       this.showNumber = false
+      const tags = this.$refs.deSelect.$refs.visualSelect.$refs.tags
 
       this.$nextTick(() => {
-        if (!this.element.options.attrs.multiple || !this.$refs.deSelect || !this.$refs.deSelect.$refs.tags) {
+        if (!this.element.options.attrs.multiple || !this.$refs.deSelect || !tags) {
           return
         }
-        const kids = this.$refs.deSelect.$refs.tags.children[0].children
+        const kids = tags.children[0].children
         let contentWidth = 0
         kids.forEach(kid => {
           contentWidth += kid.offsetWidth
         })
-        this.showNumber = contentWidth > ((this.$refs.deSelect.$refs.tags.clientWidth - 30) * 0.9)
+        this.showNumber = contentWidth > ((tags.clientWidth - 30) * 0.9)
         this.handleElTagStyle()
       })
     },

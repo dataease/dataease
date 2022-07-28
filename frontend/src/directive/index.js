@@ -86,6 +86,19 @@ const btnPress =  {
   },
 }
 
+const customStyle = {
+  inserted: function (el, binding) {
+    const label = el.querySelector('.el-checkbox__label');
+    if (label) {
+      if (label.getAttribute("data-color") === binding.value.wordColor) {
+        return
+      };
+      label.style.setProperty('color', binding.value.wordColor, 'important');
+      label.setAttribute("data-color", binding.value.wordColor);
+    }
+  },
+}
+
 
 export default {
   install(Vue) {
@@ -96,6 +109,7 @@ export default {
     Vue.directive('bottom-to-top-drag', bottom2TopDrag)
     Vue.directive('closePress', closePress)
     Vue.directive('btnPress', btnPress)
+    Vue.directive('customStyle', customStyle)
   }
 }
 

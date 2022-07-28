@@ -354,17 +354,19 @@ export default {
 
   .filter {
     display: flex;
-    align-items: center;
-    height: 46px;
+    min-height: 46px;
     > :nth-child(1) {
-      margin-right: 88px;
       color: #1f2329;
       font-family: "PingFang SC";
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
+      line-height: 24px;
+      white-space: nowrap;
+      width: 116px;
     }
     .filter-item {
+      flex: 1;
       .item,
       .more {
         font-family: PingFang SC;
@@ -378,6 +380,8 @@ export default {
         background: #f5f6f7;
         border-radius: 2px;
         cursor: pointer;
+        display: inline-block;
+        margin-bottom: 12px;
       }
 
       .active,
