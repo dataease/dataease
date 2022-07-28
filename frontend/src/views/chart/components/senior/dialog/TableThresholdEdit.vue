@@ -16,7 +16,7 @@
                 <svg-icon v-if="fieldOption.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="fieldOption.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon
-                  v-if="fieldOption.deType === 2 || fieldOption.value === 3"
+                  v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
                   icon-class="field_value"
                   class="field-icon-value"
                 />

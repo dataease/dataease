@@ -1,9 +1,7 @@
 package io.dataease.service.datasource;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -61,7 +59,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class DatasourceService {
 
     @Resource
@@ -91,6 +88,7 @@ public class DatasourceService {
     }
 
     @DeCleaner(DePermissionType.DATASOURCE)
+    @Transactional(rollbackFor = Exception.class)
     public Datasource addDatasource(Datasource datasource) throws Exception {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
@@ -298,12 +296,12 @@ public class DatasourceService {
         if (datasource == null) {
             return ResultHolder.error("Can not find datasource: " + datasourceId);
         }
+        String datasourceStatus = null;
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            String datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus(datasourceStatus);
+            datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
 
             if (datasource.getType().equalsIgnoreCase("api")) {
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
@@ -328,10 +326,14 @@ public class DatasourceService {
 
             return ResultHolder.success("Success");
         } catch (Exception e) {
-            datasource.setStatus("Error");
+            datasourceStatus = "Error";
             return ResultHolder.error("Datasource is invalid: " + e.getMessage());
         } finally {
-            datasourceMapper.updateByPrimaryKey(datasource);
+            Datasource record = new Datasource();
+            record.setStatus(datasourceStatus);
+            DatasourceExample example = new DatasourceExample();
+            example.createCriteria().andIdEqualTo(datasource.getId());
+            datasourceMapper.updateByExampleSelective(record, example);
         }
     }
 
@@ -461,15 +463,14 @@ public class DatasourceService {
             datasourceRequest.setDatasource(datasource);
             String status = datasourceProvider.checkStatus(datasourceRequest);
             record.setStatus(status);
-            datasourceMapper.updateByExampleSelective(datasource, example);
+            datasourceMapper.updateByExampleSelective(record, example);
         } catch (Exception e) {
             Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());
             record.setStatus("Error");
             if (!StringUtils.equals(temp.getStatus(), "Error")) {
                 sendWebMsg(datasource);
-                datasourceMapper.updateByExampleSelective(datasource, example);
+                datasourceMapper.updateByExampleSelective(record, example);
             }
-
         }
     }
 
