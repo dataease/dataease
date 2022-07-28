@@ -15,6 +15,6 @@ export function getCategories() {
     url: '/template/market/categories',
     method: 'get',
     hideMsg: true,
-    loading: false
+    loading: true
   })
 }

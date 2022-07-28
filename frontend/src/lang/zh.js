@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
     user_confirm_remove_cancel: '确定将该用户从角色中移除吗?',
