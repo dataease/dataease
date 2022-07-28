@@ -78,7 +78,7 @@ public class CKQueryProvider extends QueryProvider {
             case "UINT64":
                 return 2;// 整型
             case "FLOAT32":
-            case "Float64":
+            case "FLOAT64":
             case "DECIMAL":
                 return 3;// 浮点
             case "BIT":
