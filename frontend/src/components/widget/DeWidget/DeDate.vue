@@ -80,7 +80,7 @@ export default {
       return widget.isTimeWidget && widget.isTimeWidget()
     },
     componentType() {
-      let result = 'date'
+      let result = this.element.options.attrs.type || 'date'
       if (this.isTimeWidget && this.element.options.attrs.showTime) {
         result = 'datetime'
       }
@@ -91,7 +91,7 @@ export default {
       if (this.isTimeWidget && this.element.options.attrs.showTime && this.element.options.attrs.accuracy) {
         return result + ' ' + this.element.options.attrs.accuracy
       }
-      return result
+      return null
     }
 
   },
