@@ -1,0 +1,1 @@
+INSERT INTO sys_background_image (id,name,classification,content,remark,sort,upload_time,base_url,url) VALUES ('dark_2','边框2','深色调',NULL,NULL,NULL,NULL,'img/board','board/dark_2.png');
