@@ -289,13 +289,13 @@ export default {
       const trackMenuInfo = []
       let linkageCount = 0
       let jumpCount = 0
-      this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
+      this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
         }
       })
-      this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
+      this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelJumpInfo[sourceInfo]) {
           jumpCount++
@@ -685,11 +685,13 @@ export default {
           window.open(url, jumpInfo.jumpType)
         }
       } else {
-        this.$message({
-          type: 'warn',
-          message: '未获取跳转信息',
-          showClose: true
-        })
+        if (this.chart.type.indexOf('table') === -1) {
+          this.$message({
+            type: 'warn',
+            message: '未获取跳转信息',
+            showClose: true
+          })
+        }
       }
     },
     setIdValueTrans(from, to, content, colList) {

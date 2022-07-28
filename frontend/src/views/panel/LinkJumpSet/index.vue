@@ -580,7 +580,7 @@ export default {
 }
 
 .bottom {
-  margin-top: 20px;
+  margin-top: 10px;
   text-align: center;
 
 }
