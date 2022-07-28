@@ -66,7 +66,7 @@ export default {
   .testcase-template {
     position: relative;
     display: inline-block;
-    margin: 24px 0 0 24px;
+    margin: 24px 0 0 0;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
     border: solid 2px #fff;
     box-sizing: border-box;

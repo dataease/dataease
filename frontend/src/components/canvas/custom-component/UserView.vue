@@ -128,6 +128,8 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { viewPropsSave } from '@/api/chart/chart'
+import { checkAddHttp } from '@/utils/urlUtils'
+
 export default {
   name: 'UserView',
   components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -678,7 +680,8 @@ export default {
           }
         } else {
           const colList = [...param.dimensionList, ...param.quotaList]
-          const url = this.setIdValueTrans('id', 'value', jumpInfo.content, colList)
+          let url = this.setIdValueTrans('id', 'value', jumpInfo.content, colList)
+          url = checkAddHttp(url)
           window.open(url, jumpInfo.jumpType)
         }
       } else {

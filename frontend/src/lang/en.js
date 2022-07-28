@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    no_result: 'No Result',
     manage_member: 'Managing members',
     user_confirm_remove_cancel: 'Are you sure you want to remove the user from the role?',
     confirm_remove_cancel: 'Are you sure to delete the role?',
