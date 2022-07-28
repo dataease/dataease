@@ -17,20 +17,30 @@
           <el-tab-pane v-for="tabItem in marketTabs" :key="tabItem" :label="tabItem" :name="tabItem" />
         </el-tabs>
       </el-row>
-      <el-row v-if="networkStatus" class="template-main">
-        <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+      <el-row v-show="networkStatus && hasResult" id="template-main" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="template-main">
+        <el-col
+          v-for="(templateItem) in currentMarketTemplateShowList"
+          v-show="templateItem.showFlag"
+          :key="templateItem.id"
+          style="text-align: center"
+          :style="{width: templateSpan}"
+        >
           <template-market-item
-            v-for="(templateItem) in currentMarketTemplateShowList"
-            v-show="templateItem.showFlag"
-            :key="templateItem.id"
             :template="templateItem"
             :base-url="baseUrl"
             @templateApply="templateApply"
             @templatePreview="templatePreview"
           />
-        </el-row>
+        </el-col>
       </el-row>
-      <el-row v-else class="custom-position">
+      <el-row v-show="networkStatus && !hasResult" class="custom-position template-main">
+        <div style="text-align: center">
+          <svg-icon icon-class="no_result" style="font-size: 75px;margin-bottom: 16px" />
+          <br>
+          <span>{{ $t('commons.no_result') }}</span>
+        </div>
+      </el-row>
+      <el-row v-show="!networkStatus" class="custom-position template-main">
         {{ $t('panel.market_network_tips') }}
       </el-row>
     </el-row>
@@ -72,15 +82,18 @@
 import { searchMarket, getCategories } from '@/api/templateMarket'
 import TemplateMarketItem from '@/views/panel/templateMarket/component/TemplateMarketItem'
 import { groupTree, panelSave } from '@/api/panel/panel'
-import bus from '@/utils/bus'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import MarketPreview from '@/views/panel/templateMarket/component/MarketPreview'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 export default {
   name: 'TemplateMarket',
   components: { MarketPreview, TemplateMarketItem },
   data() {
     return {
+      hasResult: true,
+      templateMiniWidth: 350,
+      templateSpan: '25%',
       previewModel: false,
       previewVisible: false,
       templatePreviewId: '',
@@ -119,6 +132,16 @@ export default {
   mounted() {
     this.initMarketTemplate()
     this.getGroupTree()
+    const _this = this
+    const erd = elementResizeDetectorMaker()
+    const templateMainDom = document.getElementById('template-main')
+    // 监听div变动事件
+    erd.listenTo(templateMainDom, element => {
+      _this.$nextTick(() => {
+        _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
+        console.log('templateSpan=' + _this.templateSpan)
+      })
+    })
   },
   methods: {
     initMarketTemplate() {
@@ -181,9 +204,16 @@ export default {
 
     },
     initTemplateShow() {
+      let tempHasResult = false
       this.currentMarketTemplateShowList.forEach(template => {
         template.showFlag = this.templateShow(template)
+        if (template.showFlag) {
+          tempHasResult = true
+        }
       })
+      if (this.currentMarketTemplateShowList.length > 0) {
+        this.hasResult = tempHasResult
+      }
     },
     templateShow(templateItem) {
       let categoryMarch = false
@@ -211,11 +241,13 @@ export default {
 
 <style lang="scss" scoped>
   .template-main{
+    text-align: center;
     border-radius: 4px;
-    box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
-    border: solid 2px #fff;
     padding-bottom: 24px;
-    min-height: calc(100vh - 190px);
+    height: calc(100vh - 190px)!important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fff ;
   }
   .market-main{
     padding:24px
@@ -265,11 +297,13 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     flex-flow: row nowrap;
-    color: #9ea6b2;
+    color: #646A73;
+    font-weight: 400;
   }
   .outer-body{
     width: 100%;
     height: calc(100vh - 56px);
+    background: #f5f6f7;
   }
 
 </style>

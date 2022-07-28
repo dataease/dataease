@@ -5,7 +5,7 @@
       <el-row v-show="asideActive" style="padding: 12px 12px 0 12px ">
         <el-row>
           <span class="icon iconfont icon-close icon20 insert" @click="closePreview()" />
-          <span class="main-title">{{$t('panel.template_preview')}}</span>
+          <span class="main-title">{{ $t('panel.template_preview') }}</span>
           <span style="float: right" class="icon iconfont icon-icon_up-left_outlined insert icon20" @click="asideActiveChange(false)" />
         </el-row>
         <el-row class="margin-top16 search-area">
@@ -41,12 +41,19 @@
           :active="active(templateItem)"
           @previewTemplate="previewTemplate"
         />
+        <el-row v-show="!hasResult" class="custom-position">
+          <div style="text-align: center">
+            <svg-icon icon-class="no_result" style="font-size: 75px;margin-bottom: 16px" />
+            <br>
+            <span>{{ $t('commons.no_result') }}</span>
+          </div>
+        </el-row>
       </el-row>
     </el-col>
     <el-col class="main-area" :class="asideActive ? 'main-area-active': ''">
       <el-row>
         <span v-if="curTemplate" class="template-title">{{ curTemplate.title }}</span>
-        <el-button style="float: right" type="primary" size="small" @click="templateApply(curTemplate)">{{$t('panel.apply_this_template')}}</el-button>
+        <el-button style="float: right" type="primary" size="small" @click="templateApply(curTemplate)">{{ $t('panel.apply_this_template') }}</el-button>
       </el-row>
       <el-row class="img-main">
         <img height="100%" :src="templatePreviewUrl" alt="">
@@ -73,6 +80,7 @@ export default {
   },
   data() {
     return {
+      hasResult: true,
       extFilterActive: false,
       asideActive: true,
       previewVisible: false,
@@ -165,8 +173,12 @@ export default {
 
     },
     initTemplateShow() {
+      this.hasResult = false
       this.currentMarketTemplateShowList.forEach(template => {
         template.showFlag = this.templateShow(template)
+        if (template.showFlag) {
+          this.hasResult = true
+        }
       })
     },
     templateShow(templateItem) {
@@ -273,14 +285,15 @@ export default {
 }
 
 .custom-position {
-  height: 80vh;
+  height: 70vh;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
   flex-flow: row nowrap;
-  color: #9ea6b2;
+  color: #646A73;
+  font-weight: 400;
 }
 
 .aside-active {
@@ -288,7 +301,7 @@ export default {
   height: calc(100vh - 56px);
   overflow-x: hidden;
   overflow-y: auto;
-  border-right: 1px solid rgba(31,31,31,0.15);
+  background: #fff;
 }
 
 .aside-inActive{
@@ -366,8 +379,9 @@ export default {
 }
 .img-main{
   border-radius: 4px;
-  box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
-  border: solid 2px #fff;
+  background: #0F1114;
+  overflow-x: auto;
+  overflow-y: hidden;
   height: calc(100% - 50px)!important;
 }
 .open-button{
@@ -378,6 +392,11 @@ export default {
   top: 16px;
   z-index: 2;
 }
+
+//.open-button:hover{
+//  transition: 0.5s;
+// width: 50px;
+//}
 .open-button:hover{
   color: #3a8ee6;
 }

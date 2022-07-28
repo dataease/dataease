@@ -78,7 +78,7 @@ export default {
   }
 
   .template-item-main-active{
-    border: 2px solid #3370FF ;
+    border: 2px solid #3370FF!important; ;
 
   }
   .template-item-img{
@@ -106,7 +106,7 @@ export default {
   }
 
   .template-item-main:hover {
-    border: solid 2px gray;
+    border: solid 1px #3370FF;
   }
 
 </style>
