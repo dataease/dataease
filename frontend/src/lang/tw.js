@@ -1889,7 +1889,8 @@ export default {
 
   },
   auth: {
-    no_item_selected: '请在左侧选择资源',
+    no_item_selected: '请在左侧选择组织、角色或用户',
+    no_resource_selected: '请在左侧选择资源',
     search_pre: '通过',
     search_suf: '名称来搜索',
     separate_auth: '单独授权',

@@ -1880,7 +1880,8 @@ export default {
 
   },
   auth: {
-    no_item_selected: 'Please select resources on the left',
+    no_item_selected: 'Please select organization、user or role on the left',
+    no_resource_selected: 'Please select resource on the left',
     search_pre: 'Search by ',
     search_suf: ' name',
     separate_auth: 'Separate Authorization',

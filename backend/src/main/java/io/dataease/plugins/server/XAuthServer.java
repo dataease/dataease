@@ -9,25 +9,34 @@ import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.dto.DatasourceBaseType;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
 import io.dataease.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetail;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
 import io.dataease.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
+import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
+
 @ApiIgnore
 @RequestMapping("/plugin/auth")
 @RestController
 public class XAuthServer {
 
     private static final Set<String> cacheTypes = new HashSet<>();
+
+    @Resource
+    private DatasourceService datasourceService;
 
     @RequiresPermissions("auth:read")
     @PostMapping("/authModels")
@@ -149,7 +158,16 @@ public class XAuthServer {
 
     @GetMapping("/getDatasourceTypes")
     public List<DatasourceBaseType> getDatasourceTypes(){
+        Collection<DataSourceType> activeType =  datasourceService.types();
+        Map<String,String> activeTypeMap = activeType.stream().collect(Collectors.toMap(DataSourceType::getType, DataSourceType::getName));
+        activeTypeMap.put("all","所有数据源");
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
-        return sysAuthService.getDatasourceTypes();
+        List<DatasourceBaseType> presentTypes = sysAuthService.getDatasourceTypes();
+        presentTypes.stream().forEach(datasourceBaseType -> {
+            if(activeTypeMap.get(datasourceBaseType.getType())!=null){
+                datasourceBaseType.setName(activeTypeMap.get(datasourceBaseType.getType()));
+            }
+        });
+         return presentTypes;
     }
 }
