@@ -6,12 +6,14 @@
     :class="classId"
     popper-class="VisualSelects coustom-de-select"
     no-match-text=" "
+    clearable
     v-bind="$attrs"
     v-on="$listeners"
     @change="visualChange"
     @visible-change="popChange"
   >
-    <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id" />
+    <p v-if="startIndex === 0 && $attrs.multiple" class="select-all"><el-checkbox :indeterminate="isIndeterminate" v-customStyle="customStyle" @change="selectAllChane" v-model="selectAll">{{ $t('dataset.check_all') }}</el-checkbox></p>
+    <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id"  :class="setSelect(item.id)"/>
   </el-select>
 </template>
 
@@ -30,6 +32,10 @@ export default {
       type: String,
       require: true,
       default: uuid.v1()
+    },
+    customStyle: {
+      type: Object,
+      default: () => {}
     },
     list: {
       type: Array,
@@ -60,7 +66,13 @@ export default {
       itemHeight: 34, // select组件选项高度
       maxHeightDom: null,
       defaultFirst: false,
-      show: true
+      show: true,
+      selectAll: false
+    }
+  },
+  computed: {
+    isIndeterminate() {
+      return Array.isArray(this.selectValue) && this.selectValue.length > 0 && this.selectValue.length !== this.list.length
     }
   },
   watch: {
@@ -102,6 +114,16 @@ export default {
     })
   },
   methods: {
+    setSelect(id) {
+      if (Array.isArray(this.selectValue)) {
+        return  this.selectValue.map( ele => ele.id ).includes(id) && 'selected'
+      }
+      return this.selectValue === id && 'selected';
+    },
+    selectAllChane(val) {
+      this.visualChange(val ? [...this.list.map( ele => ele.id )] : [])
+      this.$emit('handleShowNumber');
+    },
     addScrollDiv(selectDom) {
       this.maxHeightDom = document.createElement('div')
       this.maxHeightDom.className = 'el-select-height'
@@ -171,6 +193,9 @@ export default {
       this.reCacularHeight()
     },
     visualChange(val) {
+      if(this.$attrs.multiple) {
+        this.selectAll = val.length === this.list.length;
+      }
       this.$emit('visual-change', val)
     }
   }
@@ -206,4 +231,7 @@ export default {
     height: 0;
   }
 }
+.select-all {
+    padding: 10px 20px 0 20px;
+  }
 </style>

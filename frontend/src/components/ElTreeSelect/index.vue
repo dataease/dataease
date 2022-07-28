@@ -33,6 +33,7 @@
       <el-input v-if="treeParams.filterable" v-model="keywords" size="mini" class="input-with-select mb10">
         <el-button slot="append" icon="el-icon-search" @click="_searchFun" />
       </el-input>
+      <p v-if="selectParams.multiple" class="tree-select-all"><el-checkbox :indeterminate="isIndeterminate" v-customStyle="customStyle" @change="selectAllChane" v-model="selectAll">{{ $t('dataset.check_all') }}</el-checkbox></p>
       <el-scrollbar tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
         <!-- 树列表 -->
         <el-tree
@@ -203,10 +204,15 @@ export default {
           }
         }
       }
+    },
+    customStyle: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
+      selectAll: false,
       guid: guid(),
       propsValue: 'flowId',
       propsLabel: 'name',
@@ -229,6 +235,10 @@ export default {
     popperClass() {
       const _c = 'el-tree-select-popper ' + this.popoverClass
       return this.disabled ? _c + ' disabled ' : _c
+    },
+    isIndeterminate() {
+      if (!this.selectParams.multiple) return;
+      return this.ids.length > 0 && this.ids.length !== this._checkSum().length
     }
   },
   watch: {
@@ -283,6 +293,21 @@ export default {
     off(document, 'mouseup', this._popoverHideFun)
   },
   methods: {
+    selectAllChane(val) {
+      if (val) {
+        this.ids = this._checkSum();
+        this._emitFun();
+        return
+      } 
+      this._selectClearFun()
+    },
+    _checkSum() {
+        let arr = [];
+        (this.data || []).forEach(ele => {
+          arr = [...this.allKidIds(ele), ...arr]
+        })
+        return arr
+    },
     _treeCheckChange() {
       this.$emit("treeCheckChange")
     },
@@ -494,6 +519,7 @@ export default {
         `vm:` 当前组件的vm
         */
       node.checkedKeys = checkedNodes.map(node => node.id)
+      this.selectAll = this._checkSum().length === this.ids.length;
       this.$emit('check', data, node, vm)
       this._emitFun()
     },
@@ -549,6 +575,7 @@ export default {
       this.$emit('input', multiple ? [] : '')
       // 下拉框清空，对外抛出``this.$emit('select-clear');`
       this.$emit('select-clear')
+      this.selectAll = false;
       this._updatePopoverLocationFun()
     },
     // 判断类型，抛出当前选中id
@@ -625,7 +652,9 @@ export default {
 .el-tree-select .select-option {
     display: none !important;
 }
-
+.tree-select-all {
+    padding: 10px 20px 0 24px;
+  }
 [aria-disabled='true'] > .el-tree-node__content {
     color: inherit !important;
     background: transparent !important;
