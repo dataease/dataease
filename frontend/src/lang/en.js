@@ -563,6 +563,10 @@ export default {
     clear_filter: 'Empty condition',
     recover_pwd: 'Restore to the original password?',
     filter_method: 'Filter criteria',
+    filter: 'screen',
+    list: 'List item',
+    list_info: 'Please select the information to be displayed in the list',
+    sure_delete: 'Are you sure to delete this user?',
   },
   ldap: {
     url: 'LDAP url',
