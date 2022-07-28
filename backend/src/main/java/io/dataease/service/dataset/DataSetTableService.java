@@ -57,6 +57,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SubSelect;
+import net.sf.jsqlparser.statement.select.WithItem;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -1027,7 +1028,22 @@ public class DataSetTableService {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
         plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
-        return plainSelect.toString();
+
+
+        StringBuilder builder = new StringBuilder();
+        if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
+            builder.append("WITH");
+            builder.append(" ");
+        }
+        for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext();) {
+            WithItem withItem = iter.next();
+            builder.append(withItem.toString());
+            if (iter.hasNext()) {
+                builder.append(",");
+            }
+        }
+        builder.append(plainSelect);
+        return builder.toString();
     }
 
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
@@ -2569,8 +2585,12 @@ public class DataSetTableService {
 
             @Override
             public void visit(ExpressionList expressionList) {
-                for (Expression expression : expressionList.getExpressions()) {
+                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext();) {
+                    Expression expression = iter.next();
                     expression.accept(this);
+                    if (iter.hasNext()) {
+                        buffer.append(", ");
+                    }
                 }
             }
 
