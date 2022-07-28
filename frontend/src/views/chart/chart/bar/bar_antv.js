@@ -55,7 +55,7 @@ function sortDatas(data) {
   })
 }
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
-  // console.log('bar_antv,chart',chart)
+  console.log('bar_antv,chart',chart)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -66,8 +66,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const xAxis = getXAxis(chart,cstyle)
   const yAxis = getYAxis(chart,cstyle)
   // data
-  // const data = chart.data.datas
-  const data = sortDatas(chart)
+  const data = chart.data.datas
+  // const data = sortDatas(chart)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -131,6 +131,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
       }
     }
   }
+  console.log('antv,bar,,,',options)
   // group
   if (isGroup) {
     options.isGroup = true
