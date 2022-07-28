@@ -131,6 +131,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    no_result: '没有找到相关内容',
     manage_member: '管理成員',
     user_confirm_remove_cancel: '確定將該用戶從角色中移除嗎?',
     confirm_remove_cancel: '確定刪除該角色嗎?',
@@ -1907,7 +1908,8 @@ export default {
 
   },
   auth: {
-    no_item_selected: '请在左侧选择资源',
+    no_item_selected: '请在左侧选择组织、角色或用户',
+    no_resource_selected: '请在左侧选择资源',
     search_pre: '通过',
     search_suf: '名称来搜索',
     separate_auth: '单独授权',

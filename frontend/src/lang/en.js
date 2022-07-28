@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    no_result: 'No Result',
     manage_member: 'Managing members',
     user_confirm_remove_cancel: 'Are you sure you want to remove the user from the role?',
     confirm_remove_cancel: 'Are you sure to delete the role?',
@@ -1898,7 +1899,8 @@ export default {
 
   },
   auth: {
-    no_item_selected: 'Please select resources on the left',
+    no_item_selected: 'Please select organization、user or role on the left',
+    no_resource_selected: 'Please select resource on the left',
     search_pre: 'Search by ',
     search_suf: ' name',
     separate_auth: 'Separate Authorization',

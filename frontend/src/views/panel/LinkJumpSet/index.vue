@@ -236,7 +236,6 @@ import { queryPanelJumpInfo, queryWithViewId, updateJumpSet } from '@/api/panel/
 import { groupTree } from '@/api/panel/panel'
 import { detailList } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
-import { checkAddHttp } from '@/utils/urlUtils'
 
 import draggable from 'vuedraggable'
 import { codemirror } from 'vue-codemirror'
@@ -397,7 +396,6 @@ export default {
     },
     save() {
       this.codemirrorShow = false
-      this.linkJumpInfo.content = checkAddHttp(this.linkJumpInfo.content)
       this.linkJumpInfoArray.forEach(jumpInfo => {
         jumpInfo.content = this.setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
       })
