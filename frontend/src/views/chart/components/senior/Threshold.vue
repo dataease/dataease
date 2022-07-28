@@ -68,7 +68,7 @@
               <span>
                 <svg-icon v-if="fieldItem.field.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="fieldItem.field.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="fieldItem.field.deType === 2 || fieldItem.field.value === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="fieldItem.field.deType === 2 || fieldItem.field.deType === 3" icon-class="field_value" class="field-icon-value" />
                 <svg-icon v-if="fieldItem.field.deType === 5" icon-class="field_location" class="field-icon-location" />
               </span>
               <span :title="fieldItem.field.name" class="field-text">{{ fieldItem.field.name }}</span>
