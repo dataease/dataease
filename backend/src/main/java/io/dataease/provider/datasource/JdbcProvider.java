@@ -95,22 +95,30 @@ public class JdbcProvider extends DefaultJdbcProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name()) ||datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
                     database = resultSet.getString("TABLE_SCHEM");
                 } else {
                     database = resultSet.getString("TABLE_CAT");
                 }
-                if (database != null) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableField);
-                    }
-                } else {
-                    if (tableName.equals(datasourceRequest.getTable())) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableField);
-                    }
-                }
+               if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())){
+                   if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                       TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                       list.add(tableField);
+                   }
+               }else {
+                   if (database != null) {
+                       if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                           TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                           list.add(tableField);
+                       }
+                   } else {
+                       if (tableName.equals(datasourceRequest.getTable())) {
+                           TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                           list.add(tableField);
+                       }
+                   }
+               }
+
             }
             resultSet.close();
         } catch (SQLException e) {
@@ -189,6 +197,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return jdbcConfiguration.getDataBase();
         }
+    }
+
+    private String getDsSchema(DatasourceRequest datasourceRequest) {
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        return jdbcConfiguration.getSchema();
     }
 
     @Override
