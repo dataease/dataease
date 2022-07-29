@@ -49,7 +49,7 @@ export default {
       // return this.$router.options.routes
       if (this.isCollapse) {
         return this.flatterRouter(
-          this.$store.state.permission.currentRoutes.children
+          JSON.parse(JSON.stringify(this.$store.state.permission.currentRoutes.children))
         );
       }
       return this.$store.state.permission.currentRoutes.children;
