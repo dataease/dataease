@@ -1039,7 +1039,7 @@ export default {
 
           for (var j = 0; j < this.apiItem.fields.length; j++) {
             if(this.apiItem.fields[j].name === jsonFields[i].name){
-              this.$refs.apiItemTable.toggleRowSelection(jsonFields[i]);
+              jsonFields[i].checked = false;
               this.$message.error(jsonFields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
               return
             }

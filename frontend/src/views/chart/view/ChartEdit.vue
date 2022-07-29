@@ -2297,6 +2297,7 @@ export default {
         }
       }
       this.dragMoveDuplicate(this.view.customFilter, e)
+      this.dragRemoveChartField(this.view.customFilter, e)
       this.calcData(true)
     },
 

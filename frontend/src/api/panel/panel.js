@@ -139,6 +139,7 @@ export function get(url) {
 export function delGroup(groupId) {
   return request({
     url: '/panel/group/deleteCircle/' + groupId,
+    loading: true,
     method: 'post'
   })
 }

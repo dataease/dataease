@@ -10,6 +10,7 @@
     :tree-params="treeParams"
     :filter-node-method="_filterFun"
     :tree-render-fun="_renderFun"
+    :customStyle="customStyle"
     @searchFun="_searchFun"
     @node-click="changeNode"
     @removeTag="changeNodeIds"
@@ -106,6 +107,10 @@ export default {
     },
     isSingle() {
       return this.element.options.attrs.multiple
+    },
+    customStyle() {
+      const { brColor, wordColor, innerBgColor } = this.element.style;
+      return { brColor, wordColor, innerBgColor }
     }
   },
 

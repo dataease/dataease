@@ -51,8 +51,7 @@
             LEFT JOIN panel_link_mapping on panel_link_jump_info.target_panel_id = panel_link_mapping.resource_id
         WHERE
             chart_view.id =#{source_view_id}
-        ORDER BY
-            ifnull( panel_link_jump_info.checked, 0 ) DESC
+        ORDER BY CONVERT(dataset_table_field.NAME using gbk)
     </select>
 
     <select id="queryWithPanelId" resultMap="BaseResultMapDTO">

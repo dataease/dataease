@@ -541,7 +541,7 @@ function mappingColor(value, defaultColor, field, type) {
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
       }
-    } else if (field.field.deType === 0) {
+    } else if (field.field.deType === 0 || field.field.deType === 5) {
       const tv = t.value
       if (t.term === 'eq') {
         if (value === tv) {
@@ -564,22 +564,12 @@ function mappingColor(value, defaultColor, field, type) {
           flag = true
         }
       } else if (t.term === 'null') {
-        if (value === null || value === undefined) {
+        if (value === null || value === undefined || value === '') {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_null') {
-        if (value !== null && value !== undefined) {
-          color = t[type]
-          flag = true
-        }
-      } else if (t.term === 'empty') {
-        if (value === '') {
-          color = t[type]
-          flag = true
-        }
-      } else if (t.term === 'not_empty') {
-        if (value !== '') {
+        if (value !== null && value !== undefined && value !== '') {
           color = t[type]
           flag = true
         }
