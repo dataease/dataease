@@ -183,7 +183,7 @@ public class PermissionService {
             for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
                 columnPermissionsDTO.getWhiteListUser();
                 List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
-                if(!userIdList.contains(userId)){
+                if(CollectionUtils.isNotEmpty(userIdList) && !userIdList.contains(userId)){
                     roleColumnPermissionsDTOS.add(columnPermissionsDTO);
                 }
             }

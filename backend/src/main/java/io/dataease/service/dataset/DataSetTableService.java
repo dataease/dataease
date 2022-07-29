@@ -1027,20 +1027,20 @@ public class DataSetTableService {
         }
         plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
 
-
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
             builder.append(" ");
-        }
-        for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext();) {
-            WithItem withItem = iter.next();
-            builder.append(withItem.toString());
-            if (iter.hasNext()) {
-                builder.append(",");
+            for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext();) {
+                WithItem withItem = iter.next();
+                builder.append(withItem.toString());
+                if (iter.hasNext()) {
+                    builder.append(",");
+                }
             }
         }
-        builder.append(plainSelect);
+
+        builder.append( " " + plainSelect);
         return builder.toString();
     }
 
