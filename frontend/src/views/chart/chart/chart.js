@@ -159,7 +159,10 @@ export const DEFAULT_LEGEND_STYLE = {
   textStyle: {
     color: '#333333',
     fontSize: '12'
-  }
+  },
+  itemGap: 10,
+  marginTop: 5,
+  marginButtom: 5,
 }
 export const DEFAULT_XAXIS_STYLE = {
   show: true,
@@ -641,6 +644,7 @@ export const BASE_LINE = {
 }
 
 export const BASE_PICTORIAL_BAR = {
+  animation: false, //去除加载时缓动动画
   title: {
     text: '',
     textStyle: {
@@ -652,34 +656,57 @@ export const BASE_PICTORIAL_BAR = {
   },
   tooltip: {},
   legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
+    data: [],
+    textStyle: {
+      color: '#ccc'
+    },
   },
   xAxis: {
-    splitLine: { show: false },
-    axisLabel: { show: false },
-    axisTick: { show: false },
-    axisLine: { show: false }
+    type: "category",
+    boundaryGap: true, // 坐标轴两边留白
+    axisLabel: {
+      fontSize: 16,
+    },
+    axisTick: {
+      show: false,
+    },
+    axisLine: {
+      show: true,
+      lineStyle: {
+        type: "dashed",
+      },
+    },
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: "dashed",
+      },
+    },
+    data: []
   },
   yAxis: {
-    data: [],
-    inverse: true,
-    axisLine: { show: false },
-    axisTick: { show: false },
-    axisLabel: {
-      margin: 30,
-      fontSize: 14
+    name: "",
+    type: "value",
+    // min: min,
+    axisLine: {
+      show: true,
+      lineStyle: {
+      },
     },
-    axisPointer: {
-      label: {
-        show: true,
-        margin: 30
-      }
-    }
+    axisTick: {
+      show: false,
+    },
+    axisLabel: {
+      fontSize: 16,
+      margin: 25,
+      formatter: "{value}",
+    },
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: "dashed",
+      },
+    },
   },
   series: [],
   dataZoom: [

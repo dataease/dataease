@@ -95,35 +95,35 @@
       </el-form>
 
       <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('vertical'))" ref="sizeFormTable" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item :label="chart.type.includes('vertical')?'表格字体':$t('chart.table_title_fontsize')" class="form-item">
+        <el-form-item :label="chart.type && chart.type.includes('vertical')?'表格字体':$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('vertical')" :label="'高亮字体大小'" class="form-item">
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'高亮字体大小'" class="form-item">
           <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="!chart.type.includes('vertical')" :label="$t('chart.table_item_fontsize')" class="form-item">
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('vertical')" :label="'表格间距'" class="form-item">
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'表格间距'" class="form-item">
           <el-input-number v-model="sizeForm.tableSpacing" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('vertical')" :label="'表头宽度'" class="form-item">
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'表头宽度'" class="form-item">
           <el-input-number v-model="sizeForm.tableHeightWidth" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="!chart.type.includes('vertical')" :label="$t('chart.table_title_height')" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="!chart.type.includes('vertical')" :label="$t('chart.table_item_height')" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
         <!-- 轮播速率 -->
-        <el-form-item v-show="chart.type.includes('vertical')" :label="'轮播速率'" class="form-item">
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'轮播速率'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
