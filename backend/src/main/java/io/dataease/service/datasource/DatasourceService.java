@@ -232,6 +232,10 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setType(updataDsRequest.getType());
         datasource.setUpdateTime(System.currentTimeMillis());
+
+        Provider datasourceProvider = ProviderFactory.getProvider(updataDsRequest.getType());
+        datasourceProvider.checkConfiguration(datasource);
+
         checkAndUpdateDatasourceStatus(datasource);
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andIdEqualTo(updataDsRequest.getId());
@@ -255,6 +259,7 @@ public class DatasourceService {
         BeanUtils.copyBean(datasourceDTO, datasource);
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            datasourceProvider.checkConfiguration(datasource);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             String datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
