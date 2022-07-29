@@ -1039,7 +1039,9 @@ export default {
 
           for (var j = 0; j < this.apiItem.fields.length; j++) {
             if(this.apiItem.fields[j].name === jsonFields[i].name){
-              jsonFields[i].checked = false;
+              this.$nextTick(() => {
+                jsonFields[i].checked = false;
+              })
               this.$message.error(jsonFields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
               return
             }
@@ -1200,7 +1202,7 @@ export default {
       background-color: rgba(187, 191, 196, 0.5);
       height: 1px;
       top: 13px;
-      left: calc(50% + 22px);
+      left: calc(50% + 22px) !important;
       width: 100px;
       margin-right: 0px;
 
