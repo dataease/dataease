@@ -45,6 +45,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'antv',
     category: 'chart.chart_type_table',
+    value: 'dialog-list',
+    title: '详情表格',
+    icon: 'table-normal'
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
     icon: 'table-info'

@@ -111,6 +111,19 @@
           <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
         </el-col>
       </el-row>
+      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+        <el-col :span="4">
+          <span class="params-title">{{ '默认背景图片' }}</span>
+        </el-col>
+        <el-col :span="3">
+          <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
+        </el-col>
+        <el-col :span="7">
+          <div style="height:80px;width:120px;overflow-y:scroll;">
+            <img :src="navBgImg" class="img_class">
+          </div>
+        </el-col>
+      </el-row>
       <el-dialog
         width="750px"
         title="图片库"
@@ -139,8 +152,8 @@
           <el-col :span="3">
             <span class="params-title">{{ '选中图片：' }}</span>
           </el-col>
-          <el-col v-show="changImg!==''" :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
-            <img :src="changImg" class="img_class">
+          <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
+            <img :src="currentlySelected" class="img_class">
           </el-col>
         </el-row>
         <el-row class="root-class">
@@ -251,6 +264,7 @@ export default {
   data() {
     return {
       value1: [],
+      currentlySelected: '',
       allImgData: [],
       activeNames: [],
       updataUrl: '',
@@ -275,7 +289,9 @@ export default {
       uploadDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL,
+      navBgImg: '',
       textData: [],
+      chengKey: '',
       changImg: '',
       options: [{
         value: 1000,
@@ -365,14 +381,25 @@ export default {
     })
     this.options = deepCopy(newArrr)
     if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
+      this.updataUrl = this.curComponent.options.heightBgImg
+      this.changImg = this.curComponent.options.heightBgImg
       this.fileList.push({ url: this.element.options.heightBgImg })
     }
+    if (this.curComponent.options.defaultBg) {
+      this.navBgImg = this.curComponent.options.defaultBg
+    }
+    // this.curComponent.options.defaultBg = this.navBgImg
   },
 
   methods: {
     clickImg(item) {
+      this.currentlySelected = item.url
       console.log('图片数据', item)
-      this.changImg = item.url
+      if (this.chengKey === 'highlight') {
+        this.changImg = item.url
+      } else {
+        this.navBgImg = item.url
+      }
     },
     cancelPicture() {
       this.innerVisible = false
@@ -388,6 +415,13 @@ export default {
       })
     },
     openNewImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'highlight'
+      this.innerVisible = true
+    },
+    openNewBgImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'default'
       this.innerVisible = true
     },
     addNavInfo() {
@@ -423,6 +457,7 @@ export default {
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
+          // this.updataUrl = res
         })
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
@@ -477,6 +512,7 @@ export default {
       } else {
         this.curComponent.options.heightBgImg = this.changImg
       }
+      this.curComponent.options.defaultBg = this.navBgImg
       this.commitStyle()
 
       this.$store.commit('recordSnapshot')
