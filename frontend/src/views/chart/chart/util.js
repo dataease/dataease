@@ -282,6 +282,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bar_stack_horizontal',
     icon: 'bar-stack-horizontal'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_compare',
+  //   value: 'pictorial-bar',
+  //   title: 'chart.chart_column',
+  //   icon: 'pictorial-bar'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
