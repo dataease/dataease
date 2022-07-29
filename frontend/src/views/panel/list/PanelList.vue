@@ -374,8 +374,7 @@ export default {
     bus.$off('newPanelFromMarket', this.newPanelFromMarket)
   },
   mounted() {
-    this.$store.commit('setComponentData', [])
-    this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+    this.clearCanvas()
     this.defaultTree(true)
     this.initCache()
     const routerParam = this.$router.currentRoute.params
@@ -845,7 +844,9 @@ export default {
       this.searchType = searchTypeInfo
     },
     editFromPanelViewShow() {
-      this.edit(this.lastActiveNodeData, this.lastActiveNode)
+      this.$store.commit('setComponentData', [])
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
     editPanelBashInfo(params) {
       if (params.operation === 'status') {
