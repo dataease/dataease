@@ -196,7 +196,7 @@ public class PermissionService {
             List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();
             for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
                 List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
-                if(!userIdList.contains(userId)){
+                if(CollectionUtils.isNotEmpty(userIdList) && !userIdList.contains(userId)){
                     deptColumnPermissionsDTOS.add(columnPermissionsDTO);
                 }
             }
