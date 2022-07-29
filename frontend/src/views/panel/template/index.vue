@@ -1,6 +1,6 @@
 <template>
-  <de-container>
-    <de-aside-container isTemplate>
+  <de-container class="content-container">
+    <de-aside-container class="template-aside-container" is-template>
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="self">
           <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.user_template') }}</span>
@@ -211,4 +211,13 @@ export default {
     height: 100%;
   }
 
+  .content-container{
+    padding: 20px!important;
+    overflow: hidden;
+    height: calc(100vh - 56px)!important;
+  }
+
+  .template-aside-container{
+    height: calc(100vh - 96px)!important;
+  }
 </style>
