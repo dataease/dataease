@@ -81,7 +81,6 @@ import {
   geoJson
 } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
-import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'ChartComponent',
