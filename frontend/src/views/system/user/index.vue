@@ -30,21 +30,21 @@
           :class="[filterTexts.length ? 'active-btn filter-not-null' : 'filter-zero']"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >筛选<template v-if="filterTexts.length">
+          >{{ $t('user.filter') }}<template v-if="filterTexts.length">
             ({{ filterTexts.length }})
           </template>
         </el-button>
         <el-dropdown trigger="click" :hide-on-click="false">
           <el-button v-btnPress class="normal btn filter-zero" icon="el-icon-setting"
-            >列表项</el-button
+            >{{ $t('user.list') }}</el-button
           >
           <el-dropdown-menu class="list-colums-slect" slot="dropdown">
-            <p class="title">请选择列表中要展示的信息</p>
+            <p class="title">{{ $t('user.list_info') }}</p>
             <el-checkbox
               :indeterminate="isIndeterminate"
               v-model="checkAll"
               @change="handleCheckAllChange"
-              >全选</el-checkbox
+              >{{ $t('dataset.check_all')}}</el-checkbox
             >
             <el-checkbox-group
               v-model="checkedColumnNames"
@@ -483,7 +483,7 @@ export default {
       this.initSearch();
     },
     onCopy(e) {
-      this.$success(this.$t("commons.copy_success"));
+      this.openMessageSuccess("commons.copy_success");
     },
     onError(e) {},
     handleSizeChange(pageSize) {
@@ -531,7 +531,7 @@ export default {
       this.$refs.userEditer.init(row);
     },
     del(row) {
-      this.$confirm(this.$t("确定删除该用户吗？"), "", {
+      this.$confirm(this.$t("user.sure_delete"), "", {
         confirmButtonText: this.$t("commons.delete"),
         cancelButtonText: this.$t("commons.cancel"),
         cancelButtonClass: "de-confirm-fail-btn de-confirm-fail-cancel",
@@ -541,7 +541,7 @@ export default {
       })
         .then(() => {
           delUser(encodeURIComponent(row.userId)).then((res) => {
-            this.openMessageSuccess();
+            this.openMessageSuccess("commons.delete_success");
             this.initSearch();
           });
         })
@@ -549,11 +549,11 @@ export default {
           this.$info(this.$t("commons.delete_cancel"));
         });
     },
-    openMessageSuccess() {
+    openMessageSuccess(text) {
       const h = this.$createElement;
       this.$message({
         message: h("p", null, [
-          h("span", null, this.$t("commons.delete_success")),
+          h("span", null, this.$t(text)),
         ]),
         iconClass: "el-icon-success",
         customClass: "de-message-success de-message",
@@ -848,44 +848,6 @@ export default {
   .el-checkbox {
     color: #1f2329;
     width: 100%;
-  }
-}
-</style>
-<style lang="scss">
-.de-message {
-  min-width: 20px !important;
-  padding: 16px 20px !important;
-  flex-direction: row;
-  box-shadow: 0px 4px 8px 0px #1f23291a;
-  span {
-    font-family: PingFang SC;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 22px;
-    letter-spacing: 0px;
-    text-align: left;
-    color: #1f2329;
-  }
-
-  i {
-    height: 14.666666984558105px;
-    width: 14.666669845581055px;
-    margin-right: 8.67px;
-  }
-}
-.de-message-fail {
-  border: 1px solid #f54a45 !important;
-  background: #fef1f1 !important;
-  i {
-    color: #f54a45;
-  }
-}
-
-.de-message-success {
-  border: 1px solid #34c724 !important;
-  background: #f0fbef !important;
-  i {
-    color: #34c724;
   }
 }
 </style>

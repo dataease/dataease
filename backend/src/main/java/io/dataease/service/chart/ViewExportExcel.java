@@ -44,7 +44,7 @@ public class ViewExportExcel {
         PanelGroupDTO panelDto = panelGroupService.findOne(panelId);
         String componentsJson = panelDto.getPanelData();
         List<Map<String, Object>> components = gson.fromJson(componentsJson, tokenType);
-        ChartExtRequest chartExtRequest = buildViewRequest(componentsFilter(components, "custom", null, null));
+        ChartExtRequest chartExtRequest = buildViewRequest(FilterBuildTemplate.componentsFilter(components, "custom", null, null));
         List<File> results = new ArrayList<>();
         List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, chartExtRequest)).collect(Collectors.toList());
         File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName());
@@ -52,34 +52,7 @@ public class ViewExportExcel {
         return results;
     }
 
-    private List<Map<String, Object>> componentsFilter(List<Map<String, Object>> components, String type,
-            String componentType, String serviceName) {
-        return components.stream().filter(component -> {
-            String ctype =  Optional.ofNullable(component.get("type")).orElse("").toString();
-            String cComponentType = Optional.ofNullable(component.get("component")).orElse("").toString();
-            String cServiceName = Optional.ofNullable(component.get("serviceName")).orElse("").toString();
 
-            boolean typeMatch = true;
-            boolean componentTypeMatch = true;
-            boolean serviceNameMatch = true;
-
-            if (StringUtils.isNotBlank(type)) {
-                typeMatch = StringUtils.equals(type, ctype);
-            }
-
-            if (StringUtils.isNotBlank(componentType)) {
-                componentTypeMatch = StringUtils.equals(componentType, cComponentType);
-            }
-
-            if (StringUtils.isNotBlank(serviceName)) {
-                serviceNameMatch = StringUtils.equals(serviceName, cServiceName);
-            }
-
-            return typeMatch && componentTypeMatch && serviceNameMatch;
-
-        }).collect(Collectors.toList());
-
-    }
 
     private ChartExtRequest buildViewRequest(List<Map<String, Object>> filters) {
         ChartExtRequest chartExtRequest = new ChartExtRequest();
@@ -93,6 +66,11 @@ public class ViewExportExcel {
         chartExtRequest.setQueryFrom("panel");
         chartExtRequest.setFilter(panelFilters);
         return chartExtRequest;
+    }
+
+    private List<ChartExtFilterRequest> initFilters(List<Map<String, Object>> components) {
+
+        return null;
     }
 
     private ExcelSheetModel viewFiles(String viewId, ChartExtRequest request) {

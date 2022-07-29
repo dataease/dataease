@@ -564,6 +564,10 @@ export default {
     clear_filter: '清空條件',
     recover_pwd: '是否恢復為初始密碼?',
     filter_method: '篩選條件',
+    filter: '篩選',
+    list: '列表項',
+    list_info: '請選擇列表中要展示的信息',
+    sure_delete: '確定刪除該用戶嗎？',
   },
   ldap: {
     url: 'LDAP地址',
