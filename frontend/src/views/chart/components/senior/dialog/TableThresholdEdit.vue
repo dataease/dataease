@@ -166,16 +166,6 @@ export default {
             value: 'not_null',
             label: this.$t('chart.filter_not_null')
           }]
-        },
-        {
-          label: '',
-          options: [{
-            value: 'empty',
-            label: this.$t('chart.filter_empty')
-          }, {
-            value: 'not_empty',
-            label: this.$t('chart.filter_not_empty')
-          }]
         }
       ],
       dateOptions: [

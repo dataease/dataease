@@ -934,11 +934,11 @@ div:focus {
 .pagination-cont {
   text-align: right;
   margin-top: 10px;
-  ::v-deep .el-pager li {
-    background-color: #fff;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
-    color: #1f2329;
+  .el-pager li {
+    background-color: #fff !important;
+    border: 1px solid #bbbfc4 !important;
+    border-radius: 4px !important;
+    color: #1f2329 !important;
     box-sizing: border-box;
     line-height: 26px;
     font-family: SF Pro Text;
@@ -946,33 +946,32 @@ div:focus {
     font-weight: 400;
   }
 
-  ::v-deep .btn-prev,
-  ::v-deep .btn-next {
-    background: #fff;
-    background-color: #fff;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
-    color: #bbbfc4;
+  .btn-prev,
+  .btn-next {
+    background-color: #fff !important;
+    border: 1px solid #bbbfc4 !important;
+    border-radius: 4px !important;
+    color: #bbbfc4 !important;
   }
 
-  ::v-deep .el-pagination__total {
+  .el-pagination__total {
     font-family: "PingFang SC";
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: #1f2329;
+    color: #1f2329 !important;
     line-height: 28px;
   }
 
-  ::v-deep .number.active,
-  ::v-deep .el-input__inner:hover {
-    border-color: #3370ff;
+  .number.active,
+  .el-input__inner:hover {
+    border-color: #3370ff !important;
     color: #3370ff !important;
     background-color: #fff !important;
   }
 
-  ::v-deep .el-icon-more {
+  .el-icon-more {
     border: none !important;
   }
 }

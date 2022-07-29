@@ -358,8 +358,8 @@ export default {
   methods: {
     init() {
       const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.viewId])
-      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
-      const checkJumpStr = chartDetails.type.includes('table') ? checkAllAxisStr : chartDetails.xaxis + chartDetails.xaxisExt
+      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
+      const checkJumpStr = chartDetails.type.includes('table') ? checkAllAxisStr : chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.drillFields
 
       // 获取可关联的仪表板
       groupTree({}).then(rsp => {
