@@ -25,7 +25,22 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 1,
+          x2: 0,
+          y2: 0,
+          colorStops: [{
+            offset: 0,  // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          }, {
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+          }],
+          global: false // 缺省为 false
+        }
       }
       // size
       if (customAttr.size) {

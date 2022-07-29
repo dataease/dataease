@@ -810,7 +810,7 @@
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && view.type !== 'map' && view.type !== 'waterfall' && view.type !== 'treemap' && view.type !== 'funnel' && view.type !== 'bar-stack'"
                     name="size"
-                    :title="(view.type && (view.type.includes('table')|| view.type.includes('roll'))) ? $t('chart.table_config') : $t('chart.size')"
+                    :title="(view.type && (view.type.includes('table')|| (view.type.includes('roll')||view.type.includes('dialog')))) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -820,7 +820,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table')&&!view.type.includes('vertical') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="!view.type.includes('table')&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -847,7 +847,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type &&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1015,7 +1015,7 @@
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map'
-                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')
+                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')&&!view.type.includes('dialog')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')

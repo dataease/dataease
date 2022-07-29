@@ -90,7 +90,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('roll'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
