@@ -53,6 +53,12 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
+      if(customStyle.legend.itemGap !== undefined) {
+        chart_option.legend.itemGap = customStyle.legend.itemGap
+      } else {
+        chart_option.legend.itemGap = 10
+      }
+      
       chart_option.legend.textStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       if (chart.type === 'treemap' || chart.type === 'gauge') {
         chart_option.legend.show = false

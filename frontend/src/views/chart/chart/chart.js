@@ -159,7 +159,10 @@ export const DEFAULT_LEGEND_STYLE = {
   textStyle: {
     color: '#333333',
     fontSize: '12'
-  }
+  },
+  itemGap: 10,
+  marginTop: 5,
+  marginButtom: 5,
 }
 export const DEFAULT_XAXIS_STYLE = {
   show: true,

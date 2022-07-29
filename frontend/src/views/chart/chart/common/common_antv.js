@@ -163,8 +163,9 @@ export function getLegend(chart) {
     // legend
     if (customStyle.legend) {
       const l = JSON.parse(JSON.stringify(customStyle.legend))
+      console.log('lllllllllll',l)
       if (l.show) {
-        let offsetX, offsetY, position
+        let offsetX, offsetY, position, itemSpacing
         const orient = l.orient
         const legendSymbol = l.icon
         // fix position
@@ -219,6 +220,12 @@ export function getLegend(chart) {
             offsetY = 0
           }
         }
+        
+        if (l.itemGap) {
+          itemSpacing = l.itemGap
+        } else {
+          itemSpacing = 10
+        }
 
         legend = {
           layout: orient,
@@ -227,7 +234,8 @@ export function getLegend(chart) {
           offsetY: offsetY,
           marker: {
             symbol: legendSymbol
-          }
+          },
+          itemSpacing: itemSpacing
         }
       } else {
         legend = false
