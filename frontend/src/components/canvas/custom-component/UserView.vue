@@ -126,6 +126,13 @@
       :chart="chart"
       class="table-class"
     />
+    <dialogTable
+      v-else-if="dialogTableFlog"
+      :ref="element.propValue.id"
+      :element="element"
+      :chart="chart"
+      class="table-class"
+    />
     <label-normal
       v-else-if="labelShowFlag"
       :ref="element.propValue.id"
@@ -151,6 +158,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import TableRoll from '@/views/chart/components/table/TableRoll'
 import scrollTable from '@/views/chart/components/table/scrollTable'
+import dialogTable from '@/views/chart/components/table/dialogTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
 import progressLoop from '@/views/chart/components/progress/progressLoop'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
@@ -193,6 +201,7 @@ export default {
     ChartComponentH3,
     ChartComponentHc,
     scrollTable,
+    dialogTable,
     progressBar,
     progressLoop
   },
@@ -316,6 +325,7 @@ export default {
         !this.chart.type.includes('table') &&
         !this.chart.type.includes('roll') &&
         !this.chart.type.includes('text') &&
+        !this.chart.type.includes('dialog') &&
         this.chart.type !== 'label' &&
         this.renderComponent() === 'antv'
       )
@@ -355,6 +365,15 @@ export default {
         this.chart.type &&
         this.chart.type.includes('vertical') &&
         this.renderComponent() === 'echarts'
+      )
+    },
+    dialogTableFlog() {
+      console.log('this.chart.type', this.chart.type)
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type === 'dialog-list' &&
+        this.renderComponent() === 'antv'
       )
     },
     tableRollFlag() {
@@ -731,123 +750,123 @@ export default {
             // 将视图传入echart组件
             if (response.success) {
               console.log('查出的数据', response.data)
-              if(response.data.render === 'antv') {
-                if(response.data.data) {
-                  if(response.data.xaxis) {
+              if (response.data.render === 'antv') {
+                if (response.data.data) {
+                  if (response.data.xaxis) {
                     const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
                     // console.log('antv,xaxis',axisList)
-                    if(axisList.length > 0) {
-                      let arr = []
+                    if (axisList.length > 0) {
+                      const arr = []
                       const list = deepCopy(response.data.data.datas)
                       list.forEach(item => {
-                        let obj = item
-                        if((new Date(item.field).getMonth() + 1) === 1) {
-                          if(obj.name) {
+                        const obj = item
+                        if ((new Date(item.field).getMonth() + 1) === 1) {
+                          if (obj.name) {
                             obj.name = '一月'
                           }
                           obj.field = '一月'
-                        } else if((new Date(item.field).getMonth() + 1) === 2) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 2) {
+                          if (obj.name) {
                             obj.name = '二月'
                           }
                           obj.field = '二月'
-                        } else if((new Date(item.field).getMonth() + 1) === 3) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 3) {
+                          if (obj.name) {
                             obj.name = '三月'
                           }
                           obj.field = '三月'
-                        } else if((new Date(item.field).getMonth() + 1) === 4) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 4) {
+                          if (obj.name) {
                             obj.name = '四月'
                           }
                           obj.field = '四月'
-                        } else if((new Date(item.field).getMonth() + 1) === 5) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 5) {
+                          if (obj.name) {
                             obj.name = '五月'
                           }
                           obj.field = '五月'
-                        } else if((new Date(item.field).getMonth() + 1) === 6) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 6) {
+                          if (obj.name) {
                             obj.name = '六月'
                           }
                           obj.field = '六月'
-                        } else if((new Date(item.field).getMonth() + 1) === 7) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 7) {
+                          if (obj.name) {
                             obj.name = '七月'
                           }
                           obj.field = '七月'
-                        } else if((new Date(item.field).getMonth() + 1) === 8) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 8) {
+                          if (obj.name) {
                             obj.name = '八月'
                           }
                           obj.field = '八月'
-                        } else if((new Date(item.field).getMonth() + 1) === 9) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 9) {
+                          if (obj.name) {
                             obj.name = '九月'
                           }
                           obj.field = '九月'
-                        } else if((new Date(item.field).getMonth() + 1) === 10) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 10) {
+                          if (obj.name) {
                             obj.name = '十月'
                           }
                           obj.field = '十月'
-                        } else if((new Date(item.field).getMonth() + 1) === 11) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 11) {
+                          if (obj.name) {
                             obj.name = '十一月'
                           }
                           obj.field = '十一月'
-                        } else if((new Date(item.field).getMonth() + 1) === 12) {
-                          if(obj.name) {
+                        } else if ((new Date(item.field).getMonth() + 1) === 12) {
+                          if (obj.name) {
                             obj.name = '十二月'
                           }
                           obj.field = '十二月'
                         }
                         arr.push(obj)
                       })
-                      console.log('这个。。。',arr)
+                      console.log('这个。。。', arr)
                       response.data.data.datas = arr
                     }
                   }
                 }
                 this.chart = response.data
-               }else if(response.data.render === 'echarts' || response.data.render === 'highcharts') {
-                if(response.data.data) {
-                  if(response.data.xaxis) {
+              } else if (response.data.render === 'echarts' || response.data.render === 'highcharts') {
+                if (response.data.data) {
+                  if (response.data.xaxis) {
                     const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
                     // console.log('echarts,xaxis',axisList)
-                    if(axisList.length > 0) {
-                      let arr = []
+                    if (axisList.length > 0) {
+                      const arr = []
                       const list = deepCopy(response.data.data.x)
                       list.forEach(item => {
                         let obj = item
-                        if((new Date(item).getMonth() + 1) === 1) {
+                        if ((new Date(item).getMonth() + 1) === 1) {
                           obj = '一月'
-                        } else if((new Date(item).getMonth() + 1) === 2) {
+                        } else if ((new Date(item).getMonth() + 1) === 2) {
                           obj = '二月'
-                        } else if((new Date(item).getMonth() + 1) === 3) {
+                        } else if ((new Date(item).getMonth() + 1) === 3) {
                           obj = '三月'
-                        } else if((new Date(item).getMonth() + 1) === 4) {
+                        } else if ((new Date(item).getMonth() + 1) === 4) {
                           obj = '四月'
-                        } else if((new Date(item).getMonth() + 1) === 5) {
+                        } else if ((new Date(item).getMonth() + 1) === 5) {
                           obj = '五月'
-                        } else if((new Date(item).getMonth() + 1) === 6) {
+                        } else if ((new Date(item).getMonth() + 1) === 6) {
                           obj = '六月'
-                        } else if((new Date(item).getMonth() + 1) === 7) {
+                        } else if ((new Date(item).getMonth() + 1) === 7) {
                           obj = '七月'
-                        } else if((new Date(item).getMonth() + 1) === 8) {
+                        } else if ((new Date(item).getMonth() + 1) === 8) {
                           obj = '八月'
-                        } else if((new Date(item).getMonth() + 1) === 9) {
+                        } else if ((new Date(item).getMonth() + 1) === 9) {
                           obj = '九月'
-                        } else if((new Date(item).getMonth() + 1) === 10) {
+                        } else if ((new Date(item).getMonth() + 1) === 10) {
                           obj = '十月'
-                        } else if((new Date(item).getMonth() + 1) === 11) {
+                        } else if ((new Date(item).getMonth() + 1) === 11) {
                           obj = '十一月'
-                        } else if((new Date(item).getMonth() + 1) === 12) {
+                        } else if ((new Date(item).getMonth() + 1) === 12) {
                           obj = '十二月'
                         }
                         arr.push(obj)
                       })
-                      console.log('这个。。。',arr)
+                      console.log('这个。。。', arr)
                       response.data.data.x = arr
                     }
                   }
@@ -856,7 +875,6 @@ export default {
               } else {
                 this.chart = response.data
               }
-              
 
               // 主题切换
               if (this.templateStatus) {

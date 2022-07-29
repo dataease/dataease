@@ -43,17 +43,17 @@
           </el-radio-group>
         </el-col> -->
       </el-row>
-      <!-- <el-row>
+      <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '导航启用级别' }}</span>
         </el-col>
         <el-col :span="8" style="height:40px;line-height:40px;">
           <el-radio-group v-model="curComponent.options.vertical">
             <el-radio label="directory">目录级</el-radio>
-            <el-radio label="element">元素级</el-radio>
+            <el-radio label="elementKey">元素级</el-radio>
           </el-radio-group>
         </el-col>
-      </el-row> -->
+      </el-row>
       <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
@@ -74,21 +74,21 @@
         <el-col :span="4">
           <span class="params-title">{{ '高亮背景图片' }}</span>
         </el-col>
-        <el-col :span="6">
+        <!-- <el-col :span="6">
           <el-radio-group v-model="updataType">
             <el-radio :label="true">上传</el-radio>
             <el-radio :label="false">图库</el-radio>
           </el-radio-group>
-        </el-col>
-        <el-col v-show="!updataType" :span="3">
+        </el-col> -->
+        <el-col :span="3">
           <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
         </el-col>
-        <el-col v-show="changImg!==''&&!updataType" :span="7">
+        <el-col v-show="changImg!==''" :span="7">
           <div style="height:80px;width:120px;overflow-y:scroll;">
             <img :src="changImg" class="img_class">
           </div>
         </el-col>
-        <el-col v-show="updataType" style="width: 130px!important;">
+        <!-- <el-col v-show="updataType" style="width: 130px!important;">
           <el-upload
             action=""
             accept=".jpeg,.jpg,.png,.gif,.svg"
@@ -103,12 +103,22 @@
           >
             <i class="el-icon-plus" />
           </el-upload>
-          <!-- <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog> -->
-        </el-col>
-        <el-col v-show="updataType" :span="7">
+        </el-col> -->
+        <!-- <el-col v-show="updataType" :span="7">
           <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+        </el-col> -->
+      </el-row>
+      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+        <el-col :span="4">
+          <span class="params-title">{{ '默认背景图片' }}</span>
+        </el-col>
+        <el-col :span="3">
+          <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
+        </el-col>
+        <el-col v-show="navBgImg!==''" :span="7">
+          <div style="height:80px;width:120px;overflow-y:scroll;">
+            <img :src="navBgImg" class="img_class">
+          </div>
         </el-col>
       </el-row>
       <el-dialog
@@ -117,32 +127,63 @@
         :visible.sync="innerVisible"
         append-to-body
       >
-        <el-row class="bif_box">
-          <el-col>
-            <el-collapse v-model="activeNames">
-              <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
-                <template slot="title">
-                  <span style="width:600px">{{ ited.name }}</span>
-                </template>
-                <el-row :gutter="10" style="padding:10px;">
-                  <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
-                    <div class="img_Box" @click="clickImg(item)">
-                      <img :src="item.url" class="img_class">
-                    </div>
-                  </el-col>
-                </el-row>
-              </el-collapse-item>
-            </el-collapse>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top:20px;">
-          <el-col :span="3">
-            <span class="params-title">{{ '选中图片：' }}</span>
-          </el-col>
-          <el-col v-show="changImg!==''" :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
-            <img :src="changImg" class="img_class">
-          </el-col>
-        </el-row>
+        <el-tabs v-model="activeNameTabs" @tab-click="handleClick">
+          <el-tab-pane label="图库选择" name="first">
+            <el-row class="bif_box">
+              <el-col>
+                <el-collapse v-model="activeNames">
+                  <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
+                    <template slot="title">
+                      <span style="width:600px">{{ ited.name }}</span>
+                    </template>
+                    <el-row :gutter="10" style="padding:10px;">
+                      <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
+                        <div class="img_Box" @click="clickImg(item)">
+                          <img :src="item.url" class="img_class">
+                        </div>
+                      </el-col>
+                    </el-row>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:20px;">
+              <el-col :span="3">
+                <span class="params-title">{{ '选中图片：' }}</span>
+              </el-col>
+              <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
+                <img :src="currentlySelected" class="img_class">
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+          <el-tab-pane label="上传图片" name="second">
+            <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+              <el-col :span="4">
+                <span class="params-title">{{ '选择图片' }}</span>
+              </el-col>
+              <el-col v-show="updataType" style="width: 130px!important;">
+                <el-upload
+                  action=""
+                  accept=".jpeg,.jpg,.png,.gif,.svg"
+                  class="avatar-uploader"
+                  list-type="picture-card"
+                  :class="{disabled:uploadDisabled}"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :http-request="upload"
+                  :file-list="fileList"
+                  :on-change="onChange"
+                >
+                  <i class="el-icon-plus" />
+                </el-upload>
+              </el-col>
+              <el-col v-show="updataType" :span="7">
+                <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+        </el-tabs>
+
         <el-row class="root-class">
           <el-col :span="24">
             <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
@@ -250,7 +291,9 @@ export default {
   },
   data() {
     return {
+      activeNameTabs: 'first',
       value1: [],
+      currentlySelected: '',
       allImgData: [],
       activeNames: [],
       updataUrl: '',
@@ -275,7 +318,9 @@ export default {
       uploadDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL,
+      navBgImg: '',
       textData: [],
+      chengKey: '',
       changImg: '',
       options: [{
         value: 1000,
@@ -365,20 +410,43 @@ export default {
     })
     this.options = deepCopy(newArrr)
     if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
-      this.fileList.push({ url: this.element.options.heightBgImg })
+      // this.updataUrl = this.curComponent.options.heightBgImg
+      this.changImg = this.curComponent.options.heightBgImg
+      // this.fileList.push({ url: this.element.options.heightBgImg })
     }
+    if (this.curComponent.options.defaultBg) {
+      this.navBgImg = this.curComponent.options.defaultBg
+    }
+    // this.curComponent.options.defaultBg = this.navBgImg
   },
 
   methods: {
+    handleClick() {
+
+    },
     clickImg(item) {
+      this.currentlySelected = item.url
       console.log('图片数据', item)
-      this.changImg = item.url
     },
     cancelPicture() {
       this.innerVisible = false
-      this.changImg = ''
+      // this.changImg = ''
     },
     savePicture() {
+      console.log('this.activeNameTabs', this.activeNameTabs)
+      if (this.activeNameTabs === 'first') {
+        if (this.chengKey === 'highlight') {
+          this.changImg = this.currentlySelected
+        } else {
+          this.navBgImg = this.currentlySelected
+        }
+      } else {
+        if (this.chengKey === 'highlight') {
+          this.changImg = this.updataUrl
+        } else {
+          this.navBgImg = this.updataUrl
+        }
+      }
       this.innerVisible = false
     },
     getAllImg() {
@@ -388,6 +456,13 @@ export default {
       })
     },
     openNewImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'highlight'
+      this.innerVisible = true
+    },
+    openNewBgImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'default'
       this.innerVisible = true
     },
     addNavInfo() {
@@ -423,6 +498,7 @@ export default {
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
+          // this.updataUrl = res
         })
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
@@ -469,14 +545,10 @@ export default {
         })
       })
       console.log('this.fileList', this.fileList)
-      // this.canvasStyleData.navShowKey = ''
-      // console.log('this.imgUrlList', this.imgUrlList)
-      //  _this.updataUrl = reader.result
-      if (this.updataType) {
-        this.curComponent.options.heightBgImg = this.updataUrl
-      } else {
-        this.curComponent.options.heightBgImg = this.changImg
-      }
+      // 高亮背景
+      this.curComponent.options.heightBgImg = this.changImg
+      // 默认背景
+      this.curComponent.options.defaultBg = this.navBgImg
       this.commitStyle()
 
       this.$store.commit('recordSnapshot')

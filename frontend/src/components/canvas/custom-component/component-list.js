@@ -471,6 +471,7 @@ const list = [
       vertical: 'directory',
       horizontal: 'center',
       heightTabs: '',
+      defaultBg: '',
       highlight: '#333',
       highlightBg: '',
       heightBgImg: ''
