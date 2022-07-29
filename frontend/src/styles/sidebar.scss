@@ -22,7 +22,7 @@
     left: 0;
     z-index: 999;
     overflow: hidden;
-    
+
     .horizontal-collapse-transition {
       transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
     }
@@ -63,33 +63,33 @@
       border: none;
       height: 100%;
       width: 100% !important;
-      background-color: var(--SiderBG, #ffffff);     
+      background-color: var(--SiderBG, #ffffff);
     }
 
-    
+
 
     .submenu-title-noDropdown:not(.is-active), .el-submenu__title {
       color: var(--SiderTextColor, #1e212a);
       &:hover {
         background-color: var(--MenuHovorBG, rgba(158,158,158,.2)) !important;
-        color: var(--TextActive, #409EFF);
+        color: var(--TextActive, #3370ff);
       }
       &:focus {
         background-color: var(--MenuActiveBG, #ecf5ff) !important;
-        color: var(--TextActive, #409EFF);
+        color: var(--TextActive, #3370ff);
       }
     }
     .submenu-title-noDropdown.is-active {
         background-color: var(--MenuActiveBG, #ecf5ff) !important;
-        color: var(--TextActive, #409EFF);
+        color: var(--TextActive, #3370ff);
     }
 
     .is-active > .el-submenu__title {
         background-color: var(--MenuActiveBG, #ecf5ff) !important;
-        color: var(--TextActive, #409EFF);
+        color: var(--TextActive, #3370ff);
     }
 
-    
+
 
     & .nest-menu .el-submenu > .el-submenu__title,
     & .el-submenu .el-menu-item {
@@ -106,10 +106,10 @@
     & .el-submenu .is-active.el-menu-item {
       min-width: $sideBarWidth !important;
       background-color: var(--SiderBG) !important;
-      color: var(--TextActive, #409EFF);
-      
+      color: var(--TextActive, #3370ff);
+
     }
-    
+
 
   }
 
@@ -160,7 +160,7 @@
             overflow: hidden;
             visibility: hidden;
             display: inline-block;
-            
+
           }
         }
       }
@@ -173,7 +173,7 @@
     min-width: $sideBarWidth !important;
   }
 
-  
+
 
   .withoutAnimation {
 
