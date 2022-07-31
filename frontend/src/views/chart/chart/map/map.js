@@ -88,6 +88,11 @@ export function baseMapOption(chart_option, chart, themeStyle) {
         y.name = chart.data.x[i]
         chart_option.series[0].data.push(y)
       }
+      if (chart.senior) {
+        const senior = JSON.parse(chart.senior)
+
+        senior && senior.mapMapping && (chart_option.series[0].nameMap = senior.mapMapping)
+      }
     }
   }
   componentStyle(chart_option, chart)

@@ -703,7 +703,7 @@
         <el-tab-pane name="senior" :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || view.type.includes('table'))"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || view.type.includes('table') || view.type === 'map' || view.type === 'buddle-map')"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
@@ -761,6 +761,25 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
+
+              <el-row v-if="view.type && (view.type === 'map' || view.type === 'buddle-map')">
+
+                <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+                <el-collapse v-model="attrActiveNames" class="style-collapse">
+
+                  <el-collapse-item title="地名映射">
+                    <map-mapping
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onMapMappingChange="onMapMappingChange"
+                    />
+
+                  </el-collapse-item>
+
+                </el-collapse>
+              </el-row>
+
             </div>
             <div v-else class="no-senior">
               {{ $t('chart.chart_no_senior') }}
@@ -1084,6 +1103,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
+import MapMapping from '@/views/chart/components/senior/MapMapping'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
@@ -1129,7 +1149,8 @@ export default {
     ChartDragItem,
     DrillItem,
     DrillPath,
-    PluginCom
+    PluginCom,
+    MapMapping
   },
   props: {
     param: {
@@ -1950,6 +1971,10 @@ export default {
 
     onScrollChange(val) {
       this.view.senior.scrollCfg = val
+      this.calcStyle()
+    },
+    onMapMappingChange(val) {
+      this.view.senior.mapMapping = val
       this.calcStyle()
     },
 
