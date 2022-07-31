@@ -2291,5 +2291,11 @@ export default {
     fileplaceholder: '請上傳json格式坐標文件',
     delete_confirm: '及子節點都會被刪除，確認執行？',
     cur_node: '當前節點'
+  },
+  map_mapping: {
+    map: '圖形',
+    attr: '屬性',
+    empty: '無數據',
+    please_select_map: '請先選擇地圖範圍'
   }
 }

@@ -2282,5 +2282,12 @@ export default {
     fileplaceholder: 'Please upload the JSON format coordinate file',
     delete_confirm: 'And child nodes will be deleted. Confirm to execute ?',
     cur_node: 'Current node'
+  },
+  map_mapping: {
+    map: 'Map',
+    attr: 'Attribute',
+    empty: 'Empty',
+    please_select_map: 'Please select a range of map'
   }
+
 }
