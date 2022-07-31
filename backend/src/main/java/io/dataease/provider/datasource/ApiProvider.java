@@ -181,28 +181,28 @@ public class ApiProvider extends Provider {
         if (StringUtils.isEmpty(response)) {
             throw new Exception("该请求返回数据为空");
         }
-        List<JSONObject> jsonFields = new ArrayList<>();
+        List<JSONObject> fields = new ArrayList<>();
         String rootPath;
         if (response.startsWith("[")) {
             rootPath = "$[*]";
             JSONArray jsonArray = JSONObject.parseArray(response);
             for (Object o : jsonArray) {
-                handleStr(apiDefinition, o.toString(), jsonFields, rootPath);
+                handleStr(apiDefinition, o.toString(), fields, rootPath);
             }
         } else {
             rootPath = "$";
-            handleStr(apiDefinition, response, jsonFields, rootPath);
+            handleStr(apiDefinition, response, fields, rootPath);
         }
-        apiDefinition.setJsonFields(jsonFields);
+        apiDefinition.setJsonFields(fields);
         return apiDefinition;
     }
 
 
-    static private void handleStr(ApiDefinition apiDefinition, String jsonStr, List<JSONObject> objects, String rootPath) {
+    static private void handleStr(ApiDefinition apiDefinition, String jsonStr, List<JSONObject> fields, String rootPath) {
         if (jsonStr.startsWith("[")) {
             JSONArray jsonArray = JSONObject.parseArray(jsonStr);
             for (Object o : jsonArray) {
-                handleStr(apiDefinition, o.toString(), objects, rootPath);
+                handleStr(apiDefinition, o.toString(), fields, rootPath);
             }
         } else {
             JSONObject jsonObject = JSONObject.parseObject(jsonStr);
@@ -213,12 +213,12 @@ public class ApiProvider extends Provider {
                     JSONObject o = new JSONObject();
                     JSONArray jsonArray = JSONObject.parseArray(jsonObject.getString(s));
                     try {
-                        List<JSONObject> children = new ArrayList<>();
+                        List<JSONObject> childrenField = new ArrayList<>();
                         for (Object object: jsonArray) {
                             JSONObject.parseObject(object.toString());
-                            handleStr(apiDefinition, object.toString(), children, rootPath + "." + s + "[*]");
+                            handleStr(apiDefinition, object.toString(), childrenField, rootPath + "." + s + "[*]");
                         }
-                        o.put("children", children);
+                        o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");
 
                     }catch (Exception e){
@@ -228,8 +228,8 @@ public class ApiProvider extends Provider {
                     }
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(apiDefinition, objects, o)) {
-                        objects.add(o);
+                    if (!hasItem(apiDefinition, fields, o)) {
+                        fields.add(o);
                     }
                 } else if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
                     List<JSONObject> children = new ArrayList<>();
@@ -239,8 +239,8 @@ public class ApiProvider extends Provider {
                     o.put("childrenDataType", "OBJECT");
                     o.put("jsonPath", rootPath + "." + s);
                     setProperty(apiDefinition, o, s);
-                    if (!hasItem(apiDefinition, objects, o)) {
-                        objects.add(o);
+                    if (!hasItem(apiDefinition, fields, o)) {
+                        fields.add(o);
                     }
                 } else {
                     JSONObject o = new JSONObject();
@@ -249,8 +249,8 @@ public class ApiProvider extends Provider {
                     JSONArray array = new JSONArray();
                     array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
                     o.put("value", array);
-                    if (!hasItem(apiDefinition, objects, o)) {
-                        objects.add(o);
+                    if (!hasItem(apiDefinition, fields, o)) {
+                        fields.add(o);
                     }
                 }
 
@@ -278,12 +278,13 @@ public class ApiProvider extends Provider {
 
     }
 
-    static private boolean hasItem(ApiDefinition apiDefinition, List<JSONObject> objects, JSONObject item) {
+    static private boolean hasItem(ApiDefinition apiDefinition, List<JSONObject> fields, JSONObject item) {
         boolean has = false;
-        for (JSONObject object : objects) {
-            if (object.getString("jsonPath").equals(item.getString("jsonPath"))) {
+        for (JSONObject field : fields) {
+            if (field.getString("jsonPath").equals(item.getString("jsonPath"))) {
                 has = true;
-                mergeValue(object, apiDefinition, item);
+                mergeField(field, item);
+                mergeValue(field, apiDefinition, item);
                 break;
             }
         }
@@ -291,6 +292,30 @@ public class ApiProvider extends Provider {
         return has;
     }
 
+
+    static void mergeField(JSONObject field, JSONObject item){
+        if(item.getJSONArray("children") != null ){
+            JSONArray itemChildren = item.getJSONArray("children");
+            JSONArray fieldChildren = field.getJSONArray("children");
+            if(fieldChildren == null){
+                fieldChildren = new JSONArray();
+            }
+            for (Object itemChild : itemChildren) {
+                boolean hasKey = false;
+                JSONObject itemChildObject = JSONObject.parseObject(itemChild.toString());
+                for (Object fieldChild : fieldChildren) {
+                    JSONObject fieldChildObject = JSONObject.parseObject(fieldChild.toString());
+                    if(itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))){
+                        mergeField(fieldChildObject, itemChildObject);
+                        hasKey = true;
+                    }
+                }
+                if(!hasKey){
+                    fieldChildren.add(itemChild);
+                }
+            }
+        }
+    }
 
     static void mergeValue(JSONObject object, ApiDefinition apiDefinition, JSONObject item) {
 
@@ -346,7 +371,9 @@ public class ApiProvider extends Provider {
                 if (object instanceof List) {
                     datas = (List<String>) object;
                 } else {
-                    datas.add((String) object);
+                    if (object != null) {
+                        datas.add(object.toString());
+                    }
                 }
                 maxLenth = maxLenth > datas.size() ? maxLenth : datas.size();
                 columnDataList.add(datas);

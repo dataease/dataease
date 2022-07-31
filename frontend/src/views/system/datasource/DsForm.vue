@@ -478,7 +478,7 @@ export default {
       method(form).then(res => {
         this.$success(i18n.t('commons.save_success'))
         this.refreshType(form)
-        this.backToList()
+        // this.backToList()
       })
     },
     getSchema() {
