@@ -267,6 +267,11 @@ export default {
           for (let index = 0; index < this.tData.length; index++) {
             if (typeData[0].id === this.tData[index].id) {
               this.tData[index].children = typeData[0].children
+              for (let i = 0; i < this.tData[index].children.length; i++) {
+                if(this.tData[index].children[i].id === datasource.id){
+                  this.showInfo({data: this.tData[index].children[i]})
+                }
+              }
               find = true
             }
           }
