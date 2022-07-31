@@ -759,6 +759,7 @@ export default {
 
     setDetailMapCode(code) {
       this.element.DetailAreaCode = code
+      bus.$emit('set-dynamic-area-code', code)
       return true
     },
 

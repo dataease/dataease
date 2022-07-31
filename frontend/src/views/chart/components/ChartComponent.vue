@@ -257,7 +257,7 @@ export default {
         const cCode = this.chart.DetailAreaCode || this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
-          this.initMapChart(json, chart)
+          this.initMapChart(json, chart, cCode)
           return
         }
 
@@ -266,7 +266,7 @@ export default {
             key: cCode,
             value: res
           }).then(() => {
-            this.initMapChart(res, chart)
+            this.initMapChart(res, chart, cCode)
           })
         })
         return
@@ -277,15 +277,22 @@ export default {
     registerDynamicMap(areaCode) {
       this.dynamicAreaCode = areaCode
     },
-
-    initMapChart(geoJson, chart) {
+    formatGeoJson(geoGson) {
+      geoGson.features.forEach(feature => {
+        Object.keys(feature.properties).forEach(property => {
+          feature.properties[property.toLocaleLowerCase()] = feature.properties[property]
+        })
+      })
+    },
+    initMapChart(geoJson, chart, curAreaCode) {
+      this.formatGeoJson(geoJson)
       this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
       }
-      const chart_option = baseMapOption(base_json, chart, themeStyle)
+      const chart_option = baseMapOption(base_json, chart, themeStyle, curAreaCode)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {

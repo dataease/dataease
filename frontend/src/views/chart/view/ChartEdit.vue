@@ -764,14 +764,15 @@
 
               <el-row v-if="view.type && (view.type === 'map' || view.type === 'buddle-map')">
 
-                <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
-                <el-collapse v-model="attrActiveNames" class="style-collapse">
+                <span v-if="false" class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+                <el-collapse v-model="mapActiveNames" class="style-collapse">
 
-                  <el-collapse-item title="地名映射">
+                  <el-collapse-item title="地名映射" name="map-mapping">
                     <map-mapping
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
+                      :dynamic-area-code="currentAreaCode"
                       @onMapMappingChange="onMapMappingChange"
                     />
 
@@ -1247,6 +1248,7 @@ export default {
       filterItem: {},
       places: [],
       attrActiveNames: [],
+      mapActiveNames: ['map-mapping'],
       styleActiveNames: [],
       drillClickDimensionList: [],
       drillFilters: [],
@@ -1269,7 +1271,8 @@ export default {
       currEditField: {},
       editChartCalcField: false,
       fieldShow: false,
-      tabActive: 'data'
+      tabActive: 'data',
+      currentAreaCode: ''
 
     }
   },
@@ -1370,11 +1373,15 @@ export default {
     bus.$off('calc-data', this.calcData)
     bus.$off('plugins-calc-style', this.calcStyle)
     bus.$off('plugin-chart-click', this.chartClick)
+    bus.$off('set-dynamic-area-code', this.setDynamicAreaCode)
   },
   activated() {
   },
 
   methods: {
+    setDynamicAreaCode(code) {
+      this.currentAreaCode = code
+    },
     loadPluginType() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
@@ -1410,6 +1417,8 @@ export default {
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
+      bus.$on('set-dynamic-area-code', this.setDynamicAreaCode)
+      
     },
     initTableData(id, optType) {
       if (id != null) {
@@ -2470,6 +2479,7 @@ export default {
     },
 
     setDetailMapCode(code) {
+      this.currentAreaCode = code
       this.curComponent.DetailAreaCode = code
       return true
     },
